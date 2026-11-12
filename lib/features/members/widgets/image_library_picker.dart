@@ -99,16 +99,23 @@ class _ImageLibraryPickerSheet extends ConsumerWidget {
                             ),
                             error: (error, stackTrace) => Container(
                               color: theme.colorScheme.surfaceContainerHighest,
-                              child: Icon(AppIcons.imageBroken,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  size: 20),
+                              child: Icon(
+                                AppIcons.imageBroken,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 20,
+                              ),
                             ),
                             data: (bytes) => bytes != null
-                                ? Image.memory(bytes,
-                                    fit: BoxFit.cover, cacheWidth: cacheWidth)
+                                ? Image.memory(
+                                    bytes,
+                                    fit: BoxFit.cover,
+                                    cacheWidth: cacheWidth,
+                                  )
                                 : Container(
                                     color: theme
-                                        .colorScheme.surfaceContainerHighest),
+                                        .colorScheme
+                                        .surfaceContainerHighest,
+                                  ),
                           ),
                         ),
                       ),

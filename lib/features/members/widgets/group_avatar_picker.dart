@@ -63,8 +63,7 @@ class _GroupAvatarPickerState extends State<GroupAvatarPicker> {
       createdAt: DateTime.now(),
     );
 
-    final cameraBadgeSize =
-        (widget.tileSize * 0.28).clamp(24.0, 36.0);
+    final cameraBadgeSize = (widget.tileSize * 0.28).clamp(24.0, 36.0);
 
     final avatarWidget = GestureDetector(
       onTap: widget.onPickImage,

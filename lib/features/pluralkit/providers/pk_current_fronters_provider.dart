@@ -36,9 +36,9 @@ final pkCurrentFrontersProvider = FutureProvider.autoDispose<PKSwitch?>((
   if (client == null) return null;
 
   try {
-    return await client
-        .getCurrentFronters()
-        .timeout(const Duration(seconds: 5));
+    return await client.getCurrentFronters().timeout(
+      const Duration(seconds: 5),
+    );
   } on Object {
     return null;
   } finally {

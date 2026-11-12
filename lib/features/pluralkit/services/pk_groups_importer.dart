@@ -368,7 +368,7 @@ class PkGroupsImporter with SyncRecordMixin {
               '[PK groups] F15 skip: group ${pk.uuid} is a tombstone '
               '(${driftTombstoned ? tombstone.id : 'field_versions only'}); '
               '${!canRevive ? 'no gate to mint a live incarnation' : 'background '
-                  'pull'} preserves the deletion.',
+                        'pull'} preserves the deletion.',
             );
             continue;
           }
@@ -489,8 +489,7 @@ class PkGroupsImporter with SyncRecordMixin {
         // group on every pull). Never touch emoji (R8); avatar_image_data is
         // preserved across PK pulls.
         final identityChanged =
-            existing.pluralkitId != pk.id ||
-            existing.pluralkitUuid != pk.uuid;
+            existing.pluralkitId != pk.id || existing.pluralkitUuid != pk.uuid;
         final lastSeen = existing.lastSeenFromPkAt;
         final lastSeenRefreshDue =
             lastSeen == null ||
@@ -502,12 +501,8 @@ class PkGroupsImporter with SyncRecordMixin {
 
         final updates = MemberGroupsCompanion(
           id: Value(existing.id),
-          lastSeenFromPkAt: writeLastSeen
-              ? Value(now)
-              : const Value.absent(),
-          pluralkitId: identityChanged
-              ? Value(pk.id)
-              : const Value.absent(),
+          lastSeenFromPkAt: writeLastSeen ? Value(now) : const Value.absent(),
+          pluralkitId: identityChanged ? Value(pk.id) : const Value.absent(),
           pluralkitUuid: identityChanged
               ? Value(pk.uuid)
               : const Value.absent(),
@@ -994,10 +989,15 @@ class PkGroupsImporter with SyncRecordMixin {
   Future<bool> _isGroupCanonicalTombstoned(String pkGroupUuid) async {
     final gate = _tombstoneGate;
     if (gate == null) return false;
-    if (await gate.isTombstoned(_groupTable, deriveGroupSyncEntityId(pkGroupUuid))) {
+    if (await gate.isTombstoned(
+      _groupTable,
+      deriveGroupSyncEntityId(pkGroupUuid),
+    )) {
       return true;
     }
-    final aliases = await _db.pkGroupSyncAliasesDao.getByPkGroupUuid(pkGroupUuid);
+    final aliases = await _db.pkGroupSyncAliasesDao.getByPkGroupUuid(
+      pkGroupUuid,
+    );
     for (final alias in aliases) {
       final legacyId = alias.legacyEntityId.trim();
       if (legacyId.isEmpty) continue;

@@ -29,19 +29,18 @@ class BioImageProcessingState {
 /// Watches all bio media attachments for the given [memberId].
 /// Uses a Drift stream query so it reactively updates when records are
 /// inserted, updated, or soft-deleted.
-final bioMediaForMemberProvider =
-    StreamProvider.autoDispose.family<List<MediaAttachment>, String>(
-  (ref, memberId) {
-    final repo = ref.watch(mediaAttachmentRepositoryProvider);
-    return repo.watchForMember(memberId);
-  },
-);
+final bioMediaForMemberProvider = StreamProvider.autoDispose
+    .family<List<MediaAttachment>, String>((ref, memberId) {
+      final repo = ref.watch(mediaAttachmentRepositoryProvider);
+      return repo.watchForMember(memberId);
+    });
 
 /// Watches the image library — all media_attachments with a non-empty tag.
 /// These are user-uploaded images that can be referenced from any member's
 /// bio via `![alt](tag)` markdown syntax.
-final imageLibraryProvider =
-    StreamProvider.autoDispose<List<MediaAttachment>>((ref) {
+final imageLibraryProvider = StreamProvider.autoDispose<List<MediaAttachment>>((
+  ref,
+) {
   final repo = ref.watch(mediaAttachmentRepositoryProvider);
   return repo.watchLibraryImages();
 });
@@ -51,10 +50,7 @@ Future<List<MediaAttachment>> readImageLibrarySnapshot(
   WidgetRef ref, {
   bool useCachedValueOnError = false,
 }) async {
-  final keepAlive = ref.listenManual(
-    imageLibraryProvider,
-    (previous, next) {},
-  );
+  final keepAlive = ref.listenManual(imageLibraryProvider, (previous, next) {});
   try {
     return await ref.read(imageLibraryProvider.future);
   } catch (_) {
@@ -112,10 +108,11 @@ class BioImageProcessingStateNotifier
   void reset() => state = const BioImageProcessingState();
 }
 
-final bioImageProcessingStateProvider = NotifierProvider.autoDispose<
-    BioImageProcessingStateNotifier, BioImageProcessingState>(
-  BioImageProcessingStateNotifier.new,
-);
+final bioImageProcessingStateProvider =
+    NotifierProvider.autoDispose<
+      BioImageProcessingStateNotifier,
+      BioImageProcessingState
+    >(BioImageProcessingStateNotifier.new);
 
 /// Provides a [BioImageProcessor] scoped to a single editor session, keyed by
 /// a session id the host editor generates in `initState`.
@@ -128,15 +125,16 @@ final bioImageProcessingStateProvider = NotifierProvider.autoDispose<
 ///     when the editor closes (the only watcher goes away).
 ///   - Two editors open at once get isolated instances, so cancelling/saving
 ///     one never commits or discards the other's staged images.
-final bioImageProcessorProvider =
-    Provider.autoDispose.family<BioImageProcessor, String>((ref, sessionId) {
-  final mediaService = ref.watch(mediaServiceProvider);
-  final repo =
-      ref.watch(mediaAttachmentRepositoryProvider) as DriftMediaAttachmentRepository;
-  final processor = BioImageProcessor(
-    mediaService: mediaService,
-    repository: repo,
-  );
-  ref.onDispose(processor.discardStaged);
-  return processor;
-});
+final bioImageProcessorProvider = Provider.autoDispose
+    .family<BioImageProcessor, String>((ref, sessionId) {
+      final mediaService = ref.watch(mediaServiceProvider);
+      final repo =
+          ref.watch(mediaAttachmentRepositoryProvider)
+              as DriftMediaAttachmentRepository;
+      final processor = BioImageProcessor(
+        mediaService: mediaService,
+        repository: repo,
+      );
+      ref.onDispose(processor.discardStaged);
+      return processor;
+    });

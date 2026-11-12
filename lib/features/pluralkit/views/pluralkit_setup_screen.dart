@@ -465,9 +465,7 @@ class _PluralKitSetupScreenState extends ConsumerState<PluralKitSetupScreen> {
     // Invalidate so the management screen fetches fresh PK data and locals.
     ref.invalidate(pkLinkManagementControllerProvider);
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const PkLinkManagementScreen(),
-      ),
+      MaterialPageRoute<void>(builder: (_) => const PkLinkManagementScreen()),
     );
   }
 

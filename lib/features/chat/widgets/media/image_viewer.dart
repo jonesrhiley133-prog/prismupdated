@@ -65,12 +65,11 @@ class ImageViewer extends ConsumerStatefulWidget {
     Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
         opaque: false,
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            ImageViewer(
-              imageBytes: imageBytes,
-              caption: caption,
-              actions: actions,
-            ),
+        pageBuilder: (context, animation, secondaryAnimation) => ImageViewer(
+          imageBytes: imageBytes,
+          caption: caption,
+          actions: actions,
+        ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -171,7 +170,8 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
                           widget.imageBytes,
                           fit: BoxFit.contain,
                           semanticLabel:
-                              widget.caption ?? context.l10n.chatImageAttachment,
+                              widget.caption ??
+                              context.l10n.chatImageAttachment,
                         ),
                       ),
                     ),
@@ -211,12 +211,7 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
             ),
 
             // Prism glass top bar: back, save, optional overflow menu.
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: _buildTopBar(context),
-            ),
+            Positioned(top: 0, left: 0, right: 0, child: _buildTopBar(context)),
           ],
         ),
       ),

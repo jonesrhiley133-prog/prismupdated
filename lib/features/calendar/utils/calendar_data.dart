@@ -1,16 +1,25 @@
 import 'package:prism_plurality/domain/models/calendar_event.dart';
+import 'package:prism_plurality/domain/models/contact.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/domain/models/reminder.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
 import 'package:prism_plurality/features/calendar/utils/recurrence.dart';
+import 'package:prism_plurality/features/contacts/utils/birthday_date.dart';
 import 'package:prism_plurality/features/members/utils/birthday.dart';
 import 'package:prism_plurality/features/mood/utils/mood_stats.dart';
 
 /// A member's birthday falling on a given day.
 class BirthdayOnDay {
-  const BirthdayOnDay({required this.member, this.age});
-  final Member member;
+  const BirthdayOnDay({this.member, this.contact, this.age})
+    : assert(member != null || contact != null);
+  final Member? member;
+  final Contact? contact;
+
+  /// Display name of whoever's birthday it is.
+  String name({required bool preferDisplayName}) =>
+      member?.effectiveName(preferDisplayName: preferDisplayName) ??
+      contact!.displayName;
 
   /// Age turned on that day, when the birth year is known.
   final int? age;
@@ -29,6 +38,7 @@ class CalendarData {
   CalendarData({
     required List<CalendarEvent> events,
     required this.members,
+    this.contacts = const [],
     required this.moodEntries,
     required this.reminders,
     required this.overlays,
@@ -42,6 +52,7 @@ class CalendarData {
 
   final List<CalendarEvent> events;
   final List<Member> members;
+  final List<Contact> contacts;
   final List<MoodEntry> moodEntries;
   final List<Reminder> reminders;
   final CalendarOverlays overlays;
@@ -79,6 +90,13 @@ class CalendarData {
       if (!matches) continue;
       final known = !isBirthdayYearHidden(b) && b.year < day.year;
       out.add(BirthdayOnDay(member: m, age: known ? day.year - b.year : null));
+    }
+    // Contact birthdays recur every year (Feb 29 → Feb 28 in other years).
+    final d = DateTime(day.year, day.month, day.day);
+    for (final c in contacts) {
+      final b = BirthdayDate.fromStorage(c.birthday);
+      if (b == null || b.nextOccurrence(d) != d) continue;
+      out.add(BirthdayOnDay(contact: c, age: b.ageOn(d)));
     }
     return out;
   }

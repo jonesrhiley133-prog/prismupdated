@@ -72,11 +72,13 @@ class MessageGroupBuilder {
       final message = messages[i];
 
       // Detect day boundary between the previous group and this message.
-      final dayChanged = currentGroupMessages.isNotEmpty &&
+      final dayChanged =
+          currentGroupMessages.isNotEmpty &&
           !_isSameDay(currentGroupMessages.last.timestamp, message.timestamp);
 
       // Check whether this message continues the current group.
-      final continuesGroup = currentGroupMessages.isNotEmpty &&
+      final continuesGroup =
+          currentGroupMessages.isNotEmpty &&
           !dayChanged &&
           _belongsToGroup(currentGroupMessages.last, message);
 
@@ -86,9 +88,13 @@ class MessageGroupBuilder {
         // Flush the previous group. Reverse so oldest is first — the input
         // list is DESC (newest first) but within a group we render top-to-bottom.
         if (currentGroupMessages.isNotEmpty) {
-          items.add(MessageGroup(
-            messages: List.unmodifiable(currentGroupMessages.reversed.toList()),
-          ));
+          items.add(
+            MessageGroup(
+              messages: List.unmodifiable(
+                currentGroupMessages.reversed.toList(),
+              ),
+            ),
+          );
         }
 
         // When the day changed, emit a separator for the completed day.
@@ -105,9 +111,11 @@ class MessageGroupBuilder {
 
     // Flush the last group and add its date separator.
     if (currentGroupMessages.isNotEmpty) {
-      items.add(MessageGroup(
-        messages: List.unmodifiable(currentGroupMessages.reversed.toList()),
-      ));
+      items.add(
+        MessageGroup(
+          messages: List.unmodifiable(currentGroupMessages.reversed.toList()),
+        ),
+      );
       items.add(DateSeparatorItem(currentGroupMessages.first.timestamp));
     }
 
@@ -233,8 +241,9 @@ class _HighlightAwareMessageBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isHighlighted = ref.watch(
-      highlightedMessageIdProvider(conversationId)
-          .select((id) => id == message.id),
+      highlightedMessageIdProvider(
+        conversationId,
+      ).select((id) => id == message.id),
     );
 
     return MessageBubble(

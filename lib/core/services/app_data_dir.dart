@@ -295,6 +295,8 @@ Future<bool> _currentDirectoryHasUserData(Directory currentDir) async {
           'location_sessions',
           'jobs',
           'work_sessions',
+          'cycle_entries',
+          'contacts',
           'member_groups',
           'member_group_entries',
           'pk_group_sync_aliases',

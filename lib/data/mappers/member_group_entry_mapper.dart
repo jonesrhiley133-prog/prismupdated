@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
-import 'package:prism_plurality/domain/models/member_group_entry.dart' as domain;
+import 'package:prism_plurality/domain/models/member_group_entry.dart'
+    as domain;
 
 class MemberGroupEntryMapper {
   MemberGroupEntryMapper._();
@@ -14,7 +15,8 @@ class MemberGroupEntryMapper {
   }
 
   static MemberGroupEntriesCompanion toCompanion(
-      domain.MemberGroupEntry model) {
+    domain.MemberGroupEntry model,
+  ) {
     return MemberGroupEntriesCompanion(
       id: Value(model.id),
       groupId: Value(model.groupId),

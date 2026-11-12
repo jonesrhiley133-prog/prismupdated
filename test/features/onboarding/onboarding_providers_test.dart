@@ -389,6 +389,8 @@ void main() {
         AppShellTabId.insights,
         AppShellTabId.locations,
         AppShellTabId.work,
+        AppShellTabId.cycle,
+        AppShellTabId.contacts,
         AppShellTabId.notes,
         AppShellTabId.reminders,
         AppShellTabId.statistics,

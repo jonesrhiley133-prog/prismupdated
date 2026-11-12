@@ -140,9 +140,7 @@ class _EventTile extends StatelessWidget {
 
     final titleText = Text(
       entry.summary,
-      style: theme.textTheme.bodyMedium?.copyWith(
-        fontWeight: FontWeight.w600,
-      ),
+      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
     );
 
     // Per spec: error-bearing events get a leading icon inside the title slot
@@ -185,9 +183,7 @@ class _EventTile extends StatelessWidget {
           ),
           child: SelectableText(
             const JsonEncoder.withIndent('  ').convert(entry.data),
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontFamily: 'monospace',
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
           ),
         ),
       ],

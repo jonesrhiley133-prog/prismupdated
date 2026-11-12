@@ -71,7 +71,8 @@ class HabitMapper {
       modifiedAt: Value(model.modifiedAt),
       frequency: Value(model.frequency.name),
       weeklyDays: Value(
-          model.weeklyDays != null ? jsonEncode(model.weeklyDays) : null),
+        model.weeklyDays != null ? jsonEncode(model.weeklyDays) : null,
+      ),
       intervalDays: Value(model.intervalDays),
       reminderTime: Value(model.reminderTime),
       notificationsEnabled: Value(model.notificationsEnabled),

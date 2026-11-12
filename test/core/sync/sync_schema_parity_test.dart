@@ -351,6 +351,16 @@ class _RepoFieldSource {
 
 const _repositoryFieldSources = <_RepoFieldSource>[
   _RepoFieldSource(
+    tableName: 'cycle_entries',
+    file: 'lib/data/mappers/cycle_entry_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
+    tableName: 'contacts',
+    file: 'lib/data/mappers/contact_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
     tableName: 'saved_locations',
     file: 'lib/data/mappers/saved_location_mapper.dart',
     helperName: 'syncFields',
@@ -934,6 +944,35 @@ Future<void> _seedDummyRows(AppDatabase db) async {
       );
 
   await db
+      .into(db.cycleEntries)
+      .insert(
+        CycleEntriesCompanion.insert(
+          id: 'cy1',
+          date: '2026-01-01',
+          symptoms: const Value('["cramps"]'),
+          note: const Value('n'),
+          memberId: const Value('m1'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+  await db
+      .into(db.contacts)
+      .insert(
+        ContactsCompanion.insert(
+          id: 'ct1',
+          displayName: 'Sam',
+          phones: const Value('["+1555"]'),
+          emails: const Value('["s@example.com"]'),
+          birthday: const Value('1990-04-02'),
+          notes: const Value('n'),
+          externalId: const Value('x1'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+
+  await db
       .into(db.memberGroups)
       .insert(
         MemberGroupsCompanion.insert(id: 'g1', name: 'group', createdAt: now),
@@ -1077,6 +1116,10 @@ Future<dynamic> _readDummyRow(AppDatabase db, String tableName) async {
       return (db.select(db.jobs)..limit(1)).getSingle();
     case 'work_sessions':
       return (db.select(db.workSessions)..limit(1)).getSingle();
+    case 'cycle_entries':
+      return (db.select(db.cycleEntries)..limit(1)).getSingle();
+    case 'contacts':
+      return (db.select(db.contacts)..limit(1)).getSingle();
     case 'member_groups':
       return (db.select(db.memberGroups)..limit(1)).getSingle();
     case 'member_group_entries':

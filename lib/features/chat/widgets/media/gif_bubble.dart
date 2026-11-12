@@ -213,7 +213,9 @@ class _GifBubbleState extends State<GifBubble> with WidgetsBindingObserver {
       child: Semantics(
         label: 'GIF: ${widget.contentDescription ?? 'GIF'}',
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+          borderRadius: BorderRadius.circular(
+            PrismShapes.of(context).radius(12),
+          ),
           child: SizedBox(
             width: effectiveWidth,
             height: effectiveHeight,
@@ -280,7 +282,9 @@ class _GifBubbleState extends State<GifBubble> with WidgetsBindingObserver {
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(PrismShapes.of(context).pill(36)),
+                    borderRadius: BorderRadius.circular(
+                      PrismShapes.of(context).pill(36),
+                    ),
                     onTap: () => unawaited(widget.onEnableTap!()),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -288,7 +292,9 @@ class _GifBubbleState extends State<GifBubble> with WidgetsBindingObserver {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(PrismShapes.of(context).pill(36)),
+                        borderRadius: BorderRadius.circular(
+                          PrismShapes.of(context).pill(36),
+                        ),
                         color: theme.colorScheme.surface.withValues(alpha: 0.5),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant.withValues(

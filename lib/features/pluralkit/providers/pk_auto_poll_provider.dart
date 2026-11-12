@@ -242,7 +242,9 @@ class PkAutoPollNotifier extends Notifier<void> {
           case PkPollOutcome.authFailed:
             bus.emit(const PkAutoPollTick(outcome: 'auth_failed'));
           case PkPollOutcome.rateLimited:
-            bus.emit(const PkAutoPollTick(outcome: 'skipped', reason: 'rate_limited'));
+            bus.emit(
+              const PkAutoPollTick(outcome: 'skipped', reason: 'rate_limited'),
+            );
             _overrideNext = _kMinBackoffOn429;
           case PkPollOutcome.transientError:
             bus.emit(const PkAutoPollTick(outcome: 'failed'));

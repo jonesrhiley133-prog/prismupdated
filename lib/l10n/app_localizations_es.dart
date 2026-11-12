@@ -15509,4 +15509,658 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get insightsSuggestWork =>
       'Fue una jornada larga. Descansar también cuenta.';
+
+  @override
+  String get navCycle => 'Ciclo';
+
+  @override
+  String get navContacts => 'Contactos';
+
+  @override
+  String get dataManagementPreviewCycle => 'Días del ciclo';
+
+  @override
+  String get dataManagementPreviewContacts => 'Contactos';
+
+  @override
+  String get contactsTitle => 'Contactos';
+
+  @override
+  String get contactsNew => 'Nuevo contacto';
+
+  @override
+  String get contactsEdit => 'Editar contacto';
+
+  @override
+  String get contactsName => 'Nombre';
+
+  @override
+  String get contactsPhones => 'Teléfonos (uno por línea)';
+
+  @override
+  String get contactsEmails => 'Correos (uno por línea)';
+
+  @override
+  String get contactsInvalidEmail => 'Uno de los correos no parece correcto.';
+
+  @override
+  String get contactsBirthday => 'Cumpleaños';
+
+  @override
+  String get contactsAddBirthday => 'Añadir cumpleaños';
+
+  @override
+  String get contactsYearUnknown => 'Año desconocido';
+
+  @override
+  String get contactsDeleteTitle => '¿Eliminar contacto?';
+
+  @override
+  String contactsDeleteMessage(String name) {
+    return 'Se eliminará «$name».';
+  }
+
+  @override
+  String get contactsEmptyTitle => 'Aún no hay contactos';
+
+  @override
+  String get contactsEmptySubtitle =>
+      'Añade personas de fuera del sistema o impórtalas con sus cumpleaños desde el teléfono u otra app.';
+
+  @override
+  String get contactsSearch => 'Buscar';
+
+  @override
+  String get contactsUpcomingBirthdays => 'Próximos cumpleaños';
+
+  @override
+  String contactsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count contactos',
+      one: '1 contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contactsTomorrow => 'Mañana';
+
+  @override
+  String get cycleTitle => 'Ciclo';
+
+  @override
+  String get cycleLogToday => 'Registrar ciclo';
+
+  @override
+  String get cycleFlowLabel => 'Flujo';
+
+  @override
+  String get cycleFlowNone => 'Ninguno';
+
+  @override
+  String get cycleFlowSpotting => 'Manchado';
+
+  @override
+  String get cycleFlowLight => 'Leve';
+
+  @override
+  String get cycleFlowMedium => 'Medio';
+
+  @override
+  String get cycleFlowHeavy => 'Abundante';
+
+  @override
+  String get cycleSymptomsLabel => 'Síntomas';
+
+  @override
+  String get cycleDayLabel => 'Día del ciclo';
+
+  @override
+  String get cycleAverageLength => 'Ciclo medio (días)';
+
+  @override
+  String get cyclePeriodLength => 'Periodo medio (días)';
+
+  @override
+  String cycleNextEstimate(String date) {
+    return 'Próximo periodo estimado hacia el $date';
+  }
+
+  @override
+  String get cycleNeedMoreCycles =>
+      'Registra dos o más periodos para ver una estimación.';
+
+  @override
+  String get cycleEstimated => 'Estimación';
+
+  @override
+  String get cycleDisclaimer =>
+      'Las estimaciones son promedios simples de los ciclos registrados. No son predicciones médicas ni sirven como anticonceptivo.';
+
+  @override
+  String get dashboardCustomize => 'Personalizar panel';
+
+  @override
+  String get dashboardWidgetsLabel => 'Widgets';
+
+  @override
+  String get dashboardAddWidget => 'Añadir un widget';
+
+  @override
+  String get dashboardAddAction => 'Añadir una acción';
+
+  @override
+  String get dashboardMoveUp => 'Subir';
+
+  @override
+  String get dashboardMoveDown => 'Bajar';
+
+  @override
+  String get dashboardHide => 'Ocultar';
+
+  @override
+  String get dashboardReset => 'Restablecer';
+
+  @override
+  String get dashboardWidgetNow => 'Ubicación y trabajo';
+
+  @override
+  String get dashboardWidgetQuickActions => 'Acciones rápidas';
+
+  @override
+  String get dashboardWidgetStats => 'Estadísticas de hoy';
+
+  @override
+  String get dashboardWidgetBirthdays => 'Cumpleaños';
+
+  @override
+  String get dashboardWidgetEvents => 'Hoy y mañana';
+
+  @override
+  String get dashboardInsightNoPatterns => 'Abrir el resumen de hoy.';
+
+  @override
+  String dashboardInsightPatterns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cosas que podrías notar',
+      one: '1 cosa que podrías notar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashboardStatSwitches => 'Cambios';
+
+  @override
+  String get dashboardStatFronted => 'Al frente';
+
+  @override
+  String get dashboardStatCoFront => 'Co-frente';
+
+  @override
+  String get dashboardNoSleep => 'No hay sueño registrado anoche.';
+
+  @override
+  String get dashboardCycleEmpty => 'Aún no hay datos del ciclo.';
+
+  @override
+  String get dashboardNoBirthdays =>
+      'No hay cumpleaños en las próximas dos semanas.';
+
+  @override
+  String get dashboardNoEvents => 'Nada planeado.';
+
+  @override
+  String get quickActionSwitch => 'Cambiar';
+
+  @override
+  String get quickActionLogBody => 'Registrar sensación';
+
+  @override
+  String get quickActionJournal => 'Diario';
+
+  @override
+  String get quickActionBirthday => 'Añadir cumpleaños';
+
+  @override
+  String get howWeFeelTitle => 'Cómo nos sentimos';
+
+  @override
+  String get howWeFeelNoData => 'Aún no hay registros esta semana.';
+
+  @override
+  String howWeFeelAverage(String value) {
+    return 'Esta semana la media es $value/5.';
+  }
+
+  @override
+  String howWeFeelUp(String value) {
+    return 'Un poco mejor que la semana pasada ($value/5).';
+  }
+
+  @override
+  String howWeFeelDown(String value) {
+    return 'Algo más pesada que la semana pasada ($value/5). Con calma.';
+  }
+
+  @override
+  String howWeFeelSteady(String value) {
+    return 'Más o menos como la semana pasada ($value/5).';
+  }
+
+  @override
+  String howWeFeelTopEmotions(String emotions) {
+    return 'Lo más sentido: $emotions';
+  }
+
+  @override
+  String insightsGlanceCycleDay(int day) {
+    return 'Día $day del ciclo';
+  }
+
+  @override
+  String get insightsPatternCycleTitle => 'Ciclo y ánimo';
+
+  @override
+  String insightsPatternCycle(
+    String period,
+    String other,
+    int periodCount,
+    int otherCount,
+  ) {
+    return 'Los días de periodo tuvieron un ánimo medio de $period, frente a $other en otros días ($periodCount frente a $otherCount registros).';
+  }
+
+  @override
+  String get timelineSystemTitle => 'Línea temporal del sistema';
+
+  @override
+  String get timelineSystemEmpty => 'No hay nada registrado este día.';
+
+  @override
+  String get timelineKindFront => 'Frente';
+
+  @override
+  String get timelineKindJournal => 'Diario';
+
+  @override
+  String timelineStartedFronting(String name) {
+    return '$name empezó al frente';
+  }
+
+  @override
+  String timelineStoppedFronting(String name) {
+    return '$name dejó el frente';
+  }
+
+  @override
+  String get timelineFellAsleep => 'Se fue a dormir';
+
+  @override
+  String get timelineWokeUp => 'Se despertó';
+
+  @override
+  String timelineArrived(String place) {
+    return 'Llegó a $place';
+  }
+
+  @override
+  String timelineLeft(String place) {
+    return 'Salió de $place';
+  }
+
+  @override
+  String timelineClockedIn(String job) {
+    return 'Fichó entrada: $job';
+  }
+
+  @override
+  String timelineClockedOut(String job) {
+    return 'Fichó salida: $job';
+  }
+
+  @override
+  String get patternsTitle => 'Explorador de patrones';
+
+  @override
+  String get patternsEmotionSleep => 'Ánimo ↔ Sueño';
+
+  @override
+  String get patternsEmotionFronting => 'Ánimo ↔ Frente';
+
+  @override
+  String get patternsEmotionLocation => 'Ánimo ↔ Ubicación';
+
+  @override
+  String get patternsEmotionCycle => 'Ánimo ↔ Ciclo';
+
+  @override
+  String get patternsBodyEmotion => 'Cuerpo ↔ Emoción';
+
+  @override
+  String get patternsWorkMood => 'Trabajo ↔ Ánimo';
+
+  @override
+  String get patternsNoData =>
+      'Aún no hay suficientes registros en este periodo.';
+
+  @override
+  String patternsCheckIns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count registros',
+      one: '1 registro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get patternsDisclaimer =>
+      'Los grupos muestran promedios de lo registrado. Son posibles patrones, no causas ni diagnósticos, y los grupos pequeños pueden confundir.';
+
+  @override
+  String patternsFrontingWindowNote(int days) {
+    return 'Los datos de frente y sueño cubren los últimos $days días.';
+  }
+
+  @override
+  String get patternsSleepUnknown => 'Sin sueño registrado';
+
+  @override
+  String get patternsSleepLt6 => 'Menos de 6 horas';
+
+  @override
+  String get patternsSleep67 => '6–7 horas';
+
+  @override
+  String get patternsSleep78 => '7–8 horas';
+
+  @override
+  String get patternsSleep8plus => '8+ horas';
+
+  @override
+  String get patternsNoFronter => 'Nadie registrado al frente';
+
+  @override
+  String get patternsCoFronting => 'Co-frente';
+
+  @override
+  String get patternsNoLocation => 'Sin sesión de ubicación';
+
+  @override
+  String get patternsCyclePeriod => 'Días de periodo';
+
+  @override
+  String patternsCycleDays(String range) {
+    return 'Días $range del ciclo';
+  }
+
+  @override
+  String get patternsCycleUnknown => 'Día del ciclo desconocido';
+
+  @override
+  String get patternsNoBody => 'Sin sensación corporal';
+
+  @override
+  String get patternsWorkDays => 'Días de trabajo';
+
+  @override
+  String get patternsOffDays => 'Días libres';
+
+  @override
+  String get importCenterTitle => 'Centro de importación';
+
+  @override
+  String get importCenterIntro =>
+      'Trae datos a Prism. Cada importador muestra lo encontrado, lo comprueba, te deja decidir sobre duplicados y solo entonces importa.';
+
+  @override
+  String get importCenterPrismBackup => 'Copia de Prism';
+
+  @override
+  String get importCenterPrismBackupDesc =>
+      'Restaurar una exportación de Prism.';
+
+  @override
+  String get importCenterOtherApps => 'Simply Plural y otras apps';
+
+  @override
+  String get importCenterOtherAppsDesc =>
+      'Miembros, historial de frente, chats y más.';
+
+  @override
+  String get importCenterPluralKit => 'PluralKit';
+
+  @override
+  String get importCenterPluralKitDesc =>
+      'Conectar o importar desde PluralKit.';
+
+  @override
+  String get importCenterBirthdaysDesc =>
+      'Exportación JSON de otra app de cumpleaños. Se repiten cada año.';
+
+  @override
+  String get importCenterDeviceDesc =>
+      'Elige personas de los contactos del teléfono.';
+
+  @override
+  String get importCenterVCardDesc =>
+      'Un archivo .vcf exportado de cualquier app de contactos.';
+
+  @override
+  String get importBirthdaysTitle => 'Cumpleaños de otra app';
+
+  @override
+  String get importVCardTitle => 'Archivo de contactos (vCard)';
+
+  @override
+  String get importDeviceContactsTitle => 'Contactos del dispositivo';
+
+  @override
+  String get importBirthdaysHelp =>
+      'Elige el archivo JSON que exportó tu app de cumpleaños. Prism busca nombres y fechas, te lo muestra todo primero y convierte cada cumpleaños en un recordatorio anual del calendario.';
+
+  @override
+  String get importVCardHelp =>
+      'Elige un archivo .vcf. Se importan nombres, teléfonos, correos, cumpleaños y notas.';
+
+  @override
+  String get importDeviceHelp =>
+      'Prism pedirá permiso para leer tus contactos. Tú eliges a quién importar y nada sale del dispositivo.';
+
+  @override
+  String get importChooseFile => 'Elegir archivo';
+
+  @override
+  String get importAllowAndLoad => 'Permitir acceso y cargar';
+
+  @override
+  String get importOpenSettings => 'Abrir ajustes';
+
+  @override
+  String get importDeviceUnsupported =>
+      'No disponible en este dispositivo. Exporta un archivo .vcf desde tu app de contactos.';
+
+  @override
+  String get importDevicePermissionDenied =>
+      'Prism no tiene permiso para leer los contactos. Puedes permitirlo en Ajustes.';
+
+  @override
+  String get importFileTooLarge => 'Ese archivo supera los 20 MB.';
+
+  @override
+  String get importNoRecords =>
+      'No se encontraron contactos ni cumpleaños en ese archivo.';
+
+  @override
+  String get importNotJson => 'Ese archivo no es JSON válido.';
+
+  @override
+  String importReadFailed(String error) {
+    return 'No se pudo leer el archivo: $error';
+  }
+
+  @override
+  String get importProblem => 'Algo requiere atención';
+
+  @override
+  String get importStepSelect => 'Elegir';
+
+  @override
+  String get importStepPreview => 'Vista previa';
+
+  @override
+  String get importStepValidate => 'Revisar';
+
+  @override
+  String get importStepDuplicates => 'Duplicados';
+
+  @override
+  String get importStepImport => 'Importar';
+
+  @override
+  String get importStepDone => 'Listo';
+
+  @override
+  String importStepOf(int step, int total, String name) {
+    return 'Paso $step de $total: $name';
+  }
+
+  @override
+  String importPreviewSummary(int total, int valid, String file) {
+    return 'Se encontraron $total registros, $valid listos. $file';
+  }
+
+  @override
+  String importAmbiguousTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fechas admiten dos lecturas',
+      one: '1 fecha admite dos lecturas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importAmbiguousBody =>
+      'Fechas como 03/04 pueden ser 4 de marzo o 3 de abril. Elige cómo escribe las fechas tu app.';
+
+  @override
+  String get importAmbiguousShort => 'revisar fecha';
+
+  @override
+  String get importMonthFirst => 'Mes primero (03/04 = 4 mar)';
+
+  @override
+  String get importDayFirst => 'Día primero (03/04 = 3 abr)';
+
+  @override
+  String importSelectedCount(int count) {
+    return '$count seleccionados';
+  }
+
+  @override
+  String get importSelectAll => 'Todos';
+
+  @override
+  String get importSelectNone => 'Ninguno';
+
+  @override
+  String get importNext => 'Siguiente';
+
+  @override
+  String importAllValid(int count) {
+    return 'Los $count registros seleccionados están bien.';
+  }
+
+  @override
+  String importSomeInvalid(int valid, int invalid) {
+    return '$valid registros están bien. $invalid no se pueden importar:';
+  }
+
+  @override
+  String importRowNumber(int number) {
+    return 'Fila $number';
+  }
+
+  @override
+  String get importErrorMissingName => 'sin nombre';
+
+  @override
+  String get importErrorMissingDate => 'sin cumpleaños';
+
+  @override
+  String get importErrorUnreadableDate => 'no se pudo leer la fecha';
+
+  @override
+  String get importErrorInvalidDate =>
+      'la fecha no existe (p. ej. 30 de febrero)';
+
+  @override
+  String get importErrorNotRecord => 'no es un registro';
+
+  @override
+  String get importNoDuplicates => 'No se encontraron duplicados.';
+
+  @override
+  String importDuplicatesFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count posibles duplicados',
+      one: '1 posible duplicado',
+    );
+    return '$_temp0. Elige qué hacer con cada uno.';
+  }
+
+  @override
+  String get importApplyToAll => 'Aplicar a todos';
+
+  @override
+  String get importActionSkip => 'Omitir';
+
+  @override
+  String get importActionUpdate => 'Actualizar';
+
+  @override
+  String get importActionAddAnyway => 'Añadir igualmente';
+
+  @override
+  String importMatchesExisting(String name) {
+    return 'Coincide con «$name» ya en Prism';
+  }
+
+  @override
+  String get importRepeatedInFile => 'Aparece más de una vez en el archivo';
+
+  @override
+  String get importBirthdayConflict => 'Los cumpleaños son distintos.';
+
+  @override
+  String importRun(int count) {
+    return 'Importar $count';
+  }
+
+  @override
+  String get importDoneTitle => 'Importación terminada';
+
+  @override
+  String importDoneSummary(int created, int updated, int skipped) {
+    return '$created añadidos · $updated actualizados · $skipped omitidos';
+  }
+
+  @override
+  String importDoneFailed(int count) {
+    return '$count no se pudieron guardar.';
+  }
+
+  @override
+  String get importBirthdaysRecurring =>
+      'Los cumpleaños importados se repiten cada año y aparecen en el calendario.';
 }

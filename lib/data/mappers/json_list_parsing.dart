@@ -41,3 +41,14 @@ String? encodeJsonSetOrNull<T extends Comparable<T>>(Iterable<T> values) {
   if (unique.isEmpty) return null;
   return jsonEncode(unique);
 }
+
+/// Encodes an order-significant list (e.g. phone numbers, primary first) as
+/// JSON with blanks and duplicates removed, or null when empty.
+String? encodeJsonListOrNull(Iterable<String> values) {
+  final seen = <String>{};
+  final out = <String>[
+    for (final v in values.map((v) => v.trim()))
+      if (v.isNotEmpty && seen.add(v)) v,
+  ];
+  return out.isEmpty ? null : jsonEncode(out);
+}

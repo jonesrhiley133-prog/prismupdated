@@ -65,15 +65,15 @@ class CalendarEventMapper {
       colorHex: Value(e.colorHex),
       category: Value(_blankToNull(e.category)),
       recurrence: Value(e.recurrence.name),
-      recurrenceInterval: Value(e.recurrenceInterval < 1 ? 1 : e.recurrenceInterval),
+      recurrenceInterval: Value(
+        e.recurrenceInterval < 1 ? 1 : e.recurrenceInterval,
+      ),
       recurrenceWeekdays: Value(encodeJsonSetOrNull(e.recurrenceWeekdays)),
       recurrenceUntil: Value(
         e.recurrenceUntil == null ? null : _toStoredDate(e.recurrenceUntil!),
       ),
       recurrenceCount: Value(e.recurrenceCount),
-      recurrenceExceptions: Value(
-        encodeJsonSetOrNull(e.recurrenceExceptions),
-      ),
+      recurrenceExceptions: Value(encodeJsonSetOrNull(e.recurrenceExceptions)),
       alertMinutes: Value(encodeJsonSetOrNull(e.alertMinutes)),
       memberIds: Value(encodeJsonSetOrNull(e.memberIds)),
       createdAt: Value(e.createdAt),
@@ -92,7 +92,9 @@ class CalendarEventMapper {
       'color_hex': e.colorHex,
       'category': _blankToNull(e.category),
       'recurrence': e.recurrence.name,
-      'recurrence_interval': e.recurrenceInterval < 1 ? 1 : e.recurrenceInterval,
+      'recurrence_interval': e.recurrenceInterval < 1
+          ? 1
+          : e.recurrenceInterval,
       'recurrence_weekdays': encodeJsonSetOrNull(e.recurrenceWeekdays),
       'recurrence_until': toSyncUtcOrNull(
         e.recurrenceUntil == null ? null : _toStoredDate(e.recurrenceUntil!),

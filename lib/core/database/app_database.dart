@@ -33,6 +33,8 @@ import 'package:prism_plurality/core/database/daos/saved_locations_dao.dart';
 import 'package:prism_plurality/core/database/daos/location_sessions_dao.dart';
 import 'package:prism_plurality/core/database/daos/jobs_dao.dart';
 import 'package:prism_plurality/core/database/daos/work_sessions_dao.dart';
+import 'package:prism_plurality/core/database/daos/cycle_entries_dao.dart';
+import 'package:prism_plurality/core/database/daos/contacts_dao.dart';
 import 'package:prism_plurality/core/database/daos/friends_dao.dart';
 import 'package:prism_plurality/core/database/daos/sharing_requests_dao.dart';
 import 'package:prism_plurality/core/database/daos/media_attachments_dao.dart';
@@ -92,6 +94,8 @@ part 'app_database.g.dart';
     LocationSessions,
     Jobs,
     WorkSessions,
+    CycleEntries,
+    Contacts,
   ],
   daos: [
     MembersDao,
@@ -122,6 +126,8 @@ part 'app_database.g.dart';
     LocationSessionsDao,
     JobsDao,
     WorkSessionsDao,
+    CycleEntriesDao,
+    ContactsDao,
     FriendsDao,
     SharingRequestsDao,
     MediaAttachmentsDao,
@@ -135,7 +141,7 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
-  static const currentSchemaVersion = 43;
+  static const currentSchemaVersion = 44;
 
   /// Optional view of the sync engine's absorbing-delete state. When the sync
   /// layer has a live engine handle it sets this so the deterministic-id rescue
@@ -167,6 +173,7 @@ class AppDatabase extends _$AppDatabase {
       await _createMemberBoardPostIndexes();
       await _createMoodAndCalendarIndexes();
       await _createLocationAndWorkIndexes();
+      await _createCycleAndContactIndexes();
       await _createPkUniqueIndexes();
       // Fresh v7 install: jump straight to composite + orphan fronting indexes.
       // Empty table, so no detect-and-refuse needed.
@@ -1606,6 +1613,16 @@ class AppDatabase extends _$AppDatabase {
         await _createLocationAndWorkIndexes();
       },
     ),
+    _MigrationStep(
+      from: 43,
+      to: 44,
+      apply: (migrator, to) async {
+        // Cycle tracking and contacts.
+        await _createTableIfAbsent(migrator, cycleEntries);
+        await _createTableIfAbsent(migrator, contacts);
+        await _createCycleAndContactIndexes();
+      },
+    ),
   ];
 
   /// Best-effort idempotent column reconcile run in [beforeOpen]. Adds columns
@@ -2339,6 +2356,17 @@ class AppDatabase extends _$AppDatabase {
       variables: [Variable<String>(tableName)],
     ).get();
     return rows.isNotEmpty;
+  }
+
+  Future<void> _createCycleAndContactIndexes() async {
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_cycle_entries_date '
+      'ON cycle_entries (is_deleted, date)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_contacts_external '
+      'ON contacts (external_id)',
+    );
   }
 
   Future<void> _createLocationAndWorkIndexes() async {

@@ -50,11 +50,9 @@ final frontingTableTickerProvider = StreamProvider<int>((ref) async* {
     controller.close();
   });
 
-  sub = db
-      .tableUpdates(
-        TableUpdateQuery.onTable(db.frontingSessions),
-      )
-      .listen((_) {
+  sub = db.tableUpdates(TableUpdateQuery.onTable(db.frontingSessions)).listen((
+    _,
+  ) {
     debounceTimer?.cancel();
     debounceTimer = Timer(_frontingTickerDebounce, () {
       if (!controller.isClosed) controller.add(++counter);

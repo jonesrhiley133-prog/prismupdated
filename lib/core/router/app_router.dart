@@ -64,6 +64,11 @@ import '../../features/sharing/views/sharing_screen.dart';
 import '../../features/sharing/views/friend_detail_screen.dart';
 import '../../features/calendar/views/calendar_screen.dart';
 import '../../features/habits/views/habits_list_screen.dart';
+import '../../features/connected/views/pattern_explorer_screen.dart';
+import '../../features/connected/views/system_timeline_screen.dart';
+import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/cycle/views/cycle_screen.dart';
+import '../../features/import_center/views/import_center_screen.dart';
 import '../../features/insights/views/daily_insights_screen.dart';
 import '../../features/locations/views/locations_screen.dart';
 import '../../features/work/views/work_screen.dart';
@@ -118,6 +123,10 @@ final _locationsNavigatorKey = GlobalKey<NavigatorState>(
 final _workNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'work');
 final _insightsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'insights',
+);
+final _cycleNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cycle');
+final _contactsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'contacts',
 );
 
 /// Notifier that triggers GoRouter redirect re-evaluation when onboarding
@@ -340,6 +349,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.syncSetup,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SyncSetupScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.importCenter,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ImportCenterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.systemTimeline,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.patterns,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PatternExplorerScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: buildAppShellRoute,
@@ -1091,6 +1115,26 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.insights,
                 builder: (context, state) => const DailyInsightsScreen(),
+              ),
+            ],
+          ),
+          // Branch 19: Cycle (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _cycleNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.cycle,
+                builder: (context, state) => const CycleScreen(),
+              ),
+            ],
+          ),
+          // Branch 20: Contacts (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _contactsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.contacts,
+                builder: (context, state) => const ContactsScreen(),
               ),
             ],
           ),

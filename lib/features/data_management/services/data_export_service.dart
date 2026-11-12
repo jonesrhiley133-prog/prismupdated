@@ -32,6 +32,8 @@ import 'package:prism_plurality/data/repositories/drift_saved_location_repositor
 import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_cycle_entry_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_contact_repository.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/encrypted_export_file_writer.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
@@ -284,6 +286,14 @@ class DataExportService {
       db.workSessionsDao,
       null,
     ).getAll()).map((e) => e.toJson()).toList();
+    final cycleEntries = (await DriftCycleEntryRepository(
+      db.cycleEntriesDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final contacts = (await DriftContactRepository(
+      db.contactsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
 
     // Fetch friends
     final friends = await friendsRepository.watchAll().first;
@@ -392,6 +402,8 @@ class DataExportService {
         locationSessions.length +
         jobs.length +
         workSessions.length +
+        cycleEntries.length +
+        contacts.length +
         v1Friends.length +
         v1MemberBoardPosts.length +
         v1MediaAttachments.length +
@@ -429,6 +441,8 @@ class DataExportService {
       locationSessions: locationSessions,
       jobs: jobs,
       workSessions: workSessions,
+      cycleEntries: cycleEntries,
+      contacts: contacts,
       friends: v1Friends,
       mediaAttachments: v1MediaAttachments,
       memberBoardPosts: v1MemberBoardPosts,

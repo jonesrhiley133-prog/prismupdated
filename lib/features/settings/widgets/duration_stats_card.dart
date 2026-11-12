@@ -29,39 +29,45 @@ class DurationStatsCard extends StatelessWidget {
           Row(
             children: [
               _StatItem(
-                   label: context.l10n.statisticsDurationSessions,
-                  value: '${stat.sessionCount}',
-                  theme: theme),
+                label: context.l10n.statisticsDurationSessions,
+                value: '${stat.sessionCount}',
+                theme: theme,
+              ),
               _StatItem(
-                   label: context.l10n.statisticsDurationTotal,
-                  value: _fmt(stat.totalTime),
-                  theme: theme),
+                label: context.l10n.statisticsDurationTotal,
+                value: _fmt(stat.totalTime),
+                theme: theme,
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
               _StatItem(
-                   label: context.l10n.statisticsDurationAverage,
-                  value: _fmt(stat.averageDuration),
-                  theme: theme),
+                label: context.l10n.statisticsDurationAverage,
+                value: _fmt(stat.averageDuration),
+                theme: theme,
+              ),
               _StatItem(
-                   label: context.l10n.statisticsDurationMedian,
-                  value: _fmt(stat.medianDuration),
-                  theme: theme),
+                label: context.l10n.statisticsDurationMedian,
+                value: _fmt(stat.medianDuration),
+                theme: theme,
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
               _StatItem(
-                   label: context.l10n.statisticsDurationShortest,
-                  value: _fmt(stat.shortestSession),
-                  theme: theme),
+                label: context.l10n.statisticsDurationShortest,
+                value: _fmt(stat.shortestSession),
+                theme: theme,
+              ),
               _StatItem(
-                   label: context.l10n.statisticsDurationLongest,
-                  value: _fmt(stat.longestSession),
-                  theme: theme),
+                label: context.l10n.statisticsDurationLongest,
+                value: _fmt(stat.longestSession),
+                theme: theme,
+              ),
             ],
           ),
         ],

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_data_provider.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
 import 'package:prism_plurality/features/calendar/utils/calendar_data.dart';
@@ -537,11 +536,9 @@ class _DayPanel extends ConsumerWidget {
             icon: AppIcons.cake,
             color: Colors.pinkAccent,
             text: b.age == null
-                ? l10n.calendarBirthdayOf(
-                    b.member.effectiveName(preferDisplayName: prefer),
-                  )
+                ? l10n.calendarBirthdayOf(b.name(preferDisplayName: prefer))
                 : l10n.calendarBirthdayTurning(
-                    b.member.effectiveName(preferDisplayName: prefer),
+                    b.name(preferDisplayName: prefer),
                     b.age!,
                   ),
           ),
@@ -738,7 +735,11 @@ class _WeekView extends StatelessWidget {
                 () => showEventDetailSheet(context, o),
               ),
             for (final b in data.birthdaysOn(d))
-              _LaneItem('🎂 ${b.member.name}', Colors.pinkAccent, null),
+              _LaneItem(
+                '🎂 ${b.name(preferDisplayName: false)}',
+                Colors.pinkAccent,
+                null,
+              ),
           ],
         ),
         const Divider(height: 1),
@@ -930,7 +931,7 @@ class _DayView extends ConsumerWidget {
               ),
             for (final b in data.birthdaysOn(d))
               _LaneItem(
-                '🎂 ${b.member.effectiveName(preferDisplayName: prefer)}'
+                '🎂 ${b.name(preferDisplayName: prefer)}'
                 '${b.age == null ? '' : ' (${b.age})'}',
                 Colors.pinkAccent,
                 null,
@@ -1073,11 +1074,9 @@ class _AgendaViewState extends ConsumerState<_AgendaView> {
               icon: AppIcons.cake,
               color: Colors.pinkAccent,
               text: b.age == null
-                  ? l10n.calendarBirthdayOf(
-                      b.member.effectiveName(preferDisplayName: prefer),
-                    )
+                  ? l10n.calendarBirthdayOf(b.name(preferDisplayName: prefer))
                   : l10n.calendarBirthdayTurning(
-                      b.member.effectiveName(preferDisplayName: prefer),
+                      b.name(preferDisplayName: prefer),
                       b.age!,
                     ),
             ),

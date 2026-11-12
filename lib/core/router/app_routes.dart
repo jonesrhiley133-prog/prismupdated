@@ -23,6 +23,11 @@ abstract final class AppRoutePaths {
   static const locations = '/locations';
   static const work = '/work';
   static const insights = '/insights';
+  static const cycle = '/cycle';
+  static const contacts = '/contacts';
+  static const importCenter = '/import';
+  static const systemTimeline = '/system-timeline';
+  static const patterns = '/patterns';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';
@@ -178,6 +183,8 @@ enum AppShellTabId {
   locations,
   work,
   insights,
+  cycle,
+  contacts,
 }
 
 class AppShellTab {
@@ -241,6 +248,8 @@ class AppShellTab {
       AppShellTabId.locations => l10n.navLocations,
       AppShellTabId.work => l10n.navWork,
       AppShellTabId.insights => l10n.navInsights,
+      AppShellTabId.cycle => l10n.navCycle,
+      AppShellTabId.contacts => l10n.navContacts,
     };
   }
 
@@ -276,6 +285,8 @@ class AppShellTab {
       AppShellTabId.locations => true,
       AppShellTabId.work => true,
       AppShellTabId.insights => true,
+      AppShellTabId.cycle => true,
+      AppShellTabId.contacts => true,
     };
   }
 }
@@ -434,6 +445,22 @@ final appShellTabs = [
     branchIndex: 18,
     rootLocation: AppRoutePaths.insights,
   ),
+  AppShellTab(
+    id: AppShellTabId.cycle,
+    label: 'Cycle',
+    icon: AppIcons.navCycle,
+    activeIcon: AppIcons.navCycleActive,
+    branchIndex: 19,
+    rootLocation: AppRoutePaths.cycle,
+  ),
+  AppShellTab(
+    id: AppShellTabId.contacts,
+    label: 'Contacts',
+    icon: AppIcons.navContacts,
+    activeIcon: AppIcons.navContactsActive,
+    branchIndex: 20,
+    rootLocation: AppRoutePaths.contacts,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -451,6 +478,8 @@ const defaultNavBarOverflowTabIds = [
   'insights',
   'locations',
   'work',
+  'cycle',
+  'contacts',
   'notes',
   'reminders',
   'statistics',

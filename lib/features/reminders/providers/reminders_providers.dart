@@ -66,10 +66,12 @@ class RemindersNotifier extends AsyncNotifier<void> {
   Future<void> toggleActive(Reminder reminder) async {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(remindersRepositoryProvider);
-      await repo.update(reminder.copyWith(
-        isActive: !reminder.isActive,
-        modifiedAt: DateTime.now(),
-      ));
+      await repo.update(
+        reminder.copyWith(
+          isActive: !reminder.isActive,
+          modifiedAt: DateTime.now(),
+        ),
+      );
     });
   }
 
@@ -81,6 +83,5 @@ class RemindersNotifier extends AsyncNotifier<void> {
   }
 }
 
-final remindersNotifierProvider = AsyncNotifierProvider<RemindersNotifier, void>(
-  RemindersNotifier.new,
-);
+final remindersNotifierProvider =
+    AsyncNotifierProvider<RemindersNotifier, void>(RemindersNotifier.new);

@@ -17,9 +17,7 @@ class FieldTemplateExportService {
     final all = await _repo.getAllFields();
 
     final group = all.firstWhere((f) => f.id == groupId);
-    final children = all
-        .where((f) => f.parentFieldId == groupId)
-        .toList()
+    final children = all.where((f) => f.parentFieldId == groupId).toList()
       ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
 
     return FieldTemplate.fromDomain([group, ...children]);
@@ -32,7 +30,10 @@ class FieldTemplateExportService {
   }
 }
 
-final fieldTemplateExportServiceProvider =
-    Provider<FieldTemplateExportService>((ref) {
-  return FieldTemplateExportService(ref.watch(customFieldsRepositoryProvider));
-});
+final fieldTemplateExportServiceProvider = Provider<FieldTemplateExportService>(
+  (ref) {
+    return FieldTemplateExportService(
+      ref.watch(customFieldsRepositoryProvider),
+    );
+  },
+);

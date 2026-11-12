@@ -137,6 +137,8 @@ Map<String, Future<List<dynamic>> Function()> bootstrapTableQueries(
     'location_sessions': () => db.select(db.locationSessions).get(),
     'jobs': () => db.select(db.jobs).get(),
     'work_sessions': () => db.select(db.workSessions).get(),
+    'cycle_entries': () => db.select(db.cycleEntries).get(),
+    'contacts': () => db.select(db.contacts).get(),
     'friends': () => db.select(db.friends).get(),
     'media_attachments': () => db.select(db.mediaAttachments).get(),
     'member_board_posts': () => db.select(db.memberBoardPosts).get(),

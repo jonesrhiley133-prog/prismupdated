@@ -31,9 +31,7 @@ class ImageSizeField extends StatefulWidget {
 class _ImageSizeFieldState extends State<ImageSizeField> {
   late ImageSizeMode _mode = widget.initial.mode;
   late final TextEditingController _valueController = TextEditingController(
-    text: widget.initial.value != null
-        ? _format(widget.initial.value!)
-        : '',
+    text: widget.initial.value != null ? _format(widget.initial.value!) : '',
   );
 
   static String _format(double v) =>
@@ -95,10 +93,7 @@ class _ImageSizeFieldState extends State<ImageSizeField> {
               value: ImageSizeMode.percent,
               label: l10n.mediaSizeModePercent,
             ),
-            PrismSegment(
-              value: ImageSizeMode.em,
-              label: l10n.mediaSizeModeEm,
-            ),
+            PrismSegment(value: ImageSizeMode.em, label: l10n.mediaSizeModeEm),
           ],
         ),
         AnimatedSize(

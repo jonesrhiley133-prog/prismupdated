@@ -42,10 +42,10 @@ class PkTokenSet extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkTokenSet',
-        'system_name': systemName,
-        'system_id': systemId,
-      };
+    'kind': 'pkTokenSet',
+    'system_name': systemName,
+    'system_id': systemId,
+  };
 }
 
 class PkTokenCleared extends PkSyncEvent {
@@ -66,9 +66,9 @@ class PkTokenAuthFailed extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkTokenAuthFailed',
-        'error_kind': 'auth',
-      };
+    'kind': 'pkTokenAuthFailed',
+    'error_kind': 'auth',
+  };
 
   @override
   bool get isError => true;
@@ -90,11 +90,11 @@ class PkSyncStarted extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkSyncStarted',
-        'trigger': trigger,
-        'direction': direction,
-        'mode': mode,
-      };
+    'kind': 'pkSyncStarted',
+    'trigger': trigger,
+    'direction': direction,
+    'mode': mode,
+  };
 }
 
 class PkSyncCompleted extends PkSyncEvent {
@@ -121,12 +121,12 @@ class PkSyncCompleted extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkSyncCompleted',
-        'duration_ms': durationMs,
-        'pulled': pulled,
-        'pushed': pushed,
-        if (error != null) 'error': error,
-      };
+    'kind': 'pkSyncCompleted',
+    'duration_ms': durationMs,
+    'pulled': pulled,
+    'pushed': pushed,
+    if (error != null) 'error': error,
+  };
 
   @override
   bool get isError => error != null && error!.isNotEmpty;
@@ -142,9 +142,9 @@ class PkMembersImported extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkMembersImported',
-        'count': count,
-      };
+    'kind': 'pkMembersImported',
+    'count': count,
+  };
 }
 
 class PkSyncPullCompleted extends PkSyncEvent {
@@ -166,12 +166,12 @@ class PkSyncPullCompleted extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkSyncPullCompleted',
-        'pages': pages,
-        'fetched': fetched,
-        'applied': applied,
-        'duration_ms': durationMs,
-      };
+    'kind': 'pkSyncPullCompleted',
+    'pages': pages,
+    'fetched': fetched,
+    'applied': applied,
+    'duration_ms': durationMs,
+  };
 }
 
 class PkSwitchPushed extends PkSyncEvent {
@@ -193,10 +193,10 @@ class PkSwitchPushed extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkSwitchPushed',
-        'pushed': pushed,
-        'deleted': deleted,
-      };
+    'kind': 'pkSwitchPushed',
+    'pushed': pushed,
+    'deleted': deleted,
+  };
 }
 
 class PkLiveFronterApplied extends PkSyncEvent {
@@ -209,9 +209,9 @@ class PkLiveFronterApplied extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkLiveFronterApplied',
-        'member_count': memberCount,
-      };
+    'kind': 'pkLiveFronterApplied',
+    'member_count': memberCount,
+  };
 }
 
 class PkLiveFronterSkipped extends PkSyncEvent {
@@ -224,9 +224,9 @@ class PkLiveFronterSkipped extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkLiveFronterSkipped',
-        'reason': reason,
-      };
+    'kind': 'pkLiveFronterSkipped',
+    'reason': reason,
+  };
 }
 
 class PkMappingDecisionApplied extends PkSyncEvent {
@@ -239,15 +239,14 @@ class PkMappingDecisionApplied extends PkSyncEvent {
   final String decisionKind;
 
   @override
-  String get summary =>
-      'Mapping decision applied: $decisionKind ($decisionId)';
+  String get summary => 'Mapping decision applied: $decisionKind ($decisionId)';
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkMappingDecisionApplied',
-        'decision_id': decisionId,
-        'decision_kind': decisionKind,
-      };
+    'kind': 'pkMappingDecisionApplied',
+    'decision_id': decisionId,
+    'decision_kind': decisionKind,
+  };
 }
 
 class PkMappingDecisionFailed extends PkSyncEvent {
@@ -267,11 +266,11 @@ class PkMappingDecisionFailed extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkMappingDecisionFailed',
-        'decision_id': decisionId,
-        'decision_kind': decisionKind,
-        'error': error,
-      };
+    'kind': 'pkMappingDecisionFailed',
+    'decision_id': decisionId,
+    'decision_kind': decisionKind,
+    'error': error,
+  };
 
   @override
   bool get isError => true;
@@ -304,11 +303,11 @@ class PkMassDeletionBlocked extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkMassDeletionBlocked',
-        'deletion_kind': kind,
-        'candidate_count': candidateCount,
-        'threshold': threshold,
-      };
+    'kind': 'pkMassDeletionBlocked',
+    'deletion_kind': kind,
+    'candidate_count': candidateCount,
+    'threshold': threshold,
+  };
 
   @override
   bool get isError => true;
@@ -326,10 +325,10 @@ class PkRateLimitHit extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkRateLimitHit',
-        'attempt': attempt,
-        'backoff_secs': backoffSeconds,
-      };
+    'kind': 'pkRateLimitHit',
+    'attempt': attempt,
+    'backoff_secs': backoffSeconds,
+  };
 
   @override
   bool get isError => true;
@@ -351,11 +350,11 @@ class PkRequestFailed extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkRequestFailed',
-        'stage': stage,
-        'error_kind': errorKind,
-        'message': message,
-      };
+    'kind': 'pkRequestFailed',
+    'stage': stage,
+    'error_kind': errorKind,
+    'message': message,
+  };
 
   @override
   bool get isError => true;
@@ -396,12 +395,12 @@ class PkAutoPollTick extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkAutoPollTick',
-        'outcome': outcome,
-        if (reason != null) 'reason': reason,
-        if (error != null) 'error': error,
-        if (gate != null) 'gate': gate,
-      };
+    'kind': 'pkAutoPollTick',
+    'outcome': outcome,
+    if (reason != null) 'reason': reason,
+    if (error != null) 'error': error,
+    if (gate != null) 'gate': gate,
+  };
 
   @override
   bool get isError => outcome == 'failed';
@@ -423,7 +422,7 @@ class PkBackgroundSyncTick extends PkSyncEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'kind': 'pkBackgroundSyncTick',
-        'task_name': taskName,
-      };
+    'kind': 'pkBackgroundSyncTick',
+    'task_name': taskName,
+  };
 }

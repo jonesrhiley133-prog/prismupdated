@@ -144,10 +144,7 @@ class PkUnpushedMembersNoticeController
   Future<void> _persistDismissedHashes(Set<String> hashes) async {
     final prefs = await SharedPreferences.getInstance();
     final sorted = hashes.toList(growable: false)..sort();
-    await prefs.setStringList(
-      pkUnpushedMembersDismissedHashesPrefsKey,
-      sorted,
-    );
+    await prefs.setStringList(pkUnpushedMembersDismissedHashesPrefsKey, sorted);
   }
 }
 

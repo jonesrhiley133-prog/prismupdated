@@ -119,9 +119,10 @@ class _VoiceBubbleState extends State<VoiceBubble>
     // Linearly extrapolate forward from the last real position update.
     final sinceUpdate = elapsed - _lastKnownTick;
     final durationMs = widget.durationMs > 0 ? widget.durationMs : 1;
-    final extrapolated = (_lastKnownProgress +
-            sinceUpdate.inMilliseconds / durationMs * widget.speed)
-        .clamp(0.0, 1.0);
+    final extrapolated =
+        (_lastKnownProgress +
+                sinceUpdate.inMilliseconds / durationMs * widget.speed)
+            .clamp(0.0, 1.0);
 
     if ((extrapolated - _displayProgress).abs() > 0.0005) {
       setState(() => _displayProgress = extrapolated);
@@ -222,14 +223,13 @@ class _VoiceBubbleState extends State<VoiceBubble>
               child: GestureDetector(
                 onTapDown: (details) {
                   if (widget.onSeek == null) return;
-                  final box = _waveformKey.currentContext
-                      ?.findRenderObject() as RenderBox?;
+                  final box =
+                      _waveformKey.currentContext?.findRenderObject()
+                          as RenderBox?;
                   if (box == null) return;
                   final w = box.size.width;
                   if (w <= 0) return;
-                  widget.onSeek!(
-                    details.localPosition.dx.clamp(0.0, w) / w,
-                  );
+                  widget.onSeek!(details.localPosition.dx.clamp(0.0, w) / w);
                 },
                 child: hasWaveform
                     ? SizedBox(
@@ -247,7 +247,9 @@ class _VoiceBubbleState extends State<VoiceBubble>
                         ),
                       )
                     : ClipRRect(
-                        borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(2)),
+                        borderRadius: BorderRadius.circular(
+                          PrismShapes.of(context).radius(2),
+                        ),
                         child: LayoutBuilder(
                           builder: (context, constraints) {
                             final barWidth = constraints.maxWidth;
@@ -259,7 +261,9 @@ class _VoiceBubbleState extends State<VoiceBubble>
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.onSurface
                                         .withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(2)),
+                                    borderRadius: BorderRadius.circular(
+                                      PrismShapes.of(context).radius(2),
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -267,7 +271,9 @@ class _VoiceBubbleState extends State<VoiceBubble>
                                   height: 4,
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(2)),
+                                    borderRadius: BorderRadius.circular(
+                                      PrismShapes.of(context).radius(2),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -315,7 +321,9 @@ class _VoiceBubbleState extends State<VoiceBubble>
                                         ? 0.10
                                         : 0.05,
                                   ),
-                                  borderRadius: BorderRadius.circular(PrismShapes.of(context).pill(28)),
+                                  borderRadius: BorderRadius.circular(
+                                    PrismShapes.of(context).pill(28),
+                                  ),
                                 ),
                                 child: Text(
                                   '${speedStr}x',
@@ -324,10 +332,10 @@ class _VoiceBubbleState extends State<VoiceBubble>
                                     fontWeight: FontWeight.w600,
                                     color: theme.colorScheme.onSurface
                                         .withValues(
-                                      alpha: widget.onSpeedTap != null
-                                          ? 0.70
-                                          : 0.38,
-                                    ),
+                                          alpha: widget.onSpeedTap != null
+                                              ? 0.70
+                                              : 0.38,
+                                        ),
                                   ),
                                 ),
                               ),

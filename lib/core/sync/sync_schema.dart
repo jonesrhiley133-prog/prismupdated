@@ -455,6 +455,33 @@ const String prismSyncSchema = '''
         "is_deleted": "Bool"
       }
     },
+    "cycle_entries": {
+      "fields": {
+        "date": "String",
+        "flow": "Int",
+        "symptoms": "String",
+        "note": "String",
+        "member_id": "String",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
+    "contacts": {
+      "fields": {
+        "display_name": "String",
+        "phones": "String",
+        "emails": "String",
+        "birthday": "String",
+        "notes": "String",
+        "source": "String",
+        "external_id": "String",
+        "is_favorite": "Bool",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
     "friends": {
       "fields": {
         "display_name": "String",

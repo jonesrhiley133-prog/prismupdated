@@ -451,9 +451,7 @@ String _conversationTitle(
           .where((id) => id != speakingAs)
           .map(
             (id) =>
-                participantMap[id]?.effectiveName(
-                  preferDisplayName: prefer,
-                ) ??
+                participantMap[id]?.effectiveName(preferDisplayName: prefer) ??
                 context.l10n.unknown,
           )
           .toList();

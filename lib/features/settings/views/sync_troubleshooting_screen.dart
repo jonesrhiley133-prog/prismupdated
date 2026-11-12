@@ -59,6 +59,8 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'location_sessions',
       'jobs',
       'work_sessions',
+      'cycle_entries',
+      'contacts',
       'friends',
     ];
 
@@ -83,6 +85,8 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'location_sessions': 'created_at',
       'jobs': 'created_at',
       'work_sessions': 'created_at',
+      'cycle_entries': 'created_at',
+      'contacts': 'created_at',
       'friends': 'created_at',
     };
 

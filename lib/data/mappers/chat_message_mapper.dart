@@ -15,8 +15,7 @@ class ChatMessageMapper {
       try {
         final decoded = jsonDecode(row.reactions) as List;
         reactions = decoded
-            .map((e) =>
-                MessageReaction.fromJson(e as Map<String, dynamic>))
+            .map((e) => MessageReaction.fromJson(e as Map<String, dynamic>))
             .toList();
       } catch (e) {
         ErrorReportingService.instance.report(
@@ -42,8 +41,7 @@ class ChatMessageMapper {
   }
 
   static ChatMessagesCompanion toCompanion(domain.ChatMessage model) {
-    final reactionsJson =
-        model.reactions.map((r) => r.toJson()).toList();
+    final reactionsJson = model.reactions.map((r) => r.toJson()).toList();
 
     return ChatMessagesCompanion(
       id: Value(model.id),

@@ -108,8 +108,7 @@ class VoiceRecordingNotifier extends Notifier<VoiceRecordingState> {
       };
       backend.state.addListener(_backendListener!);
       _meterSubscription = backend.meterStream.listen((raw) {
-        final clamped =
-            raw.isFinite && raw > _floorDb ? raw : _floorDb;
+        final clamped = raw.isFinite && raw > _floorDb ? raw : _floorDb;
         _emaValue = _emaAlpha * clamped + (1.0 - _emaAlpha) * _emaValue;
         _samples.add(_emaValue);
         state = state.copyWith(

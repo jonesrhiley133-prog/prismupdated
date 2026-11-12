@@ -13,22 +13,17 @@ class AnalyticsDateRangePicker extends ConsumerWidget {
   /// system has imported records that predate it (e.g. PluralKit history).
   static final DateTime _defaultFirstDate = DateTime(2020);
 
-  static const _presets = [
-    ('7d', 7),
-    ('30d', 30),
-    ('90d', 90),
-    ('1y', 365),
-  ];
+  static const _presets = [('7d', 7), ('30d', 30), ('90d', 90), ('1y', 365)];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analyticsRange = ref.watch(analyticsRangeProvider);
     final isAllTime = analyticsRange.isAllTime;
     final now = DateTime.now();
-    final selectedDays =
-        analyticsRange.range.end.difference(analyticsRange.range.start).inDays;
-    final matchesPreset =
-        _presets.any((p) => (selectedDays - p.$2).abs() <= 1);
+    final selectedDays = analyticsRange.range.end
+        .difference(analyticsRange.range.start)
+        .inDays;
+    final matchesPreset = _presets.any((p) => (selectedDays - p.$2).abs() <= 1);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -71,11 +66,13 @@ class AnalyticsDateRangePicker extends ConsumerWidget {
     final selected = ref.read(analyticsRangeProvider);
     // Pre-2020 records (PK imports) are reachable via "All"; the lower bound
     // must cover them or showDateRangePicker asserts on an out-of-range start.
-    final earliest =
-        await ref.read(frontingSessionsDaoProvider).getEarliestSessionStart();
+    final earliest = await ref
+        .read(frontingSessionsDaoProvider)
+        .getEarliestSessionStart();
     if (!context.mounted) return;
 
-    final lowerBound = (earliest != null && earliest.isBefore(_defaultFirstDate))
+    final lowerBound =
+        (earliest != null && earliest.isBefore(_defaultFirstDate))
         ? earliest
         : _defaultFirstDate;
     // When "All" is active the stored range is a placeholder, so seed the

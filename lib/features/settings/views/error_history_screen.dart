@@ -150,7 +150,9 @@ class _ErrorTileState extends State<_ErrorTile> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(8)),
+              borderRadius: BorderRadius.circular(
+                PrismShapes.of(context).radius(8),
+              ),
             ),
             child: SelectableText(
               widget.error.stackTrace.toString(),

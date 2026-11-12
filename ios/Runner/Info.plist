@@ -49,6 +49,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSContactsUsageDescription</key>
+	<string>Prism reads contacts you choose so you can import names, numbers, emails and birthdays. Nothing is uploaded.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Prism uses the camera to take photos in chat and scan pairing or recovery QR codes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

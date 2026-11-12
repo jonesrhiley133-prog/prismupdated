@@ -256,6 +256,8 @@ final _granularCategories = [
   _CategoryEntry(ResetCategory.calendar, AppIcons.navCalendar, Colors.cyan),
   _CategoryEntry(ResetCategory.locations, AppIcons.navLocations, Colors.teal),
   _CategoryEntry(ResetCategory.work, AppIcons.navWork, Colors.brown),
+  _CategoryEntry(ResetCategory.cycle, AppIcons.navCycle, Colors.redAccent),
+  _CategoryEntry(ResetCategory.contacts, AppIcons.navContacts, Colors.blueGrey),
   _CategoryEntry(
     ResetCategory.customFields,
     AppIcons.tuneOutlined,

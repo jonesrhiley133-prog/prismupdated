@@ -87,22 +87,29 @@ class ImageBubble extends StatelessWidget {
       label: imageBytes != null
           ? context.l10n.chatImageOpenFullScreen
           : isLoading
-              ? context.l10n.chatImageLoading
-              : context.l10n.chatImageError,
+          ? context.l10n.chatImageLoading
+          : context.l10n.chatImageError,
       child: GestureDetector(
         onTap: imageBytes != null
             ? () => ImageViewer.show(
-                  context,
-                  imageBytes: imageBytes!,
-                  caption: caption,
-                )
+                context,
+                imageBytes: imageBytes!,
+                caption: caption,
+              )
             : null,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+          borderRadius: BorderRadius.circular(
+            PrismShapes.of(context).radius(12),
+          ),
           child: SizedBox(
             width: effectiveWidth,
             height: effectiveHeight,
-            child: _buildContent(context, theme, effectiveWidth, effectiveHeight),
+            child: _buildContent(
+              context,
+              theme,
+              effectiveWidth,
+              effectiveHeight,
+            ),
           ),
         ),
       ),
@@ -125,7 +132,8 @@ class ImageBubble extends StatelessWidget {
         cacheWidth: (w * dpr).ceil(),
         cacheHeight: (h * dpr).ceil(),
         semanticLabel: caption ?? context.l10n.chatImageAttachment,
-        errorBuilder: (_, _, _) => _ErrorPlaceholder(width: w, height: h, onRetry: onRetry),
+        errorBuilder: (_, _, _) =>
+            _ErrorPlaceholder(width: w, height: h, onRetry: onRetry),
       );
     }
 
@@ -154,7 +162,12 @@ class ImageBubble extends StatelessWidget {
         ),
       );
     }
-    return _LoadingPlaceholder(theme: theme, width: w, height: h, blurhash: blurhash);
+    return _LoadingPlaceholder(
+      theme: theme,
+      width: w,
+      height: h,
+      blurhash: blurhash,
+    );
   }
 }
 
@@ -181,11 +194,7 @@ class _LoadingPlaceholder extends StatelessWidget {
       return Semantics(
         label: context.l10n.chatImageLoading,
         child: ExcludeSemantics(
-          child: _BlurhashPlaceholder(
-            blurhash: blurhash!,
-            width: w,
-            height: h,
-          ),
+          child: _BlurhashPlaceholder(blurhash: blurhash!, width: w, height: h),
         ),
       );
     }

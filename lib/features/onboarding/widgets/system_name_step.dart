@@ -44,7 +44,8 @@ class _SystemNameStepState extends ConsumerState<SystemNameStep> {
     });
 
     final onboarding = ref.watch(onboardingProvider);
-    final wasImported = onboarding.wasImportedFromPluralKit ||
+    final wasImported =
+        onboarding.wasImportedFromPluralKit ||
         onboarding.wasImportedFromSimplyPlural;
     final autoFocus = !wasImported;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -62,7 +63,9 @@ class _SystemNameStepState extends ConsumerState<SystemNameStep> {
               color: isDark
                   ? AppColors.warmWhite.withValues(alpha: 0.1)
                   : AppColors.parchmentElevated,
-              borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+              borderRadius: BorderRadius.circular(
+                PrismShapes.of(context).radius(12),
+              ),
             ),
             child: PrismTextField(
               controller: _controller,

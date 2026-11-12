@@ -65,7 +65,9 @@ class _AttachmentThumbnail extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(10)),
+            borderRadius: BorderRadius.circular(
+              PrismShapes.of(context).radius(10),
+            ),
             child: Image.memory(
               imageBytes,
               width: 72,
@@ -81,8 +83,9 @@ class _AttachmentThumbnail extends StatelessWidget {
                 child: Icon(
                   AppIcons.imageOutlined,
                   size: 24,
-                  color: theme.colorScheme.onSurfaceVariant
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.5,
+                  ),
                 ),
               ),
             ),

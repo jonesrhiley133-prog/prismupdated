@@ -44,6 +44,15 @@ abstract final class AppIcons {
   static final navWork = PhosphorIcons.briefcase();
   static final navWorkActive = PhosphorIcons.briefcase(PhosphorIconsStyle.fill);
   static final heartOutline = PhosphorIcons.heart();
+  static final navCycle = PhosphorIcons.drop();
+  static final navCycleActive = PhosphorIcons.drop(PhosphorIconsStyle.fill);
+  static final navContacts = PhosphorIcons.addressBook();
+  static final navContactsActive = PhosphorIcons.addressBook(PhosphorIconsStyle.fill);
+  static final navTimelineSystem = PhosphorIcons.clockCounterClockwise();
+  static final navTimelineSystemActive = PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill);
+  static final navImport = PhosphorIcons.downloadSimple();
+  static final patterns = PhosphorIcons.chartScatter();
+  static final dashboardCustomize = PhosphorIcons.slidersHorizontal();
   static final navInsights = PhosphorIcons.sparkle();
   static final navInsightsActive = PhosphorIcons.sparkle(PhosphorIconsStyle.fill);
   static final navNotes = PhosphorIcons.notepad();

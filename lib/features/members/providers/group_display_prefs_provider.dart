@@ -25,7 +25,7 @@ class GroupShowEmojiOnAvatarNotifier extends AsyncNotifier<bool> {
 }
 
 /// Family provider keyed by [groupId]. Default `true` until SharedPreferences resolves.
-final groupShowEmojiOnAvatarProvider = AsyncNotifierProvider.family<
-    GroupShowEmojiOnAvatarNotifier, bool, String>(
-  GroupShowEmojiOnAvatarNotifier.new,
-);
+final groupShowEmojiOnAvatarProvider =
+    AsyncNotifierProvider.family<GroupShowEmojiOnAvatarNotifier, bool, String>(
+      GroupShowEmojiOnAvatarNotifier.new,
+    );

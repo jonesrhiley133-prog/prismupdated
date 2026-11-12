@@ -27,7 +27,10 @@ class DeviceManagementScreen extends ConsumerWidget {
     final currentDeviceId = ref.watch(nodeIdProvider).value;
 
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: context.l10n.devicesTitle, showBackButton: true),
+      topBar: PrismTopBar(
+        title: context.l10n.devicesTitle,
+        showBackButton: true,
+      ),
       bodyPadding: EdgeInsets.zero,
       body: devicesAsync.when(
         loading: () => const PrismLoadingState(),
@@ -146,8 +149,9 @@ class DeviceManagementScreen extends ConsumerWidget {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      final newGen =
-          await ref.read(deviceListProvider.notifier).rotateMlDsaKey();
+      final newGen = await ref
+          .read(deviceListProvider.notifier)
+          .rotateMlDsaKey();
       if (context.mounted) {
         PrismToast.success(
           context,
@@ -156,7 +160,10 @@ class DeviceManagementScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        PrismToast.error(context, message: context.l10n.devicesKeyRotationFailed(e));
+        PrismToast.error(
+          context,
+          message: context.l10n.devicesKeyRotationFailed(e),
+        );
       }
     }
   }
@@ -182,9 +189,9 @@ class DeviceManagementScreen extends ConsumerWidget {
           Builder(
             builder: (dialogContext) => PrismButton(
               label: context.l10n.devicesRevoke,
-              onPressed: () => Navigator.of(dialogContext).pop(
-                (confirmed: true, wipe: requestWipe.value),
-              ),
+              onPressed: () => Navigator.of(
+                dialogContext,
+              ).pop((confirmed: true, wipe: requestWipe.value)),
               tone: PrismButtonTone.destructive,
             ),
           ),
@@ -288,8 +295,16 @@ class _DeviceTile extends StatelessWidget {
 
     return Semantics(
       label: isCurrent
-          ? context.l10n.devicesSemanticLabelCurrent(device.shortId, statusLabel, device.mlDsaKeyGeneration)
-          : context.l10n.devicesSemanticLabel(device.shortId, statusLabel, device.mlDsaKeyGeneration),
+          ? context.l10n.devicesSemanticLabelCurrent(
+              device.shortId,
+              statusLabel,
+              device.mlDsaKeyGeneration,
+            )
+          : context.l10n.devicesSemanticLabel(
+              device.shortId,
+              statusLabel,
+              device.mlDsaKeyGeneration,
+            ),
       child: PrismSurface(
         padding: EdgeInsets.zero,
         margin: const EdgeInsets.symmetric(vertical: 4),
@@ -322,19 +337,22 @@ class _DeviceTile extends StatelessWidget {
             ],
           ),
           subtitle: Text(
-            context.l10n.devicesEpochKeyGen(device.epoch, device.mlDsaKeyGeneration),
+            context.l10n.devicesEpochKeyGen(
+              device.epoch,
+              device.mlDsaKeyGeneration,
+            ),
           ),
           trailing: isCurrent
               ? (onRotateKey != null
-                  ? PrismIconButton(
-                      icon: AppIcons.refresh,
-                      tooltip: context.l10n.devicesRotateKeyTooltip,
-                      color: theme.colorScheme.primary,
-                      size: 36,
-                      iconSize: 18,
-                      onPressed: onRotateKey!,
-                    )
-                  : null)
+                    ? PrismIconButton(
+                        icon: AppIcons.refresh,
+                        tooltip: context.l10n.devicesRotateKeyTooltip,
+                        color: theme.colorScheme.primary,
+                        size: 36,
+                        iconSize: 18,
+                        onPressed: onRotateKey!,
+                      )
+                    : null)
               : PrismIconButton(
                   icon: AppIcons.removeCircleOutline,
                   tooltip: context.l10n.devicesRevokeTooltip,

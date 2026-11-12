@@ -18,7 +18,8 @@ String _buildIssueId(FrontingIssueType type, List<String> sessionIds) {
 
 /// Returns sessions that are not deleted, sorted by (start, end ?? farFuture, id).
 List<FrontingSessionSnapshot> _activeSorted(
-    List<FrontingSessionSnapshot> sessions) {
+  List<FrontingSessionSnapshot> sessions,
+) {
   final filtered = sessions.where((s) => !s.isDeleted).toList();
   filtered.sort((a, b) {
     final startCmp = a.start.compareTo(b.start);
@@ -38,7 +39,8 @@ List<FrontingSessionSnapshot> _activeSorted(
 
 /// Detects sessions where the end time is not strictly after the start time.
 List<FrontingValidationIssue> detectInvalidRanges(
-    List<FrontingSessionSnapshot> sessions) {
+  List<FrontingSessionSnapshot> sessions,
+) {
   final issues = <FrontingValidationIssue>[];
 
   for (final s in sessions) {
@@ -46,17 +48,19 @@ List<FrontingValidationIssue> detectInvalidRanges(
     final end = s.end;
     if (end == null) continue; // active sessions are fine
     if (!end.isAfter(s.start)) {
-      issues.add(FrontingValidationIssue(
-        id: _buildIssueId(FrontingIssueType.invalidRange, [s.id]),
-        type: FrontingIssueType.invalidRange,
-        severity: FrontingIssueSeverity.error,
-        sessionIds: [s.id],
-        memberIds: [if (s.memberId != null) s.memberId!],
-        rangeStart: s.start,
-        rangeEnd: end,
-        summary: 'Session end is not after its start',
-        details: 'Start: ${s.start}, End: $end',
-      ));
+      issues.add(
+        FrontingValidationIssue(
+          id: _buildIssueId(FrontingIssueType.invalidRange, [s.id]),
+          type: FrontingIssueType.invalidRange,
+          severity: FrontingIssueSeverity.error,
+          sessionIds: [s.id],
+          memberIds: [if (s.memberId != null) s.memberId!],
+          rangeStart: s.start,
+          rangeEnd: end,
+          summary: 'Session end is not after its start',
+          details: 'Start: ${s.start}, End: $end',
+        ),
+      );
     }
   }
 
@@ -75,7 +79,9 @@ List<FrontingValidationIssue> detectInvalidRanges(
 /// - Both are active (end == null): starts within [config.duplicateTolerance].
 /// - One active + one closed: NOT a duplicate (the state differs meaningfully).
 List<FrontingValidationIssue> detectDuplicates(
-    List<FrontingSessionSnapshot> sessions, FrontingValidationConfig config) {
+  List<FrontingSessionSnapshot> sessions,
+  FrontingValidationConfig config,
+) {
   final sorted = _activeSorted(sessions);
   final issues = <FrontingValidationIssue>[];
   final tolerance = config.duplicateTolerance;
@@ -104,30 +110,34 @@ List<FrontingValidationIssue> detectDuplicates(
 
       if (bothActive) {
         // Active + Active: starts within tolerance → duplicate
-        issues.add(FrontingValidationIssue(
-          id: _buildIssueId(FrontingIssueType.duplicate, [a.id, b.id]),
-          type: FrontingIssueType.duplicate,
-          severity: FrontingIssueSeverity.warning,
-          sessionIds: [a.id, b.id],
-          memberIds: [a.memberId!],
-          rangeStart: a.start.isBefore(b.start) ? a.start : b.start,
-          rangeEnd: a.start.isAfter(b.start) ? a.start : b.start,
-          summary: 'Possible duplicate active sessions for same member',
-        ));
-      } else if (bothClosed) {
-        // Closed + Closed: both start and end within tolerance → duplicate
-        final endDiff = a.end!.difference(b.end!).abs();
-        if (endDiff <= tolerance) {
-          issues.add(FrontingValidationIssue(
+        issues.add(
+          FrontingValidationIssue(
             id: _buildIssueId(FrontingIssueType.duplicate, [a.id, b.id]),
             type: FrontingIssueType.duplicate,
             severity: FrontingIssueSeverity.warning,
             sessionIds: [a.id, b.id],
             memberIds: [a.memberId!],
             rangeStart: a.start.isBefore(b.start) ? a.start : b.start,
-            rangeEnd: a.end!.isAfter(b.end!) ? a.end! : b.end!,
-            summary: 'Possible duplicate sessions for same member',
-          ));
+            rangeEnd: a.start.isAfter(b.start) ? a.start : b.start,
+            summary: 'Possible duplicate active sessions for same member',
+          ),
+        );
+      } else if (bothClosed) {
+        // Closed + Closed: both start and end within tolerance → duplicate
+        final endDiff = a.end!.difference(b.end!).abs();
+        if (endDiff <= tolerance) {
+          issues.add(
+            FrontingValidationIssue(
+              id: _buildIssueId(FrontingIssueType.duplicate, [a.id, b.id]),
+              type: FrontingIssueType.duplicate,
+              severity: FrontingIssueSeverity.warning,
+              sessionIds: [a.id, b.id],
+              memberIds: [a.memberId!],
+              rangeStart: a.start.isBefore(b.start) ? a.start : b.start,
+              rangeEnd: a.end!.isAfter(b.end!) ? a.end! : b.end!,
+              summary: 'Possible duplicate sessions for same member',
+            ),
+          );
         }
       }
       // One active + one closed → not a duplicate; skip.
@@ -147,7 +157,9 @@ List<FrontingValidationIssue> detectDuplicates(
 /// ≤ [config.mergeableGapThreshold]. Overlapping sessions are excluded
 /// (those are a separate issue type).
 List<FrontingValidationIssue> detectMergeableAdjacent(
-    List<FrontingSessionSnapshot> sessions, FrontingValidationConfig config) {
+  List<FrontingSessionSnapshot> sessions,
+  FrontingValidationConfig config,
+) {
   final sorted = _activeSorted(sessions);
   final issues = <FrontingValidationIssue>[];
   final threshold = config.mergeableGapThreshold;
@@ -177,17 +189,19 @@ List<FrontingValidationIssue> detectMergeableAdjacent(
       // only have bigger gaps for this A (same member).
       if (gap > threshold) break;
 
-      issues.add(FrontingValidationIssue(
-        id: _buildIssueId(FrontingIssueType.mergeableAdjacent, [a.id, b.id]),
-        type: FrontingIssueType.mergeableAdjacent,
-        severity: FrontingIssueSeverity.info,
-        sessionIds: [a.id, b.id],
-        memberIds: [a.memberId!],
-        rangeStart: aEnd,
-        rangeEnd: b.start,
-        summary: 'Adjacent sessions for same member could be merged',
-        details: 'Gap: ${gap.inSeconds}s',
-      ));
+      issues.add(
+        FrontingValidationIssue(
+          id: _buildIssueId(FrontingIssueType.mergeableAdjacent, [a.id, b.id]),
+          type: FrontingIssueType.mergeableAdjacent,
+          severity: FrontingIssueSeverity.info,
+          sessionIds: [a.id, b.id],
+          memberIds: [a.memberId!],
+          rangeStart: aEnd,
+          rangeEnd: b.start,
+          summary: 'Adjacent sessions for same member could be merged',
+          details: 'Gap: ${gap.inSeconds}s',
+        ),
+      );
     }
   }
 
@@ -204,9 +218,10 @@ List<FrontingValidationIssue> detectMergeableAdjacent(
 /// - End > now + futureTolerance, start ≤ now + futureTolerance → warning
 ///   (session started in the past but ends in the future)
 List<FrontingValidationIssue> detectFutureSessions(
-    List<FrontingSessionSnapshot> sessions,
-    DateTime now,
-    FrontingValidationConfig config) {
+  List<FrontingSessionSnapshot> sessions,
+  DateTime now,
+  FrontingValidationConfig config,
+) {
   final issues = <FrontingValidationIssue>[];
   final cutoff = now.add(config.futureTolerance);
 
@@ -222,30 +237,34 @@ List<FrontingValidationIssue> detectFutureSessions(
 
     if (startIsFuture) {
       // Entire session is in the future.
-      issues.add(FrontingValidationIssue(
-        id: _buildIssueId(FrontingIssueType.futureSession, [s.id]),
-        type: FrontingIssueType.futureSession,
-        severity: FrontingIssueSeverity.error,
-        sessionIds: [s.id],
-        memberIds: [if (s.memberId != null) s.memberId!],
-        rangeStart: s.start,
-        rangeEnd: s.end ?? s.start,
-        summary: 'Session starts in the future',
-        details: 'Start: ${s.start}, now: $now',
-      ));
+      issues.add(
+        FrontingValidationIssue(
+          id: _buildIssueId(FrontingIssueType.futureSession, [s.id]),
+          type: FrontingIssueType.futureSession,
+          severity: FrontingIssueSeverity.error,
+          sessionIds: [s.id],
+          memberIds: [if (s.memberId != null) s.memberId!],
+          rangeStart: s.start,
+          rangeEnd: s.end ?? s.start,
+          summary: 'Session starts in the future',
+          details: 'Start: ${s.start}, now: $now',
+        ),
+      );
     } else if (endIsFuture) {
       // Session started in the past but ends in the future.
-      issues.add(FrontingValidationIssue(
-        id: _buildIssueId(FrontingIssueType.futureSession, [s.id]),
-        type: FrontingIssueType.futureSession,
-        severity: FrontingIssueSeverity.warning,
-        sessionIds: [s.id],
-        memberIds: [if (s.memberId != null) s.memberId!],
-        rangeStart: s.start,
-        rangeEnd: s.end!,
-        summary: 'Session ends in the future',
-        details: 'End: ${s.end}, now: $now',
-      ));
+      issues.add(
+        FrontingValidationIssue(
+          id: _buildIssueId(FrontingIssueType.futureSession, [s.id]),
+          type: FrontingIssueType.futureSession,
+          severity: FrontingIssueSeverity.warning,
+          sessionIds: [s.id],
+          memberIds: [if (s.memberId != null) s.memberId!],
+          rangeStart: s.start,
+          rangeEnd: s.end!,
+          summary: 'Session ends in the future',
+          details: 'End: ${s.end}, now: $now',
+        ),
+      );
     }
   }
 
@@ -267,7 +286,8 @@ List<FrontingValidationIssue> detectFutureSessions(
 ///
 /// Cross-member overlaps are VALID by design and are NOT flagged here.
 List<FrontingValidationIssue> detectSelfOverlap(
-    List<FrontingSessionSnapshot> sessions) {
+  List<FrontingSessionSnapshot> sessions,
+) {
   final sorted = _activeSorted(sessions);
   final issues = <FrontingValidationIssue>[];
 
@@ -305,20 +325,22 @@ List<FrontingValidationIssue> detectSelfOverlap(
               ? FrontingIssueSeverity.error
               : FrontingIssueSeverity.warning;
 
-          final overlapStart =
-              a.start.isAfter(b.start) ? a.start : b.start;
+          final overlapStart = a.start.isAfter(b.start) ? a.start : b.start;
           final overlapEnd = aEnd.isBefore(bEnd) ? aEnd : bEnd;
 
-          issues.add(FrontingValidationIssue(
-            id: _buildIssueId(FrontingIssueType.selfOverlap, [a.id, b.id]),
-            type: FrontingIssueType.selfOverlap,
-            severity: severity,
-            sessionIds: [a.id, b.id],
-            memberIds: [a.memberId!],
-            rangeStart: overlapStart,
-            rangeEnd: overlapEnd == _farFuture ? overlapStart : overlapEnd,
-            summary: 'Looks like this member has two overlapping sessions — probably a mis-tap?',
-          ));
+          issues.add(
+            FrontingValidationIssue(
+              id: _buildIssueId(FrontingIssueType.selfOverlap, [a.id, b.id]),
+              type: FrontingIssueType.selfOverlap,
+              severity: severity,
+              sessionIds: [a.id, b.id],
+              memberIds: [a.memberId!],
+              rangeStart: overlapStart,
+              rangeEnd: overlapEnd == _farFuture ? overlapStart : overlapEnd,
+              summary:
+                  'Looks like this member has two overlapping sessions — probably a mis-tap?',
+            ),
+          );
         }
       }
     }

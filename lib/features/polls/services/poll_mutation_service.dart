@@ -124,7 +124,8 @@ class PollMutationService {
                 id: optionIds[i],
                 text: optionTexts[i],
                 sortOrder: i,
-                colorHex: optionColorHexes != null && i < optionColorHexes.length
+                colorHex:
+                    optionColorHexes != null && i < optionColorHexes.length
                     ? optionColorHexes[i]
                     : null,
               ),

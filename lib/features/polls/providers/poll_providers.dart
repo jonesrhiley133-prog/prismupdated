@@ -46,8 +46,9 @@ final allPollsProvider = StreamProvider.autoDispose<List<PollSummary>>((ref) {
 });
 
 /// Watches active polls (not closed and not expired).
-final activePollsProvider =
-    StreamProvider.autoDispose<List<PollSummary>>((ref) {
+final activePollsProvider = StreamProvider.autoDispose<List<PollSummary>>((
+  ref,
+) {
   final service = ref.watch(pollMutationServiceProvider);
   final now = ref.watch(_pollClockProvider).value ?? DateTime.now();
   return service.watchPollSummaries().map((polls) {
@@ -58,8 +59,9 @@ final activePollsProvider =
 });
 
 /// Watches closed polls (closed or expired).
-final closedPollsProvider =
-    StreamProvider.autoDispose<List<PollSummary>>((ref) {
+final closedPollsProvider = StreamProvider.autoDispose<List<PollSummary>>((
+  ref,
+) {
   final service = ref.watch(pollMutationServiceProvider);
   final now = ref.watch(_pollClockProvider).value ?? DateTime.now();
   return service.watchPollSummaries().map((polls) {

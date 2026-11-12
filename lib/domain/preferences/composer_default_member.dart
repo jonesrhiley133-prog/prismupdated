@@ -25,8 +25,9 @@ enum ComposerDefaultMember {
 
   /// The full set of valid storage strings — used as the preference codec's
   /// allow-list.
-  static Set<String> get storageValues =>
-      {for (final v in ComposerDefaultMember.values) v.storageValue};
+  static Set<String> get storageValues => {
+    for (final v in ComposerDefaultMember.values) v.storageValue,
+  };
 
   /// Decodes a stored string back to an enum, falling back to [defaultValue]
   /// for unknown/legacy values so a bad write can never break the composer.

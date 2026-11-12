@@ -19,6 +19,8 @@ import 'package:prism_plurality/data/mappers/saved_location_mapper.dart';
 import 'package:prism_plurality/data/mappers/location_session_mapper.dart';
 import 'package:prism_plurality/data/mappers/job_mapper.dart';
 import 'package:prism_plurality/data/mappers/work_session_mapper.dart';
+import 'package:prism_plurality/data/mappers/cycle_entry_mapper.dart';
+import 'package:prism_plurality/data/mappers/contact_mapper.dart';
 import 'package:prism_plurality/data/mappers/mood_entry_mapper.dart';
 import 'package:prism_plurality/data/mappers/member_group_mapper.dart'
     show sanitizeSortStateForEmission, tryDecodeSortState;
@@ -262,6 +264,8 @@ SyncAdapterWithCompletion buildSyncAdapterWithCompletion(
       _locationSessionsEntity(db, quarantine, pendingQuarantineWrites.add),
       _jobsEntity(db, quarantine, pendingQuarantineWrites.add),
       _workSessionsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _cycleEntriesEntity(db, quarantine, pendingQuarantineWrites.add),
+      _contactsEntity(db, quarantine, pendingQuarantineWrites.add),
       _memberGroupsEntity(
         db,
         quarantine,
@@ -4957,6 +4961,123 @@ DriftSyncEntity _workSessionsEntity(
     isDeleted: (String id) async {
       final row = await (db.select(
         db.workSessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// cycle_entries
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _cycleEntriesEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'cycle_entries',
+    toSyncFields: (dynamic row) =>
+        CycleEntryMapper.syncFieldsFromRow(row as CycleEntryRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'cycle_entries',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = CycleEntriesCompanion(
+        id: Value(id),
+        date: f.stringField('date'),
+        flow: f.intField('flow'),
+        symptoms: f.stringFieldNullable('symptoms'),
+        note: f.stringFieldNullable('note'),
+        memberId: f.stringFieldNullable('member_id'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.cycleEntries,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.cycleEntries)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.cycleEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : CycleEntryMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.cycleEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// contacts
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _contactsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'contacts',
+    toSyncFields: (dynamic row) =>
+        ContactMapper.syncFieldsFromRow(row as ContactRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'contacts',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = ContactsCompanion(
+        id: Value(id),
+        displayName: f.stringField('display_name'),
+        phones: f.stringFieldNullable('phones'),
+        emails: f.stringFieldNullable('emails'),
+        birthday: f.stringFieldNullable('birthday'),
+        notes: f.stringFieldNullable('notes'),
+        source: f.stringField('source'),
+        externalId: f.stringFieldNullable('external_id'),
+        isFavorite: f.boolField('is_favorite'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.contacts,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.contacts)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.contacts,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : ContactMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.contacts,
       )..where((t) => t.id.equals(id))).getSingleOrNull();
       return row?.isDeleted ?? true;
     },

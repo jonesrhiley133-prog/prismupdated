@@ -86,38 +86,38 @@ class PkLinkManagementState {
   /// state they had before disconnecting. Bucket on `hasPluralKitLink`
   /// alone in that case.
   List<domain.Member> get syncedMembers => [
-        for (final m in localMembers)
-          if (!m.pluralkitSyncIgnored &&
-              (isConnected
-                  ? hasResolvablePluralKitLink(
-                      m,
-                      fetchedPkUuids: fetchedPkUuids,
-                      fetchedPkIds: fetchedPkIds,
-                    )
-                  : hasPluralKitLink(m)))
-            m,
-      ];
+    for (final m in localMembers)
+      if (!m.pluralkitSyncIgnored &&
+          (isConnected
+              ? hasResolvablePluralKitLink(
+                  m,
+                  fetchedPkUuids: fetchedPkUuids,
+                  fetchedPkIds: fetchedPkIds,
+                )
+              : hasPluralKitLink(m)))
+        m,
+  ];
 
   /// Locals where the user excluded sync. Includes members with or without
   /// resolved/unresolved PK fields — the row subtitle calls it out.
   List<domain.Member> get excludedMembers => [
-        for (final m in localMembers)
-          if (m.pluralkitSyncIgnored) m,
-      ];
+    for (final m in localMembers)
+      if (m.pluralkitSyncIgnored) m,
+  ];
 
   /// Locals with PK fields set, NOT resolved in the current fetch, and not
   /// excluded. Hidden when offline (we cannot tell whether they resolve).
   List<domain.Member> get unresolvedMembers => [
-        for (final m in localMembers)
-          if (!m.pluralkitSyncIgnored &&
-              hasPluralKitLink(m) &&
-              !hasResolvablePluralKitLink(
-                m,
-                fetchedPkUuids: fetchedPkUuids,
-                fetchedPkIds: fetchedPkIds,
-              ))
+    for (final m in localMembers)
+      if (!m.pluralkitSyncIgnored &&
+          hasPluralKitLink(m) &&
+          !hasResolvablePluralKitLink(
             m,
-      ];
+            fetchedPkUuids: fetchedPkUuids,
+            fetchedPkIds: fetchedPkIds,
+          ))
+        m,
+  ];
 
   /// PK members not currently linked to any non-excluded local. Used as the
   /// search corpus for both the row-level Link action and the top-level
@@ -144,8 +144,7 @@ class PkLinkManagementState {
 ///
 /// Owns the locals + PK fetch snapshot and exposes a [refresh] hook so users
 /// can re-fetch without invalidating the global PK sync provider.
-class PkLinkManagementController
-    extends AsyncNotifier<PkLinkManagementState> {
+class PkLinkManagementController extends AsyncNotifier<PkLinkManagementState> {
   @override
   Future<PkLinkManagementState> build() async {
     return _load();
@@ -220,8 +219,8 @@ class PkLinkManagementController
 
 final pkLinkManagementControllerProvider =
     AsyncNotifierProvider<PkLinkManagementController, PkLinkManagementState>(
-  PkLinkManagementController.new,
-);
+      PkLinkManagementController.new,
+    );
 
 /// Steady-state surface for managing per-member PK link state.
 ///
@@ -289,10 +288,7 @@ class _ManagementBody extends ConsumerWidget {
     final l10n = context.l10n;
     final unmapped = state.unmappedPkMembers;
     if (unmapped.isEmpty) {
-      PrismToast.show(
-        context,
-        message: l10n.pkMappingRowNoCandidatesCaption,
-      );
+      PrismToast.show(context, message: l10n.pkMappingRowNoCandidatesCaption);
       return;
     }
 
@@ -340,8 +336,7 @@ class _ManagementBody extends ConsumerWidget {
     final current = (currentPkUuid != null && currentPkUuid.isNotEmpty)
         ? state.pkMembersByUuid[currentPkUuid]
         : (currentPkId.isNotEmpty ? state.pkMembersById[currentPkId] : null);
-    final currentDisplay =
-        current?.displayName ?? current?.name ?? currentPkId;
+    final currentDisplay = current?.displayName ?? current?.name ?? currentPkId;
     final terms = readTerminology(context, ref);
 
     final confirmed = await PrismDialog.confirm(
@@ -368,10 +363,7 @@ class _ManagementBody extends ConsumerWidget {
     final l10n = context.l10n;
     final unmapped = state.unmappedPkMembers;
     if (unmapped.isEmpty) {
-      PrismToast.show(
-        context,
-        message: l10n.pkMappingRowNoCandidatesCaption,
-      );
+      PrismToast.show(context, message: l10n.pkMappingRowNoCandidatesCaption);
       return;
     }
 
@@ -415,10 +407,7 @@ class _ManagementBody extends ConsumerWidget {
       return;
     }
     if (client == null) {
-      PrismToast.error(
-        context,
-        message: l10n.pkLinkManagementOfflineCaption,
-      );
+      PrismToast.error(context, message: l10n.pkLinkManagementOfflineCaption);
       return;
     }
 
@@ -437,10 +426,9 @@ class _ManagementBody extends ConsumerWidget {
         fetchedPkUuids: state.fetchedPkUuids,
         fetchedPkIds: state.fetchedPkIds,
       );
-      final results = await applier.apply(
-        [PkLinkDecision(localMemberId: local.id, pkMember: pkMember)],
-        resolution: resolution,
-      );
+      final results = await applier.apply([
+        PkLinkDecision(localMemberId: local.id, pkMember: pkMember),
+      ], resolution: resolution);
       if (!context.mounted) return;
       final failure = results.firstWhere(
         (r) => r.outcome == PkApplyOutcome.failed,
@@ -453,9 +441,7 @@ class _ManagementBody extends ConsumerWidget {
         // and log the raw cause for diagnosis. A proper typed-exception
         // hierarchy with per-failure-reason l10n keys is a future polish.
         if (failure.error != null) {
-          debugPrint(
-            '[PK_LINK_MGMT] Link decision failed: ${failure.error}',
-          );
+          debugPrint('[PK_LINK_MGMT] Link decision failed: ${failure.error}');
         }
         PrismToast.error(
           context,
@@ -504,8 +490,9 @@ class _ManagementBody extends ConsumerWidget {
     final synced = state.syncedMembers;
     final excluded = state.excludedMembers;
     // Hide Unresolved when offline — see plan's edge cases.
-    final unresolved =
-        state.isConnected ? state.unresolvedMembers : const <domain.Member>[];
+    final unresolved = state.isConnected
+        ? state.unresolvedMembers
+        : const <domain.Member>[];
 
     if (synced.isEmpty && excluded.isEmpty && unresolved.isEmpty) {
       return EmptyState(
@@ -545,9 +532,8 @@ class _ManagementBody extends ConsumerWidget {
         ],
         // Top-of-screen actions.
         PrismButton(
-          onPressed: () => ref
-              .read(pkLinkManagementControllerProvider.notifier)
-              .refresh(),
+          onPressed: () =>
+              ref.read(pkLinkManagementControllerProvider.notifier).refresh(),
           icon: AppIcons.sync,
           label: l10n.pkLinkManagementRefresh,
           tone: PrismButtonTone.outlined,
@@ -722,9 +708,7 @@ class _SyncedRow extends StatelessWidget {
             runSpacing: 8,
             children: [
               PrismButton(
-                key: ValueKey(
-                  'pkLinkManagementChangeLinkButton-${local.id}',
-                ),
+                key: ValueKey('pkLinkManagementChangeLinkButton-${local.id}'),
                 onPressed: onChangeLink ?? () {},
                 label: l10n.pkLinkManagementChangeLinkAction,
                 tone: PrismButtonTone.filled,
@@ -772,7 +756,8 @@ class _ExcludedRow extends StatelessWidget {
     // includes locals with any of the three states (linked, unresolved,
     // not linked), so the subtitle must reflect that.
     final hasLink = hasPluralKitLink(local);
-    final resolves = isConnected &&
+    final resolves =
+        isConnected &&
         hasResolvablePluralKitLink(
           local,
           fetchedPkUuids: fetchedPkUuids,
@@ -969,8 +954,8 @@ Future<String?> _pickLocalMember({
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -1001,7 +986,8 @@ String pkLinkManagementSearchLabelFor(
 }) {
   final pkUuid = m.pluralkitUuid?.trim();
   final pkId = m.pluralkitId?.trim();
-  final hasLink = (pkUuid != null && pkUuid.isNotEmpty) ||
+  final hasLink =
+      (pkUuid != null && pkUuid.isNotEmpty) ||
       (pkId != null && pkId.isNotEmpty);
   final excluded = m.pluralkitSyncIgnored;
 
@@ -1040,4 +1026,3 @@ String pkLinkManagementSearchLabelFor(
 // only by [_pickPkMember] and tests via the `__pk__` prefix would be brittle
 // to reproduce; the explicit dependency on `PKMember.uuid` keeps the key in
 // sync.
-

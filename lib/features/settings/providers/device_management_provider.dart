@@ -33,7 +33,8 @@ class Device {
   }
 
   /// First 6 characters of the device ID for display.
-  String get shortId => deviceId.length >= 6 ? deviceId.substring(0, 6) : deviceId;
+  String get shortId =>
+      deviceId.length >= 6 ? deviceId.substring(0, 6) : deviceId;
 
   bool get isActive => status == 'active';
   bool get isStale => status == 'stale';
@@ -134,5 +135,5 @@ class DeviceListNotifier extends AsyncNotifier<List<Device>> {
 
 final deviceListProvider =
     AsyncNotifierProvider<DeviceListNotifier, List<Device>>(
-  DeviceListNotifier.new,
-);
+      DeviceListNotifier.new,
+    );

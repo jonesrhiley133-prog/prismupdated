@@ -46,7 +46,8 @@ class KlipyGif {
 
     // Pick a small gif/webp for static preview thumbnail.
     // Prefer xs → sm for gif, then webp as fallback.
-    final previewInfo = _pickFormat(file, 'gif', ['xs', 'sm']) ??
+    final previewInfo =
+        _pickFormat(file, 'gif', ['xs', 'sm']) ??
         _pickFormat(file, 'webp', ['xs', 'sm']);
     final previewUrl = previewInfo?['url'] as String? ?? '';
 
@@ -103,9 +104,9 @@ class KlipyApiError implements Exception {
 
 /// 429 Too Many Requests — rate-limited.
 class KlipyRateLimitError extends KlipyApiError {
-  const KlipyRateLimitError(
-      [String message = 'Rate limited — please wait and try again'])
-      : super(429, message);
+  const KlipyRateLimitError([
+    String message = 'Rate limited — please wait and try again',
+  ]) : super(429, message);
 }
 
 class GifServiceConfig {
@@ -159,9 +160,7 @@ class GifServiceConfig {
 
   /// Exact GIF-provider hosts that are trusted but are not under one of the
   /// trusted suffixes above.
-  static const _trustedGifApiHostsExact = <String>[
-    'gif.prism.app',
-  ];
+  static const _trustedGifApiHostsExact = <String>['gif.prism.app'];
 
   /// Validate a relay-supplied GIF `api_base_url` before it is ever used as a
   /// request base. Returns the sanitized URL string, or `null` to reject it
@@ -227,9 +226,9 @@ class GifServiceConfig {
   }
 
   const GifServiceConfig.disabled()
-      : enabled = false,
-        apiBaseUrl = null,
-        mediaProxyEnabled = false;
+    : enabled = false,
+      apiBaseUrl = null,
+      mediaProxyEnabled = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -245,12 +244,11 @@ class KlipyService {
   final String _baseUrl;
   final http.Client _http;
 
-  KlipyService({
-    required String baseUrl,
-    http.Client? httpClient,
-  })  : _baseUrl =
-            baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl,
-        _http = httpClient ?? http.Client();
+  KlipyService({required String baseUrl, http.Client? httpClient})
+    : _baseUrl = baseUrl.endsWith('/')
+          ? baseUrl.substring(0, baseUrl.length - 1)
+          : baseUrl,
+      _http = httpClient ?? http.Client();
 
   // -- public API -----------------------------------------------------------
 
@@ -305,10 +303,15 @@ class KlipyService {
   Future<List<KlipyGif>> _fetchGifs(Uri uri) async {
     final http.Response response;
     try {
-      response = await _http.get(uri, headers: {
-        'Accept': 'application/json',
-        'User-Agent': BuildInfo.userAgent,
-      }).timeout(_httpTimeout);
+      response = await _http
+          .get(
+            uri,
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': BuildInfo.userAgent,
+            },
+          )
+          .timeout(_httpTimeout);
     } on Exception {
       // Network errors (DNS, timeout, etc.) — let them propagate.
       rethrow;

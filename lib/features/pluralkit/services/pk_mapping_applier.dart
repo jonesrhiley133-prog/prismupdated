@@ -297,7 +297,9 @@ class PkMappingApplier {
   /// M7 crash window) are trusted unconditionally — the POST just happened.
   /// Non-404 probe errors propagate so the apply records `failed` rather
   /// than re-POSTing a possible duplicate.
-  Future<bool> _priorPkIdentityStillUsable(PkMappingStateData priorState) async {
+  Future<bool> _priorPkIdentityStillUsable(
+    PkMappingStateData priorState,
+  ) async {
     // NB `!= 'applied'` deliberately also trusts `failed` rows: the
     // M7 failed-link-back lineage (POST succeeded, local writeback threw)
     // marks the row failed WITH its recorded ids, and the retry must re-link
@@ -644,9 +646,7 @@ class PkMappingApplier {
                   m.pluralkitUuid == priorState.pkMemberUuid) ||
               (m.pluralkitId != null &&
                   m.pluralkitId == priorState.pkMemberId)) {
-            throw StateError(
-              'PluralKit member is already linked to ${m.name}',
-            );
+            throw StateError('PluralKit member is already linked to ${m.name}');
           }
         }
         await _members.applyPluralKitLink(local.id, {
@@ -769,14 +769,21 @@ class PkMappingApplier {
   }) async {
     final db = _state.attachedDatabase;
     final captured = <CapturedSyncOp>[];
-    final result = await SyncRecordMixin.runFencedEmissionTransaction(db, () async {
-      await _releaseDeletedPkIdentityHolders(pk, exceptLocalId: exceptLocalId);
-      final r = await action();
-      if (syncCredentialsPersisted.value) {
-        await SyncRecordMixin.persistCapturedOpsToOutbox(db, captured);
-      }
-      return r;
-    }, captured.add);
+    final result = await SyncRecordMixin.runFencedEmissionTransaction(
+      db,
+      () async {
+        await _releaseDeletedPkIdentityHolders(
+          pk,
+          exceptLocalId: exceptLocalId,
+        );
+        final r = await action();
+        if (syncCredentialsPersisted.value) {
+          await SyncRecordMixin.persistCapturedOpsToOutbox(db, captured);
+        }
+        return r;
+      },
+      captured.add,
+    );
     if (syncCredentialsPersisted.value && captured.isNotEmpty) {
       await triggerOutboxDrain(db, syncCurrentHandle.value);
     }

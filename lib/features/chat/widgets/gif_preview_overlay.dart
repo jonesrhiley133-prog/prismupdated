@@ -47,7 +47,9 @@ class GifPreviewOverlay extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+              borderRadius: BorderRadius.circular(
+                PrismShapes.of(context).radius(12),
+              ),
               child: SizedBox(
                 width: displayWidth,
                 height: displayHeight,
@@ -57,10 +59,10 @@ class GifPreviewOverlay extends StatelessWidget {
                   fit: BoxFit.cover,
                   semanticLabel: gif.contentDescription,
                   errorBuilder: (context, error, stack) => Container(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: Center(
-                      child: Icon(AppIcons.imageBroken, size: 48),
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child: Center(child: Icon(AppIcons.imageBroken, size: 48)),
                   ),
                 ),
               ),

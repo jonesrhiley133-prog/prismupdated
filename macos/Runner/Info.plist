@@ -32,6 +32,8 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Prism reads contacts you choose so you can import names, numbers, emails and birthdays. Nothing is uploaded.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Prism uses the camera to scan pairing and recovery QR codes.</string>
 	<key>NSMicrophoneUsageDescription</key>

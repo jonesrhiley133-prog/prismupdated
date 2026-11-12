@@ -12,8 +12,8 @@ class ConversationMapper {
     List<String> participantIds = [];
     if (row.participantIds.isNotEmpty) {
       try {
-        participantIds =
-            (jsonDecode(row.participantIds) as List).cast<String>();
+        participantIds = (jsonDecode(row.participantIds) as List)
+            .cast<String>();
       } catch (e) {
         ErrorReportingService.instance.report(
           'Failed to parse JSON field in conversation ${row.id}: $e',
@@ -25,8 +25,8 @@ class ConversationMapper {
     List<String> archivedByMemberIds = [];
     if (row.archivedByMemberIds.isNotEmpty) {
       try {
-        archivedByMemberIds =
-            (jsonDecode(row.archivedByMemberIds) as List).cast<String>();
+        archivedByMemberIds = (jsonDecode(row.archivedByMemberIds) as List)
+            .cast<String>();
       } catch (e) {
         ErrorReportingService.instance.report(
           'Failed to parse JSON field in conversation ${row.id}: $e',
@@ -38,8 +38,8 @@ class ConversationMapper {
     List<String> mutedByMemberIds = [];
     if (row.mutedByMemberIds.isNotEmpty) {
       try {
-        mutedByMemberIds =
-            (jsonDecode(row.mutedByMemberIds) as List).cast<String>();
+        mutedByMemberIds = (jsonDecode(row.mutedByMemberIds) as List)
+            .cast<String>();
       } catch (e) {
         ErrorReportingService.instance.report(
           'Failed to parse JSON field in conversation ${row.id}: $e',

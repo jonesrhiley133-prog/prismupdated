@@ -21,9 +21,8 @@ class CustomFieldMapper {
   /// out-of-range guard and renders the row as text. The raw value +
   /// typeConfigJson are silently preserved in storage and re-emitted on sync.
   static domain.CustomField toDomain(CustomFieldRow row) {
-    final fieldTypeId = row.fieldTypeId ??
-        _legacyIntToId(row.fieldType) ??
-        'text';
+    final fieldTypeId =
+        row.fieldTypeId ?? _legacyIntToId(row.fieldType) ?? 'text';
 
     // Parse typeConfigJson via the codec wrapper so unknown forward-compat
     // keys are preserved in the variant's extra map.
@@ -60,15 +59,16 @@ class CustomFieldMapper {
     // data_import_service.dart.
     final domainFieldType =
         (row.fieldType >= 0 &&
-                row.fieldType < domain.CustomFieldType.values.length)
-            ? domain.CustomFieldType.values[row.fieldType]
-            : domain.CustomFieldType.text;
+            row.fieldType < domain.CustomFieldType.values.length)
+        ? domain.CustomFieldType.values[row.fieldType]
+        : domain.CustomFieldType.text;
 
     return domain.CustomField(
       id: row.id,
       name: row.name,
       fieldType: domainFieldType,
-      datePrecision: row.datePrecision != null &&
+      datePrecision:
+          row.datePrecision != null &&
               row.datePrecision! >= 0 &&
               row.datePrecision! < domain.DatePrecision.values.length
           ? domain.DatePrecision.values[row.datePrecision!]

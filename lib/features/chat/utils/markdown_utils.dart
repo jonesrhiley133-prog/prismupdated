@@ -16,8 +16,7 @@ final _bold = RegExp(r'\*\*(.+?)\*\*');
 // Approximated CommonMark flanking: `*` may not flank whitespace, `_` may
 // not flank a Unicode letter/digit. Dart's `\w` is ASCII-only, hence the
 // explicit `\p{L}\p{N}_` class for the underscore variant.
-final _italicStar =
-    RegExp(r'(?<!\*)\*(?![\s*])([^*]+?)(?<![\s*])\*(?!\*)');
+final _italicStar = RegExp(r'(?<!\*)\*(?![\s*])([^*]+?)(?<![\s*])\*(?!\*)');
 final _italicUnderscore = RegExp(
   r'(?<![\p{L}\p{N}_])_(?![\s_])([^_]+?)(?<![\s_])_(?![\p{L}\p{N}_])',
   unicode: true,

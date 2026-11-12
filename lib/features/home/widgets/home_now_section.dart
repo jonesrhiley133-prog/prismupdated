@@ -21,7 +21,10 @@ import 'package:prism_plurality/shared/widgets/prism_sheet.dart';
 /// timers, plus quick actions to log a mood, start a location session,
 /// clock in, or open Daily Insights.
 class HomeNowSection extends ConsumerWidget {
-  const HomeNowSection({super.key});
+  const HomeNowSection({super.key, this.showQuickChips = true});
+
+  /// The dashboard shows quick actions separately, so it hides these.
+  final bool showQuickChips;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,8 +37,13 @@ class HomeNowSection extends ConsumerWidget {
         ? null
         : locations.where((l) => l.id == activeLocation.locationId).firstOrNull;
 
+    if (!showQuickChips && activeLocation == null && activeWork.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: showQuickChips
+          ? const EdgeInsets.fromLTRB(16, 8, 16, 4)
+          : EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -57,41 +65,42 @@ class HomeNowSection extends ConsumerWidget {
                 compact: true,
               ),
             ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _QuickChip(
-                  icon: AppIcons.navMood,
-                  label: l10n.homeQuickLogMood,
-                  onTap: () => showLogMoodSheet(context),
-                ),
-                _QuickChip(
-                  icon: AppIcons.navLocations,
-                  label: activeLocation == null
-                      ? l10n.homeQuickStartLocation
-                      : l10n.homeQuickChangeLocation,
-                  onTap: () => _pickLocation(context, ref),
-                ),
-                _QuickChip(
-                  icon: AppIcons.navWork,
-                  label: l10n.workClockIn,
-                  onTap: () => _pickJob(context, ref),
-                ),
-                _QuickChip(
-                  icon: AppIcons.navInsights,
-                  label: l10n.insightsTitle,
-                  onTap: () => context.go(AppRoutePaths.insights),
-                ),
-              ],
+          if (showQuickChips)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _QuickChip(
+                    icon: AppIcons.navMood,
+                    label: l10n.homeQuickLogMood,
+                    onTap: () => showLogMoodSheet(context),
+                  ),
+                  _QuickChip(
+                    icon: AppIcons.navLocations,
+                    label: activeLocation == null
+                        ? l10n.homeQuickStartLocation
+                        : l10n.homeQuickChangeLocation,
+                    onTap: () => pickLocation(context, ref),
+                  ),
+                  _QuickChip(
+                    icon: AppIcons.navWork,
+                    label: l10n.workClockIn,
+                    onTap: () => pickJob(context, ref),
+                  ),
+                  _QuickChip(
+                    icon: AppIcons.navInsights,
+                    label: l10n.insightsTitle,
+                    onTap: () => context.go(AppRoutePaths.insights),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  Future<void> _pickLocation(BuildContext context, WidgetRef ref) {
+  static Future<void> pickLocation(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     return PrismSheet.show(
       context: context,
@@ -157,7 +166,7 @@ class HomeNowSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _pickJob(BuildContext context, WidgetRef ref) {
+  static Future<void> pickJob(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     return PrismSheet.show(
       context: context,

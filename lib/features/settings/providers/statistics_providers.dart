@@ -35,7 +35,9 @@ final allPollsCountProvider = FutureProvider<int>((ref) {
 });
 
 /// Top fronters sorted by session count descending.
-final topFrontersProvider = FutureProvider<List<MapEntry<Member, int>>>((ref) async {
+final topFrontersProvider = FutureProvider<List<MapEntry<Member, int>>>((
+  ref,
+) async {
   final sessions = await ref.watch(allSessionsStatProvider.future);
   final members = await ref.watch(allMembersStatProvider.future);
   final counts = <String, int>{};
@@ -44,7 +46,8 @@ final topFrontersProvider = FutureProvider<List<MapEntry<Member, int>>>((ref) as
       counts[session.memberId!] = (counts[session.memberId!] ?? 0) + 1;
     }
   }
-  final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+  final sorted = counts.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
   final memberMap = {for (final m in members) m.id: m};
   return sorted
       .where((e) => memberMap.containsKey(e.key))

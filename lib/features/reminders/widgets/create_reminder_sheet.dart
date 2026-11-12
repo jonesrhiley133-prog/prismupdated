@@ -328,15 +328,13 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
                         rangeEnd: _rangeEnd,
                         onModeChanged: (mode) =>
                             setState(() => _timesMode = mode),
-                        onTimesChanged: (times) => setState(
-                          () => _times = sortedUniqueTimes(times),
-                        ),
+                        onTimesChanged: (times) =>
+                            setState(() => _times = sortedUniqueTimes(times)),
                         onEveryMinutesChanged: (v) =>
                             setState(() => _everyMinutes = v),
                         onRangeStartChanged: (v) =>
                             setState(() => _rangeStart = v),
-                        onRangeEndChanged: (v) =>
-                            setState(() => _rangeEnd = v),
+                        onRangeEndChanged: (v) => setState(() => _rangeEnd = v),
                       ),
                     ] else ...[
                       // Delay picker for front change

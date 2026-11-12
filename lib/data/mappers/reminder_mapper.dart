@@ -17,10 +17,10 @@ class ReminderMapper {
     );
     final trigger =
         row.trigger >= 0 && row.trigger < domain.ReminderTrigger.values.length
-            ? domain.ReminderTrigger.values[row.trigger]
-            // Corrupt/future-version row: default to scheduled (the common case
-            // for existing reminders) instead of crashing.
-            : domain.ReminderTrigger.scheduled;
+        ? domain.ReminderTrigger.values[row.trigger]
+        // Corrupt/future-version row: default to scheduled (the common case
+        // for existing reminders) instead of crashing.
+        : domain.ReminderTrigger.scheduled;
 
     return domain.Reminder(
       id: row.id,

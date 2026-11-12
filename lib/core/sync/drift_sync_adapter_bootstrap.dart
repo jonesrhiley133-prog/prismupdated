@@ -124,6 +124,14 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       'work_sessions',
       () => db.select(db.workSessions).get(),
     ),
+    'cycle_entries': build(
+      'cycle_entries',
+      () => db.select(db.cycleEntries).get(),
+    ),
+    'contacts': build(
+      'contacts',
+      () => db.select(db.contacts).get(),
+    ),
     'calendar_events': build(
       'calendar_events',
       () => db.select(db.calendarEvents).get(),

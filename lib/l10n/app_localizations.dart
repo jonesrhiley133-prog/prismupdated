@@ -23220,6 +23220,1073 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That was a long work day. Rest counts as productive too.'**
   String get insightsSuggestWork;
+
+  /// navCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get navCycle;
+
+  /// navContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get navContacts;
+
+  /// dataManagementPreviewCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days'**
+  String get dataManagementPreviewCycle;
+
+  /// dataManagementPreviewContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get dataManagementPreviewContacts;
+
+  /// contactsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get contactsTitle;
+
+  /// contactsNew
+  ///
+  /// In en, this message translates to:
+  /// **'New contact'**
+  String get contactsNew;
+
+  /// contactsEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit contact'**
+  String get contactsEdit;
+
+  /// contactsName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get contactsName;
+
+  /// contactsPhones
+  ///
+  /// In en, this message translates to:
+  /// **'Phone numbers (one per line)'**
+  String get contactsPhones;
+
+  /// contactsEmails
+  ///
+  /// In en, this message translates to:
+  /// **'Emails (one per line)'**
+  String get contactsEmails;
+
+  /// contactsInvalidEmail
+  ///
+  /// In en, this message translates to:
+  /// **'One of the emails doesn\'t look right.'**
+  String get contactsInvalidEmail;
+
+  /// contactsBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get contactsBirthday;
+
+  /// contactsAddBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Add birthday'**
+  String get contactsAddBirthday;
+
+  /// contactsYearUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Year unknown'**
+  String get contactsYearUnknown;
+
+  /// contactsDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete contact?'**
+  String get contactsDeleteTitle;
+
+  /// contactsDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed.'**
+  String contactsDeleteMessage(String name);
+
+  /// contactsEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet'**
+  String get contactsEmptyTitle;
+
+  /// contactsEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add people outside your system, or import them with their birthdays from your phone or another app.'**
+  String get contactsEmptySubtitle;
+
+  /// contactsSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get contactsSearch;
+
+  /// contactsUpcomingBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming birthdays'**
+  String get contactsUpcomingBirthdays;
+
+  /// contactsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 contact} other{{count} contacts}}'**
+  String contactsCount(int count);
+
+  /// contactsTomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get contactsTomorrow;
+
+  /// cycleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get cycleTitle;
+
+  /// cycleLogToday
+  ///
+  /// In en, this message translates to:
+  /// **'Log cycle'**
+  String get cycleLogToday;
+
+  /// cycleFlowLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Flow'**
+  String get cycleFlowLabel;
+
+  /// cycleFlowNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get cycleFlowNone;
+
+  /// cycleFlowSpotting
+  ///
+  /// In en, this message translates to:
+  /// **'Spotting'**
+  String get cycleFlowSpotting;
+
+  /// cycleFlowLight
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get cycleFlowLight;
+
+  /// cycleFlowMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get cycleFlowMedium;
+
+  /// cycleFlowHeavy
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get cycleFlowHeavy;
+
+  /// cycleSymptomsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get cycleSymptomsLabel;
+
+  /// cycleDayLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day'**
+  String get cycleDayLabel;
+
+  /// cycleAverageLength
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. cycle (days)'**
+  String get cycleAverageLength;
+
+  /// cyclePeriodLength
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. period (days)'**
+  String get cyclePeriodLength;
+
+  /// cycleNextEstimate
+  ///
+  /// In en, this message translates to:
+  /// **'Next period estimated around {date}'**
+  String cycleNextEstimate(String date);
+
+  /// cycleNeedMoreCycles
+  ///
+  /// In en, this message translates to:
+  /// **'Log two or more periods to see an estimate.'**
+  String get cycleNeedMoreCycles;
+
+  /// cycleEstimated
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get cycleEstimated;
+
+  /// cycleDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates are simple averages of the cycles you logged. They aren\'t medical predictions and can\'t be used for contraception.'**
+  String get cycleDisclaimer;
+
+  /// dashboardCustomize
+  ///
+  /// In en, this message translates to:
+  /// **'Customize dashboard'**
+  String get dashboardCustomize;
+
+  /// dashboardWidgetsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Widgets'**
+  String get dashboardWidgetsLabel;
+
+  /// dashboardAddWidget
+  ///
+  /// In en, this message translates to:
+  /// **'Add a widget'**
+  String get dashboardAddWidget;
+
+  /// dashboardAddAction
+  ///
+  /// In en, this message translates to:
+  /// **'Add an action'**
+  String get dashboardAddAction;
+
+  /// dashboardMoveUp
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get dashboardMoveUp;
+
+  /// dashboardMoveDown
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get dashboardMoveDown;
+
+  /// dashboardHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get dashboardHide;
+
+  /// dashboardReset
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get dashboardReset;
+
+  /// dashboardWidgetNow
+  ///
+  /// In en, this message translates to:
+  /// **'Location & work sessions'**
+  String get dashboardWidgetNow;
+
+  /// dashboardWidgetQuickActions
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get dashboardWidgetQuickActions;
+
+  /// dashboardWidgetStats
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s system stats'**
+  String get dashboardWidgetStats;
+
+  /// dashboardWidgetBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdays'**
+  String get dashboardWidgetBirthdays;
+
+  /// dashboardWidgetEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Today & tomorrow'**
+  String get dashboardWidgetEvents;
+
+  /// dashboardInsightNoPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Open today\'s summary.'**
+  String get dashboardInsightNoPatterns;
+
+  /// dashboardInsightPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 thing you might notice} other{{count} things you might notice}}'**
+  String dashboardInsightPatterns(int count);
+
+  /// dashboardStatSwitches
+  ///
+  /// In en, this message translates to:
+  /// **'Switches'**
+  String get dashboardStatSwitches;
+
+  /// dashboardStatFronted
+  ///
+  /// In en, this message translates to:
+  /// **'Fronted'**
+  String get dashboardStatFronted;
+
+  /// dashboardStatCoFront
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting'**
+  String get dashboardStatCoFront;
+
+  /// dashboardNoSleep
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep logged for last night.'**
+  String get dashboardNoSleep;
+
+  /// dashboardCycleEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No cycle data yet.'**
+  String get dashboardCycleEmpty;
+
+  /// dashboardNoBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'No birthdays in the next two weeks.'**
+  String get dashboardNoBirthdays;
+
+  /// dashboardNoEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned.'**
+  String get dashboardNoEvents;
+
+  /// quickActionSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get quickActionSwitch;
+
+  /// quickActionLogBody
+  ///
+  /// In en, this message translates to:
+  /// **'Log body sensation'**
+  String get quickActionLogBody;
+
+  /// quickActionJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get quickActionJournal;
+
+  /// quickActionBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Add birthday'**
+  String get quickActionBirthday;
+
+  /// howWeFeelTitle
+  ///
+  /// In en, this message translates to:
+  /// **'How we feel'**
+  String get howWeFeelTitle;
+
+  /// howWeFeelNoData
+  ///
+  /// In en, this message translates to:
+  /// **'No check-ins this week yet.'**
+  String get howWeFeelNoData;
+
+  /// howWeFeelAverage
+  ///
+  /// In en, this message translates to:
+  /// **'This week averaged {value}/5.'**
+  String howWeFeelAverage(String value);
+
+  /// howWeFeelUp
+  ///
+  /// In en, this message translates to:
+  /// **'A little brighter than last week ({value}/5).'**
+  String howWeFeelUp(String value);
+
+  /// howWeFeelDown
+  ///
+  /// In en, this message translates to:
+  /// **'A bit heavier than last week ({value}/5). Go gently.'**
+  String howWeFeelDown(String value);
+
+  /// howWeFeelSteady
+  ///
+  /// In en, this message translates to:
+  /// **'About the same as last week ({value}/5).'**
+  String howWeFeelSteady(String value);
+
+  /// howWeFeelTopEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Most felt: {emotions}'**
+  String howWeFeelTopEmotions(String emotions);
+
+  /// insightsGlanceCycleDay
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day {day}'**
+  String insightsGlanceCycleDay(int day);
+
+  /// insightsPatternCycleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle and mood'**
+  String get insightsPatternCycleTitle;
+
+  /// insightsPatternCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Period days averaged a mood of {period}, compared with {other} on other days ({periodCount} vs {otherCount} check-ins).'**
+  String insightsPatternCycle(
+    String period,
+    String other,
+    int periodCount,
+    int otherCount,
+  );
+
+  /// timelineSystemTitle
+  ///
+  /// In en, this message translates to:
+  /// **'System timeline'**
+  String get timelineSystemTitle;
+
+  /// timelineSystemEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded on this day.'**
+  String get timelineSystemEmpty;
+
+  /// timelineKindFront
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting'**
+  String get timelineKindFront;
+
+  /// timelineKindJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get timelineKindJournal;
+
+  /// timelineStartedFronting
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started fronting'**
+  String timelineStartedFronting(String name);
+
+  /// timelineStoppedFronting
+  ///
+  /// In en, this message translates to:
+  /// **'{name} stopped fronting'**
+  String timelineStoppedFronting(String name);
+
+  /// timelineFellAsleep
+  ///
+  /// In en, this message translates to:
+  /// **'Went to sleep'**
+  String get timelineFellAsleep;
+
+  /// timelineWokeUp
+  ///
+  /// In en, this message translates to:
+  /// **'Woke up'**
+  String get timelineWokeUp;
+
+  /// timelineArrived
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at {place}'**
+  String timelineArrived(String place);
+
+  /// timelineLeft
+  ///
+  /// In en, this message translates to:
+  /// **'Left {place}'**
+  String timelineLeft(String place);
+
+  /// timelineClockedIn
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in: {job}'**
+  String timelineClockedIn(String job);
+
+  /// timelineClockedOut
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked out: {job}'**
+  String timelineClockedOut(String job);
+
+  /// patternsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern explorer'**
+  String get patternsTitle;
+
+  /// patternsEmotionSleep
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Sleep'**
+  String get patternsEmotionSleep;
+
+  /// patternsEmotionFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Fronting'**
+  String get patternsEmotionFronting;
+
+  /// patternsEmotionLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Location'**
+  String get patternsEmotionLocation;
+
+  /// patternsEmotionCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Cycle'**
+  String get patternsEmotionCycle;
+
+  /// patternsBodyEmotion
+  ///
+  /// In en, this message translates to:
+  /// **'Body ↔ Emotion'**
+  String get patternsBodyEmotion;
+
+  /// patternsWorkMood
+  ///
+  /// In en, this message translates to:
+  /// **'Work ↔ Mood'**
+  String get patternsWorkMood;
+
+  /// patternsNoData
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough check-ins in this range yet.'**
+  String get patternsNoData;
+
+  /// patternsCheckIns
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 check-in} other{{count} check-ins}}'**
+  String patternsCheckIns(int count);
+
+  /// patternsDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Groups show averages of what you logged. They\'re possible patterns, not causes or diagnoses, and small groups can be misleading.'**
+  String get patternsDisclaimer;
+
+  /// patternsFrontingWindowNote
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting and sleep data covers the last {days} days.'**
+  String patternsFrontingWindowNote(int days);
+
+  /// patternsSleepUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep logged'**
+  String get patternsSleepUnknown;
+
+  /// patternsSleepLt6
+  ///
+  /// In en, this message translates to:
+  /// **'Under 6 hours of sleep'**
+  String get patternsSleepLt6;
+
+  /// patternsSleep67
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours of sleep'**
+  String get patternsSleep67;
+
+  /// patternsSleep78
+  ///
+  /// In en, this message translates to:
+  /// **'7–8 hours of sleep'**
+  String get patternsSleep78;
+
+  /// patternsSleep8plus
+  ///
+  /// In en, this message translates to:
+  /// **'8+ hours of sleep'**
+  String get patternsSleep8plus;
+
+  /// patternsNoFronter
+  ///
+  /// In en, this message translates to:
+  /// **'No one logged as fronting'**
+  String get patternsNoFronter;
+
+  /// patternsCoFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting'**
+  String get patternsCoFronting;
+
+  /// patternsNoLocation
+  ///
+  /// In en, this message translates to:
+  /// **'No location session'**
+  String get patternsNoLocation;
+
+  /// patternsCyclePeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Period days'**
+  String get patternsCyclePeriod;
+
+  /// patternsCycleDays
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days {range}'**
+  String patternsCycleDays(String range);
+
+  /// patternsCycleUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day unknown'**
+  String get patternsCycleUnknown;
+
+  /// patternsNoBody
+  ///
+  /// In en, this message translates to:
+  /// **'No body sensation logged'**
+  String get patternsNoBody;
+
+  /// patternsWorkDays
+  ///
+  /// In en, this message translates to:
+  /// **'Work days'**
+  String get patternsWorkDays;
+
+  /// patternsOffDays
+  ///
+  /// In en, this message translates to:
+  /// **'Days off'**
+  String get patternsOffDays;
+
+  /// importCenterTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import Center'**
+  String get importCenterTitle;
+
+  /// importCenterIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Bring data into Prism. Every importer previews what it found, checks it, lets you decide about duplicates, and only then imports.'**
+  String get importCenterIntro;
+
+  /// importCenterPrismBackup
+  ///
+  /// In en, this message translates to:
+  /// **'Prism backup'**
+  String get importCenterPrismBackup;
+
+  /// importCenterPrismBackupDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Restore an export from Prism.'**
+  String get importCenterPrismBackupDesc;
+
+  /// importCenterOtherApps
+  ///
+  /// In en, this message translates to:
+  /// **'Simply Plural & other plural apps'**
+  String get importCenterOtherApps;
+
+  /// importCenterOtherAppsDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Members, fronting history, chats and more.'**
+  String get importCenterOtherAppsDesc;
+
+  /// importCenterPluralKit
+  ///
+  /// In en, this message translates to:
+  /// **'PluralKit'**
+  String get importCenterPluralKit;
+
+  /// importCenterPluralKitDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Connect or import from PluralKit.'**
+  String get importCenterPluralKitDesc;
+
+  /// importCenterBirthdaysDesc
+  ///
+  /// In en, this message translates to:
+  /// **'JSON export from another birthday app. Birthdays repeat every year.'**
+  String get importCenterBirthdaysDesc;
+
+  /// importCenterDeviceDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people from your phone\'s contacts.'**
+  String get importCenterDeviceDesc;
+
+  /// importCenterVCardDesc
+  ///
+  /// In en, this message translates to:
+  /// **'A .vcf file exported from any contacts app.'**
+  String get importCenterVCardDesc;
+
+  /// importBirthdaysTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdays from another app'**
+  String get importBirthdaysTitle;
+
+  /// importVCardTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts file (vCard)'**
+  String get importVCardTitle;
+
+  /// importDeviceContactsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts on this device'**
+  String get importDeviceContactsTitle;
+
+  /// importBirthdaysHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the JSON file your birthday app exported. Prism looks for names and dates, shows you everything first, and turns each birthday into a yearly reminder on the calendar.'**
+  String get importBirthdaysHelp;
+
+  /// importVCardHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a .vcf file. Names, phone numbers, emails, birthdays and notes are imported.'**
+  String get importVCardHelp;
+
+  /// importDeviceHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Prism will ask for permission to read your contacts. You choose exactly who to import, and nothing leaves your device.'**
+  String get importDeviceHelp;
+
+  /// importChooseFile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get importChooseFile;
+
+  /// importAllowAndLoad
+  ///
+  /// In en, this message translates to:
+  /// **'Allow access & load contacts'**
+  String get importAllowAndLoad;
+
+  /// importOpenSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get importOpenSettings;
+
+  /// importDeviceUnsupported
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on this device. Export a .vcf file from your contacts app instead.'**
+  String get importDeviceUnsupported;
+
+  /// importDevicePermissionDenied
+  ///
+  /// In en, this message translates to:
+  /// **'Prism doesn\'t have permission to read contacts. You can allow it in Settings.'**
+  String get importDevicePermissionDenied;
+
+  /// importFileTooLarge
+  ///
+  /// In en, this message translates to:
+  /// **'That file is larger than 20 MB.'**
+  String get importFileTooLarge;
+
+  /// importNoRecords
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts or birthdays were found in that file.'**
+  String get importNoRecords;
+
+  /// importNotJson
+  ///
+  /// In en, this message translates to:
+  /// **'That file isn\'t valid JSON.'**
+  String get importNotJson;
+
+  /// importReadFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the file: {error}'**
+  String importReadFailed(String error);
+
+  /// importProblem
+  ///
+  /// In en, this message translates to:
+  /// **'Something needs attention'**
+  String get importProblem;
+
+  /// importStepSelect
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get importStepSelect;
+
+  /// importStepPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get importStepPreview;
+
+  /// importStepValidate
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get importStepValidate;
+
+  /// importStepDuplicates
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates'**
+  String get importStepDuplicates;
+
+  /// importStepImport
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importStepImport;
+
+  /// importStepDone
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get importStepDone;
+
+  /// importStepOf
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}: {name}'**
+  String importStepOf(int step, int total, String name);
+
+  /// importPreviewSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Found {total} records, {valid} ready to import. {file}'**
+  String importPreviewSummary(int total, int valid, String file);
+
+  /// importAmbiguousTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 date could be read two ways} other{{count} dates could be read two ways}}'**
+  String importAmbiguousTitle(int count);
+
+  /// importAmbiguousBody
+  ///
+  /// In en, this message translates to:
+  /// **'Dates like 03/04 could mean March 4 or April 3. Choose how your app writes dates.'**
+  String get importAmbiguousBody;
+
+  /// importAmbiguousShort
+  ///
+  /// In en, this message translates to:
+  /// **'check date'**
+  String get importAmbiguousShort;
+
+  /// importMonthFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Month first (03/04 = Mar 4)'**
+  String get importMonthFirst;
+
+  /// importDayFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Day first (03/04 = 3 Apr)'**
+  String get importDayFirst;
+
+  /// importSelectedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String importSelectedCount(int count);
+
+  /// importSelectAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get importSelectAll;
+
+  /// importSelectNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get importSelectNone;
+
+  /// importNext
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get importNext;
+
+  /// importAllValid
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} selected records look good.'**
+  String importAllValid(int count);
+
+  /// importSomeInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'{valid} selected records look good. {invalid} can\'t be imported:'**
+  String importSomeInvalid(int valid, int invalid);
+
+  /// importRowNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Row {number}'**
+  String importRowNumber(int number);
+
+  /// importErrorMissingName
+  ///
+  /// In en, this message translates to:
+  /// **'no name found'**
+  String get importErrorMissingName;
+
+  /// importErrorMissingDate
+  ///
+  /// In en, this message translates to:
+  /// **'no birthday found'**
+  String get importErrorMissingDate;
+
+  /// importErrorUnreadableDate
+  ///
+  /// In en, this message translates to:
+  /// **'the date couldn\'t be read'**
+  String get importErrorUnreadableDate;
+
+  /// importErrorInvalidDate
+  ///
+  /// In en, this message translates to:
+  /// **'the date doesn\'t exist (e.g. February 30)'**
+  String get importErrorInvalidDate;
+
+  /// importErrorNotRecord
+  ///
+  /// In en, this message translates to:
+  /// **'not a record'**
+  String get importErrorNotRecord;
+
+  /// importNoDuplicates
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates found.'**
+  String get importNoDuplicates;
+
+  /// importDuplicatesFound
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 possible duplicate} other{{count} possible duplicates}}. Choose what to do with each.'**
+  String importDuplicatesFound(int count);
+
+  /// importApplyToAll
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to all'**
+  String get importApplyToAll;
+
+  /// importActionSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get importActionSkip;
+
+  /// importActionUpdate
+  ///
+  /// In en, this message translates to:
+  /// **'Update existing'**
+  String get importActionUpdate;
+
+  /// importActionAddAnyway
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get importActionAddAnyway;
+
+  /// importMatchesExisting
+  ///
+  /// In en, this message translates to:
+  /// **'Matches \"{name}\" already in Prism'**
+  String importMatchesExisting(String name);
+
+  /// importRepeatedInFile
+  ///
+  /// In en, this message translates to:
+  /// **'Appears more than once in this file'**
+  String get importRepeatedInFile;
+
+  /// importBirthdayConflict
+  ///
+  /// In en, this message translates to:
+  /// **'The birthdays are different.'**
+  String get importBirthdayConflict;
+
+  /// importRun
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count}'**
+  String importRun(int count);
+
+  /// importDoneTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import finished'**
+  String get importDoneTitle;
+
+  /// importDoneSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{created} added · {updated} updated · {skipped} skipped'**
+  String importDoneSummary(int created, int updated, int skipped);
+
+  /// importDoneFailed
+  ///
+  /// In en, this message translates to:
+  /// **'{count} couldn\'t be saved.'**
+  String importDoneFailed(int count);
+
+  /// importBirthdaysRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Imported birthdays repeat every year and appear on your calendar.'**
+  String get importBirthdaysRecurring;
 }
 
 class _AppLocalizationsDelegate

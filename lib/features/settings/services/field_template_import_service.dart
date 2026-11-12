@@ -104,8 +104,9 @@ class FieldTemplateImportService {
   }
 }
 
-final fieldTemplateImportServiceProvider =
-    Provider<FieldTemplateImportService>((ref) {
+final fieldTemplateImportServiceProvider = Provider<FieldTemplateImportService>((
+  ref,
+) {
   // customFieldsRepositoryProvider always returns DriftCustomFieldsRepository;
   // the abstract type is widened at the provider boundary.
   final repo =

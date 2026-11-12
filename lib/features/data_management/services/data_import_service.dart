@@ -53,6 +53,8 @@ import 'package:prism_plurality/data/repositories/drift_saved_location_repositor
 import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_cycle_entry_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_contact_repository.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
 import 'package:prism_plurality/features/fronting/services/collapse_open_duplicate_sessions.dart';
@@ -85,6 +87,8 @@ class ImportPreview {
     this.locationSessions = 0,
     this.jobs = 0,
     this.workSessions = 0,
+    this.cycleEntries = 0,
+    this.contacts = 0,
     this.friends = 0,
     this.mediaAttachments = 0,
     this.memberBoardPosts = 0,
@@ -117,6 +121,8 @@ class ImportPreview {
   final int locationSessions;
   final int jobs;
   final int workSessions;
+  final int cycleEntries;
+  final int contacts;
   final int friends;
   final int mediaAttachments;
   final int memberBoardPosts;
@@ -149,6 +155,8 @@ class ImportPreview {
       locationSessions +
       jobs +
       workSessions +
+      cycleEntries +
+      contacts +
       friends +
       mediaAttachments +
       memberBoardPosts +
@@ -182,6 +190,8 @@ class ImportResult {
     this.locationSessionsCreated = 0,
     this.jobsCreated = 0,
     this.workSessionsCreated = 0,
+    this.cycleEntriesCreated = 0,
+    this.contactsCreated = 0,
     this.friendsCreated = 0,
     this.mediaAttachmentsCreated = 0,
     this.memberBoardPostsCreated = 0,
@@ -218,6 +228,8 @@ class ImportResult {
   final int locationSessionsCreated;
   final int jobsCreated;
   final int workSessionsCreated;
+  final int cycleEntriesCreated;
+  final int contactsCreated;
   final int friendsCreated;
   final int mediaAttachmentsCreated;
   final int memberBoardPostsCreated;
@@ -278,6 +290,8 @@ class ImportResult {
       locationSessionsCreated +
       jobsCreated +
       workSessionsCreated +
+      cycleEntriesCreated +
+      contactsCreated +
       friendsCreated +
       mediaAttachmentsCreated +
       memberBoardPostsCreated +
@@ -530,6 +544,8 @@ class DataImportService {
       locationSessions: export.locationSessions.length,
       jobs: export.jobs.length,
       workSessions: export.workSessions.length,
+      cycleEntries: export.cycleEntries.length,
+      contacts: export.contacts.length,
       friends: export.friends.length,
       mediaAttachments: export.mediaAttachments.length,
       memberBoardPosts: export.memberBoardPosts.length,
@@ -2367,7 +2383,10 @@ class DataImportService {
         }
         var locationSessionsCreated = 0;
         {
-          final repo = DriftLocationSessionRepository(db.locationSessionsDao, null);
+          final repo = DriftLocationSessionRepository(
+            db.locationSessionsDao,
+            null,
+          );
           for (final raw in export.locationSessions) {
             final LocationSession item;
             try {
@@ -2408,6 +2427,36 @@ class DataImportService {
             if (await db.workSessionsDao.getById(item.id) != null) continue;
             await repo.create(item);
             workSessionsCreated++;
+          }
+        }
+        var cycleEntriesCreated = 0;
+        {
+          final repo = DriftCycleEntryRepository(db.cycleEntriesDao, null);
+          for (final raw in export.cycleEntries) {
+            final CycleEntry item;
+            try {
+              item = CycleEntry.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.cycleEntriesDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            cycleEntriesCreated++;
+          }
+        }
+        var contactsCreated = 0;
+        {
+          final repo = DriftContactRepository(db.contactsDao, null);
+          for (final raw in export.contacts) {
+            final Contact item;
+            try {
+              item = Contact.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.contactsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            contactsCreated++;
           }
         }
 
@@ -2615,6 +2664,8 @@ class DataImportService {
           locationSessionsCreated: locationSessionsCreated,
           jobsCreated: jobsCreated,
           workSessionsCreated: workSessionsCreated,
+          cycleEntriesCreated: cycleEntriesCreated,
+          contactsCreated: contactsCreated,
           friendsCreated: friendsCreated,
           mediaAttachmentsCreated: mediaAttachmentsCreated,
           memberBoardPostsCreated: memberBoardPostsCreated,

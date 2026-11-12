@@ -11,12 +11,13 @@ List<Member> sortMembersByFrequency(
   Map<String, int> counts, {
   int take = 4,
 }) {
-  final sorted = [...members]..sort((a, b) {
-    final countDiff = (counts[b.id] ?? 0).compareTo(counts[a.id] ?? 0);
-    if (countDiff != 0) return countDiff;
-    final orderDiff = a.displayOrder.compareTo(b.displayOrder);
-    if (orderDiff != 0) return orderDiff;
-    return a.id.compareTo(b.id);
-  });
+  final sorted = [...members]
+    ..sort((a, b) {
+      final countDiff = (counts[b.id] ?? 0).compareTo(counts[a.id] ?? 0);
+      if (countDiff != 0) return countDiff;
+      final orderDiff = a.displayOrder.compareTo(b.displayOrder);
+      if (orderDiff != 0) return orderDiff;
+      return a.id.compareTo(b.id);
+    });
   return sorted.take(take).toList();
 }

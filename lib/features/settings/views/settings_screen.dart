@@ -333,6 +333,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         title: context.l10n.settingsSharing,
                         route: AppRoutePaths.settingsSharing,
                       ),
+                    _navLink(
+                      icon: AppIcons.navImport,
+                      iconColor: Colors.teal,
+                      title: context.l10n.importCenterTitle,
+                      route: AppRoutePaths.importCenter,
+                    ),
                     _leafLink(
                       icon: AppIcons.importExport,
                       iconColor: Colors.amber,

@@ -85,7 +85,9 @@ class _LastNightCard extends StatelessWidget {
     final l10n = context.l10n;
 
     final quality = session?.quality ?? SleepQuality.unknown;
-    final durationText = session != null ? session!.duration.toRoundedString() : '—';
+    final durationText = session != null
+        ? session!.duration.toRoundedString()
+        : '—';
     final qualityLabel = quality == SleepQuality.unknown
         ? l10n.sleepQualityNotRated
         : quality.localizedLabel(l10n);
@@ -173,7 +175,8 @@ class _Avg7dCard extends StatelessWidget {
     final avgDuration = avg7d.avgDuration;
     final durationText = avgDuration?.toRoundedString() ?? '—';
 
-    final hasTrend = avg7dPrior.count > 0 &&
+    final hasTrend =
+        avg7dPrior.count > 0 &&
         avgDuration != null &&
         avg7dPrior.avgDuration != null;
 

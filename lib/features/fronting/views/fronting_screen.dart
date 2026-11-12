@@ -5,7 +5,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:prism_plurality/features/home/widgets/home_now_section.dart';
+import 'package:prism_plurality/features/home/widgets/home_dashboard.dart';
 import 'package:prism_plurality/core/diagnostics/boot_timings.dart';
 import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
@@ -357,7 +357,7 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
           const SliverToBoxAdapter(child: FrontingActionBannerStack()),
         ),
 
-        clampSliver(const SliverToBoxAdapter(child: HomeNowSection())),
+        clampSliver(const SliverToBoxAdapter(child: HomeDashboard())),
 
         clampSliver(
           SliverPersistentHeader(
@@ -807,7 +807,9 @@ class _AddButtonState extends ConsumerState<_AddButton> {
             .read(frontingSessionRepositoryProvider)
             .getAllActiveSessionsUnfiltered();
         initialSelected.addAll(
-          active.where((s) => !s.isSleep && s.memberId != null).map((s) => s.memberId!),
+          active
+              .where((s) => !s.isSleep && s.memberId != null)
+              .map((s) => s.memberId!),
         );
       }
       if (!mounted || !context.mounted) return;
@@ -829,11 +831,13 @@ class _AddButtonState extends ConsumerState<_AddButton> {
       if (memberIds.isEmpty && !keepCurrentFronters) return;
       final activeSession = ref.read(activeSleepSessionProvider).value;
       if (activeSession?.id != session.id) return;
-      await ref.read(frontingNotifierProvider.notifier).wakeUp(
-        session.id,
-        frontingMemberIds: memberIds,
-        keepCurrentFronters: keepCurrentFronters,
-      );
+      await ref
+          .read(frontingNotifierProvider.notifier)
+          .wakeUp(
+            session.id,
+            frontingMemberIds: memberIds,
+            keepCurrentFronters: keepCurrentFronters,
+          );
     } catch (e) {
       if (context.mounted) {
         PrismToast.error(

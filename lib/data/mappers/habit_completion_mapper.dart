@@ -19,8 +19,7 @@ class HabitCompletionMapper {
     );
   }
 
-  static HabitCompletionsCompanion toCompanion(
-      domain.HabitCompletion model) {
+  static HabitCompletionsCompanion toCompanion(domain.HabitCompletion model) {
     return HabitCompletionsCompanion(
       id: Value(model.id),
       habitId: Value(model.habitId),

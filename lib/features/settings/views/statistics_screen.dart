@@ -274,8 +274,7 @@ class _TopFronterRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
-    final name =
-        member?.effectiveName(preferDisplayName: prefer) ?? 'Unknown';
+    final name = member?.effectiveName(preferDisplayName: prefer) ?? 'Unknown';
     final emoji = member?.emoji ?? '\u2754';
 
     return Padding(
