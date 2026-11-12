@@ -55,6 +55,10 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'reminders',
       'mood_entries',
       'calendar_events',
+      'saved_locations',
+      'location_sessions',
+      'jobs',
+      'work_sessions',
       'friends',
     ];
 
@@ -75,6 +79,10 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'reminders': 'created_at',
       'mood_entries': 'created_at',
       'calendar_events': 'created_at',
+      'saved_locations': 'created_at',
+      'location_sessions': 'created_at',
+      'jobs': 'created_at',
+      'work_sessions': 'created_at',
       'friends': 'created_at',
     };
 

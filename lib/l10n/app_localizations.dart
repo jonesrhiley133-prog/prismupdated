@@ -22297,6 +22297,929 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{once} other{{count} times}}'**
   String calendarTimesCount(int count);
+
+  /// dataManagementPreviewLocations
+  ///
+  /// In en, this message translates to:
+  /// **'Saved locations'**
+  String get dataManagementPreviewLocations;
+
+  /// dataManagementPreviewLocationSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Location visits'**
+  String get dataManagementPreviewLocationSessions;
+
+  /// dataManagementPreviewJobs
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get dataManagementPreviewJobs;
+
+  /// dataManagementPreviewWorkSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Work sessions'**
+  String get dataManagementPreviewWorkSessions;
+
+  /// navLocations
+  ///
+  /// In en, this message translates to:
+  /// **'Locations'**
+  String get navLocations;
+
+  /// navWork
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get navWork;
+
+  /// navInsights
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get navInsights;
+
+  /// locationsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Locations'**
+  String get locationsTitle;
+
+  /// locationsNewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'New location'**
+  String get locationsNewTitle;
+
+  /// locationsEditTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit location'**
+  String get locationsEditTitle;
+
+  /// locationsDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete location?'**
+  String get locationsDeleteTitle;
+
+  /// locationsDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed. Past visits stay in your history.'**
+  String locationsDeleteMessage(String name);
+
+  /// locationsChooseIcon
+  ///
+  /// In en, this message translates to:
+  /// **'Choose icon'**
+  String get locationsChooseIcon;
+
+  /// locationsNameLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get locationsNameLabel;
+
+  /// locationsAddressLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Address (optional)'**
+  String get locationsAddressLabel;
+
+  /// locationsNotesLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get locationsNotesLabel;
+
+  /// locationsFavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get locationsFavorite;
+
+  /// locationsEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No saved locations yet'**
+  String get locationsEmptyTitle;
+
+  /// locationsEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Save places like home, work or school, then start a session when you arrive.'**
+  String get locationsEmptySubtitle;
+
+  /// locationsSavedPlaces
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places'**
+  String get locationsSavedPlaces;
+
+  /// locationsTapToStart
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a place to start a session there.'**
+  String get locationsTapToStart;
+
+  /// locationsHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get locationsHistory;
+
+  /// locationsNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No finished visits yet.'**
+  String get locationsNoHistory;
+
+  /// locationsAddPastVisit
+  ///
+  /// In en, this message translates to:
+  /// **'Add visit'**
+  String get locationsAddPastVisit;
+
+  /// locationsEditVisit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit visit'**
+  String get locationsEditVisit;
+
+  /// locationsPlaceLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get locationsPlaceLabel;
+
+  /// locationsDeletedPlace
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted location'**
+  String get locationsDeletedPlace;
+
+  /// locationsArrived
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get locationsArrived;
+
+  /// locationsLeft
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get locationsLeft;
+
+  /// locationsStillHere
+  ///
+  /// In en, this message translates to:
+  /// **'Still here'**
+  String get locationsStillHere;
+
+  /// locationsDurationExact
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {duration}'**
+  String locationsDurationExact(String duration);
+
+  /// locationsEndAfterStart
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving time must be after arriving.'**
+  String get locationsEndAfterStart;
+
+  /// locationsAtPlace
+  ///
+  /// In en, this message translates to:
+  /// **'At {name}'**
+  String locationsAtPlace(String name);
+
+  /// locationsStartAt
+  ///
+  /// In en, this message translates to:
+  /// **'Start session at {name}'**
+  String locationsStartAt(String name);
+
+  /// locationsSince
+  ///
+  /// In en, this message translates to:
+  /// **'since {time}'**
+  String locationsSince(String time);
+
+  /// locationsStop
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get locationsStop;
+
+  /// locationsHereNow
+  ///
+  /// In en, this message translates to:
+  /// **'Here now'**
+  String get locationsHereNow;
+
+  /// locationsThisWeek
+  ///
+  /// In en, this message translates to:
+  /// **'{duration} this week'**
+  String locationsThisWeek(String duration);
+
+  /// workTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get workTitle;
+
+  /// workNewJob
+  ///
+  /// In en, this message translates to:
+  /// **'New job'**
+  String get workNewJob;
+
+  /// workEditJob
+  ///
+  /// In en, this message translates to:
+  /// **'Edit job'**
+  String get workEditJob;
+
+  /// workJobName
+  ///
+  /// In en, this message translates to:
+  /// **'Job name'**
+  String get workJobName;
+
+  /// workHourlyRate
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly wage'**
+  String get workHourlyRate;
+
+  /// workInvalidRate
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number, like 18.50.'**
+  String get workInvalidRate;
+
+  /// workRatePerHour
+  ///
+  /// In en, this message translates to:
+  /// **'{amount}/hour'**
+  String workRatePerHour(String amount);
+
+  /// workRateChangeHint
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the wage applies to new clock-ins. Past shifts keep the rate they were worked at.'**
+  String get workRateChangeHint;
+
+  /// workArchived
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get workArchived;
+
+  /// workArchivedHint
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from the jobs list but keep its history.'**
+  String get workArchivedHint;
+
+  /// workDeleteJobTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete job?'**
+  String get workDeleteJobTitle;
+
+  /// workDeleteJobMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed. Its shifts stay in your history.'**
+  String workDeleteJobMessage(String name);
+
+  /// workAddPastShift
+  ///
+  /// In en, this message translates to:
+  /// **'Add shift'**
+  String get workAddPastShift;
+
+  /// workEditShift
+  ///
+  /// In en, this message translates to:
+  /// **'Edit shift'**
+  String get workEditShift;
+
+  /// workJob
+  ///
+  /// In en, this message translates to:
+  /// **'Job'**
+  String get workJob;
+
+  /// workStarted
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get workStarted;
+
+  /// workEnded
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get workEnded;
+
+  /// workStillClockedIn
+  ///
+  /// In en, this message translates to:
+  /// **'Still clocked in.'**
+  String get workStillClockedIn;
+
+  /// workBreakMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid break (minutes)'**
+  String get workBreakMinutes;
+
+  /// workRateForShift
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly wage for this shift ({currency})'**
+  String workRateForShift(String currency);
+
+  /// workShiftSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Worked {duration} · estimated {amount}'**
+  String workShiftSummary(String duration, String amount);
+
+  /// workShiftInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'The end must be after the start, and the break shorter than the shift.'**
+  String get workShiftInvalid;
+
+  /// workEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs yet'**
+  String get workEmptyTitle;
+
+  /// workEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add a job with its hourly wage to track time and estimated earnings.'**
+  String get workEmptySubtitle;
+
+  /// workJobs
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get workJobs;
+
+  /// workStatsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Hours & estimated earnings'**
+  String get workStatsTitle;
+
+  /// workEstimatedDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates from your hourly wage and exact time worked. Not a payslip: taxes, tips and overtime rules aren\'t included.'**
+  String get workEstimatedDisclaimer;
+
+  /// workRangeToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get workRangeToday;
+
+  /// workRangeWeek
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get workRangeWeek;
+
+  /// workRangeMonth
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get workRangeMonth;
+
+  /// workHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Shift history'**
+  String get workHistory;
+
+  /// workNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No finished shifts yet.'**
+  String get workNoHistory;
+
+  /// workDeletedJob
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted job'**
+  String get workDeletedJob;
+
+  /// workEstimatedEarnings
+  ///
+  /// In en, this message translates to:
+  /// **'est. {amount}'**
+  String workEstimatedEarnings(String amount);
+
+  /// workClockIn
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in'**
+  String get workClockIn;
+
+  /// workClockOut
+  ///
+  /// In en, this message translates to:
+  /// **'Clock out'**
+  String get workClockOut;
+
+  /// workClockedIn
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in'**
+  String get workClockedIn;
+
+  /// workHoursLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Time worked'**
+  String get workHoursLabel;
+
+  /// workEstimatedEarningsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated earnings'**
+  String get workEstimatedEarningsLabel;
+
+  /// workMixedCurrencies
+  ///
+  /// In en, this message translates to:
+  /// **'Several currencies'**
+  String get workMixedCurrencies;
+
+  /// workByJob
+  ///
+  /// In en, this message translates to:
+  /// **'By job'**
+  String get workByJob;
+
+  /// workBreakShort
+  ///
+  /// In en, this message translates to:
+  /// **'break {duration}'**
+  String workBreakShort(String duration);
+
+  /// emotionsAddCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own'**
+  String get emotionsAddCustom;
+
+  /// emotionsRemove
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get emotionsRemove;
+
+  /// emotionsTapToSetIntensity
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a selected emotion to set how strong it is.'**
+  String get emotionsTapToSetIntensity;
+
+  /// emotionsSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search emotions'**
+  String get emotionsSearch;
+
+  /// emotionsTabFavorites
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get emotionsTabFavorites;
+
+  /// emotionsTabRecent
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get emotionsTabRecent;
+
+  /// emotionsTabAll
+  ///
+  /// In en, this message translates to:
+  /// **'All ({count})'**
+  String emotionsTabAll(int count);
+
+  /// emotionsTabCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Your own'**
+  String get emotionsTabCustom;
+
+  /// emotionsNoMatch
+  ///
+  /// In en, this message translates to:
+  /// **'No emotions match. You can add it as your own.'**
+  String get emotionsNoMatch;
+
+  /// emotionsNoFavorites
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet. Long-press any emotion to star it.'**
+  String get emotionsNoFavorites;
+
+  /// emotionsNoRecent
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing logged recently.'**
+  String get emotionsNoRecent;
+
+  /// emotionsLongPressFavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Long-press an emotion to favorite it.'**
+  String get emotionsLongPressFavorite;
+
+  /// emotionsNoIntensity
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get emotionsNoIntensity;
+
+  /// emotionsClearIntensity
+  ///
+  /// In en, this message translates to:
+  /// **'Clear intensity'**
+  String get emotionsClearIntensity;
+
+  /// emotionsFavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get emotionsFavorite;
+
+  /// emotionsUnfavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Unfavorite'**
+  String get emotionsUnfavorite;
+
+  /// emotionsCustomExists
+  ///
+  /// In en, this message translates to:
+  /// **'That emotion already exists or the name is empty.'**
+  String get emotionsCustomExists;
+
+  /// emotionsCustomLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Emotion name'**
+  String get emotionsCustomLabel;
+
+  /// emotionsCustomCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get emotionsCustomCategory;
+
+  /// homeQuickLogMood
+  ///
+  /// In en, this message translates to:
+  /// **'Log mood'**
+  String get homeQuickLogMood;
+
+  /// homeQuickStartLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Start location'**
+  String get homeQuickStartLocation;
+
+  /// homeQuickChangeLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Change location'**
+  String get homeQuickChangeLocation;
+
+  /// homeQuickManageLocations
+  ///
+  /// In en, this message translates to:
+  /// **'Manage locations'**
+  String get homeQuickManageLocations;
+
+  /// homeQuickManageWork
+  ///
+  /// In en, this message translates to:
+  /// **'Manage jobs & history'**
+  String get homeQuickManageWork;
+
+  /// insightsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Insights'**
+  String get insightsTitle;
+
+  /// insightsAtAGlance
+  ///
+  /// In en, this message translates to:
+  /// **'The day at a glance'**
+  String get insightsAtAGlance;
+
+  /// insightsPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Things you might notice'**
+  String get insightsPatterns;
+
+  /// insightsSuggestions
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle ideas'**
+  String get insightsSuggestions;
+
+  /// insightsNeedMoreData
+  ///
+  /// In en, this message translates to:
+  /// **'A few more days of check-ins will let Prism point out possible patterns. ({days} days logged so far.)'**
+  String insightsNeedMoreData(int days);
+
+  /// insightsNoPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing stands out right now, and that\'s completely fine.'**
+  String get insightsNoPatterns;
+
+  /// insightsDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'These are gentle observations from what you logged over the last {days} days, worked out on this device only. They\'re possible patterns, not diagnoses or medical advice. You know yourselves best.'**
+  String insightsDisclaimer(int days);
+
+  /// insightsOpeningEmptyToday
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing logged yet today. Whenever you\'re ready, a quick check-in helps Prism reflect the day back to you.'**
+  String get insightsOpeningEmptyToday;
+
+  /// insightsOpeningEmptyPast
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was logged on this day.'**
+  String get insightsOpeningEmptyPast;
+
+  /// insightsOpeningNoMood
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s what this day held. No mood was logged, and that\'s okay.'**
+  String get insightsOpeningNoMood;
+
+  /// insightsOpeningGood
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like there were some good moments. It\'s worth noticing what helped.'**
+  String get insightsOpeningGood;
+
+  /// insightsOpeningSteady
+  ///
+  /// In en, this message translates to:
+  /// **'A fairly steady day. Thank you for checking in with yourselves.'**
+  String get insightsOpeningSteady;
+
+  /// insightsOpeningHard
+  ///
+  /// In en, this message translates to:
+  /// **'This looks like it was a harder day. Whatever you managed was enough.'**
+  String get insightsOpeningHard;
+
+  /// insightsGlanceMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly {label} across {count, plural, =1{1 check-in} other{{count} check-ins}}'**
+  String insightsGlanceMood(String label, int count);
+
+  /// insightsGlanceEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Feelings: {emotions}'**
+  String insightsGlanceEmotions(String emotions);
+
+  /// insightsGlanceIntensity
+  ///
+  /// In en, this message translates to:
+  /// **'Average intensity {value}/10'**
+  String insightsGlanceIntensity(String value);
+
+  /// insightsGlanceBody
+  ///
+  /// In en, this message translates to:
+  /// **'Body: {sensations}'**
+  String insightsGlanceBody(String sensations);
+
+  /// insightsGlanceSleep
+  ///
+  /// In en, this message translates to:
+  /// **'Slept {duration} last night'**
+  String insightsGlanceSleep(String duration);
+
+  /// insightsGlanceFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting: {members} · {switches, plural, =1{1 switch} other{{switches} switches}}'**
+  String insightsGlanceFronting(String members, int switches);
+
+  /// insightsGlanceCoFront
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting for {duration}'**
+  String insightsGlanceCoFront(String duration);
+
+  /// insightsGlanceLocations
+  ///
+  /// In en, this message translates to:
+  /// **'Places: {places}'**
+  String insightsGlanceLocations(String places);
+
+  /// insightsGlanceWork
+  ///
+  /// In en, this message translates to:
+  /// **'Worked {duration} · estimated {amount}'**
+  String insightsGlanceWork(String duration, String amount);
+
+  /// insightsPatternSupport
+  ///
+  /// In en, this message translates to:
+  /// **'Based on {count} data points'**
+  String insightsPatternSupport(int count);
+
+  /// insightsPatternSleepTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep and mood'**
+  String get insightsPatternSleepTitle;
+
+  /// insightsPatternSleepBetter
+  ///
+  /// In en, this message translates to:
+  /// **'Days after 7+ hours of sleep averaged a mood of {long}, compared with {short} after under 6 hours ({longDays} vs {shortDays} days). Rest might be part of what helps.'**
+  String insightsPatternSleepBetter(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  );
+
+  /// insightsPatternSleepWorse
+  ///
+  /// In en, this message translates to:
+  /// **'Interestingly, mood averaged {long} after longer sleep and {short} after shorter sleep ({longDays} vs {shortDays} days). Other things may matter more here.'**
+  String insightsPatternSleepWorse(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  );
+
+  /// insightsPatternLocationTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Time at {place}'**
+  String insightsPatternLocationTitle(String place);
+
+  /// insightsPatternLocationBetter
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins here averaged {there}, compared with {elsewhere} elsewhere ({count} check-ins). This place might feel supportive.'**
+  String insightsPatternLocationBetter(
+    String there,
+    String elsewhere,
+    int count,
+  );
+
+  /// insightsPatternLocationHarder
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins here averaged {there}, compared with {elsewhere} elsewhere ({count} check-ins). It may be worth being extra gentle with yourselves here.'**
+  String insightsPatternLocationHarder(
+    String there,
+    String elsewhere,
+    int count,
+  );
+
+  /// insightsPatternMemberTitle
+  ///
+  /// In en, this message translates to:
+  /// **'When {name} checks in'**
+  String insightsPatternMemberTitle(String name);
+
+  /// insightsPatternMember
+  ///
+  /// In en, this message translates to:
+  /// **'Their check-ins averaged {theirs}, compared with {others} for others ({count} check-ins). Everyone experiences things differently.'**
+  String insightsPatternMember(String theirs, String others, int count);
+
+  /// insightsPatternWorkTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Work days'**
+  String get insightsPatternWorkTitle;
+
+  /// insightsPatternWork
+  ///
+  /// In en, this message translates to:
+  /// **'Mood averaged {work} on work days and {off} on other days ({workDays} vs {offDays} days).'**
+  String insightsPatternWork(
+    String work,
+    String off,
+    int workDays,
+    int offDays,
+  );
+
+  /// insightsPatternBodyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Body and feelings'**
+  String get insightsPatternBodyTitle;
+
+  /// insightsPatternBody
+  ///
+  /// In en, this message translates to:
+  /// **'\"{body}\" and feeling \"{emotion}\" showed up together {count} times. Noticing that link can be a useful early signal.'**
+  String insightsPatternBody(String body, String emotion, int count);
+
+  /// insightsPatternStressUpTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Stress has been higher lately'**
+  String get insightsPatternStressUpTitle;
+
+  /// insightsPatternStressDownTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Stress has eased lately'**
+  String get insightsPatternStressDownTitle;
+
+  /// insightsPatternStress
+  ///
+  /// In en, this message translates to:
+  /// **'The last 3 days averaged {recent}/5, compared with {earlier}/5 before.'**
+  String insightsPatternStress(String recent, String earlier);
+
+  /// insightsSuggestRest
+  ///
+  /// In en, this message translates to:
+  /// **'If you can, a short pause, a drink of water, or a few slow breaths might take the edge off.'**
+  String get insightsSuggestRest;
+
+  /// insightsSuggestGrounding
+  ///
+  /// In en, this message translates to:
+  /// **'A grounding moment might help: notice five things you can see and four you can feel.'**
+  String get insightsSuggestGrounding;
+
+  /// insightsSuggestEvening
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep was short. A slower, softer evening tonight could be kind to everyone.'**
+  String get insightsSuggestEvening;
+
+  /// insightsSuggestCelebrate
+  ///
+  /// In en, this message translates to:
+  /// **'Something went well. You might jot down what it was so you can come back to it.'**
+  String get insightsSuggestCelebrate;
+
+  /// insightsSuggestSystem
+  ///
+  /// In en, this message translates to:
+  /// **'There was a lot of movement at the front. A quick note in chat or on the board might help everyone stay in the loop.'**
+  String get insightsSuggestSystem;
+
+  /// insightsSuggestPlace
+  ///
+  /// In en, this message translates to:
+  /// **'One of your places seems to feel good. Spending a little time there might help when things are heavy.'**
+  String get insightsSuggestPlace;
+
+  /// insightsSuggestCheckIn
+  ///
+  /// In en, this message translates to:
+  /// **'No check-in yet today. Even a single tap on how you feel is plenty.'**
+  String get insightsSuggestCheckIn;
+
+  /// insightsSuggestWork
+  ///
+  /// In en, this message translates to:
+  /// **'That was a long work day. Rest counts as productive too.'**
+  String get insightsSuggestWork;
 }
 
 class _AppLocalizationsDelegate

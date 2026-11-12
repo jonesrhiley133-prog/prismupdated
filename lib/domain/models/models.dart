@@ -24,3 +24,5 @@ export 'choice_option.dart';
 export 'custom_field_type_config.dart';
 export 'mood_entry.dart';
 export 'calendar_event.dart';
+export 'location.dart';
+export 'work.dart';

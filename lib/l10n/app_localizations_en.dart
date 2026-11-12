@@ -14714,4 +14714,584 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get dataManagementPreviewLocations => 'Saved locations';
+
+  @override
+  String get dataManagementPreviewLocationSessions => 'Location visits';
+
+  @override
+  String get dataManagementPreviewJobs => 'Jobs';
+
+  @override
+  String get dataManagementPreviewWorkSessions => 'Work sessions';
+
+  @override
+  String get navLocations => 'Locations';
+
+  @override
+  String get navWork => 'Work';
+
+  @override
+  String get navInsights => 'Insights';
+
+  @override
+  String get locationsTitle => 'Locations';
+
+  @override
+  String get locationsNewTitle => 'New location';
+
+  @override
+  String get locationsEditTitle => 'Edit location';
+
+  @override
+  String get locationsDeleteTitle => 'Delete location?';
+
+  @override
+  String locationsDeleteMessage(String name) {
+    return '\"$name\" will be removed. Past visits stay in your history.';
+  }
+
+  @override
+  String get locationsChooseIcon => 'Choose icon';
+
+  @override
+  String get locationsNameLabel => 'Name';
+
+  @override
+  String get locationsAddressLabel => 'Address (optional)';
+
+  @override
+  String get locationsNotesLabel => 'Notes (optional)';
+
+  @override
+  String get locationsFavorite => 'Favorite';
+
+  @override
+  String get locationsEmptyTitle => 'No saved locations yet';
+
+  @override
+  String get locationsEmptySubtitle =>
+      'Save places like home, work or school, then start a session when you arrive.';
+
+  @override
+  String get locationsSavedPlaces => 'Saved places';
+
+  @override
+  String get locationsTapToStart => 'Tap a place to start a session there.';
+
+  @override
+  String get locationsHistory => 'History';
+
+  @override
+  String get locationsNoHistory => 'No finished visits yet.';
+
+  @override
+  String get locationsAddPastVisit => 'Add visit';
+
+  @override
+  String get locationsEditVisit => 'Edit visit';
+
+  @override
+  String get locationsPlaceLabel => 'Place';
+
+  @override
+  String get locationsDeletedPlace => 'Deleted location';
+
+  @override
+  String get locationsArrived => 'Arrived';
+
+  @override
+  String get locationsLeft => 'Left';
+
+  @override
+  String get locationsStillHere => 'Still here';
+
+  @override
+  String locationsDurationExact(String duration) {
+    return 'Duration: $duration';
+  }
+
+  @override
+  String get locationsEndAfterStart => 'Leaving time must be after arriving.';
+
+  @override
+  String locationsAtPlace(String name) {
+    return 'At $name';
+  }
+
+  @override
+  String locationsStartAt(String name) {
+    return 'Start session at $name';
+  }
+
+  @override
+  String locationsSince(String time) {
+    return 'since $time';
+  }
+
+  @override
+  String get locationsStop => 'Stop';
+
+  @override
+  String get locationsHereNow => 'Here now';
+
+  @override
+  String locationsThisWeek(String duration) {
+    return '$duration this week';
+  }
+
+  @override
+  String get workTitle => 'Work';
+
+  @override
+  String get workNewJob => 'New job';
+
+  @override
+  String get workEditJob => 'Edit job';
+
+  @override
+  String get workJobName => 'Job name';
+
+  @override
+  String get workHourlyRate => 'Hourly wage';
+
+  @override
+  String get workInvalidRate => 'Enter a number, like 18.50.';
+
+  @override
+  String workRatePerHour(String amount) {
+    return '$amount/hour';
+  }
+
+  @override
+  String get workRateChangeHint =>
+      'Changing the wage applies to new clock-ins. Past shifts keep the rate they were worked at.';
+
+  @override
+  String get workArchived => 'Archived';
+
+  @override
+  String get workArchivedHint =>
+      'Hide from the jobs list but keep its history.';
+
+  @override
+  String get workDeleteJobTitle => 'Delete job?';
+
+  @override
+  String workDeleteJobMessage(String name) {
+    return '\"$name\" will be removed. Its shifts stay in your history.';
+  }
+
+  @override
+  String get workAddPastShift => 'Add shift';
+
+  @override
+  String get workEditShift => 'Edit shift';
+
+  @override
+  String get workJob => 'Job';
+
+  @override
+  String get workStarted => 'Started';
+
+  @override
+  String get workEnded => 'Ended';
+
+  @override
+  String get workStillClockedIn => 'Still clocked in.';
+
+  @override
+  String get workBreakMinutes => 'Unpaid break (minutes)';
+
+  @override
+  String workRateForShift(String currency) {
+    return 'Hourly wage for this shift ($currency)';
+  }
+
+  @override
+  String workShiftSummary(String duration, String amount) {
+    return 'Worked $duration · estimated $amount';
+  }
+
+  @override
+  String get workShiftInvalid =>
+      'The end must be after the start, and the break shorter than the shift.';
+
+  @override
+  String get workEmptyTitle => 'No jobs yet';
+
+  @override
+  String get workEmptySubtitle =>
+      'Add a job with its hourly wage to track time and estimated earnings.';
+
+  @override
+  String get workJobs => 'Jobs';
+
+  @override
+  String get workStatsTitle => 'Hours & estimated earnings';
+
+  @override
+  String get workEstimatedDisclaimer =>
+      'Estimates from your hourly wage and exact time worked. Not a payslip: taxes, tips and overtime rules aren\'t included.';
+
+  @override
+  String get workRangeToday => 'Today';
+
+  @override
+  String get workRangeWeek => 'This week';
+
+  @override
+  String get workRangeMonth => 'This month';
+
+  @override
+  String get workHistory => 'Shift history';
+
+  @override
+  String get workNoHistory => 'No finished shifts yet.';
+
+  @override
+  String get workDeletedJob => 'Deleted job';
+
+  @override
+  String workEstimatedEarnings(String amount) {
+    return 'est. $amount';
+  }
+
+  @override
+  String get workClockIn => 'Clock in';
+
+  @override
+  String get workClockOut => 'Clock out';
+
+  @override
+  String get workClockedIn => 'Clocked in';
+
+  @override
+  String get workHoursLabel => 'Time worked';
+
+  @override
+  String get workEstimatedEarningsLabel => 'Estimated earnings';
+
+  @override
+  String get workMixedCurrencies => 'Several currencies';
+
+  @override
+  String get workByJob => 'By job';
+
+  @override
+  String workBreakShort(String duration) {
+    return 'break $duration';
+  }
+
+  @override
+  String get emotionsAddCustom => 'Add your own';
+
+  @override
+  String get emotionsRemove => 'Remove';
+
+  @override
+  String get emotionsTapToSetIntensity =>
+      'Tap a selected emotion to set how strong it is.';
+
+  @override
+  String get emotionsSearch => 'Search emotions';
+
+  @override
+  String get emotionsTabFavorites => 'Favorites';
+
+  @override
+  String get emotionsTabRecent => 'Recent';
+
+  @override
+  String emotionsTabAll(int count) {
+    return 'All ($count)';
+  }
+
+  @override
+  String get emotionsTabCustom => 'Your own';
+
+  @override
+  String get emotionsNoMatch =>
+      'No emotions match. You can add it as your own.';
+
+  @override
+  String get emotionsNoFavorites =>
+      'No favorites yet. Long-press any emotion to star it.';
+
+  @override
+  String get emotionsNoRecent => 'Nothing logged recently.';
+
+  @override
+  String get emotionsLongPressFavorite =>
+      'Long-press an emotion to favorite it.';
+
+  @override
+  String get emotionsNoIntensity => 'Not set';
+
+  @override
+  String get emotionsClearIntensity => 'Clear intensity';
+
+  @override
+  String get emotionsFavorite => 'Favorite';
+
+  @override
+  String get emotionsUnfavorite => 'Unfavorite';
+
+  @override
+  String get emotionsCustomExists =>
+      'That emotion already exists or the name is empty.';
+
+  @override
+  String get emotionsCustomLabel => 'Emotion name';
+
+  @override
+  String get emotionsCustomCategory => 'Group';
+
+  @override
+  String get homeQuickLogMood => 'Log mood';
+
+  @override
+  String get homeQuickStartLocation => 'Start location';
+
+  @override
+  String get homeQuickChangeLocation => 'Change location';
+
+  @override
+  String get homeQuickManageLocations => 'Manage locations';
+
+  @override
+  String get homeQuickManageWork => 'Manage jobs & history';
+
+  @override
+  String get insightsTitle => 'Daily Insights';
+
+  @override
+  String get insightsAtAGlance => 'The day at a glance';
+
+  @override
+  String get insightsPatterns => 'Things you might notice';
+
+  @override
+  String get insightsSuggestions => 'Gentle ideas';
+
+  @override
+  String insightsNeedMoreData(int days) {
+    return 'A few more days of check-ins will let Prism point out possible patterns. ($days days logged so far.)';
+  }
+
+  @override
+  String get insightsNoPatterns =>
+      'Nothing stands out right now, and that\'s completely fine.';
+
+  @override
+  String insightsDisclaimer(int days) {
+    return 'These are gentle observations from what you logged over the last $days days, worked out on this device only. They\'re possible patterns, not diagnoses or medical advice. You know yourselves best.';
+  }
+
+  @override
+  String get insightsOpeningEmptyToday =>
+      'Nothing logged yet today. Whenever you\'re ready, a quick check-in helps Prism reflect the day back to you.';
+
+  @override
+  String get insightsOpeningEmptyPast => 'Nothing was logged on this day.';
+
+  @override
+  String get insightsOpeningNoMood =>
+      'Here\'s what this day held. No mood was logged, and that\'s okay.';
+
+  @override
+  String get insightsOpeningGood =>
+      'It looks like there were some good moments. It\'s worth noticing what helped.';
+
+  @override
+  String get insightsOpeningSteady =>
+      'A fairly steady day. Thank you for checking in with yourselves.';
+
+  @override
+  String get insightsOpeningHard =>
+      'This looks like it was a harder day. Whatever you managed was enough.';
+
+  @override
+  String insightsGlanceMood(String label, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count check-ins',
+      one: '1 check-in',
+    );
+    return 'Mostly $label across $_temp0';
+  }
+
+  @override
+  String insightsGlanceEmotions(String emotions) {
+    return 'Feelings: $emotions';
+  }
+
+  @override
+  String insightsGlanceIntensity(String value) {
+    return 'Average intensity $value/10';
+  }
+
+  @override
+  String insightsGlanceBody(String sensations) {
+    return 'Body: $sensations';
+  }
+
+  @override
+  String insightsGlanceSleep(String duration) {
+    return 'Slept $duration last night';
+  }
+
+  @override
+  String insightsGlanceFronting(String members, int switches) {
+    String _temp0 = intl.Intl.pluralLogic(
+      switches,
+      locale: localeName,
+      other: '$switches switches',
+      one: '1 switch',
+    );
+    return 'Fronting: $members · $_temp0';
+  }
+
+  @override
+  String insightsGlanceCoFront(String duration) {
+    return 'Co-fronting for $duration';
+  }
+
+  @override
+  String insightsGlanceLocations(String places) {
+    return 'Places: $places';
+  }
+
+  @override
+  String insightsGlanceWork(String duration, String amount) {
+    return 'Worked $duration · estimated $amount';
+  }
+
+  @override
+  String insightsPatternSupport(int count) {
+    return 'Based on $count data points';
+  }
+
+  @override
+  String get insightsPatternSleepTitle => 'Sleep and mood';
+
+  @override
+  String insightsPatternSleepBetter(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  ) {
+    return 'Days after 7+ hours of sleep averaged a mood of $long, compared with $short after under 6 hours ($longDays vs $shortDays days). Rest might be part of what helps.';
+  }
+
+  @override
+  String insightsPatternSleepWorse(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  ) {
+    return 'Interestingly, mood averaged $long after longer sleep and $short after shorter sleep ($longDays vs $shortDays days). Other things may matter more here.';
+  }
+
+  @override
+  String insightsPatternLocationTitle(String place) {
+    return 'Time at $place';
+  }
+
+  @override
+  String insightsPatternLocationBetter(
+    String there,
+    String elsewhere,
+    int count,
+  ) {
+    return 'Check-ins here averaged $there, compared with $elsewhere elsewhere ($count check-ins). This place might feel supportive.';
+  }
+
+  @override
+  String insightsPatternLocationHarder(
+    String there,
+    String elsewhere,
+    int count,
+  ) {
+    return 'Check-ins here averaged $there, compared with $elsewhere elsewhere ($count check-ins). It may be worth being extra gentle with yourselves here.';
+  }
+
+  @override
+  String insightsPatternMemberTitle(String name) {
+    return 'When $name checks in';
+  }
+
+  @override
+  String insightsPatternMember(String theirs, String others, int count) {
+    return 'Their check-ins averaged $theirs, compared with $others for others ($count check-ins). Everyone experiences things differently.';
+  }
+
+  @override
+  String get insightsPatternWorkTitle => 'Work days';
+
+  @override
+  String insightsPatternWork(
+    String work,
+    String off,
+    int workDays,
+    int offDays,
+  ) {
+    return 'Mood averaged $work on work days and $off on other days ($workDays vs $offDays days).';
+  }
+
+  @override
+  String get insightsPatternBodyTitle => 'Body and feelings';
+
+  @override
+  String insightsPatternBody(String body, String emotion, int count) {
+    return '\"$body\" and feeling \"$emotion\" showed up together $count times. Noticing that link can be a useful early signal.';
+  }
+
+  @override
+  String get insightsPatternStressUpTitle => 'Stress has been higher lately';
+
+  @override
+  String get insightsPatternStressDownTitle => 'Stress has eased lately';
+
+  @override
+  String insightsPatternStress(String recent, String earlier) {
+    return 'The last 3 days averaged $recent/5, compared with $earlier/5 before.';
+  }
+
+  @override
+  String get insightsSuggestRest =>
+      'If you can, a short pause, a drink of water, or a few slow breaths might take the edge off.';
+
+  @override
+  String get insightsSuggestGrounding =>
+      'A grounding moment might help: notice five things you can see and four you can feel.';
+
+  @override
+  String get insightsSuggestEvening =>
+      'Sleep was short. A slower, softer evening tonight could be kind to everyone.';
+
+  @override
+  String get insightsSuggestCelebrate =>
+      'Something went well. You might jot down what it was so you can come back to it.';
+
+  @override
+  String get insightsSuggestSystem =>
+      'There was a lot of movement at the front. A quick note in chat or on the board might help everyone stay in the loop.';
+
+  @override
+  String get insightsSuggestPlace =>
+      'One of your places seems to feel good. Spending a little time there might help when things are heavy.';
+
+  @override
+  String get insightsSuggestCheckIn =>
+      'No check-in yet today. Even a single tap on how you feel is plenty.';
+
+  @override
+  String get insightsSuggestWork =>
+      'That was a long work day. Rest counts as productive too.';
 }

@@ -67,6 +67,10 @@ const _allUserDataTables = [
   'reminders',
   'mood_entries',
   'calendar_events',
+  'saved_locations',
+  'location_sessions',
+  'jobs',
+  'work_sessions',
   'friends',
   'sharing_requests',
   'media_attachments',
@@ -141,6 +145,7 @@ const _memberRefColumns = <_MemberRef>[
   // reminders: target cleared; reminder definition survives.
   _MemberRef('reminders', 'target_member_id', _RefType.nulled),
   _MemberRef('mood_entries', 'member_id', _RefType.nulled),
+  _MemberRef('work_sessions', 'member_id', _RefType.nulled),
 
   // Per-member child data: fully deleted on reset.
   _MemberRef(
@@ -3313,6 +3318,60 @@ class _ResetHarness {
             modifiedAt: now,
           ),
         );
+
+    await db
+        .into(db.savedLocations)
+      .insert(
+        SavedLocationsCompanion.insert(
+          id: 'loc1',
+          name: 'Home',
+          emoji: const Value('🏠'),
+          colorHex: const Value('#336699'),
+          address: const Value('1 Main St'),
+          notes: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+    await db
+        .into(db.locationSessions)
+      .insert(
+        LocationSessionsCompanion.insert(
+          id: 'ls1',
+          locationId: 'loc1',
+          startedAt: now,
+          endedAt: Value(now.add(const Duration(seconds: 61))),
+          note: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+    await db
+        .into(db.jobs)
+      .insert(
+        JobsCompanion.insert(
+          id: 'job1',
+          name: 'Cafe',
+          colorHex: const Value('#336699'),
+          notes: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+    await db
+        .into(db.workSessions)
+      .insert(
+        WorkSessionsCompanion.insert(
+          id: 'ws1',
+          jobId: 'job1',
+          startedAt: now,
+          endedAt: Value(now.add(const Duration(seconds: 3601))),
+          memberId: const Value('m1'),
+          note: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
 
     // ── Friends ───────────────────────────────────────────────────────
     await db

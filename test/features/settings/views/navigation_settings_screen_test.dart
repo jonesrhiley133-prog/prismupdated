@@ -128,9 +128,12 @@ void main() {
       expect(find.text('Media'), findsOneWidget);
       expect(find.text('Mood'), findsOneWidget);
       expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('Locations'), findsOneWidget);
+      expect(find.text('Work'), findsOneWidget);
+      expect(find.text('Insights'), findsOneWidget);
 
       // Each available tab gets an add button.
-      expect(find.byIcon(AppIcons.addCircleOutline), findsNWidgets(13));
+      expect(find.byIcon(AppIcons.addCircleOutline), findsNWidgets(16));
     });
 
     testWidgets('disabled features appear in Disabled Features section', (

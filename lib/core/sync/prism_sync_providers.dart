@@ -6722,6 +6722,10 @@ class SyncStatusNotifier extends Notifier<SyncStatus> {
         await db.customStatement('DELETE FROM reminders');
         await db.customStatement('DELETE FROM mood_entries');
         await db.customStatement('DELETE FROM calendar_events');
+        await db.customStatement('DELETE FROM saved_locations');
+        await db.customStatement('DELETE FROM location_sessions');
+        await db.customStatement('DELETE FROM jobs');
+        await db.customStatement('DELETE FROM work_sessions');
         await db.customStatement('DELETE FROM friends');
         await db.customStatement('DELETE FROM sharing_requests');
         await db.customStatement('DELETE FROM media_attachments');
@@ -6757,6 +6761,10 @@ class SyncStatusNotifier extends Notifier<SyncStatus> {
         const TableUpdate('reminders'),
         const TableUpdate('mood_entries'),
         const TableUpdate('calendar_events'),
+        const TableUpdate('saved_locations'),
+        const TableUpdate('location_sessions'),
+        const TableUpdate('jobs'),
+        const TableUpdate('work_sessions'),
         const TableUpdate('friends'),
         const TableUpdate('sharing_requests'),
         const TableUpdate('media_attachments'),

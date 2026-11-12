@@ -20,6 +20,9 @@ abstract final class AppRoutePaths {
   static const mediaUsage = '/media/usage';
   static const mood = '/mood';
   static const calendar = '/calendar';
+  static const locations = '/locations';
+  static const work = '/work';
+  static const insights = '/insights';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';
@@ -172,6 +175,9 @@ enum AppShellTabId {
   media,
   mood,
   calendar,
+  locations,
+  work,
+  insights,
 }
 
 class AppShellTab {
@@ -232,6 +238,9 @@ class AppShellTab {
       AppShellTabId.media => l10n.navMedia,
       AppShellTabId.mood => l10n.navMood,
       AppShellTabId.calendar => l10n.navCalendar,
+      AppShellTabId.locations => l10n.navLocations,
+      AppShellTabId.work => l10n.navWork,
+      AppShellTabId.insights => l10n.navInsights,
     };
   }
 
@@ -264,6 +273,9 @@ class AppShellTab {
       AppShellTabId.media => true,
       AppShellTabId.mood => true,
       AppShellTabId.calendar => true,
+      AppShellTabId.locations => true,
+      AppShellTabId.work => true,
+      AppShellTabId.insights => true,
     };
   }
 }
@@ -398,6 +410,30 @@ final appShellTabs = [
     branchIndex: 15,
     rootLocation: AppRoutePaths.calendar,
   ),
+  AppShellTab(
+    id: AppShellTabId.locations,
+    label: 'Locations',
+    icon: AppIcons.navLocations,
+    activeIcon: AppIcons.navLocationsActive,
+    branchIndex: 16,
+    rootLocation: AppRoutePaths.locations,
+  ),
+  AppShellTab(
+    id: AppShellTabId.work,
+    label: 'Work',
+    icon: AppIcons.navWork,
+    activeIcon: AppIcons.navWorkActive,
+    branchIndex: 17,
+    rootLocation: AppRoutePaths.work,
+  ),
+  AppShellTab(
+    id: AppShellTabId.insights,
+    label: 'Insights',
+    icon: AppIcons.navInsights,
+    activeIcon: AppIcons.navInsightsActive,
+    branchIndex: 18,
+    rootLocation: AppRoutePaths.insights,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -412,6 +448,9 @@ const defaultNavBarOverflowTabIds = [
   'groups',
   'calendar',
   'mood',
+  'insights',
+  'locations',
+  'work',
   'notes',
   'reminders',
   'statistics',

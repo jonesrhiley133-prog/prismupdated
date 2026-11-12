@@ -28,6 +28,10 @@ import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_saved_location_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/encrypted_export_file_writer.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
@@ -264,6 +268,22 @@ class DataExportService {
       db.calendarEventsDao,
       null,
     ).getAll()).map((e) => e.toJson()).toList();
+    final savedLocations = (await DriftSavedLocationRepository(
+      db.savedLocationsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final locationSessions = (await DriftLocationSessionRepository(
+      db.locationSessionsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final jobs = (await DriftJobRepository(
+      db.jobsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final workSessions = (await DriftWorkSessionRepository(
+      db.workSessionsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
 
     // Fetch friends
     final friends = await friendsRepository.watchAll().first;
@@ -368,6 +388,10 @@ class DataExportService {
         v1Reminders.length +
         moodEntries.length +
         calendarEvents.length +
+        savedLocations.length +
+        locationSessions.length +
+        jobs.length +
+        workSessions.length +
         v1Friends.length +
         v1MemberBoardPosts.length +
         v1MediaAttachments.length +
@@ -401,6 +425,10 @@ class DataExportService {
       reminders: v1Reminders,
       moodEntries: moodEntries,
       calendarEvents: calendarEvents,
+      savedLocations: savedLocations,
+      locationSessions: locationSessions,
+      jobs: jobs,
+      workSessions: workSessions,
       friends: v1Friends,
       mediaAttachments: v1MediaAttachments,
       memberBoardPosts: v1MemberBoardPosts,

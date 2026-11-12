@@ -72,6 +72,10 @@ class V1Export {
     this.reminders = const [],
     this.moodEntries = const [],
     this.calendarEvents = const [],
+    this.savedLocations = const [],
+    this.locationSessions = const [],
+    this.jobs = const [],
+    this.workSessions = const [],
     this.friends = const [],
     this.mediaAttachments = const [],
     this.memberBoardPosts = const [],
@@ -110,6 +114,12 @@ class V1Export {
 
   /// Calendar events, as `CalendarEvent.toJson()` maps.
   final List<Map<String, dynamic>> calendarEvents;
+
+  /// Locations and work, as domain `toJson()` maps.
+  final List<Map<String, dynamic>> savedLocations;
+  final List<Map<String, dynamic>> locationSessions;
+  final List<Map<String, dynamic>> jobs;
+  final List<Map<String, dynamic>> workSessions;
   final List<V1Friend> friends;
   final List<V1MediaAttachment> mediaAttachments;
   final List<V1MemberBoardPost> memberBoardPosts;
@@ -182,6 +192,10 @@ class V1Export {
       'reminders': reminders.map((e) => e.toJson()).toList(),
     if (moodEntries.isNotEmpty) 'moodEntries': moodEntries,
     if (calendarEvents.isNotEmpty) 'calendarEvents': calendarEvents,
+    if (savedLocations.isNotEmpty) 'savedLocations': savedLocations,
+    if (locationSessions.isNotEmpty) 'locationSessions': locationSessions,
+    if (jobs.isNotEmpty) 'jobs': jobs,
+    if (workSessions.isNotEmpty) 'workSessions': workSessions,
     if (friends.isNotEmpty) 'friends': friends.map((e) => e.toJson()).toList(),
     if (mediaAttachments.isNotEmpty)
       'mediaAttachments': mediaAttachments.map((e) => e.toJson()).toList(),
@@ -355,6 +369,10 @@ class V1Export {
           [],
       moodEntries: _jsonObjectList(json['moodEntries']),
       calendarEvents: _jsonObjectList(json['calendarEvents']),
+      savedLocations: _jsonObjectList(json['savedLocations']),
+      locationSessions: _jsonObjectList(json['locationSessions']),
+      jobs: _jsonObjectList(json['jobs']),
+      workSessions: _jsonObjectList(json['workSessions']),
       friends:
           (json['friends'] as List<dynamic>?)
               ?.map((e) => V1Friend.fromJson(e as Map<String, dynamic>))

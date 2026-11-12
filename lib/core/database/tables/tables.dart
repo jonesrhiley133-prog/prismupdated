@@ -38,3 +38,5 @@ export 'missing_media_entries_table.dart';
 export 'plural_port_unsupported_table.dart';
 export 'mood_entries_table.dart';
 export 'calendar_events_table.dart';
+export 'locations_tables.dart';
+export 'work_tables.dart';

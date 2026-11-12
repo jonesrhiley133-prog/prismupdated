@@ -196,13 +196,13 @@ void main() {
   });
 
   group('appShellTabs', () {
-    test('has 16 entries', () {
-      expect(appShellTabs, hasLength(16));
+    test('has 19 entries', () {
+      expect(appShellTabs, hasLength(19));
     });
 
-    test('branch indices are 0 through 15', () {
+    test('branch indices are 0 through 18', () {
       final indices = appShellTabs.map((t) => t.branchIndex).toList();
-      expect(indices, List.generate(16, (i) => i));
+      expect(indices, List.generate(19, (i) => i));
     });
 
     test('no duplicate branch indices', () {

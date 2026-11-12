@@ -5,6 +5,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:prism_plurality/features/home/widgets/home_now_section.dart';
 import 'package:prism_plurality/core/diagnostics/boot_timings.dart';
 import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
@@ -355,6 +356,8 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
         clampSliver(
           const SliverToBoxAdapter(child: FrontingActionBannerStack()),
         ),
+
+        clampSliver(const SliverToBoxAdapter(child: HomeNowSection())),
 
         clampSliver(
           SliverPersistentHeader(

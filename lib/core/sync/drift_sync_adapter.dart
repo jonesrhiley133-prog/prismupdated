@@ -15,6 +15,10 @@ import 'package:prism_plurality/core/sync/pk_front_member_alias_resolver.dart';
 import 'package:prism_plurality/core/sync/pk_incarnation_ids.dart';
 import 'package:prism_plurality/core/sync/sync_quarantine.dart';
 import 'package:prism_plurality/data/mappers/calendar_event_mapper.dart';
+import 'package:prism_plurality/data/mappers/saved_location_mapper.dart';
+import 'package:prism_plurality/data/mappers/location_session_mapper.dart';
+import 'package:prism_plurality/data/mappers/job_mapper.dart';
+import 'package:prism_plurality/data/mappers/work_session_mapper.dart';
 import 'package:prism_plurality/data/mappers/mood_entry_mapper.dart';
 import 'package:prism_plurality/data/mappers/member_group_mapper.dart'
     show sanitizeSortStateForEmission, tryDecodeSortState;
@@ -254,6 +258,10 @@ SyncAdapterWithCompletion buildSyncAdapterWithCompletion(
       _remindersEntity(db, quarantine, pendingQuarantineWrites.add),
       _moodEntriesEntity(db, quarantine, pendingQuarantineWrites.add),
       _calendarEventsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _savedLocationsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _locationSessionsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _jobsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _workSessionsEntity(db, quarantine, pendingQuarantineWrites.add),
       _memberGroupsEntity(
         db,
         quarantine,
@@ -4716,6 +4724,239 @@ DriftSyncEntity _calendarEventsEntity(
     isDeleted: (String id) async {
       final row = await (db.select(
         db.calendarEvents,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// saved_locations
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _savedLocationsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'saved_locations',
+    toSyncFields: (dynamic row) =>
+        SavedLocationMapper.syncFieldsFromRow(row as SavedLocationRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'saved_locations',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = SavedLocationsCompanion(
+        id: Value(id),
+        name: f.stringField('name'),
+        emoji: f.stringFieldNullable('emoji'),
+        colorHex: f.stringFieldNullable('color_hex'),
+        address: f.stringFieldNullable('address'),
+        notes: f.stringFieldNullable('notes'),
+        isFavorite: f.boolField('is_favorite'),
+        sortOrder: f.intField('sort_order'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.savedLocations,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.savedLocations)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.savedLocations,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : SavedLocationMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.savedLocations,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// location_sessions
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _locationSessionsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'location_sessions',
+    toSyncFields: (dynamic row) =>
+        LocationSessionMapper.syncFieldsFromRow(row as LocationSessionRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'location_sessions',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = LocationSessionsCompanion(
+        id: Value(id),
+        locationId: f.stringField('location_id'),
+        startedAt: f.dateTimeField('started_at'),
+        endedAt: f.dateTimeFieldNullable('ended_at'),
+        note: f.stringFieldNullable('note'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.locationSessions,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.locationSessions)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.locationSessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : LocationSessionMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.locationSessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// jobs
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _jobsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'jobs',
+    toSyncFields: (dynamic row) =>
+        JobMapper.syncFieldsFromRow(row as JobRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'jobs',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = JobsCompanion(
+        id: Value(id),
+        name: f.stringField('name'),
+        hourlyRateCents: f.intField('hourly_rate_cents'),
+        currencyCode: f.stringField('currency_code'),
+        colorHex: f.stringFieldNullable('color_hex'),
+        notes: f.stringFieldNullable('notes'),
+        isArchived: f.boolField('is_archived'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.jobs,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.jobs)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.jobs,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : JobMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.jobs,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// work_sessions
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _workSessionsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'work_sessions',
+    toSyncFields: (dynamic row) =>
+        WorkSessionMapper.syncFieldsFromRow(row as WorkSessionRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'work_sessions',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = WorkSessionsCompanion(
+        id: Value(id),
+        jobId: f.stringField('job_id'),
+        startedAt: f.dateTimeField('started_at'),
+        endedAt: f.dateTimeFieldNullable('ended_at'),
+        hourlyRateCents: f.intField('hourly_rate_cents'),
+        currencyCode: f.stringField('currency_code'),
+        breakSeconds: f.intField('break_seconds'),
+        memberId: f.stringFieldNullable('member_id'),
+        note: f.stringFieldNullable('note'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.workSessions,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.workSessions)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.workSessions,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : WorkSessionMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.workSessions,
       )..where((t) => t.id.equals(id))).getSingleOrNull();
       return row?.isDeleted ?? true;
     },

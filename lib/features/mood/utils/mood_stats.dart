@@ -1,4 +1,5 @@
 import 'package:prism_plurality/domain/models/mood_entry.dart';
+import 'package:prism_plurality/features/mood/data/emotion_library.dart';
 
 /// Calendar-day key for grouping (local time).
 DateTime moodDayKey(DateTime t) {
@@ -125,7 +126,9 @@ class MoodSummary {
       averageEnergy: avg(entries.map((e) => e.energy)),
       averageStress: avg(entries.map((e) => e.stress)),
       averageSleepQuality: avg(entries.map((e) => e.sleepQuality)),
-      topEmotions: ranked(entries.expand((e) => e.emotions)),
+      topEmotions: ranked(
+        entries.expand((e) => e.emotions).map((r) => parseEmotionEntry(r).$1),
+      ),
       topBodySensations: ranked(entries.expand((e) => e.bodySensations)),
       moodDistribution: distribution,
       averageMoodByMember: {

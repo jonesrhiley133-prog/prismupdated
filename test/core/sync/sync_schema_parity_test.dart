@@ -351,6 +351,26 @@ class _RepoFieldSource {
 
 const _repositoryFieldSources = <_RepoFieldSource>[
   _RepoFieldSource(
+    tableName: 'saved_locations',
+    file: 'lib/data/mappers/saved_location_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
+    tableName: 'location_sessions',
+    file: 'lib/data/mappers/location_session_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
+    tableName: 'jobs',
+    file: 'lib/data/mappers/job_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
+    tableName: 'work_sessions',
+    file: 'lib/data/mappers/work_session_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
     tableName: 'mood_entries',
     file: 'lib/data/mappers/mood_entry_mapper.dart',
     helperName: 'syncFields',
@@ -860,6 +880,60 @@ Future<void> _seedDummyRows(AppDatabase db) async {
       );
 
   await db
+      .into(db.savedLocations)
+      .insert(
+        SavedLocationsCompanion.insert(
+          id: 'loc1',
+          name: 'Home',
+          emoji: const Value('🏠'),
+          colorHex: const Value('#336699'),
+          address: const Value('1 Main St'),
+          notes: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+  await db
+      .into(db.locationSessions)
+      .insert(
+        LocationSessionsCompanion.insert(
+          id: 'ls1',
+          locationId: 'loc1',
+          startedAt: now,
+          endedAt: Value(now.add(const Duration(seconds: 61))),
+          note: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+  await db
+      .into(db.jobs)
+      .insert(
+        JobsCompanion.insert(
+          id: 'job1',
+          name: 'Cafe',
+          colorHex: const Value('#336699'),
+          notes: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+  await db
+      .into(db.workSessions)
+      .insert(
+        WorkSessionsCompanion.insert(
+          id: 'ws1',
+          jobId: 'job1',
+          startedAt: now,
+          endedAt: Value(now.add(const Duration(seconds: 3601))),
+          memberId: const Value('m1'),
+          note: const Value('n'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+
+  await db
       .into(db.memberGroups)
       .insert(
         MemberGroupsCompanion.insert(id: 'g1', name: 'group', createdAt: now),
@@ -995,6 +1069,14 @@ Future<dynamic> _readDummyRow(AppDatabase db, String tableName) async {
       return (db.select(db.moodEntries)..limit(1)).getSingle();
     case 'calendar_events':
       return (db.select(db.calendarEvents)..limit(1)).getSingle();
+    case 'saved_locations':
+      return (db.select(db.savedLocations)..limit(1)).getSingle();
+    case 'location_sessions':
+      return (db.select(db.locationSessions)..limit(1)).getSingle();
+    case 'jobs':
+      return (db.select(db.jobs)..limit(1)).getSingle();
+    case 'work_sessions':
+      return (db.select(db.workSessions)..limit(1)).getSingle();
     case 'member_groups':
       return (db.select(db.memberGroups)..limit(1)).getSingle();
     case 'member_group_entries':

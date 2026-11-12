@@ -108,6 +108,22 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       'mood_entries',
       () => db.select(db.moodEntries).get(),
     ),
+    'saved_locations': build(
+      'saved_locations',
+      () => db.select(db.savedLocations).get(),
+    ),
+    'location_sessions': build(
+      'location_sessions',
+      () => db.select(db.locationSessions).get(),
+    ),
+    'jobs': build(
+      'jobs',
+      () => db.select(db.jobs).get(),
+    ),
+    'work_sessions': build(
+      'work_sessions',
+      () => db.select(db.workSessions).get(),
+    ),
     'calendar_events': build(
       'calendar_events',
       () => db.select(db.calendarEvents).get(),

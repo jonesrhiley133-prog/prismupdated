@@ -1,4 +1,5 @@
 import 'package:prism_plurality/domain/preferences/composer_default_member.dart';
+import 'package:prism_plurality/domain/preferences/emotion_preferences.dart';
 import 'package:prism_plurality/domain/preferences/fronting_terms.dart';
 import 'package:prism_plurality/domain/preferences/preference_codec.dart';
 import 'package:prism_plurality/domain/preferences/preference_definition.dart';
@@ -150,6 +151,8 @@ final appPreferenceRegistry = PreferenceRegistry(const [
   memberNamePresentationPreference,
   systemTermsPreference,
   frontingTermsPreference,
+  favoriteEmotionsPreference,
+  customEmotionsPreference,
 ]);
 final memberProfilePreferenceRegistry = PreferenceRegistry(const []);
 

@@ -402,6 +402,59 @@ const String prismSyncSchema = '''
         "is_deleted": "Bool"
       }
     },
+    "saved_locations": {
+      "fields": {
+        "name": "String",
+        "emoji": "String",
+        "color_hex": "String",
+        "address": "String",
+        "notes": "String",
+        "is_favorite": "Bool",
+        "sort_order": "Int",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
+    "location_sessions": {
+      "fields": {
+        "location_id": "String",
+        "started_at": "DateTime",
+        "ended_at": "DateTime",
+        "note": "String",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
+    "jobs": {
+      "fields": {
+        "name": "String",
+        "hourly_rate_cents": "Int",
+        "currency_code": "String",
+        "color_hex": "String",
+        "notes": "String",
+        "is_archived": "Bool",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
+    "work_sessions": {
+      "fields": {
+        "job_id": "String",
+        "started_at": "DateTime",
+        "ended_at": "DateTime",
+        "hourly_rate_cents": "Int",
+        "currency_code": "String",
+        "break_seconds": "Int",
+        "member_id": "String",
+        "note": "String",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
     "friends": {
       "fields": {
         "display_name": "String",

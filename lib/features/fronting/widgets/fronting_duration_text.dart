@@ -16,6 +16,7 @@ class FrontingDurationText extends StatefulWidget {
 
   final DateTime startTime;
   final TextStyle? style;
+
   /// When true, drops seconds once past 1 minute (e.g. "5m" instead of "5m 12s").
   final bool rounded;
 
@@ -35,14 +36,17 @@ class _FrontingDurationTextState extends State<FrontingDurationText> {
   }
 
   void _startTimer() {
-    // Tick every second while under a minute, then every 60s.
-    final interval = _elapsed.inMinutes < 1
+    // Exact mode shows seconds, so it must tick every second. Rounded mode
+    // drops seconds past the first minute, so it can tick once a minute.
+    final interval = (!widget.rounded || _elapsed.inMinutes < 1)
         ? const Duration(seconds: 1)
         : const Duration(seconds: 60);
     _timer = Timer.periodic(interval, (_) {
       final newElapsed = DateTime.now().difference(widget.startTime);
-      // Switch to minute-based timer once we cross the 1m boundary.
-      if (_elapsed.inMinutes < 1 && newElapsed.inMinutes >= 1) {
+      // Rounded mode: switch to the minute timer once we cross 1m.
+      if (widget.rounded &&
+          _elapsed.inMinutes < 1 &&
+          newElapsed.inMinutes >= 1) {
         _timer.cancel();
         _startTimer();
       }
@@ -53,7 +57,8 @@ class _FrontingDurationTextState extends State<FrontingDurationText> {
   @override
   void didUpdateWidget(FrontingDurationText oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.startTime != widget.startTime) {
+    if (oldWidget.startTime != widget.startTime ||
+        oldWidget.rounded != widget.rounded) {
       _elapsed = DateTime.now().difference(widget.startTime);
       _timer.cancel();
       _startTimer();
@@ -70,13 +75,14 @@ class _FrontingDurationTextState extends State<FrontingDurationText> {
   Widget build(BuildContext context) {
     final text = widget.rounded
         ? _elapsed.toRoundedString()
-        : _elapsed.toShortString();
+        : _elapsed.toExactString();
     return Text(
       text,
-      style: widget.style ??
+      style:
+          widget.style ??
           Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontFeatures: [const FontFeature.tabularFigures()],
-              ),
+            fontFeatures: [const FontFeature.tabularFigures()],
+          ),
     );
   }
 }

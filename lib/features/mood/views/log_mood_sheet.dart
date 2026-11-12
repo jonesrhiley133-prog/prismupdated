@@ -8,8 +8,8 @@ import 'package:prism_plurality/features/fronting/providers/fronting_providers.d
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/utils/member_search_groups.dart';
 import 'package:prism_plurality/features/mood/data/body_map.dart';
-import 'package:prism_plurality/features/mood/data/emotion_library.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
+import 'package:prism_plurality/features/mood/widgets/emotion_picker.dart';
 import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
 import 'package:prism_plurality/features/settings/providers/terminology_provider.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -63,7 +63,7 @@ class LogMoodSheet extends ConsumerStatefulWidget {
 class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
   late int _mood;
   late int _intensity;
-  late Set<String> _emotions;
+  late EmotionSelection _emotions;
   int? _energy;
   int? _stress;
   int? _sleepQuality;
@@ -83,7 +83,7 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
     final e = widget.editing;
     _mood = e?.mood ?? widget.initialMood ?? 3;
     _intensity = e?.intensity ?? 5;
-    _emotions = {...?e?.emotions};
+    _emotions = decodeEmotionSelection(e?.emotions ?? const []);
     _energy = e?.energy;
     _stress = e?.stress;
     _sleepQuality = e?.sleepQuality;
@@ -104,7 +104,7 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
   String _signature() => [
     _mood,
     _intensity,
-    (_emotions.toList()..sort()).join(','),
+    (encodeEmotionSelection(_emotions)..sort()).join(','),
     _energy,
     _stress,
     _sleepQuality,
@@ -135,7 +135,7 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
         widget.editing!.copyWith(
           mood: _mood,
           intensity: _intensity,
-          emotions: _emotions.toList(),
+          emotions: encodeEmotionSelection(_emotions),
           energy: _energy,
           stress: _stress,
           sleepQuality: _sleepQuality,
@@ -149,7 +149,7 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
       await notifier.create(
         mood: _mood,
         intensity: _intensity,
-        emotions: _emotions.toList(),
+        emotions: encodeEmotionSelection(_emotions),
         energy: _energy,
         stress: _stress,
         sleepQuality: _sleepQuality,
@@ -289,11 +289,9 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _EmotionPicker(
+                    EmotionPicker(
                       selected: _emotions,
-                      onToggle: (key) => setState(() {
-                        if (!_emotions.remove(key)) _emotions.add(key);
-                      }),
+                      onChanged: (v) => setState(() => _emotions = v),
                     ),
                     const SizedBox(height: 20),
                     _SectionLabel(l10n.moodWellbeingLabel),
@@ -505,86 +503,6 @@ class _SliderRow extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _EmotionPicker extends StatefulWidget {
-  const _EmotionPicker({required this.selected, required this.onToggle});
-
-  final Set<String> selected;
-  final ValueChanged<String> onToggle;
-
-  @override
-  State<_EmotionPicker> createState() => _EmotionPickerState();
-}
-
-class _EmotionPickerState extends State<_EmotionPicker> {
-  String _category = emotionLibrary.first.key;
-
-  @override
-  Widget build(BuildContext context) {
-    final category = emotionLibrary.firstWhere((c) => c.key == _category);
-    final selectedOutside = widget.selected
-        .where((k) => !category.emotions.any((e) => e.key == k))
-        .toList();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final c in emotionLibrary)
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: PrismChip(
-                    label: _countLabel(c),
-                    selected: c.key == _category,
-                    selectedColor: c.color,
-                    onTap: () => setState(() => _category = c.key),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final e in category.emotions)
-              PrismChip(
-                label: e.label,
-                selected: widget.selected.contains(e.key),
-                selectedColor: category.color,
-                onTap: () => widget.onToggle(e.key),
-              ),
-          ],
-        ),
-        if (selectedOutside.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              for (final key in selectedOutside)
-                PrismChip(
-                  label: emotionLabel(key),
-                  selected: true,
-                  selectedColor: emotionColor(key),
-                  avatar: Icon(AppIcons.close, size: 14),
-                  onTap: () => widget.onToggle(key),
-                ),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-
-  String _countLabel(EmotionCategory c) {
-    final n = c.emotions.where((e) => widget.selected.contains(e.key)).length;
-    return n == 0 ? c.label : '${c.label} · $n';
   }
 }
 
