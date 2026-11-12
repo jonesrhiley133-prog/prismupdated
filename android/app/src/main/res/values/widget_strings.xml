@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_label_recent_fronters">Recent fronters</string>
+    <string name="widget_desc_recent_fronters">Who fronted recently, with avatars and times</string>
+    <string name="widget_label_current_fronter">Current fronter</string>
+    <string name="widget_desc_current_fronter">Who is fronting now, with picture and status</string>
+    <string name="widget_label_quick_front">Quick front</string>
+    <string name="widget_desc_quick_front">Switch, add or remove fronters</string>
+    <string name="widget_label_events">Upcoming events</string>
+    <string name="widget_desc_events">Next events and appointments</string>
+    <string name="widget_label_journal">Journal</string>
+    <string name="widget_desc_journal">Recent entries, a prompt and quick entry</string>
+    <string name="widget_label_cycle">Cycle</string>
+    <string name="widget_desc_cycle">Cycle day, phase and symptoms</string>
+    <string name="widget_label_mood">Mood</string>
+    <string name="widget_desc_mood">Current mood and one-tap check-ins</string>
+    <string name="widget_label_location">Log location</string>
+    <string name="widget_desc_location">Record where you are in one tap</string>
+    <string name="widget_label_sleep">Sleep</string>
+    <string name="widget_desc_sleep">Last night and quick sleep logging</string>
+    <string name="widget_label_fitness">Fitness</string>
+    <string name="widget_desc_fitness">Weekly progress, workouts and goals</string>
+    <string name="widget_label_todo">To-do list</string>
+    <string name="widget_desc_todo">Tasks with checkboxes and deadlines</string>
+    <string name="widget_label_school">School</string>
+    <string name="widget_desc_school">Classes today, assignments and grades</string>
+    <string name="widget_label_finance">Finance</string>
+    <string name="widget_desc_finance">Spending, budgets and savings</string>
+    <string name="widget_label_countdown">Countdown</string>
+    <string name="widget_desc_countdown">Days until birthdays, events and dates</string>
+    <string name="widget_label_relationships">Relationships</string>
+    <string name="widget_desc_relationships">Chosen relationships and recent moments</string>
+    <string name="widget_label_achievements">Achievements</string>
+    <string name="widget_desc_achievements">Recent unlocks and progress</string>
+    <string name="widget_label_headspace">Headspace</string>
+    <string name="widget_desc_headspace">A mini map of your headspace</string>
+    <string name="widget_label_notes">Quick notes</string>
+    <string name="widget_desc_notes">Pinned notes and a new-note button</string>
+    <string name="widget_label_subsystems">Subsystems</string>
+    <string name="widget_desc_subsystems">Subsystems, members and roles</string>
+    <string name="widget_label_stats">System statistics</string>
+    <string name="widget_desc_stats">Switches and fronting distribution</string>
+    <string name="widget_setup">Tap to set up this Prism widget</string>
+    <string name="widget_loading">Loading…</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_tomorrow">Tomorrow</string>
+    <plurals name="widget_in_days"><item quantity="one">in %d day</item><item quantity="other">in %d days</item></plurals>
+    <plurals name="widget_days_ago"><item quantity="one">%d day ago</item><item quantity="other">%d days ago</item></plurals>
+    <string name="widget_refresh">Refresh</string>
+</resources>

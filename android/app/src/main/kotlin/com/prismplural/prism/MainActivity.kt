@@ -47,9 +47,28 @@ import java.io.FileInputStream
 class MainActivity : FlutterFragmentActivity() {
     private var frontingStatusChannel: MethodChannel? = null
     private var pendingFrontingAction: String? = null
+    private var pendingWidgetOpen: String? = null
+    private var pendingWidgetOpenId: Int = -1
+
+    override fun onDestroy() {
+        PrismWidgets.channel = null
+        super.onDestroy()
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        intent.getStringExtra(PrismWidgets.EXTRA_ACTION)?.let { widgetAction ->
+            val wid = intent.getIntExtra(PrismWidgets.EXTRA_WIDGET_ID, -1)
+            intent.removeExtra(PrismWidgets.EXTRA_ACTION)
+            val ch = PrismWidgets.channel
+            if (ch == null) {
+                pendingWidgetOpen = widgetAction
+                pendingWidgetOpenId = wid
+            } else {
+                ch.invokeMethod("widgetOpen", mapOf("id" to wid, "action" to widgetAction))
+            }
+            return
+        }
         val action = intent.getStringExtra(FrontingStatus.ACTION_EXTRA) ?: return
         intent.removeExtra(FrontingStatus.ACTION_EXTRA)
         val channel = frontingStatusChannel
@@ -61,6 +80,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     companion object {
+        private const val WIDGETS_CHANNEL = "com.prismplural.prism/widgets"
         private const val FRONTING_STATUS_CHANNEL = "com.prismplural.prism/fronting_status"
         private const val APP_UPDATE_CHANNEL = "com.prismplural.prism/app_update"
         private const val TAG = "PrismMainActivity"
@@ -96,6 +116,66 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        PrismWidgets.channel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            WIDGETS_CHANNEL,
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "listWidgets" -> {
+                        val mgr = android.appwidget.AppWidgetManager.getInstance(this)
+                        result.success(
+                            PrismWidgets.allPlaced(this).map { (id, type) ->
+                                val o = mgr.getAppWidgetOptions(id)
+                                mapOf(
+                                    "id" to id,
+                                    "type" to type,
+                                    "minWidth" to o.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+                                    "maxHeight" to o.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+                                )
+                            },
+                        )
+                    }
+                    "updateWidgets" -> {
+                        val models = call.argument<Map<String, String>>("models") ?: emptyMap()
+                        val mgr = android.appwidget.AppWidgetManager.getInstance(this)
+                        for ((id, json) in models) {
+                            val wid = id.toIntOrNull() ?: continue
+                            PrismWidgets.saveModel(this, wid, json)
+                            PrismWidgets.render(this, mgr, wid)
+                        }
+                        result.success(true)
+                    }
+                    "takeQueue" -> result.success(PrismWidgets.takeQueue(this))
+                    "takePendingOpen" -> {
+                        val a = pendingWidgetOpen ?: intent?.getStringExtra(PrismWidgets.EXTRA_ACTION)
+                        val id = pendingWidgetOpenId.takeIf { pendingWidgetOpen != null }
+                            ?: intent?.getIntExtra(PrismWidgets.EXTRA_WIDGET_ID, -1) ?: -1
+                        pendingWidgetOpen = null
+                        intent?.removeExtra(PrismWidgets.EXTRA_ACTION)
+                        result.success(if (a == null) null else mapOf("id" to id, "action" to a))
+                    }
+                    "canPin" -> result.success(
+                        android.appwidget.AppWidgetManager.getInstance(this).isRequestPinAppWidgetSupported,
+                    )
+                    "pin" -> {
+                        val type = call.argument<String>("type")
+                        val cls = PrismWidgets.types.entries.firstOrNull { it.value == type }?.key
+                        if (cls == null) {
+                            result.success(false)
+                        } else {
+                            val ok = android.appwidget.AppWidgetManager.getInstance(this).requestPinAppWidget(
+                                android.content.ComponentName(this, "com.prismplural.prism.widgets.$cls"),
+                                null,
+                                null,
+                            )
+                            result.success(ok)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
         frontingStatusChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             FRONTING_STATUS_CHANNEL,

@@ -32,6 +32,58 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.21.0',
+    date: DateTime(2026, 11, 12),
+    features: const [
+      LocalizedText(
+        'Home screen widgets (Android, tuned for Samsung One UI): 20 '
+            'widgets across fronting, wellness, productivity and system '
+            'tools, each in small, medium and large sizes that switch as '
+            'you resize. Settings → Home screen widgets.',
+        'Widgets de inicio (Android, pensados para Samsung One UI): 20 '
+            'widgets de frente, bienestar, productividad y sistema, cada '
+            'uno en tamaño pequeño, mediano y grande. Ajustes → Widgets '
+            'de inicio.',
+      ),
+      LocalizedText(
+        'Widget Customization Studio with live preview: themes (light, '
+            'dark, AMOLED), colours and gradients, glass transparency, '
+            'corners, borders, fonts, text size, avatar shapes, background '
+            'images with blur, compact or detailed layouts, and saved '
+            'configurations. Add the same widget several times, each with '
+            'its own look.',
+        'Estudio de personalización con vista previa en vivo: temas '
+            '(claro, oscuro, AMOLED), colores y degradados, transparencia, '
+            'esquinas, bordes, fuentes, tamaño de texto, forma de avatar, '
+            'imágenes de fondo con desenfoque, diseño compacto o detallado '
+            'y configuraciones guardadas.',
+      ),
+      LocalizedText(
+        'Quick actions from the home screen: switch fronters, log a mood, '
+            'check in to a place, start or end sleep and tick off tasks '
+            'without opening Prism.',
+        'Acciones rápidas desde la pantalla de inicio: cambiar el frente, '
+            'registrar ánimo, registrarte en un lugar, dormir o despertar y '
+            'marcar tareas sin abrir Prism.',
+      ),
+      LocalizedText(
+        'New To-do list with per-member tasks and due dates.',
+        'Nueva lista de tareas con tareas por miembro y fechas límite.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Widgets are private by default: journal and note text, finances, '
+            'symptoms and private entries stay hidden until you turn them '
+            'on for a specific widget. You can also show initials instead '
+            'of names and mask amounts.',
+        'Los widgets son privados por defecto: el texto del diario y las '
+            'notas, las finanzas, los síntomas y las entradas privadas '
+            'permanecen ocultos hasta que los actives en un widget concreto.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.20.0',
     date: DateTime(2026, 11, 12),
     features: const [
