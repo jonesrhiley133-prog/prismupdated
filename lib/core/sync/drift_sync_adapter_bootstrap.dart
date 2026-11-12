@@ -128,6 +128,10 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       'cycle_entries',
       () => db.select(db.cycleEntries).get(),
     ),
+    'tracker_records': build(
+      'tracker_records',
+      () => db.select(db.trackerRecords).get(),
+    ),
     'contacts': build(
       'contacts',
       () => db.select(db.contacts).get(),

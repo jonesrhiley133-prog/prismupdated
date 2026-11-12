@@ -61,6 +61,7 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'work_sessions',
       'cycle_entries',
       'contacts',
+      'tracker_records',
       'friends',
     ];
 
@@ -87,6 +88,7 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'work_sessions': 'created_at',
       'cycle_entries': 'created_at',
       'contacts': 'created_at',
+      'tracker_records': 'created_at',
       'friends': 'created_at',
     };
 

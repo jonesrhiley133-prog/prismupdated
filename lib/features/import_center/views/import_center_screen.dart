@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/dictionary/views/dictionary_import_flow.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/contacts/providers/contact_providers.dart';
 import 'package:prism_plurality/features/import_center/views/contact_import_flow.dart';
@@ -67,6 +68,12 @@ class ImportCenterScreen extends ConsumerWidget {
         l10n.importVCardTitle,
         l10n.importCenterVCardDesc,
         () => openFlow(ContactImportKind.vcard),
+      ),
+      (
+        AppIcons.navDictionary,
+        l10n.dictImportTitle,
+        l10n.importCenterDictionaryDesc,
+        () => openDictionaryImport(context),
       ),
     ];
 

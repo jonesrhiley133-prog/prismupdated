@@ -50,6 +50,9 @@ import 'package:prism_plurality/core/database/daos/jobs_dao.dart';
 import 'package:prism_plurality/core/database/daos/work_sessions_dao.dart';
 import 'package:prism_plurality/core/database/daos/cycle_entries_dao.dart';
 import 'package:prism_plurality/core/database/daos/contacts_dao.dart';
+import 'package:prism_plurality/core/database/daos/tracker_records_dao.dart';
+import 'package:prism_plurality/data/repositories/drift_tracker_record_repository.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/core/database/daos/friends_dao.dart';
 import 'package:prism_plurality/core/database/daos/sharing_requests_dao.dart';
 import 'package:prism_plurality/data/repositories/drift_custom_fields_repository.dart';
@@ -392,6 +395,18 @@ final cycleEntryRepositoryProvider = Provider<EntityRepository<CycleEntry>>(
 final contactsDaoProvider = Provider<ContactsDao>(
   (ref) => ref.watch(databaseProvider).contactsDao,
 );
+
+final trackerRecordsDaoProvider = Provider<TrackerRecordsDao>(
+  (ref) => ref.watch(databaseProvider).trackerRecordsDao,
+);
+
+final trackerRecordRepositoryProvider =
+    Provider<EntityRepository<TrackerRecord>>(
+      (ref) => DriftTrackerRecordRepository(
+        ref.watch(trackerRecordsDaoProvider),
+        _resolveSyncHandle(ref),
+      ),
+    );
 
 final contactRepositoryProvider = Provider<EntityRepository<Contact>>(
   (ref) => DriftContactRepository(

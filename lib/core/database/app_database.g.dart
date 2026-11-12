@@ -35066,6 +35066,951 @@ class ContactsCompanion extends UpdateCompanion<ContactRow> {
   }
 }
 
+class $TrackerRecordsTable extends TrackerRecords
+    with TableInfo<$TrackerRecordsTable, TrackerRecordRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackerRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parentIdMeta = const VerificationMeta(
+    'parentId',
+  );
+  @override
+  late final GeneratedColumn<String> parentId = GeneratedColumn<String>(
+    'parent_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+    'tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta(
+    'endedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
+    'ended_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+    'amount',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPrivateMeta = const VerificationMeta(
+    'isPrivate',
+  );
+  @override
+  late final GeneratedColumn<bool> isPrivate = GeneratedColumn<bool>(
+    'is_private',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_private" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isPinnedMeta = const VerificationMeta(
+    'isPinned',
+  );
+  @override
+  late final GeneratedColumn<bool> isPinned = GeneratedColumn<bool>(
+    'is_pinned',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pinned" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modifiedAtMeta = const VerificationMeta(
+    'modifiedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> modifiedAt = GeneratedColumn<DateTime>(
+    'modified_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    kind,
+    parentId,
+    title,
+    body,
+    data,
+    tags,
+    occurredAt,
+    endedAt,
+    amount,
+    memberId,
+    isPrivate,
+    isPinned,
+    sortOrder,
+    createdAt,
+    modifiedAt,
+    isDeleted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tracker_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackerRecordRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(
+        _parentIdMeta,
+        parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    }
+    if (data.containsKey('ended_at')) {
+      context.handle(
+        _endedAtMeta,
+        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
+      );
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    }
+    if (data.containsKey('is_private')) {
+      context.handle(
+        _isPrivateMeta,
+        isPrivate.isAcceptableOrUnknown(data['is_private']!, _isPrivateMeta),
+      );
+    }
+    if (data.containsKey('is_pinned')) {
+      context.handle(
+        _isPinnedMeta,
+        isPinned.isAcceptableOrUnknown(data['is_pinned']!, _isPinnedMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('modified_at')) {
+      context.handle(
+        _modifiedAtMeta,
+        modifiedAt.isAcceptableOrUnknown(data['modified_at']!, _modifiedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modifiedAtMeta);
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TrackerRecordRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackerRecordRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parent_id'],
+      ),
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      ),
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      ),
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      ),
+      endedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at'],
+      ),
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount'],
+      ),
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      ),
+      isPrivate: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_private'],
+      )!,
+      isPinned: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pinned'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      modifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}modified_at'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackerRecordsTable createAlias(String alias) {
+    return $TrackerRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class TrackerRecordRow extends DataClass
+    implements Insertable<TrackerRecordRow> {
+  final String id;
+  final String kind;
+  final String? parentId;
+  final String title;
+  final String? body;
+
+  /// JSON object with section-specific fields.
+  final String? data;
+
+  /// JSON list of tags.
+  final String? tags;
+  final DateTime? occurredAt;
+  final DateTime? endedAt;
+  final int? amount;
+  final String? memberId;
+
+  /// Hidden behind a tap-to-reveal and left out of Home, insights and
+  /// shared summaries.
+  final bool isPrivate;
+  final bool isPinned;
+  final int sortOrder;
+  final DateTime createdAt;
+  final DateTime modifiedAt;
+  final bool isDeleted;
+  const TrackerRecordRow({
+    required this.id,
+    required this.kind,
+    this.parentId,
+    required this.title,
+    this.body,
+    this.data,
+    this.tags,
+    this.occurredAt,
+    this.endedAt,
+    this.amount,
+    this.memberId,
+    required this.isPrivate,
+    required this.isPinned,
+    required this.sortOrder,
+    required this.createdAt,
+    required this.modifiedAt,
+    required this.isDeleted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['kind'] = Variable<String>(kind);
+    if (!nullToAbsent || parentId != null) {
+      map['parent_id'] = Variable<String>(parentId);
+    }
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || body != null) {
+      map['body'] = Variable<String>(body);
+    }
+    if (!nullToAbsent || data != null) {
+      map['data'] = Variable<String>(data);
+    }
+    if (!nullToAbsent || tags != null) {
+      map['tags'] = Variable<String>(tags);
+    }
+    if (!nullToAbsent || occurredAt != null) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt);
+    }
+    if (!nullToAbsent || endedAt != null) {
+      map['ended_at'] = Variable<DateTime>(endedAt);
+    }
+    if (!nullToAbsent || amount != null) {
+      map['amount'] = Variable<int>(amount);
+    }
+    if (!nullToAbsent || memberId != null) {
+      map['member_id'] = Variable<String>(memberId);
+    }
+    map['is_private'] = Variable<bool>(isPrivate);
+    map['is_pinned'] = Variable<bool>(isPinned);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['modified_at'] = Variable<DateTime>(modifiedAt);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    return map;
+  }
+
+  TrackerRecordsCompanion toCompanion(bool nullToAbsent) {
+    return TrackerRecordsCompanion(
+      id: Value(id),
+      kind: Value(kind),
+      parentId: parentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parentId),
+      title: Value(title),
+      body: body == null && nullToAbsent ? const Value.absent() : Value(body),
+      data: data == null && nullToAbsent ? const Value.absent() : Value(data),
+      tags: tags == null && nullToAbsent ? const Value.absent() : Value(tags),
+      occurredAt: occurredAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occurredAt),
+      endedAt: endedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAt),
+      amount: amount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(amount),
+      memberId: memberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(memberId),
+      isPrivate: Value(isPrivate),
+      isPinned: Value(isPinned),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+      modifiedAt: Value(modifiedAt),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory TrackerRecordRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackerRecordRow(
+      id: serializer.fromJson<String>(json['id']),
+      kind: serializer.fromJson<String>(json['kind']),
+      parentId: serializer.fromJson<String?>(json['parentId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String?>(json['body']),
+      data: serializer.fromJson<String?>(json['data']),
+      tags: serializer.fromJson<String?>(json['tags']),
+      occurredAt: serializer.fromJson<DateTime?>(json['occurredAt']),
+      endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      amount: serializer.fromJson<int?>(json['amount']),
+      memberId: serializer.fromJson<String?>(json['memberId']),
+      isPrivate: serializer.fromJson<bool>(json['isPrivate']),
+      isPinned: serializer.fromJson<bool>(json['isPinned']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      modifiedAt: serializer.fromJson<DateTime>(json['modifiedAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'kind': serializer.toJson<String>(kind),
+      'parentId': serializer.toJson<String?>(parentId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String?>(body),
+      'data': serializer.toJson<String?>(data),
+      'tags': serializer.toJson<String?>(tags),
+      'occurredAt': serializer.toJson<DateTime?>(occurredAt),
+      'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'amount': serializer.toJson<int?>(amount),
+      'memberId': serializer.toJson<String?>(memberId),
+      'isPrivate': serializer.toJson<bool>(isPrivate),
+      'isPinned': serializer.toJson<bool>(isPinned),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'modifiedAt': serializer.toJson<DateTime>(modifiedAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+    };
+  }
+
+  TrackerRecordRow copyWith({
+    String? id,
+    String? kind,
+    Value<String?> parentId = const Value.absent(),
+    String? title,
+    Value<String?> body = const Value.absent(),
+    Value<String?> data = const Value.absent(),
+    Value<String?> tags = const Value.absent(),
+    Value<DateTime?> occurredAt = const Value.absent(),
+    Value<DateTime?> endedAt = const Value.absent(),
+    Value<int?> amount = const Value.absent(),
+    Value<String?> memberId = const Value.absent(),
+    bool? isPrivate,
+    bool? isPinned,
+    int? sortOrder,
+    DateTime? createdAt,
+    DateTime? modifiedAt,
+    bool? isDeleted,
+  }) => TrackerRecordRow(
+    id: id ?? this.id,
+    kind: kind ?? this.kind,
+    parentId: parentId.present ? parentId.value : this.parentId,
+    title: title ?? this.title,
+    body: body.present ? body.value : this.body,
+    data: data.present ? data.value : this.data,
+    tags: tags.present ? tags.value : this.tags,
+    occurredAt: occurredAt.present ? occurredAt.value : this.occurredAt,
+    endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    amount: amount.present ? amount.value : this.amount,
+    memberId: memberId.present ? memberId.value : this.memberId,
+    isPrivate: isPrivate ?? this.isPrivate,
+    isPinned: isPinned ?? this.isPinned,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+    modifiedAt: modifiedAt ?? this.modifiedAt,
+    isDeleted: isDeleted ?? this.isDeleted,
+  );
+  TrackerRecordRow copyWithCompanion(TrackerRecordsCompanion data) {
+    return TrackerRecordRow(
+      id: data.id.present ? data.id.value : this.id,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      data: data.data.present ? data.data.value : this.data,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      isPrivate: data.isPrivate.present ? data.isPrivate.value : this.isPrivate,
+      isPinned: data.isPinned.present ? data.isPinned.value : this.isPinned,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      modifiedAt: data.modifiedAt.present
+          ? data.modifiedAt.value
+          : this.modifiedAt,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackerRecordRow(')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('parentId: $parentId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('data: $data, ')
+          ..write('tags: $tags, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('amount: $amount, ')
+          ..write('memberId: $memberId, ')
+          ..write('isPrivate: $isPrivate, ')
+          ..write('isPinned: $isPinned, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('modifiedAt: $modifiedAt, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    kind,
+    parentId,
+    title,
+    body,
+    data,
+    tags,
+    occurredAt,
+    endedAt,
+    amount,
+    memberId,
+    isPrivate,
+    isPinned,
+    sortOrder,
+    createdAt,
+    modifiedAt,
+    isDeleted,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackerRecordRow &&
+          other.id == this.id &&
+          other.kind == this.kind &&
+          other.parentId == this.parentId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.data == this.data &&
+          other.tags == this.tags &&
+          other.occurredAt == this.occurredAt &&
+          other.endedAt == this.endedAt &&
+          other.amount == this.amount &&
+          other.memberId == this.memberId &&
+          other.isPrivate == this.isPrivate &&
+          other.isPinned == this.isPinned &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt &&
+          other.modifiedAt == this.modifiedAt &&
+          other.isDeleted == this.isDeleted);
+}
+
+class TrackerRecordsCompanion extends UpdateCompanion<TrackerRecordRow> {
+  final Value<String> id;
+  final Value<String> kind;
+  final Value<String?> parentId;
+  final Value<String> title;
+  final Value<String?> body;
+  final Value<String?> data;
+  final Value<String?> tags;
+  final Value<DateTime?> occurredAt;
+  final Value<DateTime?> endedAt;
+  final Value<int?> amount;
+  final Value<String?> memberId;
+  final Value<bool> isPrivate;
+  final Value<bool> isPinned;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> modifiedAt;
+  final Value<bool> isDeleted;
+  final Value<int> rowid;
+  const TrackerRecordsCompanion({
+    this.id = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.parentId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.data = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.isPrivate = const Value.absent(),
+    this.isPinned = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.modifiedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackerRecordsCompanion.insert({
+    required String id,
+    required String kind,
+    this.parentId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.data = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.isPrivate = const Value.absent(),
+    this.isPinned = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime modifiedAt,
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       kind = Value(kind),
+       createdAt = Value(createdAt),
+       modifiedAt = Value(modifiedAt);
+  static Insertable<TrackerRecordRow> custom({
+    Expression<String>? id,
+    Expression<String>? kind,
+    Expression<String>? parentId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? data,
+    Expression<String>? tags,
+    Expression<DateTime>? occurredAt,
+    Expression<DateTime>? endedAt,
+    Expression<int>? amount,
+    Expression<String>? memberId,
+    Expression<bool>? isPrivate,
+    Expression<bool>? isPinned,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? modifiedAt,
+    Expression<bool>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (kind != null) 'kind': kind,
+      if (parentId != null) 'parent_id': parentId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (data != null) 'data': data,
+      if (tags != null) 'tags': tags,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (endedAt != null) 'ended_at': endedAt,
+      if (amount != null) 'amount': amount,
+      if (memberId != null) 'member_id': memberId,
+      if (isPrivate != null) 'is_private': isPrivate,
+      if (isPinned != null) 'is_pinned': isPinned,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (modifiedAt != null) 'modified_at': modifiedAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackerRecordsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? kind,
+    Value<String?>? parentId,
+    Value<String>? title,
+    Value<String?>? body,
+    Value<String?>? data,
+    Value<String?>? tags,
+    Value<DateTime?>? occurredAt,
+    Value<DateTime?>? endedAt,
+    Value<int?>? amount,
+    Value<String?>? memberId,
+    Value<bool>? isPrivate,
+    Value<bool>? isPinned,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? modifiedAt,
+    Value<bool>? isDeleted,
+    Value<int>? rowid,
+  }) {
+    return TrackerRecordsCompanion(
+      id: id ?? this.id,
+      kind: kind ?? this.kind,
+      parentId: parentId ?? this.parentId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      data: data ?? this.data,
+      tags: tags ?? this.tags,
+      occurredAt: occurredAt ?? this.occurredAt,
+      endedAt: endedAt ?? this.endedAt,
+      amount: amount ?? this.amount,
+      memberId: memberId ?? this.memberId,
+      isPrivate: isPrivate ?? this.isPrivate,
+      isPinned: isPinned ?? this.isPinned,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (parentId.present) {
+      map['parent_id'] = Variable<String>(parentId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (endedAt.present) {
+      map['ended_at'] = Variable<DateTime>(endedAt.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (isPrivate.present) {
+      map['is_private'] = Variable<bool>(isPrivate.value);
+    }
+    if (isPinned.present) {
+      map['is_pinned'] = Variable<bool>(isPinned.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (modifiedAt.present) {
+      map['modified_at'] = Variable<DateTime>(modifiedAt.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackerRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('parentId: $parentId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('data: $data, ')
+          ..write('tags: $tags, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('amount: $amount, ')
+          ..write('memberId: $memberId, ')
+          ..write('isPrivate: $isPrivate, ')
+          ..write('isPinned: $isPinned, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('modifiedAt: $modifiedAt, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -35145,6 +36090,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WorkSessionsTable workSessions = $WorkSessionsTable(this);
   late final $CycleEntriesTable cycleEntries = $CycleEntriesTable(this);
   late final $ContactsTable contacts = $ContactsTable(this);
+  late final $TrackerRecordsTable trackerRecords = $TrackerRecordsTable(this);
   late final MembersDao membersDao = MembersDao(this as AppDatabase);
   late final FrontingSessionsDao frontingSessionsDao = FrontingSessionsDao(
     this as AppDatabase,
@@ -35212,6 +36158,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final ContactsDao contactsDao = ContactsDao(this as AppDatabase);
+  late final TrackerRecordsDao trackerRecordsDao = TrackerRecordsDao(
+    this as AppDatabase,
+  );
   late final FriendsDao friendsDao = FriendsDao(this as AppDatabase);
   late final SharingRequestsDao sharingRequestsDao = SharingRequestsDao(
     this as AppDatabase,
@@ -35283,6 +36232,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workSessions,
     cycleEntries,
     contacts,
+    trackerRecords,
   ];
 }
 
@@ -51715,6 +52665,444 @@ typedef $$ContactsTableProcessedTableManager =
       ContactRow,
       PrefetchHooks Function()
     >;
+typedef $$TrackerRecordsTableCreateCompanionBuilder =
+    TrackerRecordsCompanion Function({
+      required String id,
+      required String kind,
+      Value<String?> parentId,
+      Value<String> title,
+      Value<String?> body,
+      Value<String?> data,
+      Value<String?> tags,
+      Value<DateTime?> occurredAt,
+      Value<DateTime?> endedAt,
+      Value<int?> amount,
+      Value<String?> memberId,
+      Value<bool> isPrivate,
+      Value<bool> isPinned,
+      Value<int> sortOrder,
+      required DateTime createdAt,
+      required DateTime modifiedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+typedef $$TrackerRecordsTableUpdateCompanionBuilder =
+    TrackerRecordsCompanion Function({
+      Value<String> id,
+      Value<String> kind,
+      Value<String?> parentId,
+      Value<String> title,
+      Value<String?> body,
+      Value<String?> data,
+      Value<String?> tags,
+      Value<DateTime?> occurredAt,
+      Value<DateTime?> endedAt,
+      Value<int?> amount,
+      Value<String?> memberId,
+      Value<bool> isPrivate,
+      Value<bool> isPinned,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<DateTime> modifiedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+
+class $$TrackerRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackerRecordsTable> {
+  $$TrackerRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPrivate => $composableBuilder(
+    column: $table.isPrivate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPinned => $composableBuilder(
+    column: $table.isPinned,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TrackerRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackerRecordsTable> {
+  $$TrackerRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPrivate => $composableBuilder(
+    column: $table.isPrivate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPinned => $composableBuilder(
+    column: $table.isPinned,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TrackerRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackerRecordsTable> {
+  $$TrackerRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get parentId =>
+      $composableBuilder(column: $table.parentId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPrivate =>
+      $composableBuilder(column: $table.isPrivate, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPinned =>
+      $composableBuilder(column: $table.isPinned, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+}
+
+class $$TrackerRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackerRecordsTable,
+          TrackerRecordRow,
+          $$TrackerRecordsTableFilterComposer,
+          $$TrackerRecordsTableOrderingComposer,
+          $$TrackerRecordsTableAnnotationComposer,
+          $$TrackerRecordsTableCreateCompanionBuilder,
+          $$TrackerRecordsTableUpdateCompanionBuilder,
+          (
+            TrackerRecordRow,
+            BaseReferences<
+              _$AppDatabase,
+              $TrackerRecordsTable,
+              TrackerRecordRow
+            >,
+          ),
+          TrackerRecordRow,
+          PrefetchHooks Function()
+        > {
+  $$TrackerRecordsTableTableManager(
+    _$AppDatabase db,
+    $TrackerRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackerRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TrackerRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TrackerRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String?> parentId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> body = const Value.absent(),
+                Value<String?> data = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<DateTime?> occurredAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<int?> amount = const Value.absent(),
+                Value<String?> memberId = const Value.absent(),
+                Value<bool> isPrivate = const Value.absent(),
+                Value<bool> isPinned = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> modifiedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackerRecordsCompanion(
+                id: id,
+                kind: kind,
+                parentId: parentId,
+                title: title,
+                body: body,
+                data: data,
+                tags: tags,
+                occurredAt: occurredAt,
+                endedAt: endedAt,
+                amount: amount,
+                memberId: memberId,
+                isPrivate: isPrivate,
+                isPinned: isPinned,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                modifiedAt: modifiedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String kind,
+                Value<String?> parentId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> body = const Value.absent(),
+                Value<String?> data = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<DateTime?> occurredAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<int?> amount = const Value.absent(),
+                Value<String?> memberId = const Value.absent(),
+                Value<bool> isPrivate = const Value.absent(),
+                Value<bool> isPinned = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime modifiedAt,
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackerRecordsCompanion.insert(
+                id: id,
+                kind: kind,
+                parentId: parentId,
+                title: title,
+                body: body,
+                data: data,
+                tags: tags,
+                occurredAt: occurredAt,
+                endedAt: endedAt,
+                amount: amount,
+                memberId: memberId,
+                isPrivate: isPrivate,
+                isPinned: isPinned,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                modifiedAt: modifiedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TrackerRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackerRecordsTable,
+      TrackerRecordRow,
+      $$TrackerRecordsTableFilterComposer,
+      $$TrackerRecordsTableOrderingComposer,
+      $$TrackerRecordsTableAnnotationComposer,
+      $$TrackerRecordsTableCreateCompanionBuilder,
+      $$TrackerRecordsTableUpdateCompanionBuilder,
+      (
+        TrackerRecordRow,
+        BaseReferences<_$AppDatabase, $TrackerRecordsTable, TrackerRecordRow>,
+      ),
+      TrackerRecordRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -51821,4 +53209,6 @@ class $AppDatabaseManager {
       $$CycleEntriesTableTableManager(_db, _db.cycleEntries);
   $$ContactsTableTableManager get contacts =>
       $$ContactsTableTableManager(_db, _db.contacts);
+  $$TrackerRecordsTableTableManager get trackerRecords =>
+      $$TrackerRecordsTableTableManager(_db, _db.trackerRecords);
 }

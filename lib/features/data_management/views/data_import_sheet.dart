@@ -494,6 +494,10 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
     ),
     (label: context.l10n.dataManagementPreviewCycle, count: p.cycleEntries),
     (label: context.l10n.dataManagementPreviewContacts, count: p.contacts),
+    (
+      label: context.l10n.dataManagementPreviewTrackerRecords,
+      count: p.trackerRecords,
+    ),
     (label: context.l10n.dataManagementPreviewFriends, count: p.friends),
     (
       label: context.l10n.dataManagementPreviewMediaAttachments,
@@ -707,6 +711,10 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
     (
       label: context.l10n.dataManagementPreviewContacts,
       count: r.contactsCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewTrackerRecords,
+      count: r.trackerRecordsCreated,
     ),
     (label: context.l10n.dataManagementPreviewFriends, count: r.friendsCreated),
     (

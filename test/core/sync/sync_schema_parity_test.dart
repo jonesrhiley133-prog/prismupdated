@@ -361,6 +361,11 @@ const _repositoryFieldSources = <_RepoFieldSource>[
     helperName: 'syncFields',
   ),
   _RepoFieldSource(
+    tableName: 'tracker_records',
+    file: 'lib/data/mappers/tracker_record_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
     tableName: 'saved_locations',
     file: 'lib/data/mappers/saved_location_mapper.dart',
     helperName: 'syncFields',
@@ -971,6 +976,25 @@ Future<void> _seedDummyRows(AppDatabase db) async {
           modifiedAt: now,
         ),
       );
+  await db
+      .into(db.trackerRecords)
+      .insert(
+        TrackerRecordsCompanion.insert(
+          id: 'tr1',
+          kind: 'journal.entry',
+          parentId: const Value('p1'),
+          title: const Value('t'),
+          body: const Value('b'),
+          data: const Value('{"a":1}'),
+          tags: const Value('["x"]'),
+          occurredAt: Value(now),
+          endedAt: Value(now),
+          amount: const Value(5),
+          memberId: const Value('m1'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
 
   await db
       .into(db.memberGroups)
@@ -1120,6 +1144,8 @@ Future<dynamic> _readDummyRow(AppDatabase db, String tableName) async {
       return (db.select(db.cycleEntries)..limit(1)).getSingle();
     case 'contacts':
       return (db.select(db.contacts)..limit(1)).getSingle();
+    case 'tracker_records':
+      return (db.select(db.trackerRecords)..limit(1)).getSingle();
     case 'member_groups':
       return (db.select(db.memberGroups)..limit(1)).getSingle();
     case 'member_group_entries':

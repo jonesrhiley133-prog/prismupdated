@@ -24401,6 +24401,1086 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong checking for updates.'**
   String get appUpdateErrorGeneric;
+
+  /// navJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get navJournal;
+
+  /// navDictionary
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary'**
+  String get navDictionary;
+
+  /// navAchievements
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get navAchievements;
+
+  /// quickActionDictionary
+  ///
+  /// In en, this message translates to:
+  /// **'New term'**
+  String get quickActionDictionary;
+
+  /// dataManagementPreviewTrackerRecords
+  ///
+  /// In en, this message translates to:
+  /// **'Journal, dictionary & trackers'**
+  String get dataManagementPreviewTrackerRecords;
+
+  /// importCenterDictionaryDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Terms from a wiki page or category, a JSON/CSV/text file, or pasted text.'**
+  String get importCenterDictionaryDesc;
+
+  /// trackerDelete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get trackerDelete;
+
+  /// trackerMoveUp
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get trackerMoveUp;
+
+  /// trackerPin
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get trackerPin;
+
+  /// trackerUnpin
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get trackerUnpin;
+
+  /// trackerPinned
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get trackerPinned;
+
+  /// trackerPrivate
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get trackerPrivate;
+
+  /// trackerPrivateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden until tapped, and left out of Home and summaries.'**
+  String get trackerPrivateHelp;
+
+  /// trackerPrivateReveal
+  ///
+  /// In en, this message translates to:
+  /// **'Private · tap to reveal'**
+  String get trackerPrivateReveal;
+
+  /// trackerRename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get trackerRename;
+
+  /// trackerTags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get trackerTags;
+
+  /// trackerTagsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Separate with commas'**
+  String get trackerTagsHelp;
+
+  /// journalNewEntry
+  ///
+  /// In en, this message translates to:
+  /// **'New entry'**
+  String get journalNewEntry;
+
+  /// journalEditEntry
+  ///
+  /// In en, this message translates to:
+  /// **'Edit entry'**
+  String get journalEditEntry;
+
+  /// journalTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get journalTitle;
+
+  /// journalBody
+  ///
+  /// In en, this message translates to:
+  /// **'Write…'**
+  String get journalBody;
+
+  /// journalMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get journalMood;
+
+  /// journalCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get journalCategory;
+
+  /// journalCategoryName
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get journalCategoryName;
+
+  /// journalNewCategory
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get journalNewCategory;
+
+  /// journalNoCategory
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get journalNoCategory;
+
+  /// journalWrittenBy
+  ///
+  /// In en, this message translates to:
+  /// **'Written by'**
+  String get journalWrittenBy;
+
+  /// journalNobodyInParticular
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody in particular'**
+  String get journalNobodyInParticular;
+
+  /// journalUsePrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Give me a prompt'**
+  String get journalUsePrompt;
+
+  /// journalAnotherPrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Another prompt'**
+  String get journalAnotherPrompt;
+
+  /// journalRemovePrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Remove prompt'**
+  String get journalRemovePrompt;
+
+  /// journalPrompt1
+  ///
+  /// In en, this message translates to:
+  /// **'What took most of your energy today?'**
+  String get journalPrompt1;
+
+  /// journalPrompt2
+  ///
+  /// In en, this message translates to:
+  /// **'Who fronted the most, and how did it feel?'**
+  String get journalPrompt2;
+
+  /// journalPrompt3
+  ///
+  /// In en, this message translates to:
+  /// **'What is one small thing that went well?'**
+  String get journalPrompt3;
+
+  /// journalPrompt4
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need more of this week?'**
+  String get journalPrompt4;
+
+  /// journalPrompt5
+  ///
+  /// In en, this message translates to:
+  /// **'Describe a moment you felt safe.'**
+  String get journalPrompt5;
+
+  /// journalPrompt6
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like another headmate to know?'**
+  String get journalPrompt6;
+
+  /// journalPrompt7
+  ///
+  /// In en, this message translates to:
+  /// **'What is something you are looking forward to?'**
+  String get journalPrompt7;
+
+  /// journalPrompt8
+  ///
+  /// In en, this message translates to:
+  /// **'Which feeling kept coming back today, and why?'**
+  String get journalPrompt8;
+
+  /// journalEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries yet'**
+  String get journalEmptyTitle;
+
+  /// journalEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Write about your day, a feeling, or anything on your mind. Entries can be private.'**
+  String get journalEmptySubtitle;
+
+  /// journalSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search entries and #tags'**
+  String get journalSearch;
+
+  /// journalFilterAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get journalFilterAll;
+
+  /// journalNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No entries match.'**
+  String get journalNoMatches;
+
+  /// journalUntitled
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get journalUntitled;
+
+  /// journalStatEntries
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get journalStatEntries;
+
+  /// journalStatThisMonth
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get journalStatThisMonth;
+
+  /// journalStatStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak · best {best}'**
+  String journalStatStreak(int best);
+
+  /// journalStatMood
+  ///
+  /// In en, this message translates to:
+  /// **'Avg mood, 30 days'**
+  String get journalStatMood;
+
+  /// journalDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String journalDays(int count);
+
+  /// journalBy
+  ///
+  /// In en, this message translates to:
+  /// **'by {name}'**
+  String journalBy(String name);
+
+  /// journalHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Version history ({count})'**
+  String journalHistory(int count);
+
+  /// journalNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier versions appear here after you edit the entry.'**
+  String get journalNoHistory;
+
+  /// journalRestore
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get journalRestore;
+
+  /// journalEntryGone
+  ///
+  /// In en, this message translates to:
+  /// **'This entry was deleted.'**
+  String get journalEntryGone;
+
+  /// journalDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this entry?'**
+  String get journalDeleteTitle;
+
+  /// journalDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'The entry and its version history will be removed on all synced devices.'**
+  String get journalDeleteMessage;
+
+  /// dictNewTerm
+  ///
+  /// In en, this message translates to:
+  /// **'New term'**
+  String get dictNewTerm;
+
+  /// dictEditTerm
+  ///
+  /// In en, this message translates to:
+  /// **'Edit term'**
+  String get dictEditTerm;
+
+  /// dictTerm
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get dictTerm;
+
+  /// dictDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'Definition'**
+  String get dictDefinition;
+
+  /// dictPronunciation
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation (optional)'**
+  String get dictPronunciation;
+
+  /// dictAliases
+  ///
+  /// In en, this message translates to:
+  /// **'Also known as'**
+  String get dictAliases;
+
+  /// dictAliasesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Other names or spellings, separated by commas'**
+  String get dictAliasesHelp;
+
+  /// dictExamples
+  ///
+  /// In en, this message translates to:
+  /// **'Examples'**
+  String get dictExamples;
+
+  /// dictExamplesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get dictExamplesHelp;
+
+  /// dictSourceUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Source link (optional)'**
+  String get dictSourceUrl;
+
+  /// dictInvalidUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a link starting with https://'**
+  String get dictInvalidUrl;
+
+  /// dictCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection'**
+  String get dictCollection;
+
+  /// dictNoCollection
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get dictNoCollection;
+
+  /// dictDuplicateWarning
+  ///
+  /// In en, this message translates to:
+  /// **'You already have \"{term}\".'**
+  String dictDuplicateWarning(String term);
+
+  /// dictEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Your dictionary is empty'**
+  String get dictEmptyTitle;
+
+  /// dictEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own terms or import them from a wiki, a file or pasted text.'**
+  String get dictEmptySubtitle;
+
+  /// dictSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search terms, aliases and definitions'**
+  String get dictSearch;
+
+  /// dictAllTerms
+  ///
+  /// In en, this message translates to:
+  /// **'All · {count}'**
+  String dictAllTerms(int count);
+
+  /// dictManageCollections
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get dictManageCollections;
+
+  /// dictNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match.'**
+  String get dictNoMatches;
+
+  /// dictStatTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get dictStatTerms;
+
+  /// dictStatCollections
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get dictStatCollections;
+
+  /// dictStatImported
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get dictStatImported;
+
+  /// dictStatOwn
+  ///
+  /// In en, this message translates to:
+  /// **'Written by you'**
+  String get dictStatOwn;
+
+  /// dictNewCollection
+  ///
+  /// In en, this message translates to:
+  /// **'New collection'**
+  String get dictNewCollection;
+
+  /// dictNoCollectionsYet
+  ///
+  /// In en, this message translates to:
+  /// **'No collections yet. Collections group terms, like \"Roles\" or \"Our words\".'**
+  String get dictNoCollectionsYet;
+
+  /// dictDeleteCollectionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String dictDeleteCollectionTitle(String name);
+
+  /// dictDeleteCollectionMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its terms are kept and moved out of the collection.'**
+  String get dictDeleteCollectionMessage;
+
+  /// dictTermGone
+  ///
+  /// In en, this message translates to:
+  /// **'This term was deleted.'**
+  String get dictTermGone;
+
+  /// dictCopy
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get dictCopy;
+
+  /// dictDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{term}\"?'**
+  String dictDeleteTitle(String term);
+
+  /// dictAlsoKnownAs
+  ///
+  /// In en, this message translates to:
+  /// **'Also known as: {names}'**
+  String dictAlsoKnownAs(String names);
+
+  /// dictInCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection: {name}'**
+  String dictInCollection(String name);
+
+  /// dictNoDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'No definition yet.'**
+  String get dictNoDefinition;
+
+  /// dictMentions
+  ///
+  /// In en, this message translates to:
+  /// **'Mentions'**
+  String get dictMentions;
+
+  /// dictSource
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get dictSource;
+
+  /// dictImportTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import terms'**
+  String get dictImportTitle;
+
+  /// dictSourceWiki
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get dictSourceWiki;
+
+  /// dictSourceFile
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get dictSourceFile;
+
+  /// dictSourcePaste
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get dictSourcePaste;
+
+  /// dictWikiHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a link to a wiki page or category. Works with Wikipedia, Fandom, Miraheze and other MediaWiki sites. Each page becomes a term with its introduction as the definition and a link back to the source.'**
+  String get dictWikiHelp;
+
+  /// dictWikiUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki page or category link'**
+  String get dictWikiUrl;
+
+  /// dictWikiWholeCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Import the whole category'**
+  String get dictWikiWholeCategory;
+
+  /// dictWikiWholeCategoryHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Every article in a category link, up to {max} pages.'**
+  String dictWikiWholeCategoryHelp(int max);
+
+  /// dictWikiFetching
+  ///
+  /// In en, this message translates to:
+  /// **'Reading pages… {done} of {total}'**
+  String dictWikiFetching(int done, int total);
+
+  /// dictWikiErrorUrl
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t look like a wiki page or category link.'**
+  String get dictWikiErrorUrl;
+
+  /// dictWikiErrorNetwork
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the wiki. Check your connection.'**
+  String get dictWikiErrorNetwork;
+
+  /// dictWikiErrorNotFound
+  ///
+  /// In en, this message translates to:
+  /// **'That page doesn\'t exist on the wiki.'**
+  String get dictWikiErrorNotFound;
+
+  /// dictWikiErrorEmptyCategory
+  ///
+  /// In en, this message translates to:
+  /// **'That category has no articles.'**
+  String get dictWikiErrorEmptyCategory;
+
+  /// dictWikiErrorNotWiki
+  ///
+  /// In en, this message translates to:
+  /// **'That site doesn\'t offer a MediaWiki API, so it can\'t be imported directly. Try exporting the terms to a file instead.'**
+  String get dictWikiErrorNotWiki;
+
+  /// dictFileHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a JSON, CSV/TSV or text file. JSON can be a list of \"term\"/\"definition\" objects or a term → definition map; CSV needs term and definition columns (category and aliases are optional); text files use one \"Term: definition\" per line.'**
+  String get dictFileHelp;
+
+  /// dictPasteHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One term per line as \"Term: definition\", \"Term - definition\" or \"Term = definition\". A term on its own line followed by a paragraph also works.'**
+  String get dictPasteHelp;
+
+  /// dictPasteLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get dictPasteLabel;
+
+  /// dictChooseFile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get dictChooseFile;
+
+  /// dictPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get dictPreview;
+
+  /// dictImportProblem
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t import'**
+  String get dictImportProblem;
+
+  /// dictImportNothingFound
+  ///
+  /// In en, this message translates to:
+  /// **'No terms were found.'**
+  String get dictImportNothingFound;
+
+  /// dictImportSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{found} found · {selected} selected · {invalid} with problems · {dups} already in your dictionary'**
+  String dictImportSummary(int found, int selected, int invalid, int dups);
+
+  /// dictDuplicatesAll
+  ///
+  /// In en, this message translates to:
+  /// **'For terms you already have'**
+  String get dictDuplicatesAll;
+
+  /// dictDupSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get dictDupSkip;
+
+  /// dictDupReplace
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get dictDupReplace;
+
+  /// dictDupKeepBoth
+  ///
+  /// In en, this message translates to:
+  /// **'Keep both'**
+  String get dictDupKeepBoth;
+
+  /// dictUseSourceCategories
+  ///
+  /// In en, this message translates to:
+  /// **'Use source categories'**
+  String get dictUseSourceCategories;
+
+  /// dictErrorMissingTerm
+  ///
+  /// In en, this message translates to:
+  /// **'No term name'**
+  String get dictErrorMissingTerm;
+
+  /// dictErrorMissingDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'No definition'**
+  String get dictErrorMissingDefinition;
+
+  /// dictErrorFetchFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read this page'**
+  String get dictErrorFetchFailed;
+
+  /// dictAlreadyHave
+  ///
+  /// In en, this message translates to:
+  /// **'Already in your dictionary as \"{term}\"'**
+  String dictAlreadyHave(String term);
+
+  /// dictFromCategory
+  ///
+  /// In en, this message translates to:
+  /// **'From: {name}'**
+  String dictFromCategory(String name);
+
+  /// dictImportCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Import 1 term} other{Import {count} terms}}'**
+  String dictImportCount(int count);
+
+  /// dictImporting
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get dictImporting;
+
+  /// dictImportDone
+  ///
+  /// In en, this message translates to:
+  /// **'Import finished'**
+  String get dictImportDone;
+
+  /// dictImportCreated
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get dictImportCreated;
+
+  /// dictImportReplaced
+  ///
+  /// In en, this message translates to:
+  /// **'Replaced'**
+  String get dictImportReplaced;
+
+  /// dictImportSkipped
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get dictImportSkipped;
+
+  /// dictImportCollections
+  ///
+  /// In en, this message translates to:
+  /// **'New collections'**
+  String get dictImportCollections;
+
+  /// achUnlocked
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get achUnlocked;
+
+  /// achComplete
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get achComplete;
+
+  /// achAlmostThere
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there'**
+  String get achAlmostThere;
+
+  /// achProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get achProgress;
+
+  /// achHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String achHistory(int count);
+
+  /// achNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked achievements appear here with the date you earned them.'**
+  String get achNoHistory;
+
+  /// achProgressOf
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {target}'**
+  String achProgressOf(int current, int target);
+
+  /// achNextTier
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} in {remaining} more'**
+  String achNextTier(String tier, int remaining);
+
+  /// achLadderComplete
+  ///
+  /// In en, this message translates to:
+  /// **'All tiers unlocked!'**
+  String get achLadderComplete;
+
+  /// achTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} · {metric} ({target})'**
+  String achTitle(String tier, String metric, int target);
+
+  /// achUnlockedOn
+  ///
+  /// In en, this message translates to:
+  /// **'{title} — unlocked {date}'**
+  String achUnlockedOn(String title, String date);
+
+  /// achTierBronze
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get achTierBronze;
+
+  /// achTierSilver
+  ///
+  /// In en, this message translates to:
+  /// **'Silver'**
+  String get achTierSilver;
+
+  /// achTierGold
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get achTierGold;
+
+  /// achTierPlatinum
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum'**
+  String get achTierPlatinum;
+
+  /// achTierDiamond
+  ///
+  /// In en, this message translates to:
+  /// **'Diamond'**
+  String get achTierDiamond;
+
+  /// achCatSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get achCatSystem;
+
+  /// achCatFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting'**
+  String get achCatFronting;
+
+  /// achCatWellbeing
+  ///
+  /// In en, this message translates to:
+  /// **'Wellbeing'**
+  String get achCatWellbeing;
+
+  /// achCatJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Writing'**
+  String get achCatJournal;
+
+  /// achCatKnowledge
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge'**
+  String get achCatKnowledge;
+
+  /// achCatHabits
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get achCatHabits;
+
+  /// achCatSocial
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get achCatSocial;
+
+  /// achCatConsistency
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get achCatConsistency;
+
+  /// achMetricMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members added'**
+  String get achMetricMembers;
+
+  /// achMetricFrontSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting sessions'**
+  String get achMetricFrontSessions;
+
+  /// achMetricFrontHours
+  ///
+  /// In en, this message translates to:
+  /// **'Hours tracked fronting'**
+  String get achMetricFrontHours;
+
+  /// achMetricSleepNights
+  ///
+  /// In en, this message translates to:
+  /// **'Nights of sleep logged'**
+  String get achMetricSleepNights;
+
+  /// achMetricMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-ins'**
+  String get achMetricMood;
+
+  /// achMetricMoodStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-in streak (days)'**
+  String get achMetricMoodStreak;
+
+  /// achMetricJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries'**
+  String get achMetricJournal;
+
+  /// achMetricJournalStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Journal streak (days)'**
+  String get achMetricJournalStreak;
+
+  /// achMetricTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary terms'**
+  String get achMetricTerms;
+
+  /// achMetricHabits
+  ///
+  /// In en, this message translates to:
+  /// **'Habit completions'**
+  String get achMetricHabits;
+
+  /// achMetricNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Notes written'**
+  String get achMetricNotes;
+
+  /// achMetricVotes
+  ///
+  /// In en, this message translates to:
+  /// **'Poll votes'**
+  String get achMetricVotes;
+
+  /// achMetricContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get achMetricContacts;
+
+  /// achMetricCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days logged'**
+  String get achMetricCycle;
+
+  /// achMetricPlaces
+  ///
+  /// In en, this message translates to:
+  /// **'Place visits'**
+  String get achMetricPlaces;
+
+  /// achMetricActiveDays
+  ///
+  /// In en, this message translates to:
+  /// **'Days with activity'**
+  String get achMetricActiveDays;
+
+  /// whatsNewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new'**
+  String get whatsNewTitle;
+
+  /// whatsNewVersion
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String whatsNewVersion(String version);
+
+  /// whatsNewFeatures
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get whatsNewFeatures;
+
+  /// whatsNewImprovements
+  ///
+  /// In en, this message translates to:
+  /// **'Improved'**
+  String get whatsNewImprovements;
+
+  /// whatsNewFixes
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed'**
+  String get whatsNewFixes;
+
+  /// whatsNewDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get whatsNewDismiss;
+
+  /// whatsNewPrevious
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier updates'**
+  String get whatsNewPrevious;
+
+  /// whatsNewChangelog
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new · changelog'**
+  String get whatsNewChangelog;
 }
 
 class _AppLocalizationsDelegate

@@ -285,6 +285,11 @@ enum ResetCategory {
   work('Work', 'Deletes jobs and work sessions.'),
   cycle('Cycle', 'Deletes all cycle tracking entries.'),
   contacts('Contacts', 'Deletes all contacts and imported birthdays.'),
+  lifeTrackers(
+    'Life trackers',
+    'Deletes journal, dictionary, fitness, finance, school, relationships, '
+        'headspace, subsystems, sleep details and achievements.',
+  ),
   customFields('Custom Fields', 'Deletes all custom fields and their values.'),
   sync(
     'Disconnect Sync',
@@ -431,6 +436,8 @@ class ResetDataNotifier extends AsyncNotifier<void> {
           await _resetTables('cycle', ['cycle_entries']);
         case ResetCategory.contacts:
           await _resetTables('contacts', ['contacts']);
+        case ResetCategory.lifeTrackers:
+          await _resetTables('life trackers', ['tracker_records']);
         case ResetCategory.customFields:
           await _resetCustomFields();
         case ResetCategory.sync:
@@ -533,6 +540,7 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       await db.customStatement('UPDATE calendar_events SET member_ids = NULL');
       await db.customStatement('UPDATE work_sessions SET member_id = NULL');
       await db.customStatement('UPDATE cycle_entries SET member_id = NULL');
+      await db.customStatement('UPDATE tracker_records SET member_id = NULL');
       // JSON maps keyed by memberId — reset to defaults so stale keys don't
       // hang around. chat_badge_preferences defaults to '{}'; field_sync_config
       // is nullable.
@@ -592,6 +600,7 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       'calendar_events',
       'work_sessions',
       'cycle_entries',
+      'tracker_records',
       'system_settings',
     ]);
   }

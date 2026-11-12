@@ -73,6 +73,7 @@ const _allUserDataTables = [
   'work_sessions',
   'cycle_entries',
   'contacts',
+  'tracker_records',
   'friends',
   'sharing_requests',
   'media_attachments',
@@ -149,6 +150,7 @@ const _memberRefColumns = <_MemberRef>[
   _MemberRef('mood_entries', 'member_id', _RefType.nulled),
   _MemberRef('work_sessions', 'member_id', _RefType.nulled),
   _MemberRef('cycle_entries', 'member_id', _RefType.nulled),
+  _MemberRef('tracker_records', 'member_id', _RefType.nulled),
 
   // Per-member child data: fully deleted on reset.
   _MemberRef(
@@ -3404,6 +3406,21 @@ class _ResetHarness {
           modifiedAt: now,
         ),
       );
+    await db
+        .into(db.trackerRecords)
+        .insert(
+          TrackerRecordsCompanion.insert(
+            id: 'tr1',
+            kind: 'journal.entry',
+            title: const Value('Day'),
+            body: const Value('b'),
+            data: const Value('{"mood":4}'),
+            tags: const Value('["a"]'),
+            memberId: const Value('member-1'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
 
     // ── Friends ───────────────────────────────────────────────────────
     await db

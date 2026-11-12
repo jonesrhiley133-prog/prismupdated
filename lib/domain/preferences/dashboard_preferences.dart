@@ -12,6 +12,8 @@ abstract final class DashboardWidgetId {
   static const cycle = 'cycle';
   static const birthdays = 'birthdays';
   static const events = 'events';
+  static const achievements = 'achievements';
+  static const journal = 'journal';
 
   static const all = [
     now,
@@ -23,6 +25,8 @@ abstract final class DashboardWidgetId {
     cycle,
     birthdays,
     events,
+    achievements,
+    journal,
   ];
   static const defaults = [
     now,
@@ -49,6 +53,8 @@ abstract final class QuickActionId {
   static const insights = 'insights';
   static const timeline = 'timeline';
   static const importCenter = 'import';
+  static const dictionary = 'dictionary';
+  static const achievements = 'achievements';
 
   static const all = [
     switchFront,
@@ -64,6 +70,8 @@ abstract final class QuickActionId {
     insights,
     timeline,
     importCenter,
+    dictionary,
+    achievements,
   ];
   static const defaults = [
     switchFront,

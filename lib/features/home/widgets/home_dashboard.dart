@@ -21,9 +21,17 @@ import 'package:prism_plurality/features/home/widgets/home_now_section.dart';
 import 'package:prism_plurality/features/insights/providers/insight_providers.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/utils/birthday.dart';
-import 'package:prism_plurality/features/members/widgets/note_sheet.dart';
 import 'package:prism_plurality/features/mood/views/log_mood_sheet.dart';
 import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
+import 'package:prism_plurality/features/achievements/providers/achievement_providers.dart';
+import 'package:prism_plurality/features/achievements/views/achievements_screen.dart';
+import 'package:prism_plurality/features/dictionary/views/term_editor_sheet.dart';
+import 'package:prism_plurality/features/journal/utils/journal_stats.dart';
+import 'package:prism_plurality/features/journal/views/journal_editor_sheet.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
+import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
+import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
+import 'package:prism_plurality/features/whats_new/whats_new.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/extensions/duration_extensions.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -56,6 +64,8 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     DashboardWidgetId.cycle => l10n.navCycle,
     DashboardWidgetId.birthdays => l10n.dashboardWidgetBirthdays,
     DashboardWidgetId.events => l10n.dashboardWidgetEvents,
+    DashboardWidgetId.achievements => l10n.navAchievements,
+    DashboardWidgetId.journal => l10n.navJournal,
     _ => id,
   };
 }
@@ -71,7 +81,9 @@ String dashboardWidgetLabel(BuildContext context, String id) {
       l10n.homeQuickStartLocation,
     ),
     QuickActionId.clockIn => (AppIcons.navWork, l10n.workClockIn),
-    QuickActionId.journal => (AppIcons.navNotes, l10n.quickActionJournal),
+    QuickActionId.journal => (AppIcons.navJournal, l10n.quickActionJournal),
+    QuickActionId.dictionary => (AppIcons.navDictionary, l10n.quickActionDictionary),
+    QuickActionId.achievements => (AppIcons.navAchievements, l10n.navAchievements),
     QuickActionId.event => (AppIcons.navCalendar, l10n.calendarNewEvent),
     QuickActionId.birthday => (AppIcons.cake, l10n.quickActionBirthday),
     QuickActionId.contact => (AppIcons.navContacts, l10n.contactsNew),
@@ -99,10 +111,11 @@ void runQuickAction(BuildContext context, WidgetRef ref, String id) {
     case QuickActionId.clockIn:
       HomeNowSection.pickJob(context, ref);
     case QuickActionId.journal:
-      PrismSheet.showFullScreen(
-        context: context,
-        builder: (context, scroll) => NoteSheet(scrollController: scroll),
-      );
+      showJournalEditor(context);
+    case QuickActionId.dictionary:
+      showTermEditor(context);
+    case QuickActionId.achievements:
+      context.push(AppRoutePaths.achievements);
     case QuickActionId.event:
       showEditEventSheet(context);
     case QuickActionId.birthday:
@@ -159,6 +172,7 @@ class HomeDashboard extends ConsumerWidget {
             ],
           ),
           const AppUpdateBanner(),
+          const WhatsNewLauncher(),
           for (final id in ids) _widgetFor(id),
         ],
       ),
@@ -176,6 +190,8 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.cycle => const _CycleWidget(),
       DashboardWidgetId.birthdays => const _BirthdaysWidget(),
       DashboardWidgetId.events => const _EventsWidget(),
+      DashboardWidgetId.achievements => const _AchievementsWidget(),
+      DashboardWidgetId.journal => const _JournalWidget(),
       _ => const SizedBox.shrink(),
     };
     return Padding(padding: const EdgeInsets.only(bottom: 8), child: child);
@@ -654,6 +670,109 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AchievementsWidget extends ConsumerWidget {
+  const _AchievementsWidget();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    ref.watch(achievementRecorderProvider);
+    final progress = ref.watch(achievementProgressProvider).value;
+    if (progress == null) return const SizedBox.shrink();
+    final unlocked = progress.where((p) => p.unlocked).length;
+    final next = [
+      for (final p in progress)
+        if (!p.unlocked) p,
+    ]..sort((a, b) => b.fraction.compareTo(a.fraction));
+    return PrismSurface(
+      onTap: () => context.push(AppRoutePaths.achievements),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.navAchievements,
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
+              Text(
+                '$unlocked / ${progress.length}',
+                style: theme.textTheme.labelLarge,
+              ),
+            ],
+          ),
+          for (final p in next.take(2)) ...[
+            const SizedBox(height: 8),
+            Text(
+              achievementTitle(l10n, p.def),
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 4),
+            TrackerBar(
+              value: p.fraction,
+              color: achievementTierColor(p.def.tier),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _JournalWidget extends ConsumerWidget {
+  const _JournalWidget();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final entries =
+        ref.watch(trackerKindProvider(TrackerKind.journalEntry)).value ??
+        const [];
+    final stats = JournalStats.of(entries, DateTime.now());
+    final latest = entries.where((e) => !e.isPrivate).firstOrNull;
+    return PrismSurface(
+      onTap: () => context.push(AppRoutePaths.journal),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(l10n.navJournal, style: theme.textTheme.titleSmall),
+              ),
+              Text(
+                l10n.journalDays(stats.currentStreak),
+                style: theme.textTheme.labelLarge,
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          if (latest == null)
+            Text(l10n.journalEmptyTitle, style: theme.textTheme.bodySmall)
+          else
+            Text(
+              latest.title.isEmpty ? (latest.body ?? '') : latest.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium,
+            ),
+          const SizedBox(height: 8),
+          PrismButton(
+            label: l10n.journalNewEntry,
+            icon: AppIcons.add,
+            density: PrismControlDensity.compact,
+            onPressed: () => showJournalEditor(context),
+          ),
+        ],
       ),
     );
   }

@@ -467,6 +467,26 @@ const String prismSyncSchema = '''
         "is_deleted": "Bool"
       }
     },
+    "tracker_records": {
+      "fields": {
+        "kind": "String",
+        "parent_id": "String",
+        "title": "String",
+        "body": "String",
+        "data": "String",
+        "tags": "String",
+        "occurred_at": "DateTime",
+        "ended_at": "DateTime",
+        "amount": "Int",
+        "member_id": "String",
+        "is_private": "Bool",
+        "is_pinned": "Bool",
+        "sort_order": "Int",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
     "contacts": {
       "fields": {
         "display_name": "String",

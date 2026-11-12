@@ -67,6 +67,9 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/achievements/views/achievements_screen.dart';
+import '../../features/dictionary/views/dictionary_screen.dart';
+import '../../features/journal/views/journal_screen.dart';
 import '../../features/cycle/views/cycle_screen.dart';
 import '../../features/import_center/views/import_center_screen.dart';
 import '../../features/insights/views/daily_insights_screen.dart';
@@ -125,6 +128,15 @@ final _insightsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'insights',
 );
 final _cycleNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cycle');
+final _journalNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'journal',
+);
+final _dictionaryNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'dictionary',
+);
+final _achievementsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'achievements',
+);
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
 );
@@ -1135,6 +1147,36 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.contacts,
                 builder: (context, state) => const ContactsScreen(),
+              ),
+            ],
+          ),
+          // Branch 21: Journal (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _journalNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.journal,
+                builder: (context, state) => const JournalScreen(),
+              ),
+            ],
+          ),
+          // Branch 22: Dictionary (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _dictionaryNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.dictionary,
+                builder: (context, state) => const DictionaryScreen(),
+              ),
+            ],
+          ),
+          // Branch 23: Achievements (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _achievementsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.achievements,
+                builder: (context, state) => const AchievementsScreen(),
               ),
             ],
           ),

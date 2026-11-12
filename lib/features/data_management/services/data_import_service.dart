@@ -55,6 +55,8 @@ import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_cycle_entry_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_contact_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_tracker_record_repository.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
 import 'package:prism_plurality/features/fronting/services/collapse_open_duplicate_sessions.dart';
@@ -89,6 +91,7 @@ class ImportPreview {
     this.workSessions = 0,
     this.cycleEntries = 0,
     this.contacts = 0,
+    this.trackerRecords = 0,
     this.friends = 0,
     this.mediaAttachments = 0,
     this.memberBoardPosts = 0,
@@ -123,6 +126,7 @@ class ImportPreview {
   final int workSessions;
   final int cycleEntries;
   final int contacts;
+  final int trackerRecords;
   final int friends;
   final int mediaAttachments;
   final int memberBoardPosts;
@@ -157,6 +161,7 @@ class ImportPreview {
       workSessions +
       cycleEntries +
       contacts +
+      trackerRecords +
       friends +
       mediaAttachments +
       memberBoardPosts +
@@ -192,6 +197,7 @@ class ImportResult {
     this.workSessionsCreated = 0,
     this.cycleEntriesCreated = 0,
     this.contactsCreated = 0,
+    this.trackerRecordsCreated = 0,
     this.friendsCreated = 0,
     this.mediaAttachmentsCreated = 0,
     this.memberBoardPostsCreated = 0,
@@ -230,6 +236,7 @@ class ImportResult {
   final int workSessionsCreated;
   final int cycleEntriesCreated;
   final int contactsCreated;
+  final int trackerRecordsCreated;
   final int friendsCreated;
   final int mediaAttachmentsCreated;
   final int memberBoardPostsCreated;
@@ -292,6 +299,7 @@ class ImportResult {
       workSessionsCreated +
       cycleEntriesCreated +
       contactsCreated +
+      trackerRecordsCreated +
       friendsCreated +
       mediaAttachmentsCreated +
       memberBoardPostsCreated +
@@ -546,6 +554,7 @@ class DataImportService {
       workSessions: export.workSessions.length,
       cycleEntries: export.cycleEntries.length,
       contacts: export.contacts.length,
+      trackerRecords: export.trackerRecords.length,
       friends: export.friends.length,
       mediaAttachments: export.mediaAttachments.length,
       memberBoardPosts: export.memberBoardPosts.length,
@@ -2459,6 +2468,21 @@ class DataImportService {
             contactsCreated++;
           }
         }
+        var trackerRecordsCreated = 0;
+        {
+          final repo = DriftTrackerRecordRepository(db.trackerRecordsDao, null);
+          for (final raw in export.trackerRecords) {
+            final TrackerRecord item;
+            try {
+              item = TrackerRecord.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.trackerRecordsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            trackerRecordsCreated++;
+          }
+        }
 
         // 19. Import friends
         var friendsCreated = 0;
@@ -2666,6 +2690,7 @@ class DataImportService {
           workSessionsCreated: workSessionsCreated,
           cycleEntriesCreated: cycleEntriesCreated,
           contactsCreated: contactsCreated,
+          trackerRecordsCreated: trackerRecordsCreated,
           friendsCreated: friendsCreated,
           mediaAttachmentsCreated: mediaAttachmentsCreated,
           memberBoardPostsCreated: memberBoardPostsCreated,

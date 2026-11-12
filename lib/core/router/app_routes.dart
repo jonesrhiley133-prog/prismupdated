@@ -25,6 +25,9 @@ abstract final class AppRoutePaths {
   static const insights = '/insights';
   static const cycle = '/cycle';
   static const contacts = '/contacts';
+  static const journal = '/journal';
+  static const dictionary = '/dictionary';
+  static const achievements = '/achievements';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -185,6 +188,9 @@ enum AppShellTabId {
   insights,
   cycle,
   contacts,
+  journal,
+  dictionary,
+  achievements,
 }
 
 class AppShellTab {
@@ -250,6 +256,9 @@ class AppShellTab {
       AppShellTabId.insights => l10n.navInsights,
       AppShellTabId.cycle => l10n.navCycle,
       AppShellTabId.contacts => l10n.navContacts,
+      AppShellTabId.journal => l10n.navJournal,
+      AppShellTabId.dictionary => l10n.navDictionary,
+      AppShellTabId.achievements => l10n.navAchievements,
     };
   }
 
@@ -287,6 +296,9 @@ class AppShellTab {
       AppShellTabId.insights => true,
       AppShellTabId.cycle => true,
       AppShellTabId.contacts => true,
+      AppShellTabId.journal => true,
+      AppShellTabId.dictionary => true,
+      AppShellTabId.achievements => true,
     };
   }
 }
@@ -461,6 +473,30 @@ final appShellTabs = [
     branchIndex: 20,
     rootLocation: AppRoutePaths.contacts,
   ),
+  AppShellTab(
+    id: AppShellTabId.journal,
+    label: 'Journal',
+    icon: AppIcons.navJournal,
+    activeIcon: AppIcons.navJournalActive,
+    branchIndex: 21,
+    rootLocation: AppRoutePaths.journal,
+  ),
+  AppShellTab(
+    id: AppShellTabId.dictionary,
+    label: 'Dictionary',
+    icon: AppIcons.navDictionary,
+    activeIcon: AppIcons.navDictionaryActive,
+    branchIndex: 22,
+    rootLocation: AppRoutePaths.dictionary,
+  ),
+  AppShellTab(
+    id: AppShellTabId.achievements,
+    label: 'Achievements',
+    icon: AppIcons.navAchievements,
+    activeIcon: AppIcons.navAchievementsActive,
+    branchIndex: 23,
+    rootLocation: AppRoutePaths.achievements,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -480,6 +516,9 @@ const defaultNavBarOverflowTabIds = [
   'work',
   'cycle',
   'contacts',
+  'journal',
+  'dictionary',
+  'achievements',
   'notes',
   'reminders',
   'statistics',

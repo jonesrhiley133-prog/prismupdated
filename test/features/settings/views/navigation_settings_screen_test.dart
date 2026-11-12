@@ -135,7 +135,7 @@ void main() {
       expect(find.text('Insights'), findsOneWidget);
 
       // Each available tab gets an add button.
-      expect(find.byIcon(AppIcons.addCircleOutline), findsNWidgets(18));
+      expect(find.byIcon(AppIcons.addCircleOutline), findsNWidgets(21));
     });
 
     testWidgets('disabled features appear in Disabled Features section', (

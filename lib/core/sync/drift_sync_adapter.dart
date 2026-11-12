@@ -21,6 +21,7 @@ import 'package:prism_plurality/data/mappers/job_mapper.dart';
 import 'package:prism_plurality/data/mappers/work_session_mapper.dart';
 import 'package:prism_plurality/data/mappers/cycle_entry_mapper.dart';
 import 'package:prism_plurality/data/mappers/contact_mapper.dart';
+import 'package:prism_plurality/data/mappers/tracker_record_mapper.dart';
 import 'package:prism_plurality/data/mappers/mood_entry_mapper.dart';
 import 'package:prism_plurality/data/mappers/member_group_mapper.dart'
     show sanitizeSortStateForEmission, tryDecodeSortState;
@@ -266,6 +267,7 @@ SyncAdapterWithCompletion buildSyncAdapterWithCompletion(
       _workSessionsEntity(db, quarantine, pendingQuarantineWrites.add),
       _cycleEntriesEntity(db, quarantine, pendingQuarantineWrites.add),
       _contactsEntity(db, quarantine, pendingQuarantineWrites.add),
+      _trackerRecordsEntity(db, quarantine, pendingQuarantineWrites.add),
       _memberGroupsEntity(
         db,
         quarantine,
@@ -5078,6 +5080,71 @@ DriftSyncEntity _contactsEntity(
     isDeleted: (String id) async {
       final row = await (db.select(
         db.contacts,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// tracker_records
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _trackerRecordsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'tracker_records',
+    toSyncFields: (dynamic row) =>
+        TrackerRecordMapper.syncFieldsFromRow(row as TrackerRecordRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'tracker_records',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = TrackerRecordsCompanion(
+        id: Value(id),
+        kind: f.stringField('kind'),
+        parentId: f.stringFieldNullable('parent_id'),
+        title: f.stringField('title'),
+        body: f.stringFieldNullable('body'),
+        data: f.stringFieldNullable('data'),
+        tags: f.stringFieldNullable('tags'),
+        occurredAt: f.dateTimeFieldNullable('occurred_at'),
+        endedAt: f.dateTimeFieldNullable('ended_at'),
+        amount: f.intFieldNullable('amount'),
+        memberId: f.stringFieldNullable('member_id'),
+        isPrivate: f.boolField('is_private'),
+        isPinned: f.boolField('is_pinned'),
+        sortOrder: f.intField('sort_order'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.trackerRecords,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.trackerRecords)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.trackerRecords,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : TrackerRecordMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.trackerRecords,
       )..where((t) => t.id.equals(id))).getSingleOrNull();
       return row?.isDeleted ?? true;
     },

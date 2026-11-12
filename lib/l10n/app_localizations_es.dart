@@ -16232,4 +16232,619 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get appUpdateErrorGeneric =>
       'Algo salió mal al buscar actualizaciones.';
+
+  @override
+  String get navJournal => 'Diario';
+
+  @override
+  String get navDictionary => 'Diccionario';
+
+  @override
+  String get navAchievements => 'Logros';
+
+  @override
+  String get quickActionDictionary => 'Nuevo término';
+
+  @override
+  String get dataManagementPreviewTrackerRecords =>
+      'Diario, diccionario y registros';
+
+  @override
+  String get importCenterDictionaryDesc =>
+      'Términos desde una página o categoría de wiki, un archivo JSON/CSV/texto o texto pegado.';
+
+  @override
+  String get trackerDelete => 'Eliminar';
+
+  @override
+  String get trackerMoveUp => 'Subir';
+
+  @override
+  String get trackerPin => 'Fijar';
+
+  @override
+  String get trackerUnpin => 'Desfijar';
+
+  @override
+  String get trackerPinned => 'Fijadas';
+
+  @override
+  String get trackerPrivate => 'Privado';
+
+  @override
+  String get trackerPrivateHelp =>
+      'Oculto hasta tocarlo y excluido de Inicio y los resúmenes.';
+
+  @override
+  String get trackerPrivateReveal => 'Privado · toca para ver';
+
+  @override
+  String get trackerRename => 'Renombrar';
+
+  @override
+  String get trackerTags => 'Etiquetas';
+
+  @override
+  String get trackerTagsHelp => 'Separa con comas';
+
+  @override
+  String get journalNewEntry => 'Nueva entrada';
+
+  @override
+  String get journalEditEntry => 'Editar entrada';
+
+  @override
+  String get journalTitle => 'Título';
+
+  @override
+  String get journalBody => 'Escribe…';
+
+  @override
+  String get journalMood => 'Ánimo';
+
+  @override
+  String get journalCategory => 'Categoría';
+
+  @override
+  String get journalCategoryName => 'Nombre de la categoría';
+
+  @override
+  String get journalNewCategory => 'Nueva categoría';
+
+  @override
+  String get journalNoCategory => 'Ninguna';
+
+  @override
+  String get journalWrittenBy => 'Escrito por';
+
+  @override
+  String get journalNobodyInParticular => 'Nadie en particular';
+
+  @override
+  String get journalUsePrompt => 'Dame una idea';
+
+  @override
+  String get journalAnotherPrompt => 'Otra idea';
+
+  @override
+  String get journalRemovePrompt => 'Quitar idea';
+
+  @override
+  String get journalPrompt1 => '¿Qué te quitó más energía hoy?';
+
+  @override
+  String get journalPrompt2 => '¿Quién estuvo más al frente y cómo se sintió?';
+
+  @override
+  String get journalPrompt3 => '¿Qué es algo pequeño que salió bien?';
+
+  @override
+  String get journalPrompt4 => '¿Qué necesitas más esta semana?';
+
+  @override
+  String get journalPrompt5 =>
+      'Describe un momento en que te sentiste a salvo.';
+
+  @override
+  String get journalPrompt6 => '¿Qué te gustaría que otro miembro supiera?';
+
+  @override
+  String get journalPrompt7 => '¿Qué es algo que esperas con ganas?';
+
+  @override
+  String get journalPrompt8 =>
+      '¿Qué sentimiento volvía una y otra vez hoy, y por qué?';
+
+  @override
+  String get journalEmptyTitle => 'Aún no hay entradas';
+
+  @override
+  String get journalEmptySubtitle =>
+      'Escribe sobre tu día, un sentimiento o lo que tengas en mente. Las entradas pueden ser privadas.';
+
+  @override
+  String get journalSearch => 'Buscar entradas y #etiquetas';
+
+  @override
+  String get journalFilterAll => 'Todas';
+
+  @override
+  String get journalNoMatches => 'Ninguna entrada coincide.';
+
+  @override
+  String get journalUntitled => 'Sin título';
+
+  @override
+  String get journalStatEntries => 'Entradas';
+
+  @override
+  String get journalStatThisMonth => 'Este mes';
+
+  @override
+  String journalStatStreak(int best) {
+    return 'Racha · mejor $best';
+  }
+
+  @override
+  String get journalStatMood => 'Ánimo medio, 30 días';
+
+  @override
+  String journalDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String journalBy(String name) {
+    return 'por $name';
+  }
+
+  @override
+  String journalHistory(int count) {
+    return 'Historial de versiones ($count)';
+  }
+
+  @override
+  String get journalNoHistory =>
+      'Las versiones anteriores aparecen aquí después de editar la entrada.';
+
+  @override
+  String get journalRestore => 'Restaurar';
+
+  @override
+  String get journalEntryGone => 'Esta entrada se eliminó.';
+
+  @override
+  String get journalDeleteTitle => '¿Eliminar esta entrada?';
+
+  @override
+  String get journalDeleteMessage =>
+      'La entrada y su historial se eliminarán en todos los dispositivos sincronizados.';
+
+  @override
+  String get dictNewTerm => 'Nuevo término';
+
+  @override
+  String get dictEditTerm => 'Editar término';
+
+  @override
+  String get dictTerm => 'Término';
+
+  @override
+  String get dictDefinition => 'Definición';
+
+  @override
+  String get dictPronunciation => 'Pronunciación (opcional)';
+
+  @override
+  String get dictAliases => 'También conocido como';
+
+  @override
+  String get dictAliasesHelp =>
+      'Otros nombres o escrituras, separados por comas';
+
+  @override
+  String get dictExamples => 'Ejemplos';
+
+  @override
+  String get dictExamplesHelp => 'Uno por línea';
+
+  @override
+  String get dictSourceUrl => 'Enlace de la fuente (opcional)';
+
+  @override
+  String get dictInvalidUrl => 'Escribe un enlace que empiece por https://';
+
+  @override
+  String get dictCollection => 'Colección';
+
+  @override
+  String get dictNoCollection => 'Ninguna';
+
+  @override
+  String dictDuplicateWarning(String term) {
+    return 'Ya tienes «$term».';
+  }
+
+  @override
+  String get dictEmptyTitle => 'Tu diccionario está vacío';
+
+  @override
+  String get dictEmptySubtitle =>
+      'Añade tus propios términos o impórtalos desde una wiki, un archivo o texto pegado.';
+
+  @override
+  String get dictSearch => 'Buscar términos, alias y definiciones';
+
+  @override
+  String dictAllTerms(int count) {
+    return 'Todos · $count';
+  }
+
+  @override
+  String get dictManageCollections => 'Colecciones';
+
+  @override
+  String get dictNoMatches => 'Ningún término coincide.';
+
+  @override
+  String get dictStatTerms => 'Términos';
+
+  @override
+  String get dictStatCollections => 'Colecciones';
+
+  @override
+  String get dictStatImported => 'Importados';
+
+  @override
+  String get dictStatOwn => 'Escritos por ti';
+
+  @override
+  String get dictNewCollection => 'Nueva colección';
+
+  @override
+  String get dictNoCollectionsYet =>
+      'Aún no hay colecciones. Agrupan términos, como «Roles» o «Nuestras palabras».';
+
+  @override
+  String dictDeleteCollectionTitle(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get dictDeleteCollectionMessage =>
+      'Sus términos se conservan y salen de la colección.';
+
+  @override
+  String get dictTermGone => 'Este término se eliminó.';
+
+  @override
+  String get dictCopy => 'Copiar';
+
+  @override
+  String dictDeleteTitle(String term) {
+    return '¿Eliminar «$term»?';
+  }
+
+  @override
+  String dictAlsoKnownAs(String names) {
+    return 'También conocido como: $names';
+  }
+
+  @override
+  String dictInCollection(String name) {
+    return 'Colección: $name';
+  }
+
+  @override
+  String get dictNoDefinition => 'Aún no hay definición.';
+
+  @override
+  String get dictMentions => 'Menciona';
+
+  @override
+  String get dictSource => 'Fuente';
+
+  @override
+  String get dictImportTitle => 'Importar términos';
+
+  @override
+  String get dictSourceWiki => 'Wiki';
+
+  @override
+  String get dictSourceFile => 'Archivo';
+
+  @override
+  String get dictSourcePaste => 'Pegar';
+
+  @override
+  String get dictWikiHelp =>
+      'Pega un enlace a una página o categoría de una wiki. Funciona con Wikipedia, Fandom, Miraheze y otros sitios MediaWiki. Cada página se convierte en un término con su introducción como definición y un enlace a la fuente.';
+
+  @override
+  String get dictWikiUrl => 'Enlace a página o categoría';
+
+  @override
+  String get dictWikiWholeCategory => 'Importar toda la categoría';
+
+  @override
+  String dictWikiWholeCategoryHelp(int max) {
+    return 'Todos los artículos de un enlace de categoría, hasta $max páginas.';
+  }
+
+  @override
+  String dictWikiFetching(int done, int total) {
+    return 'Leyendo páginas… $done de $total';
+  }
+
+  @override
+  String get dictWikiErrorUrl =>
+      'Eso no parece un enlace a una página o categoría de wiki.';
+
+  @override
+  String get dictWikiErrorNetwork =>
+      'No se pudo contactar con la wiki. Revisa tu conexión.';
+
+  @override
+  String get dictWikiErrorNotFound => 'Esa página no existe en la wiki.';
+
+  @override
+  String get dictWikiErrorEmptyCategory => 'Esa categoría no tiene artículos.';
+
+  @override
+  String get dictWikiErrorNotWiki =>
+      'Ese sitio no ofrece una API de MediaWiki, así que no se puede importar directamente. Prueba a exportar los términos a un archivo.';
+
+  @override
+  String get dictFileHelp =>
+      'Elige un archivo JSON, CSV/TSV o de texto. El JSON puede ser una lista de objetos \"term\"/\"definition\" o un mapa término → definición; el CSV necesita columnas de término y definición (categoría y alias son opcionales); los de texto usan un «Término: definición» por línea.';
+
+  @override
+  String get dictPasteHelp =>
+      'Un término por línea como «Término: definición», «Término - definición» o «Término = definición». También vale un término en su línea seguido de un párrafo.';
+
+  @override
+  String get dictPasteLabel => 'Términos';
+
+  @override
+  String get dictChooseFile => 'Elegir archivo';
+
+  @override
+  String get dictPreview => 'Vista previa';
+
+  @override
+  String get dictImportProblem => 'No se pudo importar';
+
+  @override
+  String get dictImportNothingFound => 'No se encontraron términos.';
+
+  @override
+  String dictImportSummary(int found, int selected, int invalid, int dups) {
+    return '$found encontrados · $selected seleccionados · $invalid con problemas · $dups ya en tu diccionario';
+  }
+
+  @override
+  String get dictDuplicatesAll => 'Para términos que ya tienes';
+
+  @override
+  String get dictDupSkip => 'Omitir';
+
+  @override
+  String get dictDupReplace => 'Reemplazar';
+
+  @override
+  String get dictDupKeepBoth => 'Conservar ambos';
+
+  @override
+  String get dictUseSourceCategories => 'Usar categorías de la fuente';
+
+  @override
+  String get dictErrorMissingTerm => 'Sin nombre de término';
+
+  @override
+  String get dictErrorMissingDefinition => 'Sin definición';
+
+  @override
+  String get dictErrorFetchFailed => 'No se pudo leer esta página';
+
+  @override
+  String dictAlreadyHave(String term) {
+    return 'Ya está en tu diccionario como «$term»';
+  }
+
+  @override
+  String dictFromCategory(String name) {
+    return 'De: $name';
+  }
+
+  @override
+  String dictImportCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Importar $count términos',
+      one: 'Importar 1 término',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dictImporting => 'Importando…';
+
+  @override
+  String get dictImportDone => 'Importación terminada';
+
+  @override
+  String get dictImportCreated => 'Añadidos';
+
+  @override
+  String get dictImportReplaced => 'Reemplazados';
+
+  @override
+  String get dictImportSkipped => 'Omitidos';
+
+  @override
+  String get dictImportCollections => 'Nuevas colecciones';
+
+  @override
+  String get achUnlocked => 'Desbloqueados';
+
+  @override
+  String get achComplete => 'Completado';
+
+  @override
+  String get achAlmostThere => 'Casi lo tienes';
+
+  @override
+  String get achProgress => 'Progreso';
+
+  @override
+  String achHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get achNoHistory =>
+      'Los logros desbloqueados aparecen aquí con la fecha en que los conseguiste.';
+
+  @override
+  String achProgressOf(int current, int target) {
+    return '$current de $target';
+  }
+
+  @override
+  String achNextTier(String tier, int remaining) {
+    return '$tier con $remaining más';
+  }
+
+  @override
+  String get achLadderComplete => '¡Todos los niveles desbloqueados!';
+
+  @override
+  String achTitle(String tier, String metric, int target) {
+    return '$tier · $metric ($target)';
+  }
+
+  @override
+  String achUnlockedOn(String title, String date) {
+    return '$title — desbloqueado el $date';
+  }
+
+  @override
+  String get achTierBronze => 'Bronce';
+
+  @override
+  String get achTierSilver => 'Plata';
+
+  @override
+  String get achTierGold => 'Oro';
+
+  @override
+  String get achTierPlatinum => 'Platino';
+
+  @override
+  String get achTierDiamond => 'Diamante';
+
+  @override
+  String get achCatSystem => 'Sistema';
+
+  @override
+  String get achCatFronting => 'Frente';
+
+  @override
+  String get achCatWellbeing => 'Bienestar';
+
+  @override
+  String get achCatJournal => 'Escritura';
+
+  @override
+  String get achCatKnowledge => 'Conocimiento';
+
+  @override
+  String get achCatHabits => 'Hábitos';
+
+  @override
+  String get achCatSocial => 'Social';
+
+  @override
+  String get achCatConsistency => 'Constancia';
+
+  @override
+  String get achMetricMembers => 'Miembros añadidos';
+
+  @override
+  String get achMetricFrontSessions => 'Sesiones al frente';
+
+  @override
+  String get achMetricFrontHours => 'Horas de frente registradas';
+
+  @override
+  String get achMetricSleepNights => 'Noches de sueño registradas';
+
+  @override
+  String get achMetricMood => 'Registros de ánimo';
+
+  @override
+  String get achMetricMoodStreak => 'Racha de registros de ánimo (días)';
+
+  @override
+  String get achMetricJournal => 'Entradas de diario';
+
+  @override
+  String get achMetricJournalStreak => 'Racha de diario (días)';
+
+  @override
+  String get achMetricTerms => 'Términos del diccionario';
+
+  @override
+  String get achMetricHabits => 'Hábitos completados';
+
+  @override
+  String get achMetricNotes => 'Notas escritas';
+
+  @override
+  String get achMetricVotes => 'Votos en encuestas';
+
+  @override
+  String get achMetricContacts => 'Contactos';
+
+  @override
+  String get achMetricCycle => 'Días del ciclo registrados';
+
+  @override
+  String get achMetricPlaces => 'Visitas a lugares';
+
+  @override
+  String get achMetricActiveDays => 'Días con actividad';
+
+  @override
+  String get whatsNewTitle => 'Novedades';
+
+  @override
+  String whatsNewVersion(String version) {
+    return 'Versión $version';
+  }
+
+  @override
+  String get whatsNewFeatures => 'Nuevo';
+
+  @override
+  String get whatsNewImprovements => 'Mejorado';
+
+  @override
+  String get whatsNewFixes => 'Corregido';
+
+  @override
+  String get whatsNewDismiss => 'Entendido';
+
+  @override
+  String get whatsNewPrevious => 'Actualizaciones anteriores';
+
+  @override
+  String get whatsNewChangelog => 'Novedades · historial de cambios';
 }
