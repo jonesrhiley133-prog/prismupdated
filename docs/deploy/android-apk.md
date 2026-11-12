@@ -9,13 +9,9 @@ The workflow runs on every push to `main` or any `claude/**` branch. You can
 also start it by hand: **Actions → Android APK → Run workflow**.
 
 When the run finishes (roughly 20–40 minutes; the Rust code is compiled for
-each phone architecture), open it and download **prism-android-apk** under
-**Artifacts**. It's a zip containing:
-
-- `Prism-<version>-<commit>-arm64.apk`: install this on almost any phone from
-  2017 or later.
-- `Prism-<version>-<commit>-arm32.apk`: only for very old 32-bit phones.
-- `SHA256SUMS`
+both phone architectures), open it and download **prism-android-apk** under
+**Artifacts**. It's a zip containing `Prism-<version>-<commit>.apk` (works on
+any ARM Android phone running Android 8.0 or later) and `SHA256SUMS`.
 
 On the phone, open the APK and allow "Install unknown apps" for your browser
 or file manager when Android asks.
