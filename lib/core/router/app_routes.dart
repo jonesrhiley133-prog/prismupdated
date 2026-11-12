@@ -31,6 +31,9 @@ abstract final class AppRoutePaths {
   static const fitness = '/fitness';
   static const finance = '/finance';
   static const school = '/school';
+  static const relationships = '/relationships';
+  static const subsystems = '/subsystems';
+  static const headspace = '/headspace';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -200,6 +203,9 @@ enum AppShellTabId {
   fitness,
   finance,
   school,
+  relationships,
+  subsystems,
+  headspace,
 }
 
 class AppShellTab {
@@ -271,6 +277,9 @@ class AppShellTab {
       AppShellTabId.fitness => l10n.navFitness,
       AppShellTabId.finance => l10n.navFinance,
       AppShellTabId.school => l10n.navSchool,
+      AppShellTabId.relationships => l10n.navRelationships,
+      AppShellTabId.subsystems => l10n.navSubsystems,
+      AppShellTabId.headspace => l10n.navHeadspace,
     };
   }
 
@@ -314,6 +323,9 @@ class AppShellTab {
       AppShellTabId.fitness => true,
       AppShellTabId.finance => true,
       AppShellTabId.school => true,
+      AppShellTabId.relationships => true,
+      AppShellTabId.subsystems => true,
+      AppShellTabId.headspace => true,
     };
   }
 }
@@ -536,6 +548,30 @@ final appShellTabs = [
     branchIndex: 26,
     rootLocation: AppRoutePaths.school,
   ),
+  AppShellTab(
+    id: AppShellTabId.relationships,
+    label: 'Relationships',
+    icon: AppIcons.navRelationships,
+    activeIcon: AppIcons.navRelationshipsActive,
+    branchIndex: 27,
+    rootLocation: AppRoutePaths.relationships,
+  ),
+  AppShellTab(
+    id: AppShellTabId.subsystems,
+    label: 'Subsystems',
+    icon: AppIcons.navSubsystems,
+    activeIcon: AppIcons.navSubsystemsActive,
+    branchIndex: 28,
+    rootLocation: AppRoutePaths.subsystems,
+  ),
+  AppShellTab(
+    id: AppShellTabId.headspace,
+    label: 'Headspace',
+    icon: AppIcons.navHeadspace,
+    activeIcon: AppIcons.navHeadspaceActive,
+    branchIndex: 29,
+    rootLocation: AppRoutePaths.headspace,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -561,6 +597,9 @@ const defaultNavBarOverflowTabIds = [
   'fitness',
   'finance',
   'school',
+  'relationships',
+  'subsystems',
+  'headspace',
   'notes',
   'reminders',
   'statistics',

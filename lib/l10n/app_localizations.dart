@@ -28426,6 +28426,942 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No polls yet.'**
   String get pollNoPolls;
+
+  /// navRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships'**
+  String get navRelationships;
+
+  /// navSubsystems
+  ///
+  /// In en, this message translates to:
+  /// **'Subsystems'**
+  String get navSubsystems;
+
+  /// navHeadspace
+  ///
+  /// In en, this message translates to:
+  /// **'Headspace'**
+  String get navHeadspace;
+
+  /// relNew
+  ///
+  /// In en, this message translates to:
+  /// **'New relationship'**
+  String get relNew;
+
+  /// relEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit relationship'**
+  String get relEdit;
+
+  /// relNeedMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Add system members first to track their relationships.'**
+  String get relNeedMembers;
+
+  /// relWhoseRelationship
+  ///
+  /// In en, this message translates to:
+  /// **'Whose relationship'**
+  String get relWhoseRelationship;
+
+  /// relPickMember
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a member'**
+  String get relPickMember;
+
+  /// relWith
+  ///
+  /// In en, this message translates to:
+  /// **'With'**
+  String get relWith;
+
+  /// relWithMember
+  ///
+  /// In en, this message translates to:
+  /// **'Headmate'**
+  String get relWithMember;
+
+  /// relWithContact
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get relWithContact;
+
+  /// relWithPerson
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else'**
+  String get relWithPerson;
+
+  /// relNoContacts
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet. Add them in Contacts, or choose \"Someone else\".'**
+  String get relNoContacts;
+
+  /// relPersonName
+  ///
+  /// In en, this message translates to:
+  /// **'Their name'**
+  String get relPersonName;
+
+  /// relMutual
+  ///
+  /// In en, this message translates to:
+  /// **'Mutual'**
+  String get relMutual;
+
+  /// relMutualHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Both headmates see it the same way.'**
+  String get relMutualHelp;
+
+  /// relType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get relType;
+
+  /// relStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get relStatus;
+
+  /// relCloseness
+  ///
+  /// In en, this message translates to:
+  /// **'Closeness (1–5)'**
+  String get relCloseness;
+
+  /// relTrust
+  ///
+  /// In en, this message translates to:
+  /// **'Trust (1–5)'**
+  String get relTrust;
+
+  /// relSince
+  ///
+  /// In en, this message translates to:
+  /// **'Known since'**
+  String get relSince;
+
+  /// relUnknownDate
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get relUnknownDate;
+
+  /// relDynamics
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamics'**
+  String get relDynamics;
+
+  /// relDynamicsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'How you get along, roles, what helps'**
+  String get relDynamicsHelp;
+
+  /// relBoundaries
+  ///
+  /// In en, this message translates to:
+  /// **'Boundaries'**
+  String get relBoundaries;
+
+  /// relBoundariesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get relBoundariesHelp;
+
+  /// relDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this relationship?'**
+  String get relDeleteTitle;
+
+  /// relDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its history is deleted too.'**
+  String get relDeleteMessage;
+
+  /// relFriend
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get relFriend;
+
+  /// relBestFriend
+  ///
+  /// In en, this message translates to:
+  /// **'Best friend'**
+  String get relBestFriend;
+
+  /// relPartner
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get relPartner;
+
+  /// relCrush
+  ///
+  /// In en, this message translates to:
+  /// **'Crush'**
+  String get relCrush;
+
+  /// relFamily
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get relFamily;
+
+  /// relSibling
+  ///
+  /// In en, this message translates to:
+  /// **'Sibling'**
+  String get relSibling;
+
+  /// relParentFigure
+  ///
+  /// In en, this message translates to:
+  /// **'Parent figure'**
+  String get relParentFigure;
+
+  /// relChildFigure
+  ///
+  /// In en, this message translates to:
+  /// **'Child figure'**
+  String get relChildFigure;
+
+  /// relCaretaker
+  ///
+  /// In en, this message translates to:
+  /// **'Caretaker'**
+  String get relCaretaker;
+
+  /// relProtector
+  ///
+  /// In en, this message translates to:
+  /// **'Protector'**
+  String get relProtector;
+
+  /// relMentor
+  ///
+  /// In en, this message translates to:
+  /// **'Mentor'**
+  String get relMentor;
+
+  /// relClassmate
+  ///
+  /// In en, this message translates to:
+  /// **'Classmate'**
+  String get relClassmate;
+
+  /// relCoworker
+  ///
+  /// In en, this message translates to:
+  /// **'Coworker'**
+  String get relCoworker;
+
+  /// relRival
+  ///
+  /// In en, this message translates to:
+  /// **'Rival'**
+  String get relRival;
+
+  /// relAcquaintance
+  ///
+  /// In en, this message translates to:
+  /// **'Acquaintance'**
+  String get relAcquaintance;
+
+  /// relStatusActive
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get relStatusActive;
+
+  /// relStatusClose
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get relStatusClose;
+
+  /// relStatusDistant
+  ///
+  /// In en, this message translates to:
+  /// **'Distant'**
+  String get relStatusDistant;
+
+  /// relStatusComplicated
+  ///
+  /// In en, this message translates to:
+  /// **'Complicated'**
+  String get relStatusComplicated;
+
+  /// relStatusEnded
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get relStatusEnded;
+
+  /// relTabAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get relTabAll;
+
+  /// relTabMap
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get relTabMap;
+
+  /// relEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Track relationships between headmates and with people outside the system: types, closeness, boundaries and history.'**
+  String get relEmpty;
+
+  /// relStatTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships'**
+  String get relStatTotal;
+
+  /// relStatInternal
+  ///
+  /// In en, this message translates to:
+  /// **'Between headmates'**
+  String get relStatInternal;
+
+  /// relStatExternal
+  ///
+  /// In en, this message translates to:
+  /// **'With others'**
+  String get relStatExternal;
+
+  /// relStatCloseness
+  ///
+  /// In en, this message translates to:
+  /// **'Avg closeness'**
+  String get relStatCloseness;
+
+  /// relStatTrust
+  ///
+  /// In en, this message translates to:
+  /// **'Avg trust'**
+  String get relStatTrust;
+
+  /// relStatEvents30
+  ///
+  /// In en, this message translates to:
+  /// **'Events, 30 days'**
+  String get relStatEvents30;
+
+  /// relStatPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive events'**
+  String get relStatPositive;
+
+  /// relStatEnded
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get relStatEnded;
+
+  /// relByType
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get relByType;
+
+  /// relMostConnected
+  ///
+  /// In en, this message translates to:
+  /// **'Most connected'**
+  String get relMostConnected;
+
+  /// relConnections
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 connection} other{{count} connections}}'**
+  String relConnections(int count);
+
+  /// relRecentHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Recent history'**
+  String get relRecentHistory;
+
+  /// relNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet.'**
+  String get relNoHistory;
+
+  /// relInternalOnly
+  ///
+  /// In en, this message translates to:
+  /// **'Headmates only'**
+  String get relInternalOnly;
+
+  /// relNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No relationships match.'**
+  String get relNoMatches;
+
+  /// relClosenessValue
+  ///
+  /// In en, this message translates to:
+  /// **'closeness {count}/5'**
+  String relClosenessValue(int count);
+
+  /// relMapEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Add relationships between at least two headmates to see the map.'**
+  String get relMapEmpty;
+
+  /// relMapHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Lines connect headmates; thicker means closer. Pinch to zoom.'**
+  String get relMapHelp;
+
+  /// relGone
+  ///
+  /// In en, this message translates to:
+  /// **'This relationship was deleted.'**
+  String get relGone;
+
+  /// relAddEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get relAddEvent;
+
+  /// relSinceDate
+  ///
+  /// In en, this message translates to:
+  /// **'since {date}'**
+  String relSinceDate(String date);
+
+  /// relHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String relHistory(int count);
+
+  /// relEventTitle
+  ///
+  /// In en, this message translates to:
+  /// **'What happened'**
+  String get relEventTitle;
+
+  /// relEventHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Talked it out, Met for the first time'**
+  String get relEventHint;
+
+  /// relPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get relPositive;
+
+  /// relNeutral
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get relNeutral;
+
+  /// relDifficult
+  ///
+  /// In en, this message translates to:
+  /// **'Difficult'**
+  String get relDifficult;
+
+  /// subNew
+  ///
+  /// In en, this message translates to:
+  /// **'New subsystem'**
+  String get subNew;
+
+  /// subEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit subsystem'**
+  String get subEdit;
+
+  /// subName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get subName;
+
+  /// subEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get subEmoji;
+
+  /// subDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get subDescription;
+
+  /// subPurpose
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose / role in the system'**
+  String get subPurpose;
+
+  /// subPurposeHelp
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Handles school, Protects littles'**
+  String get subPurposeHelp;
+
+  /// subOrigin
+  ///
+  /// In en, this message translates to:
+  /// **'Origin & history'**
+  String get subOrigin;
+
+  /// subPartOfLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Part of'**
+  String get subPartOfLabel;
+
+  /// subTopLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get subTopLevel;
+
+  /// subMembersAndRoles
+  ///
+  /// In en, this message translates to:
+  /// **'Members & roles'**
+  String get subMembersAndRoles;
+
+  /// subImportGroup
+  ///
+  /// In en, this message translates to:
+  /// **'From group: {name}'**
+  String subImportGroup(String name);
+
+  /// subRoleFor
+  ///
+  /// In en, this message translates to:
+  /// **'Role of {name}'**
+  String subRoleFor(String name);
+
+  /// subRoleHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Gatekeeper, Host, Little'**
+  String get subRoleHint;
+
+  /// subConnections
+  ///
+  /// In en, this message translates to:
+  /// **'Connected subsystems'**
+  String get subConnections;
+
+  /// subRules
+  ///
+  /// In en, this message translates to:
+  /// **'Rules & agreements'**
+  String get subRules;
+
+  /// subRulesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get subRulesHelp;
+
+  /// subDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String subDeleteTitle(String name);
+
+  /// subDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Nested subsystems move up a level. Members are not affected.'**
+  String get subDeleteMessage;
+
+  /// subStatSubsystems
+  ///
+  /// In en, this message translates to:
+  /// **'Subsystems'**
+  String get subStatSubsystems;
+
+  /// subStatTopLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get subStatTopLevel;
+
+  /// subStatAssigned
+  ///
+  /// In en, this message translates to:
+  /// **'Members in one'**
+  String get subStatAssigned;
+
+  /// subStatUnassigned
+  ///
+  /// In en, this message translates to:
+  /// **'Not in any'**
+  String get subStatUnassigned;
+
+  /// subEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Group headmates into subsystems with their own members, roles, structure and rules.'**
+  String get subEmpty;
+
+  /// subMembersCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String subMembersCount(int count);
+
+  /// subFrontingShare
+  ///
+  /// In en, this message translates to:
+  /// **'{count}% of fronting'**
+  String subFrontingShare(int count);
+
+  /// subUnassigned
+  ///
+  /// In en, this message translates to:
+  /// **'Members not in a subsystem'**
+  String get subUnassigned;
+
+  /// subGone
+  ///
+  /// In en, this message translates to:
+  /// **'This subsystem was deleted.'**
+  String get subGone;
+
+  /// subAddChild
+  ///
+  /// In en, this message translates to:
+  /// **'Add nested subsystem'**
+  String get subAddChild;
+
+  /// subStatMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get subStatMembers;
+
+  /// subStatFronting30
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting, 30 days'**
+  String get subStatFronting30;
+
+  /// subStatNested
+  ///
+  /// In en, this message translates to:
+  /// **'Nested'**
+  String get subStatNested;
+
+  /// subStatRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships inside'**
+  String get subStatRelationships;
+
+  /// subNoMembers
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet.'**
+  String get subNoMembers;
+
+  /// subStructure
+  ///
+  /// In en, this message translates to:
+  /// **'Structure'**
+  String get subStructure;
+
+  /// subPartOf
+  ///
+  /// In en, this message translates to:
+  /// **'Part of {name}'**
+  String subPartOf(String name);
+
+  /// subNoStructure
+  ///
+  /// In en, this message translates to:
+  /// **'Not nested in or containing other subsystems.'**
+  String get subNoStructure;
+
+  /// subInternalRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships between its members'**
+  String get subInternalRelationships;
+
+  /// hsNewMap
+  ///
+  /// In en, this message translates to:
+  /// **'New map'**
+  String get hsNewMap;
+
+  /// hsMapName
+  ///
+  /// In en, this message translates to:
+  /// **'Map name'**
+  String get hsMapName;
+
+  /// hsIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Map your inner world: places, rooms and areas, how they connect, and who lives where.'**
+  String get hsIntro;
+
+  /// hsMapSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{areas} areas · {links} connections'**
+  String hsMapSummary(int areas, int links);
+
+  /// hsMapGone
+  ///
+  /// In en, this message translates to:
+  /// **'This map was deleted.'**
+  String get hsMapGone;
+
+  /// hsShowList
+  ///
+  /// In en, this message translates to:
+  /// **'Show as list'**
+  String get hsShowList;
+
+  /// hsShowMap
+  ///
+  /// In en, this message translates to:
+  /// **'Show map'**
+  String get hsShowMap;
+
+  /// hsAddArea
+  ///
+  /// In en, this message translates to:
+  /// **'Add area'**
+  String get hsAddArea;
+
+  /// hsNewAreaName
+  ///
+  /// In en, this message translates to:
+  /// **'Area {count}'**
+  String hsNewAreaName(int count);
+
+  /// hsConnect
+  ///
+  /// In en, this message translates to:
+  /// **'Connect areas'**
+  String get hsConnect;
+
+  /// hsConnectPickFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the first area'**
+  String get hsConnectPickFirst;
+
+  /// hsConnectPickSecond
+  ///
+  /// In en, this message translates to:
+  /// **'Now tap the second area'**
+  String get hsConnectPickSecond;
+
+  /// hsArrange
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange'**
+  String get hsArrange;
+
+  /// hsMapSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Map settings'**
+  String get hsMapSettings;
+
+  /// hsEmptyMap
+  ///
+  /// In en, this message translates to:
+  /// **'Add areas with +, drag them into place, and use Connect to link them.'**
+  String get hsEmptyMap;
+
+  /// hsConnectedTo
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no connections} =1{1 connection} other{{count} connections}}'**
+  String hsConnectedTo(int count);
+
+  /// hsLinks
+  ///
+  /// In en, this message translates to:
+  /// **'Connections'**
+  String get hsLinks;
+
+  /// hsEditLink
+  ///
+  /// In en, this message translates to:
+  /// **'Edit connection'**
+  String get hsEditLink;
+
+  /// hsEditArea
+  ///
+  /// In en, this message translates to:
+  /// **'Edit area'**
+  String get hsEditArea;
+
+  /// hsAreaName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hsAreaName;
+
+  /// hsAreaDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get hsAreaDescription;
+
+  /// hsAreaDescriptionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'What it looks like, how it feels, what happens there'**
+  String get hsAreaDescriptionHelp;
+
+  /// hsShape
+  ///
+  /// In en, this message translates to:
+  /// **'Shape'**
+  String get hsShape;
+
+  /// hsShapeRounded
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded'**
+  String get hsShapeRounded;
+
+  /// hsShapeRect
+  ///
+  /// In en, this message translates to:
+  /// **'Square'**
+  String get hsShapeRect;
+
+  /// hsShapeCircle
+  ///
+  /// In en, this message translates to:
+  /// **'Circle'**
+  String get hsShapeCircle;
+
+  /// hsSize
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get hsSize;
+
+  /// hsSmall
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get hsSmall;
+
+  /// hsMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get hsMedium;
+
+  /// hsLarge
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get hsLarge;
+
+  /// hsHuge
+  ///
+  /// In en, this message translates to:
+  /// **'Huge'**
+  String get hsHuge;
+
+  /// hsResidents
+  ///
+  /// In en, this message translates to:
+  /// **'Who is usually here'**
+  String get hsResidents;
+
+  /// hsDeleteArea
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String hsDeleteArea(String name);
+
+  /// hsDeleteAreaMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its connections are removed too.'**
+  String get hsDeleteAreaMessage;
+
+  /// hsLinkLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get hsLinkLabel;
+
+  /// hsLinkHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Door, Path, Stairs'**
+  String get hsLinkHint;
+
+  /// hsOneWay
+  ///
+  /// In en, this message translates to:
+  /// **'One way'**
+  String get hsOneWay;
+
+  /// hsDeleteMap
+  ///
+  /// In en, this message translates to:
+  /// **'Delete map'**
+  String get hsDeleteMap;
+
+  /// hsDeleteMapMessage
+  ///
+  /// In en, this message translates to:
+  /// **'All areas and connections on this map are deleted.'**
+  String get hsDeleteMapMessage;
+
+  /// hsFit
+  ///
+  /// In en, this message translates to:
+  /// **'Fit'**
+  String get hsFit;
 }
 
 class _AppLocalizationsDelegate

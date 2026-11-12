@@ -32,6 +32,35 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.19.0',
+    date: DateTime(2026, 11, 12),
+    features: const [
+      LocalizedText(
+        'Relationships: between headmates and with people outside the '
+            'system, with types, status, closeness, trust, dynamics, '
+            'boundaries, event history, statistics and a relationship map.',
+        'Relaciones: entre miembros y con personas de fuera, con tipo, '
+            'estado, cercanía, confianza, dinámica, límites, historial, '
+            'estadísticas y un mapa de relaciones.',
+      ),
+      LocalizedText(
+        'Subsystems: nested subsystems with members and roles, purpose, '
+            'origin, rules, connections, internal relationships and share '
+            'of fronting; members can be brought in from a group.',
+        'Subsistemas: subsistemas anidados con miembros y roles, propósito, '
+            'origen, normas, conexiones, relaciones internas y parte del '
+            'frente; se pueden traer miembros de un grupo.',
+      ),
+      LocalizedText(
+        'Headspace Mapper: draw your inner world with draggable areas, '
+            'connections, descriptions, residents and a list view.',
+        'Mapa del espacio interior: dibuja tu mundo interior con zonas que '
+            'se arrastran, conexiones, descripciones, residentes y vista de '
+            'lista.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.18.0',
     date: DateTime(2026, 11, 12),
     features: const [

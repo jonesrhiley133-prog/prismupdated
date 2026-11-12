@@ -70,6 +70,9 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/headspace/views/headspace_screen.dart';
+import '../../features/subsystems/views/subsystems_screen.dart';
+import '../../features/relationships/views/relationships_screen.dart';
 import '../../features/school/views/school_screen.dart';
 import '../../features/finance/views/finance_screen.dart';
 import '../../features/fitness/views/fitness_screen.dart';
@@ -151,6 +154,15 @@ final _financeNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _schoolNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'school',
+);
+final _relationshipsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'relationships',
+);
+final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'subsystems',
+);
+final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'headspace',
 );
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
@@ -1237,6 +1249,36 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.school,
                 builder: (context, state) => const SchoolScreen(),
+              ),
+            ],
+          ),
+          // Branch 27: Relationships (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _relationshipsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.relationships,
+                builder: (context, state) => const RelationshipsScreen(),
+              ),
+            ],
+          ),
+          // Branch 28: Subsystems (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _subsystemsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.subsystems,
+                builder: (context, state) => const SubsystemsScreen(),
+              ),
+            ],
+          ),
+          // Branch 29: Headspace (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _headspaceNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.headspace,
+                builder: (context, state) => const HeadspaceScreen(),
               ),
             ],
           ),

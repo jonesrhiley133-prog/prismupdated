@@ -18536,4 +18536,531 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pollNoPolls => 'Aún no hay encuestas.';
+
+  @override
+  String get navRelationships => 'Relaciones';
+
+  @override
+  String get navSubsystems => 'Subsistemas';
+
+  @override
+  String get navHeadspace => 'Espacio interior';
+
+  @override
+  String get relNew => 'Nueva relación';
+
+  @override
+  String get relEdit => 'Editar relación';
+
+  @override
+  String get relNeedMembers =>
+      'Añade primero miembros del sistema para registrar sus relaciones.';
+
+  @override
+  String get relWhoseRelationship => 'De quién es la relación';
+
+  @override
+  String get relPickMember => 'Elige un miembro';
+
+  @override
+  String get relWith => 'Con';
+
+  @override
+  String get relWithMember => 'Miembro';
+
+  @override
+  String get relWithContact => 'Contacto';
+
+  @override
+  String get relWithPerson => 'Otra persona';
+
+  @override
+  String get relNoContacts =>
+      'Aún no hay contactos. Añádelos en Contactos o elige «Otra persona».';
+
+  @override
+  String get relPersonName => 'Su nombre';
+
+  @override
+  String get relMutual => 'Mutua';
+
+  @override
+  String get relMutualHelp => 'Ambos miembros la ven igual.';
+
+  @override
+  String get relType => 'Tipo';
+
+  @override
+  String get relStatus => 'Estado';
+
+  @override
+  String get relCloseness => 'Cercanía (1–5)';
+
+  @override
+  String get relTrust => 'Confianza (1–5)';
+
+  @override
+  String get relSince => 'Desde';
+
+  @override
+  String get relUnknownDate => 'Desconocido';
+
+  @override
+  String get relDynamics => 'Dinámica';
+
+  @override
+  String get relDynamicsHelp => 'Cómo os lleváis, roles, qué ayuda';
+
+  @override
+  String get relBoundaries => 'Límites';
+
+  @override
+  String get relBoundariesHelp => 'Uno por línea';
+
+  @override
+  String get relDeleteTitle => '¿Eliminar esta relación?';
+
+  @override
+  String get relDeleteMessage => 'También se elimina su historial.';
+
+  @override
+  String get relFriend => 'Amistad';
+
+  @override
+  String get relBestFriend => 'Mejor amistad';
+
+  @override
+  String get relPartner => 'Pareja';
+
+  @override
+  String get relCrush => 'Flechazo';
+
+  @override
+  String get relFamily => 'Familia';
+
+  @override
+  String get relSibling => 'Hermano/a';
+
+  @override
+  String get relParentFigure => 'Figura parental';
+
+  @override
+  String get relChildFigure => 'Figura filial';
+
+  @override
+  String get relCaretaker => 'Cuidador/a';
+
+  @override
+  String get relProtector => 'Protector/a';
+
+  @override
+  String get relMentor => 'Mentor/a';
+
+  @override
+  String get relClassmate => 'Compañero/a de clase';
+
+  @override
+  String get relCoworker => 'Compañero/a de trabajo';
+
+  @override
+  String get relRival => 'Rival';
+
+  @override
+  String get relAcquaintance => 'Conocido/a';
+
+  @override
+  String get relStatusActive => 'Activa';
+
+  @override
+  String get relStatusClose => 'Cercana';
+
+  @override
+  String get relStatusDistant => 'Distante';
+
+  @override
+  String get relStatusComplicated => 'Complicada';
+
+  @override
+  String get relStatusEnded => 'Terminada';
+
+  @override
+  String get relTabAll => 'Todas';
+
+  @override
+  String get relTabMap => 'Mapa';
+
+  @override
+  String get relEmpty =>
+      'Registra relaciones entre miembros y con personas de fuera: tipo, cercanía, límites e historial.';
+
+  @override
+  String get relStatTotal => 'Relaciones';
+
+  @override
+  String get relStatInternal => 'Entre miembros';
+
+  @override
+  String get relStatExternal => 'Con otros';
+
+  @override
+  String get relStatCloseness => 'Cercanía media';
+
+  @override
+  String get relStatTrust => 'Confianza media';
+
+  @override
+  String get relStatEvents30 => 'Eventos, 30 días';
+
+  @override
+  String get relStatPositive => 'Eventos positivos';
+
+  @override
+  String get relStatEnded => 'Terminadas';
+
+  @override
+  String get relByType => 'Por tipo';
+
+  @override
+  String get relMostConnected => 'Con más conexiones';
+
+  @override
+  String relConnections(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conexiones',
+      one: '1 conexión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relRecentHistory => 'Historial reciente';
+
+  @override
+  String get relNoHistory => 'Aún no hay eventos.';
+
+  @override
+  String get relInternalOnly => 'Solo miembros';
+
+  @override
+  String get relNoMatches => 'Ninguna relación coincide.';
+
+  @override
+  String relClosenessValue(int count) {
+    return 'cercanía $count/5';
+  }
+
+  @override
+  String get relMapEmpty =>
+      'Añade relaciones entre al menos dos miembros para ver el mapa.';
+
+  @override
+  String get relMapHelp =>
+      'Las líneas unen miembros; más gruesas significa más cercanía. Pellizca para ampliar.';
+
+  @override
+  String get relGone => 'Esta relación se eliminó.';
+
+  @override
+  String get relAddEvent => 'Añadir evento';
+
+  @override
+  String relSinceDate(String date) {
+    return 'desde $date';
+  }
+
+  @override
+  String relHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get relEventTitle => 'Qué pasó';
+
+  @override
+  String get relEventHint => 'p. ej. Lo hablamos, Nos conocimos';
+
+  @override
+  String get relPositive => 'Positivo';
+
+  @override
+  String get relNeutral => 'Neutral';
+
+  @override
+  String get relDifficult => 'Difícil';
+
+  @override
+  String get subNew => 'Nuevo subsistema';
+
+  @override
+  String get subEdit => 'Editar subsistema';
+
+  @override
+  String get subName => 'Nombre';
+
+  @override
+  String get subEmoji => 'Icono';
+
+  @override
+  String get subDescription => 'Descripción';
+
+  @override
+  String get subPurpose => 'Propósito / rol en el sistema';
+
+  @override
+  String get subPurposeHelp =>
+      'p. ej. Se ocupa de la escuela, Protege a los pequeños';
+
+  @override
+  String get subOrigin => 'Origen e historia';
+
+  @override
+  String get subPartOfLabel => 'Parte de';
+
+  @override
+  String get subTopLevel => 'Nivel superior';
+
+  @override
+  String get subMembersAndRoles => 'Miembros y roles';
+
+  @override
+  String subImportGroup(String name) {
+    return 'Del grupo: $name';
+  }
+
+  @override
+  String subRoleFor(String name) {
+    return 'Rol de $name';
+  }
+
+  @override
+  String get subRoleHint => 'p. ej. Guardián, Anfitrión, Pequeño';
+
+  @override
+  String get subConnections => 'Subsistemas conectados';
+
+  @override
+  String get subRules => 'Normas y acuerdos';
+
+  @override
+  String get subRulesHelp => 'Uno por línea';
+
+  @override
+  String subDeleteTitle(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get subDeleteMessage =>
+      'Los subsistemas anidados suben un nivel. Los miembros no se ven afectados.';
+
+  @override
+  String get subStatSubsystems => 'Subsistemas';
+
+  @override
+  String get subStatTopLevel => 'Nivel superior';
+
+  @override
+  String get subStatAssigned => 'Miembros asignados';
+
+  @override
+  String get subStatUnassigned => 'Sin asignar';
+
+  @override
+  String get subEmpty =>
+      'Agrupa miembros en subsistemas con sus propios miembros, roles, estructura y normas.';
+
+  @override
+  String subMembersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count miembros',
+      one: '1 miembro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subFrontingShare(int count) {
+    return '$count% del frente';
+  }
+
+  @override
+  String get subUnassigned => 'Miembros sin subsistema';
+
+  @override
+  String get subGone => 'Este subsistema se eliminó.';
+
+  @override
+  String get subAddChild => 'Añadir subsistema anidado';
+
+  @override
+  String get subStatMembers => 'Miembros';
+
+  @override
+  String get subStatFronting30 => 'Frente, 30 días';
+
+  @override
+  String get subStatNested => 'Anidados';
+
+  @override
+  String get subStatRelationships => 'Relaciones internas';
+
+  @override
+  String get subNoMembers => 'Aún no hay miembros.';
+
+  @override
+  String get subStructure => 'Estructura';
+
+  @override
+  String subPartOf(String name) {
+    return 'Parte de $name';
+  }
+
+  @override
+  String get subNoStructure =>
+      'No está dentro de otros subsistemas ni los contiene.';
+
+  @override
+  String get subInternalRelationships => 'Relaciones entre sus miembros';
+
+  @override
+  String get hsNewMap => 'Nuevo mapa';
+
+  @override
+  String get hsMapName => 'Nombre del mapa';
+
+  @override
+  String get hsIntro =>
+      'Mapea tu mundo interior: lugares, habitaciones y zonas, cómo se conectan y quién vive dónde.';
+
+  @override
+  String hsMapSummary(int areas, int links) {
+    return '$areas zonas · $links conexiones';
+  }
+
+  @override
+  String get hsMapGone => 'Este mapa se eliminó.';
+
+  @override
+  String get hsShowList => 'Ver como lista';
+
+  @override
+  String get hsShowMap => 'Ver mapa';
+
+  @override
+  String get hsAddArea => 'Añadir zona';
+
+  @override
+  String hsNewAreaName(int count) {
+    return 'Zona $count';
+  }
+
+  @override
+  String get hsConnect => 'Conectar zonas';
+
+  @override
+  String get hsConnectPickFirst => 'Toca la primera zona';
+
+  @override
+  String get hsConnectPickSecond => 'Ahora toca la segunda zona';
+
+  @override
+  String get hsArrange => 'Ordenar';
+
+  @override
+  String get hsMapSettings => 'Ajustes del mapa';
+
+  @override
+  String get hsEmptyMap =>
+      'Añade zonas con +, arrástralas a su sitio y usa Conectar para unirlas.';
+
+  @override
+  String hsConnectedTo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conexiones',
+      one: '1 conexión',
+      zero: 'sin conexiones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hsLinks => 'Conexiones';
+
+  @override
+  String get hsEditLink => 'Editar conexión';
+
+  @override
+  String get hsEditArea => 'Editar zona';
+
+  @override
+  String get hsAreaName => 'Nombre';
+
+  @override
+  String get hsAreaDescription => 'Descripción';
+
+  @override
+  String get hsAreaDescriptionHelp => 'Cómo es, qué se siente, qué pasa allí';
+
+  @override
+  String get hsShape => 'Forma';
+
+  @override
+  String get hsShapeRounded => 'Redondeada';
+
+  @override
+  String get hsShapeRect => 'Cuadrada';
+
+  @override
+  String get hsShapeCircle => 'Círculo';
+
+  @override
+  String get hsSize => 'Tamaño';
+
+  @override
+  String get hsSmall => 'Pequeño';
+
+  @override
+  String get hsMedium => 'Mediano';
+
+  @override
+  String get hsLarge => 'Grande';
+
+  @override
+  String get hsHuge => 'Enorme';
+
+  @override
+  String get hsResidents => 'Quién suele estar aquí';
+
+  @override
+  String hsDeleteArea(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get hsDeleteAreaMessage => 'También se eliminan sus conexiones.';
+
+  @override
+  String get hsLinkLabel => 'Etiqueta (opcional)';
+
+  @override
+  String get hsLinkHint => 'p. ej. Puerta, Camino, Escaleras';
+
+  @override
+  String get hsOneWay => 'Un sentido';
+
+  @override
+  String get hsDeleteMap => 'Eliminar mapa';
+
+  @override
+  String get hsDeleteMapMessage =>
+      'Se eliminan todas las zonas y conexiones de este mapa.';
+
+  @override
+  String get hsFit => 'Ajustar';
 }

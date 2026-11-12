@@ -1499,6 +1499,9 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.fitness, _fitnessRootTitle),
       (AppRoutePaths.finance, _financeRootTitle),
       (AppRoutePaths.school, _schoolRootTitle),
+      (AppRoutePaths.relationships, _relationshipsRootTitle),
+      (AppRoutePaths.subsystems, _subsystemsRootTitle),
+      (AppRoutePaths.headspace, _headspaceRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1558,6 +1561,9 @@ String _rootTitle(String location) {
     AppRoutePaths.fitness => _fitnessRootTitle,
     AppRoutePaths.finance => _financeRootTitle,
     AppRoutePaths.school => _schoolRootTitle,
+    AppRoutePaths.relationships => _relationshipsRootTitle,
+    AppRoutePaths.subsystems => _subsystemsRootTitle,
+    AppRoutePaths.headspace => _headspaceRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1713,6 +1719,9 @@ const _achievementsRootTitle = 'Route contract: achievements root';
 const _fitnessRootTitle = 'Route contract: fitness root';
 const _financeRootTitle = 'Route contract: finance root';
 const _schoolRootTitle = 'Route contract: school root';
+const _relationshipsRootTitle = 'Route contract: relationships root';
+const _subsystemsRootTitle = 'Route contract: subsystems root';
+const _headspaceRootTitle = 'Route contract: headspace root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';

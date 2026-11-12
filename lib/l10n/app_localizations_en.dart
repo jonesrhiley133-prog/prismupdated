@@ -18310,4 +18310,530 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pollNoPolls => 'No polls yet.';
+
+  @override
+  String get navRelationships => 'Relationships';
+
+  @override
+  String get navSubsystems => 'Subsystems';
+
+  @override
+  String get navHeadspace => 'Headspace';
+
+  @override
+  String get relNew => 'New relationship';
+
+  @override
+  String get relEdit => 'Edit relationship';
+
+  @override
+  String get relNeedMembers =>
+      'Add system members first to track their relationships.';
+
+  @override
+  String get relWhoseRelationship => 'Whose relationship';
+
+  @override
+  String get relPickMember => 'Choose a member';
+
+  @override
+  String get relWith => 'With';
+
+  @override
+  String get relWithMember => 'Headmate';
+
+  @override
+  String get relWithContact => 'Contact';
+
+  @override
+  String get relWithPerson => 'Someone else';
+
+  @override
+  String get relNoContacts =>
+      'No contacts yet. Add them in Contacts, or choose \"Someone else\".';
+
+  @override
+  String get relPersonName => 'Their name';
+
+  @override
+  String get relMutual => 'Mutual';
+
+  @override
+  String get relMutualHelp => 'Both headmates see it the same way.';
+
+  @override
+  String get relType => 'Type';
+
+  @override
+  String get relStatus => 'Status';
+
+  @override
+  String get relCloseness => 'Closeness (1–5)';
+
+  @override
+  String get relTrust => 'Trust (1–5)';
+
+  @override
+  String get relSince => 'Known since';
+
+  @override
+  String get relUnknownDate => 'Unknown';
+
+  @override
+  String get relDynamics => 'Dynamics';
+
+  @override
+  String get relDynamicsHelp => 'How you get along, roles, what helps';
+
+  @override
+  String get relBoundaries => 'Boundaries';
+
+  @override
+  String get relBoundariesHelp => 'One per line';
+
+  @override
+  String get relDeleteTitle => 'Delete this relationship?';
+
+  @override
+  String get relDeleteMessage => 'Its history is deleted too.';
+
+  @override
+  String get relFriend => 'Friend';
+
+  @override
+  String get relBestFriend => 'Best friend';
+
+  @override
+  String get relPartner => 'Partner';
+
+  @override
+  String get relCrush => 'Crush';
+
+  @override
+  String get relFamily => 'Family';
+
+  @override
+  String get relSibling => 'Sibling';
+
+  @override
+  String get relParentFigure => 'Parent figure';
+
+  @override
+  String get relChildFigure => 'Child figure';
+
+  @override
+  String get relCaretaker => 'Caretaker';
+
+  @override
+  String get relProtector => 'Protector';
+
+  @override
+  String get relMentor => 'Mentor';
+
+  @override
+  String get relClassmate => 'Classmate';
+
+  @override
+  String get relCoworker => 'Coworker';
+
+  @override
+  String get relRival => 'Rival';
+
+  @override
+  String get relAcquaintance => 'Acquaintance';
+
+  @override
+  String get relStatusActive => 'Active';
+
+  @override
+  String get relStatusClose => 'Close';
+
+  @override
+  String get relStatusDistant => 'Distant';
+
+  @override
+  String get relStatusComplicated => 'Complicated';
+
+  @override
+  String get relStatusEnded => 'Ended';
+
+  @override
+  String get relTabAll => 'All';
+
+  @override
+  String get relTabMap => 'Map';
+
+  @override
+  String get relEmpty =>
+      'Track relationships between headmates and with people outside the system: types, closeness, boundaries and history.';
+
+  @override
+  String get relStatTotal => 'Relationships';
+
+  @override
+  String get relStatInternal => 'Between headmates';
+
+  @override
+  String get relStatExternal => 'With others';
+
+  @override
+  String get relStatCloseness => 'Avg closeness';
+
+  @override
+  String get relStatTrust => 'Avg trust';
+
+  @override
+  String get relStatEvents30 => 'Events, 30 days';
+
+  @override
+  String get relStatPositive => 'Positive events';
+
+  @override
+  String get relStatEnded => 'Ended';
+
+  @override
+  String get relByType => 'By type';
+
+  @override
+  String get relMostConnected => 'Most connected';
+
+  @override
+  String relConnections(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count connections',
+      one: '1 connection',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relRecentHistory => 'Recent history';
+
+  @override
+  String get relNoHistory => 'No events yet.';
+
+  @override
+  String get relInternalOnly => 'Headmates only';
+
+  @override
+  String get relNoMatches => 'No relationships match.';
+
+  @override
+  String relClosenessValue(int count) {
+    return 'closeness $count/5';
+  }
+
+  @override
+  String get relMapEmpty =>
+      'Add relationships between at least two headmates to see the map.';
+
+  @override
+  String get relMapHelp =>
+      'Lines connect headmates; thicker means closer. Pinch to zoom.';
+
+  @override
+  String get relGone => 'This relationship was deleted.';
+
+  @override
+  String get relAddEvent => 'Add event';
+
+  @override
+  String relSinceDate(String date) {
+    return 'since $date';
+  }
+
+  @override
+  String relHistory(int count) {
+    return 'History ($count)';
+  }
+
+  @override
+  String get relEventTitle => 'What happened';
+
+  @override
+  String get relEventHint => 'e.g. Talked it out, Met for the first time';
+
+  @override
+  String get relPositive => 'Positive';
+
+  @override
+  String get relNeutral => 'Neutral';
+
+  @override
+  String get relDifficult => 'Difficult';
+
+  @override
+  String get subNew => 'New subsystem';
+
+  @override
+  String get subEdit => 'Edit subsystem';
+
+  @override
+  String get subName => 'Name';
+
+  @override
+  String get subEmoji => 'Icon';
+
+  @override
+  String get subDescription => 'Description';
+
+  @override
+  String get subPurpose => 'Purpose / role in the system';
+
+  @override
+  String get subPurposeHelp => 'e.g. Handles school, Protects littles';
+
+  @override
+  String get subOrigin => 'Origin & history';
+
+  @override
+  String get subPartOfLabel => 'Part of';
+
+  @override
+  String get subTopLevel => 'Top level';
+
+  @override
+  String get subMembersAndRoles => 'Members & roles';
+
+  @override
+  String subImportGroup(String name) {
+    return 'From group: $name';
+  }
+
+  @override
+  String subRoleFor(String name) {
+    return 'Role of $name';
+  }
+
+  @override
+  String get subRoleHint => 'e.g. Gatekeeper, Host, Little';
+
+  @override
+  String get subConnections => 'Connected subsystems';
+
+  @override
+  String get subRules => 'Rules & agreements';
+
+  @override
+  String get subRulesHelp => 'One per line';
+
+  @override
+  String subDeleteTitle(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get subDeleteMessage =>
+      'Nested subsystems move up a level. Members are not affected.';
+
+  @override
+  String get subStatSubsystems => 'Subsystems';
+
+  @override
+  String get subStatTopLevel => 'Top level';
+
+  @override
+  String get subStatAssigned => 'Members in one';
+
+  @override
+  String get subStatUnassigned => 'Not in any';
+
+  @override
+  String get subEmpty =>
+      'Group headmates into subsystems with their own members, roles, structure and rules.';
+
+  @override
+  String subMembersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subFrontingShare(int count) {
+    return '$count% of fronting';
+  }
+
+  @override
+  String get subUnassigned => 'Members not in a subsystem';
+
+  @override
+  String get subGone => 'This subsystem was deleted.';
+
+  @override
+  String get subAddChild => 'Add nested subsystem';
+
+  @override
+  String get subStatMembers => 'Members';
+
+  @override
+  String get subStatFronting30 => 'Fronting, 30 days';
+
+  @override
+  String get subStatNested => 'Nested';
+
+  @override
+  String get subStatRelationships => 'Relationships inside';
+
+  @override
+  String get subNoMembers => 'No members yet.';
+
+  @override
+  String get subStructure => 'Structure';
+
+  @override
+  String subPartOf(String name) {
+    return 'Part of $name';
+  }
+
+  @override
+  String get subNoStructure => 'Not nested in or containing other subsystems.';
+
+  @override
+  String get subInternalRelationships => 'Relationships between its members';
+
+  @override
+  String get hsNewMap => 'New map';
+
+  @override
+  String get hsMapName => 'Map name';
+
+  @override
+  String get hsIntro =>
+      'Map your inner world: places, rooms and areas, how they connect, and who lives where.';
+
+  @override
+  String hsMapSummary(int areas, int links) {
+    return '$areas areas · $links connections';
+  }
+
+  @override
+  String get hsMapGone => 'This map was deleted.';
+
+  @override
+  String get hsShowList => 'Show as list';
+
+  @override
+  String get hsShowMap => 'Show map';
+
+  @override
+  String get hsAddArea => 'Add area';
+
+  @override
+  String hsNewAreaName(int count) {
+    return 'Area $count';
+  }
+
+  @override
+  String get hsConnect => 'Connect areas';
+
+  @override
+  String get hsConnectPickFirst => 'Tap the first area';
+
+  @override
+  String get hsConnectPickSecond => 'Now tap the second area';
+
+  @override
+  String get hsArrange => 'Arrange';
+
+  @override
+  String get hsMapSettings => 'Map settings';
+
+  @override
+  String get hsEmptyMap =>
+      'Add areas with +, drag them into place, and use Connect to link them.';
+
+  @override
+  String hsConnectedTo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count connections',
+      one: '1 connection',
+      zero: 'no connections',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hsLinks => 'Connections';
+
+  @override
+  String get hsEditLink => 'Edit connection';
+
+  @override
+  String get hsEditArea => 'Edit area';
+
+  @override
+  String get hsAreaName => 'Name';
+
+  @override
+  String get hsAreaDescription => 'Description';
+
+  @override
+  String get hsAreaDescriptionHelp =>
+      'What it looks like, how it feels, what happens there';
+
+  @override
+  String get hsShape => 'Shape';
+
+  @override
+  String get hsShapeRounded => 'Rounded';
+
+  @override
+  String get hsShapeRect => 'Square';
+
+  @override
+  String get hsShapeCircle => 'Circle';
+
+  @override
+  String get hsSize => 'Size';
+
+  @override
+  String get hsSmall => 'Small';
+
+  @override
+  String get hsMedium => 'Medium';
+
+  @override
+  String get hsLarge => 'Large';
+
+  @override
+  String get hsHuge => 'Huge';
+
+  @override
+  String get hsResidents => 'Who is usually here';
+
+  @override
+  String hsDeleteArea(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get hsDeleteAreaMessage => 'Its connections are removed too.';
+
+  @override
+  String get hsLinkLabel => 'Label (optional)';
+
+  @override
+  String get hsLinkHint => 'e.g. Door, Path, Stairs';
+
+  @override
+  String get hsOneWay => 'One way';
+
+  @override
+  String get hsDeleteMap => 'Delete map';
+
+  @override
+  String get hsDeleteMapMessage =>
+      'All areas and connections on this map are deleted.';
+
+  @override
+  String get hsFit => 'Fit';
 }
