@@ -40,6 +40,12 @@ abstract final class AppRoutePaths {
   static const sleepLog = '/sleep-log';
   static const cycleInsights = '/cycle-insights';
   static const pollStats = '/poll-stats';
+  static const frontingNotification = '/fronting-notification';
+  static const homeWidgets = '/home-widgets';
+  static const widgetStudioRoute = '/home-widgets/studio/:type';
+  static String widgetStudio(String type, {int? id}) =>
+      '/home-widgets/studio/$type${id == null ? '' : '?id=$id'}';
+  static const todos = '/todos';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';

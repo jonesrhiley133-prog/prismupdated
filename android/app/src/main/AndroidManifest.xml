@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Optional live fronting notification kept pinned by a foreground service. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission
         android:name="android.permission.USE_FINGERPRINT"
@@ -84,6 +88,256 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/app_update_paths" />
         </provider>
+        <service
+            android:name=".FrontingStatusService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Shows which system members are currently fronting as a live status notification the user turned on." />
+        </service>
+        <receiver
+            android:name=".FrontingStatusReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widgets.RecentFrontersWidget"
+            android:exported="true"
+            android:label="@string/widget_label_recent_fronters">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_recent_fronters" />
+        </receiver>
+        <receiver
+            android:name=".widgets.CurrentFronterWidget"
+            android:exported="true"
+            android:label="@string/widget_label_current_fronter">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_current_fronter" />
+        </receiver>
+        <receiver
+            android:name=".widgets.QuickFrontWidget"
+            android:exported="true"
+            android:label="@string/widget_label_quick_front">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_quick_front" />
+        </receiver>
+        <receiver
+            android:name=".widgets.EventsWidget"
+            android:exported="true"
+            android:label="@string/widget_label_events">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_events" />
+        </receiver>
+        <receiver
+            android:name=".widgets.JournalWidget"
+            android:exported="true"
+            android:label="@string/widget_label_journal">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_journal" />
+        </receiver>
+        <receiver
+            android:name=".widgets.CycleWidget"
+            android:exported="true"
+            android:label="@string/widget_label_cycle">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_cycle" />
+        </receiver>
+        <receiver
+            android:name=".widgets.MoodWidget"
+            android:exported="true"
+            android:label="@string/widget_label_mood">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_mood" />
+        </receiver>
+        <receiver
+            android:name=".widgets.LocationWidget"
+            android:exported="true"
+            android:label="@string/widget_label_location">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_location" />
+        </receiver>
+        <receiver
+            android:name=".widgets.SleepWidget"
+            android:exported="true"
+            android:label="@string/widget_label_sleep">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_sleep" />
+        </receiver>
+        <receiver
+            android:name=".widgets.FitnessWidget"
+            android:exported="true"
+            android:label="@string/widget_label_fitness">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_fitness" />
+        </receiver>
+        <receiver
+            android:name=".widgets.TodoWidget"
+            android:exported="true"
+            android:label="@string/widget_label_todo">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_todo" />
+        </receiver>
+        <receiver
+            android:name=".widgets.SchoolWidget"
+            android:exported="true"
+            android:label="@string/widget_label_school">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_school" />
+        </receiver>
+        <receiver
+            android:name=".widgets.FinanceWidget"
+            android:exported="true"
+            android:label="@string/widget_label_finance">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_finance" />
+        </receiver>
+        <receiver
+            android:name=".widgets.CountdownWidget"
+            android:exported="true"
+            android:label="@string/widget_label_countdown">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_countdown" />
+        </receiver>
+        <receiver
+            android:name=".widgets.RelationshipsWidget"
+            android:exported="true"
+            android:label="@string/widget_label_relationships">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_relationships" />
+        </receiver>
+        <receiver
+            android:name=".widgets.AchievementsWidget"
+            android:exported="true"
+            android:label="@string/widget_label_achievements">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_achievements" />
+        </receiver>
+        <receiver
+            android:name=".widgets.HeadspaceWidget"
+            android:exported="true"
+            android:label="@string/widget_label_headspace">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_headspace" />
+        </receiver>
+        <receiver
+            android:name=".widgets.NotesWidget"
+            android:exported="true"
+            android:label="@string/widget_label_notes">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_notes" />
+        </receiver>
+        <receiver
+            android:name=".widgets.SubsystemsWidget"
+            android:exported="true"
+            android:label="@string/widget_label_subsystems">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_subsystems" />
+        </receiver>
+        <receiver
+            android:name=".widgets.StatsWidget"
+            android:exported="true"
+            android:label="@string/widget_label_stats">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prism_widget_stats" />
+        </receiver>
+        <receiver
+            android:name=".PrismWidgetActionReceiver"
+            android:exported="false" />
+        <activity
+            android:name=".PrismWidgetConfigureActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

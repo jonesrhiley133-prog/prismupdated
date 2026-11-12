@@ -29362,6 +29362,1818 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fit'**
   String get hsFit;
+
+  /// fnTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting notification'**
+  String get fnTitle;
+
+  /// fnEnable
+  ///
+  /// In en, this message translates to:
+  /// **'Show who is fronting in the notification shade'**
+  String get fnEnable;
+
+  /// fnEnableHelp
+  ///
+  /// In en, this message translates to:
+  /// **'A live, ongoing notification that updates whenever the front changes.'**
+  String get fnEnableHelp;
+
+  /// fnUnsupportedTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Only available on Android'**
+  String get fnUnsupportedTitle;
+
+  /// fnUnsupportedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Persistent notifications need Android. On iPhone and Mac, Prism posts a quiet alert when the front changes instead; elsewhere the setting is saved for your Android devices.'**
+  String get fnUnsupportedMessage;
+
+  /// fnPermissionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked'**
+  String get fnPermissionTitle;
+
+  /// fnPermissionMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications for Prism so the fronting notification can appear.'**
+  String get fnPermissionMessage;
+
+  /// fnPermissionButton
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications'**
+  String get fnPermissionButton;
+
+  /// fnPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get fnPreview;
+
+  /// fnPreviewHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is fronting, so the notification is hidden.'**
+  String get fnPreviewHidden;
+
+  /// fnRefreshNow
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh now'**
+  String get fnRefreshNow;
+
+  /// fnContent
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get fnContent;
+
+  /// fnTitleTemplate
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get fnTitleTemplate;
+
+  /// fnTitleTemplateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Use {tokens}.'**
+  String fnTitleTemplateHelp(String tokens);
+
+  /// fnGreeting
+  ///
+  /// In en, this message translates to:
+  /// **'Greeting'**
+  String get fnGreeting;
+
+  /// fnGreetingHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Shown under the title, e.g. \"{example}\" Leave empty to show the first info line.'**
+  String fnGreetingHelp(String example);
+
+  /// fnGreetingMemberHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. {example}'**
+  String fnGreetingMemberHint(String example);
+
+  /// fnCustomStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Custom status'**
+  String get fnCustomStatus;
+
+  /// fnCustomStatusHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Busy, low spoons, do not disturb'**
+  String get fnCustomStatusHint;
+
+  /// fnCustomLines
+  ///
+  /// In en, this message translates to:
+  /// **'Extra lines'**
+  String get fnCustomLines;
+
+  /// fnCustomLinesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Your own information, one per line'**
+  String get fnCustomLinesHelp;
+
+  /// fnInformation
+  ///
+  /// In en, this message translates to:
+  /// **'Information to show'**
+  String get fnInformation;
+
+  /// fnInformationHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tick what appears and use the arrows to set the order.'**
+  String get fnInformationHelp;
+
+  /// fnInfoFronters
+  ///
+  /// In en, this message translates to:
+  /// **'Current fronter(s)'**
+  String get fnInfoFronters;
+
+  /// fnInfoCofronters
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting members'**
+  String get fnInfoCofronters;
+
+  /// fnInfoPronouns
+  ///
+  /// In en, this message translates to:
+  /// **'Pronouns'**
+  String get fnInfoPronouns;
+
+  /// fnInfoDuration
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting duration (live timer)'**
+  String get fnInfoDuration;
+
+  /// fnInfoStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status (asleep, session note)'**
+  String get fnInfoStatus;
+
+  /// fnInfoCustomStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Custom status'**
+  String get fnInfoCustomStatus;
+
+  /// fnInfoMood
+  ///
+  /// In en, this message translates to:
+  /// **'Current mood'**
+  String get fnInfoMood;
+
+  /// fnInfoEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Emotions'**
+  String get fnInfoEmotions;
+
+  /// fnInfoLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get fnInfoLocation;
+
+  /// fnInfoActivity
+  ///
+  /// In en, this message translates to:
+  /// **'Current activity (work, workout, study)'**
+  String get fnInfoActivity;
+
+  /// fnInfoCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Extra lines'**
+  String get fnInfoCustom;
+
+  /// fnIcons
+  ///
+  /// In en, this message translates to:
+  /// **'Icons'**
+  String get fnIcons;
+
+  /// fnIconAvatar
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar'**
+  String get fnIconAvatar;
+
+  /// fnIconEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get fnIconEmoji;
+
+  /// fnIconBuiltIn
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get fnIconBuiltIn;
+
+  /// fnIconNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get fnIconNone;
+
+  /// fnIconAvatarHelp
+  ///
+  /// In en, this message translates to:
+  /// **'The fronter\'s profile picture, or their emoji when they have none.'**
+  String get fnIconAvatarHelp;
+
+  /// fnIconEmojiHelp
+  ///
+  /// In en, this message translates to:
+  /// **'The same emoji for everyone (members can override it below).'**
+  String get fnIconEmojiHelp;
+
+  /// fnIconBuiltInHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Only the status-bar icon chosen below.'**
+  String get fnIconBuiltInHelp;
+
+  /// fnIconNoneHelp
+  ///
+  /// In en, this message translates to:
+  /// **'No large picture in the notification.'**
+  String get fnIconNoneHelp;
+
+  /// fnEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get fnEmoji;
+
+  /// fnStatusBarIcon
+  ///
+  /// In en, this message translates to:
+  /// **'Status bar icon'**
+  String get fnStatusBarIcon;
+
+  /// fnAppearance
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get fnAppearance;
+
+  /// fnLayout
+  ///
+  /// In en, this message translates to:
+  /// **'Layout'**
+  String get fnLayout;
+
+  /// fnLayoutCompact
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get fnLayoutCompact;
+
+  /// fnLayoutExpanded
+  ///
+  /// In en, this message translates to:
+  /// **'Expanded'**
+  String get fnLayoutExpanded;
+
+  /// fnLayoutMinimal
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get fnLayoutMinimal;
+
+  /// fnLayoutDetailed
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed'**
+  String get fnLayoutDetailed;
+
+  /// fnStyleSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System style'**
+  String get fnStyleSystem;
+
+  /// fnStyleCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Custom colours'**
+  String get fnStyleCustom;
+
+  /// fnStyleSystemHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your phone\'s notification look and dark mode.'**
+  String get fnStyleSystemHelp;
+
+  /// fnStyleCustomHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Uses your own background and text colours.'**
+  String get fnStyleCustomHelp;
+
+  /// fnAccentColor
+  ///
+  /// In en, this message translates to:
+  /// **'Accent colour'**
+  String get fnAccentColor;
+
+  /// fnBackgroundColor
+  ///
+  /// In en, this message translates to:
+  /// **'Background colour'**
+  String get fnBackgroundColor;
+
+  /// fnTextColor
+  ///
+  /// In en, this message translates to:
+  /// **'Text colour'**
+  String get fnTextColor;
+
+  /// fnColorAuto
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get fnColorAuto;
+
+  /// fnColorCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Custom…'**
+  String get fnColorCustom;
+
+  /// fnColorized
+  ///
+  /// In en, this message translates to:
+  /// **'Fill with accent colour'**
+  String get fnColorized;
+
+  /// fnColorizedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Android only fills the notification when \"Keep running\" below is on.'**
+  String get fnColorizedHelp;
+
+  /// fnActions
+  ///
+  /// In en, this message translates to:
+  /// **'Buttons'**
+  String get fnActions;
+
+  /// fnActionsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick up to three, in the order you tap them.'**
+  String get fnActionsHelp;
+
+  /// fnActionQuickFront
+  ///
+  /// In en, this message translates to:
+  /// **'Quick front'**
+  String get fnActionQuickFront;
+
+  /// fnActionSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get fnActionSwitch;
+
+  /// fnActionOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open Prism'**
+  String get fnActionOpen;
+
+  /// fnActionMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get fnActionMood;
+
+  /// fnActionStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get fnActionStatus;
+
+  /// fnActionDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get fnActionDetails;
+
+  /// fnPerMember
+  ///
+  /// In en, this message translates to:
+  /// **'Per member'**
+  String get fnPerMember;
+
+  /// fnPerMemberHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Give each member their own title, greeting, emoji and colours, used while they front first.'**
+  String get fnPerMemberHelp;
+
+  /// fnMemberStyleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s notification'**
+  String fnMemberStyleTitle(String name);
+
+  /// fnMemberStyleHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a field empty to use the general setting.'**
+  String get fnMemberStyleHelp;
+
+  /// fnAdvanced
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get fnAdvanced;
+
+  /// fnForeground
+  ///
+  /// In en, this message translates to:
+  /// **'Keep running in the background'**
+  String get fnForeground;
+
+  /// fnForegroundHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Runs a small service so the notification cannot be cleared and updates from your other devices arrive even when Prism is closed. Uses a little more battery.'**
+  String get fnForegroundHelp;
+
+  /// fnRestore
+  ///
+  /// In en, this message translates to:
+  /// **'Restore after restart'**
+  String get fnRestore;
+
+  /// fnRestoreHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Show the last notification again after the phone restarts or Prism updates.'**
+  String get fnRestoreHelp;
+
+  /// fnAllowDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Allow swiping away'**
+  String get fnAllowDismiss;
+
+  /// fnAllowDismissHelp
+  ///
+  /// In en, this message translates to:
+  /// **'It comes back the next time the front changes.'**
+  String get fnAllowDismissHelp;
+
+  /// fnDnd
+  ///
+  /// In en, this message translates to:
+  /// **'Show during Do Not Disturb'**
+  String get fnDnd;
+
+  /// fnDndHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a separate channel allowed to bypass Do Not Disturb (Android may ask you to confirm).'**
+  String get fnDndHelp;
+
+  /// fnOpenDndSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Open channel settings'**
+  String get fnOpenDndSettings;
+
+  /// fnLockScreen
+  ///
+  /// In en, this message translates to:
+  /// **'On the lock screen'**
+  String get fnLockScreen;
+
+  /// fnLockShow
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get fnLockShow;
+
+  /// fnLockHideDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Hide names'**
+  String get fnLockHideDetails;
+
+  /// fnLockHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get fnLockHide;
+
+  /// fnLockPreviewShow
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: shows everything'**
+  String get fnLockPreviewShow;
+
+  /// fnLockPreviewHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: \"{title}\"'**
+  String fnLockPreviewHidden(String title);
+
+  /// fnLockPreviewNone
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: hidden'**
+  String get fnLockPreviewNone;
+
+  /// fnWhenEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'When nobody is fronting'**
+  String get fnWhenEmpty;
+
+  /// fnWhenEmptyMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Show a message'**
+  String get fnWhenEmptyMessage;
+
+  /// fnWhenEmptyHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the notification'**
+  String get fnWhenEmptyHide;
+
+  /// fnEmptyMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get fnEmptyMessage;
+
+  /// fnNobodyFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is logged as fronting'**
+  String get fnNobodyFronting;
+
+  /// fnMoodFreshness
+  ///
+  /// In en, this message translates to:
+  /// **'Show moods logged in the last {count} hours'**
+  String fnMoodFreshness(int count);
+
+  /// fnChannelSettings
+  ///
+  /// In en, this message translates to:
+  /// **'System notification settings'**
+  String get fnChannelSettings;
+
+  /// fnBatterySettings
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimisation'**
+  String get fnBatterySettings;
+
+  /// fnBatteryHelp
+  ///
+  /// In en, this message translates to:
+  /// **'If the notification stops updating in the background, exclude Prism from battery optimisation.'**
+  String get fnBatteryHelp;
+
+  /// fnChannelName
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status'**
+  String get fnChannelName;
+
+  /// fnChannelDndName
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status (Do Not Disturb)'**
+  String get fnChannelDndName;
+
+  /// fnChannelDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing notification showing who is currently fronting.'**
+  String get fnChannelDescription;
+
+  /// fnPublicTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Prism'**
+  String get fnPublicTitle;
+
+  /// fnPublicText
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status'**
+  String get fnPublicText;
+
+  /// fnLineFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting: {names}'**
+  String fnLineFronting(String names);
+
+  /// fnLineCofronting
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting: {names}'**
+  String fnLineCofronting(String names);
+
+  /// fnLineSince
+  ///
+  /// In en, this message translates to:
+  /// **'Since {time}'**
+  String fnLineSince(String time);
+
+  /// fnLineAsleep
+  ///
+  /// In en, this message translates to:
+  /// **'Asleep since {time}'**
+  String fnLineAsleep(String time);
+
+  /// fnLineStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String fnLineStatus(String status);
+
+  /// fnLineMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood: {label} ({level}/5)'**
+  String fnLineMood(String label, int level);
+
+  /// fnLineEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Feeling: {list}'**
+  String fnLineEmotions(String list);
+
+  /// fnLineLocation
+  ///
+  /// In en, this message translates to:
+  /// **'At {place}'**
+  String fnLineLocation(String place);
+
+  /// fnLineWorking
+  ///
+  /// In en, this message translates to:
+  /// **'Working: {job}'**
+  String fnLineWorking(String job);
+
+  /// fnLineWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Working out: {activity}'**
+  String fnLineWorkout(String activity);
+
+  /// fnLineStudying
+  ///
+  /// In en, this message translates to:
+  /// **'Studying: {subject}'**
+  String fnLineStudying(String subject);
+
+  /// fnQuickFrontHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a member to start or end their front.'**
+  String get fnQuickFrontHelp;
+
+  /// fnClearStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get fnClearStatus;
+
+  /// fnStatusPresetBusy
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get fnStatusPresetBusy;
+
+  /// fnStatusPresetResting
+  ///
+  /// In en, this message translates to:
+  /// **'Resting'**
+  String get fnStatusPresetResting;
+
+  /// fnStatusPresetLowSpoons
+  ///
+  /// In en, this message translates to:
+  /// **'Low energy'**
+  String get fnStatusPresetLowSpoons;
+
+  /// fnStatusPresetBlurry
+  ///
+  /// In en, this message translates to:
+  /// **'Blurry front'**
+  String get fnStatusPresetBlurry;
+
+  /// fnStatusPresetOk
+  ///
+  /// In en, this message translates to:
+  /// **'Doing okay'**
+  String get fnStatusPresetOk;
+
+  /// fnTopBar
+  ///
+  /// In en, this message translates to:
+  /// **'Front status'**
+  String get fnTopBar;
+
+  /// hwTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen widgets'**
+  String get hwTitle;
+
+  /// hwIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Put Prism on your home screen. Every widget comes in three sizes and has its own look, content and privacy settings.'**
+  String get hwIntro;
+
+  /// hwUnsupportedTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Android only'**
+  String get hwUnsupportedTitle;
+
+  /// hwUnsupportedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen widgets are available on Android phones and tablets. You can still design them here.'**
+  String get hwUnsupportedMessage;
+
+  /// hwOnHomeScreen
+  ///
+  /// In en, this message translates to:
+  /// **'On your home screen'**
+  String get hwOnHomeScreen;
+
+  /// hwNonePlaced
+  ///
+  /// In en, this message translates to:
+  /// **'No widgets yet. Pick one from the library below and tap Add to home screen.'**
+  String get hwNonePlaced;
+
+  /// hwCustomized
+  ///
+  /// In en, this message translates to:
+  /// **'Customized'**
+  String get hwCustomized;
+
+  /// hwUsingDefault
+  ///
+  /// In en, this message translates to:
+  /// **'Using default look'**
+  String get hwUsingDefault;
+
+  /// hwRecentlyUsed
+  ///
+  /// In en, this message translates to:
+  /// **'Recently used'**
+  String get hwRecentlyUsed;
+
+  /// hwLibrary
+  ///
+  /// In en, this message translates to:
+  /// **'Widget library'**
+  String get hwLibrary;
+
+  /// hwCustomize
+  ///
+  /// In en, this message translates to:
+  /// **'Customize'**
+  String get hwCustomize;
+
+  /// hwAddToHome
+  ///
+  /// In en, this message translates to:
+  /// **'Add to home screen'**
+  String get hwAddToHome;
+
+  /// hwPinUnsupported
+  ///
+  /// In en, this message translates to:
+  /// **'Your launcher did not accept the request. Add the widget from the home screen instead (see the steps below).'**
+  String get hwPinUnsupported;
+
+  /// hwPresets
+  ///
+  /// In en, this message translates to:
+  /// **'Saved configurations'**
+  String get hwPresets;
+
+  /// hwPresetName
+  ///
+  /// In en, this message translates to:
+  /// **'Name this look'**
+  String get hwPresetName;
+
+  /// hwPresetSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get hwPresetSaved;
+
+  /// hwApply
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get hwApply;
+
+  /// hwResetDefault
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get hwResetDefault;
+
+  /// hwResetColors
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get hwResetColors;
+
+  /// hwHowToTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Adding widgets on Samsung One UI'**
+  String get hwHowToTitle;
+
+  /// hwHowTo1
+  ///
+  /// In en, this message translates to:
+  /// **'Touch and hold an empty spot on your home screen.'**
+  String get hwHowTo1;
+
+  /// hwHowTo2
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Widgets, then find Prism in the list.'**
+  String get hwHowTo2;
+
+  /// hwHowTo3
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a widget and tap Add, or drag it where you want it.'**
+  String get hwHowTo3;
+
+  /// hwHowTo4
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the handles to resize: the widget switches between small, medium and large layouts.'**
+  String get hwHowTo4;
+
+  /// hwHowTo5
+  ///
+  /// In en, this message translates to:
+  /// **'Touch and hold a widget and tap Settings to customize just that one. You can add the same widget several times with different looks.'**
+  String get hwHowTo5;
+
+  /// hwQuickActionNote
+  ///
+  /// In en, this message translates to:
+  /// **'Widgets keep showing their last content while Prism is closed. Quick buttons (front, mood, check in, tasks) update the widget right away and are saved to Prism the next time it opens.'**
+  String get hwQuickActionNote;
+
+  /// hwCatFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting'**
+  String get hwCatFronting;
+
+  /// hwCatWellness
+  ///
+  /// In en, this message translates to:
+  /// **'Wellness'**
+  String get hwCatWellness;
+
+  /// hwCatProductivity
+  ///
+  /// In en, this message translates to:
+  /// **'Productivity'**
+  String get hwCatProductivity;
+
+  /// hwCatSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get hwCatSystem;
+
+  /// hwRecentFronters
+  ///
+  /// In en, this message translates to:
+  /// **'Recent fronters'**
+  String get hwRecentFronters;
+
+  /// hwCurrentFronter
+  ///
+  /// In en, this message translates to:
+  /// **'Current fronter'**
+  String get hwCurrentFronter;
+
+  /// hwEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming events'**
+  String get hwEvents;
+
+  /// hwLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get hwLocation;
+
+  /// hwTodo
+  ///
+  /// In en, this message translates to:
+  /// **'To-do'**
+  String get hwTodo;
+
+  /// hwCountdown
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown'**
+  String get hwCountdown;
+
+  /// hwNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get hwNotes;
+
+  /// hwStats
+  ///
+  /// In en, this message translates to:
+  /// **'Front statistics'**
+  String get hwStats;
+
+  /// hwDescRecentFronters
+  ///
+  /// In en, this message translates to:
+  /// **'Who fronted lately, with avatars and times.'**
+  String get hwDescRecentFronters;
+
+  /// hwDescCurrentFronter
+  ///
+  /// In en, this message translates to:
+  /// **'Who is fronting now, co-fronters, status and how long.'**
+  String get hwDescCurrentFronter;
+
+  /// hwDescQuickFront
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a member to switch them in or out.'**
+  String get hwDescQuickFront;
+
+  /// hwDescEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Your next calendar events with countdowns.'**
+  String get hwDescEvents;
+
+  /// hwDescJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Writing streak, daily prompt and quick entry.'**
+  String get hwDescJournal;
+
+  /// hwDescCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day, next period estimate and quick log.'**
+  String get hwDescCycle;
+
+  /// hwDescMood
+  ///
+  /// In en, this message translates to:
+  /// **'Latest mood and one-tap mood logging.'**
+  String get hwDescMood;
+
+  /// hwDescLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Where you are checked in, and one-tap check-in to saved places. Uses no GPS.'**
+  String get hwDescLocation;
+
+  /// hwDescSleep
+  ///
+  /// In en, this message translates to:
+  /// **'Last night, recent nights and a sleep/wake button.'**
+  String get hwDescSleep;
+
+  /// hwDescFitness
+  ///
+  /// In en, this message translates to:
+  /// **'This week, goals and recent workouts.'**
+  String get hwDescFitness;
+
+  /// hwDescTodo
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks you can tick off from the home screen.'**
+  String get hwDescTodo;
+
+  /// hwDescSchool
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s classes and what\'s due next.'**
+  String get hwDescSchool;
+
+  /// hwDescFinance
+  ///
+  /// In en, this message translates to:
+  /// **'Month spending, budgets and savings goals.'**
+  String get hwDescFinance;
+
+  /// hwDescCountdown
+  ///
+  /// In en, this message translates to:
+  /// **'Days until birthdays, events and your own dates.'**
+  String get hwDescCountdown;
+
+  /// hwDescRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships, closeness and recent moments.'**
+  String get hwDescRelationships;
+
+  /// hwDescAchievements
+  ///
+  /// In en, this message translates to:
+  /// **'Latest unlocks and what is next.'**
+  String get hwDescAchievements;
+
+  /// hwDescHeadspace
+  ///
+  /// In en, this message translates to:
+  /// **'A mini picture of one of your headspace maps.'**
+  String get hwDescHeadspace;
+
+  /// hwDescNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Recent or pinned notes.'**
+  String get hwDescNotes;
+
+  /// hwDescSubsystems
+  ///
+  /// In en, this message translates to:
+  /// **'Subsystems, their members and roles.'**
+  String get hwDescSubsystems;
+
+  /// hwDescStats
+  ///
+  /// In en, this message translates to:
+  /// **'Switch count and front-time share.'**
+  String get hwDescStats;
+
+  /// hwSizeSmall
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get hwSizeSmall;
+
+  /// hwSizeMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get hwSizeMedium;
+
+  /// hwSizeLarge
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get hwSizeLarge;
+
+  /// hwEditingDefault
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview. Changes apply to new widgets of this type and to placed ones without their own look.'**
+  String get hwEditingDefault;
+
+  /// hwEditingPlaced
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview. Changes apply only to this widget on your home screen.'**
+  String get hwEditingPlaced;
+
+  /// hwTheme
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get hwTheme;
+
+  /// hwThemeSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get hwThemeSystem;
+
+  /// hwThemeLight
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get hwThemeLight;
+
+  /// hwThemeDark
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get hwThemeDark;
+
+  /// hwThemeAmoled
+  ///
+  /// In en, this message translates to:
+  /// **'AMOLED'**
+  String get hwThemeAmoled;
+
+  /// hwPreviewDark
+  ///
+  /// In en, this message translates to:
+  /// **'Preview in dark mode'**
+  String get hwPreviewDark;
+
+  /// hwColors
+  ///
+  /// In en, this message translates to:
+  /// **'Colors'**
+  String get hwColors;
+
+  /// hwBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get hwBackground;
+
+  /// hwGradientEnd
+  ///
+  /// In en, this message translates to:
+  /// **'Gradient end'**
+  String get hwGradientEnd;
+
+  /// hwTextColor
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get hwTextColor;
+
+  /// hwAccentColor
+  ///
+  /// In en, this message translates to:
+  /// **'Accent & buttons'**
+  String get hwAccentColor;
+
+  /// hwGradientAngle
+  ///
+  /// In en, this message translates to:
+  /// **'Gradient angle'**
+  String get hwGradientAngle;
+
+  /// hwShape
+  ///
+  /// In en, this message translates to:
+  /// **'Shape & glass'**
+  String get hwShape;
+
+  /// hwOpacity
+  ///
+  /// In en, this message translates to:
+  /// **'Opacity'**
+  String get hwOpacity;
+
+  /// hwOpacityHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Lower the opacity for a see-through glass look over your wallpaper.'**
+  String get hwOpacityHelp;
+
+  /// hwCorners
+  ///
+  /// In en, this message translates to:
+  /// **'Corner radius'**
+  String get hwCorners;
+
+  /// hwBorder
+  ///
+  /// In en, this message translates to:
+  /// **'Border'**
+  String get hwBorder;
+
+  /// hwBorderColor
+  ///
+  /// In en, this message translates to:
+  /// **'Border color'**
+  String get hwBorderColor;
+
+  /// hwBgImage
+  ///
+  /// In en, this message translates to:
+  /// **'Background image'**
+  String get hwBgImage;
+
+  /// hwChooseImage
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image'**
+  String get hwChooseImage;
+
+  /// hwChangeImage
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get hwChangeImage;
+
+  /// hwRemoveImage
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hwRemoveImage;
+
+  /// hwBlur
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get hwBlur;
+
+  /// hwApplyBlur
+  ///
+  /// In en, this message translates to:
+  /// **'Apply blur'**
+  String get hwApplyBlur;
+
+  /// hwImageDim
+  ///
+  /// In en, this message translates to:
+  /// **'Tint over image'**
+  String get hwImageDim;
+
+  /// hwTextLayout
+  ///
+  /// In en, this message translates to:
+  /// **'Text & layout'**
+  String get hwTextLayout;
+
+  /// hwFontSans
+  ///
+  /// In en, this message translates to:
+  /// **'Sans'**
+  String get hwFontSans;
+
+  /// hwFontSerif
+  ///
+  /// In en, this message translates to:
+  /// **'Serif'**
+  String get hwFontSerif;
+
+  /// hwFontMono
+  ///
+  /// In en, this message translates to:
+  /// **'Mono'**
+  String get hwFontMono;
+
+  /// hwFontCondensed
+  ///
+  /// In en, this message translates to:
+  /// **'Narrow'**
+  String get hwFontCondensed;
+
+  /// hwTextSize
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get hwTextSize;
+
+  /// hwCompact
+  ///
+  /// In en, this message translates to:
+  /// **'Compact layout'**
+  String get hwCompact;
+
+  /// hwCompactHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tighter spacing; turn off for the detailed layout.'**
+  String get hwCompactHelp;
+
+  /// hwCentered
+  ///
+  /// In en, this message translates to:
+  /// **'Center the header'**
+  String get hwCentered;
+
+  /// hwShowRefresh
+  ///
+  /// In en, this message translates to:
+  /// **'Show refresh button'**
+  String get hwShowRefresh;
+
+  /// hwShowAvatars
+  ///
+  /// In en, this message translates to:
+  /// **'Show avatars & emoji'**
+  String get hwShowAvatars;
+
+  /// hwShowAvatarsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Member pictures and icons next to each line.'**
+  String get hwShowAvatarsHelp;
+
+  /// hwAvatarShape
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar shape'**
+  String get hwAvatarShape;
+
+  /// hwShapeCircle
+  ///
+  /// In en, this message translates to:
+  /// **'Circle'**
+  String get hwShapeCircle;
+
+  /// hwShapeRounded
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded'**
+  String get hwShapeRounded;
+
+  /// hwShapeSquare
+  ///
+  /// In en, this message translates to:
+  /// **'Square'**
+  String get hwShapeSquare;
+
+  /// hwPrivacy
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy on the home screen'**
+  String get hwPrivacy;
+
+  /// hwHideSensitive
+  ///
+  /// In en, this message translates to:
+  /// **'Hide sensitive details'**
+  String get hwHideSensitive;
+
+  /// hwHideSensitiveHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps journal and note text, private entries, symptoms and emotions off the home screen. Turn off to show them on this widget.'**
+  String get hwHideSensitiveHelp;
+
+  /// hwHideNames
+  ///
+  /// In en, this message translates to:
+  /// **'Initials instead of names'**
+  String get hwHideNames;
+
+  /// hwHideNamesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Also hides avatars.'**
+  String get hwHideNamesHelp;
+
+  /// hwMaskNumbers
+  ///
+  /// In en, this message translates to:
+  /// **'Mask amounts and grades'**
+  String get hwMaskNumbers;
+
+  /// hwMaskNumbersHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Shows dots instead of money and GPA.'**
+  String get hwMaskNumbersHelp;
+
+  /// hwContent
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get hwContent;
+
+  /// hwTimeRange
+  ///
+  /// In en, this message translates to:
+  /// **'Time range'**
+  String get hwTimeRange;
+
+  /// hwOptMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members shown'**
+  String get hwOptMembers;
+
+  /// hwOptAuto
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get hwOptAuto;
+
+  /// hwOptAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hwOptAll;
+
+  /// hwOptRecent
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent'**
+  String get hwOptRecent;
+
+  /// hwOptShowDone
+  ///
+  /// In en, this message translates to:
+  /// **'Show completed tasks'**
+  String get hwOptShowDone;
+
+  /// hwOptAssignments
+  ///
+  /// In en, this message translates to:
+  /// **'Include school assignments'**
+  String get hwOptAssignments;
+
+  /// hwOptMap
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get hwOptMap;
+
+  /// hwOptNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned notes'**
+  String get hwOptNotes;
+
+  /// hwOptBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdays'**
+  String get hwOptBirthdays;
+
+  /// hwOptEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar events'**
+  String get hwOptEvents;
+
+  /// hwOptCustomCountdowns
+  ///
+  /// In en, this message translates to:
+  /// **'Your own countdowns'**
+  String get hwOptCustomCountdowns;
+
+  /// hwCountdownTitle
+  ///
+  /// In en, this message translates to:
+  /// **'What are you counting down to?'**
+  String get hwCountdownTitle;
+
+  /// hwPickDate
+  ///
+  /// In en, this message translates to:
+  /// **'Pick date & add'**
+  String get hwPickDate;
+
+  /// hwFrontingNow
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting now'**
+  String get hwFrontingNow;
+
+  /// hwFrontedAt
+  ///
+  /// In en, this message translates to:
+  /// **'Since {value}'**
+  String hwFrontedAt(String value);
+
+  /// hwNoRecentFronting
+  ///
+  /// In en, this message translates to:
+  /// **'No fronting logged recently'**
+  String get hwNoRecentFronting;
+
+  /// hwAsleep
+  ///
+  /// In en, this message translates to:
+  /// **'Asleep'**
+  String get hwAsleep;
+
+  /// hwCofronting
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting'**
+  String get hwCofronting;
+
+  /// hwTapToToggle
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to switch in or out'**
+  String get hwTapToToggle;
+
+  /// hwNewEvent
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get hwNewEvent;
+
+  /// hwNoEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing coming up'**
+  String get hwNoEvents;
+
+  /// hwPrivateEntry
+  ///
+  /// In en, this message translates to:
+  /// **'Entry (hidden)'**
+  String get hwPrivateEntry;
+
+  /// hwNextPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Next period'**
+  String get hwNextPeriod;
+
+  /// hwSymptomsToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get hwSymptomsToday;
+
+  /// hwHowAreYou
+  ///
+  /// In en, this message translates to:
+  /// **'How are you?'**
+  String get hwHowAreYou;
+
+  /// hwLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {value}'**
+  String hwLogged(String value);
+
+  /// hwNotCheckedIn
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked in'**
+  String get hwNotCheckedIn;
+
+  /// hwCheckOut
+  ///
+  /// In en, this message translates to:
+  /// **'Check out'**
+  String get hwCheckOut;
+
+  /// hwCheckedOut
+  ///
+  /// In en, this message translates to:
+  /// **'Checked out'**
+  String get hwCheckedOut;
+
+  /// hwPlaces
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get hwPlaces;
+
+  /// hwNoPlaces
+  ///
+  /// In en, this message translates to:
+  /// **'Add places in Prism to check in from here'**
+  String get hwNoPlaces;
+
+  /// hwSleepingNow
+  ///
+  /// In en, this message translates to:
+  /// **'Sleeping'**
+  String get hwSleepingNow;
+
+  /// hwLastNight
+  ///
+  /// In en, this message translates to:
+  /// **'Last sleep'**
+  String get hwLastNight;
+
+  /// hwWakeUp
+  ///
+  /// In en, this message translates to:
+  /// **'Wake up'**
+  String get hwWakeUp;
+
+  /// hwGoodMorning
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning!'**
+  String get hwGoodMorning;
+
+  /// hwGoToSleep
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get hwGoToSleep;
+
+  /// hwSleepWell
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep well'**
+  String get hwSleepWell;
+
+  /// hwWeekMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min this week'**
+  String hwWeekMinutes(int count);
+
+  /// hwWeekWorkouts
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
+  String hwWeekWorkouts(int count);
+
+  /// hwAddTask
+  ///
+  /// In en, this message translates to:
+  /// **'Add task'**
+  String get hwAddTask;
+
+  /// hwAllTasks
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hwAllTasks;
+
+  /// hwNoTasks
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to do'**
+  String get hwNoTasks;
+
+  /// hwTaskFor
+  ///
+  /// In en, this message translates to:
+  /// **'For'**
+  String get hwTaskFor;
+
+  /// hwDueDate
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get hwDueDate;
+
+  /// hwClassesToday
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No classes today} =1{1 class today} other{{count} classes today}}'**
+  String hwClassesToday(int count);
+
+  /// hwSpentMonth
+  ///
+  /// In en, this message translates to:
+  /// **'{value} spent'**
+  String hwSpentMonth(String value);
+
+  /// hwIncomeMonth
+  ///
+  /// In en, this message translates to:
+  /// **'{value} income this month'**
+  String hwIncomeMonth(String value);
+
+  /// hwBirthdayOf
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s birthday'**
+  String hwBirthdayOf(String value);
+
+  /// hwNoCountdowns
+  ///
+  /// In en, this message translates to:
+  /// **'Add a date in the widget settings'**
+  String get hwNoCountdowns;
+
+  /// hwNewNote
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get hwNewNote;
+
+  /// hwNoNotes
+  ///
+  /// In en, this message translates to:
+  /// **'No notes yet'**
+  String get hwNoNotes;
+
+  /// hwSwitches
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 switch} other{{count} switches}}'**
+  String hwSwitches(int count);
+
+  /// hwLastDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String hwLastDays(int count);
+
+  /// hwToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get hwToday;
+
+  /// hwTomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get hwTomorrow;
+
+  /// hwInDays
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} days'**
+  String hwInDays(int count);
+
+  /// hwDaysAgo
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Yesterday} other{{count} days ago}}'**
+  String hwDaysAgo(int count);
+
+  /// hwMinutesShort
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String hwMinutesShort(int count);
+
+  /// hwHoursShort
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hr'**
+  String hwHoursShort(int count);
+
+  /// hwDaysShort
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d'**
+  String hwDaysShort(int count);
+
+  /// hwInTime
+  ///
+  /// In en, this message translates to:
+  /// **'In {value}'**
+  String hwInTime(String value);
+
+  /// hwTimeAgo
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ago'**
+  String hwTimeAgo(String value);
+
+  /// hwHiddenHint
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden for privacy. Turn off Hide sensitive details in this widget to show it.'**
+  String get hwHiddenHint;
+
+  /// hwNoteHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Note (hidden)'**
+  String get hwNoteHidden;
+
+  /// hwTopBar
+  ///
+  /// In en, this message translates to:
+  /// **'Widgets'**
+  String get hwTopBar;
 }
 
 class _AppLocalizationsDelegate

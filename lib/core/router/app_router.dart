@@ -17,6 +17,10 @@ import '../../features/fronting/views/sleep_screen.dart';
 import '../../features/sleep_log/views/sleep_log_screen.dart';
 import '../../features/cycle/views/cycle_insights_screen.dart';
 import '../../features/polls/advanced/poll_stats_screen.dart';
+import '../../features/fronting_notification/views/fronting_notification_settings_screen.dart';
+import '../../features/home_widgets/views/home_widgets_screen.dart';
+import '../../features/home_widgets/views/todo_screen.dart';
+import '../../features/home_widgets/views/widget_studio_screen.dart';
 import '../../features/fronting/views/timeline_screen.dart';
 import '../../features/members/views/members_screen.dart';
 import '../../features/members/navigation/member_navigation_branch.dart';
@@ -398,6 +402,30 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.systemTimeline,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.homeWidgets,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const HomeWidgetsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.widgetStudioRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => WidgetStudioScreen(
+          type: state.pathParameters['type'] ?? 'current_fronter',
+          widgetId: int.tryParse(state.uri.queryParameters['id'] ?? ''),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.todos,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+            TodoScreen(focusNew: state.uri.queryParameters['new'] == '1'),
+      ),
+      GoRoute(
+        path: AppRoutePaths.frontingNotification,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FrontingNotificationSettingsScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.pollStats,

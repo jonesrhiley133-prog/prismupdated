@@ -217,6 +217,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       title: context.l10n.settingsGroups,
                       route: AppRoutePaths.settingsGroups,
                     ),
+                    _navLink(
+                      icon: AppIcons.notificationsOutlined,
+                      iconColor: Colors.teal,
+                      title: context.l10n.fnTitle,
+                      route: AppRoutePaths.frontingNotification,
+                    ),
+                    _navLink(
+                      icon: AppIcons.dashboardCustomize,
+                      iconColor: Colors.indigo,
+                      title: context.l10n.hwTitle,
+                      route: AppRoutePaths.homeWidgets,
+                    ),
                     _leafLink(
                       icon: AppIcons.tuneOutlined,
                       iconColor: Colors.deepPurple,

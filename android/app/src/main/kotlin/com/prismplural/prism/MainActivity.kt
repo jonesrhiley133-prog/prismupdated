@@ -45,7 +45,43 @@ import java.io.File
 import java.io.FileInputStream
 
 class MainActivity : FlutterFragmentActivity() {
+    private var frontingStatusChannel: MethodChannel? = null
+    private var pendingFrontingAction: String? = null
+    private var pendingWidgetOpen: String? = null
+    private var pendingWidgetOpenId: Int = -1
+
+    override fun onDestroy() {
+        PrismWidgets.channel = null
+        super.onDestroy()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra(PrismWidgets.EXTRA_ACTION)?.let { widgetAction ->
+            val wid = intent.getIntExtra(PrismWidgets.EXTRA_WIDGET_ID, -1)
+            intent.removeExtra(PrismWidgets.EXTRA_ACTION)
+            val ch = PrismWidgets.channel
+            if (ch == null) {
+                pendingWidgetOpen = widgetAction
+                pendingWidgetOpenId = wid
+            } else {
+                ch.invokeMethod("widgetOpen", mapOf("id" to wid, "action" to widgetAction))
+            }
+            return
+        }
+        val action = intent.getStringExtra(FrontingStatus.ACTION_EXTRA) ?: return
+        intent.removeExtra(FrontingStatus.ACTION_EXTRA)
+        val channel = frontingStatusChannel
+        if (channel == null) {
+            pendingFrontingAction = action
+        } else {
+            channel.invokeMethod("onAction", action)
+        }
+    }
+
     companion object {
+        private const val WIDGETS_CHANNEL = "com.prismplural.prism/widgets"
+        private const val FRONTING_STATUS_CHANNEL = "com.prismplural.prism/fronting_status"
         private const val APP_UPDATE_CHANNEL = "com.prismplural.prism/app_update"
         private const val TAG = "PrismMainActivity"
         private const val SECURE_DISPLAY_CHANNEL = "com.prism.prism_plurality/secure_display"
@@ -80,6 +116,147 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        PrismWidgets.channel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            WIDGETS_CHANNEL,
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "listWidgets" -> {
+                        val mgr = android.appwidget.AppWidgetManager.getInstance(this)
+                        result.success(
+                            PrismWidgets.allPlaced(this).map { (id, type) ->
+                                val o = mgr.getAppWidgetOptions(id)
+                                mapOf(
+                                    "id" to id,
+                                    "type" to type,
+                                    "minWidth" to o.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+                                    "maxHeight" to o.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+                                )
+                            },
+                        )
+                    }
+                    "updateWidgets" -> {
+                        val models = call.argument<Map<String, String>>("models") ?: emptyMap()
+                        val mgr = android.appwidget.AppWidgetManager.getInstance(this)
+                        for ((id, json) in models) {
+                            val wid = id.toIntOrNull() ?: continue
+                            PrismWidgets.saveModel(this, wid, json)
+                            PrismWidgets.render(this, mgr, wid)
+                        }
+                        result.success(true)
+                    }
+                    "takeQueue" -> result.success(PrismWidgets.takeQueue(this))
+                    "takePendingOpen" -> {
+                        val a = pendingWidgetOpen ?: intent?.getStringExtra(PrismWidgets.EXTRA_ACTION)
+                        val id = pendingWidgetOpenId.takeIf { pendingWidgetOpen != null }
+                            ?: intent?.getIntExtra(PrismWidgets.EXTRA_WIDGET_ID, -1) ?: -1
+                        pendingWidgetOpen = null
+                        intent?.removeExtra(PrismWidgets.EXTRA_ACTION)
+                        result.success(if (a == null) null else mapOf("id" to id, "action" to a))
+                    }
+                    "canPin" -> result.success(
+                        android.appwidget.AppWidgetManager.getInstance(this).isRequestPinAppWidgetSupported,
+                    )
+                    "pin" -> {
+                        val type = call.argument<String>("type")
+                        val cls = PrismWidgets.types.entries.firstOrNull { it.value == type }?.key
+                        if (cls == null) {
+                            result.success(false)
+                        } else {
+                            val ok = android.appwidget.AppWidgetManager.getInstance(this).requestPinAppWidget(
+                                android.content.ComponentName(this, "com.prismplural.prism.widgets.$cls"),
+                                null,
+                                null,
+                            )
+                            result.success(ok)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
+        frontingStatusChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            FRONTING_STATUS_CHANNEL,
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "ensureChannels" -> {
+                        FrontingStatus.ensureChannels(
+                            this,
+                            call.argument<String>("name") ?: "Fronting status",
+                            call.argument<String>("dndName") ?: "Fronting status (Do Not Disturb)",
+                            call.argument<String>("description") ?: "",
+                        )
+                        result.success(true)
+                    }
+                    "show" -> {
+                        val raw = call.argument<String>("snapshot")
+                        if (raw == null) {
+                            result.error("bad_args", "snapshot missing", null)
+                        } else {
+                            try {
+                                FrontingStatus.show(this, org.json.JSONObject(raw))
+                                result.success(FrontingStatus.canPost(this))
+                            } catch (e: Exception) {
+                                result.error("show_failed", e.message, null)
+                            }
+                        }
+                    }
+                    "cancel" -> {
+                        FrontingStatus.cancel(this)
+                        result.success(true)
+                    }
+                    "isShowing" -> result.success(FrontingStatus.isShowing(this))
+                    "wasDismissed" -> result.success(FrontingStatus.wasDismissed(this))
+                    "notificationsEnabled" -> result.success(FrontingStatus.canPost(this))
+                    "openChannelSettings" -> {
+                        try {
+                            val i = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                                    .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+                                    .putExtra(
+                                        android.provider.Settings.EXTRA_CHANNEL_ID,
+                                        call.argument<String>("channel") ?: FrontingStatus.CHANNEL,
+                                    )
+                            } else {
+                                Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                            }
+                            startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("settings_unavailable", e.message, null)
+                        }
+                    }
+                    "openBatterySettings" -> {
+                        try {
+                            startActivity(
+                                Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("settings_unavailable", e.message, null)
+                        }
+                    }
+                    "isIgnoringBatteryOptimizations" -> {
+                        val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+                        result.success(
+                            Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                                pm.isIgnoringBatteryOptimizations(packageName),
+                        )
+                    }
+                    "takePendingAction" -> {
+                        val action = pendingFrontingAction ?: intent?.getStringExtra(FrontingStatus.ACTION_EXTRA)
+                        pendingFrontingAction = null
+                        intent?.removeExtra(FrontingStatus.ACTION_EXTRA)
+                        result.success(action)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, APP_UPDATE_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {

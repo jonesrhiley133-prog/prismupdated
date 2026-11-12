@@ -19063,4 +19063,1052 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get hsFit => 'Ajustar';
+
+  @override
+  String get fnTitle => 'Notificación de frente';
+
+  @override
+  String get fnEnable => 'Mostrar quién está al frente en las notificaciones';
+
+  @override
+  String get fnEnableHelp =>
+      'Una notificación continua que se actualiza cada vez que cambia el frente.';
+
+  @override
+  String get fnUnsupportedTitle => 'Solo disponible en Android';
+
+  @override
+  String get fnUnsupportedMessage =>
+      'Las notificaciones persistentes necesitan Android. En iPhone y Mac, Prism envía un aviso silencioso cuando cambia el frente; en otros sistemas el ajuste se guarda para tus dispositivos Android.';
+
+  @override
+  String get fnPermissionTitle => 'Las notificaciones están bloqueadas';
+
+  @override
+  String get fnPermissionMessage =>
+      'Permite las notificaciones de Prism para que aparezca la notificación de frente.';
+
+  @override
+  String get fnPermissionButton => 'Permitir notificaciones';
+
+  @override
+  String get fnPreview => 'Vista previa';
+
+  @override
+  String get fnPreviewHidden =>
+      'Nadie está al frente, así que la notificación está oculta.';
+
+  @override
+  String get fnRefreshNow => 'Actualizar ahora';
+
+  @override
+  String get fnContent => 'Texto';
+
+  @override
+  String get fnTitleTemplate => 'Título';
+
+  @override
+  String fnTitleTemplateHelp(String tokens) {
+    return 'Usa $tokens.';
+  }
+
+  @override
+  String get fnGreeting => 'Saludo';
+
+  @override
+  String fnGreetingHelp(String example) {
+    return 'Se muestra bajo el título, p. ej. «$example» Déjalo vacío para mostrar la primera línea.';
+  }
+
+  @override
+  String fnGreetingMemberHint(String example) {
+    return 'p. ej. $example';
+  }
+
+  @override
+  String get fnCustomStatus => 'Estado personalizado';
+
+  @override
+  String get fnCustomStatusHint =>
+      'p. ej. Ocupado/a, poca energía, no molestar';
+
+  @override
+  String get fnCustomLines => 'Líneas extra';
+
+  @override
+  String get fnCustomLinesHelp => 'Tu propia información, una por línea';
+
+  @override
+  String get fnInformation => 'Información que mostrar';
+
+  @override
+  String get fnInformationHelp =>
+      'Marca lo que aparece y usa las flechas para ordenarlo.';
+
+  @override
+  String get fnInfoFronters => 'Quién está al frente';
+
+  @override
+  String get fnInfoCofronters => 'Miembros en co-frente';
+
+  @override
+  String get fnInfoPronouns => 'Pronombres';
+
+  @override
+  String get fnInfoDuration => 'Duración del frente (cronómetro)';
+
+  @override
+  String get fnInfoStatus => 'Estado del frente (dormido, nota)';
+
+  @override
+  String get fnInfoCustomStatus => 'Estado personalizado';
+
+  @override
+  String get fnInfoMood => 'Ánimo actual';
+
+  @override
+  String get fnInfoEmotions => 'Emociones';
+
+  @override
+  String get fnInfoLocation => 'Ubicación actual';
+
+  @override
+  String get fnInfoActivity => 'Actividad (trabajo, ejercicio, estudio)';
+
+  @override
+  String get fnInfoCustom => 'Líneas extra';
+
+  @override
+  String get fnIcons => 'Iconos';
+
+  @override
+  String get fnIconAvatar => 'Avatar';
+
+  @override
+  String get fnIconEmoji => 'Emoji';
+
+  @override
+  String get fnIconBuiltIn => 'Integrado';
+
+  @override
+  String get fnIconNone => 'Ninguno';
+
+  @override
+  String get fnIconAvatarHelp =>
+      'La foto del miembro al frente, o su emoji si no tiene.';
+
+  @override
+  String get fnIconEmojiHelp =>
+      'El mismo emoji para todos (cada miembro puede cambiarlo abajo).';
+
+  @override
+  String get fnIconBuiltInHelp =>
+      'Solo el icono de la barra de estado elegido abajo.';
+
+  @override
+  String get fnIconNoneHelp => 'Sin imagen grande en la notificación.';
+
+  @override
+  String get fnEmoji => 'Emoji';
+
+  @override
+  String get fnStatusBarIcon => 'Icono de la barra de estado';
+
+  @override
+  String get fnAppearance => 'Apariencia';
+
+  @override
+  String get fnLayout => 'Diseño';
+
+  @override
+  String get fnLayoutCompact => 'Compacto';
+
+  @override
+  String get fnLayoutExpanded => 'Ampliado';
+
+  @override
+  String get fnLayoutMinimal => 'Mínimo';
+
+  @override
+  String get fnLayoutDetailed => 'Detallado';
+
+  @override
+  String get fnStyleSystem => 'Estilo del sistema';
+
+  @override
+  String get fnStyleCustom => 'Colores propios';
+
+  @override
+  String get fnStyleSystemHelp =>
+      'Coincide con el aspecto de las notificaciones y el modo oscuro del teléfono.';
+
+  @override
+  String get fnStyleCustomHelp => 'Usa tus propios colores de fondo y texto.';
+
+  @override
+  String get fnAccentColor => 'Color de acento';
+
+  @override
+  String get fnBackgroundColor => 'Color de fondo';
+
+  @override
+  String get fnTextColor => 'Color del texto';
+
+  @override
+  String get fnColorAuto => 'Automático';
+
+  @override
+  String get fnColorCustom => 'Personalizado…';
+
+  @override
+  String get fnColorized => 'Rellenar con el color de acento';
+
+  @override
+  String get fnColorizedHelp =>
+      'Android solo rellena la notificación si «Mantener activo» está activado.';
+
+  @override
+  String get fnActions => 'Botones';
+
+  @override
+  String get fnActionsHelp =>
+      'Elige hasta tres, en el orden en que los toques.';
+
+  @override
+  String get fnActionQuickFront => 'Frente rápido';
+
+  @override
+  String get fnActionSwitch => 'Cambiar';
+
+  @override
+  String get fnActionOpen => 'Abrir Prism';
+
+  @override
+  String get fnActionMood => 'Ánimo';
+
+  @override
+  String get fnActionStatus => 'Estado';
+
+  @override
+  String get fnActionDetails => 'Detalles';
+
+  @override
+  String get fnPerMember => 'Por miembro';
+
+  @override
+  String get fnPerMemberHelp =>
+      'Da a cada miembro su propio título, saludo, emoji y colores, usados cuando está al frente.';
+
+  @override
+  String fnMemberStyleTitle(String name) {
+    return 'Notificación de $name';
+  }
+
+  @override
+  String get fnMemberStyleHelp =>
+      'Deja un campo vacío para usar el ajuste general.';
+
+  @override
+  String get fnAdvanced => 'Avanzado';
+
+  @override
+  String get fnForeground => 'Mantener activo en segundo plano';
+
+  @override
+  String get fnForegroundHelp =>
+      'Ejecuta un pequeño servicio para que la notificación no se pueda borrar y lleguen los cambios de tus otros dispositivos aunque Prism esté cerrado. Gasta algo más de batería.';
+
+  @override
+  String get fnRestore => 'Restaurar tras reiniciar';
+
+  @override
+  String get fnRestoreHelp =>
+      'Volver a mostrar la última notificación tras reiniciar el teléfono o actualizar Prism.';
+
+  @override
+  String get fnAllowDismiss => 'Permitir deslizar para quitar';
+
+  @override
+  String get fnAllowDismissHelp =>
+      'Vuelve la próxima vez que cambie el frente.';
+
+  @override
+  String get fnDnd => 'Mostrar en No molestar';
+
+  @override
+  String get fnDndHelp =>
+      'Usa un canal aparte que puede saltarse No molestar (Android puede pedir confirmación).';
+
+  @override
+  String get fnOpenDndSettings => 'Abrir ajustes del canal';
+
+  @override
+  String get fnLockScreen => 'En la pantalla de bloqueo';
+
+  @override
+  String get fnLockShow => 'Mostrar todo';
+
+  @override
+  String get fnLockHideDetails => 'Ocultar nombres';
+
+  @override
+  String get fnLockHide => 'Ocultar';
+
+  @override
+  String get fnLockPreviewShow => 'Bloqueo: se muestra todo';
+
+  @override
+  String fnLockPreviewHidden(String title) {
+    return 'Bloqueo: «$title»';
+  }
+
+  @override
+  String get fnLockPreviewNone => 'Bloqueo: oculta';
+
+  @override
+  String get fnWhenEmpty => 'Cuando nadie está al frente';
+
+  @override
+  String get fnWhenEmptyMessage => 'Mostrar un mensaje';
+
+  @override
+  String get fnWhenEmptyHide => 'Ocultar la notificación';
+
+  @override
+  String get fnEmptyMessage => 'Mensaje';
+
+  @override
+  String get fnNobodyFronting => 'Nadie registrado al frente';
+
+  @override
+  String fnMoodFreshness(int count) {
+    return 'Mostrar ánimos de las últimas $count horas';
+  }
+
+  @override
+  String get fnChannelSettings => 'Ajustes de notificación del sistema';
+
+  @override
+  String get fnBatterySettings => 'Optimización de batería';
+
+  @override
+  String get fnBatteryHelp =>
+      'Si la notificación deja de actualizarse en segundo plano, excluye Prism de la optimización de batería.';
+
+  @override
+  String get fnChannelName => 'Estado del frente';
+
+  @override
+  String get fnChannelDndName => 'Estado del frente (No molestar)';
+
+  @override
+  String get fnChannelDescription =>
+      'Notificación continua que muestra quién está al frente.';
+
+  @override
+  String get fnPublicTitle => 'Prism';
+
+  @override
+  String get fnPublicText => 'Estado del frente';
+
+  @override
+  String fnLineFronting(String names) {
+    return 'Al frente: $names';
+  }
+
+  @override
+  String fnLineCofronting(String names) {
+    return 'En co-frente: $names';
+  }
+
+  @override
+  String fnLineSince(String time) {
+    return 'Desde las $time';
+  }
+
+  @override
+  String fnLineAsleep(String time) {
+    return 'Dormido/a desde las $time';
+  }
+
+  @override
+  String fnLineStatus(String status) {
+    return 'Estado: $status';
+  }
+
+  @override
+  String fnLineMood(String label, int level) {
+    return 'Ánimo: $label ($level/5)';
+  }
+
+  @override
+  String fnLineEmotions(String list) {
+    return 'Sintiendo: $list';
+  }
+
+  @override
+  String fnLineLocation(String place) {
+    return 'En $place';
+  }
+
+  @override
+  String fnLineWorking(String job) {
+    return 'Trabajando: $job';
+  }
+
+  @override
+  String fnLineWorkout(String activity) {
+    return 'Haciendo ejercicio: $activity';
+  }
+
+  @override
+  String fnLineStudying(String subject) {
+    return 'Estudiando: $subject';
+  }
+
+  @override
+  String get fnQuickFrontHelp =>
+      'Toca un miembro para empezar o terminar su frente.';
+
+  @override
+  String get fnClearStatus => 'Borrar';
+
+  @override
+  String get fnStatusPresetBusy => 'Ocupado/a';
+
+  @override
+  String get fnStatusPresetResting => 'Descansando';
+
+  @override
+  String get fnStatusPresetLowSpoons => 'Poca energía';
+
+  @override
+  String get fnStatusPresetBlurry => 'Frente difuso';
+
+  @override
+  String get fnStatusPresetOk => 'Bien';
+
+  @override
+  String get fnTopBar => 'Estado';
+
+  @override
+  String get hwTitle => 'Widgets de inicio';
+
+  @override
+  String get hwIntro =>
+      'Pon Prism en tu pantalla de inicio. Cada widget tiene tres tamaños y su propio aspecto, contenido y privacidad.';
+
+  @override
+  String get hwUnsupportedTitle => 'Solo Android';
+
+  @override
+  String get hwUnsupportedMessage =>
+      'Los widgets de inicio están disponibles en Android. Aun así puedes diseñarlos aquí.';
+
+  @override
+  String get hwOnHomeScreen => 'En tu pantalla de inicio';
+
+  @override
+  String get hwNonePlaced =>
+      'Aún no hay widgets. Elige uno de la biblioteca y toca Añadir a inicio.';
+
+  @override
+  String get hwCustomized => 'Personalizado';
+
+  @override
+  String get hwUsingDefault => 'Aspecto predeterminado';
+
+  @override
+  String get hwRecentlyUsed => 'Usados recientemente';
+
+  @override
+  String get hwLibrary => 'Biblioteca de widgets';
+
+  @override
+  String get hwCustomize => 'Personalizar';
+
+  @override
+  String get hwAddToHome => 'Añadir a inicio';
+
+  @override
+  String get hwPinUnsupported =>
+      'Tu lanzador no aceptó la solicitud. Añade el widget desde la pantalla de inicio (mira los pasos abajo).';
+
+  @override
+  String get hwPresets => 'Configuraciones guardadas';
+
+  @override
+  String get hwPresetName => 'Nombre de este aspecto';
+
+  @override
+  String get hwPresetSaved => 'Configuración guardada';
+
+  @override
+  String get hwApply => 'Aplicar';
+
+  @override
+  String get hwResetDefault => 'Restablecer';
+
+  @override
+  String get hwResetColors => 'Restablecer';
+
+  @override
+  String get hwHowToTitle => 'Añadir widgets en Samsung One UI';
+
+  @override
+  String get hwHowTo1 =>
+      'Mantén pulsado un espacio vacío de la pantalla de inicio.';
+
+  @override
+  String get hwHowTo2 => 'Toca Widgets y busca Prism en la lista.';
+
+  @override
+  String get hwHowTo3 =>
+      'Elige un widget y toca Añadir, o arrástralo adonde quieras.';
+
+  @override
+  String get hwHowTo4 =>
+      'Arrastra los bordes para cambiar el tamaño: el widget cambia entre diseño pequeño, mediano y grande.';
+
+  @override
+  String get hwHowTo5 =>
+      'Mantén pulsado un widget y toca Ajustes para personalizar solo ese. Puedes añadir el mismo widget varias veces con aspectos distintos.';
+
+  @override
+  String get hwQuickActionNote =>
+      'Los widgets muestran su último contenido con Prism cerrado. Los botones rápidos (frente, ánimo, registro, tareas) actualizan el widget al instante y se guardan en Prism la próxima vez que se abra.';
+
+  @override
+  String get hwCatFronting => 'Frente';
+
+  @override
+  String get hwCatWellness => 'Bienestar';
+
+  @override
+  String get hwCatProductivity => 'Productividad';
+
+  @override
+  String get hwCatSystem => 'Sistema';
+
+  @override
+  String get hwRecentFronters => 'Frentes recientes';
+
+  @override
+  String get hwCurrentFronter => 'Frente actual';
+
+  @override
+  String get hwEvents => 'Próximos eventos';
+
+  @override
+  String get hwLocation => 'Ubicación';
+
+  @override
+  String get hwTodo => 'Tareas';
+
+  @override
+  String get hwCountdown => 'Cuenta atrás';
+
+  @override
+  String get hwNotes => 'Notas';
+
+  @override
+  String get hwStats => 'Estadísticas de frente';
+
+  @override
+  String get hwDescRecentFronters =>
+      'Quién estuvo al frente, con avatares y horas.';
+
+  @override
+  String get hwDescCurrentFronter =>
+      'Quién está al frente, co-frentes, estado y duración.';
+
+  @override
+  String get hwDescQuickFront =>
+      'Toca un miembro para ponerlo o quitarlo del frente.';
+
+  @override
+  String get hwDescEvents => 'Tus próximos eventos con cuenta atrás.';
+
+  @override
+  String get hwDescJournal =>
+      'Racha de escritura, sugerencia diaria y entrada rápida.';
+
+  @override
+  String get hwDescCycle =>
+      'Día del ciclo, próxima regla estimada y registro rápido.';
+
+  @override
+  String get hwDescMood => 'Último ánimo y registro con un toque.';
+
+  @override
+  String get hwDescLocation =>
+      'Dónde estás registrado/a y registro con un toque en lugares guardados. No usa GPS.';
+
+  @override
+  String get hwDescSleep =>
+      'Anoche, noches recientes y botón de dormir/despertar.';
+
+  @override
+  String get hwDescFitness =>
+      'Esta semana, objetivos y entrenamientos recientes.';
+
+  @override
+  String get hwDescTodo =>
+      'Tareas que puedes marcar desde la pantalla de inicio.';
+
+  @override
+  String get hwDescSchool => 'Clases de hoy y próximas entregas.';
+
+  @override
+  String get hwDescFinance =>
+      'Gasto del mes, presupuestos y objetivos de ahorro.';
+
+  @override
+  String get hwDescCountdown =>
+      'Días hasta cumpleaños, eventos y tus propias fechas.';
+
+  @override
+  String get hwDescRelationships =>
+      'Relaciones, cercanía y momentos recientes.';
+
+  @override
+  String get hwDescAchievements => 'Últimos logros y los siguientes.';
+
+  @override
+  String get hwDescHeadspace =>
+      'Una miniatura de uno de tus mapas de headspace.';
+
+  @override
+  String get hwDescNotes => 'Notas recientes o fijadas.';
+
+  @override
+  String get hwDescSubsystems => 'Subsistemas, sus miembros y roles.';
+
+  @override
+  String get hwDescStats => 'Número de cambios y reparto del tiempo al frente.';
+
+  @override
+  String get hwSizeSmall => 'Pequeño';
+
+  @override
+  String get hwSizeMedium => 'Mediano';
+
+  @override
+  String get hwSizeLarge => 'Grande';
+
+  @override
+  String get hwEditingDefault =>
+      'Vista previa en vivo. Los cambios se aplican a widgets nuevos de este tipo y a los colocados sin aspecto propio.';
+
+  @override
+  String get hwEditingPlaced =>
+      'Vista previa en vivo. Los cambios solo se aplican a este widget de tu pantalla de inicio.';
+
+  @override
+  String get hwTheme => 'Tema';
+
+  @override
+  String get hwThemeSystem => 'Sistema';
+
+  @override
+  String get hwThemeLight => 'Claro';
+
+  @override
+  String get hwThemeDark => 'Oscuro';
+
+  @override
+  String get hwThemeAmoled => 'AMOLED';
+
+  @override
+  String get hwPreviewDark => 'Vista previa en modo oscuro';
+
+  @override
+  String get hwColors => 'Colores';
+
+  @override
+  String get hwBackground => 'Fondo';
+
+  @override
+  String get hwGradientEnd => 'Fin del degradado';
+
+  @override
+  String get hwTextColor => 'Texto';
+
+  @override
+  String get hwAccentColor => 'Acento y botones';
+
+  @override
+  String get hwGradientAngle => 'Ángulo del degradado';
+
+  @override
+  String get hwShape => 'Forma y cristal';
+
+  @override
+  String get hwOpacity => 'Opacidad';
+
+  @override
+  String get hwOpacityHelp =>
+      'Baja la opacidad para un efecto cristal translúcido sobre tu fondo.';
+
+  @override
+  String get hwCorners => 'Radio de esquinas';
+
+  @override
+  String get hwBorder => 'Borde';
+
+  @override
+  String get hwBorderColor => 'Color del borde';
+
+  @override
+  String get hwBgImage => 'Imagen de fondo';
+
+  @override
+  String get hwChooseImage => 'Elegir imagen';
+
+  @override
+  String get hwChangeImage => 'Cambiar imagen';
+
+  @override
+  String get hwRemoveImage => 'Quitar';
+
+  @override
+  String get hwBlur => 'Desenfoque';
+
+  @override
+  String get hwApplyBlur => 'Aplicar desenfoque';
+
+  @override
+  String get hwImageDim => 'Tinte sobre la imagen';
+
+  @override
+  String get hwTextLayout => 'Texto y diseño';
+
+  @override
+  String get hwFontSans => 'Sans';
+
+  @override
+  String get hwFontSerif => 'Serif';
+
+  @override
+  String get hwFontMono => 'Mono';
+
+  @override
+  String get hwFontCondensed => 'Estrecha';
+
+  @override
+  String get hwTextSize => 'Tamaño del texto';
+
+  @override
+  String get hwCompact => 'Diseño compacto';
+
+  @override
+  String get hwCompactHelp =>
+      'Menos espacio; desactívalo para el diseño detallado.';
+
+  @override
+  String get hwCentered => 'Centrar el encabezado';
+
+  @override
+  String get hwShowRefresh => 'Mostrar botón de actualizar';
+
+  @override
+  String get hwShowAvatars => 'Mostrar avatares y emoji';
+
+  @override
+  String get hwShowAvatarsHelp => 'Fotos e iconos junto a cada línea.';
+
+  @override
+  String get hwAvatarShape => 'Forma del avatar';
+
+  @override
+  String get hwShapeCircle => 'Círculo';
+
+  @override
+  String get hwShapeRounded => 'Redondeado';
+
+  @override
+  String get hwShapeSquare => 'Cuadrado';
+
+  @override
+  String get hwPrivacy => 'Privacidad en la pantalla de inicio';
+
+  @override
+  String get hwHideSensitive => 'Ocultar detalles sensibles';
+
+  @override
+  String get hwHideSensitiveHelp =>
+      'Mantiene fuera de la pantalla de inicio el texto del diario y notas, entradas privadas, síntomas y emociones. Desactívalo para mostrarlos en este widget.';
+
+  @override
+  String get hwHideNames => 'Iniciales en vez de nombres';
+
+  @override
+  String get hwHideNamesHelp => 'También oculta los avatares.';
+
+  @override
+  String get hwMaskNumbers => 'Ocultar importes y notas';
+
+  @override
+  String get hwMaskNumbersHelp => 'Muestra puntos en vez de dinero y promedio.';
+
+  @override
+  String get hwContent => 'Contenido';
+
+  @override
+  String get hwTimeRange => 'Periodo';
+
+  @override
+  String get hwOptMembers => 'Miembros mostrados';
+
+  @override
+  String get hwOptAuto => 'Automático';
+
+  @override
+  String get hwOptAll => 'Todos';
+
+  @override
+  String get hwOptRecent => 'Más recientes';
+
+  @override
+  String get hwOptShowDone => 'Mostrar tareas completadas';
+
+  @override
+  String get hwOptAssignments => 'Incluir tareas escolares';
+
+  @override
+  String get hwOptMap => 'Mapa';
+
+  @override
+  String get hwOptNotes => 'Notas fijadas';
+
+  @override
+  String get hwOptBirthdays => 'Cumpleaños';
+
+  @override
+  String get hwOptEvents => 'Eventos del calendario';
+
+  @override
+  String get hwOptCustomCountdowns => 'Tus cuentas atrás';
+
+  @override
+  String get hwCountdownTitle => '¿Hasta qué cuentas?';
+
+  @override
+  String get hwPickDate => 'Elegir fecha y añadir';
+
+  @override
+  String get hwFrontingNow => 'Al frente ahora';
+
+  @override
+  String hwFrontedAt(String value) {
+    return 'Desde $value';
+  }
+
+  @override
+  String get hwNoRecentFronting => 'Sin frente registrado recientemente';
+
+  @override
+  String get hwAsleep => 'Durmiendo';
+
+  @override
+  String get hwCofronting => 'Co-frente';
+
+  @override
+  String get hwTapToToggle => 'Toca para entrar o salir';
+
+  @override
+  String get hwNewEvent => 'Nuevo evento';
+
+  @override
+  String get hwNoEvents => 'Nada próximo';
+
+  @override
+  String get hwPrivateEntry => 'Entrada (oculta)';
+
+  @override
+  String get hwNextPeriod => 'Próxima regla';
+
+  @override
+  String get hwSymptomsToday => 'Hoy';
+
+  @override
+  String get hwHowAreYou => '¿Cómo estás?';
+
+  @override
+  String hwLogged(String value) {
+    return 'Registrado $value';
+  }
+
+  @override
+  String get hwNotCheckedIn => 'Sin registro';
+
+  @override
+  String get hwCheckOut => 'Salir';
+
+  @override
+  String get hwCheckedOut => 'Has salido';
+
+  @override
+  String get hwPlaces => 'Lugares';
+
+  @override
+  String get hwNoPlaces => 'Añade lugares en Prism para registrarte desde aquí';
+
+  @override
+  String get hwSleepingNow => 'Durmiendo';
+
+  @override
+  String get hwLastNight => 'Último sueño';
+
+  @override
+  String get hwWakeUp => 'Despertar';
+
+  @override
+  String get hwGoodMorning => '¡Buenos días!';
+
+  @override
+  String get hwGoToSleep => 'Dormir';
+
+  @override
+  String get hwSleepWell => 'Dulces sueños';
+
+  @override
+  String hwWeekMinutes(int count) {
+    return '$count min esta semana';
+  }
+
+  @override
+  String hwWeekWorkouts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entrenamientos',
+      one: '1 entrenamiento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hwAddTask => 'Añadir tarea';
+
+  @override
+  String get hwAllTasks => 'Todas';
+
+  @override
+  String get hwNoTasks => 'Nada pendiente';
+
+  @override
+  String get hwTaskFor => 'Para';
+
+  @override
+  String get hwDueDate => 'Fecha límite';
+
+  @override
+  String hwClassesToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count clases hoy',
+      one: '1 clase hoy',
+      zero: 'Sin clases hoy',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hwSpentMonth(String value) {
+    return '$value gastado';
+  }
+
+  @override
+  String hwIncomeMonth(String value) {
+    return '$value de ingresos este mes';
+  }
+
+  @override
+  String hwBirthdayOf(String value) {
+    return 'Cumpleaños de $value';
+  }
+
+  @override
+  String get hwNoCountdowns => 'Añade una fecha en los ajustes del widget';
+
+  @override
+  String get hwNewNote => 'Notas';
+
+  @override
+  String get hwNoNotes => 'Aún no hay notas';
+
+  @override
+  String hwSwitches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cambios',
+      one: '1 cambio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hwLastDays(int count) {
+    return '$count días';
+  }
+
+  @override
+  String get hwToday => 'Hoy';
+
+  @override
+  String get hwTomorrow => 'Mañana';
+
+  @override
+  String hwInDays(int count) {
+    return 'En $count días';
+  }
+
+  @override
+  String hwDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Hace $count días',
+      one: 'Ayer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hwMinutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String hwHoursShort(int count) {
+    return '$count h';
+  }
+
+  @override
+  String hwDaysShort(int count) {
+    return '$count d';
+  }
+
+  @override
+  String hwInTime(String value) {
+    return 'En $value';
+  }
+
+  @override
+  String hwTimeAgo(String value) {
+    return 'Hace $value';
+  }
+
+  @override
+  String get hwHiddenHint =>
+      'Oculto por privacidad. Desactiva Ocultar detalles sensibles en este widget para mostrarlo.';
+
+  @override
+  String get hwNoteHidden => 'Nota (oculta)';
+
+  @override
+  String get hwTopBar => 'Widgets';
 }
