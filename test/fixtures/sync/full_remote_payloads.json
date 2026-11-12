@@ -15,6 +15,8 @@
     "habit_completions",
     "conversation_categories",
     "reminders",
+    "mood_entries",
+    "calendar_events",
     "member_groups",
     "member_group_entries",
     "custom_fields",
@@ -49,7 +51,9 @@
     "friends": "friend-1",
     "media_attachments": "media-attachment-1",
     "member_board_posts": "member-board-post-1",
-    "plural_port_unsupported": "8ebbd6b873b346c7beea98708a897fb0a37585e2f94ef29059483bca32a1c769:0"
+    "plural_port_unsupported": "8ebbd6b873b346c7beea98708a897fb0a37585e2f94ef29059483bca32a1c769:0",
+    "mood_entries": "mood-1",
+    "calendar_events": "event-1"
   },
   "payloads": {
     "members": {
@@ -291,7 +295,8 @@
       "modified_at": "2026-04-29T12:05:00.000Z",
       "frequency": "daily",
       "weekly_days": "[1,2]",
-      "is_deleted": false
+      "is_deleted": false,
+      "additional_times": "[\"12:00\",\"18:30\"]"
     },
     "member_groups": {
       "name": "Group",
@@ -406,6 +411,42 @@
       "chunk_index": 0,
       "chunk_count": 1,
       "payload": "eyJraW5kIjoidGVzdCIsIm9wYXF1ZSI6InBvcnRhYmxlIGZpeHR1cmUifQ==",
+      "is_deleted": false
+    },
+    "mood_entries": {
+      "member_id": "member-1",
+      "mood": 4,
+      "intensity": 7,
+      "emotions": "[\"calm\",\"happy\"]",
+      "energy": 3,
+      "stress": 2,
+      "sleep_quality": 4,
+      "body_sensations": "[\"chest:tight\"]",
+      "note": "Feeling okay",
+      "recorded_at": "2026-04-29T12:00:00.000Z",
+      "created_at": "2026-04-29T12:00:00.000Z",
+      "modified_at": "2026-04-29T12:05:00.000Z",
+      "is_deleted": false
+    },
+    "calendar_events": {
+      "title": "Therapy",
+      "description": "Weekly session",
+      "location": "Clinic",
+      "start_at": "2026-04-29T15:00:00.000Z",
+      "end_at": "2026-04-29T16:00:00.000Z",
+      "is_all_day": false,
+      "color_hex": "#5B8DEF",
+      "category": "Therapy",
+      "recurrence": "weekly",
+      "recurrence_interval": 1,
+      "recurrence_weekdays": "[3]",
+      "recurrence_until": "2026-12-31T00:00:00.000Z",
+      "recurrence_count": null,
+      "recurrence_exceptions": "[\"2026-05-06\"]",
+      "alert_minutes": "[15,60]",
+      "member_ids": "[\"member-1\"]",
+      "created_at": "2026-04-29T12:00:00.000Z",
+      "modified_at": "2026-04-29T12:05:00.000Z",
       "is_deleted": false
     }
   }

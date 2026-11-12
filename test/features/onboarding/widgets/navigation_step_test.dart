@@ -71,6 +71,8 @@ void main() {
     expect(state.navBarOverflowItems, [
       'members',
       'groups',
+      'calendar',
+      'mood',
       'notes',
       'reminders',
       'statistics',
@@ -137,6 +139,8 @@ void main() {
     expect(state.navBarOverflowItems, [
       'members',
       'groups',
+      'calendar',
+      'mood',
       'notes',
       'reminders',
       'statistics',
@@ -354,6 +358,8 @@ void main() {
     expect(state.navBarOverflowItems, [
       'members',
       'groups',
+      'calendar',
+      'mood',
       'notes',
       'reminders',
       'statistics',

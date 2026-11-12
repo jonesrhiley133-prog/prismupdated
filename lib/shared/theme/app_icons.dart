@@ -34,6 +34,11 @@ abstract final class AppIcons {
   static final navMoodActive = PhosphorIcons.smiley(PhosphorIconsStyle.fill);
   static final navCalendar = PhosphorIcons.calendarDots();
   static final navCalendarActive = PhosphorIcons.calendarDots(PhosphorIconsStyle.fill);
+  static final repeat = PhosphorIcons.repeat();
+  static final locationOn = PhosphorIcons.mapPin();
+  static final calendarJumpToday = PhosphorIcons.calendarCheck();
+  static final cake = PhosphorIcons.cake();
+  static final funnel = PhosphorIcons.funnel();
   static final navNotes = PhosphorIcons.notepad();
   static final navNotesActive = PhosphorIcons.notepad(PhosphorIconsStyle.fill);
   static final navStatistics = PhosphorIcons.chartBar();

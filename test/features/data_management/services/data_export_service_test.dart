@@ -552,6 +552,7 @@ void main() {
         weeklyDays: const [2, 4],
         intervalDays: 3,
         timeOfDay: '08:15',
+        additionalTimes: const ['12:00', '18:30'],
         delayHours: 2,
         targetMemberId: member.id,
         isActive: false,

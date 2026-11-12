@@ -1031,6 +1031,94 @@ void main() {
       expect(fake.showImmediateCalls, hasLength(1));
     });
   });
+  group('multiple times per day', () {
+    test(
+      'daily reminder with three times schedules three distinct slots',
+      () async {
+        final fake = _FakeLocalNotificationService();
+        final service = ReminderSchedulerService(fake);
+
+        await service.scheduleReminder(
+          _reminder(
+            id: 'multi',
+          ).copyWith(timeOfDay: '08:00', additionalTimes: ['12:30', '20:15']),
+        );
+
+        final calls = fake.scheduleExactDailyCalls;
+        expect(calls, hasLength(3));
+        expect(calls.map((c) => c.$1).toSet(), hasLength(3));
+        expect(calls.map((c) => c.$2), const [
+          TimeOfDay(hour: 8, minute: 0),
+          TimeOfDay(hour: 12, minute: 30),
+          TimeOfDay(hour: 20, minute: 15),
+        ]);
+      },
+    );
+
+    test('single-time reminder keeps its original notification id', () async {
+      final fake = _FakeLocalNotificationService();
+      final service = ReminderSchedulerService(fake);
+
+      await service.scheduleReminder(_reminder(id: 'single'));
+      final singleId = fake.scheduleExactDailyCalls.single.$1;
+      fake.resetCalls();
+
+      await service.scheduleReminder(
+        _reminder(id: 'single').copyWith(additionalTimes: ['18:00']),
+      );
+      expect(fake.scheduleExactDailyCalls.first.$1, singleId);
+    });
+
+    test('weekly reminder schedules days x times', () async {
+      final fake = _FakeLocalNotificationService();
+      final service = ReminderSchedulerService(fake);
+
+      await service.scheduleReminder(
+        _reminder(id: 'weekly-multi').copyWith(
+          frequency: ReminderFrequency.weekly,
+          weeklyDays: [1, 3],
+          timeOfDay: '09:00',
+          additionalTimes: ['21:00'],
+        ),
+      );
+      expect(fake.scheduleExactWeeklyCalls, hasLength(4));
+      expect(
+        fake.scheduleExactWeeklyCalls.map((c) => c.$1).toSet(),
+        hasLength(4),
+      );
+    });
+
+    test('removing a time cancels its stale slot on reschedule', () async {
+      final fake = _FakeLocalNotificationService();
+      final service = ReminderSchedulerService(fake);
+
+      await service.rescheduleAll([
+        _reminder(id: 'shrink').copyWith(additionalTimes: ['18:00']),
+      ]);
+      final extraId = fake.scheduleExactDailyCalls.last.$1;
+      expect(fake.pendingRequests, contains(extraId));
+      fake.resetCalls();
+
+      await service.rescheduleAll([_reminder(id: 'shrink')]);
+      expect(fake.cancelCalls, contains(extraId));
+      expect(fake.pendingRequests, isNot(contains(extraId)));
+      expect(fake.scheduleExactDailyCalls, hasLength(1));
+    });
+
+    test('cancelReminder clears every time slot', () async {
+      final fake = _FakeLocalNotificationService();
+      final service = ReminderSchedulerService(fake);
+
+      await service.scheduleReminder(
+        _reminder(id: 'gone').copyWith(additionalTimes: ['12:00', '18:00']),
+      );
+      final ids = fake.scheduleExactDailyCalls.map((c) => c.$1).toList();
+      await service.cancelReminder('gone');
+      for (final id in ids) {
+        expect(fake.pendingRequests, isNot(contains(id)));
+      }
+    });
+  });
 }
 
 FrontingSession _session({

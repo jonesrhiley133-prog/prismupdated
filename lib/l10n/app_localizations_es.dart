@@ -14429,4 +14429,501 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dataManagementPreviewCalendarEvents => 'Eventos del calendario';
+
+  @override
+  String get navMood => 'Ánimo';
+
+  @override
+  String get moodTitle => 'Ánimo';
+
+  @override
+  String get moodLevelAwful => 'Fatal';
+
+  @override
+  String get moodLevelBad => 'Mal';
+
+  @override
+  String get moodLevelOkay => 'Normal';
+
+  @override
+  String get moodLevelGood => 'Bien';
+
+  @override
+  String get moodLevelGreat => 'Genial';
+
+  @override
+  String get moodScaleVeryLow => 'Muy bajo';
+
+  @override
+  String get moodScaleLow => 'Bajo';
+
+  @override
+  String get moodScaleMedium => 'Medio';
+
+  @override
+  String get moodScaleHigh => 'Alto';
+
+  @override
+  String get moodScaleVeryHigh => 'Muy alto';
+
+  @override
+  String get moodLogTitle => 'Registrar ánimo';
+
+  @override
+  String get moodEditTitle => 'Editar registro';
+
+  @override
+  String get moodDeleteTitle => '¿Eliminar registro?';
+
+  @override
+  String get moodDeleteMessage => 'Este registro se eliminará de tu historial.';
+
+  @override
+  String get moodWholeSystem => 'Todo el sistema';
+
+  @override
+  String get moodHowAreYou => '¿Cómo te sientes?';
+
+  @override
+  String get moodIntensityLabel => 'Intensidad';
+
+  @override
+  String get moodEmotionsLabel => 'Emociones';
+
+  @override
+  String get moodEmotionsHelper =>
+      'Elige todas las que encajen, de cualquier grupo.';
+
+  @override
+  String get moodWellbeingLabel => 'Bienestar';
+
+  @override
+  String get moodEnergyLabel => 'Energía';
+
+  @override
+  String get moodStressLabel => 'Estrés';
+
+  @override
+  String get moodSleepQualityLabel => 'Calidad del sueño';
+
+  @override
+  String get moodBodyLabel => 'Sensaciones corporales';
+
+  @override
+  String get moodBodyHelper => 'Toca donde notes algo en tu cuerpo.';
+
+  @override
+  String get moodBodyNoticed => 'Algo ahí';
+
+  @override
+  String get moodBodyClear => 'Borrar';
+
+  @override
+  String get moodWhoLabel => '¿Quién lo siente?';
+
+  @override
+  String get moodWhenLabel => 'Cuándo';
+
+  @override
+  String get moodNoteLabel => 'Nota (opcional)';
+
+  @override
+  String get moodTabOverview => 'Resumen';
+
+  @override
+  String get moodTabCalendar => 'Calendario';
+
+  @override
+  String get moodTabHistory => 'Historial';
+
+  @override
+  String get moodQuickPrompt => '¿Cómo te sientes ahora mismo?';
+
+  @override
+  String get moodLatestToday => 'Último de hoy';
+
+  @override
+  String get moodNoCheckInsToday => 'Aún no hay registros hoy.';
+
+  @override
+  String get moodEmptyTitle => 'Aún no hay registros';
+
+  @override
+  String get moodEmptySubtitle =>
+      'Lleva un registro de cómo os sentís con el tiempo.';
+
+  @override
+  String moodRangeDays(int count) {
+    return '$count días';
+  }
+
+  @override
+  String get moodStatAverage => 'Ánimo medio';
+
+  @override
+  String get moodStatCheckIns => 'Registros';
+
+  @override
+  String get moodStatStreak => 'Racha de días';
+
+  @override
+  String get moodStatDaysLogged => 'Días registrados';
+
+  @override
+  String get moodTrendTitle => 'Ánimo en el tiempo';
+
+  @override
+  String get moodDistributionTitle => 'Distribución del ánimo';
+
+  @override
+  String get moodWellbeingAverages => 'Promedios de bienestar';
+
+  @override
+  String get moodTopEmotions => 'Emociones más sentidas';
+
+  @override
+  String get moodTopBody => 'Sensaciones corporales';
+
+  @override
+  String get moodByTimeOfDay => 'Ánimo según la hora';
+
+  @override
+  String get moodByMember => 'Ánimo por miembro';
+
+  @override
+  String get moodTimeMorning => 'Mañana';
+
+  @override
+  String get moodTimeAfternoon => 'Tarde';
+
+  @override
+  String get moodTimeEvening => 'Noche';
+
+  @override
+  String get moodTimeNight => 'Madrugada';
+
+  @override
+  String get moodNotEnoughData =>
+      'Registra algunos estados para ver tendencias aquí.';
+
+  @override
+  String get moodDayEmpty => 'No hay nada registrado este día.';
+
+  @override
+  String get moodDeletedToast => 'Registro eliminado';
+
+  @override
+  String moodIntensityShort(int value) {
+    return 'Intensidad $value';
+  }
+
+  @override
+  String get moodPreviousMonth => 'Mes anterior';
+
+  @override
+  String get moodNextMonth => 'Mes siguiente';
+
+  @override
+  String moodAverageOfDay(String value) {
+    return 'Media $value';
+  }
+
+  @override
+  String get navCalendar => 'Calendario';
+
+  @override
+  String get calendarTitle => 'Calendario';
+
+  @override
+  String get calendarToday => 'Hoy';
+
+  @override
+  String get calendarFilters => 'Filtros y capas';
+
+  @override
+  String get calendarNewEvent => 'Nuevo evento';
+
+  @override
+  String get calendarEditEvent => 'Editar evento';
+
+  @override
+  String get calendarAddEvent => 'Añadir';
+
+  @override
+  String get calendarViewMonth => 'Mes';
+
+  @override
+  String get calendarViewWeek => 'Semana';
+
+  @override
+  String get calendarViewDay => 'Día';
+
+  @override
+  String get calendarViewAgenda => 'Agenda';
+
+  @override
+  String calendarFilteredBy(String category) {
+    return 'Solo: $category';
+  }
+
+  @override
+  String get calendarPrevious => 'Anterior';
+
+  @override
+  String get calendarNext => 'Siguiente';
+
+  @override
+  String get calendarNothingOnDay =>
+      'Nada planeado. Mantén pulsado un día o toca Añadir para crear un evento.';
+
+  @override
+  String calendarBirthdayOf(String name) {
+    return 'Cumpleaños de $name';
+  }
+
+  @override
+  String calendarBirthdayTurning(String name, int age) {
+    return '$name cumple $age';
+  }
+
+  @override
+  String calendarMoodAverage(String label, String value) {
+    return 'Ánimo: $label ($value)';
+  }
+
+  @override
+  String get calendarSearch => 'Buscar eventos';
+
+  @override
+  String get calendarAgendaEmpty => 'No hay eventos próximos.';
+
+  @override
+  String get calendarSearchEmpty =>
+      'Ningún evento coincide con tu búsqueda en el próximo año.';
+
+  @override
+  String get calendarShowMore => 'Mostrar más';
+
+  @override
+  String get calendarShowBirthdays => 'Mostrar cumpleaños de miembros';
+
+  @override
+  String get calendarShowMood => 'Mostrar ánimo diario';
+
+  @override
+  String get calendarShowReminders => 'Mostrar recordatorios';
+
+  @override
+  String get calendarAllCategories => 'Todas';
+
+  @override
+  String get calendarTitleLabel => 'Título';
+
+  @override
+  String get calendarAllDay => 'Todo el día';
+
+  @override
+  String get calendarStarts => 'Empieza';
+
+  @override
+  String get calendarEnds => 'Termina';
+
+  @override
+  String get calendarEndBeforeStart => 'El final debe ser posterior al inicio.';
+
+  @override
+  String get calendarRepeat => 'Repetir';
+
+  @override
+  String get calendarRepeatNone => 'Nunca';
+
+  @override
+  String get calendarRepeatDaily => 'Diario';
+
+  @override
+  String get calendarRepeatWeekly => 'Semanal';
+
+  @override
+  String get calendarRepeatMonthly => 'Mensual';
+
+  @override
+  String get calendarRepeatYearly => 'Anual';
+
+  @override
+  String get calendarRepeatEvery => 'Repetir cada';
+
+  @override
+  String calendarEveryNDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count días',
+      one: 'Cada día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count semanas',
+      one: 'Cada semana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count meses',
+      one: 'Cada mes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count años',
+      one: 'Cada año',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarRepeatEnds => 'Termina';
+
+  @override
+  String get calendarEndsNever => 'Nunca';
+
+  @override
+  String get calendarEndsOnDate => 'En una fecha';
+
+  @override
+  String get calendarEndsAfterCount => 'Tras varias veces';
+
+  @override
+  String get calendarOccurrences => 'Repeticiones';
+
+  @override
+  String get calendarAlerts => 'Avisos';
+
+  @override
+  String get calendarAlertAtStart => 'Al empezar';
+
+  @override
+  String calendarAlertMinutes(int count) {
+    return '$count min antes';
+  }
+
+  @override
+  String calendarAlertHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horas antes',
+      one: '1 hora antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarAlertDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días antes',
+      one: '1 día antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarAlertWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count semanas antes',
+      one: '1 semana antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarCategory => 'Categoría';
+
+  @override
+  String get calendarCustomCategory => 'Categoría personalizada';
+
+  @override
+  String get calendarAddCategory => 'Usar esta categoría';
+
+  @override
+  String get calendarColor => 'Color';
+
+  @override
+  String get calendarDefaultColor => 'Color predeterminado';
+
+  @override
+  String get calendarLocation => 'Ubicación';
+
+  @override
+  String get calendarMembers => 'Miembros implicados';
+
+  @override
+  String get calendarNoMembers => 'Nadie en particular';
+
+  @override
+  String get calendarNotes => 'Notas';
+
+  @override
+  String get calendarEditRecurringTitle => '¿Qué eventos cambiar?';
+
+  @override
+  String get calendarDeleteRecurringTitle => '¿Qué eventos eliminar?';
+
+  @override
+  String get calendarScopeThis => 'Solo este evento';
+
+  @override
+  String get calendarScopeFollowing => 'Este y los siguientes';
+
+  @override
+  String get calendarScopeAll => 'Todos los de la serie';
+
+  @override
+  String get calendarDuplicate => 'Duplicar';
+
+  @override
+  String get calendarDeleteTitle => '¿Eliminar evento?';
+
+  @override
+  String calendarDeleteMessage(String title) {
+    return 'Se eliminará «$title».';
+  }
+
+  @override
+  String get calendarDeletedToast => 'Evento eliminado';
+
+  @override
+  String calendarUntilDate(String date) {
+    return 'hasta el $date';
+  }
+
+  @override
+  String calendarTimesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count veces',
+      one: 'una vez',
+    );
+    return '$_temp0';
+  }
 }

@@ -18,6 +18,8 @@ abstract final class AppRoutePaths {
   static const groups = '/groups';
   static const media = '/media';
   static const mediaUsage = '/media/usage';
+  static const mood = '/mood';
+  static const calendar = '/calendar';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';
@@ -168,6 +170,8 @@ enum AppShellTabId {
   boards,
   groups,
   media,
+  mood,
+  calendar,
 }
 
 class AppShellTab {
@@ -226,6 +230,8 @@ class AppShellTab {
       AppShellTabId.boards => l10n.navBoards,
       AppShellTabId.groups => l10n.navGroups,
       AppShellTabId.media => l10n.navMedia,
+      AppShellTabId.mood => l10n.navMood,
+      AppShellTabId.calendar => l10n.navCalendar,
     };
   }
 
@@ -256,6 +262,8 @@ class AppShellTab {
       AppShellTabId.boards => flags.boards,
       AppShellTabId.groups => true,
       AppShellTabId.media => true,
+      AppShellTabId.mood => true,
+      AppShellTabId.calendar => true,
     };
   }
 }
@@ -374,6 +382,22 @@ final appShellTabs = [
     branchIndex: 13,
     rootLocation: AppRoutePaths.media,
   ),
+  AppShellTab(
+    id: AppShellTabId.mood,
+    label: 'Mood',
+    icon: AppIcons.navMood,
+    activeIcon: AppIcons.navMoodActive,
+    branchIndex: 14,
+    rootLocation: AppRoutePaths.mood,
+  ),
+  AppShellTab(
+    id: AppShellTabId.calendar,
+    label: 'Calendar',
+    icon: AppIcons.navCalendar,
+    activeIcon: AppIcons.navCalendarActive,
+    branchIndex: 15,
+    rootLocation: AppRoutePaths.calendar,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -386,6 +410,8 @@ const defaultNavBarTabIds = ['home', 'chat', 'habits', 'polls', 'settings'];
 const defaultNavBarOverflowTabIds = [
   'members',
   'groups',
+  'calendar',
+  'mood',
   'notes',
   'reminders',
   'statistics',

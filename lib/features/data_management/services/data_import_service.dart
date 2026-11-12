@@ -49,8 +49,6 @@ import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
-import 'package:prism_plurality/domain/models/calendar_event.dart';
-import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
 import 'package:prism_plurality/features/fronting/services/collapse_open_duplicate_sessions.dart';

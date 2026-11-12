@@ -21481,6 +21481,822 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calendar events'**
   String get dataManagementPreviewCalendarEvents;
+
+  /// navMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get navMood;
+
+  /// moodTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get moodTitle;
+
+  /// moodLevelAwful
+  ///
+  /// In en, this message translates to:
+  /// **'Awful'**
+  String get moodLevelAwful;
+
+  /// moodLevelBad
+  ///
+  /// In en, this message translates to:
+  /// **'Bad'**
+  String get moodLevelBad;
+
+  /// moodLevelOkay
+  ///
+  /// In en, this message translates to:
+  /// **'Okay'**
+  String get moodLevelOkay;
+
+  /// moodLevelGood
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get moodLevelGood;
+
+  /// moodLevelGreat
+  ///
+  /// In en, this message translates to:
+  /// **'Great'**
+  String get moodLevelGreat;
+
+  /// moodScaleVeryLow
+  ///
+  /// In en, this message translates to:
+  /// **'Very low'**
+  String get moodScaleVeryLow;
+
+  /// moodScaleLow
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get moodScaleLow;
+
+  /// moodScaleMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get moodScaleMedium;
+
+  /// moodScaleHigh
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get moodScaleHigh;
+
+  /// moodScaleVeryHigh
+  ///
+  /// In en, this message translates to:
+  /// **'Very high'**
+  String get moodScaleVeryHigh;
+
+  /// moodLogTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Log mood'**
+  String get moodLogTitle;
+
+  /// moodEditTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit check-in'**
+  String get moodEditTitle;
+
+  /// moodDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete check-in?'**
+  String get moodDeleteTitle;
+
+  /// moodDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'This check-in will be removed from your history.'**
+  String get moodDeleteMessage;
+
+  /// moodWholeSystem
+  ///
+  /// In en, this message translates to:
+  /// **'Whole system'**
+  String get moodWholeSystem;
+
+  /// moodHowAreYou
+  ///
+  /// In en, this message translates to:
+  /// **'How are you feeling?'**
+  String get moodHowAreYou;
+
+  /// moodIntensityLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity'**
+  String get moodIntensityLabel;
+
+  /// moodEmotionsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Emotions'**
+  String get moodEmotionsLabel;
+
+  /// moodEmotionsHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Pick as many as fit, from any group.'**
+  String get moodEmotionsHelper;
+
+  /// moodWellbeingLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Wellbeing'**
+  String get moodWellbeingLabel;
+
+  /// moodEnergyLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get moodEnergyLabel;
+
+  /// moodStressLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Stress'**
+  String get moodStressLabel;
+
+  /// moodSleepQualityLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep quality'**
+  String get moodSleepQualityLabel;
+
+  /// moodBodyLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Body sensations'**
+  String get moodBodyLabel;
+
+  /// moodBodyHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Tap where you notice something in your body.'**
+  String get moodBodyHelper;
+
+  /// moodBodyNoticed
+  ///
+  /// In en, this message translates to:
+  /// **'Something there'**
+  String get moodBodyNoticed;
+
+  /// moodBodyClear
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get moodBodyClear;
+
+  /// moodWhoLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Who is feeling this?'**
+  String get moodWhoLabel;
+
+  /// moodWhenLabel
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get moodWhenLabel;
+
+  /// moodNoteLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get moodNoteLabel;
+
+  /// moodTabOverview
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get moodTabOverview;
+
+  /// moodTabCalendar
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get moodTabCalendar;
+
+  /// moodTabHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get moodTabHistory;
+
+  /// moodQuickPrompt
+  ///
+  /// In en, this message translates to:
+  /// **'How are you feeling right now?'**
+  String get moodQuickPrompt;
+
+  /// moodLatestToday
+  ///
+  /// In en, this message translates to:
+  /// **'Latest today'**
+  String get moodLatestToday;
+
+  /// moodNoCheckInsToday
+  ///
+  /// In en, this message translates to:
+  /// **'No check-ins yet today.'**
+  String get moodNoCheckInsToday;
+
+  /// moodEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No check-ins yet'**
+  String get moodEmptyTitle;
+
+  /// moodEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Track how you and your system feel over time.'**
+  String get moodEmptySubtitle;
+
+  /// moodRangeDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String moodRangeDays(int count);
+
+  /// moodStatAverage
+  ///
+  /// In en, this message translates to:
+  /// **'Average mood'**
+  String get moodStatAverage;
+
+  /// moodStatCheckIns
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins'**
+  String get moodStatCheckIns;
+
+  /// moodStatStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Day streak'**
+  String get moodStatStreak;
+
+  /// moodStatDaysLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Days logged'**
+  String get moodStatDaysLogged;
+
+  /// moodTrendTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Mood over time'**
+  String get moodTrendTitle;
+
+  /// moodDistributionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Mood distribution'**
+  String get moodDistributionTitle;
+
+  /// moodWellbeingAverages
+  ///
+  /// In en, this message translates to:
+  /// **'Wellbeing averages'**
+  String get moodWellbeingAverages;
+
+  /// moodTopEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Most felt emotions'**
+  String get moodTopEmotions;
+
+  /// moodTopBody
+  ///
+  /// In en, this message translates to:
+  /// **'Body sensations'**
+  String get moodTopBody;
+
+  /// moodByTimeOfDay
+  ///
+  /// In en, this message translates to:
+  /// **'Mood by time of day'**
+  String get moodByTimeOfDay;
+
+  /// moodByMember
+  ///
+  /// In en, this message translates to:
+  /// **'Mood by member'**
+  String get moodByMember;
+
+  /// moodTimeMorning
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get moodTimeMorning;
+
+  /// moodTimeAfternoon
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get moodTimeAfternoon;
+
+  /// moodTimeEvening
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get moodTimeEvening;
+
+  /// moodTimeNight
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get moodTimeNight;
+
+  /// moodNotEnoughData
+  ///
+  /// In en, this message translates to:
+  /// **'Log a few check-ins to see trends here.'**
+  String get moodNotEnoughData;
+
+  /// moodDayEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing logged on this day.'**
+  String get moodDayEmpty;
+
+  /// moodDeletedToast
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in deleted'**
+  String get moodDeletedToast;
+
+  /// moodIntensityShort
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity {value}'**
+  String moodIntensityShort(int value);
+
+  /// moodPreviousMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get moodPreviousMonth;
+
+  /// moodNextMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get moodNextMonth;
+
+  /// moodAverageOfDay
+  ///
+  /// In en, this message translates to:
+  /// **'Average {value}'**
+  String moodAverageOfDay(String value);
+
+  /// navCalendar
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get navCalendar;
+
+  /// calendarTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendarTitle;
+
+  /// calendarToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get calendarToday;
+
+  /// calendarFilters
+  ///
+  /// In en, this message translates to:
+  /// **'Filters & layers'**
+  String get calendarFilters;
+
+  /// calendarNewEvent
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get calendarNewEvent;
+
+  /// calendarEditEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event'**
+  String get calendarEditEvent;
+
+  /// calendarAddEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get calendarAddEvent;
+
+  /// calendarViewMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get calendarViewMonth;
+
+  /// calendarViewWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get calendarViewWeek;
+
+  /// calendarViewDay
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get calendarViewDay;
+
+  /// calendarViewAgenda
+  ///
+  /// In en, this message translates to:
+  /// **'Agenda'**
+  String get calendarViewAgenda;
+
+  /// calendarFilteredBy
+  ///
+  /// In en, this message translates to:
+  /// **'Only: {category}'**
+  String calendarFilteredBy(String category);
+
+  /// calendarPrevious
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get calendarPrevious;
+
+  /// calendarNext
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get calendarNext;
+
+  /// calendarNothingOnDay
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned. Long-press a day or tap Add to create an event.'**
+  String get calendarNothingOnDay;
+
+  /// calendarBirthdayOf
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s birthday'**
+  String calendarBirthdayOf(String name);
+
+  /// calendarBirthdayTurning
+  ///
+  /// In en, this message translates to:
+  /// **'{name} turns {age}'**
+  String calendarBirthdayTurning(String name, int age);
+
+  /// calendarMoodAverage
+  ///
+  /// In en, this message translates to:
+  /// **'Mood: {label} ({value})'**
+  String calendarMoodAverage(String label, String value);
+
+  /// calendarSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search events'**
+  String get calendarSearch;
+
+  /// calendarAgendaEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming events.'**
+  String get calendarAgendaEmpty;
+
+  /// calendarSearchEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No events match your search in the next year.'**
+  String get calendarSearchEmpty;
+
+  /// calendarShowMore
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get calendarShowMore;
+
+  /// calendarShowBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Show member birthdays'**
+  String get calendarShowBirthdays;
+
+  /// calendarShowMood
+  ///
+  /// In en, this message translates to:
+  /// **'Show daily mood'**
+  String get calendarShowMood;
+
+  /// calendarShowReminders
+  ///
+  /// In en, this message translates to:
+  /// **'Show reminders'**
+  String get calendarShowReminders;
+
+  /// calendarAllCategories
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get calendarAllCategories;
+
+  /// calendarTitleLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get calendarTitleLabel;
+
+  /// calendarAllDay
+  ///
+  /// In en, this message translates to:
+  /// **'All day'**
+  String get calendarAllDay;
+
+  /// calendarStarts
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get calendarStarts;
+
+  /// calendarEnds
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get calendarEnds;
+
+  /// calendarEndBeforeStart
+  ///
+  /// In en, this message translates to:
+  /// **'The end must be after the start.'**
+  String get calendarEndBeforeStart;
+
+  /// calendarRepeat
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get calendarRepeat;
+
+  /// calendarRepeatNone
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get calendarRepeatNone;
+
+  /// calendarRepeatDaily
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get calendarRepeatDaily;
+
+  /// calendarRepeatWeekly
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get calendarRepeatWeekly;
+
+  /// calendarRepeatMonthly
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get calendarRepeatMonthly;
+
+  /// calendarRepeatYearly
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get calendarRepeatYearly;
+
+  /// calendarRepeatEvery
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat every'**
+  String get calendarRepeatEvery;
+
+  /// calendarEveryNDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Every day} other{Every {count} days}}'**
+  String calendarEveryNDays(int count);
+
+  /// calendarEveryNWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Every week} other{Every {count} weeks}}'**
+  String calendarEveryNWeeks(int count);
+
+  /// calendarEveryNMonths
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Every month} other{Every {count} months}}'**
+  String calendarEveryNMonths(int count);
+
+  /// calendarEveryNYears
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Every year} other{Every {count} years}}'**
+  String calendarEveryNYears(int count);
+
+  /// calendarRepeatEnds
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get calendarRepeatEnds;
+
+  /// calendarEndsNever
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get calendarEndsNever;
+
+  /// calendarEndsOnDate
+  ///
+  /// In en, this message translates to:
+  /// **'On date'**
+  String get calendarEndsOnDate;
+
+  /// calendarEndsAfterCount
+  ///
+  /// In en, this message translates to:
+  /// **'After a number of times'**
+  String get calendarEndsAfterCount;
+
+  /// calendarOccurrences
+  ///
+  /// In en, this message translates to:
+  /// **'Occurrences'**
+  String get calendarOccurrences;
+
+  /// calendarAlerts
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get calendarAlerts;
+
+  /// calendarAlertAtStart
+  ///
+  /// In en, this message translates to:
+  /// **'At start'**
+  String get calendarAlertAtStart;
+
+  /// calendarAlertMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min before'**
+  String calendarAlertMinutes(int count);
+
+  /// calendarAlertHours
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour before} other{{count} hours before}}'**
+  String calendarAlertHours(int count);
+
+  /// calendarAlertDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day before} other{{count} days before}}'**
+  String calendarAlertDays(int count);
+
+  /// calendarAlertWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week before} other{{count} weeks before}}'**
+  String calendarAlertWeeks(int count);
+
+  /// calendarCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get calendarCategory;
+
+  /// calendarCustomCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Custom category'**
+  String get calendarCustomCategory;
+
+  /// calendarAddCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Use this category'**
+  String get calendarAddCategory;
+
+  /// calendarColor
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get calendarColor;
+
+  /// calendarDefaultColor
+  ///
+  /// In en, this message translates to:
+  /// **'Default colour'**
+  String get calendarDefaultColor;
+
+  /// calendarLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get calendarLocation;
+
+  /// calendarMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members involved'**
+  String get calendarMembers;
+
+  /// calendarNoMembers
+  ///
+  /// In en, this message translates to:
+  /// **'No one in particular'**
+  String get calendarNoMembers;
+
+  /// calendarNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get calendarNotes;
+
+  /// calendarEditRecurringTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Change which events?'**
+  String get calendarEditRecurringTitle;
+
+  /// calendarDeleteRecurringTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete which events?'**
+  String get calendarDeleteRecurringTitle;
+
+  /// calendarScopeThis
+  ///
+  /// In en, this message translates to:
+  /// **'Only this event'**
+  String get calendarScopeThis;
+
+  /// calendarScopeFollowing
+  ///
+  /// In en, this message translates to:
+  /// **'This and following events'**
+  String get calendarScopeFollowing;
+
+  /// calendarScopeAll
+  ///
+  /// In en, this message translates to:
+  /// **'All events in the series'**
+  String get calendarScopeAll;
+
+  /// calendarDuplicate
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get calendarDuplicate;
+
+  /// calendarDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete event?'**
+  String get calendarDeleteTitle;
+
+  /// calendarDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" will be deleted.'**
+  String calendarDeleteMessage(String title);
+
+  /// calendarDeletedToast
+  ///
+  /// In en, this message translates to:
+  /// **'Event deleted'**
+  String get calendarDeletedToast;
+
+  /// calendarUntilDate
+  ///
+  /// In en, this message translates to:
+  /// **'until {date}'**
+  String calendarUntilDate(String date);
+
+  /// calendarTimesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{once} other{{count} times}}'**
+  String calendarTimesCount(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -65,6 +65,8 @@ const _allUserDataTables = [
   'front_session_comments',
   'conversation_categories',
   'reminders',
+  'mood_entries',
+  'calendar_events',
   'friends',
   'sharing_requests',
   'media_attachments',
@@ -138,6 +140,7 @@ const _memberRefColumns = <_MemberRef>[
 
   // reminders: target cleared; reminder definition survives.
   _MemberRef('reminders', 'target_member_id', _RefType.nulled),
+  _MemberRef('mood_entries', 'member_id', _RefType.nulled),
 
   // Per-member child data: fully deleted on reset.
   _MemberRef(
@@ -3283,6 +3286,31 @@ class _ResetHarness {
             trigger: const Value(0),
             createdAt: Value(now),
             modifiedAt: Value(now),
+          ),
+        );
+
+    // ── Mood & calendar ───────────────────────────────────────────────
+    await db
+        .into(db.moodEntries)
+        .insert(
+          MoodEntriesCompanion.insert(
+            id: 'mood-1',
+            memberId: const Value('member-1'),
+            recordedAt: now,
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
+    await db
+        .into(db.calendarEvents)
+        .insert(
+          CalendarEventsCompanion.insert(
+            id: 'event-1',
+            title: 'Appointment',
+            startAt: now,
+            endAt: now.add(const Duration(hours: 1)),
+            createdAt: now,
+            modifiedAt: now,
           ),
         );
 
