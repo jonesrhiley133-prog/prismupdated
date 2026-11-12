@@ -18836,4 +18836,427 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hsFit => 'Fit';
+
+  @override
+  String get fnTitle => 'Fronting notification';
+
+  @override
+  String get fnEnable => 'Show who is fronting in the notification shade';
+
+  @override
+  String get fnEnableHelp =>
+      'A live, ongoing notification that updates whenever the front changes.';
+
+  @override
+  String get fnUnsupportedTitle => 'Only available on Android';
+
+  @override
+  String get fnUnsupportedMessage =>
+      'Persistent notifications need Android. On iPhone and Mac, Prism posts a quiet alert when the front changes instead; elsewhere the setting is saved for your Android devices.';
+
+  @override
+  String get fnPermissionTitle => 'Notifications are blocked';
+
+  @override
+  String get fnPermissionMessage =>
+      'Allow notifications for Prism so the fronting notification can appear.';
+
+  @override
+  String get fnPermissionButton => 'Allow notifications';
+
+  @override
+  String get fnPreview => 'Preview';
+
+  @override
+  String get fnPreviewHidden =>
+      'Nobody is fronting, so the notification is hidden.';
+
+  @override
+  String get fnRefreshNow => 'Refresh now';
+
+  @override
+  String get fnContent => 'Text';
+
+  @override
+  String get fnTitleTemplate => 'Title';
+
+  @override
+  String fnTitleTemplateHelp(String tokens) {
+    return 'Use $tokens.';
+  }
+
+  @override
+  String get fnGreeting => 'Greeting';
+
+  @override
+  String fnGreetingHelp(String example) {
+    return 'Shown under the title, e.g. \"$example\" Leave empty to show the first info line.';
+  }
+
+  @override
+  String fnGreetingMemberHint(String example) {
+    return 'e.g. $example';
+  }
+
+  @override
+  String get fnCustomStatus => 'Custom status';
+
+  @override
+  String get fnCustomStatusHint => 'e.g. Busy, low spoons, do not disturb';
+
+  @override
+  String get fnCustomLines => 'Extra lines';
+
+  @override
+  String get fnCustomLinesHelp => 'Your own information, one per line';
+
+  @override
+  String get fnInformation => 'Information to show';
+
+  @override
+  String get fnInformationHelp =>
+      'Tick what appears and use the arrows to set the order.';
+
+  @override
+  String get fnInfoFronters => 'Current fronter(s)';
+
+  @override
+  String get fnInfoCofronters => 'Co-fronting members';
+
+  @override
+  String get fnInfoPronouns => 'Pronouns';
+
+  @override
+  String get fnInfoDuration => 'Fronting duration (live timer)';
+
+  @override
+  String get fnInfoStatus => 'Fronting status (asleep, session note)';
+
+  @override
+  String get fnInfoCustomStatus => 'Custom status';
+
+  @override
+  String get fnInfoMood => 'Current mood';
+
+  @override
+  String get fnInfoEmotions => 'Emotions';
+
+  @override
+  String get fnInfoLocation => 'Current location';
+
+  @override
+  String get fnInfoActivity => 'Current activity (work, workout, study)';
+
+  @override
+  String get fnInfoCustom => 'Extra lines';
+
+  @override
+  String get fnIcons => 'Icons';
+
+  @override
+  String get fnIconAvatar => 'Avatar';
+
+  @override
+  String get fnIconEmoji => 'Emoji';
+
+  @override
+  String get fnIconBuiltIn => 'Built-in';
+
+  @override
+  String get fnIconNone => 'None';
+
+  @override
+  String get fnIconAvatarHelp =>
+      'The fronter\'s profile picture, or their emoji when they have none.';
+
+  @override
+  String get fnIconEmojiHelp =>
+      'The same emoji for everyone (members can override it below).';
+
+  @override
+  String get fnIconBuiltInHelp => 'Only the status-bar icon chosen below.';
+
+  @override
+  String get fnIconNoneHelp => 'No large picture in the notification.';
+
+  @override
+  String get fnEmoji => 'Emoji';
+
+  @override
+  String get fnStatusBarIcon => 'Status bar icon';
+
+  @override
+  String get fnAppearance => 'Appearance';
+
+  @override
+  String get fnLayout => 'Layout';
+
+  @override
+  String get fnLayoutCompact => 'Compact';
+
+  @override
+  String get fnLayoutExpanded => 'Expanded';
+
+  @override
+  String get fnLayoutMinimal => 'Minimal';
+
+  @override
+  String get fnLayoutDetailed => 'Detailed';
+
+  @override
+  String get fnStyleSystem => 'System style';
+
+  @override
+  String get fnStyleCustom => 'Custom colours';
+
+  @override
+  String get fnStyleSystemHelp =>
+      'Matches your phone\'s notification look and dark mode.';
+
+  @override
+  String get fnStyleCustomHelp => 'Uses your own background and text colours.';
+
+  @override
+  String get fnAccentColor => 'Accent colour';
+
+  @override
+  String get fnBackgroundColor => 'Background colour';
+
+  @override
+  String get fnTextColor => 'Text colour';
+
+  @override
+  String get fnColorAuto => 'Automatic';
+
+  @override
+  String get fnColorCustom => 'Custom…';
+
+  @override
+  String get fnColorized => 'Fill with accent colour';
+
+  @override
+  String get fnColorizedHelp =>
+      'Android only fills the notification when \"Keep running\" below is on.';
+
+  @override
+  String get fnActions => 'Buttons';
+
+  @override
+  String get fnActionsHelp => 'Pick up to three, in the order you tap them.';
+
+  @override
+  String get fnActionQuickFront => 'Quick front';
+
+  @override
+  String get fnActionSwitch => 'Switch';
+
+  @override
+  String get fnActionOpen => 'Open Prism';
+
+  @override
+  String get fnActionMood => 'Mood';
+
+  @override
+  String get fnActionStatus => 'Status';
+
+  @override
+  String get fnActionDetails => 'Details';
+
+  @override
+  String get fnPerMember => 'Per member';
+
+  @override
+  String get fnPerMemberHelp =>
+      'Give each member their own title, greeting, emoji and colours, used while they front first.';
+
+  @override
+  String fnMemberStyleTitle(String name) {
+    return '$name\'s notification';
+  }
+
+  @override
+  String get fnMemberStyleHelp =>
+      'Leave a field empty to use the general setting.';
+
+  @override
+  String get fnAdvanced => 'Advanced';
+
+  @override
+  String get fnForeground => 'Keep running in the background';
+
+  @override
+  String get fnForegroundHelp =>
+      'Runs a small service so the notification cannot be cleared and updates from your other devices arrive even when Prism is closed. Uses a little more battery.';
+
+  @override
+  String get fnRestore => 'Restore after restart';
+
+  @override
+  String get fnRestoreHelp =>
+      'Show the last notification again after the phone restarts or Prism updates.';
+
+  @override
+  String get fnAllowDismiss => 'Allow swiping away';
+
+  @override
+  String get fnAllowDismissHelp =>
+      'It comes back the next time the front changes.';
+
+  @override
+  String get fnDnd => 'Show during Do Not Disturb';
+
+  @override
+  String get fnDndHelp =>
+      'Uses a separate channel allowed to bypass Do Not Disturb (Android may ask you to confirm).';
+
+  @override
+  String get fnOpenDndSettings => 'Open channel settings';
+
+  @override
+  String get fnLockScreen => 'On the lock screen';
+
+  @override
+  String get fnLockShow => 'Show all';
+
+  @override
+  String get fnLockHideDetails => 'Hide names';
+
+  @override
+  String get fnLockHide => 'Hide';
+
+  @override
+  String get fnLockPreviewShow => 'Lock screen: shows everything';
+
+  @override
+  String fnLockPreviewHidden(String title) {
+    return 'Lock screen: \"$title\"';
+  }
+
+  @override
+  String get fnLockPreviewNone => 'Lock screen: hidden';
+
+  @override
+  String get fnWhenEmpty => 'When nobody is fronting';
+
+  @override
+  String get fnWhenEmptyMessage => 'Show a message';
+
+  @override
+  String get fnWhenEmptyHide => 'Hide the notification';
+
+  @override
+  String get fnEmptyMessage => 'Message';
+
+  @override
+  String get fnNobodyFronting => 'Nobody is logged as fronting';
+
+  @override
+  String fnMoodFreshness(int count) {
+    return 'Show moods logged in the last $count hours';
+  }
+
+  @override
+  String get fnChannelSettings => 'System notification settings';
+
+  @override
+  String get fnBatterySettings => 'Battery optimisation';
+
+  @override
+  String get fnBatteryHelp =>
+      'If the notification stops updating in the background, exclude Prism from battery optimisation.';
+
+  @override
+  String get fnChannelName => 'Fronting status';
+
+  @override
+  String get fnChannelDndName => 'Fronting status (Do Not Disturb)';
+
+  @override
+  String get fnChannelDescription =>
+      'Ongoing notification showing who is currently fronting.';
+
+  @override
+  String get fnPublicTitle => 'Prism';
+
+  @override
+  String get fnPublicText => 'Fronting status';
+
+  @override
+  String fnLineFronting(String names) {
+    return 'Fronting: $names';
+  }
+
+  @override
+  String fnLineCofronting(String names) {
+    return 'Co-fronting: $names';
+  }
+
+  @override
+  String fnLineSince(String time) {
+    return 'Since $time';
+  }
+
+  @override
+  String fnLineAsleep(String time) {
+    return 'Asleep since $time';
+  }
+
+  @override
+  String fnLineStatus(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String fnLineMood(String label, int level) {
+    return 'Mood: $label ($level/5)';
+  }
+
+  @override
+  String fnLineEmotions(String list) {
+    return 'Feeling: $list';
+  }
+
+  @override
+  String fnLineLocation(String place) {
+    return 'At $place';
+  }
+
+  @override
+  String fnLineWorking(String job) {
+    return 'Working: $job';
+  }
+
+  @override
+  String fnLineWorkout(String activity) {
+    return 'Working out: $activity';
+  }
+
+  @override
+  String fnLineStudying(String subject) {
+    return 'Studying: $subject';
+  }
+
+  @override
+  String get fnQuickFrontHelp => 'Tap a member to start or end their front.';
+
+  @override
+  String get fnClearStatus => 'Clear';
+
+  @override
+  String get fnStatusPresetBusy => 'Busy';
+
+  @override
+  String get fnStatusPresetResting => 'Resting';
+
+  @override
+  String get fnStatusPresetLowSpoons => 'Low energy';
+
+  @override
+  String get fnStatusPresetBlurry => 'Blurry front';
+
+  @override
+  String get fnStatusPresetOk => 'Doing okay';
+
+  @override
+  String get fnTopBar => 'Front status';
 }

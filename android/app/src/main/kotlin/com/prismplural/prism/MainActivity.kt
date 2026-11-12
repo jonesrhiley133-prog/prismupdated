@@ -45,7 +45,23 @@ import java.io.File
 import java.io.FileInputStream
 
 class MainActivity : FlutterFragmentActivity() {
+    private var frontingStatusChannel: MethodChannel? = null
+    private var pendingFrontingAction: String? = null
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val action = intent.getStringExtra(FrontingStatus.ACTION_EXTRA) ?: return
+        intent.removeExtra(FrontingStatus.ACTION_EXTRA)
+        val channel = frontingStatusChannel
+        if (channel == null) {
+            pendingFrontingAction = action
+        } else {
+            channel.invokeMethod("onAction", action)
+        }
+    }
+
     companion object {
+        private const val FRONTING_STATUS_CHANNEL = "com.prismplural.prism/fronting_status"
         private const val APP_UPDATE_CHANNEL = "com.prismplural.prism/app_update"
         private const val TAG = "PrismMainActivity"
         private const val SECURE_DISPLAY_CHANNEL = "com.prism.prism_plurality/secure_display"
@@ -80,6 +96,87 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        frontingStatusChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            FRONTING_STATUS_CHANNEL,
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "ensureChannels" -> {
+                        FrontingStatus.ensureChannels(
+                            this,
+                            call.argument<String>("name") ?: "Fronting status",
+                            call.argument<String>("dndName") ?: "Fronting status (Do Not Disturb)",
+                            call.argument<String>("description") ?: "",
+                        )
+                        result.success(true)
+                    }
+                    "show" -> {
+                        val raw = call.argument<String>("snapshot")
+                        if (raw == null) {
+                            result.error("bad_args", "snapshot missing", null)
+                        } else {
+                            try {
+                                FrontingStatus.show(this, org.json.JSONObject(raw))
+                                result.success(FrontingStatus.canPost(this))
+                            } catch (e: Exception) {
+                                result.error("show_failed", e.message, null)
+                            }
+                        }
+                    }
+                    "cancel" -> {
+                        FrontingStatus.cancel(this)
+                        result.success(true)
+                    }
+                    "isShowing" -> result.success(FrontingStatus.isShowing(this))
+                    "wasDismissed" -> result.success(FrontingStatus.wasDismissed(this))
+                    "notificationsEnabled" -> result.success(FrontingStatus.canPost(this))
+                    "openChannelSettings" -> {
+                        try {
+                            val i = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                                    .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+                                    .putExtra(
+                                        android.provider.Settings.EXTRA_CHANNEL_ID,
+                                        call.argument<String>("channel") ?: FrontingStatus.CHANNEL,
+                                    )
+                            } else {
+                                Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                            }
+                            startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("settings_unavailable", e.message, null)
+                        }
+                    }
+                    "openBatterySettings" -> {
+                        try {
+                            startActivity(
+                                Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("settings_unavailable", e.message, null)
+                        }
+                    }
+                    "isIgnoringBatteryOptimizations" -> {
+                        val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+                        result.success(
+                            Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                                pm.isIgnoringBatteryOptimizations(packageName),
+                        )
+                    }
+                    "takePendingAction" -> {
+                        val action = pendingFrontingAction ?: intent?.getStringExtra(FrontingStatus.ACTION_EXTRA)
+                        pendingFrontingAction = null
+                        intent?.removeExtra(FrontingStatus.ACTION_EXTRA)
+                        result.success(action)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, APP_UPDATE_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {

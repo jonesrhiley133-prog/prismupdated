@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
+import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_controller.dart';
 import 'package:prism_plurality/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -287,6 +289,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
+    // Keep the live fronting notification in step with the front.
+    ref.listen(frontingNotificationListenerProvider, (_, _) {});
+    ref.listen(frontingNotificationActionsProvider, (_, _) {});
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
     // `db.transaction(...)` (drift_sync_adapter.dart `_frontingSessionsEntity`

@@ -32,6 +32,27 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.20.0',
+    date: DateTime(2026, 11, 12),
+    features: const [
+      LocalizedText(
+        'Fronting notification (Android): a live notification showing who '
+            'is fronting, co-fronters, a running timer, mood, location, '
+            'activity and your own status, updated the moment the front '
+            'changes. Customise the title, greeting, icon, colours, layout, '
+            'buttons (switch, quick front, mood, status, details), lock '
+            'screen privacy and per-member styles. Settings → Fronting '
+            'notification.',
+        'Notificación de frente (Android): una notificación continua con '
+            'quién está al frente, co-frente, cronómetro, ánimo, ubicación, '
+            'actividad y tu estado, que se actualiza al cambiar el frente. '
+            'Personaliza título, saludo, icono, colores, diseño, botones, '
+            'privacidad en la pantalla de bloqueo y estilos por miembro. '
+            'Ajustes → Notificación de frente.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.19.0',
     date: DateTime(2026, 11, 12),
     features: const [

@@ -29362,6 +29362,750 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fit'**
   String get hsFit;
+
+  /// fnTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting notification'**
+  String get fnTitle;
+
+  /// fnEnable
+  ///
+  /// In en, this message translates to:
+  /// **'Show who is fronting in the notification shade'**
+  String get fnEnable;
+
+  /// fnEnableHelp
+  ///
+  /// In en, this message translates to:
+  /// **'A live, ongoing notification that updates whenever the front changes.'**
+  String get fnEnableHelp;
+
+  /// fnUnsupportedTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Only available on Android'**
+  String get fnUnsupportedTitle;
+
+  /// fnUnsupportedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Persistent notifications need Android. On iPhone and Mac, Prism posts a quiet alert when the front changes instead; elsewhere the setting is saved for your Android devices.'**
+  String get fnUnsupportedMessage;
+
+  /// fnPermissionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked'**
+  String get fnPermissionTitle;
+
+  /// fnPermissionMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications for Prism so the fronting notification can appear.'**
+  String get fnPermissionMessage;
+
+  /// fnPermissionButton
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications'**
+  String get fnPermissionButton;
+
+  /// fnPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get fnPreview;
+
+  /// fnPreviewHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is fronting, so the notification is hidden.'**
+  String get fnPreviewHidden;
+
+  /// fnRefreshNow
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh now'**
+  String get fnRefreshNow;
+
+  /// fnContent
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get fnContent;
+
+  /// fnTitleTemplate
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get fnTitleTemplate;
+
+  /// fnTitleTemplateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Use {tokens}.'**
+  String fnTitleTemplateHelp(String tokens);
+
+  /// fnGreeting
+  ///
+  /// In en, this message translates to:
+  /// **'Greeting'**
+  String get fnGreeting;
+
+  /// fnGreetingHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Shown under the title, e.g. \"{example}\" Leave empty to show the first info line.'**
+  String fnGreetingHelp(String example);
+
+  /// fnGreetingMemberHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. {example}'**
+  String fnGreetingMemberHint(String example);
+
+  /// fnCustomStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Custom status'**
+  String get fnCustomStatus;
+
+  /// fnCustomStatusHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Busy, low spoons, do not disturb'**
+  String get fnCustomStatusHint;
+
+  /// fnCustomLines
+  ///
+  /// In en, this message translates to:
+  /// **'Extra lines'**
+  String get fnCustomLines;
+
+  /// fnCustomLinesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Your own information, one per line'**
+  String get fnCustomLinesHelp;
+
+  /// fnInformation
+  ///
+  /// In en, this message translates to:
+  /// **'Information to show'**
+  String get fnInformation;
+
+  /// fnInformationHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tick what appears and use the arrows to set the order.'**
+  String get fnInformationHelp;
+
+  /// fnInfoFronters
+  ///
+  /// In en, this message translates to:
+  /// **'Current fronter(s)'**
+  String get fnInfoFronters;
+
+  /// fnInfoCofronters
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting members'**
+  String get fnInfoCofronters;
+
+  /// fnInfoPronouns
+  ///
+  /// In en, this message translates to:
+  /// **'Pronouns'**
+  String get fnInfoPronouns;
+
+  /// fnInfoDuration
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting duration (live timer)'**
+  String get fnInfoDuration;
+
+  /// fnInfoStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status (asleep, session note)'**
+  String get fnInfoStatus;
+
+  /// fnInfoCustomStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Custom status'**
+  String get fnInfoCustomStatus;
+
+  /// fnInfoMood
+  ///
+  /// In en, this message translates to:
+  /// **'Current mood'**
+  String get fnInfoMood;
+
+  /// fnInfoEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Emotions'**
+  String get fnInfoEmotions;
+
+  /// fnInfoLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get fnInfoLocation;
+
+  /// fnInfoActivity
+  ///
+  /// In en, this message translates to:
+  /// **'Current activity (work, workout, study)'**
+  String get fnInfoActivity;
+
+  /// fnInfoCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Extra lines'**
+  String get fnInfoCustom;
+
+  /// fnIcons
+  ///
+  /// In en, this message translates to:
+  /// **'Icons'**
+  String get fnIcons;
+
+  /// fnIconAvatar
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar'**
+  String get fnIconAvatar;
+
+  /// fnIconEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get fnIconEmoji;
+
+  /// fnIconBuiltIn
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get fnIconBuiltIn;
+
+  /// fnIconNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get fnIconNone;
+
+  /// fnIconAvatarHelp
+  ///
+  /// In en, this message translates to:
+  /// **'The fronter\'s profile picture, or their emoji when they have none.'**
+  String get fnIconAvatarHelp;
+
+  /// fnIconEmojiHelp
+  ///
+  /// In en, this message translates to:
+  /// **'The same emoji for everyone (members can override it below).'**
+  String get fnIconEmojiHelp;
+
+  /// fnIconBuiltInHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Only the status-bar icon chosen below.'**
+  String get fnIconBuiltInHelp;
+
+  /// fnIconNoneHelp
+  ///
+  /// In en, this message translates to:
+  /// **'No large picture in the notification.'**
+  String get fnIconNoneHelp;
+
+  /// fnEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get fnEmoji;
+
+  /// fnStatusBarIcon
+  ///
+  /// In en, this message translates to:
+  /// **'Status bar icon'**
+  String get fnStatusBarIcon;
+
+  /// fnAppearance
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get fnAppearance;
+
+  /// fnLayout
+  ///
+  /// In en, this message translates to:
+  /// **'Layout'**
+  String get fnLayout;
+
+  /// fnLayoutCompact
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get fnLayoutCompact;
+
+  /// fnLayoutExpanded
+  ///
+  /// In en, this message translates to:
+  /// **'Expanded'**
+  String get fnLayoutExpanded;
+
+  /// fnLayoutMinimal
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get fnLayoutMinimal;
+
+  /// fnLayoutDetailed
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed'**
+  String get fnLayoutDetailed;
+
+  /// fnStyleSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System style'**
+  String get fnStyleSystem;
+
+  /// fnStyleCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Custom colours'**
+  String get fnStyleCustom;
+
+  /// fnStyleSystemHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your phone\'s notification look and dark mode.'**
+  String get fnStyleSystemHelp;
+
+  /// fnStyleCustomHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Uses your own background and text colours.'**
+  String get fnStyleCustomHelp;
+
+  /// fnAccentColor
+  ///
+  /// In en, this message translates to:
+  /// **'Accent colour'**
+  String get fnAccentColor;
+
+  /// fnBackgroundColor
+  ///
+  /// In en, this message translates to:
+  /// **'Background colour'**
+  String get fnBackgroundColor;
+
+  /// fnTextColor
+  ///
+  /// In en, this message translates to:
+  /// **'Text colour'**
+  String get fnTextColor;
+
+  /// fnColorAuto
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get fnColorAuto;
+
+  /// fnColorCustom
+  ///
+  /// In en, this message translates to:
+  /// **'Custom…'**
+  String get fnColorCustom;
+
+  /// fnColorized
+  ///
+  /// In en, this message translates to:
+  /// **'Fill with accent colour'**
+  String get fnColorized;
+
+  /// fnColorizedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Android only fills the notification when \"Keep running\" below is on.'**
+  String get fnColorizedHelp;
+
+  /// fnActions
+  ///
+  /// In en, this message translates to:
+  /// **'Buttons'**
+  String get fnActions;
+
+  /// fnActionsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick up to three, in the order you tap them.'**
+  String get fnActionsHelp;
+
+  /// fnActionQuickFront
+  ///
+  /// In en, this message translates to:
+  /// **'Quick front'**
+  String get fnActionQuickFront;
+
+  /// fnActionSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get fnActionSwitch;
+
+  /// fnActionOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open Prism'**
+  String get fnActionOpen;
+
+  /// fnActionMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get fnActionMood;
+
+  /// fnActionStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get fnActionStatus;
+
+  /// fnActionDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get fnActionDetails;
+
+  /// fnPerMember
+  ///
+  /// In en, this message translates to:
+  /// **'Per member'**
+  String get fnPerMember;
+
+  /// fnPerMemberHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Give each member their own title, greeting, emoji and colours, used while they front first.'**
+  String get fnPerMemberHelp;
+
+  /// fnMemberStyleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s notification'**
+  String fnMemberStyleTitle(String name);
+
+  /// fnMemberStyleHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a field empty to use the general setting.'**
+  String get fnMemberStyleHelp;
+
+  /// fnAdvanced
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get fnAdvanced;
+
+  /// fnForeground
+  ///
+  /// In en, this message translates to:
+  /// **'Keep running in the background'**
+  String get fnForeground;
+
+  /// fnForegroundHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Runs a small service so the notification cannot be cleared and updates from your other devices arrive even when Prism is closed. Uses a little more battery.'**
+  String get fnForegroundHelp;
+
+  /// fnRestore
+  ///
+  /// In en, this message translates to:
+  /// **'Restore after restart'**
+  String get fnRestore;
+
+  /// fnRestoreHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Show the last notification again after the phone restarts or Prism updates.'**
+  String get fnRestoreHelp;
+
+  /// fnAllowDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Allow swiping away'**
+  String get fnAllowDismiss;
+
+  /// fnAllowDismissHelp
+  ///
+  /// In en, this message translates to:
+  /// **'It comes back the next time the front changes.'**
+  String get fnAllowDismissHelp;
+
+  /// fnDnd
+  ///
+  /// In en, this message translates to:
+  /// **'Show during Do Not Disturb'**
+  String get fnDnd;
+
+  /// fnDndHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a separate channel allowed to bypass Do Not Disturb (Android may ask you to confirm).'**
+  String get fnDndHelp;
+
+  /// fnOpenDndSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Open channel settings'**
+  String get fnOpenDndSettings;
+
+  /// fnLockScreen
+  ///
+  /// In en, this message translates to:
+  /// **'On the lock screen'**
+  String get fnLockScreen;
+
+  /// fnLockShow
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get fnLockShow;
+
+  /// fnLockHideDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Hide names'**
+  String get fnLockHideDetails;
+
+  /// fnLockHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get fnLockHide;
+
+  /// fnLockPreviewShow
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: shows everything'**
+  String get fnLockPreviewShow;
+
+  /// fnLockPreviewHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: \"{title}\"'**
+  String fnLockPreviewHidden(String title);
+
+  /// fnLockPreviewNone
+  ///
+  /// In en, this message translates to:
+  /// **'Lock screen: hidden'**
+  String get fnLockPreviewNone;
+
+  /// fnWhenEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'When nobody is fronting'**
+  String get fnWhenEmpty;
+
+  /// fnWhenEmptyMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Show a message'**
+  String get fnWhenEmptyMessage;
+
+  /// fnWhenEmptyHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the notification'**
+  String get fnWhenEmptyHide;
+
+  /// fnEmptyMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get fnEmptyMessage;
+
+  /// fnNobodyFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is logged as fronting'**
+  String get fnNobodyFronting;
+
+  /// fnMoodFreshness
+  ///
+  /// In en, this message translates to:
+  /// **'Show moods logged in the last {count} hours'**
+  String fnMoodFreshness(int count);
+
+  /// fnChannelSettings
+  ///
+  /// In en, this message translates to:
+  /// **'System notification settings'**
+  String get fnChannelSettings;
+
+  /// fnBatterySettings
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimisation'**
+  String get fnBatterySettings;
+
+  /// fnBatteryHelp
+  ///
+  /// In en, this message translates to:
+  /// **'If the notification stops updating in the background, exclude Prism from battery optimisation.'**
+  String get fnBatteryHelp;
+
+  /// fnChannelName
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status'**
+  String get fnChannelName;
+
+  /// fnChannelDndName
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status (Do Not Disturb)'**
+  String get fnChannelDndName;
+
+  /// fnChannelDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing notification showing who is currently fronting.'**
+  String get fnChannelDescription;
+
+  /// fnPublicTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Prism'**
+  String get fnPublicTitle;
+
+  /// fnPublicText
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting status'**
+  String get fnPublicText;
+
+  /// fnLineFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting: {names}'**
+  String fnLineFronting(String names);
+
+  /// fnLineCofronting
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting: {names}'**
+  String fnLineCofronting(String names);
+
+  /// fnLineSince
+  ///
+  /// In en, this message translates to:
+  /// **'Since {time}'**
+  String fnLineSince(String time);
+
+  /// fnLineAsleep
+  ///
+  /// In en, this message translates to:
+  /// **'Asleep since {time}'**
+  String fnLineAsleep(String time);
+
+  /// fnLineStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String fnLineStatus(String status);
+
+  /// fnLineMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood: {label} ({level}/5)'**
+  String fnLineMood(String label, int level);
+
+  /// fnLineEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Feeling: {list}'**
+  String fnLineEmotions(String list);
+
+  /// fnLineLocation
+  ///
+  /// In en, this message translates to:
+  /// **'At {place}'**
+  String fnLineLocation(String place);
+
+  /// fnLineWorking
+  ///
+  /// In en, this message translates to:
+  /// **'Working: {job}'**
+  String fnLineWorking(String job);
+
+  /// fnLineWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Working out: {activity}'**
+  String fnLineWorkout(String activity);
+
+  /// fnLineStudying
+  ///
+  /// In en, this message translates to:
+  /// **'Studying: {subject}'**
+  String fnLineStudying(String subject);
+
+  /// fnQuickFrontHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a member to start or end their front.'**
+  String get fnQuickFrontHelp;
+
+  /// fnClearStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get fnClearStatus;
+
+  /// fnStatusPresetBusy
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get fnStatusPresetBusy;
+
+  /// fnStatusPresetResting
+  ///
+  /// In en, this message translates to:
+  /// **'Resting'**
+  String get fnStatusPresetResting;
+
+  /// fnStatusPresetLowSpoons
+  ///
+  /// In en, this message translates to:
+  /// **'Low energy'**
+  String get fnStatusPresetLowSpoons;
+
+  /// fnStatusPresetBlurry
+  ///
+  /// In en, this message translates to:
+  /// **'Blurry front'**
+  String get fnStatusPresetBlurry;
+
+  /// fnStatusPresetOk
+  ///
+  /// In en, this message translates to:
+  /// **'Doing okay'**
+  String get fnStatusPresetOk;
+
+  /// fnTopBar
+  ///
+  /// In en, this message translates to:
+  /// **'Front status'**
+  String get fnTopBar;
 }
 
 class _AppLocalizationsDelegate
