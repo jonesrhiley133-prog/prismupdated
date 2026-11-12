@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/utils/fitness.dart';
 import 'package:prism_plurality/features/fitness/views/fitness_editors.dart';
@@ -47,6 +48,7 @@ class FitnessScreen extends ConsumerStatefulWidget {
 class _FitnessScreenState extends ConsumerState<FitnessScreen> {
   FitnessTab _tab = FitnessTab.overview;
   String? _activityFilter;
+  String? _member;
 
   Future<void> _startLive(BuildContext context) async {
     final activity = await PrismSheet.show<String>(
@@ -72,6 +74,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
           kind: TrackerKind.fitnessWorkout,
           title: fitnessActivityLabel(context.l10n, activity),
           occurredAt: DateTime.now(),
+          memberId: currentFronterId(ref),
           fields: {FitField.activity: activity, 'live': true},
         );
   }
@@ -83,7 +86,10 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
         ref.watch(trackerKindProvider(TrackerKind.fitnessWorkout)).value ??
         const <TrackerRecord>[];
     final live = all.where(isLiveWorkout).toList();
-    final workouts = all.where((w) => !isLiveWorkout(w)).toList();
+    final workouts = all
+        .where((w) => !isLiveWorkout(w))
+        .where((w) => _member == null || w.memberId == _member)
+        .toList();
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: l10n.navFitness,
@@ -137,6 +143,11 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
                           onTap: () => setState(() => _tab = t),
                         ),
                     ],
+                  ),
+                  TrackerMemberFilter(
+                    value: _member,
+                    onChanged: (m) => setState(() => _member = m),
+                    onlyIds: {for (final w in all) ?w.memberId},
                   ),
                   const SizedBox(height: 12),
                   ...switch (_tab) {
@@ -464,16 +475,17 @@ class _GoalTile extends StatelessWidget {
   }
 }
 
-class _WorkoutTile extends StatelessWidget {
+class _WorkoutTile extends ConsumerWidget {
   const _WorkoutTile({required this.workout});
 
   final TrackerRecord workout;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final w = workout;
+    final who = memberNameFor(ref, w.memberId);
     final d = w.occurredAt ?? w.createdAt;
     final mood = w.integer(FitField.moodAfter);
     final sets = workoutSets(w);
@@ -499,6 +511,7 @@ class _WorkoutTile extends StatelessWidget {
                       if (w.integer(FitField.effort) != null)
                         l10n.fitEffortValue(w.integer(FitField.effort)!),
                       if (sets.isNotEmpty) l10n.fitExerciseCount(sets.length),
+                      ?who,
                     ].join(' · '),
                     style: theme.textTheme.bodySmall,
                   ),

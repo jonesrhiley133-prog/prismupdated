@@ -6251,5 +6251,15 @@
   "schClassGone": "Esta clase se eliminó.",
   "schTeacherIs": "Profesor/a: {name}",
   "schRoomIs": "Aula: {name}",
-  "schCreditsIs": "Créditos: {count}"
+  "schCreditsIs": "Créditos: {count}",
+  "trackerWholeSystem": "Todo el sistema",
+  "trackerEveryone": "Todos",
+  "trackerFrontingNow": "{name} (al frente)",
+  "finWho": "Quién",
+  "finWhoseGoal": "De quién es la meta",
+  "finSpendingByMember": "Gastos por miembro",
+  "schWhoseClass": "De quién es la clase",
+  "schWhoseAssignment": "De quién es la tarea",
+  "schWhoStudied": "Quién estudió",
+  "dictAddedBy": "Añadido por"
 }

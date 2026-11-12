@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/journal/utils/journal_stats.dart';
-import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
@@ -73,7 +73,7 @@ class _JournalEditorSheetState extends ConsumerState<JournalEditorSheet> {
   late String? _category =
       _e?.str(JournalField.category) ?? widget.initialCategory;
   late int? _mood = _e?.integer(JournalField.mood);
-  late String? _memberId = _e?.memberId;
+  late String? _memberId = _e == null ? currentFronterId(ref) : _e.memberId;
   late bool _private = _e?.isPrivate ?? false;
   late bool _pinned = _e?.isPinned ?? false;
   late String? _prompt = _e?.str(JournalField.prompt);
@@ -217,7 +217,6 @@ class _JournalEditorSheetState extends ConsumerState<JournalEditorSheet> {
     final categories =
         ref.watch(trackerKindProvider(TrackerKind.journalCategory)).value ??
         const <TrackerRecord>[];
-    final members = ref.watch(activeMembersProvider).value ?? const [];
     final locale = context.dateLocale;
     return ListenableBuilder(
       listenable: Listenable.merge([_title, _body]),
@@ -347,26 +346,11 @@ class _JournalEditorSheetState extends ConsumerState<JournalEditorSheet> {
             labelText: l10n.trackerTags,
             helperText: l10n.trackerTagsHelp,
           ),
-          if (members.isNotEmpty) ...[
-            TrackerLabel(l10n.journalWrittenBy),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                PrismChip(
-                  label: l10n.journalNobodyInParticular,
-                  selected: _memberId == null,
-                  onTap: () => setState(() => _memberId = null),
-                ),
-                for (final m in members)
-                  PrismChip(
-                    label: m.name,
-                    selected: _memberId == m.id,
-                    onTap: () => setState(() => _memberId = m.id),
-                  ),
-              ],
-            ),
-          ],
+          TrackerMemberPicker(
+            label: l10n.journalWrittenBy,
+            value: _memberId,
+            onChanged: (v) => setState(() => _memberId = v),
+          ),
           const SizedBox(height: 12),
           PrismSwitchRow(
             title: l10n.trackerPrivate,

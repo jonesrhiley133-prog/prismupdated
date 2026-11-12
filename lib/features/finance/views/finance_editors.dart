@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/finance/providers/finance_providers.dart';
 import 'package:prism_plurality/features/finance/utils/finance.dart';
@@ -225,6 +226,7 @@ class _TxnEditorSheetState extends ConsumerState<TxnEditorSheet> {
   late String? _account = _e?.str(FinField.account);
   late String? _toAccount = _e?.str(FinField.toAccount);
   late DateTime _date = _e?.occurredAt ?? DateTime.now();
+  late String? _member = _e == null ? currentFronterId(ref) : _e.memberId;
   bool _saving = false;
 
   int? get _cents => MoneyField.read(_amount);
@@ -268,6 +270,7 @@ class _TxnEditorSheetState extends ConsumerState<TxnEditorSheet> {
         body: _note.text,
         amount: _cents,
         occurredAt: _date,
+        memberId: _member,
         tags: parseTagInput(_tags.text),
         fields: fields,
       );
@@ -279,6 +282,7 @@ class _TxnEditorSheetState extends ConsumerState<TxnEditorSheet> {
               body: _note.text,
               amount: _cents,
               occurredAt: _date,
+              memberId: _member,
               tags: parseTagInput(_tags.text),
             )
             .withFields(fields),
@@ -378,6 +382,11 @@ class _TxnEditorSheetState extends ConsumerState<TxnEditorSheet> {
                 child: Text(l10n.finTransferNeedsAccounts),
               ),
           ],
+          TrackerMemberPicker(
+            label: l10n.finWho,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
+          ),
           const SizedBox(height: 12),
           PrismTextField(
             controller: _note,
@@ -621,6 +630,7 @@ class _GoalEditorState extends ConsumerState<GoalEditorSheet> {
   );
   late DateTime? _deadline = _e?.endedAt;
   late int _color = _e?.integer(FinField.color) ?? trackerPalette[2];
+  late String? _member = _e?.memberId;
 
   bool get _valid =>
       _name.text.trim().isNotEmpty &&
@@ -648,6 +658,7 @@ class _GoalEditorState extends ConsumerState<GoalEditorSheet> {
         title: _name.text,
         amount: MoneyField.read(_target),
         endedAt: _deadline,
+        memberId: _member,
         fields: fields,
       );
     } else {
@@ -657,6 +668,7 @@ class _GoalEditorState extends ConsumerState<GoalEditorSheet> {
               title: _name.text.trim(),
               amount: MoneyField.read(_target),
               endedAt: _deadline,
+              memberId: _member,
             )
             .withFields(fields),
       );
@@ -738,6 +750,11 @@ class _GoalEditorState extends ConsumerState<GoalEditorSheet> {
                   ),
                 ),
             ],
+          ),
+          TrackerMemberPicker(
+            label: l10n.finWhoseGoal,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
           ),
           _deleteButton(context, ref, _e, l10n.finDeleteGoal),
         ],

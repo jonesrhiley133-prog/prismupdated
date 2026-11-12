@@ -27155,6 +27155,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Credits: {count}'**
   String schCreditsIs(String count);
+
+  /// trackerWholeSystem
+  ///
+  /// In en, this message translates to:
+  /// **'Whole system'**
+  String get trackerWholeSystem;
+
+  /// trackerEveryone
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get trackerEveryone;
+
+  /// trackerFrontingNow
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (fronting)'**
+  String trackerFrontingNow(String name);
+
+  /// finWho
+  ///
+  /// In en, this message translates to:
+  /// **'Who'**
+  String get finWho;
+
+  /// finWhoseGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Whose goal'**
+  String get finWhoseGoal;
+
+  /// finSpendingByMember
+  ///
+  /// In en, this message translates to:
+  /// **'Spending by member'**
+  String get finSpendingByMember;
+
+  /// schWhoseClass
+  ///
+  /// In en, this message translates to:
+  /// **'Whose class'**
+  String get schWhoseClass;
+
+  /// schWhoseAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Whose assignment'**
+  String get schWhoseAssignment;
+
+  /// schWhoStudied
+  ///
+  /// In en, this message translates to:
+  /// **'Who studied'**
+  String get schWhoStudied;
+
+  /// dictAddedBy
+  ///
+  /// In en, this message translates to:
+  /// **'Added by'**
+  String get dictAddedBy;
 }
 
 class _AppLocalizationsDelegate

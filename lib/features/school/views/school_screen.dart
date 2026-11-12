@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/views/fitness_screen.dart'
     show formatElapsed;
@@ -45,9 +46,13 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
   SchoolTab _tab = SchoolTab.today;
   _AssignFilter _filter = _AssignFilter.open;
   String? _classFilter;
+  String? _member;
 
-  List<TrackerRecord> _kind(String k) =>
-      ref.watch(trackerKindProvider(k)).value ?? const [];
+  List<TrackerRecord> _kind(String k) => [
+    for (final r
+        in ref.watch(trackerKindProvider(k)).value ?? const <TrackerRecord>[])
+      if (_member == null || r.memberId == null || r.memberId == _member) r,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +113,22 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
                           ),
                       ],
                     ),
+                  ),
+                  TrackerMemberFilter(
+                    value: _member,
+                    onChanged: (m) => setState(() => _member = m),
+                    onlyIds: {
+                      for (final r
+                          in ref
+                                  .watch(
+                                    trackerKindProvider(
+                                      TrackerKind.schoolClass,
+                                    ),
+                                  )
+                                  .value ??
+                              const <TrackerRecord>[])
+                        ?r.memberId,
+                    },
                   ),
                   const SizedBox(height: 12),
                   ...switch (_tab) {
@@ -275,6 +296,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
           title: context.l10n.schStudySession,
           parentId: classId == null || classId.isEmpty ? null : classId,
           occurredAt: DateTime.now(),
+          memberId: currentFronterId(ref),
           fields: {'live': true},
         );
   }
@@ -346,6 +368,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
                                     .toSet()
                                     .join(' '),
                               l10n.schOpenCount(open),
+                              ?memberNameFor(ref, c.memberId),
                             ].join(' · '),
                             style: theme.textTheme.bodySmall,
                           ),

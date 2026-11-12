@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
@@ -64,6 +65,7 @@ class _TermEditorSheetState extends ConsumerState<TermEditorSheet> {
   late String? _collection =
       _e?.str(DictField.collection) ?? widget.initialCollection;
   late bool _private = _e?.isPrivate ?? false;
+  late String? _member = _e?.memberId;
   bool _saving = false;
 
   String? get _duplicateOf {
@@ -119,6 +121,7 @@ class _TermEditorSheetState extends ConsumerState<TermEditorSheet> {
         body: _def.text,
         tags: parseTagInput(_tags.text),
         isPrivate: _private,
+        memberId: _member,
         fields: fields,
       );
     } else {
@@ -129,6 +132,7 @@ class _TermEditorSheetState extends ConsumerState<TermEditorSheet> {
               body: _def.text.trim().isEmpty ? null : _def.text.trim(),
               tags: parseTagInput(_tags.text),
               isPrivate: _private,
+              memberId: _member,
             )
             .withFields(fields),
       );
@@ -235,6 +239,11 @@ class _TermEditorSheetState extends ConsumerState<TermEditorSheet> {
               controller: _tags,
               labelText: l10n.trackerTags,
               helperText: l10n.trackerTagsHelp,
+            ),
+            TrackerMemberPicker(
+              label: l10n.dictAddedBy,
+              value: _member,
+              onChanged: (v) => setState(() => _member = v),
             ),
             const SizedBox(height: 12),
             PrismSwitchRow(

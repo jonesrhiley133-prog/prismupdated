@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/journal/utils/journal_stats.dart';
 import 'package:prism_plurality/features/journal/views/journal_editor_sheet.dart';
@@ -40,6 +41,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   _JournalFilter _filter = _JournalFilter.all;
   String? _category;
   String? _tag;
+  String? _member;
 
   @override
   void dispose() {
@@ -92,7 +94,8 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   (_filter != _JournalFilter.private || e.isPrivate) &&
                   (_category == null ||
                       e.str(JournalField.category) == _category) &&
-                  (_tag == null || e.tags.contains(_tag)))
+                  (_tag == null || e.tags.contains(_tag)) &&
+                  (_member == null || e.memberId == _member))
                 e,
           ];
           final pinned = [
@@ -173,6 +176,11 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 ],
               ),
             ),
+            TrackerMemberFilter(
+              value: _member,
+              onChanged: (m) => setState(() => _member = m),
+              onlyIds: {for (final e in entries) ?e.memberId},
+            ),
             if (stats.topTags.isNotEmpty) ...[
               const SizedBox(height: 6),
               SingleChildScrollView(
@@ -241,16 +249,17 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 }
 
-class _EntryCard extends StatelessWidget {
+class _EntryCard extends ConsumerWidget {
   const _EntryCard({required this.entry, required this.catById});
 
   final TrackerRecord entry;
   final Map<String, TrackerRecord> catById;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
+    final author = memberNameFor(ref, entry.memberId);
     final cat = catById[entry.str(JournalField.category)];
     final mood = entry.integer(JournalField.mood);
     final d = entry.occurredAt ?? entry.createdAt;
@@ -287,6 +296,7 @@ class _EntryCard extends StatelessWidget {
                             DateFormat.MMMEd(context.dateLocale).format(d),
                             DateFormat.jm(context.dateLocale).format(d),
                             ?cat?.title,
+                            ?author,
                           ].join(' · '),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,

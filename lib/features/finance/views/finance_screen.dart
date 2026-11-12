@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/domain/preferences/finance_preferences.dart';
@@ -46,12 +47,18 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   final _search = TextEditingController();
   String? _typeFilter;
   bool _postedRecurring = false;
+  String? _member;
 
   @override
   void dispose() {
     _search.dispose();
     super.dispose();
   }
+
+  List<TrackerRecord> _txns() => [
+    for (final t in ref.watch(financeTxnsProvider))
+      if (_member == null || t.memberId == _member) t,
+  ];
 
   void _postAutoRecurring(List<TrackerRecord> recurring) {
     if (_postedRecurring) return;
@@ -131,6 +138,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                       ],
                     ),
                   ),
+                  TrackerMemberFilter(
+                    value: _member,
+                    onChanged: (m) => setState(() => _member = m),
+                    onlyIds: {
+                      for (final t in ref.watch(financeTxnsProvider))
+                        ?t.memberId,
+                    },
+                  ),
                   const SizedBox(height: 12),
                   if (_tab == FinanceTab.overview || _tab == FinanceTab.budgets)
                     _MonthSwitcher(
@@ -157,7 +172,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final money = ref.watch(financeMoneyFormatterProvider);
-    final txns = ref.watch(financeTxnsProvider);
+    final txns = _txns();
     final accounts = ref.watch(financeAccountsProvider);
     final m = monthTotals(txns, _month);
     final history = monthHistory(txns, _month);
@@ -287,6 +302,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             ],
           ),
         ),
+      ..._spendingByMember(context, money),
       TrackerLabel(
         l10n.finAccounts,
         trailing: PrismButton(
@@ -357,6 +373,62 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     ];
   }
 
+  List<Widget> _spendingByMember(
+    BuildContext context,
+    String Function(int) money,
+  ) {
+    if (_member != null) return const [];
+    final m = monthTotals(const [], _month);
+    final start = m.month;
+    final end = DateTime(start.year, start.month + 1);
+    final by = <String?, int>{};
+    for (final t in ref.watch(financeTxnsProvider)) {
+      final d = t.occurredAt ?? t.createdAt;
+      if (txnType(t) != TxnType.expense ||
+          d.isBefore(start) ||
+          !d.isBefore(end)) {
+        continue;
+      }
+      by[t.memberId] = (by[t.memberId] ?? 0) + (t.amount ?? 0);
+    }
+    if (by.keys.every((k) => k == null)) return const [];
+    final total = by.values.fold(0, (a, b) => a + b);
+    final rows = by.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final l10n = context.l10n;
+    return [
+      TrackerLabel(l10n.finSpendingByMember),
+      PrismSurface(
+        child: Column(
+          children: [
+            for (final e in rows)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            memberNameFor(ref, e.key) ??
+                                l10n.trackerWholeSystem,
+                          ),
+                        ),
+                        Text(money(e.value)),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    TrackerBar(value: total == 0 ? 0 : e.value / total),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    ];
+  }
+
   List<Widget> _transactions(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
@@ -366,7 +438,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     };
     final q = _search.text.trim().toLowerCase();
     final txns = [
-      for (final t in ref.watch(financeTxnsProvider))
+      for (final t in _txns())
         if ((_typeFilter == null || txnType(t) == _typeFilter) &&
             (q.isEmpty ||
                 t.title.toLowerCase().contains(q) ||
@@ -460,6 +532,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                           ],
                           if (t.str(FinField.recurringId) != null)
                             l10n.finRecurringBadge,
+                          ?memberNameFor(ref, t.memberId),
                         ].join(' · '),
                         style: theme.textTheme.bodySmall,
                       ),
@@ -485,7 +558,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final money = ref.watch(financeMoneyFormatterProvider);
-    final m = monthTotals(ref.watch(financeTxnsProvider), _month);
+    final m = monthTotals(_txns(), _month);
     final statuses = budgetStatuses(ref.watch(financeBudgetsProvider), m);
     final totalLimit = statuses.fold(0, (s, b) => s + b.limit);
     final totalSpent = statuses.fold(0, (s, b) => s + b.spent);

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/utils/fitness.dart';
 import 'package:prism_plurality/features/fitness/views/fitness_labels.dart';
-import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
@@ -93,7 +93,7 @@ class _WorkoutEditorState extends ConsumerState<WorkoutEditorSheet> {
   late final _notes = TextEditingController(text: _e?.body ?? '');
   late int? _effort = _e?.integer(FitField.effort);
   late int? _mood = _e?.integer(FitField.moodAfter);
-  late String? _member = _e?.memberId;
+  late String? _member = _e == null ? currentFronterId(ref) : _e.memberId;
   late DateTime _at = _e?.occurredAt ?? DateTime.now();
   late final List<_SetRow> _sets = [
     for (final s in _e == null ? const <ExerciseSet>[] : workoutSets(_e))
@@ -186,7 +186,6 @@ class _WorkoutEditorState extends ConsumerState<WorkoutEditorSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final members = ref.watch(activeMembersProvider).value ?? const [];
     final known = exerciseHistory(
       ref.watch(trackerKindProvider(TrackerKind.fitnessWorkout)).value ??
           const [],
@@ -398,26 +397,11 @@ class _WorkoutEditorState extends ConsumerState<WorkoutEditorSheet> {
                 ),
               ),
             ),
-          if (members.isNotEmpty) ...[
-            TrackerLabel(l10n.fitWho),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                PrismChip(
-                  label: l10n.journalNobodyInParticular,
-                  selected: _member == null,
-                  onTap: () => setState(() => _member = null),
-                ),
-                for (final m in members)
-                  PrismChip(
-                    label: m.name,
-                    selected: _member == m.id,
-                    onTap: () => setState(() => _member = m.id),
-                  ),
-              ],
-            ),
-          ],
+          TrackerMemberPicker(
+            label: l10n.fitWho,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
+          ),
           const SizedBox(height: 12),
           PrismTextField(
             controller: _notes,

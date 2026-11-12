@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/school/utils/school.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
@@ -117,6 +118,7 @@ class _ClassEditorState extends ConsumerState<ClassEditorSheet> {
   late int _color =
       _e?.integer(SchoolField.color) ??
       trackerPalette[DateTime.now().millisecond % trackerPalette.length];
+  late String? _member = _e == null ? currentFronterId(ref) : _e.memberId;
   late final List<_MeetingDraft> _meetings = [
     for (final m in _e == null ? const <ClassMeeting>[] : classSchedule(_e))
       _MeetingDraft(m.weekday, m.startMinute, m.endMinute),
@@ -163,10 +165,15 @@ class _ClassEditorState extends ConsumerState<ClassEditorSheet> {
       await n.create(
         kind: TrackerKind.schoolClass,
         title: _name.text,
+        memberId: _member,
         fields: fields,
       );
     } else {
-      await n.save(e.copyWith(title: _name.text.trim()).withFields(fields));
+      await n.save(
+        e
+            .copyWith(title: _name.text.trim(), memberId: _member)
+            .withFields(fields),
+      );
     }
     if (mounted) Navigator.of(context).pop();
   }
@@ -223,6 +230,11 @@ class _ClassEditorState extends ConsumerState<ClassEditorSheet> {
                 ),
               ),
             ],
+          ),
+          TrackerMemberPicker(
+            label: l10n.schWhoseClass,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
           ),
           TrackerLabel(l10n.finColor),
           Wrap(
@@ -397,6 +409,19 @@ class _AssignmentEditorState extends ConsumerState<AssignmentEditorSheet> {
       ? AssignmentStatus.todo
       : assignmentStatus(_e);
   late int _priority = _e?.integer(SchoolField.priority) ?? 2;
+  late String? _member =
+      _e?.memberId ??
+      _classOwner(widget.classId) ??
+      (_e == null ? currentFronterId(ref) : null);
+
+  String? _classOwner(String? id) {
+    if (id == null) return null;
+    final classes =
+        ref.read(trackerKindProvider(TrackerKind.schoolClass)).value ??
+        const <TrackerRecord>[];
+    return classes.where((c) => c.id == id).firstOrNull?.memberId;
+  }
+
   late DateTime? _due = _e?.occurredAt ?? _defaultDue();
 
   static DateTime _defaultDue() {
@@ -447,6 +472,7 @@ class _AssignmentEditorState extends ConsumerState<AssignmentEditorSheet> {
         body: _notes.text,
         parentId: _classId,
         occurredAt: _due,
+        memberId: _member,
         fields: fields,
       );
     } else {
@@ -457,6 +483,7 @@ class _AssignmentEditorState extends ConsumerState<AssignmentEditorSheet> {
               body: _notes.text,
               parentId: _classId,
               occurredAt: _due,
+              memberId: _member,
               endedAt: _status == AssignmentStatus.done
                   ? (e.endedAt ?? DateTime.now())
                   : null,
@@ -504,9 +531,17 @@ class _AssignmentEditorState extends ConsumerState<AssignmentEditorSheet> {
                   selectedColor: Color(
                     c.integer(SchoolField.color) ?? trackerPalette.first,
                   ),
-                  onTap: () => setState(() => _classId = c.id),
+                  onTap: () => setState(() {
+                    _classId = c.id;
+                    _member = c.memberId ?? _member;
+                  }),
                 ),
             ],
+          ),
+          TrackerMemberPicker(
+            label: l10n.schWhoseAssignment,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
           ),
           TrackerLabel(l10n.schType),
           Wrap(
@@ -697,6 +732,7 @@ class _StudyEditorState extends ConsumerState<StudyEditorSheet> {
   late String? _classId = _e?.parentId ?? widget.classId;
   late int? _focus = _e?.integer(SchoolField.focus);
   late DateTime _at = _e?.occurredAt ?? DateTime.now();
+  late String? _member = _e == null ? currentFronterId(ref) : _e.memberId;
 
   bool get _valid => (int.tryParse(_minutes.text.trim()) ?? 0) > 0;
 
@@ -723,6 +759,7 @@ class _StudyEditorState extends ConsumerState<StudyEditorSheet> {
         body: _notes.text,
         parentId: _classId,
         occurredAt: _at,
+        memberId: _member,
         fields: fields,
       );
     } else {
@@ -732,6 +769,7 @@ class _StudyEditorState extends ConsumerState<StudyEditorSheet> {
               body: _notes.text,
               parentId: _classId,
               occurredAt: _at,
+              memberId: _member,
               endedAt: e.endedAt ?? DateTime.now(),
             )
             .withFields(fields),
@@ -801,6 +839,11 @@ class _StudyEditorState extends ConsumerState<StudyEditorSheet> {
                   onTap: () => setState(() => _classId = c.id),
                 ),
             ],
+          ),
+          TrackerMemberPicker(
+            label: l10n.schWhoStudied,
+            value: _member,
+            onChanged: (v) => setState(() => _member = v),
           ),
           TrackerLabel(l10n.schFocus),
           Wrap(

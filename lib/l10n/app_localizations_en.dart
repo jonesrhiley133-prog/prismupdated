@@ -17564,4 +17564,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String schCreditsIs(String count) {
     return 'Credits: $count';
   }
+
+  @override
+  String get trackerWholeSystem => 'Whole system';
+
+  @override
+  String get trackerEveryone => 'Everyone';
+
+  @override
+  String trackerFrontingNow(String name) {
+    return '$name (fronting)';
+  }
+
+  @override
+  String get finWho => 'Who';
+
+  @override
+  String get finWhoseGoal => 'Whose goal';
+
+  @override
+  String get finSpendingByMember => 'Spending by member';
+
+  @override
+  String get schWhoseClass => 'Whose class';
+
+  @override
+  String get schWhoseAssignment => 'Whose assignment';
+
+  @override
+  String get schWhoStudied => 'Who studied';
+
+  @override
+  String get dictAddedBy => 'Added by';
 }
