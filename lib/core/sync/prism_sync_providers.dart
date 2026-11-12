@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' show min;
 
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
+    show PlatformInt64Util;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -4831,12 +4833,15 @@ Future<DrainResult> drainRemoteDeliveries(
         take: (limit) async {
           final json = await ffi.takeUndeliveredChanges(
             handle: handle,
-            limit: limit,
+            limit: PlatformInt64Util.from(limit),
           );
           return DrainChunk.fromJson(jsonDecode(json) as Map<String, dynamic>);
         },
         ack: (upToId) =>
-            ffi.ackConsumerDeliveries(handle: handle, upToId: upToId),
+            ffi.ackConsumerDeliveries(
+              handle: handle,
+              upToId: PlatformInt64Util.from(upToId),
+            ),
         applyChanges: (deliveries) async {
           final chunkBase = runningApplied;
           final applied = await applyConsumerDeliveriesHealingUnappliable(

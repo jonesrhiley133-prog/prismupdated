@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:prism_plurality/core/database/database_encryption.dart';
-import 'package:sqlite3/sqlite3.dart' as raw;
+import 'package:prism_plurality/core/database/platform/sqlite_opener.dart';
 
 const _legacyWindowsCompanyDir = 'com.prismplural';
 const _legacyWindowsProductDir = 'prism_plurality';
@@ -320,7 +320,7 @@ Future<bool> _encryptedDatabaseHasRows(
   String hexKey,
   List<String> tables,
 ) async {
-  final db = raw.sqlite3.open(dbPath);
+  final db = openRawSqlite(dbPath);
   try {
     configurePrismSqliteConnection(db, hexKey: hexKey);
     db.select('SELECT count(*) FROM sqlite_master;');

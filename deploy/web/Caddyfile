@@ -1,0 +1,27 @@
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT:8080} {
+	root * /srv
+	encode zstd gzip
+
+	# Flutter's entry files must never be served stale after a deploy.
+	@entry path / /index.html /flutter_bootstrap.js /flutter_service_worker.js /version.json /manifest.json
+	header @entry Cache-Control "no-cache"
+
+	# Everything else is content-hashed or versioned by Flutter.
+	@static not path / /index.html /flutter_bootstrap.js /flutter_service_worker.js /version.json /manifest.json
+	header @static Cache-Control "public, max-age=3600"
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+	}
+
+	# Single-page app: unknown paths (e.g. /mood, /calendar) load the app.
+	try_files {path} /index.html
+	file_server
+}

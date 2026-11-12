@@ -1,7 +1,7 @@
 // ignore_for_file: experimental_member_use
 
 import 'package:drift/remote.dart' show DriftRemoteException;
-import 'package:sqlite3/sqlite3.dart' show SqlExtendedError, SqliteException;
+import 'package:sqlite3/common.dart' show SqlExtendedError, SqliteException;
 
 /// Returns the underlying [SqliteException] for [error], unwrapping a
 /// [DriftRemoteException] when the database runs in a background isolate

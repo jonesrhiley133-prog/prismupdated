@@ -38,6 +38,7 @@ import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
 // import 'package:prism_plurality/features/pluralkit/services/pluralkit_background_service.dart';
 import 'app.dart';
+import 'web/web_bootstrap.dart';
 
 const _debugSeedStressPresetName = String.fromEnvironment(
   'PRISM_SEED_STRESS_PRESET',
@@ -55,6 +56,10 @@ const _debugSeedStressPresetName = String.fromEnvironment(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await runWebApp();
+    return;
+  }
   BootTimings.mark('binding');
   MainIsolateStalls.start();
 
