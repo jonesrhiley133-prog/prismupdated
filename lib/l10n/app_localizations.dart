@@ -24287,6 +24287,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Imported birthdays repeat every year and appear on your calendar.'**
   String get importBirthdaysRecurring;
+
+  /// appUpdateTitle
+  ///
+  /// In en, this message translates to:
+  /// **'App updates'**
+  String get appUpdateTitle;
+
+  /// appUpdateTapToCheck
+  ///
+  /// In en, this message translates to:
+  /// **'Check whether a newer version of Prism is available.'**
+  String get appUpdateTapToCheck;
+
+  /// appUpdateChecking
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates…'**
+  String get appUpdateChecking;
+
+  /// appUpdateUpToDate
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on the latest version.'**
+  String get appUpdateUpToDate;
+
+  /// appUpdateAvailable
+  ///
+  /// In en, this message translates to:
+  /// **'Update available: {version} (build {build})'**
+  String appUpdateAvailable(String version, int build);
+
+  /// appUpdateDownloading
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update… {percent}%'**
+  String appUpdateDownloading(int percent);
+
+  /// appUpdateNeedsPermission
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Prism to install apps, then tap Install now. Android asks for this once.'**
+  String get appUpdateNeedsPermission;
+
+  /// appUpdateKeepsData
+  ///
+  /// In en, this message translates to:
+  /// **'Installs over the current app. Your data stays.'**
+  String get appUpdateKeepsData;
+
+  /// appUpdateCheckNow
+  ///
+  /// In en, this message translates to:
+  /// **'Check now'**
+  String get appUpdateCheckNow;
+
+  /// appUpdateDownloadInstall
+  ///
+  /// In en, this message translates to:
+  /// **'Download & install'**
+  String get appUpdateDownloadInstall;
+
+  /// appUpdateInstallNow
+  ///
+  /// In en, this message translates to:
+  /// **'Install now'**
+  String get appUpdateInstallNow;
+
+  /// appUpdateOpenSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Allow installs'**
+  String get appUpdateOpenSettings;
+
+  /// appUpdateLater
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appUpdateLater;
+
+  /// appUpdateErrorNetwork
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the update server. Check your connection.'**
+  String get appUpdateErrorNetwork;
+
+  /// appUpdateErrorChecksum
+  ///
+  /// In en, this message translates to:
+  /// **'The download was corrupted and was deleted. Try again.'**
+  String get appUpdateErrorChecksum;
+
+  /// appUpdateErrorDownload
+  ///
+  /// In en, this message translates to:
+  /// **'The download didn\'t finish. Try again.'**
+  String get appUpdateErrorDownload;
+
+  /// appUpdateErrorInstall
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the installer.'**
+  String get appUpdateErrorInstall;
+
+  /// appUpdateErrorNoApk
+  ///
+  /// In en, this message translates to:
+  /// **'The latest release has no Android app attached.'**
+  String get appUpdateErrorNoApk;
+
+  /// appUpdateErrorGeneric
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong checking for updates.'**
+  String get appUpdateErrorGeneric;
 }
 
 class _AppLocalizationsDelegate

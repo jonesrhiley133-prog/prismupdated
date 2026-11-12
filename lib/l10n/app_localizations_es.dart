@@ -16163,4 +16163,73 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get importBirthdaysRecurring =>
       'Los cumpleaños importados se repiten cada año y aparecen en el calendario.';
+
+  @override
+  String get appUpdateTitle => 'Actualizaciones';
+
+  @override
+  String get appUpdateTapToCheck =>
+      'Comprueba si hay una versión más reciente de Prism.';
+
+  @override
+  String get appUpdateChecking => 'Buscando actualizaciones…';
+
+  @override
+  String get appUpdateUpToDate => 'Tienes la versión más reciente.';
+
+  @override
+  String appUpdateAvailable(String version, int build) {
+    return 'Actualización disponible: $version (compilación $build)';
+  }
+
+  @override
+  String appUpdateDownloading(int percent) {
+    return 'Descargando actualización… $percent%';
+  }
+
+  @override
+  String get appUpdateNeedsPermission =>
+      'Permite que Prism instale aplicaciones y luego toca Instalar ahora. Android lo pide una sola vez.';
+
+  @override
+  String get appUpdateKeepsData =>
+      'Se instala sobre la app actual. Tus datos se conservan.';
+
+  @override
+  String get appUpdateCheckNow => 'Comprobar ahora';
+
+  @override
+  String get appUpdateDownloadInstall => 'Descargar e instalar';
+
+  @override
+  String get appUpdateInstallNow => 'Instalar ahora';
+
+  @override
+  String get appUpdateOpenSettings => 'Permitir instalaciones';
+
+  @override
+  String get appUpdateLater => 'Más tarde';
+
+  @override
+  String get appUpdateErrorNetwork =>
+      'No se pudo contactar con el servidor de actualizaciones. Revisa tu conexión.';
+
+  @override
+  String get appUpdateErrorChecksum =>
+      'La descarga estaba dañada y se eliminó. Inténtalo de nuevo.';
+
+  @override
+  String get appUpdateErrorDownload =>
+      'La descarga no terminó. Inténtalo de nuevo.';
+
+  @override
+  String get appUpdateErrorInstall => 'No se pudo abrir el instalador.';
+
+  @override
+  String get appUpdateErrorNoApk =>
+      'La última versión no incluye la app de Android.';
+
+  @override
+  String get appUpdateErrorGeneric =>
+      'Algo salió mal al buscar actualizaciones.';
 }

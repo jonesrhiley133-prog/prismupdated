@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/features/app_update/app_update_widgets.dart';
 import 'package:prism_plurality/features/settings/views/about_section.dart';
 import 'package:prism_plurality/shared/widgets/app_shell.dart';
 import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
@@ -18,7 +19,10 @@ class AboutScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
-        child: const AboutSection(),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [AppUpdateCard(), AboutSection()],
+        ),
       ),
     );
   }

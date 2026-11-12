@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/app_update/app_update_widgets.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
@@ -157,6 +158,7 @@ class HomeDashboard extends ConsumerWidget {
               ),
             ],
           ),
+          const AppUpdateBanner(),
           for (final id in ids) _widgetFor(id),
         ],
       ),

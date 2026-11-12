@@ -15944,4 +15944,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get importBirthdaysRecurring =>
       'Imported birthdays repeat every year and appear on your calendar.';
+
+  @override
+  String get appUpdateTitle => 'App updates';
+
+  @override
+  String get appUpdateTapToCheck =>
+      'Check whether a newer version of Prism is available.';
+
+  @override
+  String get appUpdateChecking => 'Checking for updates…';
+
+  @override
+  String get appUpdateUpToDate => 'You\'re on the latest version.';
+
+  @override
+  String appUpdateAvailable(String version, int build) {
+    return 'Update available: $version (build $build)';
+  }
+
+  @override
+  String appUpdateDownloading(int percent) {
+    return 'Downloading update… $percent%';
+  }
+
+  @override
+  String get appUpdateNeedsPermission =>
+      'Allow Prism to install apps, then tap Install now. Android asks for this once.';
+
+  @override
+  String get appUpdateKeepsData =>
+      'Installs over the current app. Your data stays.';
+
+  @override
+  String get appUpdateCheckNow => 'Check now';
+
+  @override
+  String get appUpdateDownloadInstall => 'Download & install';
+
+  @override
+  String get appUpdateInstallNow => 'Install now';
+
+  @override
+  String get appUpdateOpenSettings => 'Allow installs';
+
+  @override
+  String get appUpdateLater => 'Later';
+
+  @override
+  String get appUpdateErrorNetwork =>
+      'Couldn\'t reach the update server. Check your connection.';
+
+  @override
+  String get appUpdateErrorChecksum =>
+      'The download was corrupted and was deleted. Try again.';
+
+  @override
+  String get appUpdateErrorDownload =>
+      'The download didn\'t finish. Try again.';
+
+  @override
+  String get appUpdateErrorInstall => 'Couldn\'t open the installer.';
+
+  @override
+  String get appUpdateErrorNoApk =>
+      'The latest release has no Android app attached.';
+
+  @override
+  String get appUpdateErrorGeneric =>
+      'Something went wrong checking for updates.';
 }
