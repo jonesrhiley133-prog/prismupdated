@@ -143,6 +143,7 @@ void main() {
     final dates = prismChangelog.map((r) => r.date).toList();
     expect([...dates]..sort((a, b) => b.compareTo(a)), dates);
     expect(releaseFor('0.16.0'), isNotNull);
+    expect(releaseFor('0.17.0'), isNotNull);
     expect(releaseFor('9.9.9'), isNull);
   });
 }

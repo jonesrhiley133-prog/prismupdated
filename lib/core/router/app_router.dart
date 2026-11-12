@@ -67,6 +67,9 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/school/views/school_screen.dart';
+import '../../features/finance/views/finance_screen.dart';
+import '../../features/fitness/views/fitness_screen.dart';
 import '../../features/achievements/views/achievements_screen.dart';
 import '../../features/dictionary/views/dictionary_screen.dart';
 import '../../features/journal/views/journal_screen.dart';
@@ -136,6 +139,15 @@ final _dictionaryNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _achievementsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'achievements',
+);
+final _fitnessNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'fitness',
+);
+final _financeNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'finance',
+);
+final _schoolNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'school',
 );
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
@@ -1177,6 +1189,36 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.achievements,
                 builder: (context, state) => const AchievementsScreen(),
+              ),
+            ],
+          ),
+          // Branch 24: Fitness (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _fitnessNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.fitness,
+                builder: (context, state) => const FitnessScreen(),
+              ),
+            ],
+          ),
+          // Branch 25: Finance (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _financeNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.finance,
+                builder: (context, state) => const FinanceScreen(),
+              ),
+            ],
+          ),
+          // Branch 26: School (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _schoolNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.school,
+                builder: (context, state) => const SchoolScreen(),
               ),
             ],
           ),

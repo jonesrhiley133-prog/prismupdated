@@ -25481,6 +25481,1680 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What\'s new · changelog'**
   String get whatsNewChangelog;
+
+  /// navFinance
+  ///
+  /// In en, this message translates to:
+  /// **'Finance'**
+  String get navFinance;
+
+  /// navFitness
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness'**
+  String get navFitness;
+
+  /// navSchool
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get navSchool;
+
+  /// finTabOverview
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get finTabOverview;
+
+  /// finTabTransactions
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get finTabTransactions;
+
+  /// finTabBudgets
+  ///
+  /// In en, this message translates to:
+  /// **'Budgets'**
+  String get finTabBudgets;
+
+  /// finTabGoals
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get finTabGoals;
+
+  /// finTabRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring'**
+  String get finTabRecurring;
+
+  /// finIncome
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get finIncome;
+
+  /// finExpense
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get finExpense;
+
+  /// finTransfer
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get finTransfer;
+
+  /// finSpent
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get finSpent;
+
+  /// finNet
+  ///
+  /// In en, this message translates to:
+  /// **'Net'**
+  String get finNet;
+
+  /// finSavingsRate
+  ///
+  /// In en, this message translates to:
+  /// **'Savings rate'**
+  String get finSavingsRate;
+
+  /// finSixMonths
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get finSixMonths;
+
+  /// finSpendingByCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Spending by category'**
+  String get finSpendingByCategory;
+
+  /// finNoSpending
+  ///
+  /// In en, this message translates to:
+  /// **'No spending this month.'**
+  String get finNoSpending;
+
+  /// finAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get finAccounts;
+
+  /// finNoAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Add accounts to track balances (optional).'**
+  String get finNoAccounts;
+
+  /// finTotalBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String finTotalBalance(String amount);
+
+  /// finNewTxn
+  ///
+  /// In en, this message translates to:
+  /// **'New transaction'**
+  String get finNewTxn;
+
+  /// finEditTxn
+  ///
+  /// In en, this message translates to:
+  /// **'Edit transaction'**
+  String get finEditTxn;
+
+  /// finAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get finAmount;
+
+  /// finInvalidAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero, like 12.50'**
+  String get finInvalidAmount;
+
+  /// finPayee
+  ///
+  /// In en, this message translates to:
+  /// **'Paid to'**
+  String get finPayee;
+
+  /// finFrom
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get finFrom;
+
+  /// finDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get finDescription;
+
+  /// finCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get finCategory;
+
+  /// finCustomCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Custom…'**
+  String get finCustomCategory;
+
+  /// finAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get finAccount;
+
+  /// finFromAccount
+  ///
+  /// In en, this message translates to:
+  /// **'From account'**
+  String get finFromAccount;
+
+  /// finToAccount
+  ///
+  /// In en, this message translates to:
+  /// **'To account'**
+  String get finToAccount;
+
+  /// finNoAccount
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get finNoAccount;
+
+  /// finTransferNeedsAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two accounts to record transfers.'**
+  String get finTransferNeedsAccounts;
+
+  /// finNote
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get finNote;
+
+  /// finDeleteTxn
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this transaction?'**
+  String get finDeleteTxn;
+
+  /// finNewAccount
+  ///
+  /// In en, this message translates to:
+  /// **'New account'**
+  String get finNewAccount;
+
+  /// finEditAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Edit account'**
+  String get finEditAccount;
+
+  /// finAccountName
+  ///
+  /// In en, this message translates to:
+  /// **'Account name'**
+  String get finAccountName;
+
+  /// finAccountType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get finAccountType;
+
+  /// finOpeningBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Starting balance'**
+  String get finOpeningBalance;
+
+  /// finOwed
+  ///
+  /// In en, this message translates to:
+  /// **'Money owed'**
+  String get finOwed;
+
+  /// finOwedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on for credit cards or debts, so the balance counts as negative.'**
+  String get finOwedHelp;
+
+  /// finDeleteAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this account? Its transactions are kept.'**
+  String get finDeleteAccount;
+
+  /// finAccCash
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get finAccCash;
+
+  /// finAccChecking
+  ///
+  /// In en, this message translates to:
+  /// **'Checking'**
+  String get finAccChecking;
+
+  /// finAccSavings
+  ///
+  /// In en, this message translates to:
+  /// **'Savings'**
+  String get finAccSavings;
+
+  /// finAccCredit
+  ///
+  /// In en, this message translates to:
+  /// **'Credit card'**
+  String get finAccCredit;
+
+  /// finAccInvestment
+  ///
+  /// In en, this message translates to:
+  /// **'Investment'**
+  String get finAccInvestment;
+
+  /// finNewBudget
+  ///
+  /// In en, this message translates to:
+  /// **'New budget'**
+  String get finNewBudget;
+
+  /// finEditBudget
+  ///
+  /// In en, this message translates to:
+  /// **'Edit budget'**
+  String get finEditBudget;
+
+  /// finMonthlyLimit
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly limit'**
+  String get finMonthlyLimit;
+
+  /// finDeleteBudget
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this budget?'**
+  String get finDeleteBudget;
+
+  /// finNoBudgets
+  ///
+  /// In en, this message translates to:
+  /// **'No budgets yet. Set a monthly limit for a category to see how you are doing.'**
+  String get finNoBudgets;
+
+  /// finBudgetTotal
+  ///
+  /// In en, this message translates to:
+  /// **'{spent} of {limit} budgeted'**
+  String finBudgetTotal(String spent, String limit);
+
+  /// finOverBudget
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} over budget'**
+  String finOverBudget(String amount);
+
+  /// finLeftInBudget
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left'**
+  String finLeftInBudget(String amount);
+
+  /// finUnbudgeted
+  ///
+  /// In en, this message translates to:
+  /// **'Spending without a budget'**
+  String get finUnbudgeted;
+
+  /// finNewGoal
+  ///
+  /// In en, this message translates to:
+  /// **'New savings goal'**
+  String get finNewGoal;
+
+  /// finEditGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get finEditGoal;
+
+  /// finGoalName
+  ///
+  /// In en, this message translates to:
+  /// **'Saving for'**
+  String get finGoalName;
+
+  /// finGoalTarget
+  ///
+  /// In en, this message translates to:
+  /// **'Target amount'**
+  String get finGoalTarget;
+
+  /// finGoalSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved so far'**
+  String get finGoalSaved;
+
+  /// finGoalDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'Target date'**
+  String get finGoalDeadline;
+
+  /// finNoDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'No date'**
+  String get finNoDeadline;
+
+  /// finColor
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get finColor;
+
+  /// finDeleteGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this goal?'**
+  String get finDeleteGoal;
+
+  /// finNoGoals
+  ///
+  /// In en, this message translates to:
+  /// **'No savings goals yet.'**
+  String get finNoGoals;
+
+  /// finGoalPerMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Save {amount} a month to reach it by {date}'**
+  String finGoalPerMonth(String amount, String date);
+
+  /// finGoalReached
+  ///
+  /// In en, this message translates to:
+  /// **'Goal reached!'**
+  String get finGoalReached;
+
+  /// finAddToGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Add money'**
+  String get finAddToGoal;
+
+  /// finAddToGoalTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add to \"{name}\"'**
+  String finAddToGoalTitle(String name);
+
+  /// finNewRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'New recurring item'**
+  String get finNewRecurring;
+
+  /// finEditRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Edit recurring item'**
+  String get finEditRecurring;
+
+  /// finRecurringName
+  ///
+  /// In en, this message translates to:
+  /// **'Name (rent, salary, streaming…)'**
+  String get finRecurringName;
+
+  /// finRepeats
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats'**
+  String get finRepeats;
+
+  /// finNextDue
+  ///
+  /// In en, this message translates to:
+  /// **'Next date'**
+  String get finNextDue;
+
+  /// finAutoAdd
+  ///
+  /// In en, this message translates to:
+  /// **'Add automatically'**
+  String get finAutoAdd;
+
+  /// finAutoAddHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Record the transaction on its date when you open Finance. Otherwise it waits for you to confirm.'**
+  String get finAutoAddHelp;
+
+  /// finDeleteRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this recurring item? Past transactions are kept.'**
+  String get finDeleteRecurring;
+
+  /// finNoRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring items. Add rent, bills, subscriptions or pay days.'**
+  String get finNoRecurring;
+
+  /// finFixedCosts
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed costs / month'**
+  String get finFixedCosts;
+
+  /// finRegularIncome
+  ///
+  /// In en, this message translates to:
+  /// **'Regular income / month'**
+  String get finRegularIncome;
+
+  /// finNextOn
+  ///
+  /// In en, this message translates to:
+  /// **'next {date}'**
+  String finNextOn(String date);
+
+  /// finDueNow
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment due} other{{count} payments due}}'**
+  String finDueNow(int count);
+
+  /// finAddNow
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get finAddNow;
+
+  /// finSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get finSkip;
+
+  /// finRecurringBadge
+  ///
+  /// In en, this message translates to:
+  /// **'recurring'**
+  String get finRecurringBadge;
+
+  /// finEveryWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get finEveryWeek;
+
+  /// finEveryTwoWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'Every 2 weeks'**
+  String get finEveryTwoWeeks;
+
+  /// finEveryMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get finEveryMonth;
+
+  /// finEveryQuarter
+  ///
+  /// In en, this message translates to:
+  /// **'Every 3 months'**
+  String get finEveryQuarter;
+
+  /// finEveryYear
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get finEveryYear;
+
+  /// finSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search transactions'**
+  String get finSearch;
+
+  /// finNoTxns
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet.'**
+  String get finNoTxns;
+
+  /// finHideAmounts
+  ///
+  /// In en, this message translates to:
+  /// **'Hide amounts'**
+  String get finHideAmounts;
+
+  /// finShowAmounts
+  ///
+  /// In en, this message translates to:
+  /// **'Show amounts'**
+  String get finShowAmounts;
+
+  /// finSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Finance settings'**
+  String get finSettings;
+
+  /// finCurrency
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get finCurrency;
+
+  /// finCurrencyHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts are stored as entered; the currency only changes how they are shown.'**
+  String get finCurrencyHelp;
+
+  /// finPreviousMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get finPreviousMonth;
+
+  /// finNextMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get finNextMonth;
+
+  /// finWorkEarnings
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated earnings from Work this month'**
+  String get finWorkEarnings;
+
+  /// finWorkEarningsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Based on tracked shifts and hourly rates. Record adds it as income once per job and month.'**
+  String get finWorkEarningsHelp;
+
+  /// finRecord
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get finRecord;
+
+  /// finRecorded
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get finRecorded;
+
+  /// finCatHousing
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get finCatHousing;
+
+  /// finCatGroceries
+  ///
+  /// In en, this message translates to:
+  /// **'Groceries'**
+  String get finCatGroceries;
+
+  /// finCatDining
+  ///
+  /// In en, this message translates to:
+  /// **'Eating out'**
+  String get finCatDining;
+
+  /// finCatTransport
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get finCatTransport;
+
+  /// finCatUtilities
+  ///
+  /// In en, this message translates to:
+  /// **'Utilities & bills'**
+  String get finCatUtilities;
+
+  /// finCatHealth
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get finCatHealth;
+
+  /// finCatPersonal
+  ///
+  /// In en, this message translates to:
+  /// **'Personal care'**
+  String get finCatPersonal;
+
+  /// finCatEntertainment
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get finCatEntertainment;
+
+  /// finCatShopping
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get finCatShopping;
+
+  /// finCatEducation
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get finCatEducation;
+
+  /// finCatSubscriptions
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions'**
+  String get finCatSubscriptions;
+
+  /// finCatGifts
+  ///
+  /// In en, this message translates to:
+  /// **'Gifts'**
+  String get finCatGifts;
+
+  /// finCatPets
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get finCatPets;
+
+  /// finCatTravel
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get finCatTravel;
+
+  /// finCatDebt
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payments'**
+  String get finCatDebt;
+
+  /// finCatSalary
+  ///
+  /// In en, this message translates to:
+  /// **'Salary & wages'**
+  String get finCatSalary;
+
+  /// finCatFreelance
+  ///
+  /// In en, this message translates to:
+  /// **'Freelance'**
+  String get finCatFreelance;
+
+  /// finCatBenefits
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get finCatBenefits;
+
+  /// finCatRefunds
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get finCatRefunds;
+
+  /// finCatInterest
+  ///
+  /// In en, this message translates to:
+  /// **'Interest'**
+  String get finCatInterest;
+
+  /// finCatOther
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get finCatOther;
+
+  /// fitWalk
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get fitWalk;
+
+  /// fitRun
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get fitRun;
+
+  /// fitCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get fitCycle;
+
+  /// fitSwim
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get fitSwim;
+
+  /// fitStrength
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get fitStrength;
+
+  /// fitYoga
+  ///
+  /// In en, this message translates to:
+  /// **'Yoga'**
+  String get fitYoga;
+
+  /// fitHiit
+  ///
+  /// In en, this message translates to:
+  /// **'HIIT'**
+  String get fitHiit;
+
+  /// fitHike
+  ///
+  /// In en, this message translates to:
+  /// **'Hike'**
+  String get fitHike;
+
+  /// fitDance
+  ///
+  /// In en, this message translates to:
+  /// **'Dance'**
+  String get fitDance;
+
+  /// fitSports
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get fitSports;
+
+  /// fitStretch
+  ///
+  /// In en, this message translates to:
+  /// **'Stretching'**
+  String get fitStretch;
+
+  /// fitClimb
+  ///
+  /// In en, this message translates to:
+  /// **'Climbing'**
+  String get fitClimb;
+
+  /// fitRow
+  ///
+  /// In en, this message translates to:
+  /// **'Rowing'**
+  String get fitRow;
+
+  /// fitOther
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get fitOther;
+
+  /// fitNewWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Log workout'**
+  String get fitNewWorkout;
+
+  /// fitEditWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Edit workout'**
+  String get fitEditWorkout;
+
+  /// fitWorkoutName
+  ///
+  /// In en, this message translates to:
+  /// **'Name (optional)'**
+  String get fitWorkoutName;
+
+  /// fitMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get fitMinutes;
+
+  /// fitDistanceKm
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km)'**
+  String get fitDistanceKm;
+
+  /// fitCalories
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get fitCalories;
+
+  /// fitHeartRate
+  ///
+  /// In en, this message translates to:
+  /// **'Avg heart rate'**
+  String get fitHeartRate;
+
+  /// fitInvalidNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers must be zero or more.'**
+  String get fitInvalidNumber;
+
+  /// fitEffort
+  ///
+  /// In en, this message translates to:
+  /// **'Effort (1–10)'**
+  String get fitEffort;
+
+  /// fitMoodAfter
+  ///
+  /// In en, this message translates to:
+  /// **'Mood afterwards'**
+  String get fitMoodAfter;
+
+  /// fitExercises
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get fitExercises;
+
+  /// fitAddExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get fitAddExercise;
+
+  /// fitExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get fitExercise;
+
+  /// fitSets
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get fitSets;
+
+  /// fitReps
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get fitReps;
+
+  /// fitWeightKg
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get fitWeightKg;
+
+  /// fitWho
+  ///
+  /// In en, this message translates to:
+  /// **'Who exercised'**
+  String get fitWho;
+
+  /// fitDeleteWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this workout?'**
+  String get fitDeleteWorkout;
+
+  /// fitNewGoal
+  ///
+  /// In en, this message translates to:
+  /// **'New fitness goal'**
+  String get fitNewGoal;
+
+  /// fitEditGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get fitEditGoal;
+
+  /// fitGoalMetric
+  ///
+  /// In en, this message translates to:
+  /// **'Measure'**
+  String get fitGoalMetric;
+
+  /// fitGoalPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Every'**
+  String get fitGoalPeriod;
+
+  /// fitGoalTarget
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get fitGoalTarget;
+
+  /// fitPerWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get fitPerWeek;
+
+  /// fitPerMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get fitPerMonth;
+
+  /// fitMetricWorkouts
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get fitMetricWorkouts;
+
+  /// fitMetricMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes'**
+  String get fitMetricMinutes;
+
+  /// fitMetricDistance
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km)'**
+  String get fitMetricDistance;
+
+  /// fitMetricCalories
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get fitMetricCalories;
+
+  /// fitNoGoals
+  ///
+  /// In en, this message translates to:
+  /// **'No goals yet. Set a weekly or monthly target.'**
+  String get fitNoGoals;
+
+  /// fitStartWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Start a workout now'**
+  String get fitStartWorkout;
+
+  /// fitStartWhich
+  ///
+  /// In en, this message translates to:
+  /// **'What are you doing?'**
+  String get fitStartWhich;
+
+  /// fitFinish
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get fitFinish;
+
+  /// fitTabHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get fitTabHistory;
+
+  /// fitThisWeekWorkouts
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts this week'**
+  String get fitThisWeekWorkouts;
+
+  /// fitThisWeekMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes this week'**
+  String get fitThisWeekMinutes;
+
+  /// fitThisWeekKm
+  ///
+  /// In en, this message translates to:
+  /// **'Km this week'**
+  String get fitThisWeekKm;
+
+  /// fitWeekStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly streak'**
+  String get fitWeekStreak;
+
+  /// fitWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String fitWeeks(int count);
+
+  /// fitMinutesPerWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes per week'**
+  String get fitMinutesPerWeek;
+
+  /// fitByActivity
+  ///
+  /// In en, this message translates to:
+  /// **'By activity'**
+  String get fitByActivity;
+
+  /// fitPersonalBests
+  ///
+  /// In en, this message translates to:
+  /// **'Personal bests'**
+  String get fitPersonalBests;
+
+  /// fitMinutesShort
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String fitMinutesShort(int count);
+
+  /// fitEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No workouts yet. Log one or start the timer.'**
+  String get fitEmpty;
+
+  /// fitNoExercises
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercises with sets, reps and weight to a workout to see your history here.'**
+  String get fitNoExercises;
+
+  /// fitSessions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session} other{{count} sessions}}'**
+  String fitSessions(int count);
+
+  /// fitBestWeight
+  ///
+  /// In en, this message translates to:
+  /// **'best {kg} kg'**
+  String fitBestWeight(String kg);
+
+  /// fitBestReps
+  ///
+  /// In en, this message translates to:
+  /// **'best {count} reps'**
+  String fitBestReps(int count);
+
+  /// fitVolume
+  ///
+  /// In en, this message translates to:
+  /// **'{count} kg total volume'**
+  String fitVolume(int count);
+
+  /// fitLastDone
+  ///
+  /// In en, this message translates to:
+  /// **'Last done {date}'**
+  String fitLastDone(String date);
+
+  /// fitEffortValue
+  ///
+  /// In en, this message translates to:
+  /// **'effort {count}/10'**
+  String fitEffortValue(int count);
+
+  /// fitExerciseCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String fitExerciseCount(int count);
+
+  /// schTabToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get schTabToday;
+
+  /// schTabClasses
+  ///
+  /// In en, this message translates to:
+  /// **'Classes'**
+  String get schTabClasses;
+
+  /// schTabAssignments
+  ///
+  /// In en, this message translates to:
+  /// **'Assignments'**
+  String get schTabAssignments;
+
+  /// schTabStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Study'**
+  String get schTabStudy;
+
+  /// schTabProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get schTabProgress;
+
+  /// schNewClass
+  ///
+  /// In en, this message translates to:
+  /// **'New class'**
+  String get schNewClass;
+
+  /// schEditClass
+  ///
+  /// In en, this message translates to:
+  /// **'Edit class'**
+  String get schEditClass;
+
+  /// schClassName
+  ///
+  /// In en, this message translates to:
+  /// **'Class name'**
+  String get schClassName;
+
+  /// schTeacher
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher'**
+  String get schTeacher;
+
+  /// schRoom
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get schRoom;
+
+  /// schCredits
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get schCredits;
+
+  /// schTargetGrade
+  ///
+  /// In en, this message translates to:
+  /// **'Target grade %'**
+  String get schTargetGrade;
+
+  /// schSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly schedule'**
+  String get schSchedule;
+
+  /// schAddMeeting
+  ///
+  /// In en, this message translates to:
+  /// **'Add time'**
+  String get schAddMeeting;
+
+  /// schNoSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'No schedule set.'**
+  String get schNoSchedule;
+
+  /// schEndAfterStart
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be after start time.'**
+  String get schEndAfterStart;
+
+  /// schDeleteClass
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String schDeleteClass(String name);
+
+  /// schDeleteClassMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its assignments and study sessions are deleted too.'**
+  String get schDeleteClassMessage;
+
+  /// schNewAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'New assignment'**
+  String get schNewAssignment;
+
+  /// schEditAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Edit assignment'**
+  String get schEditAssignment;
+
+  /// schAssignmentTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get schAssignmentTitle;
+
+  /// schClass
+  ///
+  /// In en, this message translates to:
+  /// **'Class'**
+  String get schClass;
+
+  /// schNoClass
+  ///
+  /// In en, this message translates to:
+  /// **'No class'**
+  String get schNoClass;
+
+  /// schType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get schType;
+
+  /// schDue
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get schDue;
+
+  /// schNoDueDate
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get schNoDueDate;
+
+  /// schStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get schStatus;
+
+  /// schTodo
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get schTodo;
+
+  /// schDoing
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get schDoing;
+
+  /// schDone
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get schDone;
+
+  /// schPriority
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get schPriority;
+
+  /// schPriorityLow
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get schPriorityLow;
+
+  /// schPriorityNormal
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get schPriorityNormal;
+
+  /// schPriorityHigh
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get schPriorityHigh;
+
+  /// schGrade
+  ///
+  /// In en, this message translates to:
+  /// **'Grade'**
+  String get schGrade;
+
+  /// schEarned
+  ///
+  /// In en, this message translates to:
+  /// **'Points earned'**
+  String get schEarned;
+
+  /// schPossible
+  ///
+  /// In en, this message translates to:
+  /// **'Out of'**
+  String get schPossible;
+
+  /// schGradeInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter both numbers; \"out of\" must be more than zero.'**
+  String get schGradeInvalid;
+
+  /// schWeight
+  ///
+  /// In en, this message translates to:
+  /// **'Weight in final grade (%)'**
+  String get schWeight;
+
+  /// schWeightHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. With weights, the class grade is a weighted average.'**
+  String get schWeightHelp;
+
+  /// schDeleteAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this assignment?'**
+  String get schDeleteAssignment;
+
+  /// schHomework
+  ///
+  /// In en, this message translates to:
+  /// **'Homework'**
+  String get schHomework;
+
+  /// schReading
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get schReading;
+
+  /// schEssay
+  ///
+  /// In en, this message translates to:
+  /// **'Essay'**
+  String get schEssay;
+
+  /// schProject
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get schProject;
+
+  /// schLab
+  ///
+  /// In en, this message translates to:
+  /// **'Lab'**
+  String get schLab;
+
+  /// schQuiz
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz'**
+  String get schQuiz;
+
+  /// schExam
+  ///
+  /// In en, this message translates to:
+  /// **'Exam'**
+  String get schExam;
+
+  /// schPresentation
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation'**
+  String get schPresentation;
+
+  /// schStudySession
+  ///
+  /// In en, this message translates to:
+  /// **'Study session'**
+  String get schStudySession;
+
+  /// schFocus
+  ///
+  /// In en, this message translates to:
+  /// **'Focus (1–5)'**
+  String get schFocus;
+
+  /// schDeleteStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this study session?'**
+  String get schDeleteStudy;
+
+  /// schStartStudying
+  ///
+  /// In en, this message translates to:
+  /// **'Start studying'**
+  String get schStartStudying;
+
+  /// schStudyWhich
+  ///
+  /// In en, this message translates to:
+  /// **'Which class?'**
+  String get schStudyWhich;
+
+  /// schTodaysClasses
+  ///
+  /// In en, this message translates to:
+  /// **'Classes · {day}'**
+  String schTodaysClasses(String day);
+
+  /// schNoClassesToday
+  ///
+  /// In en, this message translates to:
+  /// **'No classes today.'**
+  String get schNoClassesToday;
+
+  /// schNoClassesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No classes yet. Add your classes with their schedule to see your day here.'**
+  String get schNoClassesYet;
+
+  /// schNow
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get schNow;
+
+  /// schOverdue
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue ({count})'**
+  String schOverdue(int count);
+
+  /// schDueThisWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Due in the next 7 days'**
+  String get schDueThisWeek;
+
+  /// schNothingDue
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing due this week.'**
+  String get schNothingDue;
+
+  /// schOpenCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{nothing open} =1{1 open} other{{count} open}}'**
+  String schOpenCount(int count);
+
+  /// schFilterOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get schFilterOpen;
+
+  /// schFilterOverdue
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get schFilterOverdue;
+
+  /// schNoAssignments
+  ///
+  /// In en, this message translates to:
+  /// **'No assignments here.'**
+  String get schNoAssignments;
+
+  /// schStudyThisWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Studied in the last 7 days'**
+  String get schStudyThisWeek;
+
+  /// schStudyTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Total study time'**
+  String get schStudyTotal;
+
+  /// schHours
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String schHours(String hours);
+
+  /// schSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions'**
+  String get schSessions;
+
+  /// schAvgFocus
+  ///
+  /// In en, this message translates to:
+  /// **'Average focus'**
+  String get schAvgFocus;
+
+  /// schLogStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Log study time'**
+  String get schLogStudy;
+
+  /// schNoStudy
+  ///
+  /// In en, this message translates to:
+  /// **'No study sessions yet.'**
+  String get schNoStudy;
+
+  /// schGpa
+  ///
+  /// In en, this message translates to:
+  /// **'GPA (4.0)'**
+  String get schGpa;
+
+  /// schCompleted
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get schCompleted;
+
+  /// schOnTime
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get schOnTime;
+
+  /// schClassesCount
+  ///
+  /// In en, this message translates to:
+  /// **'Classes'**
+  String get schClassesCount;
+
+  /// schGradesByClass
+  ///
+  /// In en, this message translates to:
+  /// **'Grades by class'**
+  String get schGradesByClass;
+
+  /// schNoGradesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No grades yet'**
+  String get schNoGradesYet;
+
+  /// schStudiedHours
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h studied'**
+  String schStudiedHours(String hours);
+
+  /// schTargetIs
+  ///
+  /// In en, this message translates to:
+  /// **'target {count}%'**
+  String schTargetIs(int count);
+
+  /// schNeedOnRest
+  ///
+  /// In en, this message translates to:
+  /// **'need {percent}% on the rest'**
+  String schNeedOnRest(String percent);
+
+  /// schTargetOutOfReach
+  ///
+  /// In en, this message translates to:
+  /// **'target no longer reachable'**
+  String get schTargetOutOfReach;
+
+  /// schClassGone
+  ///
+  /// In en, this message translates to:
+  /// **'This class was deleted.'**
+  String get schClassGone;
+
+  /// schTeacherIs
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher: {name}'**
+  String schTeacherIs(String name);
+
+  /// schRoomIs
+  ///
+  /// In en, this message translates to:
+  /// **'Room: {name}'**
+  String schRoomIs(String name);
+
+  /// schCreditsIs
+  ///
+  /// In en, this message translates to:
+  /// **'Credits: {count}'**
+  String schCreditsIs(String count);
 }
 
 class _AppLocalizationsDelegate

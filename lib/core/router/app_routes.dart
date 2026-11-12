@@ -28,6 +28,9 @@ abstract final class AppRoutePaths {
   static const journal = '/journal';
   static const dictionary = '/dictionary';
   static const achievements = '/achievements';
+  static const fitness = '/fitness';
+  static const finance = '/finance';
+  static const school = '/school';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -191,6 +194,9 @@ enum AppShellTabId {
   journal,
   dictionary,
   achievements,
+  fitness,
+  finance,
+  school,
 }
 
 class AppShellTab {
@@ -259,6 +265,9 @@ class AppShellTab {
       AppShellTabId.journal => l10n.navJournal,
       AppShellTabId.dictionary => l10n.navDictionary,
       AppShellTabId.achievements => l10n.navAchievements,
+      AppShellTabId.fitness => l10n.navFitness,
+      AppShellTabId.finance => l10n.navFinance,
+      AppShellTabId.school => l10n.navSchool,
     };
   }
 
@@ -299,6 +308,9 @@ class AppShellTab {
       AppShellTabId.journal => true,
       AppShellTabId.dictionary => true,
       AppShellTabId.achievements => true,
+      AppShellTabId.fitness => true,
+      AppShellTabId.finance => true,
+      AppShellTabId.school => true,
     };
   }
 }
@@ -497,6 +509,30 @@ final appShellTabs = [
     branchIndex: 23,
     rootLocation: AppRoutePaths.achievements,
   ),
+  AppShellTab(
+    id: AppShellTabId.fitness,
+    label: 'Fitness',
+    icon: AppIcons.navFitness,
+    activeIcon: AppIcons.navFitnessActive,
+    branchIndex: 24,
+    rootLocation: AppRoutePaths.fitness,
+  ),
+  AppShellTab(
+    id: AppShellTabId.finance,
+    label: 'Finance',
+    icon: AppIcons.navFinance,
+    activeIcon: AppIcons.navFinanceActive,
+    branchIndex: 25,
+    rootLocation: AppRoutePaths.finance,
+  ),
+  AppShellTab(
+    id: AppShellTabId.school,
+    label: 'School',
+    icon: AppIcons.navSchool,
+    activeIcon: AppIcons.navSchoolActive,
+    branchIndex: 26,
+    rootLocation: AppRoutePaths.school,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -519,6 +555,9 @@ const defaultNavBarOverflowTabIds = [
   'journal',
   'dictionary',
   'achievements',
+  'fitness',
+  'finance',
+  'school',
   'notes',
   'reminders',
   'statistics',

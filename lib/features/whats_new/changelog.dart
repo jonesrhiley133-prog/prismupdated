@@ -32,6 +32,39 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.17.0',
+    date: DateTime(2026, 11, 12),
+    features: const [
+      LocalizedText(
+        'Finance: income, expenses, transfers, accounts and balances, '
+            'monthly budgets, savings goals, recurring payments, statistics '
+            'and a privacy toggle to hide amounts.',
+        'Finanzas: ingresos, gastos, transferencias, cuentas y saldos, '
+            'presupuestos mensuales, metas de ahorro, pagos recurrentes, '
+            'estadísticas y un botón para ocultar importes.',
+      ),
+      LocalizedText(
+        'Fitness: workouts with a live timer, distance, calories, effort, '
+            'sets and reps, exercise history, personal bests and goals.',
+        'Ejercicio: sesiones con cronómetro, distancia, calorías, esfuerzo, '
+            'series y repeticiones, historial, mejores marcas y metas.',
+      ),
+      LocalizedText(
+        'School: classes with weekly schedules, assignments and deadlines, '
+            'grades and GPA, study timer and progress.',
+        'Escuela: clases con horario, tareas y entregas, notas y promedio, '
+            'cronómetro de estudio y progreso.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Finance can record estimated Work earnings as income.',
+        'Finanzas puede registrar las ganancias estimadas de Trabajo como '
+            'ingreso.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.16.0',
     date: DateTime(2026, 11, 12),
     features: const [

@@ -16625,4 +16625,943 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsNewChangelog => 'What\'s new · changelog';
+
+  @override
+  String get navFinance => 'Finance';
+
+  @override
+  String get navFitness => 'Fitness';
+
+  @override
+  String get navSchool => 'School';
+
+  @override
+  String get finTabOverview => 'Overview';
+
+  @override
+  String get finTabTransactions => 'Transactions';
+
+  @override
+  String get finTabBudgets => 'Budgets';
+
+  @override
+  String get finTabGoals => 'Goals';
+
+  @override
+  String get finTabRecurring => 'Recurring';
+
+  @override
+  String get finIncome => 'Income';
+
+  @override
+  String get finExpense => 'Expense';
+
+  @override
+  String get finTransfer => 'Transfer';
+
+  @override
+  String get finSpent => 'Spent';
+
+  @override
+  String get finNet => 'Net';
+
+  @override
+  String get finSavingsRate => 'Savings rate';
+
+  @override
+  String get finSixMonths => 'Last 6 months';
+
+  @override
+  String get finSpendingByCategory => 'Spending by category';
+
+  @override
+  String get finNoSpending => 'No spending this month.';
+
+  @override
+  String get finAccounts => 'Accounts';
+
+  @override
+  String get finNoAccounts => 'Add accounts to track balances (optional).';
+
+  @override
+  String finTotalBalance(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get finNewTxn => 'New transaction';
+
+  @override
+  String get finEditTxn => 'Edit transaction';
+
+  @override
+  String get finAmount => 'Amount';
+
+  @override
+  String get finInvalidAmount =>
+      'Enter an amount greater than zero, like 12.50';
+
+  @override
+  String get finPayee => 'Paid to';
+
+  @override
+  String get finFrom => 'From';
+
+  @override
+  String get finDescription => 'Description';
+
+  @override
+  String get finCategory => 'Category';
+
+  @override
+  String get finCustomCategory => 'Custom…';
+
+  @override
+  String get finAccount => 'Account';
+
+  @override
+  String get finFromAccount => 'From account';
+
+  @override
+  String get finToAccount => 'To account';
+
+  @override
+  String get finNoAccount => 'None';
+
+  @override
+  String get finTransferNeedsAccounts =>
+      'Add at least two accounts to record transfers.';
+
+  @override
+  String get finNote => 'Notes';
+
+  @override
+  String get finDeleteTxn => 'Delete this transaction?';
+
+  @override
+  String get finNewAccount => 'New account';
+
+  @override
+  String get finEditAccount => 'Edit account';
+
+  @override
+  String get finAccountName => 'Account name';
+
+  @override
+  String get finAccountType => 'Type';
+
+  @override
+  String get finOpeningBalance => 'Starting balance';
+
+  @override
+  String get finOwed => 'Money owed';
+
+  @override
+  String get finOwedHelp =>
+      'Turn on for credit cards or debts, so the balance counts as negative.';
+
+  @override
+  String get finDeleteAccount =>
+      'Delete this account? Its transactions are kept.';
+
+  @override
+  String get finAccCash => 'Cash';
+
+  @override
+  String get finAccChecking => 'Checking';
+
+  @override
+  String get finAccSavings => 'Savings';
+
+  @override
+  String get finAccCredit => 'Credit card';
+
+  @override
+  String get finAccInvestment => 'Investment';
+
+  @override
+  String get finNewBudget => 'New budget';
+
+  @override
+  String get finEditBudget => 'Edit budget';
+
+  @override
+  String get finMonthlyLimit => 'Monthly limit';
+
+  @override
+  String get finDeleteBudget => 'Delete this budget?';
+
+  @override
+  String get finNoBudgets =>
+      'No budgets yet. Set a monthly limit for a category to see how you are doing.';
+
+  @override
+  String finBudgetTotal(String spent, String limit) {
+    return '$spent of $limit budgeted';
+  }
+
+  @override
+  String finOverBudget(String amount) {
+    return '$amount over budget';
+  }
+
+  @override
+  String finLeftInBudget(String amount) {
+    return '$amount left';
+  }
+
+  @override
+  String get finUnbudgeted => 'Spending without a budget';
+
+  @override
+  String get finNewGoal => 'New savings goal';
+
+  @override
+  String get finEditGoal => 'Edit goal';
+
+  @override
+  String get finGoalName => 'Saving for';
+
+  @override
+  String get finGoalTarget => 'Target amount';
+
+  @override
+  String get finGoalSaved => 'Saved so far';
+
+  @override
+  String get finGoalDeadline => 'Target date';
+
+  @override
+  String get finNoDeadline => 'No date';
+
+  @override
+  String get finColor => 'Colour';
+
+  @override
+  String get finDeleteGoal => 'Delete this goal?';
+
+  @override
+  String get finNoGoals => 'No savings goals yet.';
+
+  @override
+  String finGoalPerMonth(String amount, String date) {
+    return 'Save $amount a month to reach it by $date';
+  }
+
+  @override
+  String get finGoalReached => 'Goal reached!';
+
+  @override
+  String get finAddToGoal => 'Add money';
+
+  @override
+  String finAddToGoalTitle(String name) {
+    return 'Add to \"$name\"';
+  }
+
+  @override
+  String get finNewRecurring => 'New recurring item';
+
+  @override
+  String get finEditRecurring => 'Edit recurring item';
+
+  @override
+  String get finRecurringName => 'Name (rent, salary, streaming…)';
+
+  @override
+  String get finRepeats => 'Repeats';
+
+  @override
+  String get finNextDue => 'Next date';
+
+  @override
+  String get finAutoAdd => 'Add automatically';
+
+  @override
+  String get finAutoAddHelp =>
+      'Record the transaction on its date when you open Finance. Otherwise it waits for you to confirm.';
+
+  @override
+  String get finDeleteRecurring =>
+      'Delete this recurring item? Past transactions are kept.';
+
+  @override
+  String get finNoRecurring =>
+      'No recurring items. Add rent, bills, subscriptions or pay days.';
+
+  @override
+  String get finFixedCosts => 'Fixed costs / month';
+
+  @override
+  String get finRegularIncome => 'Regular income / month';
+
+  @override
+  String finNextOn(String date) {
+    return 'next $date';
+  }
+
+  @override
+  String finDueNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments due',
+      one: '1 payment due',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finAddNow => 'Add';
+
+  @override
+  String get finSkip => 'Skip';
+
+  @override
+  String get finRecurringBadge => 'recurring';
+
+  @override
+  String get finEveryWeek => 'Weekly';
+
+  @override
+  String get finEveryTwoWeeks => 'Every 2 weeks';
+
+  @override
+  String get finEveryMonth => 'Monthly';
+
+  @override
+  String get finEveryQuarter => 'Every 3 months';
+
+  @override
+  String get finEveryYear => 'Yearly';
+
+  @override
+  String get finSearch => 'Search transactions';
+
+  @override
+  String get finNoTxns => 'No transactions yet.';
+
+  @override
+  String get finHideAmounts => 'Hide amounts';
+
+  @override
+  String get finShowAmounts => 'Show amounts';
+
+  @override
+  String get finSettings => 'Finance settings';
+
+  @override
+  String get finCurrency => 'Currency';
+
+  @override
+  String get finCurrencyHelp =>
+      'Amounts are stored as entered; the currency only changes how they are shown.';
+
+  @override
+  String get finPreviousMonth => 'Previous month';
+
+  @override
+  String get finNextMonth => 'Next month';
+
+  @override
+  String get finWorkEarnings => 'Estimated earnings from Work this month';
+
+  @override
+  String get finWorkEarningsHelp =>
+      'Based on tracked shifts and hourly rates. Record adds it as income once per job and month.';
+
+  @override
+  String get finRecord => 'Record';
+
+  @override
+  String get finRecorded => 'Recorded';
+
+  @override
+  String get finCatHousing => 'Housing';
+
+  @override
+  String get finCatGroceries => 'Groceries';
+
+  @override
+  String get finCatDining => 'Eating out';
+
+  @override
+  String get finCatTransport => 'Transport';
+
+  @override
+  String get finCatUtilities => 'Utilities & bills';
+
+  @override
+  String get finCatHealth => 'Health';
+
+  @override
+  String get finCatPersonal => 'Personal care';
+
+  @override
+  String get finCatEntertainment => 'Entertainment';
+
+  @override
+  String get finCatShopping => 'Shopping';
+
+  @override
+  String get finCatEducation => 'Education';
+
+  @override
+  String get finCatSubscriptions => 'Subscriptions';
+
+  @override
+  String get finCatGifts => 'Gifts';
+
+  @override
+  String get finCatPets => 'Pets';
+
+  @override
+  String get finCatTravel => 'Travel';
+
+  @override
+  String get finCatDebt => 'Debt payments';
+
+  @override
+  String get finCatSalary => 'Salary & wages';
+
+  @override
+  String get finCatFreelance => 'Freelance';
+
+  @override
+  String get finCatBenefits => 'Benefits';
+
+  @override
+  String get finCatRefunds => 'Refunds';
+
+  @override
+  String get finCatInterest => 'Interest';
+
+  @override
+  String get finCatOther => 'Other';
+
+  @override
+  String get fitWalk => 'Walk';
+
+  @override
+  String get fitRun => 'Run';
+
+  @override
+  String get fitCycle => 'Cycling';
+
+  @override
+  String get fitSwim => 'Swim';
+
+  @override
+  String get fitStrength => 'Strength';
+
+  @override
+  String get fitYoga => 'Yoga';
+
+  @override
+  String get fitHiit => 'HIIT';
+
+  @override
+  String get fitHike => 'Hike';
+
+  @override
+  String get fitDance => 'Dance';
+
+  @override
+  String get fitSports => 'Sports';
+
+  @override
+  String get fitStretch => 'Stretching';
+
+  @override
+  String get fitClimb => 'Climbing';
+
+  @override
+  String get fitRow => 'Rowing';
+
+  @override
+  String get fitOther => 'Other';
+
+  @override
+  String get fitNewWorkout => 'Log workout';
+
+  @override
+  String get fitEditWorkout => 'Edit workout';
+
+  @override
+  String get fitWorkoutName => 'Name (optional)';
+
+  @override
+  String get fitMinutes => 'Minutes';
+
+  @override
+  String get fitDistanceKm => 'Distance (km)';
+
+  @override
+  String get fitCalories => 'Calories';
+
+  @override
+  String get fitHeartRate => 'Avg heart rate';
+
+  @override
+  String get fitInvalidNumber => 'Numbers must be zero or more.';
+
+  @override
+  String get fitEffort => 'Effort (1–10)';
+
+  @override
+  String get fitMoodAfter => 'Mood afterwards';
+
+  @override
+  String get fitExercises => 'Exercises';
+
+  @override
+  String get fitAddExercise => 'Add exercise';
+
+  @override
+  String get fitExercise => 'Exercise';
+
+  @override
+  String get fitSets => 'Sets';
+
+  @override
+  String get fitReps => 'Reps';
+
+  @override
+  String get fitWeightKg => 'Weight (kg)';
+
+  @override
+  String get fitWho => 'Who exercised';
+
+  @override
+  String get fitDeleteWorkout => 'Delete this workout?';
+
+  @override
+  String get fitNewGoal => 'New fitness goal';
+
+  @override
+  String get fitEditGoal => 'Edit goal';
+
+  @override
+  String get fitGoalMetric => 'Measure';
+
+  @override
+  String get fitGoalPeriod => 'Every';
+
+  @override
+  String get fitGoalTarget => 'Target';
+
+  @override
+  String get fitPerWeek => 'Week';
+
+  @override
+  String get fitPerMonth => 'Month';
+
+  @override
+  String get fitMetricWorkouts => 'Workouts';
+
+  @override
+  String get fitMetricMinutes => 'Active minutes';
+
+  @override
+  String get fitMetricDistance => 'Distance (km)';
+
+  @override
+  String get fitMetricCalories => 'Calories';
+
+  @override
+  String get fitNoGoals => 'No goals yet. Set a weekly or monthly target.';
+
+  @override
+  String get fitStartWorkout => 'Start a workout now';
+
+  @override
+  String get fitStartWhich => 'What are you doing?';
+
+  @override
+  String get fitFinish => 'Finish';
+
+  @override
+  String get fitTabHistory => 'History';
+
+  @override
+  String get fitThisWeekWorkouts => 'Workouts this week';
+
+  @override
+  String get fitThisWeekMinutes => 'Minutes this week';
+
+  @override
+  String get fitThisWeekKm => 'Km this week';
+
+  @override
+  String get fitWeekStreak => 'Weekly streak';
+
+  @override
+  String fitWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks',
+      one: '1 week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fitMinutesPerWeek => 'Active minutes per week';
+
+  @override
+  String get fitByActivity => 'By activity';
+
+  @override
+  String get fitPersonalBests => 'Personal bests';
+
+  @override
+  String fitMinutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get fitEmpty => 'No workouts yet. Log one or start the timer.';
+
+  @override
+  String get fitNoExercises =>
+      'Add exercises with sets, reps and weight to a workout to see your history here.';
+
+  @override
+  String fitSessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String fitBestWeight(String kg) {
+    return 'best $kg kg';
+  }
+
+  @override
+  String fitBestReps(int count) {
+    return 'best $count reps';
+  }
+
+  @override
+  String fitVolume(int count) {
+    return '$count kg total volume';
+  }
+
+  @override
+  String fitLastDone(String date) {
+    return 'Last done $date';
+  }
+
+  @override
+  String fitEffortValue(int count) {
+    return 'effort $count/10';
+  }
+
+  @override
+  String fitExerciseCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schTabToday => 'Today';
+
+  @override
+  String get schTabClasses => 'Classes';
+
+  @override
+  String get schTabAssignments => 'Assignments';
+
+  @override
+  String get schTabStudy => 'Study';
+
+  @override
+  String get schTabProgress => 'Progress';
+
+  @override
+  String get schNewClass => 'New class';
+
+  @override
+  String get schEditClass => 'Edit class';
+
+  @override
+  String get schClassName => 'Class name';
+
+  @override
+  String get schTeacher => 'Teacher';
+
+  @override
+  String get schRoom => 'Room';
+
+  @override
+  String get schCredits => 'Credits';
+
+  @override
+  String get schTargetGrade => 'Target grade %';
+
+  @override
+  String get schSchedule => 'Weekly schedule';
+
+  @override
+  String get schAddMeeting => 'Add time';
+
+  @override
+  String get schNoSchedule => 'No schedule set.';
+
+  @override
+  String get schEndAfterStart => 'End time must be after start time.';
+
+  @override
+  String schDeleteClass(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get schDeleteClassMessage =>
+      'Its assignments and study sessions are deleted too.';
+
+  @override
+  String get schNewAssignment => 'New assignment';
+
+  @override
+  String get schEditAssignment => 'Edit assignment';
+
+  @override
+  String get schAssignmentTitle => 'Title';
+
+  @override
+  String get schClass => 'Class';
+
+  @override
+  String get schNoClass => 'No class';
+
+  @override
+  String get schType => 'Type';
+
+  @override
+  String get schDue => 'Due';
+
+  @override
+  String get schNoDueDate => 'No due date';
+
+  @override
+  String get schStatus => 'Status';
+
+  @override
+  String get schTodo => 'To do';
+
+  @override
+  String get schDoing => 'In progress';
+
+  @override
+  String get schDone => 'Done';
+
+  @override
+  String get schPriority => 'Priority';
+
+  @override
+  String get schPriorityLow => 'Low';
+
+  @override
+  String get schPriorityNormal => 'Normal';
+
+  @override
+  String get schPriorityHigh => 'High';
+
+  @override
+  String get schGrade => 'Grade';
+
+  @override
+  String get schEarned => 'Points earned';
+
+  @override
+  String get schPossible => 'Out of';
+
+  @override
+  String get schGradeInvalid =>
+      'Enter both numbers; \"out of\" must be more than zero.';
+
+  @override
+  String get schWeight => 'Weight in final grade (%)';
+
+  @override
+  String get schWeightHelp =>
+      'Optional. With weights, the class grade is a weighted average.';
+
+  @override
+  String get schDeleteAssignment => 'Delete this assignment?';
+
+  @override
+  String get schHomework => 'Homework';
+
+  @override
+  String get schReading => 'Reading';
+
+  @override
+  String get schEssay => 'Essay';
+
+  @override
+  String get schProject => 'Project';
+
+  @override
+  String get schLab => 'Lab';
+
+  @override
+  String get schQuiz => 'Quiz';
+
+  @override
+  String get schExam => 'Exam';
+
+  @override
+  String get schPresentation => 'Presentation';
+
+  @override
+  String get schStudySession => 'Study session';
+
+  @override
+  String get schFocus => 'Focus (1–5)';
+
+  @override
+  String get schDeleteStudy => 'Delete this study session?';
+
+  @override
+  String get schStartStudying => 'Start studying';
+
+  @override
+  String get schStudyWhich => 'Which class?';
+
+  @override
+  String schTodaysClasses(String day) {
+    return 'Classes · $day';
+  }
+
+  @override
+  String get schNoClassesToday => 'No classes today.';
+
+  @override
+  String get schNoClassesYet =>
+      'No classes yet. Add your classes with their schedule to see your day here.';
+
+  @override
+  String get schNow => 'Now';
+
+  @override
+  String schOverdue(int count) {
+    return 'Overdue ($count)';
+  }
+
+  @override
+  String get schDueThisWeek => 'Due in the next 7 days';
+
+  @override
+  String get schNothingDue => 'Nothing due this week.';
+
+  @override
+  String schOpenCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count open',
+      one: '1 open',
+      zero: 'nothing open',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schFilterOpen => 'Open';
+
+  @override
+  String get schFilterOverdue => 'Overdue';
+
+  @override
+  String get schNoAssignments => 'No assignments here.';
+
+  @override
+  String get schStudyThisWeek => 'Studied in the last 7 days';
+
+  @override
+  String get schStudyTotal => 'Total study time';
+
+  @override
+  String schHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get schSessions => 'Sessions';
+
+  @override
+  String get schAvgFocus => 'Average focus';
+
+  @override
+  String get schLogStudy => 'Log study time';
+
+  @override
+  String get schNoStudy => 'No study sessions yet.';
+
+  @override
+  String get schGpa => 'GPA (4.0)';
+
+  @override
+  String get schCompleted => 'Completed';
+
+  @override
+  String get schOnTime => 'On time';
+
+  @override
+  String get schClassesCount => 'Classes';
+
+  @override
+  String get schGradesByClass => 'Grades by class';
+
+  @override
+  String get schNoGradesYet => 'No grades yet';
+
+  @override
+  String schStudiedHours(String hours) {
+    return '$hours h studied';
+  }
+
+  @override
+  String schTargetIs(int count) {
+    return 'target $count%';
+  }
+
+  @override
+  String schNeedOnRest(String percent) {
+    return 'need $percent% on the rest';
+  }
+
+  @override
+  String get schTargetOutOfReach => 'target no longer reachable';
+
+  @override
+  String get schClassGone => 'This class was deleted.';
+
+  @override
+  String schTeacherIs(String name) {
+    return 'Teacher: $name';
+  }
+
+  @override
+  String schRoomIs(String name) {
+    return 'Room: $name';
+  }
+
+  @override
+  String schCreditsIs(String count) {
+    return 'Credits: $count';
+  }
 }

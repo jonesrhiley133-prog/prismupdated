@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:prism_plurality/features/achievements/providers/achievement_providers.dart';
 import 'package:prism_plurality/features/achievements/utils/achievements.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
-import 'package:prism_plurality/l10n/app_localizations.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';

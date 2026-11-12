@@ -11,7 +11,6 @@ import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
-import 'package:prism_plurality/l10n/app_localizations.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';

@@ -512,8 +512,9 @@ class WikiClient {
       final members = r['query'] is Map ? r['query']['categorymembers'] : null;
       if (members is List) {
         for (final m in members) {
-          if (m is Map && m['title'] is String)
+          if (m is Map && m['title'] is String) {
             titles.add(m['title'] as String);
+          }
         }
       }
       final c = r['continue'];

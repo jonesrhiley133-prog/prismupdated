@@ -74,6 +74,7 @@ abstract final class AppIcons {
   static final privateEyeSlash = PhosphorIcons.eyeSlash();
   static final pin = PhosphorIcons.pushPin();
   static final globe = PhosphorIcons.globe();
+  static final timer = PhosphorIcons.timer();
   static final patterns = PhosphorIcons.chartScatter();
   static final dashboardCustomize = PhosphorIcons.slidersHorizontal();
   static final navInsights = PhosphorIcons.sparkle();

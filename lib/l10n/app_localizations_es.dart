@@ -16847,4 +16847,946 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get whatsNewChangelog => 'Novedades · historial de cambios';
+
+  @override
+  String get navFinance => 'Finanzas';
+
+  @override
+  String get navFitness => 'Ejercicio';
+
+  @override
+  String get navSchool => 'Escuela';
+
+  @override
+  String get finTabOverview => 'Resumen';
+
+  @override
+  String get finTabTransactions => 'Movimientos';
+
+  @override
+  String get finTabBudgets => 'Presupuestos';
+
+  @override
+  String get finTabGoals => 'Metas';
+
+  @override
+  String get finTabRecurring => 'Recurrentes';
+
+  @override
+  String get finIncome => 'Ingresos';
+
+  @override
+  String get finExpense => 'Gasto';
+
+  @override
+  String get finTransfer => 'Transferencia';
+
+  @override
+  String get finSpent => 'Gastado';
+
+  @override
+  String get finNet => 'Neto';
+
+  @override
+  String get finSavingsRate => 'Tasa de ahorro';
+
+  @override
+  String get finSixMonths => 'Últimos 6 meses';
+
+  @override
+  String get finSpendingByCategory => 'Gastos por categoría';
+
+  @override
+  String get finNoSpending => 'Sin gastos este mes.';
+
+  @override
+  String get finAccounts => 'Cuentas';
+
+  @override
+  String get finNoAccounts => 'Añade cuentas para seguir saldos (opcional).';
+
+  @override
+  String finTotalBalance(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get finNewTxn => 'Nuevo movimiento';
+
+  @override
+  String get finEditTxn => 'Editar movimiento';
+
+  @override
+  String get finAmount => 'Importe';
+
+  @override
+  String get finInvalidAmount =>
+      'Escribe un importe mayor que cero, como 12,50';
+
+  @override
+  String get finPayee => 'Pagado a';
+
+  @override
+  String get finFrom => 'De';
+
+  @override
+  String get finDescription => 'Descripción';
+
+  @override
+  String get finCategory => 'Categoría';
+
+  @override
+  String get finCustomCategory => 'Personalizada…';
+
+  @override
+  String get finAccount => 'Cuenta';
+
+  @override
+  String get finFromAccount => 'Desde la cuenta';
+
+  @override
+  String get finToAccount => 'A la cuenta';
+
+  @override
+  String get finNoAccount => 'Ninguna';
+
+  @override
+  String get finTransferNeedsAccounts =>
+      'Añade al menos dos cuentas para registrar transferencias.';
+
+  @override
+  String get finNote => 'Notas';
+
+  @override
+  String get finDeleteTxn => '¿Eliminar este movimiento?';
+
+  @override
+  String get finNewAccount => 'Nueva cuenta';
+
+  @override
+  String get finEditAccount => 'Editar cuenta';
+
+  @override
+  String get finAccountName => 'Nombre de la cuenta';
+
+  @override
+  String get finAccountType => 'Tipo';
+
+  @override
+  String get finOpeningBalance => 'Saldo inicial';
+
+  @override
+  String get finOwed => 'Dinero adeudado';
+
+  @override
+  String get finOwedHelp =>
+      'Actívalo para tarjetas de crédito o deudas, así el saldo cuenta como negativo.';
+
+  @override
+  String get finDeleteAccount =>
+      '¿Eliminar esta cuenta? Sus movimientos se conservan.';
+
+  @override
+  String get finAccCash => 'Efectivo';
+
+  @override
+  String get finAccChecking => 'Cuenta corriente';
+
+  @override
+  String get finAccSavings => 'Ahorros';
+
+  @override
+  String get finAccCredit => 'Tarjeta de crédito';
+
+  @override
+  String get finAccInvestment => 'Inversión';
+
+  @override
+  String get finNewBudget => 'Nuevo presupuesto';
+
+  @override
+  String get finEditBudget => 'Editar presupuesto';
+
+  @override
+  String get finMonthlyLimit => 'Límite mensual';
+
+  @override
+  String get finDeleteBudget => '¿Eliminar este presupuesto?';
+
+  @override
+  String get finNoBudgets =>
+      'Aún no hay presupuestos. Pon un límite mensual a una categoría para ver cómo vas.';
+
+  @override
+  String finBudgetTotal(String spent, String limit) {
+    return '$spent de $limit presupuestado';
+  }
+
+  @override
+  String finOverBudget(String amount) {
+    return '$amount por encima';
+  }
+
+  @override
+  String finLeftInBudget(String amount) {
+    return 'Quedan $amount';
+  }
+
+  @override
+  String get finUnbudgeted => 'Gastos sin presupuesto';
+
+  @override
+  String get finNewGoal => 'Nueva meta de ahorro';
+
+  @override
+  String get finEditGoal => 'Editar meta';
+
+  @override
+  String get finGoalName => 'Ahorro para';
+
+  @override
+  String get finGoalTarget => 'Importe objetivo';
+
+  @override
+  String get finGoalSaved => 'Ahorrado hasta ahora';
+
+  @override
+  String get finGoalDeadline => 'Fecha objetivo';
+
+  @override
+  String get finNoDeadline => 'Sin fecha';
+
+  @override
+  String get finColor => 'Color';
+
+  @override
+  String get finDeleteGoal => '¿Eliminar esta meta?';
+
+  @override
+  String get finNoGoals => 'Aún no hay metas de ahorro.';
+
+  @override
+  String finGoalPerMonth(String amount, String date) {
+    return 'Ahorra $amount al mes para lograrlo en $date';
+  }
+
+  @override
+  String get finGoalReached => '¡Meta alcanzada!';
+
+  @override
+  String get finAddToGoal => 'Añadir dinero';
+
+  @override
+  String finAddToGoalTitle(String name) {
+    return 'Añadir a «$name»';
+  }
+
+  @override
+  String get finNewRecurring => 'Nuevo recurrente';
+
+  @override
+  String get finEditRecurring => 'Editar recurrente';
+
+  @override
+  String get finRecurringName => 'Nombre (alquiler, nómina, streaming…)';
+
+  @override
+  String get finRepeats => 'Se repite';
+
+  @override
+  String get finNextDue => 'Próxima fecha';
+
+  @override
+  String get finAutoAdd => 'Añadir automáticamente';
+
+  @override
+  String get finAutoAddHelp =>
+      'Registra el movimiento en su fecha al abrir Finanzas. Si no, espera a que lo confirmes.';
+
+  @override
+  String get finDeleteRecurring =>
+      '¿Eliminar este recurrente? Los movimientos pasados se conservan.';
+
+  @override
+  String get finNoRecurring =>
+      'Sin recurrentes. Añade alquiler, facturas, suscripciones o días de cobro.';
+
+  @override
+  String get finFixedCosts => 'Gastos fijos / mes';
+
+  @override
+  String get finRegularIncome => 'Ingresos regulares / mes';
+
+  @override
+  String finNextOn(String date) {
+    return 'próximo $date';
+  }
+
+  @override
+  String finDueNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pagos pendientes',
+      one: '1 pago pendiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finAddNow => 'Añadir';
+
+  @override
+  String get finSkip => 'Omitir';
+
+  @override
+  String get finRecurringBadge => 'recurrente';
+
+  @override
+  String get finEveryWeek => 'Semanal';
+
+  @override
+  String get finEveryTwoWeeks => 'Cada 2 semanas';
+
+  @override
+  String get finEveryMonth => 'Mensual';
+
+  @override
+  String get finEveryQuarter => 'Cada 3 meses';
+
+  @override
+  String get finEveryYear => 'Anual';
+
+  @override
+  String get finSearch => 'Buscar movimientos';
+
+  @override
+  String get finNoTxns => 'Aún no hay movimientos.';
+
+  @override
+  String get finHideAmounts => 'Ocultar importes';
+
+  @override
+  String get finShowAmounts => 'Mostrar importes';
+
+  @override
+  String get finSettings => 'Ajustes de finanzas';
+
+  @override
+  String get finCurrency => 'Moneda';
+
+  @override
+  String get finCurrencyHelp =>
+      'Los importes se guardan tal cual; la moneda solo cambia cómo se muestran.';
+
+  @override
+  String get finPreviousMonth => 'Mes anterior';
+
+  @override
+  String get finNextMonth => 'Mes siguiente';
+
+  @override
+  String get finWorkEarnings => 'Ganancias estimadas de Trabajo este mes';
+
+  @override
+  String get finWorkEarningsHelp =>
+      'Según turnos y tarifas por hora. Registrar lo añade como ingreso una vez por trabajo y mes.';
+
+  @override
+  String get finRecord => 'Registrar';
+
+  @override
+  String get finRecorded => 'Registrado';
+
+  @override
+  String get finCatHousing => 'Vivienda';
+
+  @override
+  String get finCatGroceries => 'Supermercado';
+
+  @override
+  String get finCatDining => 'Comer fuera';
+
+  @override
+  String get finCatTransport => 'Transporte';
+
+  @override
+  String get finCatUtilities => 'Servicios y facturas';
+
+  @override
+  String get finCatHealth => 'Salud';
+
+  @override
+  String get finCatPersonal => 'Cuidado personal';
+
+  @override
+  String get finCatEntertainment => 'Ocio';
+
+  @override
+  String get finCatShopping => 'Compras';
+
+  @override
+  String get finCatEducation => 'Educación';
+
+  @override
+  String get finCatSubscriptions => 'Suscripciones';
+
+  @override
+  String get finCatGifts => 'Regalos';
+
+  @override
+  String get finCatPets => 'Mascotas';
+
+  @override
+  String get finCatTravel => 'Viajes';
+
+  @override
+  String get finCatDebt => 'Pago de deudas';
+
+  @override
+  String get finCatSalary => 'Sueldo';
+
+  @override
+  String get finCatFreelance => 'Trabajo independiente';
+
+  @override
+  String get finCatBenefits => 'Prestaciones';
+
+  @override
+  String get finCatRefunds => 'Reembolsos';
+
+  @override
+  String get finCatInterest => 'Intereses';
+
+  @override
+  String get finCatOther => 'Otros';
+
+  @override
+  String get fitWalk => 'Caminar';
+
+  @override
+  String get fitRun => 'Correr';
+
+  @override
+  String get fitCycle => 'Ciclismo';
+
+  @override
+  String get fitSwim => 'Natación';
+
+  @override
+  String get fitStrength => 'Fuerza';
+
+  @override
+  String get fitYoga => 'Yoga';
+
+  @override
+  String get fitHiit => 'HIIT';
+
+  @override
+  String get fitHike => 'Senderismo';
+
+  @override
+  String get fitDance => 'Baile';
+
+  @override
+  String get fitSports => 'Deportes';
+
+  @override
+  String get fitStretch => 'Estiramientos';
+
+  @override
+  String get fitClimb => 'Escalada';
+
+  @override
+  String get fitRow => 'Remo';
+
+  @override
+  String get fitOther => 'Otro';
+
+  @override
+  String get fitNewWorkout => 'Registrar ejercicio';
+
+  @override
+  String get fitEditWorkout => 'Editar ejercicio';
+
+  @override
+  String get fitWorkoutName => 'Nombre (opcional)';
+
+  @override
+  String get fitMinutes => 'Minutos';
+
+  @override
+  String get fitDistanceKm => 'Distancia (km)';
+
+  @override
+  String get fitCalories => 'Calorías';
+
+  @override
+  String get fitHeartRate => 'Pulso medio';
+
+  @override
+  String get fitInvalidNumber => 'Los números deben ser cero o más.';
+
+  @override
+  String get fitEffort => 'Esfuerzo (1–10)';
+
+  @override
+  String get fitMoodAfter => 'Ánimo después';
+
+  @override
+  String get fitExercises => 'Ejercicios';
+
+  @override
+  String get fitAddExercise => 'Añadir ejercicio';
+
+  @override
+  String get fitExercise => 'Ejercicio';
+
+  @override
+  String get fitSets => 'Series';
+
+  @override
+  String get fitReps => 'Repeticiones';
+
+  @override
+  String get fitWeightKg => 'Peso (kg)';
+
+  @override
+  String get fitWho => 'Quién hizo ejercicio';
+
+  @override
+  String get fitDeleteWorkout => '¿Eliminar este ejercicio?';
+
+  @override
+  String get fitNewGoal => 'Nueva meta de ejercicio';
+
+  @override
+  String get fitEditGoal => 'Editar meta';
+
+  @override
+  String get fitGoalMetric => 'Medida';
+
+  @override
+  String get fitGoalPeriod => 'Cada';
+
+  @override
+  String get fitGoalTarget => 'Objetivo';
+
+  @override
+  String get fitPerWeek => 'Semana';
+
+  @override
+  String get fitPerMonth => 'Mes';
+
+  @override
+  String get fitMetricWorkouts => 'Sesiones';
+
+  @override
+  String get fitMetricMinutes => 'Minutos activos';
+
+  @override
+  String get fitMetricDistance => 'Distancia (km)';
+
+  @override
+  String get fitMetricCalories => 'Calorías';
+
+  @override
+  String get fitNoGoals =>
+      'Aún no hay metas. Pon un objetivo semanal o mensual.';
+
+  @override
+  String get fitStartWorkout => 'Empezar ejercicio ahora';
+
+  @override
+  String get fitStartWhich => '¿Qué vas a hacer?';
+
+  @override
+  String get fitFinish => 'Terminar';
+
+  @override
+  String get fitTabHistory => 'Historial';
+
+  @override
+  String get fitThisWeekWorkouts => 'Sesiones esta semana';
+
+  @override
+  String get fitThisWeekMinutes => 'Minutos esta semana';
+
+  @override
+  String get fitThisWeekKm => 'Km esta semana';
+
+  @override
+  String get fitWeekStreak => 'Racha semanal';
+
+  @override
+  String fitWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count semanas',
+      one: '1 semana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fitMinutesPerWeek => 'Minutos activos por semana';
+
+  @override
+  String get fitByActivity => 'Por actividad';
+
+  @override
+  String get fitPersonalBests => 'Mejores marcas';
+
+  @override
+  String fitMinutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get fitEmpty =>
+      'Aún no hay ejercicios. Registra uno o empieza el cronómetro.';
+
+  @override
+  String get fitNoExercises =>
+      'Añade ejercicios con series, repeticiones y peso para ver aquí tu historial.';
+
+  @override
+  String fitSessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sesiones',
+      one: '1 sesión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String fitBestWeight(String kg) {
+    return 'mejor $kg kg';
+  }
+
+  @override
+  String fitBestReps(int count) {
+    return 'mejor $count rep.';
+  }
+
+  @override
+  String fitVolume(int count) {
+    return '$count kg de volumen total';
+  }
+
+  @override
+  String fitLastDone(String date) {
+    return 'Último: $date';
+  }
+
+  @override
+  String fitEffortValue(int count) {
+    return 'esfuerzo $count/10';
+  }
+
+  @override
+  String fitExerciseCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ejercicios',
+      one: '1 ejercicio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schTabToday => 'Hoy';
+
+  @override
+  String get schTabClasses => 'Clases';
+
+  @override
+  String get schTabAssignments => 'Tareas';
+
+  @override
+  String get schTabStudy => 'Estudio';
+
+  @override
+  String get schTabProgress => 'Progreso';
+
+  @override
+  String get schNewClass => 'Nueva clase';
+
+  @override
+  String get schEditClass => 'Editar clase';
+
+  @override
+  String get schClassName => 'Nombre de la clase';
+
+  @override
+  String get schTeacher => 'Profesor/a';
+
+  @override
+  String get schRoom => 'Aula';
+
+  @override
+  String get schCredits => 'Créditos';
+
+  @override
+  String get schTargetGrade => 'Nota objetivo %';
+
+  @override
+  String get schSchedule => 'Horario semanal';
+
+  @override
+  String get schAddMeeting => 'Añadir horario';
+
+  @override
+  String get schNoSchedule => 'Sin horario.';
+
+  @override
+  String get schEndAfterStart =>
+      'La hora de fin debe ser posterior a la de inicio.';
+
+  @override
+  String schDeleteClass(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get schDeleteClassMessage =>
+      'También se eliminan sus tareas y sesiones de estudio.';
+
+  @override
+  String get schNewAssignment => 'Nueva tarea';
+
+  @override
+  String get schEditAssignment => 'Editar tarea';
+
+  @override
+  String get schAssignmentTitle => 'Título';
+
+  @override
+  String get schClass => 'Clase';
+
+  @override
+  String get schNoClass => 'Sin clase';
+
+  @override
+  String get schType => 'Tipo';
+
+  @override
+  String get schDue => 'Entrega';
+
+  @override
+  String get schNoDueDate => 'Sin fecha';
+
+  @override
+  String get schStatus => 'Estado';
+
+  @override
+  String get schTodo => 'Pendiente';
+
+  @override
+  String get schDoing => 'En curso';
+
+  @override
+  String get schDone => 'Hecha';
+
+  @override
+  String get schPriority => 'Prioridad';
+
+  @override
+  String get schPriorityLow => 'Baja';
+
+  @override
+  String get schPriorityNormal => 'Normal';
+
+  @override
+  String get schPriorityHigh => 'Alta';
+
+  @override
+  String get schGrade => 'Nota';
+
+  @override
+  String get schEarned => 'Puntos obtenidos';
+
+  @override
+  String get schPossible => 'Sobre';
+
+  @override
+  String get schGradeInvalid =>
+      'Escribe ambos números; «sobre» debe ser mayor que cero.';
+
+  @override
+  String get schWeight => 'Peso en la nota final (%)';
+
+  @override
+  String get schWeightHelp =>
+      'Opcional. Con pesos, la nota de la clase es una media ponderada.';
+
+  @override
+  String get schDeleteAssignment => '¿Eliminar esta tarea?';
+
+  @override
+  String get schHomework => 'Deberes';
+
+  @override
+  String get schReading => 'Lectura';
+
+  @override
+  String get schEssay => 'Redacción';
+
+  @override
+  String get schProject => 'Proyecto';
+
+  @override
+  String get schLab => 'Laboratorio';
+
+  @override
+  String get schQuiz => 'Prueba';
+
+  @override
+  String get schExam => 'Examen';
+
+  @override
+  String get schPresentation => 'Presentación';
+
+  @override
+  String get schStudySession => 'Sesión de estudio';
+
+  @override
+  String get schFocus => 'Concentración (1–5)';
+
+  @override
+  String get schDeleteStudy => '¿Eliminar esta sesión?';
+
+  @override
+  String get schStartStudying => 'Empezar a estudiar';
+
+  @override
+  String get schStudyWhich => '¿Qué clase?';
+
+  @override
+  String schTodaysClasses(String day) {
+    return 'Clases · $day';
+  }
+
+  @override
+  String get schNoClassesToday => 'Hoy no hay clases.';
+
+  @override
+  String get schNoClassesYet =>
+      'Aún no hay clases. Añádelas con su horario para ver aquí tu día.';
+
+  @override
+  String get schNow => 'Ahora';
+
+  @override
+  String schOverdue(int count) {
+    return 'Atrasadas ($count)';
+  }
+
+  @override
+  String get schDueThisWeek => 'Para los próximos 7 días';
+
+  @override
+  String get schNothingDue => 'Nada para esta semana.';
+
+  @override
+  String schOpenCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pendientes',
+      one: '1 pendiente',
+      zero: 'nada pendiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schFilterOpen => 'Pendientes';
+
+  @override
+  String get schFilterOverdue => 'Atrasadas';
+
+  @override
+  String get schNoAssignments => 'No hay tareas aquí.';
+
+  @override
+  String get schStudyThisWeek => 'Estudiado en 7 días';
+
+  @override
+  String get schStudyTotal => 'Tiempo total de estudio';
+
+  @override
+  String schHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get schSessions => 'Sesiones';
+
+  @override
+  String get schAvgFocus => 'Concentración media';
+
+  @override
+  String get schLogStudy => 'Registrar estudio';
+
+  @override
+  String get schNoStudy => 'Aún no hay sesiones de estudio.';
+
+  @override
+  String get schGpa => 'Promedio (4.0)';
+
+  @override
+  String get schCompleted => 'Completadas';
+
+  @override
+  String get schOnTime => 'A tiempo';
+
+  @override
+  String get schClassesCount => 'Clases';
+
+  @override
+  String get schGradesByClass => 'Notas por clase';
+
+  @override
+  String get schNoGradesYet => 'Sin notas aún';
+
+  @override
+  String schStudiedHours(String hours) {
+    return '$hours h estudiadas';
+  }
+
+  @override
+  String schTargetIs(int count) {
+    return 'objetivo $count%';
+  }
+
+  @override
+  String schNeedOnRest(String percent) {
+    return 'necesitas $percent% en el resto';
+  }
+
+  @override
+  String get schTargetOutOfReach => 'objetivo ya inalcanzable';
+
+  @override
+  String get schClassGone => 'Esta clase se eliminó.';
+
+  @override
+  String schTeacherIs(String name) {
+    return 'Profesor/a: $name';
+  }
+
+  @override
+  String schRoomIs(String name) {
+    return 'Aula: $name';
+  }
+
+  @override
+  String schCreditsIs(String count) {
+    return 'Créditos: $count';
+  }
 }
