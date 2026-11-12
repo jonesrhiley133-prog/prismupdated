@@ -151,6 +151,11 @@ class _PollsListScreenState extends ConsumerState<PollsListScreen> {
                       ),
                     ),
                     PrismTopBarAction(
+                      icon: AppIcons.patterns,
+                      tooltip: context.l10n.pollStatsTitle,
+                      onPressed: () => context.push(AppRoutePaths.pollStats),
+                    ),
+                    PrismTopBarAction(
                       icon: AppIcons.add,
                       tooltip: context.l10n.pollsCreateTooltip,
                       onPressed: () => _showCreateSheet(context),

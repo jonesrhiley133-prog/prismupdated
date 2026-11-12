@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
+import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
+import 'package:prism_plurality/features/cycle/views/cycle_insights_screen.dart';
 import 'package:prism_plurality/domain/models/cycle_entry.dart';
 import 'package:prism_plurality/features/calendar/widgets/month_grid.dart';
 import 'package:prism_plurality/features/cycle/providers/cycle_providers.dart';
@@ -84,6 +90,11 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
         title: l10n.cycleTitle,
         showBackButton: widget.showBackButton,
         actions: [
+          PrismTopBarAction(
+            icon: AppIcons.navInsights,
+            tooltip: l10n.cycInsightsTitle,
+            onPressed: () => context.push(AppRoutePaths.cycleInsights),
+          ),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.cycleLogToday,
@@ -365,11 +376,20 @@ class _CycleDaySheetState extends ConsumerState<_CycleDaySheet> {
   late int _flow = _existing?.flow ?? 0;
   late final Set<String> _symptoms = {...?_existing?.symptoms};
   late final _note = TextEditingController(text: _existing?.note ?? '');
+  late final _wellness = CycleWellnessController()
+    ..load(
+      (ref.read(trackerKindProvider(TrackerKind.cycleWellness)).value ??
+              const <TrackerRecord>[])
+          .where((w) => w.title == CycleStats.dateKey(widget.day))
+          .firstOrNull,
+    );
+  int _section = 0;
   bool _saving = false;
 
   @override
   void dispose() {
     _note.dispose();
+    _wellness.dispose();
     super.dispose();
   }
 
@@ -383,6 +403,10 @@ class _CycleDaySheetState extends ConsumerState<_CycleDaySheet> {
           symptoms: _symptoms.toList(),
           note: _note.text,
         );
+    await _wellness.save(
+      ref.read(trackerNotifierProvider.notifier),
+      widget.day,
+    );
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -402,46 +426,63 @@ class _CycleDaySheetState extends ConsumerState<_CycleDaySheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.cycleFlowLabel, style: theme.textTheme.labelLarge),
-            const SizedBox(height: 8),
-            PrismSegmentedControl<int>(
-              segments: [
-                for (var f = 0; f <= 4; f++)
-                  PrismSegment(value: f, label: flowLabel(context, f)),
-              ],
-              selected: _flow,
-              onChanged: (v) => setState(() => _flow = v),
+            CycleDaySections(
+              value: _section,
+              onChanged: (v) => setState(() => _section = v),
             ),
-            const SizedBox(height: 16),
-            Text(l10n.cycleSymptomsLabel, style: theme.textTheme.labelLarge),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final s in cycleSymptoms.entries)
-                  PrismChip(
-                    label: s.value,
-                    selected: _symptoms.contains(s.key),
-                    onTap: () => setState(() {
-                      if (!_symptoms.remove(s.key)) _symptoms.add(s.key);
-                    }),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            PrismTextField(
-              controller: _note,
-              labelText: l10n.locationsNotesLabel,
-              maxLines: 3,
-            ),
+            const SizedBox(height: 12),
+            if (_section == 1)
+              CycleWellnessSection(day: widget.day, controller: _wellness)
+            else ...[
+              Text(l10n.cycleFlowLabel, style: theme.textTheme.labelLarge),
+              const SizedBox(height: 8),
+              PrismSegmentedControl<int>(
+                segments: [
+                  for (var f = 0; f <= 4; f++)
+                    PrismSegment(value: f, label: flowLabel(context, f)),
+                ],
+                selected: _flow,
+                onChanged: (v) => setState(() => _flow = v),
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.cycleSymptomsLabel, style: theme.textTheme.labelLarge),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final s in cycleSymptoms.entries)
+                    PrismChip(
+                      label: s.value,
+                      selected: _symptoms.contains(s.key),
+                      onTap: () => setState(() {
+                        if (!_symptoms.remove(s.key)) _symptoms.add(s.key);
+                      }),
+                    ),
+                  for (final c in ref.watch(customCycleSymptomsProvider))
+                    PrismChip(
+                      label: c.title,
+                      selected: _symptoms.contains(c.title),
+                      onTap: () => setState(() {
+                        if (!_symptoms.remove(c.title)) _symptoms.add(c.title);
+                      }),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              PrismTextField(
+                controller: _note,
+                labelText: l10n.locationsNotesLabel,
+                maxLines: 3,
+              ),
+            ],
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: PrismButton(
                 label: l10n.save,
                 tone: PrismButtonTone.filled,
-                enabled: !_saving,
+                enabled: !_saving && _wellness.valid,
                 onPressed: _save,
               ),
             ),

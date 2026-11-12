@@ -34,6 +34,9 @@ abstract final class AppRoutePaths {
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
+  static const sleepLog = '/sleep-log';
+  static const cycleInsights = '/cycle-insights';
+  static const pollStats = '/poll-stats';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';

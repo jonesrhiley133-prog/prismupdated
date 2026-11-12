@@ -144,6 +144,7 @@ void main() {
     expect([...dates]..sort((a, b) => b.compareTo(a)), dates);
     expect(releaseFor('0.16.0'), isNotNull);
     expect(releaseFor('0.17.0'), isNotNull);
+    expect(releaseFor('0.18.0'), isNotNull);
     expect(releaseFor('9.9.9'), isNull);
   });
 }

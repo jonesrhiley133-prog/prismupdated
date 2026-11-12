@@ -17596,4 +17596,718 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dictAddedBy => 'Added by';
+
+  @override
+  String get slpAnalysisTitle => 'Sleep analysis';
+
+  @override
+  String get slpAnalysisEntry =>
+      'Environment, schedule and what helps you sleep';
+
+  @override
+  String get slpDetailsTitle => 'Night details';
+
+  @override
+  String get slpTemperature => 'Room temperature (°C)';
+
+  @override
+  String get slpLatency => 'Minutes to fall asleep';
+
+  @override
+  String get slpInvalidNumbers => 'Check the temperature and minutes.';
+
+  @override
+  String get slpLighting => 'Lighting';
+
+  @override
+  String get slpWhere => 'Where';
+
+  @override
+  String get slpNoise => 'Sound';
+
+  @override
+  String get slpSharedWith => 'Slept with';
+
+  @override
+  String get slpComfort => 'Comfort (1–5)';
+
+  @override
+  String get slpBeforeBed => 'Before bed';
+
+  @override
+  String get slpDreams => 'Dreams';
+
+  @override
+  String get slpWakeFeeling => 'How rested on waking (1–5)';
+
+  @override
+  String get slpWokeUpAs => 'Who woke up';
+
+  @override
+  String get slpNotSure => 'Not sure';
+
+  @override
+  String slpInterruptions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count interruptions',
+      one: '1 interruption',
+      zero: 'No interruptions',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpDark => 'Dark';
+
+  @override
+  String get slpDim => 'Dim';
+
+  @override
+  String get slpNightlight => 'Night light';
+
+  @override
+  String get slpBright => 'Bright';
+
+  @override
+  String get slpScreenOn => 'Screen on';
+
+  @override
+  String get slpBed => 'Own bed';
+
+  @override
+  String get slpCouch => 'Couch';
+
+  @override
+  String get slpGuestBed => 'Other bed';
+
+  @override
+  String get slpTravel => 'Travelling';
+
+  @override
+  String get slpFloor => 'Floor';
+
+  @override
+  String get slpSilent => 'Silent';
+
+  @override
+  String get slpQuiet => 'Quiet';
+
+  @override
+  String get slpWhiteNoise => 'White noise';
+
+  @override
+  String get slpMusic => 'Music';
+
+  @override
+  String get slpNoisy => 'Noisy';
+
+  @override
+  String get slpAlone => 'Alone';
+
+  @override
+  String get slpPartner => 'Partner';
+
+  @override
+  String get slpPet => 'Pet';
+
+  @override
+  String get slpChild => 'Child';
+
+  @override
+  String get slpOthers => 'Others';
+
+  @override
+  String get slpNoDreams => 'None remembered';
+
+  @override
+  String get slpNeutralDreams => 'Neutral';
+
+  @override
+  String get slpPleasant => 'Pleasant';
+
+  @override
+  String get slpVivid => 'Vivid';
+
+  @override
+  String get slpNightmare => 'Nightmare';
+
+  @override
+  String get slpCaffeine => 'Caffeine';
+
+  @override
+  String get slpAlcohol => 'Alcohol';
+
+  @override
+  String get slpScreens => 'Screens';
+
+  @override
+  String get slpExercise => 'Exercise';
+
+  @override
+  String get slpLateMeal => 'Late meal';
+
+  @override
+  String get slpNap => 'Napped';
+
+  @override
+  String get slpMedication => 'Medication';
+
+  @override
+  String get slpStress => 'Stress';
+
+  @override
+  String get slpPain => 'Pain';
+
+  @override
+  String get slpReading => 'Reading';
+
+  @override
+  String get slpMeditation => 'Meditation';
+
+  @override
+  String get slpShower => 'Warm shower';
+
+  @override
+  String get slpBathroom => 'Bathroom';
+
+  @override
+  String get slpNoiseWake => 'Noise';
+
+  @override
+  String get slpTooHotCold => 'Too hot or cold';
+
+  @override
+  String get slpSwitch => 'Switch';
+
+  @override
+  String get slpAnxiety => 'Anxiety';
+
+  @override
+  String get slpAvgAsleep7 => 'Avg asleep, 7 nights';
+
+  @override
+  String get slpAvgQuality => 'Avg quality, 30 nights';
+
+  @override
+  String get slpAvgLatency => 'Time to fall asleep';
+
+  @override
+  String get slpDebt7 => 'Sleep debt, 7 nights';
+
+  @override
+  String get slpRegularity => 'Bedtime regularity';
+
+  @override
+  String slpPlusMinus(int count) {
+    return '± $count min';
+  }
+
+  @override
+  String get slpAvgInterruptions => 'Interruptions / night';
+
+  @override
+  String get slpAvgBedtime => 'Average bedtime';
+
+  @override
+  String get slpAvgWake => 'Average wake time';
+
+  @override
+  String get slpSchedule => 'Sleep schedule';
+
+  @override
+  String get slpSetSchedule => 'Set schedule';
+
+  @override
+  String get slpNoSchedule =>
+      'Set a target bedtime and wake time to see how well you keep to them.';
+
+  @override
+  String slpScheduleSummary(String bed, String wake, String hours) {
+    return 'Bed $bed · up $wake · $hours h target';
+  }
+
+  @override
+  String get slpOnTime => 'On schedule';
+
+  @override
+  String slpLate(int count) {
+    return '$count min late';
+  }
+
+  @override
+  String slpEarly(int count) {
+    return '$count min early';
+  }
+
+  @override
+  String get slpTargetBedtime => 'Target bedtime';
+
+  @override
+  String get slpTargetWake => 'Target wake time';
+
+  @override
+  String get slpTargetHours => 'Target hours of sleep';
+
+  @override
+  String get slpTargetHoursInvalid => 'Between 3 and 14 hours';
+
+  @override
+  String get slpLast14 => 'Last 14 nights';
+
+  @override
+  String get slpNoNights => 'No finished sleep sessions yet.';
+
+  @override
+  String slpChartLegend(String hours) {
+    return 'Bars: hours asleep, coloured by quality. Line: $hours h target.';
+  }
+
+  @override
+  String get slpWhatHelps => 'What goes with better sleep';
+
+  @override
+  String get slpNeedMoreLogs =>
+      'Add details to a few nights to compare environments and habits.';
+
+  @override
+  String get slpImpactNote =>
+      'Averages over nights with details (★ quality out of 5). Patterns, not proof of cause.';
+
+  @override
+  String slpNights(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nights',
+      one: '1 night',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpRecentNights => 'Recent nights';
+
+  @override
+  String get slpAddDetails => 'Add details';
+
+  @override
+  String get slpDetailsLogged => 'Details ✓';
+
+  @override
+  String slpTempRange(String range) {
+    return 'Room $range';
+  }
+
+  @override
+  String slpComfortIs(String level) {
+    return 'Comfort $level';
+  }
+
+  @override
+  String get cycInsightsTitle => 'Cycle insights';
+
+  @override
+  String get cycPatterns => 'Patterns';
+
+  @override
+  String get cycPhasesAndSymptoms => 'Phases & symptoms';
+
+  @override
+  String get cycPhaseMenstrual => 'Menstrual';
+
+  @override
+  String get cycPhaseFollicular => 'Follicular';
+
+  @override
+  String get cycPhaseOvulation => 'Ovulation';
+
+  @override
+  String get cycPhaseLuteal => 'Luteal';
+
+  @override
+  String get cycNoCurrentCycle => 'No current cycle';
+
+  @override
+  String cycDayN(int count) {
+    return 'Cycle day $count';
+  }
+
+  @override
+  String cycPhaseNow(String phase) {
+    return '$phase phase';
+  }
+
+  @override
+  String get cycAvgCycle => 'Average cycle';
+
+  @override
+  String get cycAvgPeriod => 'Average period';
+
+  @override
+  String get cycVariability => 'Variation (days)';
+
+  @override
+  String get cycCyclesLogged => 'Cycles measured';
+
+  @override
+  String get cycPredictions => 'Predictions';
+
+  @override
+  String get cycNeedTwoCycles =>
+      'Predictions appear after two full cycles are logged.';
+
+  @override
+  String cycPeriodAround(String date) {
+    return 'Period around $date';
+  }
+
+  @override
+  String cycFertileWindow(String from, String to, String ovulation) {
+    return 'Fertile window $from–$to · ovulation ~$ovulation';
+  }
+
+  @override
+  String get cycPredictionDisclaimer =>
+      'Estimates from your past cycles, not medical advice or contraception.';
+
+  @override
+  String get cycInsights => 'Personal insights';
+
+  @override
+  String get cycNoInsights =>
+      'Keep logging symptoms and body signs to see insights.';
+
+  @override
+  String cycInsightSymptom(String symptom, int percent, String phase) {
+    return '$symptom shows up on $percent% of logged $phase days.';
+  }
+
+  @override
+  String cycInsightEnergy(String low, String high) {
+    return 'Energy is lowest in the $low phase and highest in the $high phase.';
+  }
+
+  @override
+  String cycInsightMood(
+    String low,
+    String lowMood,
+    String high,
+    String highMood,
+  ) {
+    return 'Mood averages $lowMood in the $low phase vs $highMood in the $high phase.';
+  }
+
+  @override
+  String cycInsightRegular(String days) {
+    return 'Your cycles are regular (± $days days).';
+  }
+
+  @override
+  String cycInsightIrregular(String days) {
+    return 'Your cycle length varies by about ± $days days, so predictions are rougher.';
+  }
+
+  @override
+  String get cycNoHistory => 'No complete cycles yet.';
+
+  @override
+  String get cycCurrent => 'Current';
+
+  @override
+  String cycHistoryLine(int period, int symptoms) {
+    return 'Period $period days · $symptoms days with symptoms';
+  }
+
+  @override
+  String cycDaysRange(int from, int to) {
+    return 'Days $from–$to';
+  }
+
+  @override
+  String cycDaysLogged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days logged',
+      one: '1 day logged',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cycAvgMood(String value) {
+    return 'mood $value';
+  }
+
+  @override
+  String cycAvgEnergy(String value) {
+    return 'energy $value';
+  }
+
+  @override
+  String cycAvgPain(String value) {
+    return 'pain $value';
+  }
+
+  @override
+  String get cycNoSymptomsInPhase => 'No symptoms logged in this phase yet.';
+
+  @override
+  String get cycDefaultPhasesInfo =>
+      'Phases are estimated from your average cycle and period length. Customize them to use your own names and day ranges.';
+
+  @override
+  String get cycCustomPhasesOn => 'Using your custom phases. Tap one to edit.';
+
+  @override
+  String get cycCustomizePhases => 'Customize phases';
+
+  @override
+  String get cycAddPhase => 'Add phase';
+
+  @override
+  String get cycEditPhase => 'Edit phase';
+
+  @override
+  String get cycResetPhases => 'Use estimated phases';
+
+  @override
+  String get cycPhaseName => 'Phase name';
+
+  @override
+  String get cycFromDay => 'From day';
+
+  @override
+  String get cycToDay => 'To day';
+
+  @override
+  String get cycPhaseInvalid =>
+      'Days must be 1–60 and \"to\" at least \"from\".';
+
+  @override
+  String get cycCustomSymptoms => 'Your own symptoms';
+
+  @override
+  String get cycAddSymptom => 'Add symptom';
+
+  @override
+  String get cycFlowAndSymptoms => 'Flow & symptoms';
+
+  @override
+  String get cycBodySigns => 'Body signs';
+
+  @override
+  String get cycEnergy => 'Energy (1–5)';
+
+  @override
+  String get cycPain => 'Pain (0–10)';
+
+  @override
+  String get cycLibido => 'Libido (1–5)';
+
+  @override
+  String get cycMucus => 'Cervical fluid';
+
+  @override
+  String get cycMucusDry => 'Dry';
+
+  @override
+  String get cycMucusSticky => 'Sticky';
+
+  @override
+  String get cycMucusCreamy => 'Creamy';
+
+  @override
+  String get cycMucusWatery => 'Watery';
+
+  @override
+  String get cycMucusEggwhite => 'Egg white';
+
+  @override
+  String get cycOvulationTest => 'Ovulation test';
+
+  @override
+  String get cycPregnancyTest => 'Pregnancy test';
+
+  @override
+  String get cycPositive => 'Positive';
+
+  @override
+  String get cycNegative => 'Negative';
+
+  @override
+  String get cycBbt => 'Basal temperature (°C)';
+
+  @override
+  String get cycBbtInvalid => 'Enter a temperature between 30 and 45 °C';
+
+  @override
+  String get cycMedication => 'Medication';
+
+  @override
+  String get pollType => 'Poll type';
+
+  @override
+  String get pollTypeChoice => 'Choice';
+
+  @override
+  String get pollTypeYesNo => 'Yes / No';
+
+  @override
+  String get pollTypeScale => 'Scale';
+
+  @override
+  String get pollTypeRanked => 'Ranked';
+
+  @override
+  String get pollTypeRating => 'Rating';
+
+  @override
+  String get pollTypeChoiceHelp => 'Pick one (or several) options.';
+
+  @override
+  String get pollTypeYesNoHelp => 'Yes, No or Abstain.';
+
+  @override
+  String get pollTypeScaleHelp =>
+      'Pick a number on a scale; results show the average and spread.';
+
+  @override
+  String get pollTypeRankedHelp =>
+      'Each member orders the options; results use points (Borda count).';
+
+  @override
+  String get pollTypeRatingHelp =>
+      'Each member rates every option from 1 to 5 stars.';
+
+  @override
+  String get pollScaleFrom => 'From';
+
+  @override
+  String get pollScaleTo => 'To';
+
+  @override
+  String get pollCategory => 'Category (optional)';
+
+  @override
+  String get pollCategoryHint => 'e.g. Food, Plans, Rules';
+
+  @override
+  String get pollYes => 'Yes';
+
+  @override
+  String get pollNo => 'No';
+
+  @override
+  String get pollAbstain => 'Abstain';
+
+  @override
+  String get pollChooseVoter => 'Choose who is voting above.';
+
+  @override
+  String get pollClosedSeeResults =>
+      'This poll is closed. See the results below.';
+
+  @override
+  String get pollRankHelp => 'Put the options in order, favourite first.';
+
+  @override
+  String get pollRateHelp => 'Rate the options you have an opinion on.';
+
+  @override
+  String get pollMoveDown => 'Move down';
+
+  @override
+  String get pollAnalytics => 'Results & analytics';
+
+  @override
+  String pollVoters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count voters',
+      one: '1 voter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pollTurnout(int count) {
+    return '$count% turnout';
+  }
+
+  @override
+  String pollBordaPoints(int points, String rank) {
+    return '$points pts · avg rank $rank';
+  }
+
+  @override
+  String get pollNoRatings => 'No ratings';
+
+  @override
+  String pollAverageRating(String avg, int count) {
+    return '$avg★ from $count';
+  }
+
+  @override
+  String get pollNoVotesYet => 'No votes yet.';
+
+  @override
+  String pollScaleSummary(String mean, String median, int count) {
+    return 'Average $mean · median $median · $count votes';
+  }
+
+  @override
+  String pollLeading(String option) {
+    return 'Leading: $option';
+  }
+
+  @override
+  String pollTied(String options) {
+    return 'Tied: $options';
+  }
+
+  @override
+  String pollNotVotedYet(String names) {
+    return 'Not voted yet: $names';
+  }
+
+  @override
+  String get pollStatsTitle => 'Poll history & stats';
+
+  @override
+  String get pollStatTotal => 'Polls';
+
+  @override
+  String get pollStatOpen => 'Open';
+
+  @override
+  String get pollStatVotes => 'Votes cast';
+
+  @override
+  String get pollStatTurnout => 'Average turnout';
+
+  @override
+  String get pollParticipation => 'Participation by member';
+
+  @override
+  String pollVotedIn(int count, int total) {
+    return '$count of $total polls';
+  }
+
+  @override
+  String get pollNoMembers => 'No members yet.';
+
+  @override
+  String get pollByType => 'By type';
+
+  @override
+  String pollHistory(int count) {
+    return 'History ($count with votes)';
+  }
+
+  @override
+  String get pollNoPolls => 'No polls yet.';
 }

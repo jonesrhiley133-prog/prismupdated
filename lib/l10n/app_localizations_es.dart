@@ -17821,4 +17821,719 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dictAddedBy => 'Añadido por';
+
+  @override
+  String get slpAnalysisTitle => 'Análisis del sueño';
+
+  @override
+  String get slpAnalysisEntry => 'Entorno, horario y lo que te ayuda a dormir';
+
+  @override
+  String get slpDetailsTitle => 'Detalles de la noche';
+
+  @override
+  String get slpTemperature => 'Temperatura (°C)';
+
+  @override
+  String get slpLatency => 'Minutos para dormirse';
+
+  @override
+  String get slpInvalidNumbers => 'Revisa la temperatura y los minutos.';
+
+  @override
+  String get slpLighting => 'Iluminación';
+
+  @override
+  String get slpWhere => 'Dónde';
+
+  @override
+  String get slpNoise => 'Sonido';
+
+  @override
+  String get slpSharedWith => 'Durmió con';
+
+  @override
+  String get slpComfort => 'Comodidad (1–5)';
+
+  @override
+  String get slpBeforeBed => 'Antes de dormir';
+
+  @override
+  String get slpDreams => 'Sueños';
+
+  @override
+  String get slpWakeFeeling => 'Descanso al despertar (1–5)';
+
+  @override
+  String get slpWokeUpAs => 'Quién despertó';
+
+  @override
+  String get slpNotSure => 'No sé';
+
+  @override
+  String slpInterruptions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count interrupciones',
+      one: '1 interrupción',
+      zero: 'Sin interrupciones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpDark => 'Oscuro';
+
+  @override
+  String get slpDim => 'Tenue';
+
+  @override
+  String get slpNightlight => 'Luz nocturna';
+
+  @override
+  String get slpBright => 'Luminoso';
+
+  @override
+  String get slpScreenOn => 'Pantalla encendida';
+
+  @override
+  String get slpBed => 'Cama propia';
+
+  @override
+  String get slpCouch => 'Sofá';
+
+  @override
+  String get slpGuestBed => 'Otra cama';
+
+  @override
+  String get slpTravel => 'De viaje';
+
+  @override
+  String get slpFloor => 'Suelo';
+
+  @override
+  String get slpSilent => 'Silencio';
+
+  @override
+  String get slpQuiet => 'Tranquilo';
+
+  @override
+  String get slpWhiteNoise => 'Ruido blanco';
+
+  @override
+  String get slpMusic => 'Música';
+
+  @override
+  String get slpNoisy => 'Ruidoso';
+
+  @override
+  String get slpAlone => 'Solo/a';
+
+  @override
+  String get slpPartner => 'Pareja';
+
+  @override
+  String get slpPet => 'Mascota';
+
+  @override
+  String get slpChild => 'Niño/a';
+
+  @override
+  String get slpOthers => 'Otros';
+
+  @override
+  String get slpNoDreams => 'Ninguno';
+
+  @override
+  String get slpNeutralDreams => 'Neutros';
+
+  @override
+  String get slpPleasant => 'Agradables';
+
+  @override
+  String get slpVivid => 'Vívidos';
+
+  @override
+  String get slpNightmare => 'Pesadilla';
+
+  @override
+  String get slpCaffeine => 'Cafeína';
+
+  @override
+  String get slpAlcohol => 'Alcohol';
+
+  @override
+  String get slpScreens => 'Pantallas';
+
+  @override
+  String get slpExercise => 'Ejercicio';
+
+  @override
+  String get slpLateMeal => 'Cena tardía';
+
+  @override
+  String get slpNap => 'Siesta';
+
+  @override
+  String get slpMedication => 'Medicación';
+
+  @override
+  String get slpStress => 'Estrés';
+
+  @override
+  String get slpPain => 'Dolor';
+
+  @override
+  String get slpReading => 'Lectura';
+
+  @override
+  String get slpMeditation => 'Meditación';
+
+  @override
+  String get slpShower => 'Ducha caliente';
+
+  @override
+  String get slpBathroom => 'Baño';
+
+  @override
+  String get slpNoiseWake => 'Ruido';
+
+  @override
+  String get slpTooHotCold => 'Calor o frío';
+
+  @override
+  String get slpSwitch => 'Cambio de frente';
+
+  @override
+  String get slpAnxiety => 'Ansiedad';
+
+  @override
+  String get slpAvgAsleep7 => 'Media dormida, 7 noches';
+
+  @override
+  String get slpAvgQuality => 'Calidad media, 30 noches';
+
+  @override
+  String get slpAvgLatency => 'Tiempo para dormirse';
+
+  @override
+  String get slpDebt7 => 'Deuda de sueño, 7 noches';
+
+  @override
+  String get slpRegularity => 'Regularidad al acostarse';
+
+  @override
+  String slpPlusMinus(int count) {
+    return '± $count min';
+  }
+
+  @override
+  String get slpAvgInterruptions => 'Interrupciones / noche';
+
+  @override
+  String get slpAvgBedtime => 'Hora media de acostarse';
+
+  @override
+  String get slpAvgWake => 'Hora media de despertar';
+
+  @override
+  String get slpSchedule => 'Horario de sueño';
+
+  @override
+  String get slpSetSchedule => 'Definir horario';
+
+  @override
+  String get slpNoSchedule =>
+      'Define una hora objetivo para acostarte y despertar para ver cómo la cumples.';
+
+  @override
+  String slpScheduleSummary(String bed, String wake, String hours) {
+    return 'Cama $bed · arriba $wake · objetivo $hours h';
+  }
+
+  @override
+  String get slpOnTime => 'A tiempo';
+
+  @override
+  String slpLate(int count) {
+    return '$count min tarde';
+  }
+
+  @override
+  String slpEarly(int count) {
+    return '$count min antes';
+  }
+
+  @override
+  String get slpTargetBedtime => 'Hora objetivo de acostarse';
+
+  @override
+  String get slpTargetWake => 'Hora objetivo de despertar';
+
+  @override
+  String get slpTargetHours => 'Horas de sueño objetivo';
+
+  @override
+  String get slpTargetHoursInvalid => 'Entre 3 y 14 horas';
+
+  @override
+  String get slpLast14 => 'Últimas 14 noches';
+
+  @override
+  String get slpNoNights => 'Aún no hay sesiones de sueño terminadas.';
+
+  @override
+  String slpChartLegend(String hours) {
+    return 'Barras: horas dormidas, color según calidad. Línea: objetivo $hours h.';
+  }
+
+  @override
+  String get slpWhatHelps => 'Qué acompaña a un mejor sueño';
+
+  @override
+  String get slpNeedMoreLogs =>
+      'Añade detalles a algunas noches para comparar entornos y hábitos.';
+
+  @override
+  String get slpImpactNote =>
+      'Medias de noches con detalles (★ calidad sobre 5). Son patrones, no prueba de causa.';
+
+  @override
+  String slpNights(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count noches',
+      one: '1 noche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpRecentNights => 'Noches recientes';
+
+  @override
+  String get slpAddDetails => 'Añadir detalles';
+
+  @override
+  String get slpDetailsLogged => 'Detalles ✓';
+
+  @override
+  String slpTempRange(String range) {
+    return 'Habitación $range';
+  }
+
+  @override
+  String slpComfortIs(String level) {
+    return 'Comodidad $level';
+  }
+
+  @override
+  String get cycInsightsTitle => 'Análisis del ciclo';
+
+  @override
+  String get cycPatterns => 'Patrones';
+
+  @override
+  String get cycPhasesAndSymptoms => 'Fases y síntomas';
+
+  @override
+  String get cycPhaseMenstrual => 'Menstrual';
+
+  @override
+  String get cycPhaseFollicular => 'Folicular';
+
+  @override
+  String get cycPhaseOvulation => 'Ovulación';
+
+  @override
+  String get cycPhaseLuteal => 'Lútea';
+
+  @override
+  String get cycNoCurrentCycle => 'Sin ciclo actual';
+
+  @override
+  String cycDayN(int count) {
+    return 'Día $count del ciclo';
+  }
+
+  @override
+  String cycPhaseNow(String phase) {
+    return 'Fase $phase';
+  }
+
+  @override
+  String get cycAvgCycle => 'Ciclo medio';
+
+  @override
+  String get cycAvgPeriod => 'Periodo medio';
+
+  @override
+  String get cycVariability => 'Variación (días)';
+
+  @override
+  String get cycCyclesLogged => 'Ciclos medidos';
+
+  @override
+  String get cycPredictions => 'Predicciones';
+
+  @override
+  String get cycNeedTwoCycles =>
+      'Las predicciones aparecen tras registrar dos ciclos completos.';
+
+  @override
+  String cycPeriodAround(String date) {
+    return 'Periodo hacia el $date';
+  }
+
+  @override
+  String cycFertileWindow(String from, String to, String ovulation) {
+    return 'Ventana fértil $from–$to · ovulación ~$ovulation';
+  }
+
+  @override
+  String get cycPredictionDisclaimer =>
+      'Estimaciones según tus ciclos anteriores; no es consejo médico ni anticonceptivo.';
+
+  @override
+  String get cycInsights => 'Observaciones personales';
+
+  @override
+  String get cycNoInsights =>
+      'Sigue registrando síntomas y señales para ver observaciones.';
+
+  @override
+  String cycInsightSymptom(String symptom, int percent, String phase) {
+    return '$symptom aparece en el $percent% de los días de fase $phase registrados.';
+  }
+
+  @override
+  String cycInsightEnergy(String low, String high) {
+    return 'La energía es más baja en la fase $low y más alta en la $high.';
+  }
+
+  @override
+  String cycInsightMood(
+    String low,
+    String lowMood,
+    String high,
+    String highMood,
+  ) {
+    return 'El ánimo medio es $lowMood en la fase $low frente a $highMood en la $high.';
+  }
+
+  @override
+  String cycInsightRegular(String days) {
+    return 'Tus ciclos son regulares (± $days días).';
+  }
+
+  @override
+  String cycInsightIrregular(String days) {
+    return 'La duración de tu ciclo varía unos ± $days días, así que las predicciones son aproximadas.';
+  }
+
+  @override
+  String get cycNoHistory => 'Aún no hay ciclos completos.';
+
+  @override
+  String get cycCurrent => 'Actual';
+
+  @override
+  String cycHistoryLine(int period, int symptoms) {
+    return 'Periodo $period días · $symptoms días con síntomas';
+  }
+
+  @override
+  String cycDaysRange(int from, int to) {
+    return 'Días $from–$to';
+  }
+
+  @override
+  String cycDaysLogged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días registrados',
+      one: '1 día registrado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cycAvgMood(String value) {
+    return 'ánimo $value';
+  }
+
+  @override
+  String cycAvgEnergy(String value) {
+    return 'energía $value';
+  }
+
+  @override
+  String cycAvgPain(String value) {
+    return 'dolor $value';
+  }
+
+  @override
+  String get cycNoSymptomsInPhase => 'Aún no hay síntomas en esta fase.';
+
+  @override
+  String get cycDefaultPhasesInfo =>
+      'Las fases se estiman con tu ciclo y periodo medios. Personalízalas para usar tus propios nombres y días.';
+
+  @override
+  String get cycCustomPhasesOn =>
+      'Usando tus fases personalizadas. Toca una para editarla.';
+
+  @override
+  String get cycCustomizePhases => 'Personalizar fases';
+
+  @override
+  String get cycAddPhase => 'Añadir fase';
+
+  @override
+  String get cycEditPhase => 'Editar fase';
+
+  @override
+  String get cycResetPhases => 'Usar fases estimadas';
+
+  @override
+  String get cycPhaseName => 'Nombre de la fase';
+
+  @override
+  String get cycFromDay => 'Desde el día';
+
+  @override
+  String get cycToDay => 'Hasta el día';
+
+  @override
+  String get cycPhaseInvalid =>
+      'Los días deben ser 1–60 y «hasta» al menos «desde».';
+
+  @override
+  String get cycCustomSymptoms => 'Tus propios síntomas';
+
+  @override
+  String get cycAddSymptom => 'Añadir síntoma';
+
+  @override
+  String get cycFlowAndSymptoms => 'Flujo y síntomas';
+
+  @override
+  String get cycBodySigns => 'Señales del cuerpo';
+
+  @override
+  String get cycEnergy => 'Energía (1–5)';
+
+  @override
+  String get cycPain => 'Dolor (0–10)';
+
+  @override
+  String get cycLibido => 'Libido (1–5)';
+
+  @override
+  String get cycMucus => 'Flujo cervical';
+
+  @override
+  String get cycMucusDry => 'Seco';
+
+  @override
+  String get cycMucusSticky => 'Pegajoso';
+
+  @override
+  String get cycMucusCreamy => 'Cremoso';
+
+  @override
+  String get cycMucusWatery => 'Acuoso';
+
+  @override
+  String get cycMucusEggwhite => 'Clara de huevo';
+
+  @override
+  String get cycOvulationTest => 'Test de ovulación';
+
+  @override
+  String get cycPregnancyTest => 'Test de embarazo';
+
+  @override
+  String get cycPositive => 'Positivo';
+
+  @override
+  String get cycNegative => 'Negativo';
+
+  @override
+  String get cycBbt => 'Temperatura basal (°C)';
+
+  @override
+  String get cycBbtInvalid => 'Escribe una temperatura entre 30 y 45 °C';
+
+  @override
+  String get cycMedication => 'Medicación';
+
+  @override
+  String get pollType => 'Tipo de encuesta';
+
+  @override
+  String get pollTypeChoice => 'Opción';
+
+  @override
+  String get pollTypeYesNo => 'Sí / No';
+
+  @override
+  String get pollTypeScale => 'Escala';
+
+  @override
+  String get pollTypeRanked => 'Por orden';
+
+  @override
+  String get pollTypeRating => 'Valoración';
+
+  @override
+  String get pollTypeChoiceHelp => 'Elige una (o varias) opciones.';
+
+  @override
+  String get pollTypeYesNoHelp => 'Sí, No o Abstención.';
+
+  @override
+  String get pollTypeScaleHelp =>
+      'Elige un número en una escala; los resultados muestran la media y la distribución.';
+
+  @override
+  String get pollTypeRankedHelp =>
+      'Cada miembro ordena las opciones; los resultados usan puntos (recuento Borda).';
+
+  @override
+  String get pollTypeRatingHelp =>
+      'Cada miembro valora cada opción de 1 a 5 estrellas.';
+
+  @override
+  String get pollScaleFrom => 'Desde';
+
+  @override
+  String get pollScaleTo => 'Hasta';
+
+  @override
+  String get pollCategory => 'Categoría (opcional)';
+
+  @override
+  String get pollCategoryHint => 'p. ej. Comida, Planes, Normas';
+
+  @override
+  String get pollYes => 'Sí';
+
+  @override
+  String get pollNo => 'No';
+
+  @override
+  String get pollAbstain => 'Abstención';
+
+  @override
+  String get pollChooseVoter => 'Elige arriba quién vota.';
+
+  @override
+  String get pollClosedSeeResults =>
+      'Esta encuesta está cerrada. Mira los resultados abajo.';
+
+  @override
+  String get pollRankHelp => 'Ordena las opciones, la favorita primero.';
+
+  @override
+  String get pollRateHelp =>
+      'Valora las opciones sobre las que tengas opinión.';
+
+  @override
+  String get pollMoveDown => 'Bajar';
+
+  @override
+  String get pollAnalytics => 'Resultados y análisis';
+
+  @override
+  String pollVoters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count votantes',
+      one: '1 votante',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pollTurnout(int count) {
+    return '$count% de participación';
+  }
+
+  @override
+  String pollBordaPoints(int points, String rank) {
+    return '$points pts · puesto medio $rank';
+  }
+
+  @override
+  String get pollNoRatings => 'Sin valoraciones';
+
+  @override
+  String pollAverageRating(String avg, int count) {
+    return '$avg★ de $count';
+  }
+
+  @override
+  String get pollNoVotesYet => 'Aún no hay votos.';
+
+  @override
+  String pollScaleSummary(String mean, String median, int count) {
+    return 'Media $mean · mediana $median · $count votos';
+  }
+
+  @override
+  String pollLeading(String option) {
+    return 'Gana: $option';
+  }
+
+  @override
+  String pollTied(String options) {
+    return 'Empate: $options';
+  }
+
+  @override
+  String pollNotVotedYet(String names) {
+    return 'Aún sin votar: $names';
+  }
+
+  @override
+  String get pollStatsTitle => 'Historial y estadísticas';
+
+  @override
+  String get pollStatTotal => 'Encuestas';
+
+  @override
+  String get pollStatOpen => 'Abiertas';
+
+  @override
+  String get pollStatVotes => 'Votos';
+
+  @override
+  String get pollStatTurnout => 'Participación media';
+
+  @override
+  String get pollParticipation => 'Participación por miembro';
+
+  @override
+  String pollVotedIn(int count, int total) {
+    return '$count de $total encuestas';
+  }
+
+  @override
+  String get pollNoMembers => 'Aún no hay miembros.';
+
+  @override
+  String get pollByType => 'Por tipo';
+
+  @override
+  String pollHistory(int count) {
+    return 'Historial ($count con votos)';
+  }
+
+  @override
+  String get pollNoPolls => 'Aún no hay encuestas.';
 }

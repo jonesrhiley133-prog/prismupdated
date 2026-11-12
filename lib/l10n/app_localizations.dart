@@ -27215,6 +27215,1217 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Added by'**
   String get dictAddedBy;
+
+  /// slpAnalysisTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep analysis'**
+  String get slpAnalysisTitle;
+
+  /// slpAnalysisEntry
+  ///
+  /// In en, this message translates to:
+  /// **'Environment, schedule and what helps you sleep'**
+  String get slpAnalysisEntry;
+
+  /// slpDetailsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Night details'**
+  String get slpDetailsTitle;
+
+  /// slpTemperature
+  ///
+  /// In en, this message translates to:
+  /// **'Room temperature (°C)'**
+  String get slpTemperature;
+
+  /// slpLatency
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes to fall asleep'**
+  String get slpLatency;
+
+  /// slpInvalidNumbers
+  ///
+  /// In en, this message translates to:
+  /// **'Check the temperature and minutes.'**
+  String get slpInvalidNumbers;
+
+  /// slpLighting
+  ///
+  /// In en, this message translates to:
+  /// **'Lighting'**
+  String get slpLighting;
+
+  /// slpWhere
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get slpWhere;
+
+  /// slpNoise
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get slpNoise;
+
+  /// slpSharedWith
+  ///
+  /// In en, this message translates to:
+  /// **'Slept with'**
+  String get slpSharedWith;
+
+  /// slpComfort
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort (1–5)'**
+  String get slpComfort;
+
+  /// slpBeforeBed
+  ///
+  /// In en, this message translates to:
+  /// **'Before bed'**
+  String get slpBeforeBed;
+
+  /// slpDreams
+  ///
+  /// In en, this message translates to:
+  /// **'Dreams'**
+  String get slpDreams;
+
+  /// slpWakeFeeling
+  ///
+  /// In en, this message translates to:
+  /// **'How rested on waking (1–5)'**
+  String get slpWakeFeeling;
+
+  /// slpWokeUpAs
+  ///
+  /// In en, this message translates to:
+  /// **'Who woke up'**
+  String get slpWokeUpAs;
+
+  /// slpNotSure
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get slpNotSure;
+
+  /// slpInterruptions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No interruptions} =1{1 interruption} other{{count} interruptions}}'**
+  String slpInterruptions(int count);
+
+  /// slpDark
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get slpDark;
+
+  /// slpDim
+  ///
+  /// In en, this message translates to:
+  /// **'Dim'**
+  String get slpDim;
+
+  /// slpNightlight
+  ///
+  /// In en, this message translates to:
+  /// **'Night light'**
+  String get slpNightlight;
+
+  /// slpBright
+  ///
+  /// In en, this message translates to:
+  /// **'Bright'**
+  String get slpBright;
+
+  /// slpScreenOn
+  ///
+  /// In en, this message translates to:
+  /// **'Screen on'**
+  String get slpScreenOn;
+
+  /// slpBed
+  ///
+  /// In en, this message translates to:
+  /// **'Own bed'**
+  String get slpBed;
+
+  /// slpCouch
+  ///
+  /// In en, this message translates to:
+  /// **'Couch'**
+  String get slpCouch;
+
+  /// slpGuestBed
+  ///
+  /// In en, this message translates to:
+  /// **'Other bed'**
+  String get slpGuestBed;
+
+  /// slpTravel
+  ///
+  /// In en, this message translates to:
+  /// **'Travelling'**
+  String get slpTravel;
+
+  /// slpFloor
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get slpFloor;
+
+  /// slpSilent
+  ///
+  /// In en, this message translates to:
+  /// **'Silent'**
+  String get slpSilent;
+
+  /// slpQuiet
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet'**
+  String get slpQuiet;
+
+  /// slpWhiteNoise
+  ///
+  /// In en, this message translates to:
+  /// **'White noise'**
+  String get slpWhiteNoise;
+
+  /// slpMusic
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get slpMusic;
+
+  /// slpNoisy
+  ///
+  /// In en, this message translates to:
+  /// **'Noisy'**
+  String get slpNoisy;
+
+  /// slpAlone
+  ///
+  /// In en, this message translates to:
+  /// **'Alone'**
+  String get slpAlone;
+
+  /// slpPartner
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get slpPartner;
+
+  /// slpPet
+  ///
+  /// In en, this message translates to:
+  /// **'Pet'**
+  String get slpPet;
+
+  /// slpChild
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get slpChild;
+
+  /// slpOthers
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get slpOthers;
+
+  /// slpNoDreams
+  ///
+  /// In en, this message translates to:
+  /// **'None remembered'**
+  String get slpNoDreams;
+
+  /// slpNeutralDreams
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get slpNeutralDreams;
+
+  /// slpPleasant
+  ///
+  /// In en, this message translates to:
+  /// **'Pleasant'**
+  String get slpPleasant;
+
+  /// slpVivid
+  ///
+  /// In en, this message translates to:
+  /// **'Vivid'**
+  String get slpVivid;
+
+  /// slpNightmare
+  ///
+  /// In en, this message translates to:
+  /// **'Nightmare'**
+  String get slpNightmare;
+
+  /// slpCaffeine
+  ///
+  /// In en, this message translates to:
+  /// **'Caffeine'**
+  String get slpCaffeine;
+
+  /// slpAlcohol
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol'**
+  String get slpAlcohol;
+
+  /// slpScreens
+  ///
+  /// In en, this message translates to:
+  /// **'Screens'**
+  String get slpScreens;
+
+  /// slpExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get slpExercise;
+
+  /// slpLateMeal
+  ///
+  /// In en, this message translates to:
+  /// **'Late meal'**
+  String get slpLateMeal;
+
+  /// slpNap
+  ///
+  /// In en, this message translates to:
+  /// **'Napped'**
+  String get slpNap;
+
+  /// slpMedication
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get slpMedication;
+
+  /// slpStress
+  ///
+  /// In en, this message translates to:
+  /// **'Stress'**
+  String get slpStress;
+
+  /// slpPain
+  ///
+  /// In en, this message translates to:
+  /// **'Pain'**
+  String get slpPain;
+
+  /// slpReading
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get slpReading;
+
+  /// slpMeditation
+  ///
+  /// In en, this message translates to:
+  /// **'Meditation'**
+  String get slpMeditation;
+
+  /// slpShower
+  ///
+  /// In en, this message translates to:
+  /// **'Warm shower'**
+  String get slpShower;
+
+  /// slpBathroom
+  ///
+  /// In en, this message translates to:
+  /// **'Bathroom'**
+  String get slpBathroom;
+
+  /// slpNoiseWake
+  ///
+  /// In en, this message translates to:
+  /// **'Noise'**
+  String get slpNoiseWake;
+
+  /// slpTooHotCold
+  ///
+  /// In en, this message translates to:
+  /// **'Too hot or cold'**
+  String get slpTooHotCold;
+
+  /// slpSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get slpSwitch;
+
+  /// slpAnxiety
+  ///
+  /// In en, this message translates to:
+  /// **'Anxiety'**
+  String get slpAnxiety;
+
+  /// slpAvgAsleep7
+  ///
+  /// In en, this message translates to:
+  /// **'Avg asleep, 7 nights'**
+  String get slpAvgAsleep7;
+
+  /// slpAvgQuality
+  ///
+  /// In en, this message translates to:
+  /// **'Avg quality, 30 nights'**
+  String get slpAvgQuality;
+
+  /// slpAvgLatency
+  ///
+  /// In en, this message translates to:
+  /// **'Time to fall asleep'**
+  String get slpAvgLatency;
+
+  /// slpDebt7
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep debt, 7 nights'**
+  String get slpDebt7;
+
+  /// slpRegularity
+  ///
+  /// In en, this message translates to:
+  /// **'Bedtime regularity'**
+  String get slpRegularity;
+
+  /// slpPlusMinus
+  ///
+  /// In en, this message translates to:
+  /// **'± {count} min'**
+  String slpPlusMinus(int count);
+
+  /// slpAvgInterruptions
+  ///
+  /// In en, this message translates to:
+  /// **'Interruptions / night'**
+  String get slpAvgInterruptions;
+
+  /// slpAvgBedtime
+  ///
+  /// In en, this message translates to:
+  /// **'Average bedtime'**
+  String get slpAvgBedtime;
+
+  /// slpAvgWake
+  ///
+  /// In en, this message translates to:
+  /// **'Average wake time'**
+  String get slpAvgWake;
+
+  /// slpSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep schedule'**
+  String get slpSchedule;
+
+  /// slpSetSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Set schedule'**
+  String get slpSetSchedule;
+
+  /// slpNoSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Set a target bedtime and wake time to see how well you keep to them.'**
+  String get slpNoSchedule;
+
+  /// slpScheduleSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Bed {bed} · up {wake} · {hours} h target'**
+  String slpScheduleSummary(String bed, String wake, String hours);
+
+  /// slpOnTime
+  ///
+  /// In en, this message translates to:
+  /// **'On schedule'**
+  String get slpOnTime;
+
+  /// slpLate
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min late'**
+  String slpLate(int count);
+
+  /// slpEarly
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min early'**
+  String slpEarly(int count);
+
+  /// slpTargetBedtime
+  ///
+  /// In en, this message translates to:
+  /// **'Target bedtime'**
+  String get slpTargetBedtime;
+
+  /// slpTargetWake
+  ///
+  /// In en, this message translates to:
+  /// **'Target wake time'**
+  String get slpTargetWake;
+
+  /// slpTargetHours
+  ///
+  /// In en, this message translates to:
+  /// **'Target hours of sleep'**
+  String get slpTargetHours;
+
+  /// slpTargetHoursInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Between 3 and 14 hours'**
+  String get slpTargetHoursInvalid;
+
+  /// slpLast14
+  ///
+  /// In en, this message translates to:
+  /// **'Last 14 nights'**
+  String get slpLast14;
+
+  /// slpNoNights
+  ///
+  /// In en, this message translates to:
+  /// **'No finished sleep sessions yet.'**
+  String get slpNoNights;
+
+  /// slpChartLegend
+  ///
+  /// In en, this message translates to:
+  /// **'Bars: hours asleep, coloured by quality. Line: {hours} h target.'**
+  String slpChartLegend(String hours);
+
+  /// slpWhatHelps
+  ///
+  /// In en, this message translates to:
+  /// **'What goes with better sleep'**
+  String get slpWhatHelps;
+
+  /// slpNeedMoreLogs
+  ///
+  /// In en, this message translates to:
+  /// **'Add details to a few nights to compare environments and habits.'**
+  String get slpNeedMoreLogs;
+
+  /// slpImpactNote
+  ///
+  /// In en, this message translates to:
+  /// **'Averages over nights with details (★ quality out of 5). Patterns, not proof of cause.'**
+  String get slpImpactNote;
+
+  /// slpNights
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night} other{{count} nights}}'**
+  String slpNights(int count);
+
+  /// slpRecentNights
+  ///
+  /// In en, this message translates to:
+  /// **'Recent nights'**
+  String get slpRecentNights;
+
+  /// slpAddDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get slpAddDetails;
+
+  /// slpDetailsLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Details ✓'**
+  String get slpDetailsLogged;
+
+  /// slpTempRange
+  ///
+  /// In en, this message translates to:
+  /// **'Room {range}'**
+  String slpTempRange(String range);
+
+  /// slpComfortIs
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort {level}'**
+  String slpComfortIs(String level);
+
+  /// cycInsightsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle insights'**
+  String get cycInsightsTitle;
+
+  /// cycPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns'**
+  String get cycPatterns;
+
+  /// cycPhasesAndSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Phases & symptoms'**
+  String get cycPhasesAndSymptoms;
+
+  /// cycPhaseMenstrual
+  ///
+  /// In en, this message translates to:
+  /// **'Menstrual'**
+  String get cycPhaseMenstrual;
+
+  /// cycPhaseFollicular
+  ///
+  /// In en, this message translates to:
+  /// **'Follicular'**
+  String get cycPhaseFollicular;
+
+  /// cycPhaseOvulation
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation'**
+  String get cycPhaseOvulation;
+
+  /// cycPhaseLuteal
+  ///
+  /// In en, this message translates to:
+  /// **'Luteal'**
+  String get cycPhaseLuteal;
+
+  /// cycNoCurrentCycle
+  ///
+  /// In en, this message translates to:
+  /// **'No current cycle'**
+  String get cycNoCurrentCycle;
+
+  /// cycDayN
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day {count}'**
+  String cycDayN(int count);
+
+  /// cycPhaseNow
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} phase'**
+  String cycPhaseNow(String phase);
+
+  /// cycAvgCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Average cycle'**
+  String get cycAvgCycle;
+
+  /// cycAvgPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Average period'**
+  String get cycAvgPeriod;
+
+  /// cycVariability
+  ///
+  /// In en, this message translates to:
+  /// **'Variation (days)'**
+  String get cycVariability;
+
+  /// cycCyclesLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Cycles measured'**
+  String get cycCyclesLogged;
+
+  /// cycPredictions
+  ///
+  /// In en, this message translates to:
+  /// **'Predictions'**
+  String get cycPredictions;
+
+  /// cycNeedTwoCycles
+  ///
+  /// In en, this message translates to:
+  /// **'Predictions appear after two full cycles are logged.'**
+  String get cycNeedTwoCycles;
+
+  /// cycPeriodAround
+  ///
+  /// In en, this message translates to:
+  /// **'Period around {date}'**
+  String cycPeriodAround(String date);
+
+  /// cycFertileWindow
+  ///
+  /// In en, this message translates to:
+  /// **'Fertile window {from}–{to} · ovulation ~{ovulation}'**
+  String cycFertileWindow(String from, String to, String ovulation);
+
+  /// cycPredictionDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates from your past cycles, not medical advice or contraception.'**
+  String get cycPredictionDisclaimer;
+
+  /// cycInsights
+  ///
+  /// In en, this message translates to:
+  /// **'Personal insights'**
+  String get cycInsights;
+
+  /// cycNoInsights
+  ///
+  /// In en, this message translates to:
+  /// **'Keep logging symptoms and body signs to see insights.'**
+  String get cycNoInsights;
+
+  /// cycInsightSymptom
+  ///
+  /// In en, this message translates to:
+  /// **'{symptom} shows up on {percent}% of logged {phase} days.'**
+  String cycInsightSymptom(String symptom, int percent, String phase);
+
+  /// cycInsightEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'Energy is lowest in the {low} phase and highest in the {high} phase.'**
+  String cycInsightEnergy(String low, String high);
+
+  /// cycInsightMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood averages {lowMood} in the {low} phase vs {highMood} in the {high} phase.'**
+  String cycInsightMood(
+    String low,
+    String lowMood,
+    String high,
+    String highMood,
+  );
+
+  /// cycInsightRegular
+  ///
+  /// In en, this message translates to:
+  /// **'Your cycles are regular (± {days} days).'**
+  String cycInsightRegular(String days);
+
+  /// cycInsightIrregular
+  ///
+  /// In en, this message translates to:
+  /// **'Your cycle length varies by about ± {days} days, so predictions are rougher.'**
+  String cycInsightIrregular(String days);
+
+  /// cycNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No complete cycles yet.'**
+  String get cycNoHistory;
+
+  /// cycCurrent
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get cycCurrent;
+
+  /// cycHistoryLine
+  ///
+  /// In en, this message translates to:
+  /// **'Period {period} days · {symptoms} days with symptoms'**
+  String cycHistoryLine(int period, int symptoms);
+
+  /// cycDaysRange
+  ///
+  /// In en, this message translates to:
+  /// **'Days {from}–{to}'**
+  String cycDaysRange(int from, int to);
+
+  /// cycDaysLogged
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day logged} other{{count} days logged}}'**
+  String cycDaysLogged(int count);
+
+  /// cycAvgMood
+  ///
+  /// In en, this message translates to:
+  /// **'mood {value}'**
+  String cycAvgMood(String value);
+
+  /// cycAvgEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'energy {value}'**
+  String cycAvgEnergy(String value);
+
+  /// cycAvgPain
+  ///
+  /// In en, this message translates to:
+  /// **'pain {value}'**
+  String cycAvgPain(String value);
+
+  /// cycNoSymptomsInPhase
+  ///
+  /// In en, this message translates to:
+  /// **'No symptoms logged in this phase yet.'**
+  String get cycNoSymptomsInPhase;
+
+  /// cycDefaultPhasesInfo
+  ///
+  /// In en, this message translates to:
+  /// **'Phases are estimated from your average cycle and period length. Customize them to use your own names and day ranges.'**
+  String get cycDefaultPhasesInfo;
+
+  /// cycCustomPhasesOn
+  ///
+  /// In en, this message translates to:
+  /// **'Using your custom phases. Tap one to edit.'**
+  String get cycCustomPhasesOn;
+
+  /// cycCustomizePhases
+  ///
+  /// In en, this message translates to:
+  /// **'Customize phases'**
+  String get cycCustomizePhases;
+
+  /// cycAddPhase
+  ///
+  /// In en, this message translates to:
+  /// **'Add phase'**
+  String get cycAddPhase;
+
+  /// cycEditPhase
+  ///
+  /// In en, this message translates to:
+  /// **'Edit phase'**
+  String get cycEditPhase;
+
+  /// cycResetPhases
+  ///
+  /// In en, this message translates to:
+  /// **'Use estimated phases'**
+  String get cycResetPhases;
+
+  /// cycPhaseName
+  ///
+  /// In en, this message translates to:
+  /// **'Phase name'**
+  String get cycPhaseName;
+
+  /// cycFromDay
+  ///
+  /// In en, this message translates to:
+  /// **'From day'**
+  String get cycFromDay;
+
+  /// cycToDay
+  ///
+  /// In en, this message translates to:
+  /// **'To day'**
+  String get cycToDay;
+
+  /// cycPhaseInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Days must be 1–60 and \"to\" at least \"from\".'**
+  String get cycPhaseInvalid;
+
+  /// cycCustomSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Your own symptoms'**
+  String get cycCustomSymptoms;
+
+  /// cycAddSymptom
+  ///
+  /// In en, this message translates to:
+  /// **'Add symptom'**
+  String get cycAddSymptom;
+
+  /// cycFlowAndSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Flow & symptoms'**
+  String get cycFlowAndSymptoms;
+
+  /// cycBodySigns
+  ///
+  /// In en, this message translates to:
+  /// **'Body signs'**
+  String get cycBodySigns;
+
+  /// cycEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'Energy (1–5)'**
+  String get cycEnergy;
+
+  /// cycPain
+  ///
+  /// In en, this message translates to:
+  /// **'Pain (0–10)'**
+  String get cycPain;
+
+  /// cycLibido
+  ///
+  /// In en, this message translates to:
+  /// **'Libido (1–5)'**
+  String get cycLibido;
+
+  /// cycMucus
+  ///
+  /// In en, this message translates to:
+  /// **'Cervical fluid'**
+  String get cycMucus;
+
+  /// cycMucusDry
+  ///
+  /// In en, this message translates to:
+  /// **'Dry'**
+  String get cycMucusDry;
+
+  /// cycMucusSticky
+  ///
+  /// In en, this message translates to:
+  /// **'Sticky'**
+  String get cycMucusSticky;
+
+  /// cycMucusCreamy
+  ///
+  /// In en, this message translates to:
+  /// **'Creamy'**
+  String get cycMucusCreamy;
+
+  /// cycMucusWatery
+  ///
+  /// In en, this message translates to:
+  /// **'Watery'**
+  String get cycMucusWatery;
+
+  /// cycMucusEggwhite
+  ///
+  /// In en, this message translates to:
+  /// **'Egg white'**
+  String get cycMucusEggwhite;
+
+  /// cycOvulationTest
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation test'**
+  String get cycOvulationTest;
+
+  /// cycPregnancyTest
+  ///
+  /// In en, this message translates to:
+  /// **'Pregnancy test'**
+  String get cycPregnancyTest;
+
+  /// cycPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get cycPositive;
+
+  /// cycNegative
+  ///
+  /// In en, this message translates to:
+  /// **'Negative'**
+  String get cycNegative;
+
+  /// cycBbt
+  ///
+  /// In en, this message translates to:
+  /// **'Basal temperature (°C)'**
+  String get cycBbt;
+
+  /// cycBbtInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a temperature between 30 and 45 °C'**
+  String get cycBbtInvalid;
+
+  /// cycMedication
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get cycMedication;
+
+  /// pollType
+  ///
+  /// In en, this message translates to:
+  /// **'Poll type'**
+  String get pollType;
+
+  /// pollTypeChoice
+  ///
+  /// In en, this message translates to:
+  /// **'Choice'**
+  String get pollTypeChoice;
+
+  /// pollTypeYesNo
+  ///
+  /// In en, this message translates to:
+  /// **'Yes / No'**
+  String get pollTypeYesNo;
+
+  /// pollTypeScale
+  ///
+  /// In en, this message translates to:
+  /// **'Scale'**
+  String get pollTypeScale;
+
+  /// pollTypeRanked
+  ///
+  /// In en, this message translates to:
+  /// **'Ranked'**
+  String get pollTypeRanked;
+
+  /// pollTypeRating
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get pollTypeRating;
+
+  /// pollTypeChoiceHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one (or several) options.'**
+  String get pollTypeChoiceHelp;
+
+  /// pollTypeYesNoHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, No or Abstain.'**
+  String get pollTypeYesNoHelp;
+
+  /// pollTypeScaleHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a number on a scale; results show the average and spread.'**
+  String get pollTypeScaleHelp;
+
+  /// pollTypeRankedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Each member orders the options; results use points (Borda count).'**
+  String get pollTypeRankedHelp;
+
+  /// pollTypeRatingHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Each member rates every option from 1 to 5 stars.'**
+  String get pollTypeRatingHelp;
+
+  /// pollScaleFrom
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get pollScaleFrom;
+
+  /// pollScaleTo
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get pollScaleTo;
+
+  /// pollCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category (optional)'**
+  String get pollCategory;
+
+  /// pollCategoryHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Food, Plans, Rules'**
+  String get pollCategoryHint;
+
+  /// pollYes
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get pollYes;
+
+  /// pollNo
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get pollNo;
+
+  /// pollAbstain
+  ///
+  /// In en, this message translates to:
+  /// **'Abstain'**
+  String get pollAbstain;
+
+  /// pollChooseVoter
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who is voting above.'**
+  String get pollChooseVoter;
+
+  /// pollClosedSeeResults
+  ///
+  /// In en, this message translates to:
+  /// **'This poll is closed. See the results below.'**
+  String get pollClosedSeeResults;
+
+  /// pollRankHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Put the options in order, favourite first.'**
+  String get pollRankHelp;
+
+  /// pollRateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the options you have an opinion on.'**
+  String get pollRateHelp;
+
+  /// pollMoveDown
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get pollMoveDown;
+
+  /// pollAnalytics
+  ///
+  /// In en, this message translates to:
+  /// **'Results & analytics'**
+  String get pollAnalytics;
+
+  /// pollVoters
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 voter} other{{count} voters}}'**
+  String pollVoters(int count);
+
+  /// pollTurnout
+  ///
+  /// In en, this message translates to:
+  /// **'{count}% turnout'**
+  String pollTurnout(int count);
+
+  /// pollBordaPoints
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts · avg rank {rank}'**
+  String pollBordaPoints(int points, String rank);
+
+  /// pollNoRatings
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings'**
+  String get pollNoRatings;
+
+  /// pollAverageRating
+  ///
+  /// In en, this message translates to:
+  /// **'{avg}★ from {count}'**
+  String pollAverageRating(String avg, int count);
+
+  /// pollNoVotesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No votes yet.'**
+  String get pollNoVotesYet;
+
+  /// pollScaleSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Average {mean} · median {median} · {count} votes'**
+  String pollScaleSummary(String mean, String median, int count);
+
+  /// pollLeading
+  ///
+  /// In en, this message translates to:
+  /// **'Leading: {option}'**
+  String pollLeading(String option);
+
+  /// pollTied
+  ///
+  /// In en, this message translates to:
+  /// **'Tied: {options}'**
+  String pollTied(String options);
+
+  /// pollNotVotedYet
+  ///
+  /// In en, this message translates to:
+  /// **'Not voted yet: {names}'**
+  String pollNotVotedYet(String names);
+
+  /// pollStatsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Poll history & stats'**
+  String get pollStatsTitle;
+
+  /// pollStatTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Polls'**
+  String get pollStatTotal;
+
+  /// pollStatOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pollStatOpen;
+
+  /// pollStatVotes
+  ///
+  /// In en, this message translates to:
+  /// **'Votes cast'**
+  String get pollStatVotes;
+
+  /// pollStatTurnout
+  ///
+  /// In en, this message translates to:
+  /// **'Average turnout'**
+  String get pollStatTurnout;
+
+  /// pollParticipation
+  ///
+  /// In en, this message translates to:
+  /// **'Participation by member'**
+  String get pollParticipation;
+
+  /// pollVotedIn
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} polls'**
+  String pollVotedIn(int count, int total);
+
+  /// pollNoMembers
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet.'**
+  String get pollNoMembers;
+
+  /// pollByType
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get pollByType;
+
+  /// pollHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count} with votes)'**
+  String pollHistory(int count);
+
+  /// pollNoPolls
+  ///
+  /// In en, this message translates to:
+  /// **'No polls yet.'**
+  String get pollNoPolls;
 }
 
 class _AppLocalizationsDelegate

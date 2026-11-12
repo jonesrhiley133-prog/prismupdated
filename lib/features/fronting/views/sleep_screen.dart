@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
 import 'package:prism_plurality/features/fronting/views/session_detail_screen.dart';
@@ -140,6 +141,39 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
 
             SliverToBoxAdapter(
               child: SleepFrontingInfoBanner(onOpenSettings: _openSettings),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: PrismSurface(
+                  onTap: () => context.push(AppRoutePaths.sleepLog),
+                  child: Row(
+                    children: [
+                      Icon(
+                        AppIcons.patterns,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.slpAnalysisTitle,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            Text(
+                              l10n.slpAnalysisEntry,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(AppIcons.chevronRight, size: 18),
+                    ],
+                  ),
+                ),
+              ),
             ),
             if (showRecoveryBanner)
               SliverToBoxAdapter(

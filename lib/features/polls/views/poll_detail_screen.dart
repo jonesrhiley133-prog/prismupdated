@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/polls/advanced/poll_advanced_widgets.dart';
+import 'package:prism_plurality/features/polls/advanced/poll_advanced.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -125,6 +127,9 @@ class _PollDetailBodyState extends ConsumerState<_PollDetailBody> {
     _otherTextController.dispose();
     super.dispose();
   }
+
+  String get _pollType =>
+      pollTypeOf(ref.watch(pollMetaProvider(widget.poll.id)));
 
   bool get _isClosed {
     final now = DateTime.now();
@@ -542,42 +547,51 @@ class _PollDetailBodyState extends ConsumerState<_PollDetailBody> {
             ),
             const SizedBox(height: 8),
 
-            ...widget.options.map((option) {
-              return _OptionTile(
-                option: option,
-                totalVotes: _totalVotes,
-                isClosed: _isClosed,
-                showResults: _shouldShowResults,
-                isAnonymous: widget.poll.isAnonymous,
-                isMultiVote: widget.poll.allowsMultipleVotes,
-                isSelected: widget.poll.allowsMultipleVotes
-                    ? _selectedOptionIds.contains(option.id)
-                    : _selectedOptionId == option.id,
-                otherTextController: option.isOtherOption
-                    ? _otherTextController
-                    : null,
-                onSelected: _isClosed
-                    ? null
-                    : () {
-                        setState(() {
-                          if (widget.poll.allowsMultipleVotes) {
-                            if (_selectedOptionIds.contains(option.id)) {
-                              _selectedOptionIds.remove(option.id);
+            if (PollType.perOption(_pollType))
+              PerOptionVoting(
+                poll: widget.poll,
+                options: widget.options,
+                type: _pollType,
+                closed: _isClosed,
+              ),
+            if (!PollType.perOption(_pollType))
+              ...widget.options.map((option) {
+                return _OptionTile(
+                  option: option,
+                  totalVotes: _totalVotes,
+                  isClosed: _isClosed,
+                  showResults: _shouldShowResults,
+                  isAnonymous: widget.poll.isAnonymous,
+                  isMultiVote: widget.poll.allowsMultipleVotes,
+                  isSelected: widget.poll.allowsMultipleVotes
+                      ? _selectedOptionIds.contains(option.id)
+                      : _selectedOptionId == option.id,
+                  otherTextController: option.isOtherOption
+                      ? _otherTextController
+                      : null,
+                  onSelected: _isClosed
+                      ? null
+                      : () {
+                          setState(() {
+                            if (widget.poll.allowsMultipleVotes) {
+                              if (_selectedOptionIds.contains(option.id)) {
+                                _selectedOptionIds.remove(option.id);
+                              } else {
+                                _selectedOptionIds.add(option.id);
+                              }
                             } else {
-                              _selectedOptionIds.add(option.id);
+                              _selectedOptionId = _selectedOptionId == option.id
+                                  ? null
+                                  : option.id;
                             }
-                          } else {
-                            _selectedOptionId = _selectedOptionId == option.id
-                                ? null
-                                : option.id;
-                          }
-                        });
-                      },
-              );
-            }),
+                          });
+                        },
+                );
+              }),
 
             // Vote button
-            if (!_isClosed &&
+            if (!PollType.perOption(_pollType) &&
+                !_isClosed &&
                 (!_hasCurrentMemberVoted || hasPendingVoteChanges)) ...[
               const SizedBox(height: 16),
               PrismButton(
@@ -589,6 +603,16 @@ class _PollDetailBodyState extends ConsumerState<_PollDetailBody> {
               ),
             ],
 
+            if (_shouldShowResults ||
+                _isClosed ||
+                PollType.perOption(_pollType)) ...[
+              const SizedBox(height: 24),
+              PollAnalyticsCard(
+                poll: widget.poll,
+                options: widget.options,
+                type: _pollType,
+              ),
+            ],
             const SizedBox(height: 32),
           ],
         ),

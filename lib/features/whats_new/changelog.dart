@@ -32,6 +32,47 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.18.0',
+    date: DateTime(2026, 11, 12),
+    features: const [
+      LocalizedText(
+        'Sleep analysis: log room temperature, lighting, noise, comfort, '
+            'interruptions, habits, dreams and who woke up; set a sleep '
+            'schedule; see sleep debt, regularity and what goes with better '
+            'sleep.',
+        'Análisis del sueño: registra temperatura, luz, ruido, comodidad, '
+            'interrupciones, hábitos, sueños y quién despertó; define un '
+            'horario; ve la deuda de sueño, la regularidad y qué acompaña a '
+            'un mejor descanso.',
+      ),
+      LocalizedText(
+        'Cycle insights: customizable phases, your own symptoms, body signs '
+            '(energy, pain, basal temperature, tests), cycle history, '
+            'fertile-window estimates and personal patterns.',
+        'Análisis del ciclo: fases personalizables, síntomas propios, señales '
+            'del cuerpo (energía, dolor, temperatura basal, tests), historial, '
+            'ventana fértil estimada y patrones personales.',
+      ),
+      LocalizedText(
+        'Polls: yes/no, numeric scale, ranked-choice and rating polls, '
+            'categories, results analytics with turnout, and poll history '
+            'with participation per member.',
+        'Encuestas: sí/no, escala numérica, por orden y valoración, '
+            'categorías, análisis de resultados con participación e historial '
+            'con participación por miembro.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Journal entries, workouts, transactions, classes and study sessions '
+            'are attributed to the current fronter and can be filtered by '
+            'member.',
+        'Entradas, ejercicios, movimientos, clases y sesiones de estudio se '
+            'atribuyen a quien está al frente y se pueden filtrar por miembro.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.17.0',
     date: DateTime(2026, 11, 12),
     features: const [

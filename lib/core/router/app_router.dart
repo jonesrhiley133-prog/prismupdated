@@ -14,6 +14,9 @@ import '../../features/fronting/views/period_detail_args.dart';
 import '../../features/fronting/views/period_detail_screen.dart';
 import '../../features/fronting/views/session_detail_screen.dart';
 import '../../features/fronting/views/sleep_screen.dart';
+import '../../features/sleep_log/views/sleep_log_screen.dart';
+import '../../features/cycle/views/cycle_insights_screen.dart';
+import '../../features/polls/advanced/poll_stats_screen.dart';
 import '../../features/fronting/views/timeline_screen.dart';
 import '../../features/members/views/members_screen.dart';
 import '../../features/members/navigation/member_navigation_branch.dart';
@@ -383,6 +386,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.systemTimeline,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.pollStats,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PollStatsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.cycleInsights,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CycleInsightsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.sleepLog,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SleepLogScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.patterns,
