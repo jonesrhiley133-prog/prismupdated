@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
+import 'package:prism_plurality/data/mappers/json_list_parsing.dart';
 import 'package:prism_plurality/domain/models/reminder.dart' as domain;
 
 class ReminderMapper {
@@ -30,6 +31,7 @@ class ReminderMapper {
       weeklyDays: _parseWeeklyDays(row.weeklyDays),
       intervalDays: row.intervalDays,
       timeOfDay: row.timeOfDay,
+      additionalTimes: _parseAdditionalTimes(row.additionalTimes),
       delayHours: row.delayHours,
       targetMemberId: row.targetMemberId,
       isActive: row.isActive,
@@ -50,6 +52,7 @@ class ReminderMapper {
           : const Value(null),
       intervalDays: Value(model.intervalDays),
       timeOfDay: Value(model.timeOfDay),
+      additionalTimes: Value(encodeAdditionalTimes(model.additionalTimes)),
       delayHours: Value(model.delayHours),
       targetMemberId: Value(model.targetMemberId),
       isActive: Value(model.isActive),
@@ -81,4 +84,20 @@ List<int>? _parseWeeklyDays(String? raw) {
   } catch (_) {
     return null;
   }
+}
+
+/// Canonical storage/sync encoding for `reminders.additional_times`: valid
+/// "HH:mm" values, de-duplicated and sorted, or null when there are none.
+String? encodeAdditionalTimes(List<String>? times) {
+  if (times == null) return null;
+  return encodeJsonSetOrNull(
+    times.map(domain.normalizeReminderTime).whereType<String>(),
+  );
+}
+
+List<String>? _parseAdditionalTimes(String? raw) {
+  final parsed = parseJsonStringList(
+    raw,
+  ).map(domain.normalizeReminderTime).whereType<String>().toList();
+  return parsed.isEmpty ? null : parsed;
 }

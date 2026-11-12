@@ -131,6 +131,8 @@ Map<String, Future<List<dynamic>> Function()> bootstrapTableQueries(
     'front_session_comments': () => db.select(db.frontSessionComments).get(),
     'conversation_categories': () => db.select(db.conversationCategories).get(),
     'reminders': () => db.select(db.reminders).get(),
+    'mood_entries': () => db.select(db.moodEntries).get(),
+    'calendar_events': () => db.select(db.calendarEvents).get(),
     'friends': () => db.select(db.friends).get(),
     'media_attachments': () => db.select(db.mediaAttachments).get(),
     'member_board_posts': () => db.select(db.memberBoardPosts).get(),

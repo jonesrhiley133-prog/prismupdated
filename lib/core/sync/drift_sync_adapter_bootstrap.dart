@@ -104,6 +104,14 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       () => db.select(db.conversationCategories).get(),
     ),
     'reminders': build('reminders', () => db.select(db.reminders).get()),
+    'mood_entries': build(
+      'mood_entries',
+      () => db.select(db.moodEntries).get(),
+    ),
+    'calendar_events': build(
+      'calendar_events',
+      () => db.select(db.calendarEvents).get(),
+    ),
     'member_groups': build(
       'member_groups',
       () => db.select(db.memberGroups).get(),

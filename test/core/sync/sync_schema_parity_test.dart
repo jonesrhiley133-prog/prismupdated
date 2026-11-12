@@ -351,6 +351,16 @@ class _RepoFieldSource {
 
 const _repositoryFieldSources = <_RepoFieldSource>[
   _RepoFieldSource(
+    tableName: 'mood_entries',
+    file: 'lib/data/mappers/mood_entry_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
+    tableName: 'calendar_events',
+    file: 'lib/data/mappers/calendar_event_mapper.dart',
+    helperName: 'syncFields',
+  ),
+  _RepoFieldSource(
     tableName: 'members',
     file: 'lib/data/repositories/drift_member_repository.dart',
     helperName: '_memberFields',
@@ -809,6 +819,47 @@ Future<void> _seedDummyRows(AppDatabase db) async {
       );
 
   await db
+      .into(db.moodEntries)
+      .insert(
+        MoodEntriesCompanion.insert(
+          id: 'mood1',
+          memberId: const Value('m1'),
+          emotions: const Value('["calm"]'),
+          energy: const Value(3),
+          stress: const Value(2),
+          sleepQuality: const Value(4),
+          bodySensations: const Value('["chest"]'),
+          note: const Value('note'),
+          recordedAt: now,
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+
+  await db
+      .into(db.calendarEvents)
+      .insert(
+        CalendarEventsCompanion.insert(
+          id: 'ev1',
+          title: 'event',
+          description: const Value('desc'),
+          location: const Value('home'),
+          startAt: now,
+          endAt: now.add(const Duration(hours: 1)),
+          colorHex: const Value('#336699'),
+          category: const Value('Appointment'),
+          recurrenceWeekdays: const Value('[1,3]'),
+          recurrenceUntil: Value(now.add(const Duration(days: 30))),
+          recurrenceCount: const Value(5),
+          recurrenceExceptions: const Value('["2026-01-08"]'),
+          alertMinutes: const Value('[15]'),
+          memberIds: const Value('["m1"]'),
+          createdAt: now,
+          modifiedAt: now,
+        ),
+      );
+
+  await db
       .into(db.memberGroups)
       .insert(
         MemberGroupsCompanion.insert(id: 'g1', name: 'group', createdAt: now),
@@ -940,6 +991,10 @@ Future<dynamic> _readDummyRow(AppDatabase db, String tableName) async {
       return (db.select(db.conversationCategories)..limit(1)).getSingle();
     case 'reminders':
       return (db.select(db.reminders)..limit(1)).getSingle();
+    case 'mood_entries':
+      return (db.select(db.moodEntries)..limit(1)).getSingle();
+    case 'calendar_events':
+      return (db.select(db.calendarEvents)..limit(1)).getSingle();
     case 'member_groups':
       return (db.select(db.memberGroups)..limit(1)).getSingle();
     case 'member_group_entries':

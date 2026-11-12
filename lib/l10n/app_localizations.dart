@@ -21391,6 +21391,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{category, select, members{Members} groups{Groups} memberships{Group memberships} fields{Custom fields} fieldValues{Field values} notes{Notes} fronts{Front periods} frontComments{Front comments} conversations{Conversations} messages{Messages} boardPosts{Board posts} polls{Polls} pollOptions{Poll options} habits{Habits} habitCompletions{Habit completions} reminders{Reminders} friends{Friends} conversationCategories{Conversation categories} sleep{Sleep sessions} frontEvents{Front events} taxonomyTerms{Tags and terms} taxonomyAssignments{Tag assignments} reactions{Reactions} relationshipTypes{Relationship types} relationships{Relationships} sharing{Sharing data} safety{Safety data} proxy{Proxy data} profiles{System profiles} preferences{Prism preferences} extraData{Other app data} other{Other data}}'**
   String pluralPortCategory(String category);
+
+  /// remindersTimesPerDayLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Times'**
+  String get remindersTimesPerDayLabel;
+
+  /// remindersTimesSpecific
+  ///
+  /// In en, this message translates to:
+  /// **'Specific times'**
+  String get remindersTimesSpecific;
+
+  /// remindersTimesEveryFewHours
+  ///
+  /// In en, this message translates to:
+  /// **'Every few hours'**
+  String get remindersTimesEveryFewHours;
+
+  /// remindersTimeNumberLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Time {number}'**
+  String remindersTimeNumberLabel(int number);
+
+  /// remindersRemoveTime
+  ///
+  /// In en, this message translates to:
+  /// **'Remove time'**
+  String get remindersRemoveTime;
+
+  /// remindersAddTime
+  ///
+  /// In en, this message translates to:
+  /// **'Add time'**
+  String get remindersAddTime;
+
+  /// remindersMaxTimesHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} times per day.'**
+  String remindersMaxTimesHelper(int count);
+
+  /// remindersEveryMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count} minutes'**
+  String remindersEveryMinutes(int count);
+
+  /// remindersEveryHours
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String remindersEveryHours(int count);
+
+  /// remindersFromLabel
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get remindersFromLabel;
+
+  /// remindersUntilLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Until'**
+  String get remindersUntilLabel;
+
+  /// remindersGeneratedTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Fires at {times}'**
+  String remindersGeneratedTimes(String times);
+
+  /// remindersSubtitleTimesPerDay
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× a day'**
+  String remindersSubtitleTimesPerDay(int count);
+
+  /// dataManagementPreviewMoodEntries
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-ins'**
+  String get dataManagementPreviewMoodEntries;
+
+  /// dataManagementPreviewCalendarEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar events'**
+  String get dataManagementPreviewCalendarEvents;
 }
 
 class _AppLocalizationsDelegate

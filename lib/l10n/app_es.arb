@@ -5295,5 +5295,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "remindersTimesPerDayLabel": "Horas",
+  "remindersTimesSpecific": "Horas concretas",
+  "remindersTimesEveryFewHours": "Cada pocas horas",
+  "remindersTimeNumberLabel": "Hora {number}",
+  "remindersRemoveTime": "Quitar hora",
+  "remindersAddTime": "Añadir hora",
+  "remindersMaxTimesHelper": "Hasta {count} veces al día.",
+  "remindersEveryMinutes": "{count} minutos",
+  "remindersEveryHours": "{count, plural, =1{1 hora} other{{count} horas}}",
+  "remindersFromLabel": "Desde",
+  "remindersUntilLabel": "Hasta",
+  "remindersGeneratedTimes": "Suena a las {times}",
+  "remindersSubtitleTimesPerDay": "{count} veces al día",
+  "dataManagementPreviewMoodEntries": "Registros de ánimo",
+  "dataManagementPreviewCalendarEvents": "Eventos del calendario"
 }

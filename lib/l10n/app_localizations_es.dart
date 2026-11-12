@@ -14366,4 +14366,67 @@ class AppLocalizationsEs extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get remindersTimesPerDayLabel => 'Horas';
+
+  @override
+  String get remindersTimesSpecific => 'Horas concretas';
+
+  @override
+  String get remindersTimesEveryFewHours => 'Cada pocas horas';
+
+  @override
+  String remindersTimeNumberLabel(int number) {
+    return 'Hora $number';
+  }
+
+  @override
+  String get remindersRemoveTime => 'Quitar hora';
+
+  @override
+  String get remindersAddTime => 'Añadir hora';
+
+  @override
+  String remindersMaxTimesHelper(int count) {
+    return 'Hasta $count veces al día.';
+  }
+
+  @override
+  String remindersEveryMinutes(int count) {
+    return '$count minutos';
+  }
+
+  @override
+  String remindersEveryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horas',
+      one: '1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersFromLabel => 'Desde';
+
+  @override
+  String get remindersUntilLabel => 'Hasta';
+
+  @override
+  String remindersGeneratedTimes(String times) {
+    return 'Suena a las $times';
+  }
+
+  @override
+  String remindersSubtitleTimesPerDay(int count) {
+    return '$count veces al día';
+  }
+
+  @override
+  String get dataManagementPreviewMoodEntries => 'Registros de ánimo';
+
+  @override
+  String get dataManagementPreviewCalendarEvents => 'Eventos del calendario';
 }

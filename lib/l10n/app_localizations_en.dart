@@ -14155,4 +14155,67 @@ class AppLocalizationsEn extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get remindersTimesPerDayLabel => 'Times';
+
+  @override
+  String get remindersTimesSpecific => 'Specific times';
+
+  @override
+  String get remindersTimesEveryFewHours => 'Every few hours';
+
+  @override
+  String remindersTimeNumberLabel(int number) {
+    return 'Time $number';
+  }
+
+  @override
+  String get remindersRemoveTime => 'Remove time';
+
+  @override
+  String get remindersAddTime => 'Add time';
+
+  @override
+  String remindersMaxTimesHelper(int count) {
+    return 'Up to $count times per day.';
+  }
+
+  @override
+  String remindersEveryMinutes(int count) {
+    return '$count minutes';
+  }
+
+  @override
+  String remindersEveryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersFromLabel => 'From';
+
+  @override
+  String get remindersUntilLabel => 'Until';
+
+  @override
+  String remindersGeneratedTimes(String times) {
+    return 'Fires at $times';
+  }
+
+  @override
+  String remindersSubtitleTimesPerDay(int count) {
+    return '$count× a day';
+  }
+
+  @override
+  String get dataManagementPreviewMoodEntries => 'Mood check-ins';
+
+  @override
+  String get dataManagementPreviewCalendarEvents => 'Calendar events';
 }

@@ -47,6 +47,10 @@ import 'package:prism_plurality/domain/repositories/front_session_comments_repos
 import 'package:prism_plurality/domain/repositories/conversation_categories_repository.dart';
 import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
+import 'package:prism_plurality/domain/models/calendar_event.dart';
+import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
 import 'package:prism_plurality/features/fronting/services/collapse_open_duplicate_sessions.dart';
@@ -73,6 +77,8 @@ class ImportPreview {
     this.frontSessionComments = 0,
     this.conversationCategories = 0,
     this.reminders = 0,
+    this.moodEntries = 0,
+    this.calendarEvents = 0,
     this.friends = 0,
     this.mediaAttachments = 0,
     this.memberBoardPosts = 0,
@@ -99,6 +105,8 @@ class ImportPreview {
   final int frontSessionComments;
   final int conversationCategories;
   final int reminders;
+  final int moodEntries;
+  final int calendarEvents;
   final int friends;
   final int mediaAttachments;
   final int memberBoardPosts;
@@ -125,6 +133,8 @@ class ImportPreview {
       frontSessionComments +
       conversationCategories +
       reminders +
+      moodEntries +
+      calendarEvents +
       friends +
       mediaAttachments +
       memberBoardPosts +
@@ -152,6 +162,8 @@ class ImportResult {
     this.frontSessionCommentsCreated = 0,
     this.conversationCategoriesCreated = 0,
     this.remindersCreated = 0,
+    this.moodEntriesCreated = 0,
+    this.calendarEventsCreated = 0,
     this.friendsCreated = 0,
     this.mediaAttachmentsCreated = 0,
     this.memberBoardPostsCreated = 0,
@@ -182,6 +194,8 @@ class ImportResult {
   final int frontSessionCommentsCreated;
   final int conversationCategoriesCreated;
   final int remindersCreated;
+  final int moodEntriesCreated;
+  final int calendarEventsCreated;
   final int friendsCreated;
   final int mediaAttachmentsCreated;
   final int memberBoardPostsCreated;
@@ -236,6 +250,8 @@ class ImportResult {
       frontSessionCommentsCreated +
       conversationCategoriesCreated +
       remindersCreated +
+      moodEntriesCreated +
+      calendarEventsCreated +
       friendsCreated +
       mediaAttachmentsCreated +
       memberBoardPostsCreated +
@@ -482,6 +498,8 @@ class DataImportService {
       frontSessionComments: export.frontSessionComments.length,
       conversationCategories: export.conversationCategories.length,
       reminders: export.reminders.length,
+      moodEntries: export.moodEntries.length,
+      calendarEvents: export.calendarEvents.length,
       friends: export.friends.length,
       mediaAttachments: export.mediaAttachments.length,
       memberBoardPosts: export.memberBoardPosts.length,
@@ -2257,6 +2275,7 @@ class DataImportService {
               weeklyDays: _weeklyDaysFromExport(r.weeklyDays),
               intervalDays: r.intervalDays,
               timeOfDay: r.timeOfDay,
+              additionalTimes: r.additionalTimes,
               delayHours: r.delayHours,
               targetMemberId: r.targetMemberId,
               isActive: r.isActive,
@@ -2265,6 +2284,39 @@ class DataImportService {
             ),
           );
           remindersCreated++;
+        }
+
+        // 18b. Import mood check-ins and calendar events. Malformed rows are
+        // skipped rather than failing the whole import.
+        var moodEntriesCreated = 0;
+        final moodRepo = DriftMoodRepository(db.moodEntriesDao, null);
+        for (final raw in export.moodEntries) {
+          final MoodEntry entry;
+          try {
+            entry = MoodEntry.fromJson(raw);
+          } catch (_) {
+            continue;
+          }
+          if (await db.moodEntriesDao.getById(entry.id) != null) continue;
+          await moodRepo.create(entry);
+          moodEntriesCreated++;
+        }
+
+        var calendarEventsCreated = 0;
+        final calendarRepo = DriftCalendarRepository(
+          db.calendarEventsDao,
+          null,
+        );
+        for (final raw in export.calendarEvents) {
+          final CalendarEvent event;
+          try {
+            event = CalendarEvent.fromJson(raw);
+          } catch (_) {
+            continue;
+          }
+          if (await db.calendarEventsDao.getById(event.id) != null) continue;
+          await calendarRepo.create(event);
+          calendarEventsCreated++;
         }
 
         // 19. Import friends
@@ -2465,6 +2517,8 @@ class DataImportService {
           frontSessionCommentsCreated: frontSessionCommentsCreated,
           conversationCategoriesCreated: conversationCategoriesCreated,
           remindersCreated: remindersCreated,
+          moodEntriesCreated: moodEntriesCreated,
+          calendarEventsCreated: calendarEventsCreated,
           friendsCreated: friendsCreated,
           mediaAttachmentsCreated: mediaAttachmentsCreated,
           memberBoardPostsCreated: memberBoardPostsCreated,

@@ -114,6 +114,9 @@ class DriftRemindersRepository
       timeOfDay: fields.containsKey('time_of_day')
           ? Value(fields['time_of_day'] as String?)
           : const Value.absent(),
+      additionalTimes: fields.containsKey('additional_times')
+          ? Value(fields['additional_times'] as String?)
+          : const Value.absent(),
       delayHours: fields.containsKey('delay_hours')
           ? Value(fields['delay_hours'] as int?)
           : const Value.absent(),
@@ -179,6 +182,7 @@ class DriftRemindersRepository
       'trigger': row.trigger,
       'interval_days': row.intervalDays,
       'time_of_day': row.timeOfDay,
+      'additional_times': row.additionalTimes,
       'delay_hours': row.delayHours,
       'target_member_id': row.targetMemberId,
       'frequency': row.frequency,
@@ -203,6 +207,7 @@ class DriftRemindersRepository
       'trigger': r.trigger.index,
       'interval_days': r.intervalDays,
       'time_of_day': r.timeOfDay,
+      'additional_times': encodeAdditionalTimes(r.additionalTimes),
       'delay_hours': r.delayHours,
       'target_member_id': r.targetMemberId,
       'frequency': r.frequency.name,

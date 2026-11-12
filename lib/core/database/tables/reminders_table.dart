@@ -10,6 +10,11 @@ class Reminders extends Table {
   IntColumn get intervalDays => integer().nullable()();
   TextColumn get weeklyDays => text().nullable()();
   TextColumn get timeOfDay => text().nullable()();
+
+  /// JSON list of extra "HH:mm" times for scheduled reminders that fire more
+  /// than once a day. [timeOfDay] stays the first time so older peers keep
+  /// firing at least once.
+  TextColumn get additionalTimes => text().nullable()();
   IntColumn get delayHours => integer().nullable()();
   /// Optional member ID this reminder targets. When null, a front-change
   /// reminder fires on any switch; when set, it fires only when the referenced

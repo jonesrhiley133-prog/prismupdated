@@ -31,12 +31,17 @@ class ReminderSchedulerService {
   /// habits (3_000_000–3_100_029) and fronting (1000–2000). The 100k-wide
   /// hash space keeps birthday-paradox collisions negligible (~1% at 50
   /// items, ~5% at 100) compared to the previous 10k space (~12% at 50).
+  ///
+  /// Reminders that fire several times a day give each time-of-day slot its
+  /// own copy of that range: slot `k` lives at `k * _idRangeStride` above
+  /// slot 0. Slot 0 is the original single-time range, so reminders created
+  /// before multi-time support keep their existing platform IDs.
   static const _idRangeStart = 20000000;
   static const _idRangeMod = 100000;
+  static const _idRangeStride =
+      _idRangeMod + LocalNotificationService.maxIntervalOccurrences;
   static const _idRangeEndExclusive =
-      _idRangeStart +
-      _idRangeMod +
-      LocalNotificationService.maxIntervalOccurrences;
+      _idRangeStart + _idRangeStride * Reminder.maxTimesPerDay;
   static const _scheduledPayloadPrefix = 'prism:reminder:scheduled:';
   static const _frontChangeDelayedPayloadPrefix =
       'prism:reminder:front-change-delayed:';
@@ -76,7 +81,35 @@ class ReminderSchedulerService {
       _notificationIdBase(id),
       LocalNotificationService.maxIntervalOccurrences,
     );
+    // Extra time-of-day slots: cancel only what the platform actually has
+    // pending, instead of blindly cancelling every slot of every range.
+    await _cancelPendingExtraSlots(id, keepSlots: 0);
     _pendingFrontChangeReminders.removeWhere((r) => r.id == id);
+  }
+
+  /// Cancels pending notifications in [reminderId]'s time-of-day slots
+  /// `>= keepSlots` (slot 0 is handled by the caller's range cancel).
+  Future<void> _cancelPendingExtraSlots(
+    String reminderId, {
+    required int keepSlots,
+  }) async {
+    final firstSlot = keepSlots < 1 ? 1 : keepSlots;
+    if (firstSlot >= Reminder.maxTimesPerDay) return;
+    final owned = <int>{
+      for (var slot = firstSlot; slot < Reminder.maxTimesPerDay; slot++)
+        for (
+          var i = 0;
+          i < LocalNotificationService.maxIntervalOccurrences;
+          i++
+        )
+          _notificationIdBase(reminderId, slot: slot) + i,
+    };
+    final pending = await _localService.pendingNotificationRequests();
+    for (final request in pending) {
+      if (owned.contains(request.id)) {
+        await _localService.cancel(request.id);
+      }
+    }
   }
 
   /// Cancel stale reminder notifications and reschedule from the provided list.
@@ -151,8 +184,10 @@ class ReminderSchedulerService {
   // ── Private helpers ─────────────────────────────────────────────
 
   Future<void> _scheduleRepeating(Reminder reminder, int generation) async {
-    final time =
-        _parseTime(reminder.timeOfDay) ?? const TimeOfDay(hour: 9, minute: 0);
+    final times = [
+      for (final raw in reminder.allTimesOfDay)
+        _parseTime(raw) ?? const TimeOfDay(hour: 9, minute: 0),
+    ];
 
     const androidDetails = AndroidNotificationDetails(
       _channelId,
@@ -168,17 +203,38 @@ class ReminderSchedulerService {
       macOS: darwinDetails,
     );
 
-    // Cancel ALL slots first — covers the single-ID case (daily), the
-    // multi-ID weekly case (base+0..base+6), and the interval case
-    // (base+0..base+N) to prevent stale notifications.
-    await _localService.cancelRange(
-      _notificationIdBase(reminder.id),
-      LocalNotificationService.maxIntervalOccurrences,
-    );
+    // Cancel ALL slots of every time-of-day range we are about to write —
+    // covers the single-ID case (daily), the multi-ID weekly case
+    // (base+0..base+6), and the interval case (base+0..base+N) to prevent
+    // stale notifications. Slots for times that were removed are cleared
+    // from the platform's pending list.
+    for (var slot = 0; slot < times.length; slot++) {
+      await _localService.cancelRange(
+        _notificationIdBase(reminder.id, slot: slot),
+        LocalNotificationService.maxIntervalOccurrences,
+      );
+    }
+    await _cancelPendingExtraSlots(reminder.id, keepSlots: times.length);
 
-    if (_generations[reminder.id] != generation) return;
-    final baseId = _notificationIdBase(reminder.id);
+    for (var slot = 0; slot < times.length; slot++) {
+      if (_generations[reminder.id] != generation) return;
+      await _scheduleSlot(
+        reminder,
+        generation,
+        baseId: _notificationIdBase(reminder.id, slot: slot),
+        time: times[slot],
+        details: details,
+      );
+    }
+  }
 
+  Future<void> _scheduleSlot(
+    Reminder reminder,
+    int generation, {
+    required int baseId,
+    required TimeOfDay time,
+    required NotificationDetails details,
+  }) async {
     switch (reminder.frequency) {
       case ReminderFrequency.daily:
         await _localService.scheduleExactDaily(
@@ -286,8 +342,13 @@ class ReminderSchedulerService {
   /// Weekly scheduling uses `base + i` for each selected weekday (i in 0..6);
   /// interval scheduling uses `base + i` for each occurrence. The collision
   /// space is bounded by [_idRangeMod] for [LocalNotificationService.cancelRange].
-  int _notificationIdBase(String id) {
-    return _idRangeStart + (_stableStringHash(id) % _idRangeMod);
+  ///
+  /// [slot] selects the time-of-day range for reminders that fire several
+  /// times a day; slot 0 is the original range.
+  int _notificationIdBase(String id, {int slot = 0}) {
+    return _idRangeStart +
+        slot * _idRangeStride +
+        (_stableStringHash(id) % _idRangeMod);
   }
 
   Future<void> _cancelStalePlatformNotifications(
@@ -312,12 +373,16 @@ class ReminderSchedulerService {
       final base = _notificationIdBase(reminder.id);
       switch (reminder.trigger) {
         case ReminderTrigger.scheduled:
-          for (
-            var i = 0;
-            i < LocalNotificationService.maxIntervalOccurrences;
-            i++
-          ) {
-            scheduledIds.add(base + i);
+          final slots = reminder.allTimesOfDay.length;
+          for (var slot = 0; slot < slots; slot++) {
+            final slotBase = _notificationIdBase(reminder.id, slot: slot);
+            for (
+              var i = 0;
+              i < LocalNotificationService.maxIntervalOccurrences;
+              i++
+            ) {
+              scheduledIds.add(slotBase + i);
+            }
           }
         case ReminderTrigger.onFrontChange:
           frontChangePayloads[base] = _frontChangeDelayedPayload(reminder);

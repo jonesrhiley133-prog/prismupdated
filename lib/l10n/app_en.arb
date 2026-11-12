@@ -13985,5 +13985,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "remindersTimesPerDayLabel": "Times",
+  "@remindersTimesPerDayLabel": {"description": "remindersTimesPerDayLabel"},
+  "remindersTimesSpecific": "Specific times",
+  "@remindersTimesSpecific": {"description": "remindersTimesSpecific"},
+  "remindersTimesEveryFewHours": "Every few hours",
+  "@remindersTimesEveryFewHours": {"description": "remindersTimesEveryFewHours"},
+  "remindersTimeNumberLabel": "Time {number}",
+  "@remindersTimeNumberLabel": {"description": "remindersTimeNumberLabel", "placeholders": {"number": {"type": "int"}}},
+  "remindersRemoveTime": "Remove time",
+  "@remindersRemoveTime": {"description": "remindersRemoveTime"},
+  "remindersAddTime": "Add time",
+  "@remindersAddTime": {"description": "remindersAddTime"},
+  "remindersMaxTimesHelper": "Up to {count} times per day.",
+  "@remindersMaxTimesHelper": {"description": "remindersMaxTimesHelper", "placeholders": {"count": {"type": "int"}}},
+  "remindersEveryMinutes": "{count} minutes",
+  "@remindersEveryMinutes": {"description": "remindersEveryMinutes", "placeholders": {"count": {"type": "int"}}},
+  "remindersEveryHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@remindersEveryHours": {"description": "remindersEveryHours", "placeholders": {"count": {"type": "int"}}},
+  "remindersFromLabel": "From",
+  "@remindersFromLabel": {"description": "remindersFromLabel"},
+  "remindersUntilLabel": "Until",
+  "@remindersUntilLabel": {"description": "remindersUntilLabel"},
+  "remindersGeneratedTimes": "Fires at {times}",
+  "@remindersGeneratedTimes": {"description": "remindersGeneratedTimes", "placeholders": {"times": {"type": "String"}}},
+  "remindersSubtitleTimesPerDay": "{count}× a day",
+  "@remindersSubtitleTimesPerDay": {"description": "remindersSubtitleTimesPerDay", "placeholders": {"count": {"type": "int"}}},
+  "dataManagementPreviewMoodEntries": "Mood check-ins",
+  "@dataManagementPreviewMoodEntries": {"description": "dataManagementPreviewMoodEntries"},
+  "dataManagementPreviewCalendarEvents": "Calendar events",
+  "@dataManagementPreviewCalendarEvents": {"description": "dataManagementPreviewCalendarEvents"}
 }

@@ -351,6 +351,7 @@ const String prismSyncSchema = '''
         "trigger": "Int",
         "interval_days": "Int",
         "time_of_day": "String",
+        "additional_times": "String",
         "delay_hours": "Int",
         "target_member_id": "String",
         "is_active": "Bool",
@@ -358,6 +359,46 @@ const String prismSyncSchema = '''
         "modified_at": "DateTime",
         "frequency": "String",
         "weekly_days": "String",
+        "is_deleted": "Bool"
+      }
+    },
+    "mood_entries": {
+      "fields": {
+        "member_id": "String",
+        "mood": "Int",
+        "intensity": "Int",
+        "emotions": "String",
+        "energy": "Int",
+        "stress": "Int",
+        "sleep_quality": "Int",
+        "body_sensations": "String",
+        "note": "String",
+        "recorded_at": "DateTime",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
+        "is_deleted": "Bool"
+      }
+    },
+    "calendar_events": {
+      "fields": {
+        "title": "String",
+        "description": "String",
+        "location": "String",
+        "start_at": "DateTime",
+        "end_at": "DateTime",
+        "is_all_day": "Bool",
+        "color_hex": "String",
+        "category": "String",
+        "recurrence": "String",
+        "recurrence_interval": "Int",
+        "recurrence_weekdays": "String",
+        "recurrence_until": "DateTime",
+        "recurrence_count": "Int",
+        "recurrence_exceptions": "String",
+        "alert_minutes": "String",
+        "member_ids": "String",
+        "created_at": "DateTime",
+        "modified_at": "DateTime",
         "is_deleted": "Bool"
       }
     },

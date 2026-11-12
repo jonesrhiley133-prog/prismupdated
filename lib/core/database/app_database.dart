@@ -27,6 +27,8 @@ import 'package:prism_plurality/core/database/daos/member_board_posts_dao.dart';
 import 'package:prism_plurality/core/database/daos/front_session_comments_dao.dart';
 import 'package:prism_plurality/core/database/daos/conversation_categories_dao.dart';
 import 'package:prism_plurality/core/database/daos/reminders_dao.dart';
+import 'package:prism_plurality/core/database/daos/mood_entries_dao.dart';
+import 'package:prism_plurality/core/database/daos/calendar_events_dao.dart';
 import 'package:prism_plurality/core/database/daos/friends_dao.dart';
 import 'package:prism_plurality/core/database/daos/sharing_requests_dao.dart';
 import 'package:prism_plurality/core/database/daos/media_attachments_dao.dart';
@@ -80,6 +82,8 @@ part 'app_database.g.dart';
     MemberProfilePreferenceValues,
     UploadQueueEntries,
     MissingMediaEntries,
+    MoodEntries,
+    CalendarEvents,
   ],
   daos: [
     MembersDao,
@@ -104,6 +108,8 @@ part 'app_database.g.dart';
     FrontSessionCommentsDao,
     ConversationCategoriesDao,
     RemindersDao,
+    MoodEntriesDao,
+    CalendarEventsDao,
     FriendsDao,
     SharingRequestsDao,
     MediaAttachmentsDao,
@@ -117,7 +123,7 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
-  static const currentSchemaVersion = 41;
+  static const currentSchemaVersion = 42;
 
   /// Optional view of the sync engine's absorbing-delete state. When the sync
   /// layer has a live engine handle it sets this so the deterministic-id rescue
@@ -147,6 +153,7 @@ class AppDatabase extends _$AppDatabase {
       await _createCurrentIndexes();
       await _createBioMediaReconcileIndexIfSupported();
       await _createMemberBoardPostIndexes();
+      await _createMoodAndCalendarIndexes();
       await _createPkUniqueIndexes();
       // Fresh v7 install: jump straight to composite + orphan fronting indexes.
       // Empty table, so no detect-and-refuse needed.
@@ -1559,6 +1566,21 @@ class AppDatabase extends _$AppDatabase {
         await _createTableIfAbsent(migrator, pluralPortUnsupported);
       },
     ),
+    _MigrationStep(
+      from: 41,
+      to: 42,
+      apply: (migrator, to) async {
+        // Multi-time-per-day reminders, mood tracking, and the calendar.
+        await _addColumnIfAbsent(
+          migrator,
+          reminders,
+          reminders.additionalTimes,
+        );
+        await _createTableIfAbsent(migrator, moodEntries);
+        await _createTableIfAbsent(migrator, calendarEvents);
+        await _createMoodAndCalendarIndexes();
+      },
+    ),
   ];
 
   /// Best-effort idempotent column reconcile run in [beforeOpen]. Adds columns
@@ -2292,6 +2314,17 @@ class AppDatabase extends _$AppDatabase {
       variables: [Variable<String>(tableName)],
     ).get();
     return rows.isNotEmpty;
+  }
+
+  Future<void> _createMoodAndCalendarIndexes() async {
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_mood_entries_recorded '
+      'ON mood_entries (is_deleted, recorded_at DESC)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_calendar_events_start '
+      'ON calendar_events (is_deleted, start_at)',
+    );
   }
 
   Future<void> _createMemberBoardPostIndexes() async {

@@ -53,6 +53,8 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'front_session_comments',
       'conversation_categories',
       'reminders',
+      'mood_entries',
+      'calendar_events',
       'friends',
     ];
 
@@ -71,6 +73,8 @@ final _syncEntityCountsProvider = FutureProvider.autoDispose<_SyncEntityCounts>(
       'front_session_comments': 'created_at',
       'conversation_categories': 'created_at',
       'reminders': 'created_at',
+      'mood_entries': 'created_at',
+      'calendar_events': 'created_at',
       'friends': 'created_at',
     };
 

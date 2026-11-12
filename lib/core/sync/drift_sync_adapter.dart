@@ -14,6 +14,8 @@ import 'package:prism_plurality/core/sync/pk_alias_guards.dart';
 import 'package:prism_plurality/core/sync/pk_front_member_alias_resolver.dart';
 import 'package:prism_plurality/core/sync/pk_incarnation_ids.dart';
 import 'package:prism_plurality/core/sync/sync_quarantine.dart';
+import 'package:prism_plurality/data/mappers/calendar_event_mapper.dart';
+import 'package:prism_plurality/data/mappers/mood_entry_mapper.dart';
 import 'package:prism_plurality/data/mappers/member_group_mapper.dart'
     show sanitizeSortStateForEmission, tryDecodeSortState;
 import 'package:prism_plurality/domain/preferences/preference_entity_id.dart';
@@ -250,6 +252,8 @@ SyncAdapterWithCompletion buildSyncAdapterWithCompletion(
         pendingQuarantineWrites.add,
       ),
       _remindersEntity(db, quarantine, pendingQuarantineWrites.add),
+      _moodEntriesEntity(db, quarantine, pendingQuarantineWrites.add),
+      _calendarEventsEntity(db, quarantine, pendingQuarantineWrites.add),
       _memberGroupsEntity(
         db,
         quarantine,
@@ -4513,6 +4517,7 @@ DriftSyncEntity _remindersEntity(
         'interval_days': r.intervalDays,
         'weekly_days': r.weeklyDays,
         'time_of_day': r.timeOfDay,
+        'additional_times': r.additionalTimes,
         'delay_hours': r.delayHours,
         'target_member_id': r.targetMemberId,
         'is_active': r.isActive,
@@ -4538,6 +4543,7 @@ DriftSyncEntity _remindersEntity(
         intervalDays: f.intFieldNullable('interval_days'),
         weeklyDays: f.stringFieldNullable('weekly_days'),
         timeOfDay: f.stringFieldNullable('time_of_day'),
+        additionalTimes: f.stringFieldNullable('additional_times'),
         delayHours: f.intFieldNullable('delay_hours'),
         targetMemberId: f.stringFieldNullable('target_member_id'),
         isActive: f.boolField('is_active'),
@@ -4568,6 +4574,7 @@ DriftSyncEntity _remindersEntity(
         'interval_days': row.intervalDays,
         'weekly_days': row.weeklyDays,
         'time_of_day': row.timeOfDay,
+        'additional_times': row.additionalTimes,
         'delay_hours': row.delayHours,
         'target_member_id': row.targetMemberId,
         'is_active': row.isActive,
@@ -4579,6 +4586,136 @@ DriftSyncEntity _remindersEntity(
     isDeleted: (String id) async {
       final row = await (db.select(
         db.reminders,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// mood_entries
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _moodEntriesEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'mood_entries',
+    toSyncFields: (dynamic row) =>
+        MoodEntryMapper.syncFieldsFromRow(row as MoodEntryRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'mood_entries',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = MoodEntriesCompanion(
+        id: Value(id),
+        memberId: f.stringFieldNullable('member_id'),
+        mood: f.intField('mood'),
+        intensity: f.intField('intensity'),
+        emotions: f.stringFieldNullable('emotions'),
+        energy: f.intFieldNullable('energy'),
+        stress: f.intFieldNullable('stress'),
+        sleepQuality: f.intFieldNullable('sleep_quality'),
+        bodySensations: f.stringFieldNullable('body_sensations'),
+        note: f.stringFieldNullable('note'),
+        recordedAt: f.dateTimeField('recorded_at'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.moodEntries,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.moodEntries)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.moodEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : MoodEntryMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.moodEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row?.isDeleted ?? true;
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// calendar_events
+// ---------------------------------------------------------------------------
+
+DriftSyncEntity _calendarEventsEntity(
+  AppDatabase db,
+  SyncQuarantineService? quarantine,
+  void Function(Future<void> write) trackQuarantineWrite,
+) {
+  return DriftSyncEntity(
+    tableName: 'calendar_events',
+    toSyncFields: (dynamic row) =>
+        CalendarEventMapper.syncFieldsFromRow(row as CalendarEventRow),
+    applyFields: (String id, Map<String, dynamic> fields) async {
+      final f = _FieldContext(
+        entityType: 'calendar_events',
+        entityId: id,
+        fields: fields,
+        quarantine: quarantine,
+        trackQuarantineWrite: trackQuarantineWrite,
+      );
+      final companion = CalendarEventsCompanion(
+        id: Value(id),
+        title: f.stringField('title'),
+        description: f.stringFieldNullable('description'),
+        location: f.stringFieldNullable('location'),
+        startAt: f.dateTimeField('start_at'),
+        endAt: f.dateTimeField('end_at'),
+        isAllDay: f.boolField('is_all_day'),
+        colorHex: f.stringFieldNullable('color_hex'),
+        category: f.stringFieldNullable('category'),
+        recurrence: f.stringField('recurrence'),
+        recurrenceInterval: f.intField('recurrence_interval'),
+        recurrenceWeekdays: f.stringFieldNullable('recurrence_weekdays'),
+        recurrenceUntil: f.dateTimeFieldNullable('recurrence_until'),
+        recurrenceCount: f.intFieldNullable('recurrence_count'),
+        recurrenceExceptions: f.stringFieldNullable('recurrence_exceptions'),
+        alertMinutes: f.stringFieldNullable('alert_minutes'),
+        memberIds: f.stringFieldNullable('member_ids'),
+        createdAt: f.dateTimeField('created_at'),
+        modifiedAt: f.dateTimeField('modified_at'),
+        isDeleted: f.boolField('is_deleted'),
+      );
+      await _insertOrUpdateById(
+        db,
+        db.calendarEvents,
+        companion,
+        (t) => t.id.equals(id),
+      );
+    },
+    hardDelete: (String id) async {
+      await (db.delete(db.calendarEvents)..where((t) => t.id.equals(id))).go();
+    },
+    readRow: (String id) async {
+      final row = await (db.select(
+        db.calendarEvents,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : CalendarEventMapper.syncFieldsFromRow(row);
+    },
+    isDeleted: (String id) async {
+      final row = await (db.select(
+        db.calendarEvents,
       )..where((t) => t.id.equals(id))).getSingleOrNull();
       return row?.isDeleted ?? true;
     },

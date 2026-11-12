@@ -252,6 +252,8 @@ final _granularCategories = [
     Colors.green,
   ),
   _CategoryEntry(ResetCategory.sleep, AppIcons.bedtimeOutlined, Colors.indigo),
+  _CategoryEntry(ResetCategory.mood, AppIcons.navMood, Colors.amber),
+  _CategoryEntry(ResetCategory.calendar, AppIcons.navCalendar, Colors.cyan),
   _CategoryEntry(
     ResetCategory.customFields,
     AppIcons.tuneOutlined,

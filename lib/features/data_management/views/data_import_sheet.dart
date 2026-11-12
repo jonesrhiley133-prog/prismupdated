@@ -471,6 +471,11 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
       count: p.conversationCategories,
     ),
     (label: context.l10n.dataManagementPreviewReminders, count: p.reminders),
+    (label: context.l10n.dataManagementPreviewMoodEntries, count: p.moodEntries),
+    (
+      label: context.l10n.dataManagementPreviewCalendarEvents,
+      count: p.calendarEvents,
+    ),
     (label: context.l10n.dataManagementPreviewFriends, count: p.friends),
     (
       label: context.l10n.dataManagementPreviewMediaAttachments,
@@ -655,6 +660,14 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
     (
       label: context.l10n.dataManagementPreviewReminders,
       count: r.remindersCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewMoodEntries,
+      count: r.moodEntriesCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewCalendarEvents,
+      count: r.calendarEventsCreated,
     ),
     (label: context.l10n.dataManagementPreviewFriends, count: r.friendsCreated),
     (
