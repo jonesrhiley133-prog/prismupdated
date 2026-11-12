@@ -1491,6 +1491,8 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.locations, _locationsRootTitle),
       (AppRoutePaths.work, _workRootTitle),
       (AppRoutePaths.insights, _insightsRootTitle),
+      (AppRoutePaths.cycle, _cycleRootTitle),
+      (AppRoutePaths.contacts, _contactsRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1542,6 +1544,8 @@ String _rootTitle(String location) {
     AppRoutePaths.locations => _locationsRootTitle,
     AppRoutePaths.work => _workRootTitle,
     AppRoutePaths.insights => _insightsRootTitle,
+    AppRoutePaths.cycle => _cycleRootTitle,
+    AppRoutePaths.contacts => _contactsRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1689,6 +1693,8 @@ const _moodRootTitle = 'Route contract: mood root';
 const _calendarRootTitle = 'Route contract: calendar root';
 const _locationsRootTitle = 'Route contract: locations root';
 const _workRootTitle = 'Route contract: work root';
+const _cycleRootTitle = 'Route contract: cycle root';
+const _contactsRootTitle = 'Route contract: contacts root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';
