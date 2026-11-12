@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:isolate';
 import 'dart:math';
 
+import 'package:prism_plurality/shared/utils/run_in_background.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hashlib/hashlib.dart' as hashlib;
@@ -84,10 +84,14 @@ class PinLockService {
 
   /// Hash PIN bytes with Argon2id (slow hash, resistant to brute force).
   static List<int> hashPinArgon2idBytes(List<int> pinBytes, String salt) {
+    // The web build compiles to JavaScript, where Argon2 is orders of
+    // magnitude slower and runs on the UI thread. Web data is unencrypted and
+    // never syncs, so the web PIN is a local lock only and uses light
+    // parameters; native keeps the full cost.
     final argon2 = hashlib.Argon2(
       hashLength: 32,
-      iterations: 3,
-      memorySizeKB: 19456, // 19 MB — mobile-friendly
+      iterations: kIsWeb ? 1 : 3,
+      memorySizeKB: kIsWeb ? 1024 : 19456, // 19 MB — mobile-friendly
       parallelism: 1,
       type: hashlib.Argon2Type.argon2id,
       salt: utf8.encode(salt),
@@ -103,7 +107,7 @@ class PinLockService {
     List<int> pinBytes,
     String salt,
   ) {
-    return Isolate.run(() => hashPinArgon2idBytes(pinBytes, salt));
+    return runInBackground(() => hashPinArgon2idBytes(pinBytes, salt));
   }
 
   static Future<List<int>> _hashPinArgon2idOffMainIsolate(

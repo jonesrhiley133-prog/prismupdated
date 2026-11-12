@@ -1470,6 +1470,36 @@ List<StatefulShellBranch> _contractBranches() {
         ),
       ],
     ),
+    StatefulShellBranch(
+      routes: [
+        GoRoute(
+          path: AppRoutePaths.mood,
+          builder: (context, state) => const _ProbePage(title: _moodRootTitle),
+        ),
+      ],
+    ),
+    StatefulShellBranch(
+      routes: [
+        GoRoute(
+          path: AppRoutePaths.calendar,
+          builder: (context, state) =>
+              const _ProbePage(title: _calendarRootTitle),
+        ),
+      ],
+    ),
+    for (final (path, title) in const [
+      (AppRoutePaths.locations, _locationsRootTitle),
+      (AppRoutePaths.work, _workRootTitle),
+      (AppRoutePaths.insights, _insightsRootTitle),
+    ])
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: path,
+            builder: (context, state) => _ProbePage(title: title),
+          ),
+        ],
+      ),
   ];
 }
 
@@ -1507,6 +1537,11 @@ String _rootTitle(String location) {
     AppRoutePaths.boards => _boardsRootTitle,
     AppRoutePaths.groups => _groupsRootTitle,
     AppRoutePaths.media => _mediaRootTitle,
+    AppRoutePaths.mood => _moodRootTitle,
+    AppRoutePaths.calendar => _calendarRootTitle,
+    AppRoutePaths.locations => _locationsRootTitle,
+    AppRoutePaths.work => _workRootTitle,
+    AppRoutePaths.insights => _insightsRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1650,6 +1685,11 @@ const _sleepRootTitle = 'Route contract: sleep root';
 const _boardsRootTitle = 'Route contract: boards root';
 const _groupsRootTitle = 'Route contract: groups root';
 const _mediaRootTitle = 'Route contract: media root';
+const _moodRootTitle = 'Route contract: mood root';
+const _calendarRootTitle = 'Route contract: calendar root';
+const _locationsRootTitle = 'Route contract: locations root';
+const _workRootTitle = 'Route contract: work root';
+const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';
 const _homeSessionTitle = 'Route contract: home session detail';

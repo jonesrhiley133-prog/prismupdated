@@ -26,6 +26,12 @@ import 'package:prism_plurality/domain/repositories/front_session_comments_repos
 import 'package:prism_plurality/domain/repositories/conversation_categories_repository.dart';
 import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_saved_location_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/encrypted_export_file_writer.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
@@ -253,6 +259,32 @@ class DataExportService {
     final reminders = await remindersRepository.watchAll().first;
     final v1Reminders = reminders.map(_mapReminder).toList();
 
+    // Fetch mood check-ins and calendar events (read-only; no sync handle).
+    final moodEntries = (await DriftMoodRepository(
+      db.moodEntriesDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final calendarEvents = (await DriftCalendarRepository(
+      db.calendarEventsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final savedLocations = (await DriftSavedLocationRepository(
+      db.savedLocationsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final locationSessions = (await DriftLocationSessionRepository(
+      db.locationSessionsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final jobs = (await DriftJobRepository(
+      db.jobsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+    final workSessions = (await DriftWorkSessionRepository(
+      db.workSessionsDao,
+      null,
+    ).getAll()).map((e) => e.toJson()).toList();
+
     // Fetch friends
     final friends = await friendsRepository.watchAll().first;
     final v1Friends = friends.map(_mapFriend).toList();
@@ -354,6 +386,12 @@ class DataExportService {
         v1FrontSessionComments.length +
         v1ConversationCategories.length +
         v1Reminders.length +
+        moodEntries.length +
+        calendarEvents.length +
+        savedLocations.length +
+        locationSessions.length +
+        jobs.length +
+        workSessions.length +
         v1Friends.length +
         v1MemberBoardPosts.length +
         v1MediaAttachments.length +
@@ -385,6 +423,12 @@ class DataExportService {
       frontSessionComments: v1FrontSessionComments,
       conversationCategories: v1ConversationCategories,
       reminders: v1Reminders,
+      moodEntries: moodEntries,
+      calendarEvents: calendarEvents,
+      savedLocations: savedLocations,
+      locationSessions: locationSessions,
+      jobs: jobs,
+      workSessions: workSessions,
       friends: v1Friends,
       mediaAttachments: v1MediaAttachments,
       memberBoardPosts: v1MemberBoardPosts,
@@ -899,6 +943,7 @@ class DataExportService {
     intervalDays: r.intervalDays,
     weeklyDays: r.weeklyDays != null ? jsonEncode(r.weeklyDays) : null,
     timeOfDay: r.timeOfDay,
+    additionalTimes: r.additionalTimes,
     delayHours: r.delayHours,
     targetMemberId: r.targetMemberId,
     isActive: r.isActive,

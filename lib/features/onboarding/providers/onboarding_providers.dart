@@ -437,6 +437,18 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
       return;
     }
     _pinSetupInFlight = true;
+    if (kIsWeb) {
+      // Web build: no Rust sync engine or keychain, so there is no key
+      // hierarchy to derive and no recovery phrase to show. The PIN hash was
+      // already stored by PinSetupStep and acts as a local app lock only.
+      try {
+        await ref.read(authPolicyServiceProvider).recordPinVerified();
+        state = state.copyWith(currentStep: OnboardingStep.importData);
+      } finally {
+        _pinSetupInFlight = false;
+      }
+      return;
+    }
     try {
       // 1. Get or create the sync handle (we need it for FFI calls).
       //    In new-device onboarding, no handle exists yet. We create one

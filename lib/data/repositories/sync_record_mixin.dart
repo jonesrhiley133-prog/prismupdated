@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
+    show PlatformInt64Util;
 import 'package:flutter/foundation.dart';
 import 'package:prism_sync/generated/api.dart' as ffi;
 import 'package:prism_plurality/core/database/app_database.dart';
@@ -397,20 +399,20 @@ mixin SyncRecordMixin {
           table: op.table,
           entityId: op.entityId,
           fieldsJson: payload,
-          originTimestampMs: originMs,
+          originTimestampMs: PlatformInt64Util.from(originMs),
         ),
         SyncRecordOpType.update => ffi.recordUpdateAt(
           handle: handle,
           table: op.table,
           entityId: op.entityId,
           changedFieldsJson: payload,
-          originTimestampMs: originMs,
+          originTimestampMs: PlatformInt64Util.from(originMs),
         ),
         SyncRecordOpType.delete => ffi.recordDeleteAt(
           handle: handle,
           table: op.table,
           entityId: op.entityId,
-          originTimestampMs: originMs,
+          originTimestampMs: PlatformInt64Util.from(originMs),
         ),
       };
     }

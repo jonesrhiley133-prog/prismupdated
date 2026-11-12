@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
+    show PlatformInt64Util;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -233,8 +235,18 @@ Future<int> ackBootstrapConsumerDeliveryJournal({
   int chunkSize = 1000,
   int maxChunks = 10000,
 }) async {
-  final takeFn = take ?? ffi.takeUndeliveredChanges;
-  final ackFn = ack ?? ffi.ackConsumerDeliveries;
+  final TakeUndeliveredChangesFn takeFn =
+      take ??
+      ({required handle, required limit}) => ffi.takeUndeliveredChanges(
+        handle: handle,
+        limit: PlatformInt64Util.from(limit),
+      );
+  final AckConsumerDeliveriesFn ackFn =
+      ack ??
+      ({required handle, required upToId}) => ffi.ackConsumerDeliveries(
+        handle: handle,
+        upToId: PlatformInt64Util.from(upToId),
+      );
 
   for (var chunksAcked = 0; chunksAcked < maxChunks; chunksAcked++) {
     final raw = await takeFn(handle: handle, limit: chunkSize);

@@ -42,6 +42,12 @@ import 'package:prism_plurality/core/database/daos/member_board_posts_dao.dart';
 import 'package:prism_plurality/core/database/daos/front_session_comments_dao.dart';
 import 'package:prism_plurality/core/database/daos/conversation_categories_dao.dart';
 import 'package:prism_plurality/core/database/daos/reminders_dao.dart';
+import 'package:prism_plurality/core/database/daos/mood_entries_dao.dart';
+import 'package:prism_plurality/core/database/daos/calendar_events_dao.dart';
+import 'package:prism_plurality/core/database/daos/saved_locations_dao.dart';
+import 'package:prism_plurality/core/database/daos/location_sessions_dao.dart';
+import 'package:prism_plurality/core/database/daos/jobs_dao.dart';
+import 'package:prism_plurality/core/database/daos/work_sessions_dao.dart';
 import 'package:prism_plurality/core/database/daos/friends_dao.dart';
 import 'package:prism_plurality/core/database/daos/sharing_requests_dao.dart';
 import 'package:prism_plurality/data/repositories/drift_custom_fields_repository.dart';
@@ -50,6 +56,15 @@ import 'package:prism_plurality/data/repositories/drift_member_board_posts_repos
 import 'package:prism_plurality/data/repositories/drift_front_session_comments_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_conversation_categories_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_reminders_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_saved_location_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
+import 'package:prism_plurality/domain/models/location.dart';
+import 'package:prism_plurality/domain/models/work.dart';
+import 'package:prism_plurality/domain/repositories/entity_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_friends_repository.dart';
 import 'package:prism_plurality/domain/repositories/custom_fields_repository.dart';
 import 'package:prism_plurality/domain/repositories/notes_repository.dart';
@@ -57,6 +72,8 @@ import 'package:prism_plurality/domain/repositories/member_board_posts_repositor
 import 'package:prism_plurality/domain/repositories/front_session_comments_repository.dart';
 import 'package:prism_plurality/domain/repositories/conversation_categories_repository.dart';
 import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
+import 'package:prism_plurality/domain/repositories/mood_repository.dart';
+import 'package:prism_plurality/domain/repositories/calendar_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
 import 'package:prism_plurality/core/database/daos/media_attachments_dao.dart';
 import 'package:prism_plurality/data/repositories/drift_media_attachment_repository.dart';
@@ -285,6 +302,72 @@ final remindersDaoProvider = Provider<RemindersDao>(
 final remindersRepositoryProvider = Provider<RemindersRepository>(
   (ref) => DriftRemindersRepository(
     ref.watch(remindersDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final moodEntriesDaoProvider = Provider<MoodEntriesDao>(
+  (ref) => ref.watch(databaseProvider).moodEntriesDao,
+);
+
+final moodRepositoryProvider = Provider<MoodRepository>(
+  (ref) => DriftMoodRepository(
+    ref.watch(moodEntriesDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final calendarEventsDaoProvider = Provider<CalendarEventsDao>(
+  (ref) => ref.watch(databaseProvider).calendarEventsDao,
+);
+
+final calendarRepositoryProvider = Provider<CalendarRepository>(
+  (ref) => DriftCalendarRepository(
+    ref.watch(calendarEventsDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final savedLocationsDaoProvider = Provider<SavedLocationsDao>(
+  (ref) => ref.watch(databaseProvider).savedLocationsDao,
+);
+
+final savedLocationRepositoryProvider = Provider<EntityRepository<SavedLocation>>(
+  (ref) => DriftSavedLocationRepository(
+    ref.watch(savedLocationsDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final locationSessionsDaoProvider = Provider<LocationSessionsDao>(
+  (ref) => ref.watch(databaseProvider).locationSessionsDao,
+);
+
+final locationSessionRepositoryProvider = Provider<EntityRepository<LocationSession>>(
+  (ref) => DriftLocationSessionRepository(
+    ref.watch(locationSessionsDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final jobsDaoProvider = Provider<JobsDao>(
+  (ref) => ref.watch(databaseProvider).jobsDao,
+);
+
+final jobRepositoryProvider = Provider<EntityRepository<Job>>(
+  (ref) => DriftJobRepository(
+    ref.watch(jobsDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final workSessionsDaoProvider = Provider<WorkSessionsDao>(
+  (ref) => ref.watch(databaseProvider).workSessionsDao,
+);
+
+final workSessionRepositoryProvider = Provider<EntityRepository<WorkSession>>(
+  (ref) => DriftWorkSessionRepository(
+    ref.watch(workSessionsDaoProvider),
     _resolveSyncHandle(ref),
   ),
 );

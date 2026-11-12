@@ -1,6 +1,6 @@
-import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/run_in_background.dart';
 import 'package:blurhash_dart/blurhash_dart.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image/image.dart' as img;
@@ -326,7 +326,7 @@ class ImageCompressionService {
   /// A full-size photo decode would stall the UI thread, so it runs on a
   /// helper isolate and only these small values cross back.
   static Future<_StillImageInfo?> _stillInfoOffMainIsolate(Uint8List bytes) =>
-      Isolate.run(() => _stillInfo(bytes));
+      runInBackground(() => _stillInfo(bytes));
 
   static _StillImageInfo? _stillInfo(Uint8List bytes) {
     final decoded = img.decodeImage(bytes);
@@ -341,7 +341,7 @@ class ImageCompressionService {
 
   static Future<(int, int)?> _decodedDimensionsOffMainIsolate(
     Uint8List bytes,
-  ) => Isolate.run(() => _decodedDimensions(bytes));
+  ) => runInBackground(() => _decodedDimensions(bytes));
 
   static (int, int)? _decodedDimensions(Uint8List bytes) {
     final decoded = img.decodeImage(bytes);

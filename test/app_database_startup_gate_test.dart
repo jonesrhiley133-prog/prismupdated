@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/calendar/services/calendar_notification_service.dart';
 import 'package:prism_plurality/app.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
 import 'package:prism_plurality/core/database/database_encryption.dart';
@@ -332,6 +333,7 @@ class _StartupGateHarness {
       ),
       reminderSchedulerListenerProvider.overrideWithValue(null),
       habitNotificationListenerProvider.overrideWithValue(null),
+      calendarNotificationListenerProvider.overrideWithValue(null),
       frontingReminderListenerProvider.overrideWithValue(null),
       frontingOpenSessionRepairBootstrapProvider.overrideWithValue(null),
       spBoardsBackfillProvider.overrideWith((ref) async => null),

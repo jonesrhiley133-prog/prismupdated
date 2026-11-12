@@ -303,7 +303,13 @@ String _formatReminderSubtitle(
         '${l10n.remindersDelayHours(delay)}';
   }
 
-  final time = _formatReminderTime(context, r.timeOfDay);
+  final times = r.allTimesOfDay;
+  final String time;
+  if (times.length <= 3) {
+    time = times.map((t) => _formatReminderTime(context, t)).join(', ');
+  } else {
+    time = l10n.remindersSubtitleTimesPerDay(times.length);
+  }
   final prefix = time.isEmpty ? '' : '$time · ';
 
   switch (r.frequency) {

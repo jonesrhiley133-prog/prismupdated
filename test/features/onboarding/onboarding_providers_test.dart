@@ -384,6 +384,11 @@ void main() {
       expect(overflowIds, [
         AppShellTabId.members,
         AppShellTabId.groups,
+        AppShellTabId.calendar,
+        AppShellTabId.mood,
+        AppShellTabId.insights,
+        AppShellTabId.locations,
+        AppShellTabId.work,
         AppShellTabId.notes,
         AppShellTabId.reminders,
         AppShellTabId.statistics,

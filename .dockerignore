@@ -1,0 +1,19 @@
+# Keep the Docker build context small: only what the web build needs.
+.git
+.dart_tool
+build
+**/build
+android
+ios
+macos
+linux
+windows
+fastlane
+packaging
+integration_test
+test
+test_driver
+docs
+*.iml
+.idea
+.vscode

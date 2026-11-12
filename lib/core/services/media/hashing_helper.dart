@@ -1,6 +1,7 @@
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/run_in_background.dart';
 import 'package:crypto/crypto.dart';
 
 /// Computes a SHA-256 hex digest for [bytes].
@@ -33,7 +34,7 @@ String _sha256Hex(Uint8List bytes) => sha256.convert(bytes).toString();
 Future<String> _sha256HexOffMain(Uint8List bytes) {
   // Isolate.run copies `bytes` into the helper isolate once and returns only the
   // 64-character digest, so the total transfer cost is a single payload copy.
-  return Isolate.run(() => _sha256Hex(bytes));
+  return runInBackground(() => _sha256Hex(bytes));
 }
 
 /// Hashes [bytes] to the lowercase hex SHA-256 digest used for media integrity.

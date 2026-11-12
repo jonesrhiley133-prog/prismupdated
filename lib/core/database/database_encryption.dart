@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqlite3/sqlite3.dart' as raw;
+import 'package:sqlite3/common.dart' as raw;
+
+import 'package:prism_plurality/core/database/platform/sqlite_opener.dart';
 
 import 'package:prism_plurality/core/database/app_database.dart';
 import 'package:prism_plurality/core/services/secure_storage.dart';
@@ -787,7 +789,7 @@ Future<String> ensureLocalSyncDatabaseKey({String? verifiedStartupKey}) async {
 bool tryOpenEncryptedDb(String path, String hexKey) {
   if (!File(path).existsSync()) return false;
   try {
-    final db = raw.sqlite3.open(path);
+    final db = openRawSqlite(path);
     try {
       configurePrismSqliteConnection(db, hexKey: hexKey);
       db.select('SELECT count(*) FROM sqlite_master;');
@@ -853,12 +855,12 @@ Future<void> rotateDatabaseToKey({
 ///
 /// SQLite3MultipleCiphers (sqlite3mc) uses its default cipher (AES-256 CBC)
 /// when you supply a raw hex key with `PRAGMA key = "x'...'";`.
-void Function(raw.Database) makeCipherSetup(String hexKey) {
+void Function(raw.CommonDatabase) makeCipherSetup(String hexKey) {
   assert(
     validateHexKey(hexKey),
     'Invalid hex key: expected 64 lowercase hex chars',
   );
-  return (raw.Database db) {
+  return (raw.CommonDatabase db) {
     configurePrismSqliteConnection(db, hexKey: hexKey);
   };
 }
@@ -908,7 +910,7 @@ String? lastVerifiedCipherCodecVersion;
 /// (wrong-key opens are rejected). Probing with `cipher_version` would brick
 /// every real build at first keyed open. `sqlite3mc_version()` is the function
 /// that reliably distinguishes the codec.
-void _assertSqliteCipherCodecPresent(raw.Database db) {
+void _assertSqliteCipherCodecPresent(raw.CommonDatabase db) {
   if (_cipherCodecVerified) return;
 
   String? version;
@@ -942,7 +944,7 @@ void _assertSqliteCipherCodecPresent(raw.Database db) {
   _cipherCodecVerified = true;
 }
 
-void configurePrismSqliteConnection(raw.Database db, {String? hexKey}) {
+void configurePrismSqliteConnection(raw.CommonDatabase db, {String? hexKey}) {
   if (hexKey != null) {
     assert(
       validateHexKey(hexKey),

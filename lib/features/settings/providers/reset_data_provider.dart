@@ -279,6 +279,10 @@ enum ResetCategory {
   polls('Polls', 'Deletes all polls, options, and votes.'),
   habits('Habits', 'Deletes all habits and completion records.'),
   sleep('Sleep Sessions', 'Deletes all sleep tracking data.'),
+  mood('Mood', 'Deletes all mood and wellbeing check-ins.'),
+  calendar('Calendar', 'Deletes all calendar events.'),
+  locations('Locations', 'Deletes saved locations and location history.'),
+  work('Work', 'Deletes jobs and work sessions.'),
   customFields('Custom Fields', 'Deletes all custom fields and their values.'),
   sync(
     'Disconnect Sync',
@@ -410,6 +414,14 @@ class ResetDataNotifier extends AsyncNotifier<void> {
           await _resetHabits();
         case ResetCategory.sleep:
           await _resetSleep();
+        case ResetCategory.mood:
+          await _resetTables('mood', ['mood_entries']);
+        case ResetCategory.calendar:
+          await _resetTables('calendar', ['calendar_events']);
+        case ResetCategory.locations:
+          await _resetTables('location', ['location_sessions', 'saved_locations']);
+        case ResetCategory.work:
+          await _resetTables('work', ['work_sessions', 'jobs']);
         case ResetCategory.customFields:
           await _resetCustomFields();
         case ResetCategory.sync:
@@ -508,6 +520,9 @@ class ResetDataNotifier extends AsyncNotifier<void> {
         'UPDATE pk_mapping_state SET local_member_id = NULL',
       );
       await db.customStatement('UPDATE reminders SET target_member_id = NULL');
+      await db.customStatement('UPDATE mood_entries SET member_id = NULL');
+      await db.customStatement('UPDATE calendar_events SET member_ids = NULL');
+      await db.customStatement('UPDATE work_sessions SET member_id = NULL');
       // JSON maps keyed by memberId — reset to defaults so stale keys don't
       // hang around. chat_badge_preferences defaults to '{}'; field_sync_config
       // is nullable.
@@ -563,6 +578,9 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       'plural_kit_sync_state',
       'poll_votes',
       'reminders',
+      'mood_entries',
+      'calendar_events',
+      'work_sessions',
       'system_settings',
     ]);
   }
@@ -649,6 +667,17 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       await db.customStatement('DELETE FROM polls');
     });
     _notifyTableChanges(['poll_votes', 'poll_options', 'polls']);
+  }
+
+  Future<void> _resetTables(String label, List<String> tables) async {
+    final db = ref.read(databaseProvider);
+    _log('Resetting $label data');
+    await db.transaction(() async {
+      for (final table in tables) {
+        await db.customStatement('DELETE FROM $table');
+      }
+    });
+    _notifyTableChanges(tables);
   }
 
   Future<void> _resetHabits() async {

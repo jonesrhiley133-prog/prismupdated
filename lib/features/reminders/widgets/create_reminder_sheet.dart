@@ -10,6 +10,7 @@ import 'package:prism_plurality/features/members/utils/member_search_groups.dart
 import 'package:prism_plurality/features/settings/providers/terminology_provider.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/features/reminders/providers/reminders_providers.dart';
+import 'package:prism_plurality/features/reminders/utils/reminder_times.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
 import 'package:prism_plurality/shared/widgets/prism_glass_icon_button.dart';
@@ -26,6 +27,9 @@ import 'package:prism_plurality/shared/widgets/prism_segmented_control.dart';
 import 'package:prism_plurality/shared/widgets/prism_time_picker.dart';
 import 'package:prism_plurality/shared/widgets/unsaved_changes_guard.dart';
 import 'package:prism_plurality/shared/widgets/weekday_picker.dart';
+
+/// How the times of a scheduled reminder are chosen.
+enum _TimesMode { specific, everyFewHours }
 
 class CreateReminderSheet extends ConsumerStatefulWidget {
   const CreateReminderSheet({super.key, this.editing, this.scrollController});
@@ -45,7 +49,11 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
   late ReminderFrequency _frequency;
   late Set<int> _weeklyDays;
   int? _intervalDays;
-  TimeOfDay? _timeOfDay;
+  late List<TimeOfDay> _times;
+  _TimesMode _timesMode = _TimesMode.specific;
+  int _everyMinutes = 120;
+  TimeOfDay _rangeStart = const TimeOfDay(hour: 9, minute: 0);
+  TimeOfDay _rangeEnd = const TimeOfDay(hour: 21, minute: 0);
   int? _delayHours;
   String? _targetMemberId;
   late final String _initialName;
@@ -54,7 +62,7 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
   late final ReminderFrequency _initialFrequency;
   late final Set<int> _initialWeeklyDays;
   late final int? _initialIntervalDays;
-  late final TimeOfDay? _initialTimeOfDay;
+  late final List<TimeOfDay> _initialTimes;
   late final int? _initialDelayHours;
   late final String? _initialTargetMemberId;
 
@@ -71,7 +79,7 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
       _frequency != _initialFrequency ||
       !_setEquals(_weeklyDays, _initialWeeklyDays) ||
       _intervalDays != _initialIntervalDays ||
-      _timeOfDay != _initialTimeOfDay ||
+      !_timesEqual(_effectiveTimes, _initialTimes) ||
       _delayHours != _initialDelayHours ||
       _targetMemberId != _initialTargetMemberId;
 
@@ -95,24 +103,21 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
         : (editingInterval ?? 2);
     _delayHours = r?.delayHours ?? 0;
     _targetMemberId = r?.targetMemberId;
-    final timeOfDay = r?.timeOfDay;
-    if (timeOfDay != null) {
-      final parts = timeOfDay.split(':');
-      if (parts.length == 2) {
-        _timeOfDay = TimeOfDay(
-          hour: int.tryParse(parts[0]) ?? 9,
-          minute: int.tryParse(parts[1]) ?? 0,
-        );
-      }
-    }
-    _timeOfDay ??= const TimeOfDay(hour: 9, minute: 0);
+    _times = r == null
+        ? const [TimeOfDay(hour: 9, minute: 0)]
+        : sortedUniqueTimes(
+            r.allTimesOfDay.map(parseReminderTime).whereType<TimeOfDay>(),
+          );
+    if (_times.isEmpty) _times = const [TimeOfDay(hour: 9, minute: 0)];
+    _rangeStart = _times.first;
+    if (_times.length > 1) _rangeEnd = _times.last;
     _initialName = _nameController.text;
     _initialMessage = _messageController.text;
     _initialTrigger = _trigger;
     _initialFrequency = _frequency;
     _initialWeeklyDays = Set<int>.from(_weeklyDays);
     _initialIntervalDays = _intervalDays;
-    _initialTimeOfDay = _timeOfDay;
+    _initialTimes = List.of(_times);
     _initialDelayHours = _delayHours;
     _initialTargetMemberId = _targetMemberId;
   }
@@ -313,27 +318,25 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
                         ),
                         const SizedBox(height: 12),
                       ],
-                      // Time picker (all scheduled frequencies have a time).
-                      _LabeledRow(
-                        label: context.l10n.remindersTimeLabel,
-                        child: Builder(
-                          builder: (anchorContext) => PrismButton(
-                            label: _timeOfDay?.format(context) ?? '9:00 AM',
-                            tone: PrismButtonTone.subtle,
-                            onPressed: () async {
-                              final picked = await showPrismTimePicker(
-                                context: context,
-                                anchorContext: anchorContext,
-                                initialTime:
-                                    _timeOfDay ??
-                                    const TimeOfDay(hour: 9, minute: 0),
-                              );
-                              if (picked != null) {
-                                setState(() => _timeOfDay = picked);
-                              }
-                            },
-                          ),
+                      // Times (all scheduled frequencies fire at one or more
+                      // times of day).
+                      _TimesEditor(
+                        mode: _timesMode,
+                        times: _times,
+                        everyMinutes: _everyMinutes,
+                        rangeStart: _rangeStart,
+                        rangeEnd: _rangeEnd,
+                        onModeChanged: (mode) =>
+                            setState(() => _timesMode = mode),
+                        onTimesChanged: (times) => setState(
+                          () => _times = sortedUniqueTimes(times),
                         ),
+                        onEveryMinutesChanged: (v) =>
+                            setState(() => _everyMinutes = v),
+                        onRangeStartChanged: (v) =>
+                            setState(() => _rangeStart = v),
+                        onRangeEndChanged: (v) =>
+                            setState(() => _rangeEnd = v),
                       ),
                     ] else ...[
                       // Delay picker for front change
@@ -459,6 +462,24 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
     );
   }
 
+  /// The times that will be saved for the current editor state.
+  List<TimeOfDay> get _effectiveTimes => switch (_timesMode) {
+    _TimesMode.specific => _times,
+    _TimesMode.everyFewHours => evenlySpacedTimes(
+      start: _rangeStart,
+      end: _rangeEnd,
+      everyMinutes: _everyMinutes,
+    ),
+  };
+
+  bool _timesEqual(List<TimeOfDay> a, List<TimeOfDay> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
   bool _setEquals(Set<int> left, Set<int> right) =>
       left.length == right.length && left.containsAll(right);
 
@@ -468,10 +489,9 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
     if (name.isEmpty || message.isEmpty) return;
 
     final notifier = ref.read(remindersNotifierProvider.notifier);
-    final timeStr = _timeOfDay != null
-        ? '${_timeOfDay!.hour.toString().padLeft(2, '0')}:'
-              '${_timeOfDay!.minute.toString().padLeft(2, '0')}'
-        : null;
+    final times = _effectiveTimes.map(formatReminderTime).toList();
+    final timeStr = times.isEmpty ? null : times.first;
+    final extraTimes = times.length > 1 ? times.sublist(1) : null;
 
     final isScheduled = _trigger == ReminderTrigger.scheduled;
     final frequency = isScheduled ? _frequency : ReminderFrequency.daily;
@@ -496,6 +516,7 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
           weeklyDays: weeklyDays,
           intervalDays: intervalDays,
           timeOfDay: isScheduled ? timeStr : null,
+          additionalTimes: isScheduled ? extraTimes : null,
           delayHours: _trigger == ReminderTrigger.onFrontChange
               ? _delayHours
               : null,
@@ -511,6 +532,7 @@ class _CreateReminderSheetState extends ConsumerState<CreateReminderSheet> {
         weeklyDays: weeklyDays,
         intervalDays: intervalDays,
         timeOfDay: isScheduled ? timeStr : null,
+        additionalTimes: isScheduled ? extraTimes : null,
         delayHours: _trigger == ReminderTrigger.onFrontChange
             ? _delayHours
             : null,
@@ -542,6 +564,210 @@ class _LabeledRow extends StatelessWidget {
         Text(label, style: Theme.of(context).textTheme.bodyMedium),
         child,
       ],
+    );
+  }
+}
+
+/// Editor for the time(s) of day a scheduled reminder fires.
+///
+/// "Specific times" is a list of times the user picks one by one. "Every few
+/// hours" generates evenly spaced times between a start and an end time.
+class _TimesEditor extends StatelessWidget {
+  const _TimesEditor({
+    required this.mode,
+    required this.times,
+    required this.everyMinutes,
+    required this.rangeStart,
+    required this.rangeEnd,
+    required this.onModeChanged,
+    required this.onTimesChanged,
+    required this.onEveryMinutesChanged,
+    required this.onRangeStartChanged,
+    required this.onRangeEndChanged,
+  });
+
+  final _TimesMode mode;
+  final List<TimeOfDay> times;
+  final int everyMinutes;
+  final TimeOfDay rangeStart;
+  final TimeOfDay rangeEnd;
+  final ValueChanged<_TimesMode> onModeChanged;
+  final ValueChanged<List<TimeOfDay>> onTimesChanged;
+  final ValueChanged<int> onEveryMinutesChanged;
+  final ValueChanged<TimeOfDay> onRangeStartChanged;
+  final ValueChanged<TimeOfDay> onRangeEndChanged;
+
+  static const _intervalOptions = [30, 60, 90, 120, 180, 240, 360, 480];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final generated = evenlySpacedTimes(
+      start: rangeStart,
+      end: rangeEnd,
+      everyMinutes: everyMinutes,
+    );
+    final canAdd = times.length < Reminder.maxTimesPerDay;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.remindersTimesPerDayLabel,
+          style: theme.textTheme.labelLarge,
+        ),
+        const SizedBox(height: 8),
+        PrismSegmentedControl<_TimesMode>(
+          segments: [
+            PrismSegment(
+              value: _TimesMode.specific,
+              label: context.l10n.remindersTimesSpecific,
+            ),
+            PrismSegment(
+              value: _TimesMode.everyFewHours,
+              label: context.l10n.remindersTimesEveryFewHours,
+            ),
+          ],
+          selected: mode,
+          onChanged: onModeChanged,
+        ),
+        const SizedBox(height: 12),
+        if (mode == _TimesMode.specific) ...[
+          for (var i = 0; i < times.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      times.length == 1
+                          ? context.l10n.remindersTimeLabel
+                          : context.l10n.remindersTimeNumberLabel(i + 1),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                  _TimeButton(
+                    time: times[i],
+                    onPicked: (picked) {
+                      final next = List.of(times)..[i] = picked;
+                      onTimesChanged(next);
+                    },
+                  ),
+                  if (times.length > 1)
+                    IconButton(
+                      tooltip: context.l10n.remindersRemoveTime,
+                      icon: Icon(AppIcons.close, size: 18),
+                      onPressed: () =>
+                          onTimesChanged(List.of(times)..removeAt(i)),
+                    ),
+                ],
+              ),
+            ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Builder(
+              builder: (anchorContext) => PrismButton(
+                label: context.l10n.remindersAddTime,
+                icon: AppIcons.add,
+                tone: PrismButtonTone.subtle,
+                enabled: canAdd,
+                onPressed: canAdd
+                    ? () async {
+                        final last = times.isEmpty
+                            ? const TimeOfDay(hour: 9, minute: 0)
+                            : times.last;
+                        final suggested = TimeOfDay(
+                          hour: (last.hour + 3) % 24,
+                          minute: last.minute,
+                        );
+                        final picked = await showPrismTimePicker(
+                          context: context,
+                          anchorContext: anchorContext,
+                          initialTime: suggested,
+                        );
+                        if (picked != null) {
+                          onTimesChanged([...times, picked]);
+                        }
+                      }
+                    : () {},
+              ),
+            ),
+          ),
+          if (!canAdd)
+            Text(
+              context.l10n.remindersMaxTimesHelper(Reminder.maxTimesPerDay),
+              style: theme.textTheme.bodySmall,
+            ),
+        ] else ...[
+          _LabeledRow(
+            label: context.l10n.remindersRepeatEveryLabel,
+            child: PrismSelect<int>.compact(
+              value: _intervalOptions.contains(everyMinutes)
+                  ? everyMinutes
+                  : 120,
+              menuWidth: 180,
+              items: [
+                for (final m in _intervalOptions)
+                  PrismSelectItem(
+                    value: m,
+                    label: m < 60
+                        ? context.l10n.remindersEveryMinutes(m)
+                        : (m % 60 == 0
+                              ? context.l10n.remindersEveryHours(m ~/ 60)
+                              : context.l10n.remindersEveryMinutes(m)),
+                  ),
+              ],
+              onChanged: (v) {
+                if (v != null) onEveryMinutesChanged(v);
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          _LabeledRow(
+            label: context.l10n.remindersFromLabel,
+            child: _TimeButton(time: rangeStart, onPicked: onRangeStartChanged),
+          ),
+          const SizedBox(height: 8),
+          _LabeledRow(
+            label: context.l10n.remindersUntilLabel,
+            child: _TimeButton(time: rangeEnd, onPicked: onRangeEndChanged),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.remindersGeneratedTimes(
+              generated.map((t) => t.format(context)).join(', '),
+            ),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TimeButton extends StatelessWidget {
+  const _TimeButton({required this.time, required this.onPicked});
+
+  final TimeOfDay time;
+  final ValueChanged<TimeOfDay> onPicked;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (anchorContext) => PrismButton(
+        label: time.format(context),
+        tone: PrismButtonTone.subtle,
+        onPressed: () async {
+          final picked = await showPrismTimePicker(
+            context: context,
+            anchorContext: anchorContext,
+            initialTime: time,
+          );
+          if (picked != null) onPicked(picked);
+        },
+      ),
     );
   }
 }

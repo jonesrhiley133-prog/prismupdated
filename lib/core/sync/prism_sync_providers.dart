@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' show min;
 
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
+    show PlatformInt64Util;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -4831,12 +4833,15 @@ Future<DrainResult> drainRemoteDeliveries(
         take: (limit) async {
           final json = await ffi.takeUndeliveredChanges(
             handle: handle,
-            limit: limit,
+            limit: PlatformInt64Util.from(limit),
           );
           return DrainChunk.fromJson(jsonDecode(json) as Map<String, dynamic>);
         },
         ack: (upToId) =>
-            ffi.ackConsumerDeliveries(handle: handle, upToId: upToId),
+            ffi.ackConsumerDeliveries(
+              handle: handle,
+              upToId: PlatformInt64Util.from(upToId),
+            ),
         applyChanges: (deliveries) async {
           final chunkBase = runningApplied;
           final applied = await applyConsumerDeliveriesHealingUnappliable(
@@ -6715,6 +6720,12 @@ class SyncStatusNotifier extends Notifier<SyncStatus> {
         await db.customStatement('DELETE FROM member_groups');
         await db.customStatement('DELETE FROM notes');
         await db.customStatement('DELETE FROM reminders');
+        await db.customStatement('DELETE FROM mood_entries');
+        await db.customStatement('DELETE FROM calendar_events');
+        await db.customStatement('DELETE FROM saved_locations');
+        await db.customStatement('DELETE FROM location_sessions');
+        await db.customStatement('DELETE FROM jobs');
+        await db.customStatement('DELETE FROM work_sessions');
         await db.customStatement('DELETE FROM friends');
         await db.customStatement('DELETE FROM sharing_requests');
         await db.customStatement('DELETE FROM media_attachments');
@@ -6748,6 +6759,12 @@ class SyncStatusNotifier extends Notifier<SyncStatus> {
         const TableUpdate('member_groups'),
         const TableUpdate('notes'),
         const TableUpdate('reminders'),
+        const TableUpdate('mood_entries'),
+        const TableUpdate('calendar_events'),
+        const TableUpdate('saved_locations'),
+        const TableUpdate('location_sessions'),
+        const TableUpdate('jobs'),
+        const TableUpdate('work_sessions'),
         const TableUpdate('friends'),
         const TableUpdate('sharing_requests'),
         const TableUpdate('media_attachments'),

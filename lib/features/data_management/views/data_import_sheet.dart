@@ -471,6 +471,21 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
       count: p.conversationCategories,
     ),
     (label: context.l10n.dataManagementPreviewReminders, count: p.reminders),
+    (label: context.l10n.dataManagementPreviewMoodEntries, count: p.moodEntries),
+    (
+      label: context.l10n.dataManagementPreviewCalendarEvents,
+      count: p.calendarEvents,
+    ),
+    (label: context.l10n.dataManagementPreviewLocations, count: p.savedLocations),
+    (
+      label: context.l10n.dataManagementPreviewLocationSessions,
+      count: p.locationSessions,
+    ),
+    (label: context.l10n.dataManagementPreviewJobs, count: p.jobs),
+    (
+      label: context.l10n.dataManagementPreviewWorkSessions,
+      count: p.workSessions,
+    ),
     (label: context.l10n.dataManagementPreviewFriends, count: p.friends),
     (
       label: context.l10n.dataManagementPreviewMediaAttachments,
@@ -655,6 +670,27 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
     (
       label: context.l10n.dataManagementPreviewReminders,
       count: r.remindersCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewMoodEntries,
+      count: r.moodEntriesCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewCalendarEvents,
+      count: r.calendarEventsCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewLocations,
+      count: r.savedLocationsCreated,
+    ),
+    (
+      label: context.l10n.dataManagementPreviewLocationSessions,
+      count: r.locationSessionsCreated,
+    ),
+    (label: context.l10n.dataManagementPreviewJobs, count: r.jobsCreated),
+    (
+      label: context.l10n.dataManagementPreviewWorkSessions,
+      count: r.workSessionsCreated,
     ),
     (label: context.l10n.dataManagementPreviewFriends, count: r.friendsCreated),
     (

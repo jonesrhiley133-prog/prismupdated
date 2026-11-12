@@ -24,6 +24,7 @@ import 'core/sync/prism_sync_providers.dart';
 import 'features/pluralkit/providers/pk_sync_event_log_provider.dart';
 import 'features/fronting/migration/providers/fronting_migration_providers.dart';
 import 'features/fronting/providers/fronting_session_repair_provider.dart';
+import 'features/calendar/services/calendar_notification_service.dart';
 import 'features/habits/providers/habit_providers.dart';
 import 'features/onboarding/providers/onboarding_providers.dart';
 import 'domain/models/system_settings.dart';
@@ -282,6 +283,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(reminderSchedulerListenerProvider, (previous, next) {});
     // Keep the habit notification listener alive — reschedules on habit changes.
     ref.listen(habitNotificationListenerProvider, (_, _) {});
+    // Keep calendar event alerts armed — reschedules on event changes.
+    ref.listen(calendarNotificationListenerProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
     // Keep frontingMigrationModeProvider always-warm. The sync apply path

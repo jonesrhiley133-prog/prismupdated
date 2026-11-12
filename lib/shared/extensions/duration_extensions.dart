@@ -22,6 +22,35 @@ extension DurationFormatting on Duration {
     return '${seconds}s';
   }
 
+  /// Exact to the second, for live timers: "2:05:09", "12:03", "0:42".
+  /// Hours are not wrapped into days, so long sessions read naturally.
+  String toClockString() {
+    final total = inSeconds.abs();
+    final h = total ~/ 3600;
+    final m = (total % 3600) ~/ 60;
+    final s = total % 60;
+    final sign = isNegative ? '-' : '';
+    if (h > 0) {
+      return '$sign$h:${m.toString().padLeft(2, '0')}:'
+          '${s.toString().padLeft(2, '0')}';
+    }
+    return '$sign$m:${s.toString().padLeft(2, '0')}';
+  }
+
+  /// Exact to the second in words: "1h 45m 03s", "12m 07s", "42s".
+  String toExactString() {
+    final total = inSeconds.abs();
+    final h = total ~/ 3600;
+    final m = (total % 3600) ~/ 60;
+    final s = total % 60;
+    if (h > 0) {
+      return '${h}h ${m.toString().padLeft(2, '0')}m '
+          '${s.toString().padLeft(2, '0')}s';
+    }
+    if (m > 0) return '${m}m ${s.toString().padLeft(2, '0')}s';
+    return '${s}s';
+  }
+
   /// Returns a rounded string without seconds (unless under 1 minute).
   /// e.g. "2d 5h", "2h 15m", "45m", "30s".
   String toRoundedString() {

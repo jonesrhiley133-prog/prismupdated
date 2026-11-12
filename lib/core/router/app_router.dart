@@ -62,7 +62,12 @@ import '../../features/pluralkit/views/pk_sync_debug_screen.dart';
 import '../../features/pluralkit/views/pluralkit_setup_screen.dart';
 import '../../features/sharing/views/sharing_screen.dart';
 import '../../features/sharing/views/friend_detail_screen.dart';
+import '../../features/calendar/views/calendar_screen.dart';
 import '../../features/habits/views/habits_list_screen.dart';
+import '../../features/insights/views/daily_insights_screen.dart';
+import '../../features/locations/views/locations_screen.dart';
+import '../../features/work/views/work_screen.dart';
+import '../../features/mood/views/mood_screen.dart';
 import '../../features/habits/views/habit_detail_screen.dart';
 import '../../features/data_management/views/import_export_screen.dart';
 import '../../features/settings/views/features_settings_screen.dart';
@@ -105,6 +110,15 @@ final _sleepNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'sleep');
 final _boardsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'boards');
 final _groupsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'groups');
 final _mediaNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'media');
+final _moodNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'mood');
+final _calendarNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'calendar');
+final _locationsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'locations',
+);
+final _workNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'work');
+final _insightsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'insights',
+);
 
 /// Notifier that triggers GoRouter redirect re-evaluation when onboarding
 /// status changes.
@@ -1027,6 +1041,56 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          // Branch 14: Mood (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _moodNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.mood,
+                builder: (context, state) => const MoodScreen(),
+              ),
+            ],
+          ),
+          // Branch 15: Calendar (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _calendarNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.calendar,
+                builder: (context, state) => const CalendarScreen(),
+              ),
+            ],
+          ),
+          // Branch 16: Locations (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _locationsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.locations,
+                builder: (context, state) => const LocationsScreen(),
+              ),
+            ],
+          ),
+          // Branch 17: Work (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _workNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.work,
+                builder: (context, state) => const WorkScreen(),
+              ),
+            ],
+          ),
+          // Branch 18: Daily Insights (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _insightsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.insights,
+                builder: (context, state) => const DailyInsightsScreen(),
               ),
             ],
           ),

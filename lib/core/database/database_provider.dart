@@ -2,13 +2,12 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
-import 'package:sqlite3/sqlite3.dart' as raw;
 
 import 'app_database.dart';
+import 'platform/sqlite_opener.dart';
 import 'database_encryption.dart';
 import 'package:prism_plurality/core/services/app_data_dir.dart';
 import 'package:prism_plurality/core/services/backup_exclusion.dart';
@@ -664,7 +663,7 @@ LazyDatabase _openVerifiedConnection(String hexKey) {
   return LazyDatabase(() async {
     final file = await getDatabaseFile();
     await excludeFromiCloudBackup(file.path);
-    return NativeDatabase.createInBackground(
+    return openNativeDatabaseInBackground(
       file,
       setup: makeCipherSetup(hexKey),
     );
@@ -701,7 +700,7 @@ Future<String?> verifiedSyncRecoveryKeyForTest(String dbPath) {
 /// Returns true if the DB is readable with this key.
 bool _tryOpenEncrypted(String path, String hexKey) {
   try {
-    final db = raw.sqlite3.open(path);
+    final db = openRawSqlite(path);
     try {
       configurePrismSqliteConnection(db, hexKey: hexKey);
       db.select('SELECT count(*) FROM sqlite_master;');
@@ -715,7 +714,7 @@ bool _tryOpenEncrypted(String path, String hexKey) {
 }
 
 int _readEncryptedUserVersion(String path, String hexKey) {
-  final db = raw.sqlite3.open(path);
+  final db = openRawSqlite(path);
   try {
     configurePrismSqliteConnection(db, hexKey: hexKey);
     final rows = db.select('PRAGMA user_version;');

@@ -70,6 +70,12 @@ class V1Export {
     this.frontSessionComments = const [],
     this.conversationCategories = const [],
     this.reminders = const [],
+    this.moodEntries = const [],
+    this.calendarEvents = const [],
+    this.savedLocations = const [],
+    this.locationSessions = const [],
+    this.jobs = const [],
+    this.workSessions = const [],
     this.friends = const [],
     this.mediaAttachments = const [],
     this.memberBoardPosts = const [],
@@ -102,6 +108,18 @@ class V1Export {
   final List<V1FrontSessionComment> frontSessionComments;
   final List<V1ConversationCategory> conversationCategories;
   final List<V1Reminder> reminders;
+
+  /// Mood check-ins, as `MoodEntry.toJson()` maps.
+  final List<Map<String, dynamic>> moodEntries;
+
+  /// Calendar events, as `CalendarEvent.toJson()` maps.
+  final List<Map<String, dynamic>> calendarEvents;
+
+  /// Locations and work, as domain `toJson()` maps.
+  final List<Map<String, dynamic>> savedLocations;
+  final List<Map<String, dynamic>> locationSessions;
+  final List<Map<String, dynamic>> jobs;
+  final List<Map<String, dynamic>> workSessions;
   final List<V1Friend> friends;
   final List<V1MediaAttachment> mediaAttachments;
   final List<V1MemberBoardPost> memberBoardPosts;
@@ -172,6 +190,12 @@ class V1Export {
           .toList(),
     if (reminders.isNotEmpty)
       'reminders': reminders.map((e) => e.toJson()).toList(),
+    if (moodEntries.isNotEmpty) 'moodEntries': moodEntries,
+    if (calendarEvents.isNotEmpty) 'calendarEvents': calendarEvents,
+    if (savedLocations.isNotEmpty) 'savedLocations': savedLocations,
+    if (locationSessions.isNotEmpty) 'locationSessions': locationSessions,
+    if (jobs.isNotEmpty) 'jobs': jobs,
+    if (workSessions.isNotEmpty) 'workSessions': workSessions,
     if (friends.isNotEmpty) 'friends': friends.map((e) => e.toJson()).toList(),
     if (mediaAttachments.isNotEmpty)
       'mediaAttachments': mediaAttachments.map((e) => e.toJson()).toList(),
@@ -343,6 +367,12 @@ class V1Export {
               ?.map((e) => V1Reminder.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      moodEntries: _jsonObjectList(json['moodEntries']),
+      calendarEvents: _jsonObjectList(json['calendarEvents']),
+      savedLocations: _jsonObjectList(json['savedLocations']),
+      locationSessions: _jsonObjectList(json['locationSessions']),
+      jobs: _jsonObjectList(json['jobs']),
+      workSessions: _jsonObjectList(json['workSessions']),
       friends:
           (json['friends'] as List<dynamic>?)
               ?.map((e) => V1Friend.fromJson(e as Map<String, dynamic>))
@@ -2124,6 +2154,7 @@ class V1Reminder {
     this.intervalDays,
     this.weeklyDays,
     this.timeOfDay,
+    this.additionalTimes,
     this.delayHours,
     this.targetMemberId,
     this.isActive = true,
@@ -2135,6 +2166,7 @@ class V1Reminder {
   final String name;
   final String message;
   final int trigger; // ReminderTrigger enum index
+  final List<String>? additionalTimes; // extra "HH:mm" times per day
   final String? frequency;
   final int? intervalDays;
   final String? weeklyDays; // JSON-encoded int list
@@ -2154,6 +2186,8 @@ class V1Reminder {
     if (intervalDays != null) 'intervalDays': intervalDays,
     if (weeklyDays != null) 'weeklyDays': weeklyDays,
     if (timeOfDay != null) 'timeOfDay': timeOfDay,
+    if (additionalTimes != null && additionalTimes!.isNotEmpty)
+      'additionalTimes': additionalTimes,
     if (delayHours != null) 'delayHours': delayHours,
     if (targetMemberId != null) 'targetMemberId': targetMemberId,
     'isActive': isActive,
@@ -2170,6 +2204,9 @@ class V1Reminder {
     intervalDays: json['intervalDays'] as int?,
     weeklyDays: json['weeklyDays'] as String?,
     timeOfDay: json['timeOfDay'] as String?,
+    additionalTimes: (json['additionalTimes'] as List<dynamic>?)
+        ?.whereType<String>()
+        .toList(),
     delayHours: json['delayHours'] as int?,
     targetMemberId: json['targetMemberId'] as String?,
     isActive: json['isActive'] as bool? ?? true,
@@ -2406,4 +2443,12 @@ class V1MemberBoardPost {
         editedAt: json['editedAt'] as String?,
         isDeleted: json['isDeleted'] as bool? ?? false,
       );
+}
+
+List<Map<String, dynamic>> _jsonObjectList(Object? raw) {
+  if (raw is! List) return const [];
+  return [
+    for (final e in raw)
+      if (e is Map) Map<String, dynamic>.from(e),
+  ];
 }

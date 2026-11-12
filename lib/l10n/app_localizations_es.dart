@@ -14366,4 +14366,1147 @@ class AppLocalizationsEs extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get remindersTimesPerDayLabel => 'Horas';
+
+  @override
+  String get remindersTimesSpecific => 'Horas concretas';
+
+  @override
+  String get remindersTimesEveryFewHours => 'Cada pocas horas';
+
+  @override
+  String remindersTimeNumberLabel(int number) {
+    return 'Hora $number';
+  }
+
+  @override
+  String get remindersRemoveTime => 'Quitar hora';
+
+  @override
+  String get remindersAddTime => 'Añadir hora';
+
+  @override
+  String remindersMaxTimesHelper(int count) {
+    return 'Hasta $count veces al día.';
+  }
+
+  @override
+  String remindersEveryMinutes(int count) {
+    return '$count minutos';
+  }
+
+  @override
+  String remindersEveryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horas',
+      one: '1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersFromLabel => 'Desde';
+
+  @override
+  String get remindersUntilLabel => 'Hasta';
+
+  @override
+  String remindersGeneratedTimes(String times) {
+    return 'Suena a las $times';
+  }
+
+  @override
+  String remindersSubtitleTimesPerDay(int count) {
+    return '$count veces al día';
+  }
+
+  @override
+  String get dataManagementPreviewMoodEntries => 'Registros de ánimo';
+
+  @override
+  String get dataManagementPreviewCalendarEvents => 'Eventos del calendario';
+
+  @override
+  String get navMood => 'Ánimo';
+
+  @override
+  String get moodTitle => 'Ánimo';
+
+  @override
+  String get moodLevelAwful => 'Fatal';
+
+  @override
+  String get moodLevelBad => 'Mal';
+
+  @override
+  String get moodLevelOkay => 'Normal';
+
+  @override
+  String get moodLevelGood => 'Bien';
+
+  @override
+  String get moodLevelGreat => 'Genial';
+
+  @override
+  String get moodScaleVeryLow => 'Muy bajo';
+
+  @override
+  String get moodScaleLow => 'Bajo';
+
+  @override
+  String get moodScaleMedium => 'Medio';
+
+  @override
+  String get moodScaleHigh => 'Alto';
+
+  @override
+  String get moodScaleVeryHigh => 'Muy alto';
+
+  @override
+  String get moodLogTitle => 'Registrar ánimo';
+
+  @override
+  String get moodEditTitle => 'Editar registro';
+
+  @override
+  String get moodDeleteTitle => '¿Eliminar registro?';
+
+  @override
+  String get moodDeleteMessage => 'Este registro se eliminará de tu historial.';
+
+  @override
+  String get moodWholeSystem => 'Todo el sistema';
+
+  @override
+  String get moodHowAreYou => '¿Cómo te sientes?';
+
+  @override
+  String get moodIntensityLabel => 'Intensidad';
+
+  @override
+  String get moodEmotionsLabel => 'Emociones';
+
+  @override
+  String get moodEmotionsHelper =>
+      'Elige todas las que encajen, de cualquier grupo.';
+
+  @override
+  String get moodWellbeingLabel => 'Bienestar';
+
+  @override
+  String get moodEnergyLabel => 'Energía';
+
+  @override
+  String get moodStressLabel => 'Estrés';
+
+  @override
+  String get moodSleepQualityLabel => 'Calidad del sueño';
+
+  @override
+  String get moodBodyLabel => 'Sensaciones corporales';
+
+  @override
+  String get moodBodyHelper => 'Toca donde notes algo en tu cuerpo.';
+
+  @override
+  String get moodBodyNoticed => 'Algo ahí';
+
+  @override
+  String get moodBodyClear => 'Borrar';
+
+  @override
+  String get moodWhoLabel => '¿Quién lo siente?';
+
+  @override
+  String get moodWhenLabel => 'Cuándo';
+
+  @override
+  String get moodNoteLabel => 'Nota (opcional)';
+
+  @override
+  String get moodTabOverview => 'Resumen';
+
+  @override
+  String get moodTabCalendar => 'Calendario';
+
+  @override
+  String get moodTabHistory => 'Historial';
+
+  @override
+  String get moodQuickPrompt => '¿Cómo te sientes ahora mismo?';
+
+  @override
+  String get moodLatestToday => 'Último de hoy';
+
+  @override
+  String get moodNoCheckInsToday => 'Aún no hay registros hoy.';
+
+  @override
+  String get moodEmptyTitle => 'Aún no hay registros';
+
+  @override
+  String get moodEmptySubtitle =>
+      'Lleva un registro de cómo os sentís con el tiempo.';
+
+  @override
+  String moodRangeDays(int count) {
+    return '$count días';
+  }
+
+  @override
+  String get moodStatAverage => 'Ánimo medio';
+
+  @override
+  String get moodStatCheckIns => 'Registros';
+
+  @override
+  String get moodStatStreak => 'Racha de días';
+
+  @override
+  String get moodStatDaysLogged => 'Días registrados';
+
+  @override
+  String get moodTrendTitle => 'Ánimo en el tiempo';
+
+  @override
+  String get moodDistributionTitle => 'Distribución del ánimo';
+
+  @override
+  String get moodWellbeingAverages => 'Promedios de bienestar';
+
+  @override
+  String get moodTopEmotions => 'Emociones más sentidas';
+
+  @override
+  String get moodTopBody => 'Sensaciones corporales';
+
+  @override
+  String get moodByTimeOfDay => 'Ánimo según la hora';
+
+  @override
+  String get moodByMember => 'Ánimo por miembro';
+
+  @override
+  String get moodTimeMorning => 'Mañana';
+
+  @override
+  String get moodTimeAfternoon => 'Tarde';
+
+  @override
+  String get moodTimeEvening => 'Noche';
+
+  @override
+  String get moodTimeNight => 'Madrugada';
+
+  @override
+  String get moodNotEnoughData =>
+      'Registra algunos estados para ver tendencias aquí.';
+
+  @override
+  String get moodDayEmpty => 'No hay nada registrado este día.';
+
+  @override
+  String get moodDeletedToast => 'Registro eliminado';
+
+  @override
+  String moodIntensityShort(int value) {
+    return 'Intensidad $value';
+  }
+
+  @override
+  String get moodPreviousMonth => 'Mes anterior';
+
+  @override
+  String get moodNextMonth => 'Mes siguiente';
+
+  @override
+  String moodAverageOfDay(String value) {
+    return 'Media $value';
+  }
+
+  @override
+  String get navCalendar => 'Calendario';
+
+  @override
+  String get calendarTitle => 'Calendario';
+
+  @override
+  String get calendarToday => 'Hoy';
+
+  @override
+  String get calendarFilters => 'Filtros y capas';
+
+  @override
+  String get calendarNewEvent => 'Nuevo evento';
+
+  @override
+  String get calendarEditEvent => 'Editar evento';
+
+  @override
+  String get calendarAddEvent => 'Añadir';
+
+  @override
+  String get calendarViewMonth => 'Mes';
+
+  @override
+  String get calendarViewWeek => 'Semana';
+
+  @override
+  String get calendarViewDay => 'Día';
+
+  @override
+  String get calendarViewAgenda => 'Agenda';
+
+  @override
+  String calendarFilteredBy(String category) {
+    return 'Solo: $category';
+  }
+
+  @override
+  String get calendarPrevious => 'Anterior';
+
+  @override
+  String get calendarNext => 'Siguiente';
+
+  @override
+  String get calendarNothingOnDay =>
+      'Nada planeado. Mantén pulsado un día o toca Añadir para crear un evento.';
+
+  @override
+  String calendarBirthdayOf(String name) {
+    return 'Cumpleaños de $name';
+  }
+
+  @override
+  String calendarBirthdayTurning(String name, int age) {
+    return '$name cumple $age';
+  }
+
+  @override
+  String calendarMoodAverage(String label, String value) {
+    return 'Ánimo: $label ($value)';
+  }
+
+  @override
+  String get calendarSearch => 'Buscar eventos';
+
+  @override
+  String get calendarAgendaEmpty => 'No hay eventos próximos.';
+
+  @override
+  String get calendarSearchEmpty =>
+      'Ningún evento coincide con tu búsqueda en el próximo año.';
+
+  @override
+  String get calendarShowMore => 'Mostrar más';
+
+  @override
+  String get calendarShowBirthdays => 'Mostrar cumpleaños de miembros';
+
+  @override
+  String get calendarShowMood => 'Mostrar ánimo diario';
+
+  @override
+  String get calendarShowReminders => 'Mostrar recordatorios';
+
+  @override
+  String get calendarAllCategories => 'Todas';
+
+  @override
+  String get calendarTitleLabel => 'Título';
+
+  @override
+  String get calendarAllDay => 'Todo el día';
+
+  @override
+  String get calendarStarts => 'Empieza';
+
+  @override
+  String get calendarEnds => 'Termina';
+
+  @override
+  String get calendarEndBeforeStart => 'El final debe ser posterior al inicio.';
+
+  @override
+  String get calendarRepeat => 'Repetir';
+
+  @override
+  String get calendarRepeatNone => 'Nunca';
+
+  @override
+  String get calendarRepeatDaily => 'Diario';
+
+  @override
+  String get calendarRepeatWeekly => 'Semanal';
+
+  @override
+  String get calendarRepeatMonthly => 'Mensual';
+
+  @override
+  String get calendarRepeatYearly => 'Anual';
+
+  @override
+  String get calendarRepeatEvery => 'Repetir cada';
+
+  @override
+  String calendarEveryNDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count días',
+      one: 'Cada día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count semanas',
+      one: 'Cada semana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count meses',
+      one: 'Cada mes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEveryNYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cada $count años',
+      one: 'Cada año',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarRepeatEnds => 'Termina';
+
+  @override
+  String get calendarEndsNever => 'Nunca';
+
+  @override
+  String get calendarEndsOnDate => 'En una fecha';
+
+  @override
+  String get calendarEndsAfterCount => 'Tras varias veces';
+
+  @override
+  String get calendarOccurrences => 'Repeticiones';
+
+  @override
+  String get calendarAlerts => 'Avisos';
+
+  @override
+  String get calendarAlertAtStart => 'Al empezar';
+
+  @override
+  String calendarAlertMinutes(int count) {
+    return '$count min antes';
+  }
+
+  @override
+  String calendarAlertHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horas antes',
+      one: '1 hora antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarAlertDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días antes',
+      one: '1 día antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarAlertWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count semanas antes',
+      one: '1 semana antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarCategory => 'Categoría';
+
+  @override
+  String get calendarCustomCategory => 'Categoría personalizada';
+
+  @override
+  String get calendarAddCategory => 'Usar esta categoría';
+
+  @override
+  String get calendarColor => 'Color';
+
+  @override
+  String get calendarDefaultColor => 'Color predeterminado';
+
+  @override
+  String get calendarLocation => 'Ubicación';
+
+  @override
+  String get calendarMembers => 'Miembros implicados';
+
+  @override
+  String get calendarNoMembers => 'Nadie en particular';
+
+  @override
+  String get calendarNotes => 'Notas';
+
+  @override
+  String get calendarEditRecurringTitle => '¿Qué eventos cambiar?';
+
+  @override
+  String get calendarDeleteRecurringTitle => '¿Qué eventos eliminar?';
+
+  @override
+  String get calendarScopeThis => 'Solo este evento';
+
+  @override
+  String get calendarScopeFollowing => 'Este y los siguientes';
+
+  @override
+  String get calendarScopeAll => 'Todos los de la serie';
+
+  @override
+  String get calendarDuplicate => 'Duplicar';
+
+  @override
+  String get calendarDeleteTitle => '¿Eliminar evento?';
+
+  @override
+  String calendarDeleteMessage(String title) {
+    return 'Se eliminará «$title».';
+  }
+
+  @override
+  String get calendarDeletedToast => 'Evento eliminado';
+
+  @override
+  String calendarUntilDate(String date) {
+    return 'hasta el $date';
+  }
+
+  @override
+  String calendarTimesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count veces',
+      one: 'una vez',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dataManagementPreviewLocations => 'Ubicaciones guardadas';
+
+  @override
+  String get dataManagementPreviewLocationSessions => 'Visitas a ubicaciones';
+
+  @override
+  String get dataManagementPreviewJobs => 'Trabajos';
+
+  @override
+  String get dataManagementPreviewWorkSessions => 'Sesiones de trabajo';
+
+  @override
+  String get navLocations => 'Ubicaciones';
+
+  @override
+  String get navWork => 'Trabajo';
+
+  @override
+  String get navInsights => 'Perspectivas';
+
+  @override
+  String get locationsTitle => 'Ubicaciones';
+
+  @override
+  String get locationsNewTitle => 'Nueva ubicación';
+
+  @override
+  String get locationsEditTitle => 'Editar ubicación';
+
+  @override
+  String get locationsDeleteTitle => '¿Eliminar ubicación?';
+
+  @override
+  String locationsDeleteMessage(String name) {
+    return 'Se eliminará «$name». Las visitas pasadas se quedan en tu historial.';
+  }
+
+  @override
+  String get locationsChooseIcon => 'Elegir icono';
+
+  @override
+  String get locationsNameLabel => 'Nombre';
+
+  @override
+  String get locationsAddressLabel => 'Dirección (opcional)';
+
+  @override
+  String get locationsNotesLabel => 'Notas (opcional)';
+
+  @override
+  String get locationsFavorite => 'Favorita';
+
+  @override
+  String get locationsEmptyTitle => 'Aún no hay ubicaciones guardadas';
+
+  @override
+  String get locationsEmptySubtitle =>
+      'Guarda lugares como casa, trabajo o escuela y empieza una sesión al llegar.';
+
+  @override
+  String get locationsSavedPlaces => 'Lugares guardados';
+
+  @override
+  String get locationsTapToStart =>
+      'Toca un lugar para empezar una sesión allí.';
+
+  @override
+  String get locationsHistory => 'Historial';
+
+  @override
+  String get locationsNoHistory => 'Aún no hay visitas terminadas.';
+
+  @override
+  String get locationsAddPastVisit => 'Añadir visita';
+
+  @override
+  String get locationsEditVisit => 'Editar visita';
+
+  @override
+  String get locationsPlaceLabel => 'Lugar';
+
+  @override
+  String get locationsDeletedPlace => 'Ubicación eliminada';
+
+  @override
+  String get locationsArrived => 'Llegada';
+
+  @override
+  String get locationsLeft => 'Salida';
+
+  @override
+  String get locationsStillHere => 'Sigo aquí';
+
+  @override
+  String locationsDurationExact(String duration) {
+    return 'Duración: $duration';
+  }
+
+  @override
+  String get locationsEndAfterStart =>
+      'La salida debe ser posterior a la llegada.';
+
+  @override
+  String locationsAtPlace(String name) {
+    return 'En $name';
+  }
+
+  @override
+  String locationsStartAt(String name) {
+    return 'Empezar sesión en $name';
+  }
+
+  @override
+  String locationsSince(String time) {
+    return 'desde las $time';
+  }
+
+  @override
+  String get locationsStop => 'Parar';
+
+  @override
+  String get locationsHereNow => 'Aquí ahora';
+
+  @override
+  String locationsThisWeek(String duration) {
+    return '$duration esta semana';
+  }
+
+  @override
+  String get workTitle => 'Trabajo';
+
+  @override
+  String get workNewJob => 'Nuevo trabajo';
+
+  @override
+  String get workEditJob => 'Editar trabajo';
+
+  @override
+  String get workJobName => 'Nombre del trabajo';
+
+  @override
+  String get workHourlyRate => 'Salario por hora';
+
+  @override
+  String get workInvalidRate => 'Escribe un número, como 18.50.';
+
+  @override
+  String workRatePerHour(String amount) {
+    return '$amount/hora';
+  }
+
+  @override
+  String get workRateChangeHint =>
+      'Cambiar el salario afecta a los nuevos fichajes. Los turnos pasados conservan su tarifa.';
+
+  @override
+  String get workArchived => 'Archivado';
+
+  @override
+  String get workArchivedHint =>
+      'Ocultar de la lista pero conservar su historial.';
+
+  @override
+  String get workDeleteJobTitle => '¿Eliminar trabajo?';
+
+  @override
+  String workDeleteJobMessage(String name) {
+    return 'Se eliminará «$name». Sus turnos se quedan en tu historial.';
+  }
+
+  @override
+  String get workAddPastShift => 'Añadir turno';
+
+  @override
+  String get workEditShift => 'Editar turno';
+
+  @override
+  String get workJob => 'Trabajo';
+
+  @override
+  String get workStarted => 'Inicio';
+
+  @override
+  String get workEnded => 'Fin';
+
+  @override
+  String get workStillClockedIn => 'Sigue fichado.';
+
+  @override
+  String get workBreakMinutes => 'Descanso no pagado (minutos)';
+
+  @override
+  String workRateForShift(String currency) {
+    return 'Salario por hora de este turno ($currency)';
+  }
+
+  @override
+  String workShiftSummary(String duration, String amount) {
+    return 'Trabajado $duration · estimado $amount';
+  }
+
+  @override
+  String get workShiftInvalid =>
+      'El fin debe ser posterior al inicio y el descanso más corto que el turno.';
+
+  @override
+  String get workEmptyTitle => 'Aún no hay trabajos';
+
+  @override
+  String get workEmptySubtitle =>
+      'Añade un trabajo con su salario por hora para registrar tiempo y ganancias estimadas.';
+
+  @override
+  String get workJobs => 'Trabajos';
+
+  @override
+  String get workStatsTitle => 'Horas y ganancias estimadas';
+
+  @override
+  String get workEstimatedDisclaimer =>
+      'Estimaciones según tu salario por hora y el tiempo exacto trabajado. No es una nómina: no incluye impuestos, propinas ni horas extra.';
+
+  @override
+  String get workRangeToday => 'Hoy';
+
+  @override
+  String get workRangeWeek => 'Esta semana';
+
+  @override
+  String get workRangeMonth => 'Este mes';
+
+  @override
+  String get workHistory => 'Historial de turnos';
+
+  @override
+  String get workNoHistory => 'Aún no hay turnos terminados.';
+
+  @override
+  String get workDeletedJob => 'Trabajo eliminado';
+
+  @override
+  String workEstimatedEarnings(String amount) {
+    return 'est. $amount';
+  }
+
+  @override
+  String get workClockIn => 'Fichar entrada';
+
+  @override
+  String get workClockOut => 'Fichar salida';
+
+  @override
+  String get workClockedIn => 'Fichado';
+
+  @override
+  String get workHoursLabel => 'Tiempo trabajado';
+
+  @override
+  String get workEstimatedEarningsLabel => 'Ganancias estimadas';
+
+  @override
+  String get workMixedCurrencies => 'Varias monedas';
+
+  @override
+  String get workByJob => 'Por trabajo';
+
+  @override
+  String workBreakShort(String duration) {
+    return 'descanso $duration';
+  }
+
+  @override
+  String get emotionsAddCustom => 'Añadir propia';
+
+  @override
+  String get emotionsRemove => 'Quitar';
+
+  @override
+  String get emotionsTapToSetIntensity =>
+      'Toca una emoción elegida para indicar su intensidad.';
+
+  @override
+  String get emotionsSearch => 'Buscar emociones';
+
+  @override
+  String get emotionsTabFavorites => 'Favoritas';
+
+  @override
+  String get emotionsTabRecent => 'Recientes';
+
+  @override
+  String emotionsTabAll(int count) {
+    return 'Todas ($count)';
+  }
+
+  @override
+  String get emotionsTabCustom => 'Propias';
+
+  @override
+  String get emotionsNoMatch =>
+      'Ninguna emoción coincide. Puedes añadirla como propia.';
+
+  @override
+  String get emotionsNoFavorites =>
+      'Aún no hay favoritas. Mantén pulsada una emoción para marcarla.';
+
+  @override
+  String get emotionsNoRecent => 'Nada registrado recientemente.';
+
+  @override
+  String get emotionsLongPressFavorite =>
+      'Mantén pulsada una emoción para hacerla favorita.';
+
+  @override
+  String get emotionsNoIntensity => 'Sin indicar';
+
+  @override
+  String get emotionsClearIntensity => 'Quitar intensidad';
+
+  @override
+  String get emotionsFavorite => 'Favorita';
+
+  @override
+  String get emotionsUnfavorite => 'Quitar de favoritas';
+
+  @override
+  String get emotionsCustomExists =>
+      'Esa emoción ya existe o el nombre está vacío.';
+
+  @override
+  String get emotionsCustomLabel => 'Nombre de la emoción';
+
+  @override
+  String get emotionsCustomCategory => 'Grupo';
+
+  @override
+  String get homeQuickLogMood => 'Registrar ánimo';
+
+  @override
+  String get homeQuickStartLocation => 'Empezar ubicación';
+
+  @override
+  String get homeQuickChangeLocation => 'Cambiar ubicación';
+
+  @override
+  String get homeQuickManageLocations => 'Gestionar ubicaciones';
+
+  @override
+  String get homeQuickManageWork => 'Gestionar trabajos e historial';
+
+  @override
+  String get insightsTitle => 'Perspectivas del día';
+
+  @override
+  String get insightsAtAGlance => 'El día de un vistazo';
+
+  @override
+  String get insightsPatterns => 'Cosas que podrías notar';
+
+  @override
+  String get insightsSuggestions => 'Ideas suaves';
+
+  @override
+  String insightsNeedMoreData(int days) {
+    return 'Con algunos días más de registros, Prism podrá señalar posibles patrones. (Llevas $days días.)';
+  }
+
+  @override
+  String get insightsNoPatterns =>
+      'Ahora mismo no destaca nada, y está perfectamente bien.';
+
+  @override
+  String insightsDisclaimer(int days) {
+    return 'Son observaciones suaves de lo que registrasteis en los últimos $days días, calculadas solo en este dispositivo. Son posibles patrones, no diagnósticos ni consejo médico. Vosotros os conocéis mejor.';
+  }
+
+  @override
+  String get insightsOpeningEmptyToday =>
+      'Aún no hay nada registrado hoy. Cuando quieras, un registro rápido ayuda a Prism a reflejar tu día.';
+
+  @override
+  String get insightsOpeningEmptyPast => 'No se registró nada este día.';
+
+  @override
+  String get insightsOpeningNoMood =>
+      'Esto es lo que tuvo este día. No se registró el ánimo, y está bien.';
+
+  @override
+  String get insightsOpeningGood =>
+      'Parece que hubo buenos momentos. Merece la pena notar qué ayudó.';
+
+  @override
+  String get insightsOpeningSteady =>
+      'Un día bastante estable. Gracias por tomaros un momento para revisar cómo estáis.';
+
+  @override
+  String get insightsOpeningHard =>
+      'Parece que fue un día más difícil. Lo que lograsteis fue suficiente.';
+
+  @override
+  String insightsGlanceMood(String label, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count registros',
+      one: '1 registro',
+    );
+    return 'Mayormente $label en $_temp0';
+  }
+
+  @override
+  String insightsGlanceEmotions(String emotions) {
+    return 'Emociones: $emotions';
+  }
+
+  @override
+  String insightsGlanceIntensity(String value) {
+    return 'Intensidad media $value/10';
+  }
+
+  @override
+  String insightsGlanceBody(String sensations) {
+    return 'Cuerpo: $sensations';
+  }
+
+  @override
+  String insightsGlanceSleep(String duration) {
+    return 'Durmió $duration anoche';
+  }
+
+  @override
+  String insightsGlanceFronting(String members, int switches) {
+    String _temp0 = intl.Intl.pluralLogic(
+      switches,
+      locale: localeName,
+      other: '$switches cambios',
+      one: '1 cambio',
+    );
+    return 'Al frente: $members · $_temp0';
+  }
+
+  @override
+  String insightsGlanceCoFront(String duration) {
+    return 'Co-frente durante $duration';
+  }
+
+  @override
+  String insightsGlanceLocations(String places) {
+    return 'Lugares: $places';
+  }
+
+  @override
+  String insightsGlanceWork(String duration, String amount) {
+    return 'Trabajó $duration · estimado $amount';
+  }
+
+  @override
+  String insightsPatternSupport(int count) {
+    return 'Basado en $count datos';
+  }
+
+  @override
+  String get insightsPatternSleepTitle => 'Sueño y ánimo';
+
+  @override
+  String insightsPatternSleepBetter(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  ) {
+    return 'Los días tras 7+ horas de sueño tuvieron un ánimo medio de $long, frente a $short tras menos de 6 horas ($longDays frente a $shortDays días). Descansar podría ayudar.';
+  }
+
+  @override
+  String insightsPatternSleepWorse(
+    String long,
+    String short,
+    int longDays,
+    int shortDays,
+  ) {
+    return 'Curiosamente, el ánimo fue de $long tras dormir más y $short tras dormir menos ($longDays frente a $shortDays días). Puede que influyan otras cosas.';
+  }
+
+  @override
+  String insightsPatternLocationTitle(String place) {
+    return 'Tiempo en $place';
+  }
+
+  @override
+  String insightsPatternLocationBetter(
+    String there,
+    String elsewhere,
+    int count,
+  ) {
+    return 'Los registros aquí tuvieron una media de $there, frente a $elsewhere en otros sitios ($count registros). Este lugar podría resultar agradable.';
+  }
+
+  @override
+  String insightsPatternLocationHarder(
+    String there,
+    String elsewhere,
+    int count,
+  ) {
+    return 'Los registros aquí tuvieron una media de $there, frente a $elsewhere en otros sitios ($count registros). Quizá convenga ser especialmente amables con vosotros aquí.';
+  }
+
+  @override
+  String insightsPatternMemberTitle(String name) {
+    return 'Cuando $name hace un registro';
+  }
+
+  @override
+  String insightsPatternMember(String theirs, String others, int count) {
+    return 'Sus registros tuvieron una media de $theirs, frente a $others para los demás ($count registros). Cada cual vive las cosas de forma distinta.';
+  }
+
+  @override
+  String get insightsPatternWorkTitle => 'Días de trabajo';
+
+  @override
+  String insightsPatternWork(
+    String work,
+    String off,
+    int workDays,
+    int offDays,
+  ) {
+    return 'El ánimo fue de $work en días de trabajo y $off en otros días ($workDays frente a $offDays días).';
+  }
+
+  @override
+  String get insightsPatternBodyTitle => 'Cuerpo y emociones';
+
+  @override
+  String insightsPatternBody(String body, String emotion, int count) {
+    return '«$body» y sentir «$emotion» aparecieron juntos $count veces. Notar esa relación puede servir de aviso temprano.';
+  }
+
+  @override
+  String get insightsPatternStressUpTitle => 'El estrés ha subido últimamente';
+
+  @override
+  String get insightsPatternStressDownTitle =>
+      'El estrés ha bajado últimamente';
+
+  @override
+  String insightsPatternStress(String recent, String earlier) {
+    return 'Los últimos 3 días tuvieron una media de $recent/5, frente a $earlier/5 antes.';
+  }
+
+  @override
+  String get insightsSuggestRest =>
+      'Si podéis, una pausa corta, un vaso de agua o unas respiraciones lentas podrían aliviar un poco.';
+
+  @override
+  String get insightsSuggestGrounding =>
+      'Un momento de anclaje podría ayudar: fijaos en cinco cosas que veis y cuatro que sentís.';
+
+  @override
+  String get insightsSuggestEvening =>
+      'Durmieron poco. Una noche más tranquila hoy podría sentar bien a todos.';
+
+  @override
+  String get insightsSuggestCelebrate =>
+      'Algo salió bien. Podríais anotar qué fue para volver a ello.';
+
+  @override
+  String get insightsSuggestSystem =>
+      'Hubo mucho movimiento al frente. Una nota rápida en el chat o el tablón podría ayudar a que todos estén al tanto.';
+
+  @override
+  String get insightsSuggestPlace =>
+      'Uno de vuestros lugares parece sentar bien. Pasar un rato allí podría ayudar cuando las cosas pesan.';
+
+  @override
+  String get insightsSuggestCheckIn =>
+      'Aún no hay registro hoy. Basta con un toque para indicar cómo os sentís.';
+
+  @override
+  String get insightsSuggestWork =>
+      'Fue una jornada larga. Descansar también cuenta.';
 }

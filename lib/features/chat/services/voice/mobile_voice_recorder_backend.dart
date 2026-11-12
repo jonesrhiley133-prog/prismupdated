@@ -5,10 +5,10 @@ import 'dart:math';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ogg_caf_converter/ogg_caf_converter.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:prism_plurality/features/chat/services/voice/ogg_caf_remuxer.dart';
 import 'package:prism_plurality/features/chat/services/voice/voice_format.dart';
 import 'package:prism_plurality/features/chat/services/voice/voice_models.dart';
 import 'package:prism_plurality/features/chat/services/voice/voice_recorder_backend.dart';
@@ -67,7 +67,7 @@ class MobileVoiceRecorderBackend implements VoiceRecorderBackend {
            audioSessionConfigurator ??
            AudioSessionMobileAudioSessionConfigurator(),
        _recorder = recorder ?? RecordMobileAudioRecorder(),
-       _remuxer = remuxer ?? OggCafConverterMobileOggCafRemuxer(),
+       _remuxer = remuxer ?? createDefaultOggCafRemuxer(),
        _fileStore = fileStore ?? PathProviderMobileVoiceRecorderFileStore(),
        _now = now ?? DateTime.now;
 
@@ -580,18 +580,6 @@ class RecordMobileAudioRecorder implements MobileAudioRecorder {
 
   @override
   Future<String?> stop() => _recorder.stop();
-}
-
-class OggCafConverterMobileOggCafRemuxer implements MobileOggCafRemuxer {
-  OggCafConverterMobileOggCafRemuxer({OggCafConverter? converter})
-    : _converter = converter ?? OggCafConverter();
-
-  final OggCafConverter _converter;
-
-  @override
-  Future<Uint8List> remuxCafToOgg(String inputPath) {
-    return _converter.convertCafToOggInMemory(input: inputPath);
-  }
 }
 
 class PathProviderMobileVoiceRecorderFileStore

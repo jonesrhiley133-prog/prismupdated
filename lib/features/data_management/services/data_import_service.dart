@@ -47,6 +47,12 @@ import 'package:prism_plurality/domain/repositories/front_session_comments_repos
 import 'package:prism_plurality/domain/repositories/conversation_categories_repository.dart';
 import 'package:prism_plurality/domain/repositories/reminders_repository.dart';
 import 'package:prism_plurality/domain/repositories/friends_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_saved_location_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_work_session_repository.dart';
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
 import 'package:prism_plurality/features/data_management/services/export_crypto.dart';
 import 'package:prism_plurality/features/fronting/services/collapse_open_duplicate_sessions.dart';
@@ -73,6 +79,12 @@ class ImportPreview {
     this.frontSessionComments = 0,
     this.conversationCategories = 0,
     this.reminders = 0,
+    this.moodEntries = 0,
+    this.calendarEvents = 0,
+    this.savedLocations = 0,
+    this.locationSessions = 0,
+    this.jobs = 0,
+    this.workSessions = 0,
     this.friends = 0,
     this.mediaAttachments = 0,
     this.memberBoardPosts = 0,
@@ -99,6 +111,12 @@ class ImportPreview {
   final int frontSessionComments;
   final int conversationCategories;
   final int reminders;
+  final int moodEntries;
+  final int calendarEvents;
+  final int savedLocations;
+  final int locationSessions;
+  final int jobs;
+  final int workSessions;
   final int friends;
   final int mediaAttachments;
   final int memberBoardPosts;
@@ -125,6 +143,12 @@ class ImportPreview {
       frontSessionComments +
       conversationCategories +
       reminders +
+      moodEntries +
+      calendarEvents +
+      savedLocations +
+      locationSessions +
+      jobs +
+      workSessions +
       friends +
       mediaAttachments +
       memberBoardPosts +
@@ -152,6 +176,12 @@ class ImportResult {
     this.frontSessionCommentsCreated = 0,
     this.conversationCategoriesCreated = 0,
     this.remindersCreated = 0,
+    this.moodEntriesCreated = 0,
+    this.calendarEventsCreated = 0,
+    this.savedLocationsCreated = 0,
+    this.locationSessionsCreated = 0,
+    this.jobsCreated = 0,
+    this.workSessionsCreated = 0,
     this.friendsCreated = 0,
     this.mediaAttachmentsCreated = 0,
     this.memberBoardPostsCreated = 0,
@@ -182,6 +212,12 @@ class ImportResult {
   final int frontSessionCommentsCreated;
   final int conversationCategoriesCreated;
   final int remindersCreated;
+  final int moodEntriesCreated;
+  final int calendarEventsCreated;
+  final int savedLocationsCreated;
+  final int locationSessionsCreated;
+  final int jobsCreated;
+  final int workSessionsCreated;
   final int friendsCreated;
   final int mediaAttachmentsCreated;
   final int memberBoardPostsCreated;
@@ -236,6 +272,12 @@ class ImportResult {
       frontSessionCommentsCreated +
       conversationCategoriesCreated +
       remindersCreated +
+      moodEntriesCreated +
+      calendarEventsCreated +
+      savedLocationsCreated +
+      locationSessionsCreated +
+      jobsCreated +
+      workSessionsCreated +
       friendsCreated +
       mediaAttachmentsCreated +
       memberBoardPostsCreated +
@@ -482,6 +524,12 @@ class DataImportService {
       frontSessionComments: export.frontSessionComments.length,
       conversationCategories: export.conversationCategories.length,
       reminders: export.reminders.length,
+      moodEntries: export.moodEntries.length,
+      calendarEvents: export.calendarEvents.length,
+      savedLocations: export.savedLocations.length,
+      locationSessions: export.locationSessions.length,
+      jobs: export.jobs.length,
+      workSessions: export.workSessions.length,
       friends: export.friends.length,
       mediaAttachments: export.mediaAttachments.length,
       memberBoardPosts: export.memberBoardPosts.length,
@@ -2257,6 +2305,7 @@ class DataImportService {
               weeklyDays: _weeklyDaysFromExport(r.weeklyDays),
               intervalDays: r.intervalDays,
               timeOfDay: r.timeOfDay,
+              additionalTimes: r.additionalTimes,
               delayHours: r.delayHours,
               targetMemberId: r.targetMemberId,
               isActive: r.isActive,
@@ -2265,6 +2314,101 @@ class DataImportService {
             ),
           );
           remindersCreated++;
+        }
+
+        // 18b. Import mood check-ins and calendar events. Malformed rows are
+        // skipped rather than failing the whole import.
+        var moodEntriesCreated = 0;
+        final moodRepo = DriftMoodRepository(db.moodEntriesDao, null);
+        for (final raw in export.moodEntries) {
+          final MoodEntry entry;
+          try {
+            entry = MoodEntry.fromJson(raw);
+          } catch (_) {
+            continue;
+          }
+          if (await db.moodEntriesDao.getById(entry.id) != null) continue;
+          await moodRepo.create(entry);
+          moodEntriesCreated++;
+        }
+
+        var calendarEventsCreated = 0;
+        final calendarRepo = DriftCalendarRepository(
+          db.calendarEventsDao,
+          null,
+        );
+        for (final raw in export.calendarEvents) {
+          final CalendarEvent event;
+          try {
+            event = CalendarEvent.fromJson(raw);
+          } catch (_) {
+            continue;
+          }
+          if (await db.calendarEventsDao.getById(event.id) != null) continue;
+          await calendarRepo.create(event);
+          calendarEventsCreated++;
+        }
+
+        // 18c. Locations and work (malformed rows are skipped).
+        var savedLocationsCreated = 0;
+        {
+          final repo = DriftSavedLocationRepository(db.savedLocationsDao, null);
+          for (final raw in export.savedLocations) {
+            final SavedLocation item;
+            try {
+              item = SavedLocation.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.savedLocationsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            savedLocationsCreated++;
+          }
+        }
+        var locationSessionsCreated = 0;
+        {
+          final repo = DriftLocationSessionRepository(db.locationSessionsDao, null);
+          for (final raw in export.locationSessions) {
+            final LocationSession item;
+            try {
+              item = LocationSession.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.locationSessionsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            locationSessionsCreated++;
+          }
+        }
+        var jobsCreated = 0;
+        {
+          final repo = DriftJobRepository(db.jobsDao, null);
+          for (final raw in export.jobs) {
+            final Job item;
+            try {
+              item = Job.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.jobsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            jobsCreated++;
+          }
+        }
+        var workSessionsCreated = 0;
+        {
+          final repo = DriftWorkSessionRepository(db.workSessionsDao, null);
+          for (final raw in export.workSessions) {
+            final WorkSession item;
+            try {
+              item = WorkSession.fromJson(raw);
+            } catch (_) {
+              continue;
+            }
+            if (await db.workSessionsDao.getById(item.id) != null) continue;
+            await repo.create(item);
+            workSessionsCreated++;
+          }
         }
 
         // 19. Import friends
@@ -2465,6 +2609,12 @@ class DataImportService {
           frontSessionCommentsCreated: frontSessionCommentsCreated,
           conversationCategoriesCreated: conversationCategoriesCreated,
           remindersCreated: remindersCreated,
+          moodEntriesCreated: moodEntriesCreated,
+          calendarEventsCreated: calendarEventsCreated,
+          savedLocationsCreated: savedLocationsCreated,
+          locationSessionsCreated: locationSessionsCreated,
+          jobsCreated: jobsCreated,
+          workSessionsCreated: workSessionsCreated,
           friendsCreated: friendsCreated,
           mediaAttachmentsCreated: mediaAttachmentsCreated,
           memberBoardPostsCreated: memberBoardPostsCreated,

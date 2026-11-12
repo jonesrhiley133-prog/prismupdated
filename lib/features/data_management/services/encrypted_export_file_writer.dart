@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/run_in_background.dart';
 import 'package:flutter/foundation.dart' show immutable, visibleForTesting;
 
 import 'package:prism_plurality/features/data_management/models/export_models.dart';
@@ -119,7 +120,7 @@ final class EncryptedExportWriteTask {
 /// top-level function: defining it inside `DataExportService` would let it
 /// over-capture repositories, database state, or an open sink.
 Future<int> writeEncryptedExportFileOffMain(EncryptedExportWriteTask task) =>
-    Isolate.run(() => writeEncryptedExportFileTask(task));
+    runInBackground(() => writeEncryptedExportFileTask(task));
 
 /// Builds and writes the PRISM1 file. Runs on the worker isolate in
 /// production; tests may call it directly.

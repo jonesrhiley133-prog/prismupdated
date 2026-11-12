@@ -21,6 +21,9 @@ _Reminder _$ReminderFromJson(Map<String, dynamic> json) => _Reminder(
       .toList(),
   intervalDays: (json['intervalDays'] as num?)?.toInt(),
   timeOfDay: json['timeOfDay'] as String?,
+  additionalTimes: (json['additionalTimes'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   delayHours: (json['delayHours'] as num?)?.toInt(),
   targetMemberId: json['targetMemberId'] as String?,
   isActive: json['isActive'] as bool? ?? true,
@@ -37,6 +40,7 @@ Map<String, dynamic> _$ReminderToJson(_Reminder instance) => <String, dynamic>{
   'weeklyDays': instance.weeklyDays,
   'intervalDays': instance.intervalDays,
   'timeOfDay': instance.timeOfDay,
+  'additionalTimes': instance.additionalTimes,
   'delayHours': instance.delayHours,
   'targetMemberId': instance.targetMemberId,
   'isActive': instance.isActive,

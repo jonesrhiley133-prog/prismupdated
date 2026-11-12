@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -341,7 +342,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     return switch (step) {
       OnboardingStep.welcome => WelcomeStep(
         key: const ValueKey('welcome'),
-        onSyncDevice: n.enterSyncDeviceFlowFromWelcome,
+        // Pairing needs the native sync engine, which the web build lacks.
+        onSyncDevice: kIsWeb ? null : n.enterSyncDeviceFlowFromWelcome,
       ),
       OnboardingStep.pinSetup => PinSetupStep(
         key: const ValueKey('pin-setup'),

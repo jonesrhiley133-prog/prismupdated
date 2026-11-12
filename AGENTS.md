@@ -38,6 +38,17 @@ flutter test
 flutter run
 ```
 
+Web build (local-only, no sync; deployed to Railway via the root
+`Dockerfile`). See [docs/deploy/railway.md](docs/deploy/railway.md):
+
+```bash
+./scripts/build_web.sh
+```
+
+Code that must also run on the web cannot import `dart:ffi`-backed packages
+(`sqlite3/sqlite3.dart`, `drift/native.dart`) or spawn isolates directly; use
+`core/database/platform/` and `shared/utils/run_in_background.dart`.
+
 Use watch mode while editing generated-model or Drift sources:
 
 ```bash
