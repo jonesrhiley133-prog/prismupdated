@@ -61,8 +61,7 @@ class OversizedInlineImageReemitService {
        _preferences = preferences,
        _avatarNormalizer =
            avatarNormalizer ?? AvatarNormalizer.normalizeOffMainIsolate,
-       _headerNormalizer =
-           headerNormalizer ?? _defaultHeaderNormalizer;
+       _headerNormalizer = headerNormalizer ?? _defaultHeaderNormalizer;
 
   static const flagKey = 'sync.oversized_inline_image_reemit_v1';
 
@@ -227,10 +226,12 @@ class OversizedInlineImageReemitService {
     await (_db.update(_db.members)..where((t) => t.id.equals(id))).write(
       MembersCompanion(
         avatarImageData: avatar == null ? const Value.absent() : Value(avatar),
-        profileHeaderImageData:
-            header == null ? const Value.absent() : Value(header),
-        pkBannerImageData:
-            pkBanner == null ? const Value.absent() : Value(pkBanner),
+        profileHeaderImageData: header == null
+            ? const Value.absent()
+            : Value(header),
+        pkBannerImageData: pkBanner == null
+            ? const Value.absent()
+            : Value(pkBanner),
       ),
     );
   }

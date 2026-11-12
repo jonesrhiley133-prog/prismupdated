@@ -416,8 +416,10 @@ class SoLoudMobileVoicePlaybackPlayer implements MobileVoicePlaybackPlayer {
     return soLoudTrack.source.soundEvents
         .where((event) => event.event == SoundEventType.handleIsNoMoreValid)
         .map(
-          (event) =>
-              _SoLoudMobileVoicePlaybackHandle(event.handle, soLoudTrack.source),
+          (event) => _SoLoudMobileVoicePlaybackHandle(
+            event.handle,
+            soLoudTrack.source,
+          ),
         );
   }
 

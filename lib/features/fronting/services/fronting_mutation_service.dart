@@ -457,8 +457,7 @@ class FrontingMutationService {
       final memberId = session.memberId;
       if (session.isSleep || memberId == null) continue;
       final previous = result[memberId];
-      if (previous == null ||
-          _latestSession([previous, session]) == session) {
+      if (previous == null || _latestSession([previous, session]) == session) {
         result[memberId] = session;
       }
     }

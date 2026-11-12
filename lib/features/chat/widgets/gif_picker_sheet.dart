@@ -77,7 +77,9 @@ class _GifPickerSheetState extends ConsumerState<GifPickerSheet> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TintedGlassSurface(
-              borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+              borderRadius: BorderRadius.circular(
+                PrismShapes.of(context).radius(12),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: TextField(
                 controller: _searchController,
@@ -176,10 +178,7 @@ class _GifPickerSheetState extends ConsumerState<GifPickerSheet> {
                   itemCount: gifs.length,
                   itemBuilder: (context, index) {
                     final gif = gifs[index];
-                    return _GifCell(
-                      gif: gif,
-                      onTap: () => _onGifTap(gif),
-                    );
+                    return _GifCell(gif: gif, onTap: () => _onGifTap(gif));
                   },
                 );
               },
@@ -204,8 +203,9 @@ class _GifCell extends StatelessWidget {
     final placeholderColor = theme.colorScheme.surfaceContainerHighest;
 
     // Compute aspect ratio from API dimensions, with a sane fallback.
-    final double aspectRatio =
-        (gif.width > 0 && gif.height > 0) ? gif.width / gif.height : 1.0;
+    final double aspectRatio = (gif.width > 0 && gif.height > 0)
+        ? gif.width / gif.height
+        : 1.0;
 
     return Semantics(
       label: gif.contentDescription.isNotEmpty
@@ -215,7 +215,9 @@ class _GifCell extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
+          borderRadius: BorderRadius.circular(
+            PrismShapes.of(context).radius(12),
+          ),
           child: AspectRatio(
             aspectRatio: aspectRatio,
             child: ConstrainedBox(
@@ -235,8 +237,7 @@ class _GifCell extends StatelessWidget {
                     child: Icon(
                       AppIcons.imageBroken,
                       size: 24,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                   ),
                 ),

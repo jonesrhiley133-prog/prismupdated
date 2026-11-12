@@ -1,7 +1,9 @@
+import 'package:prism_plurality/domain/models/cycle_entry.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
 import 'package:prism_plurality/domain/models/location.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/domain/models/work.dart';
+import 'package:prism_plurality/features/cycle/utils/cycle_stats.dart';
 import 'package:prism_plurality/features/mood/data/emotion_library.dart';
 import 'package:prism_plurality/features/work/utils/work_stats.dart';
 
@@ -12,6 +14,7 @@ class InsightInputs {
     required this.frontingSessions,
     required this.locationSessions,
     required this.workSessions,
+    this.cycleEntries = const [],
   });
 
   final List<MoodEntry> moodEntries;
@@ -20,6 +23,7 @@ class InsightInputs {
   final List<FrontingSession> frontingSessions;
   final List<LocationSession> locationSessions;
   final List<WorkSession> workSessions;
+  final List<CycleEntry> cycleEntries;
 }
 
 /// What happened on one day, from exact timestamps.
@@ -41,6 +45,9 @@ class DaySummary {
     required this.locationSeconds,
     required this.workSeconds,
     required this.workEarnings,
+    this.cycleDay,
+    this.cycleFlow,
+    this.cycleSymptoms = const [],
   });
 
   final DateTime day;
@@ -76,12 +83,20 @@ class DaySummary {
   /// Currency code → estimated earnings (hundredths).
   final Map<String, int> workEarnings;
 
+  /// Day of the cycle (1 = first period day), if cycle tracking is used.
+  final int? cycleDay;
+
+  /// Flow logged for this day (0–4), if any.
+  final int? cycleFlow;
+  final List<String> cycleSymptoms;
+
   bool get isEmpty =>
       checkIns == 0 &&
       sleep == null &&
       frontSeconds.isEmpty &&
       locationSeconds.isEmpty &&
-      workSeconds == 0;
+      workSeconds == 0 &&
+      cycleFlow == null;
 }
 
 /// A possible pattern across recent days. Never a diagnosis.
@@ -163,6 +178,21 @@ class BodyEmotionPattern extends InsightPattern {
   final int together;
   @override
   int get support => together;
+}
+
+class CycleMoodPattern extends InsightPattern {
+  const CycleMoodPattern({
+    required this.periodMood,
+    required this.otherMood,
+    required this.periodCheckIns,
+    required this.otherCheckIns,
+  });
+  final double periodMood;
+  final double otherMood;
+  final int periodCheckIns;
+  final int otherCheckIns;
+  @override
+  int get support => periodCheckIns + otherCheckIns;
 }
 
 class StressTrendPattern extends InsightPattern {
@@ -272,6 +302,7 @@ DailyInsight buildDailyInsight(
     ..._locationMood(input, windowEntries, now),
     ..._memberMood(windowEntries),
     ?_bodyEmotion(windowEntries),
+    ?_cycleMood(input, windowEntries),
     ?_stressTrend(windowEntries, day),
   ]..sort((a, b) => b.support.compareTo(a.support));
 
@@ -353,8 +384,19 @@ DaySummary _summarizeDay(InsightInputs input, DateTime day, DateTime now) {
     }
   }
 
+  final cycleKey = CycleStats.dateKey(day);
+  final cycleToday = input.cycleEntries
+      .where((c) => c.date == cycleKey)
+      .lastOrNull;
+  final cycleDay = input.cycleEntries.isEmpty
+      ? null
+      : CycleStats.of(input.cycleEntries, today: day).currentCycleDay;
+
   return DaySummary(
     day: day,
+    cycleDay: cycleDay,
+    cycleFlow: cycleToday?.flow,
+    cycleSymptoms: cycleToday?.symptoms ?? const [],
     checkIns: entries.length,
     averageMood: _avg(entries.map((e) => e.mood)),
     averageIntensity: _avg(entries.map((e) => e.intensity)),
@@ -546,6 +588,32 @@ BodyEmotionPattern? _bodyEmotion(List<MoodEntry> entries) {
     bodySensation: best.key.$1,
     emotionKey: best.key.$2,
     together: best.value,
+  );
+}
+
+CycleMoodPattern? _cycleMood(InsightInputs input, List<MoodEntry> entries) {
+  if (input.cycleEntries.isEmpty) return null;
+  final periodDays = {
+    for (final c in input.cycleEntries.where((c) => c.isPeriodDay)) c.date,
+  };
+  final on = <int>[];
+  final off = <int>[];
+  for (final e in entries) {
+    (periodDays.contains(CycleStats.dateKey(e.recordedAt)) ? on : off).add(
+      e.mood,
+    );
+  }
+  if (on.length < minPatternSupport || off.length < minPatternSupport) {
+    return null;
+  }
+  final a = _avg(on)!;
+  final b = _avg(off)!;
+  if ((a - b).abs() < minMoodDifference) return null;
+  return CycleMoodPattern(
+    periodMood: a,
+    otherMood: b,
+    periodCheckIns: on.length,
+    otherCheckIns: off.length,
   );
 }
 

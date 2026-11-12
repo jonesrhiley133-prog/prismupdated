@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.15.3+15301
+version: 0.19.0+19000
 
 environment:
   sdk: ^3.11.1
@@ -126,6 +126,7 @@ dependencies:
       url: https://github.com/skylartaylor/ogg_caf_converter.git
       ref: 899b9692ea048b90ffa114c25b471b06d495ef7b
   package_info_plus: ^9.0.1
+  flutter_contacts: 2.1.0
 
 dev_dependencies:
   flutter_test:

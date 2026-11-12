@@ -7,9 +7,9 @@ import 'package:prism_plurality/core/database/database_providers.dart';
 /// Watches all conversation categories ordered by display order.
 final conversationCategoriesProvider =
     StreamProvider<List<ConversationCategory>>((ref) {
-  final repo = ref.watch(conversationCategoriesRepositoryProvider);
-  return repo.watchAll();
-});
+      final repo = ref.watch(conversationCategoriesRepositoryProvider);
+      return repo.watchAll();
+    });
 
 /// Category CRUD notifier.
 class CategoryNotifier extends AsyncNotifier<void> {
@@ -22,13 +22,10 @@ class CategoryNotifier extends AsyncNotifier<void> {
     final repo = ref.read(conversationCategoriesRepositoryProvider);
 
     // Determine next display order.
-    final existing =
-        ref.read(conversationCategoriesProvider).value ?? [];
+    final existing = ref.read(conversationCategoriesProvider).value ?? [];
     final maxOrder = existing.isEmpty
         ? -1
-        : existing
-            .map((c) => c.displayOrder)
-            .reduce((a, b) => a > b ? a : b);
+        : existing.map((c) => c.displayOrder).reduce((a, b) => a > b ? a : b);
 
     final now = DateTime.now();
     final category = ConversationCategory(
@@ -62,10 +59,7 @@ class CategoryNotifier extends AsyncNotifier<void> {
       for (var i = 0; i < categories.length; i++) {
         if (categories[i].displayOrder != i) {
           await repo.update(
-            categories[i].copyWith(
-              displayOrder: i,
-              modifiedAt: DateTime.now(),
-            ),
+            categories[i].copyWith(displayOrder: i, modifiedAt: DateTime.now()),
           );
         }
       }
@@ -73,5 +67,6 @@ class CategoryNotifier extends AsyncNotifier<void> {
   }
 }
 
-final categoryNotifierProvider =
-    AsyncNotifierProvider<CategoryNotifier, void>(CategoryNotifier.new);
+final categoryNotifierProvider = AsyncNotifierProvider<CategoryNotifier, void>(
+  CategoryNotifier.new,
+);

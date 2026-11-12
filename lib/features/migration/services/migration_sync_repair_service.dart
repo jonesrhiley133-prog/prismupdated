@@ -90,9 +90,7 @@ class MigrationSyncRepairService {
   static Future<bool> hasPending(AppDatabase db) async {
     if (!await _tableExists(db)) return false;
     final rows = await db
-        .customSelect(
-          'SELECT 1 FROM sync_migration_repairs LIMIT 1',
-        )
+        .customSelect('SELECT 1 FROM sync_migration_repairs LIMIT 1')
         .get();
     return rows.isNotEmpty;
   }
@@ -433,12 +431,8 @@ enum _DispositionKind { emit, drop, skip }
 
 class _Disposition {
   const _Disposition.emit(this.fields) : kind = _DispositionKind.emit;
-  const _Disposition.drop()
-      : kind = _DispositionKind.drop,
-        fields = null;
-  const _Disposition.skip()
-      : kind = _DispositionKind.skip,
-        fields = null;
+  const _Disposition.drop() : kind = _DispositionKind.drop, fields = null;
+  const _Disposition.skip() : kind = _DispositionKind.skip, fields = null;
 
   final _DispositionKind kind;
   final Map<String, dynamic>? fields;

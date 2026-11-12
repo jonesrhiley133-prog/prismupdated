@@ -1,4 +1,6 @@
+import 'package:prism_plurality/domain/preferences/finance_preferences.dart';
 import 'package:prism_plurality/domain/preferences/composer_default_member.dart';
+import 'package:prism_plurality/domain/preferences/dashboard_preferences.dart';
 import 'package:prism_plurality/domain/preferences/emotion_preferences.dart';
 import 'package:prism_plurality/domain/preferences/fronting_terms.dart';
 import 'package:prism_plurality/domain/preferences/preference_codec.dart';
@@ -153,6 +155,10 @@ final appPreferenceRegistry = PreferenceRegistry(const [
   frontingTermsPreference,
   favoriteEmotionsPreference,
   customEmotionsPreference,
+  dashboardWidgetsPreference,
+  dashboardQuickActionsPreference,
+  financeCurrencyPreference,
+  financeHideAmountsPreference,
 ]);
 final memberProfilePreferenceRegistry = PreferenceRegistry(const []);
 

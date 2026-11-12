@@ -1491,6 +1491,17 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.locations, _locationsRootTitle),
       (AppRoutePaths.work, _workRootTitle),
       (AppRoutePaths.insights, _insightsRootTitle),
+      (AppRoutePaths.cycle, _cycleRootTitle),
+      (AppRoutePaths.contacts, _contactsRootTitle),
+      (AppRoutePaths.journal, _journalRootTitle),
+      (AppRoutePaths.dictionary, _dictionaryRootTitle),
+      (AppRoutePaths.achievements, _achievementsRootTitle),
+      (AppRoutePaths.fitness, _fitnessRootTitle),
+      (AppRoutePaths.finance, _financeRootTitle),
+      (AppRoutePaths.school, _schoolRootTitle),
+      (AppRoutePaths.relationships, _relationshipsRootTitle),
+      (AppRoutePaths.subsystems, _subsystemsRootTitle),
+      (AppRoutePaths.headspace, _headspaceRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1542,6 +1553,17 @@ String _rootTitle(String location) {
     AppRoutePaths.locations => _locationsRootTitle,
     AppRoutePaths.work => _workRootTitle,
     AppRoutePaths.insights => _insightsRootTitle,
+    AppRoutePaths.cycle => _cycleRootTitle,
+    AppRoutePaths.contacts => _contactsRootTitle,
+    AppRoutePaths.journal => _journalRootTitle,
+    AppRoutePaths.dictionary => _dictionaryRootTitle,
+    AppRoutePaths.achievements => _achievementsRootTitle,
+    AppRoutePaths.fitness => _fitnessRootTitle,
+    AppRoutePaths.finance => _financeRootTitle,
+    AppRoutePaths.school => _schoolRootTitle,
+    AppRoutePaths.relationships => _relationshipsRootTitle,
+    AppRoutePaths.subsystems => _subsystemsRootTitle,
+    AppRoutePaths.headspace => _headspaceRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1689,6 +1711,17 @@ const _moodRootTitle = 'Route contract: mood root';
 const _calendarRootTitle = 'Route contract: calendar root';
 const _locationsRootTitle = 'Route contract: locations root';
 const _workRootTitle = 'Route contract: work root';
+const _cycleRootTitle = 'Route contract: cycle root';
+const _contactsRootTitle = 'Route contract: contacts root';
+const _journalRootTitle = 'Route contract: journal root';
+const _dictionaryRootTitle = 'Route contract: dictionary root';
+const _achievementsRootTitle = 'Route contract: achievements root';
+const _fitnessRootTitle = 'Route contract: fitness root';
+const _financeRootTitle = 'Route contract: finance root';
+const _schoolRootTitle = 'Route contract: school root';
+const _relationshipsRootTitle = 'Route contract: relationships root';
+const _subsystemsRootTitle = 'Route contract: subsystems root';
+const _headspaceRootTitle = 'Route contract: headspace root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';

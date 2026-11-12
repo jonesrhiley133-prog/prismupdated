@@ -88,7 +88,7 @@ class PkOneShotPushService {
   final Set<String> _inFlight = <String>{};
 
   PkOneShotPushService(this._ref, {PkPushService? pushService})
-      : _pushService = pushService ?? const PkPushService();
+    : _pushService = pushService ?? const PkPushService();
 
   /// Push [memberId] to PluralKit, returning the resulting [PKMember].
   ///
@@ -161,10 +161,9 @@ class PkOneShotPushService {
       // Already linked — fetch fresh PK data so callers can react (e.g.
       // refresh local cache from server-authoritative fields). UUID is
       // preferred since it's stable; fall back to short id.
-      final ref =
-          (member.pluralkitUuid?.isNotEmpty ?? false)
-              ? member.pluralkitUuid!
-              : member.pluralkitId!;
+      final ref = (member.pluralkitUuid?.isNotEmpty ?? false)
+          ? member.pluralkitUuid!
+          : member.pluralkitId!;
       final fetched = await client.getMember(ref);
       // If we fell back to the short id and PK returned
       // a member owned by a DIFFERENT system, the short id is stale (foreign).

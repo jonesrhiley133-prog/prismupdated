@@ -15,7 +15,9 @@ class PollVoteMapper {
   }
 
   static PollVotesCompanion toCompanion(
-      domain.PollVote model, String optionId) {
+    domain.PollVote model,
+    String optionId,
+  ) {
     return PollVotesCompanion(
       id: Value(model.id),
       pollOptionId: Value(optionId),

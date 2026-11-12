@@ -92,13 +92,15 @@ ProxyTagMatch? matchProxyTag(String rawText, List<Member> members) {
         );
       }
 
-      candidates.add(_Candidate(
-        member: member,
-        tagIndex: i,
-        prefix: prefix,
-        suffix: suffix,
-        strippedText: stripped.trim(),
-      ));
+      candidates.add(
+        _Candidate(
+          member: member,
+          tagIndex: i,
+          prefix: prefix,
+          suffix: suffix,
+          strippedText: stripped.trim(),
+        ),
+      );
     }
   }
 

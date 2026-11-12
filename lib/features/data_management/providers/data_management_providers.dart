@@ -19,10 +19,12 @@ final dataExportServiceProvider = Provider<DataExportService>((ref) {
     memberGroupsRepository: ref.watch(memberGroupsRepositoryProvider),
     customFieldsRepository: ref.watch(customFieldsRepositoryProvider),
     notesRepository: ref.watch(notesRepositoryProvider),
-    frontSessionCommentsRepository:
-        ref.watch(frontSessionCommentsRepositoryProvider),
-    conversationCategoriesRepository:
-        ref.watch(conversationCategoriesRepositoryProvider),
+    frontSessionCommentsRepository: ref.watch(
+      frontSessionCommentsRepositoryProvider,
+    ),
+    conversationCategoriesRepository: ref.watch(
+      conversationCategoriesRepositoryProvider,
+    ),
     remindersRepository: ref.watch(remindersRepositoryProvider),
     friendsRepository: ref.watch(friendsRepositoryProvider),
     mediaAttachmentsDao: ref.watch(mediaAttachmentsDaoProvider),
@@ -43,10 +45,12 @@ final dataImportServiceProvider = Provider<DataImportService>((ref) {
     memberGroupsRepository: ref.watch(memberGroupsRepositoryProvider),
     customFieldsRepository: ref.watch(customFieldsRepositoryProvider),
     notesRepository: ref.watch(notesRepositoryProvider),
-    frontSessionCommentsRepository:
-        ref.watch(frontSessionCommentsRepositoryProvider),
-    conversationCategoriesRepository:
-        ref.watch(conversationCategoriesRepositoryProvider),
+    frontSessionCommentsRepository: ref.watch(
+      frontSessionCommentsRepositoryProvider,
+    ),
+    conversationCategoriesRepository: ref.watch(
+      conversationCategoriesRepositoryProvider,
+    ),
     remindersRepository: ref.watch(remindersRepositoryProvider),
     friendsRepository: ref.watch(friendsRepositoryProvider),
     appPreferenceRepository: ref.watch(appPreferenceRepositoryProvider),

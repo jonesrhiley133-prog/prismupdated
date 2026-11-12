@@ -14,6 +14,9 @@ import '../../features/fronting/views/period_detail_args.dart';
 import '../../features/fronting/views/period_detail_screen.dart';
 import '../../features/fronting/views/session_detail_screen.dart';
 import '../../features/fronting/views/sleep_screen.dart';
+import '../../features/sleep_log/views/sleep_log_screen.dart';
+import '../../features/cycle/views/cycle_insights_screen.dart';
+import '../../features/polls/advanced/poll_stats_screen.dart';
 import '../../features/fronting/views/timeline_screen.dart';
 import '../../features/members/views/members_screen.dart';
 import '../../features/members/navigation/member_navigation_branch.dart';
@@ -64,6 +67,20 @@ import '../../features/sharing/views/sharing_screen.dart';
 import '../../features/sharing/views/friend_detail_screen.dart';
 import '../../features/calendar/views/calendar_screen.dart';
 import '../../features/habits/views/habits_list_screen.dart';
+import '../../features/connected/views/pattern_explorer_screen.dart';
+import '../../features/connected/views/system_timeline_screen.dart';
+import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/headspace/views/headspace_screen.dart';
+import '../../features/subsystems/views/subsystems_screen.dart';
+import '../../features/relationships/views/relationships_screen.dart';
+import '../../features/school/views/school_screen.dart';
+import '../../features/finance/views/finance_screen.dart';
+import '../../features/fitness/views/fitness_screen.dart';
+import '../../features/achievements/views/achievements_screen.dart';
+import '../../features/dictionary/views/dictionary_screen.dart';
+import '../../features/journal/views/journal_screen.dart';
+import '../../features/cycle/views/cycle_screen.dart';
+import '../../features/import_center/views/import_center_screen.dart';
 import '../../features/insights/views/daily_insights_screen.dart';
 import '../../features/locations/views/locations_screen.dart';
 import '../../features/work/views/work_screen.dart';
@@ -118,6 +135,37 @@ final _locationsNavigatorKey = GlobalKey<NavigatorState>(
 final _workNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'work');
 final _insightsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'insights',
+);
+final _cycleNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cycle');
+final _journalNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'journal',
+);
+final _dictionaryNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'dictionary',
+);
+final _achievementsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'achievements',
+);
+final _fitnessNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'fitness',
+);
+final _financeNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'finance',
+);
+final _schoolNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'school',
+);
+final _relationshipsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'relationships',
+);
+final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'subsystems',
+);
+final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'headspace',
+);
+final _contactsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'contacts',
 );
 
 /// Notifier that triggers GoRouter redirect re-evaluation when onboarding
@@ -340,6 +388,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.syncSetup,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SyncSetupScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.importCenter,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ImportCenterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.systemTimeline,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.pollStats,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PollStatsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.cycleInsights,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CycleInsightsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.sleepLog,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SleepLogScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.patterns,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PatternExplorerScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: buildAppShellRoute,
@@ -1091,6 +1169,116 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.insights,
                 builder: (context, state) => const DailyInsightsScreen(),
+              ),
+            ],
+          ),
+          // Branch 19: Cycle (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _cycleNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.cycle,
+                builder: (context, state) => const CycleScreen(),
+              ),
+            ],
+          ),
+          // Branch 20: Contacts (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _contactsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.contacts,
+                builder: (context, state) => const ContactsScreen(),
+              ),
+            ],
+          ),
+          // Branch 21: Journal (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _journalNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.journal,
+                builder: (context, state) => const JournalScreen(),
+              ),
+            ],
+          ),
+          // Branch 22: Dictionary (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _dictionaryNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.dictionary,
+                builder: (context, state) => const DictionaryScreen(),
+              ),
+            ],
+          ),
+          // Branch 23: Achievements (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _achievementsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.achievements,
+                builder: (context, state) => const AchievementsScreen(),
+              ),
+            ],
+          ),
+          // Branch 24: Fitness (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _fitnessNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.fitness,
+                builder: (context, state) => const FitnessScreen(),
+              ),
+            ],
+          ),
+          // Branch 25: Finance (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _financeNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.finance,
+                builder: (context, state) => const FinanceScreen(),
+              ),
+            ],
+          ),
+          // Branch 26: School (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _schoolNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.school,
+                builder: (context, state) => const SchoolScreen(),
+              ),
+            ],
+          ),
+          // Branch 27: Relationships (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _relationshipsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.relationships,
+                builder: (context, state) => const RelationshipsScreen(),
+              ),
+            ],
+          ),
+          // Branch 28: Subsystems (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _subsystemsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.subsystems,
+                builder: (context, state) => const SubsystemsScreen(),
+              ),
+            ],
+          ),
+          // Branch 29: Headspace (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _headspaceNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.headspace,
+                builder: (context, state) => const HeadspaceScreen(),
               ),
             ],
           ),

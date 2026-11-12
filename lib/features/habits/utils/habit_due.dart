@@ -67,8 +67,9 @@ bool isHabitCompletedForCurrentPeriod({
     case HabitFrequency.interval:
       final intervalDays = habit.intervalDays;
       if (intervalDays == null || intervalDays <= 0) return false;
-      final habitCompletions =
-          allCompletions.where((c) => c.habitId == habit.id);
+      final habitCompletions = allCompletions.where(
+        (c) => c.habitId == habit.id,
+      );
       if (habitCompletions.isEmpty) return false;
       final last = habitCompletions.reduce(
         (a, b) => a.completedAt.isAfter(b.completedAt) ? a : b,

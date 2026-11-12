@@ -33,8 +33,7 @@ class DisplaySession {
   // TODO(i18n): localize "ongoing" label — requires passing l10n
   String timeRangeString(BuildContext context) {
     final startStr = context.formatTime(displayStart);
-    final endStr =
-        displayEnd != null ? context.formatTime(displayEnd!) : null;
+    final endStr = displayEnd != null ? context.formatTime(displayEnd!) : null;
     final midnight = context.use24HourTime ? '00:00' : '12:00 AM';
     if (isActive && !continuesNextDay) {
       return '$startStr \u2013 ongoing';
@@ -142,13 +141,15 @@ List<DisplaySession> splitAtMidnight(FrontingSession session) {
     final isFirst = currentDayStart == session.startTime;
     final isLast = !nextMidnight.isBefore(end);
 
-    slices.add(DisplaySession(
-      session: session,
-      displayStart: currentDayStart,
-      displayEnd: isLast ? session.endTime : nextMidnight,
-      isContinuation: !isFirst,
-      continuesNextDay: !isLast,
-    ));
+    slices.add(
+      DisplaySession(
+        session: session,
+        displayStart: currentDayStart,
+        displayEnd: isLast ? session.endTime : nextMidnight,
+        isContinuation: !isFirst,
+        continuesNextDay: !isLast,
+      ),
+    );
 
     if (isLast) break;
     currentDayStart = nextMidnight;

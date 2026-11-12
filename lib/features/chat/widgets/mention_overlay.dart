@@ -139,9 +139,7 @@ class MentionOverlayState extends ConsumerState<MentionOverlay>
   /// Handle keyboard navigation. Returns true if the event was consumed.
   bool handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
-    final filtered = _filteredFor(
-      ref.read(memberNamePreferDisplayProvider),
-    );
+    final filtered = _filteredFor(ref.read(memberNamePreferDisplayProvider));
     if (filtered.isEmpty) return false;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {

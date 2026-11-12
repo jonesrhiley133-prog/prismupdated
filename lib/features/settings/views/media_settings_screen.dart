@@ -105,7 +105,8 @@ final tagUsageProvider = FutureProvider.autoDispose
 
       final prefer = ref.watch(memberNamePreferDisplayProvider);
       final memberName = {
-        for (final m in members) m.id: m.effectiveName(preferDisplayName: prefer),
+        for (final m in members)
+          m.id: m.effectiveName(preferDisplayName: prefer),
       };
       final fieldName = {for (final f in fields) f.id: f.name};
 

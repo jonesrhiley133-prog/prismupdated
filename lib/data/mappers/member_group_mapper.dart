@@ -57,9 +57,7 @@ String sanitizeSortStateForEmission(String raw, {String? contextId}) {
     'substituting manualEmpty',
     severity: ErrorSeverity.warning,
   );
-  return MemberGroupMapper.encodeSortStateForColumn(
-    GroupSortState.manualEmpty,
-  );
+  return MemberGroupMapper.encodeSortStateForColumn(GroupSortState.manualEmpty);
 }
 
 String _truncateForLog(String s) =>
@@ -104,10 +102,7 @@ class MemberGroupMapper {
 
   /// JSON-encode for the `sort_state` column: `{"mode": <int>, "order": [...]}`.
   static String encodeSortStateForColumn(GroupSortState state) =>
-      jsonEncode({
-        'mode': state.mode.asInt,
-        'order': state.manualOrder,
-      });
+      jsonEncode({'mode': state.mode.asInt, 'order': state.manualOrder});
 
   /// Read-path fallback: on decode failure, returns [GroupSortState.manualEmpty]
   /// for display + warn log; never writes back, so corrupt rows can't

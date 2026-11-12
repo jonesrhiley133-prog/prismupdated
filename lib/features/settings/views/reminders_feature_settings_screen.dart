@@ -23,7 +23,10 @@ class RemindersFeatureSettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: context.l10n.featureRemindersTitle, showBackButton: true),
+      topBar: PrismTopBar(
+        title: context.l10n.featureRemindersTitle,
+        showBackButton: true,
+      ),
       bodyPadding: EdgeInsets.zero,
       body: ListView(
         padding: EdgeInsets.only(bottom: NavBarInset.of(context)),

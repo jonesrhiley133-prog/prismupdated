@@ -76,6 +76,9 @@ class V1Export {
     this.locationSessions = const [],
     this.jobs = const [],
     this.workSessions = const [],
+    this.cycleEntries = const [],
+    this.contacts = const [],
+    this.trackerRecords = const [],
     this.friends = const [],
     this.mediaAttachments = const [],
     this.memberBoardPosts = const [],
@@ -120,6 +123,9 @@ class V1Export {
   final List<Map<String, dynamic>> locationSessions;
   final List<Map<String, dynamic>> jobs;
   final List<Map<String, dynamic>> workSessions;
+  final List<Map<String, dynamic>> cycleEntries;
+  final List<Map<String, dynamic>> contacts;
+  final List<Map<String, dynamic>> trackerRecords;
   final List<V1Friend> friends;
   final List<V1MediaAttachment> mediaAttachments;
   final List<V1MemberBoardPost> memberBoardPosts;
@@ -196,6 +202,9 @@ class V1Export {
     if (locationSessions.isNotEmpty) 'locationSessions': locationSessions,
     if (jobs.isNotEmpty) 'jobs': jobs,
     if (workSessions.isNotEmpty) 'workSessions': workSessions,
+    if (cycleEntries.isNotEmpty) 'cycleEntries': cycleEntries,
+    if (contacts.isNotEmpty) 'contacts': contacts,
+    if (trackerRecords.isNotEmpty) 'trackerRecords': trackerRecords,
     if (friends.isNotEmpty) 'friends': friends.map((e) => e.toJson()).toList(),
     if (mediaAttachments.isNotEmpty)
       'mediaAttachments': mediaAttachments.map((e) => e.toJson()).toList(),
@@ -373,6 +382,9 @@ class V1Export {
       locationSessions: _jsonObjectList(json['locationSessions']),
       jobs: _jsonObjectList(json['jobs']),
       workSessions: _jsonObjectList(json['workSessions']),
+      cycleEntries: _jsonObjectList(json['cycleEntries']),
+      contacts: _jsonObjectList(json['contacts']),
+      trackerRecords: _jsonObjectList(json['trackerRecords']),
       friends:
           (json['friends'] as List<dynamic>?)
               ?.map((e) => V1Friend.fromJson(e as Map<String, dynamic>))
@@ -407,11 +419,7 @@ class V1Export {
 // ---------------------------------------------------------------------------
 
 class V1AppPreference {
-  V1AppPreference({
-    required this.key,
-    required this.valueType,
-    this.valueJson,
-  });
+  V1AppPreference({required this.key, required this.valueType, this.valueJson});
 
   final String key;
   final String valueType;

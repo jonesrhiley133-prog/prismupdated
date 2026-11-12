@@ -231,8 +231,9 @@ PkFileExport _parseSync(String raw) {
               continue;
             }
             final normalizedHid = _normalizeHid(trimmed);
-            final uuid =
-                normalizedHid == null ? null : hidToUuid[normalizedHid];
+            final uuid = normalizedHid == null
+                ? null
+                : hidToUuid[normalizedHid];
             if (uuid != null) {
               translated.add(uuid);
             } else {

@@ -88,7 +88,8 @@ class MarkdownImageButtonState extends ConsumerState<MarkdownImageButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isProcessing = ref.watch(bioImageProcessingStateProvider).status ==
+    final isProcessing =
+        ref.watch(bioImageProcessingStateProvider).status ==
         BioImageProcessingStatus.processing;
 
     final l10n = context.l10n;
@@ -216,7 +217,10 @@ class MarkdownImageButtonState extends ConsumerState<MarkdownImageButton> {
     // "just insert" case is one confirming tap.
     final size = await _showSizeDialog();
     if (size == null || !mounted) return; // cancelled
-    insertMarkdownAtCursor(widget.controller, buildImageRef(tag: tag, size: size));
+    insertMarkdownAtCursor(
+      widget.controller,
+      buildImageRef(tag: tag, size: size),
+    );
   }
 
   /// Asks for an image size on its own (used by the library path, which has no
@@ -304,64 +308,66 @@ class MarkdownImageButtonState extends ConsumerState<MarkdownImageButton> {
     var sizeSpec = ImageSizeSpec.unset;
     final canAdd = ValueNotifier<bool>(_sizeReady(sizeSpec));
     final result =
-        await PrismDialog.show<({String tag, String? altText, ImageSizeSpec size})>(
-      context: context,
-      title: l10n.mediaAddImageToLibraryTitle,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 160),
-              child: Image.memory(imageBytes, fit: BoxFit.contain),
+        await PrismDialog.show<
+          ({String tag, String? altText, ImageSizeSpec size})
+        >(
+          context: context,
+          title: l10n.mediaAddImageToLibraryTitle,
+          builder: (_) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 160),
+                  child: Image.memory(imageBytes, fit: BoxFit.contain),
+                ),
+              ),
+              const SizedBox(height: 16),
+              PrismTextField(
+                controller: _tagController,
+                autofocus: true,
+                hintText: l10n.mediaTagFieldHint,
+                textCapitalization: TextCapitalization.none,
+              ),
+              const SizedBox(height: 8),
+              PrismTextField(
+                controller: _altController,
+                hintText: l10n.mediaAltTextFieldHint,
+                textCapitalization: TextCapitalization.sentences,
+              ),
+              const SizedBox(height: 16),
+              ImageSizeField(
+                onChanged: (s) {
+                  sizeSpec = s;
+                  canAdd.value = _sizeReady(s);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            PrismButton(
+              label: l10n.cancel,
+              tone: PrismButtonTone.outlined,
+              onPressed: () => nav.pop(null),
             ),
-          ),
-          const SizedBox(height: 16),
-          PrismTextField(
-            controller: _tagController,
-            autofocus: true,
-            hintText: l10n.mediaTagFieldHint,
-            textCapitalization: TextCapitalization.none,
-          ),
-          const SizedBox(height: 8),
-          PrismTextField(
-            controller: _altController,
-            hintText: l10n.mediaAltTextFieldHint,
-            textCapitalization: TextCapitalization.sentences,
-          ),
-          const SizedBox(height: 16),
-          ImageSizeField(
-            onChanged: (s) {
-              sizeSpec = s;
-              canAdd.value = _sizeReady(s);
-            },
-          ),
-        ],
-      ),
-      actions: [
-        PrismButton(
-          label: l10n.cancel,
-          tone: PrismButtonTone.outlined,
-          onPressed: () => nav.pop(null),
-        ),
-        ValueListenableBuilder<bool>(
-          valueListenable: canAdd,
-          builder: (_, ready, _) => PrismButton(
-            label: l10n.add,
-            tone: PrismButtonTone.filled,
-            enabled: ready,
-            onPressed: () => nav.pop((
-              tag: _tagController.text.trim(),
-              altText: _altController.text.trim().isEmpty
-                  ? null
-                  : _altController.text.trim(),
-              size: sizeSpec,
-            )),
-          ),
-        ),
-      ],
-    );
+            ValueListenableBuilder<bool>(
+              valueListenable: canAdd,
+              builder: (_, ready, _) => PrismButton(
+                label: l10n.add,
+                tone: PrismButtonTone.filled,
+                enabled: ready,
+                onPressed: () => nav.pop((
+                  tag: _tagController.text.trim(),
+                  altText: _altController.text.trim().isEmpty
+                      ? null
+                      : _altController.text.trim(),
+                  size: sizeSpec,
+                )),
+              ),
+            ),
+          ],
+        );
     canAdd.dispose();
     return result;
   }

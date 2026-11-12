@@ -22,40 +22,44 @@ Future<GapResolution?> showGapResolutionDialog(
   return PrismDialog.show<GapResolution>(
     context: context,
     title: context.l10n.frontingGapDetectedTitle(gaps.length),
-    message: context.l10n.frontingGapDetectedMessage(gaps.length, totalDuration.toShortString()),
+    message: context.l10n.frontingGapDetectedMessage(
+      gaps.length,
+      totalDuration.toShortString(),
+    ),
     builder: (ctx) {
       final theme = Theme.of(ctx);
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (gaps.length <= 5)
-            ...gaps.map((gap) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    children: [
-                      Icon(
-                        AppIcons.schedule,
-                        size: 16,
+            ...gaps.map(
+              (gap) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    Icon(
+                      AppIcons.schedule,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      gap.duration.toShortString(),
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        gap.duration.toShortString(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
           PrismListRow(
             padding: EdgeInsets.zero,
             leading: Icon(AppIcons.autoFixHigh),
             title: Text(ctx.l10n.frontingGapFillWithUnknown),
             subtitle: Text(ctx.l10n.frontingGapFillWithUnknownSubtitle),
-            onTap: () =>
-                Navigator.of(ctx).pop(GapResolution.fillWithUnknown),
+            onTap: () => Navigator.of(ctx).pop(GapResolution.fillWithUnknown),
           ),
           PrismListRow(
             padding: EdgeInsets.zero,

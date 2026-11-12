@@ -17,7 +17,8 @@ class ConversationCategoryMapper {
   }
 
   static ConversationCategoriesCompanion toCompanion(
-      domain.ConversationCategory model) {
+    domain.ConversationCategory model,
+  ) {
     return ConversationCategoriesCompanion(
       id: Value(model.id),
       name: Value(model.name),

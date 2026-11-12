@@ -167,15 +167,18 @@ List<SpCustomFieldDef> synthesizeSpCustomFieldsFromUserFields(
         ? rawType
         : int.tryParse(rawType?.toString() ?? '') ?? 0;
     final order = value['order']?.toString();
-    final supportMarkdown = value['supportMarkdown'] == true ||
+    final supportMarkdown =
+        value['supportMarkdown'] == true ||
         value['supportDescMarkdown'] == true;
-    result.add(SpCustomFieldDef(
-      id: id,
-      name: name,
-      type: type,
-      order: order,
-      supportMarkdown: supportMarkdown,
-    ));
+    result.add(
+      SpCustomFieldDef(
+        id: id,
+        name: name,
+        type: type,
+        order: order,
+        supportMarkdown: supportMarkdown,
+      ),
+    );
   });
   result.sort((a, b) {
     final ao = int.tryParse(a.order ?? '');
@@ -939,10 +942,7 @@ class SpBoardMessage {
       writtenFor: json['writtenFor']?.toString(),
       title: json['title'] as String?,
       message: (json['message'] ?? '').toString(),
-      writtenAt: _parseSpTimeOr(
-        json['writtenAt'] ?? json['createdAt'],
-        clock,
-      ),
+      writtenAt: _parseSpTimeOr(json['writtenAt'] ?? json['createdAt'], clock),
       read: json['read'] == true,
     );
   }
@@ -1127,9 +1127,7 @@ class SpParser {
         systemColor ??= user['color'] as String?;
         systemDescription ??= user['desc'] as String?;
         userFieldsMap = user['fields'];
-        customFieldValueKeyMap = extractSpCustomFieldValueKeyMap(
-          userFieldsMap,
-        );
+        customFieldValueKeyMap = extractSpCustomFieldValueKeyMap(userFieldsMap);
 
         // System-level avatar: prefer direct URL, else construct the
         // serve.apparyllis.com URL from (uid, avatarUuid). Mirrors the

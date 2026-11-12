@@ -31,7 +31,8 @@ class _SecretKeySetupScreenState extends ConsumerState<SecretKeySetupScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    final mnemonic = (widget.mnemonic ?? ref.read(pendingMnemonicProvider))?.trim();
+    final mnemonic = (widget.mnemonic ?? ref.read(pendingMnemonicProvider))
+        ?.trim();
     if (mnemonic == null || mnemonic.isEmpty) {
       return PrismPageScaffold(
         topBar: PrismTopBar(title: l10n.secretKeyUnavailableTitle),

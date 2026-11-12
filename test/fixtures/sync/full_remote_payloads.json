@@ -21,6 +21,9 @@
     "location_sessions",
     "jobs",
     "work_sessions",
+    "cycle_entries",
+    "contacts",
+    "tracker_records",
     "member_groups",
     "member_group_entries",
     "custom_fields",
@@ -61,7 +64,10 @@
     "saved_locations": "loc-1",
     "location_sessions": "ls-1",
     "jobs": "job-1",
-    "work_sessions": "ws-1"
+    "work_sessions": "ws-1",
+    "cycle_entries": "cy-1",
+    "contacts": "ct-1",
+    "tracker_records": "tr-1"
   },
   "payloads": {
     "members": {
@@ -498,6 +504,47 @@
       "break_seconds": 900,
       "member_id": "member-1",
       "note": "shift",
+      "created_at": "2026-04-29T12:00:00.000Z",
+      "modified_at": "2026-04-29T12:05:00.000Z",
+      "is_deleted": false
+    },
+    "cycle_entries": {
+      "date": "2026-04-29",
+      "flow": 3,
+      "symptoms": "[\"cramps\",\"fatigue\"]",
+      "note": "ok",
+      "member_id": "member-1",
+      "created_at": "2026-04-29T12:00:00.000Z",
+      "modified_at": "2026-04-29T12:05:00.000Z",
+      "is_deleted": false
+    },
+    "contacts": {
+      "display_name": "Sam Rivers",
+      "phones": "[\"+15550100\"]",
+      "emails": "[\"sam@example.com\"]",
+      "birthday": "0004-04-02",
+      "notes": "friend",
+      "source": "device",
+      "external_id": "dev-42",
+      "is_favorite": true,
+      "created_at": "2026-04-29T12:00:00.000Z",
+      "modified_at": "2026-04-29T12:05:00.000Z",
+      "is_deleted": false
+    },
+    "tracker_records": {
+      "kind": "journal.entry",
+      "parent_id": null,
+      "title": "A good day",
+      "body": "Went for a walk.",
+      "data": "{\"mood\":4}",
+      "tags": "[\"walk\"]",
+      "occurred_at": "2026-04-29T09:00:00.000Z",
+      "ended_at": null,
+      "amount": null,
+      "member_id": null,
+      "is_private": false,
+      "is_pinned": false,
+      "sort_order": 0,
       "created_at": "2026-04-29T12:00:00.000Z",
       "modified_at": "2026-04-29T12:05:00.000Z",
       "is_deleted": false

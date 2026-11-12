@@ -8,11 +8,7 @@ import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 /// Displays "X polls need your vote" with a tappable surface.
 /// The caller handles navigation via [onTap].
 class PollNotificationBanner extends StatelessWidget {
-  const PollNotificationBanner({
-    super.key,
-    required this.count,
-    this.onTap,
-  });
+  const PollNotificationBanner({super.key, required this.count, this.onTap});
 
   /// Number of polls that need the user's vote.
   final int count;

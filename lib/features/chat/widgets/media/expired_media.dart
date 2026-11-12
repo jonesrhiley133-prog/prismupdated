@@ -8,11 +8,7 @@ import 'package:prism_plurality/shared/widgets/tinted_glass_surface.dart';
 /// Placeholder shown when a media attachment has expired or is no longer
 /// available (e.g. relay TTL exceeded, deleted from server).
 class ExpiredMedia extends StatelessWidget {
-  const ExpiredMedia({
-    super.key,
-    this.width,
-    this.height,
-  });
+  const ExpiredMedia({super.key, this.width, this.height});
 
   /// Display width constraint. Defaults to 200.
   final double? width;
@@ -45,8 +41,9 @@ class ExpiredMedia extends StatelessWidget {
             Text(
               context.l10n.chatMediaNoLongerAvailable,
               style: theme.textTheme.bodySmall?.copyWith(
-                color:
-                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurfaceVariant.withValues(
+                  alpha: 0.6,
+                ),
                 fontStyle: FontStyle.italic,
               ),
             ),

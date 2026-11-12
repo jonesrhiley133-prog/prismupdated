@@ -40,3 +40,5 @@ export 'mood_entries_table.dart';
 export 'calendar_events_table.dart';
 export 'locations_tables.dart';
 export 'work_tables.dart';
+export 'cycle_contacts_tables.dart';
+export 'tracker_records_table.dart';

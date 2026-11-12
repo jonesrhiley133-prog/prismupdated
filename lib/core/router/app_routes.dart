@@ -23,6 +23,23 @@ abstract final class AppRoutePaths {
   static const locations = '/locations';
   static const work = '/work';
   static const insights = '/insights';
+  static const cycle = '/cycle';
+  static const contacts = '/contacts';
+  static const journal = '/journal';
+  static const dictionary = '/dictionary';
+  static const achievements = '/achievements';
+  static const fitness = '/fitness';
+  static const finance = '/finance';
+  static const school = '/school';
+  static const relationships = '/relationships';
+  static const subsystems = '/subsystems';
+  static const headspace = '/headspace';
+  static const importCenter = '/import';
+  static const systemTimeline = '/system-timeline';
+  static const patterns = '/patterns';
+  static const sleepLog = '/sleep-log';
+  static const cycleInsights = '/cycle-insights';
+  static const pollStats = '/poll-stats';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';
@@ -178,6 +195,17 @@ enum AppShellTabId {
   locations,
   work,
   insights,
+  cycle,
+  contacts,
+  journal,
+  dictionary,
+  achievements,
+  fitness,
+  finance,
+  school,
+  relationships,
+  subsystems,
+  headspace,
 }
 
 class AppShellTab {
@@ -241,6 +269,17 @@ class AppShellTab {
       AppShellTabId.locations => l10n.navLocations,
       AppShellTabId.work => l10n.navWork,
       AppShellTabId.insights => l10n.navInsights,
+      AppShellTabId.cycle => l10n.navCycle,
+      AppShellTabId.contacts => l10n.navContacts,
+      AppShellTabId.journal => l10n.navJournal,
+      AppShellTabId.dictionary => l10n.navDictionary,
+      AppShellTabId.achievements => l10n.navAchievements,
+      AppShellTabId.fitness => l10n.navFitness,
+      AppShellTabId.finance => l10n.navFinance,
+      AppShellTabId.school => l10n.navSchool,
+      AppShellTabId.relationships => l10n.navRelationships,
+      AppShellTabId.subsystems => l10n.navSubsystems,
+      AppShellTabId.headspace => l10n.navHeadspace,
     };
   }
 
@@ -276,6 +315,17 @@ class AppShellTab {
       AppShellTabId.locations => true,
       AppShellTabId.work => true,
       AppShellTabId.insights => true,
+      AppShellTabId.cycle => true,
+      AppShellTabId.contacts => true,
+      AppShellTabId.journal => true,
+      AppShellTabId.dictionary => true,
+      AppShellTabId.achievements => true,
+      AppShellTabId.fitness => true,
+      AppShellTabId.finance => true,
+      AppShellTabId.school => true,
+      AppShellTabId.relationships => true,
+      AppShellTabId.subsystems => true,
+      AppShellTabId.headspace => true,
     };
   }
 }
@@ -434,6 +484,94 @@ final appShellTabs = [
     branchIndex: 18,
     rootLocation: AppRoutePaths.insights,
   ),
+  AppShellTab(
+    id: AppShellTabId.cycle,
+    label: 'Cycle',
+    icon: AppIcons.navCycle,
+    activeIcon: AppIcons.navCycleActive,
+    branchIndex: 19,
+    rootLocation: AppRoutePaths.cycle,
+  ),
+  AppShellTab(
+    id: AppShellTabId.contacts,
+    label: 'Contacts',
+    icon: AppIcons.navContacts,
+    activeIcon: AppIcons.navContactsActive,
+    branchIndex: 20,
+    rootLocation: AppRoutePaths.contacts,
+  ),
+  AppShellTab(
+    id: AppShellTabId.journal,
+    label: 'Journal',
+    icon: AppIcons.navJournal,
+    activeIcon: AppIcons.navJournalActive,
+    branchIndex: 21,
+    rootLocation: AppRoutePaths.journal,
+  ),
+  AppShellTab(
+    id: AppShellTabId.dictionary,
+    label: 'Dictionary',
+    icon: AppIcons.navDictionary,
+    activeIcon: AppIcons.navDictionaryActive,
+    branchIndex: 22,
+    rootLocation: AppRoutePaths.dictionary,
+  ),
+  AppShellTab(
+    id: AppShellTabId.achievements,
+    label: 'Achievements',
+    icon: AppIcons.navAchievements,
+    activeIcon: AppIcons.navAchievementsActive,
+    branchIndex: 23,
+    rootLocation: AppRoutePaths.achievements,
+  ),
+  AppShellTab(
+    id: AppShellTabId.fitness,
+    label: 'Fitness',
+    icon: AppIcons.navFitness,
+    activeIcon: AppIcons.navFitnessActive,
+    branchIndex: 24,
+    rootLocation: AppRoutePaths.fitness,
+  ),
+  AppShellTab(
+    id: AppShellTabId.finance,
+    label: 'Finance',
+    icon: AppIcons.navFinance,
+    activeIcon: AppIcons.navFinanceActive,
+    branchIndex: 25,
+    rootLocation: AppRoutePaths.finance,
+  ),
+  AppShellTab(
+    id: AppShellTabId.school,
+    label: 'School',
+    icon: AppIcons.navSchool,
+    activeIcon: AppIcons.navSchoolActive,
+    branchIndex: 26,
+    rootLocation: AppRoutePaths.school,
+  ),
+  AppShellTab(
+    id: AppShellTabId.relationships,
+    label: 'Relationships',
+    icon: AppIcons.navRelationships,
+    activeIcon: AppIcons.navRelationshipsActive,
+    branchIndex: 27,
+    rootLocation: AppRoutePaths.relationships,
+  ),
+  AppShellTab(
+    id: AppShellTabId.subsystems,
+    label: 'Subsystems',
+    icon: AppIcons.navSubsystems,
+    activeIcon: AppIcons.navSubsystemsActive,
+    branchIndex: 28,
+    rootLocation: AppRoutePaths.subsystems,
+  ),
+  AppShellTab(
+    id: AppShellTabId.headspace,
+    label: 'Headspace',
+    icon: AppIcons.navHeadspace,
+    activeIcon: AppIcons.navHeadspaceActive,
+    branchIndex: 29,
+    rootLocation: AppRoutePaths.headspace,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -451,6 +589,17 @@ const defaultNavBarOverflowTabIds = [
   'insights',
   'locations',
   'work',
+  'cycle',
+  'contacts',
+  'journal',
+  'dictionary',
+  'achievements',
+  'fitness',
+  'finance',
+  'school',
+  'relationships',
+  'subsystems',
+  'headspace',
   'notes',
   'reminders',
   'statistics',

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
 import 'package:prism_plurality/features/calendar/utils/calendar_data.dart';
+import 'package:prism_plurality/features/contacts/providers/contact_providers.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
 import 'package:prism_plurality/features/reminders/providers/reminders_providers.dart';
@@ -15,6 +16,9 @@ final calendarDataProvider = Provider<CalendarData?>((ref) {
     events: events,
     members: overlays.birthdays
         ? (ref.watch(userVisibleMemberListProvider).value ?? const [])
+        : const [],
+    contacts: overlays.birthdays
+        ? (ref.watch(contactsProvider).value ?? const [])
         : const [],
     moodEntries: overlays.mood
         ? (ref.watch(moodEntriesProvider).value ?? const [])

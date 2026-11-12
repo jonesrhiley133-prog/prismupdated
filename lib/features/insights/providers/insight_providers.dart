@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
+import 'package:prism_plurality/features/cycle/providers/cycle_providers.dart';
 import 'package:prism_plurality/features/insights/utils/insight_engine.dart';
 import 'package:prism_plurality/features/locations/providers/location_providers.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
@@ -32,10 +33,12 @@ final dailyInsightProvider = Provider.autoDispose
       final fronting = ref.watch(insightFrontingSessionsProvider(day));
       final locations = ref.watch(locationSessionsProvider);
       final work = ref.watch(workSessionsProvider);
+      final cycle = ref.watch(cycleEntriesProvider);
       if (!mood.hasValue ||
           !fronting.hasValue ||
           !locations.hasValue ||
-          !work.hasValue) {
+          !work.hasValue ||
+          !cycle.hasValue) {
         return null;
       }
       return buildDailyInsight(

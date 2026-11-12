@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
+import 'package:prism_plurality/features/connected/widgets/how_we_feel_card.dart';
+import 'package:prism_plurality/features/cycle/utils/cycle_stats.dart';
+import 'package:prism_plurality/features/cycle/views/cycle_screen.dart';
 import 'package:prism_plurality/features/insights/providers/insight_providers.dart';
 import 'package:prism_plurality/features/insights/utils/insight_engine.dart';
 import 'package:prism_plurality/features/locations/providers/location_providers.dart';
@@ -128,7 +133,30 @@ class _DailyInsightsScreenState extends ConsumerState<DailyInsightsScreen> {
     final t = insight.today;
     return [
       _Opening(summary: t, isToday: isToday),
-      const SizedBox(height: 16),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Expanded(
+            child: PrismButton(
+              label: l10n.timelineSystemTitle,
+              icon: AppIcons.navTimelineSystem,
+              expanded: true,
+              onPressed: () => context.push(AppRoutePaths.systemTimeline),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: PrismButton(
+              label: l10n.patternsTitle,
+              icon: AppIcons.patterns,
+              expanded: true,
+              onPressed: () => context.push(AppRoutePaths.patterns),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      if (isToday) ...[const HowWeFeelCard(), const SizedBox(height: 16)],
       if (!t.isEmpty) ...[
         _SectionTitle(l10n.insightsAtAGlance),
         _Glance(summary: t),
@@ -317,6 +345,17 @@ class _Glance extends ConsumerWidget {
             t.bodySensations.take(3).map(bodySensationLabel).join(', '),
           ),
         ),
+      if (t.cycleFlow != null || t.cycleDay != null)
+        (
+          AppIcons.navCycle,
+          [
+            if (t.cycleDay != null) l10n.insightsGlanceCycleDay(t.cycleDay!),
+            if (t.cycleFlow != null && t.cycleFlow! > 0)
+              flowLabel(context, t.cycleFlow!),
+            if (t.cycleSymptoms.isNotEmpty)
+              t.cycleSymptoms.map((k) => cycleSymptoms[k] ?? k).join(', '),
+          ].join(' · '),
+        ),
       if (t.sleep != null)
         (
           AppIcons.bedtimeOutlined,
@@ -474,6 +513,15 @@ class _PatternTile extends ConsumerWidget {
           bodySensationLabel(p.bodySensation),
           emotionLabel(p.emotionKey),
           p.together,
+        ),
+      ),
+      CycleMoodPattern p => (
+        l10n.insightsPatternCycleTitle,
+        l10n.insightsPatternCycle(
+          f(p.periodMood),
+          f(p.otherMood),
+          p.periodCheckIns,
+          p.otherCheckIns,
         ),
       ),
       StressTrendPattern p => (

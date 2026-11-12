@@ -48,6 +48,11 @@ import 'package:prism_plurality/core/database/daos/saved_locations_dao.dart';
 import 'package:prism_plurality/core/database/daos/location_sessions_dao.dart';
 import 'package:prism_plurality/core/database/daos/jobs_dao.dart';
 import 'package:prism_plurality/core/database/daos/work_sessions_dao.dart';
+import 'package:prism_plurality/core/database/daos/cycle_entries_dao.dart';
+import 'package:prism_plurality/core/database/daos/contacts_dao.dart';
+import 'package:prism_plurality/core/database/daos/tracker_records_dao.dart';
+import 'package:prism_plurality/data/repositories/drift_tracker_record_repository.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/core/database/daos/friends_dao.dart';
 import 'package:prism_plurality/core/database/daos/sharing_requests_dao.dart';
 import 'package:prism_plurality/data/repositories/drift_custom_fields_repository.dart';
@@ -58,6 +63,10 @@ import 'package:prism_plurality/data/repositories/drift_conversation_categories_
 import 'package:prism_plurality/data/repositories/drift_reminders_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_mood_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_calendar_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_cycle_entry_repository.dart';
+import 'package:prism_plurality/data/repositories/drift_contact_repository.dart';
+import 'package:prism_plurality/domain/models/cycle_entry.dart';
+import 'package:prism_plurality/domain/models/contact.dart';
 import 'package:prism_plurality/data/repositories/drift_saved_location_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_location_session_repository.dart';
 import 'package:prism_plurality/data/repositories/drift_job_repository.dart';
@@ -368,6 +377,40 @@ final workSessionsDaoProvider = Provider<WorkSessionsDao>(
 final workSessionRepositoryProvider = Provider<EntityRepository<WorkSession>>(
   (ref) => DriftWorkSessionRepository(
     ref.watch(workSessionsDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final cycleEntriesDaoProvider = Provider<CycleEntriesDao>(
+  (ref) => ref.watch(databaseProvider).cycleEntriesDao,
+);
+
+final cycleEntryRepositoryProvider = Provider<EntityRepository<CycleEntry>>(
+  (ref) => DriftCycleEntryRepository(
+    ref.watch(cycleEntriesDaoProvider),
+    _resolveSyncHandle(ref),
+  ),
+);
+
+final contactsDaoProvider = Provider<ContactsDao>(
+  (ref) => ref.watch(databaseProvider).contactsDao,
+);
+
+final trackerRecordsDaoProvider = Provider<TrackerRecordsDao>(
+  (ref) => ref.watch(databaseProvider).trackerRecordsDao,
+);
+
+final trackerRecordRepositoryProvider =
+    Provider<EntityRepository<TrackerRecord>>(
+      (ref) => DriftTrackerRecordRepository(
+        ref.watch(trackerRecordsDaoProvider),
+        _resolveSyncHandle(ref),
+      ),
+    );
+
+final contactRepositoryProvider = Provider<EntityRepository<Contact>>(
+  (ref) => DriftContactRepository(
+    ref.watch(contactsDaoProvider),
     _resolveSyncHandle(ref),
   ),
 );

@@ -111,107 +111,108 @@ class MemberProfileHeaderEditor extends StatelessWidget {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-          PrismSectionCard(
-            padding: const EdgeInsets.all(12),
-            child: MemberProfileHeader(
-              member: member,
-              source: previewSource,
-              layout: layout,
-              visible: visible,
-              prismHeaderImageData: prismHeaderImageData,
-              pluralKitHeaderImageData: pluralKitHeaderImageData,
-              onAvatarTap: onAvatarTap,
-              onAvatarRemove: onAvatarRemove,
-              onNameStyleTap: onNameStyleTap,
-            ),
+        PrismSectionCard(
+          padding: const EdgeInsets.all(12),
+          child: MemberProfileHeader(
+            member: member,
+            source: previewSource,
+            layout: layout,
+            visible: visible,
+            prismHeaderImageData: prismHeaderImageData,
+            pluralKitHeaderImageData: pluralKitHeaderImageData,
+            onAvatarTap: onAvatarTap,
+            onAvatarRemove: onAvatarRemove,
+            onNameStyleTap: onNameStyleTap,
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            PrismButton(
+              icon: AppIcons.imageOutlined,
+              label:
+                  prismHeaderImageData != null &&
+                      prismHeaderImageData!.isNotEmpty
+                  ? context.l10n.memberProfileHeaderChangeImage
+                  : context.l10n.memberProfileHeaderAddImage,
+              onPressed: () => _changePrismHeader(context),
+              density: PrismControlDensity.compact,
+            ),
+            if (canRemovePrismImage)
               PrismButton(
-                icon: AppIcons.imageOutlined,
-                label: prismHeaderImageData != null &&
-                        prismHeaderImageData!.isNotEmpty
-                    ? context.l10n.memberProfileHeaderChangeImage
-                    : context.l10n.memberProfileHeaderAddImage,
-                onPressed: () => _changePrismHeader(context),
+                icon: AppIcons.deleteOutline,
+                label: context.l10n.memberProfileHeaderRemoveImage,
+                tone: PrismButtonTone.destructive,
                 density: PrismControlDensity.compact,
+                onPressed: () {
+                  onPrismHeaderImageChanged(null);
+                  onPrismHeaderImageRemoved?.call();
+                },
               ),
-              if (canRemovePrismImage)
-                PrismButton(
-                  icon: AppIcons.deleteOutline,
-                  label: context.l10n.memberProfileHeaderRemoveImage,
-                  tone: PrismButtonTone.destructive,
-                  density: PrismControlDensity.compact,
-                  onPressed: () {
-                    onPrismHeaderImageChanged(null);
-                    onPrismHeaderImageRemoved?.call();
-                  },
-                ),
-            ],
-          ),
-          if (resolvedPluralKitEligible) ...[
-            const SizedBox(height: 16),
-            PrismSegmentedControl<MemberProfileHeaderSource>(
-              selected: previewSource,
-              onChanged: onSourceChanged,
-              segments: [
-                PrismSegment(
-                  value: MemberProfileHeaderSource.pluralKit,
-                  label: context.l10n.memberProfileHeaderSourcePluralKit,
-                ),
-                PrismSegment(
-                  value: MemberProfileHeaderSource.prism,
-                  label: context.l10n.memberProfileHeaderSourcePrism,
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              previewSource == MemberProfileHeaderSource.pluralKit
-                  ? context.l10n.memberProfileHeaderSourcePluralKitHelper
-                  : context.l10n.memberProfileHeaderSourcePrismHelper,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.35,
-              ),
-            ),
           ],
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.memberProfileHeaderLayoutLabel,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 6),
-          PrismSegmentedControl<MemberProfileHeaderLayout>(
-            selected: layout,
-            onChanged: onLayoutChanged,
+        ),
+        if (resolvedPluralKitEligible) ...[
+          const SizedBox(height: 16),
+          PrismSegmentedControl<MemberProfileHeaderSource>(
+            selected: previewSource,
+            onChanged: onSourceChanged,
             segments: [
               PrismSegment(
-                value: MemberProfileHeaderLayout.compactBackground,
-                label: context.l10n.memberProfileHeaderLayoutCompact,
+                value: MemberProfileHeaderSource.pluralKit,
+                label: context.l10n.memberProfileHeaderSourcePluralKit,
               ),
               PrismSegment(
-                value: MemberProfileHeaderLayout.classicOverlap,
-                label: context.l10n.memberProfileHeaderLayoutClassic,
+                value: MemberProfileHeaderSource.prism,
+                label: context.l10n.memberProfileHeaderSourcePrism,
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          PrismSwitchRow(
-            title: context.l10n.memberProfileHeaderHideTitle,
-            subtitle: context.l10n.memberProfileHeaderVisibleSubtitle,
-            value: !visible,
-            onChanged: (v) => onVisibleChanged(!v),
-            icon: AppIcons.imageOutlined,
+          const SizedBox(height: 6),
+          Text(
+            previewSource == MemberProfileHeaderSource.pluralKit
+                ? context.l10n.memberProfileHeaderSourcePluralKitHelper
+                : context.l10n.memberProfileHeaderSourcePrismHelper,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.35,
+            ),
           ),
         ],
-      );
+        const SizedBox(height: 12),
+        Text(
+          context.l10n.memberProfileHeaderLayoutLabel,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 6),
+        PrismSegmentedControl<MemberProfileHeaderLayout>(
+          selected: layout,
+          onChanged: onLayoutChanged,
+          segments: [
+            PrismSegment(
+              value: MemberProfileHeaderLayout.compactBackground,
+              label: context.l10n.memberProfileHeaderLayoutCompact,
+            ),
+            PrismSegment(
+              value: MemberProfileHeaderLayout.classicOverlap,
+              label: context.l10n.memberProfileHeaderLayoutClassic,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        PrismSwitchRow(
+          title: context.l10n.memberProfileHeaderHideTitle,
+          subtitle: context.l10n.memberProfileHeaderVisibleSubtitle,
+          value: !visible,
+          onChanged: (v) => onVisibleChanged(!v),
+          icon: AppIcons.imageOutlined,
+        ),
+      ],
+    );
     if (!showSectionWrapper) return content;
     return PrismSection(
       title: context.l10n.memberProfileHeaderSectionTitle,

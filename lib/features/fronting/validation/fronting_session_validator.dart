@@ -36,8 +36,10 @@ class FrontingSessionValidator {
       ...detectInvalidRanges(active),
       if (config.detectSelfOverlaps) ...detectSelfOverlap(active),
       if (config.detectDuplicates) ...detectDuplicates(active, config),
-      if (config.detectMergeableAdjacent) ...detectMergeableAdjacent(active, config),
-      if (config.detectFutureSessions) ...detectFutureSessions(active, effectiveNow, config),
+      if (config.detectMergeableAdjacent)
+        ...detectMergeableAdjacent(active, config),
+      if (config.detectFutureSessions)
+        ...detectFutureSessions(active, effectiveNow, config),
     ];
 
     issues.sort((a, b) => a.rangeStart.compareTo(b.rangeStart));

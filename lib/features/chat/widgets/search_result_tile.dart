@@ -46,7 +46,8 @@ class SearchResultTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${result.authorName ?? 'Unknown'}: $a11ySnippet '
+      label:
+          '${result.authorName ?? 'Unknown'}: $a11ySnippet '
           'in ${result.conversationTitle ?? 'conversation'}',
       excludeSemantics: true,
       child: InkWell(
@@ -151,10 +152,9 @@ class SearchResultTile extends StatelessWidget {
       return false;
     }
 
-    final highlights = RegExp(r'\[([^\]]*)\]')
-        .allMatches(redacted)
-        .where((m) => !insideMention(m.start))
-        .toList();
+    final highlights = RegExp(
+      r'\[([^\]]*)\]',
+    ).allMatches(redacted).where((m) => !insideMention(m.start)).toList();
 
     final regions = <_SnippetRegion>[
       for (final m in mentions)
@@ -167,39 +167,41 @@ class SearchResultTile extends StatelessWidget {
     var cursor = 0;
     for (final region in regions) {
       if (region.start > cursor) {
-        spans.add(TextSpan(
-          text: redacted.substring(cursor, region.start),
-          style: baseStyle,
-        ));
+        spans.add(
+          TextSpan(
+            text: redacted.substring(cursor, region.start),
+            style: baseStyle,
+          ),
+        );
       }
       if (region.isMention) {
         final member = authorMap[region.payload];
         final name =
             member?.effectiveName(preferDisplayName: preferDisplayName) ??
             'Unknown';
-        final mentionColor = (member != null &&
+        final mentionColor =
+            (member != null &&
                 member.customColorEnabled &&
                 member.customColorHex != null)
             ? AppColors.fromHex(member.customColorHex!)
             : theme.colorScheme.primary;
-        spans.add(TextSpan(
-          text: '@$name',
-          style: baseStyle?.copyWith(
-            color: mentionColor,
-            fontWeight: FontWeight.w600,
+        spans.add(
+          TextSpan(
+            text: '@$name',
+            style: baseStyle?.copyWith(
+              color: mentionColor,
+              fontWeight: FontWeight.w600,
+            ),
+            semanticsLabel: '@$name',
           ),
-          semanticsLabel: '@$name',
-        ));
+        );
       } else {
         spans.add(TextSpan(text: region.payload, style: highlightStyle));
       }
       cursor = region.end;
     }
     if (cursor < redacted.length) {
-      spans.add(TextSpan(
-        text: redacted.substring(cursor),
-        style: baseStyle,
-      ));
+      spans.add(TextSpan(text: redacted.substring(cursor), style: baseStyle));
     }
 
     return RichText(

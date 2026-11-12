@@ -49,7 +49,8 @@ class GroupTreeUtils {
       if (!visited.add(currentId)) break; // cycle guard
       final group = idMap[currentId];
       if (group == null || group.parentGroupId == null) break;
-      if (!idMap.containsKey(group.parentGroupId)) break; // dangling parent → stop
+      if (!idMap.containsKey(group.parentGroupId))
+        break; // dangling parent → stop
       depth++;
       currentId = group.parentGroupId;
     }

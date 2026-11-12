@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
-import 'package:prism_plurality/domain/models/custom_field_value.dart' as domain;
+import 'package:prism_plurality/domain/models/custom_field_value.dart'
+    as domain;
 
 class CustomFieldValueMapper {
   CustomFieldValueMapper._();
@@ -14,8 +15,7 @@ class CustomFieldValueMapper {
     );
   }
 
-  static CustomFieldValuesCompanion toCompanion(
-      domain.CustomFieldValue model) {
+  static CustomFieldValuesCompanion toCompanion(domain.CustomFieldValue model) {
     return CustomFieldValuesCompanion(
       id: Value(model.id),
       customFieldId: Value(model.customFieldId),

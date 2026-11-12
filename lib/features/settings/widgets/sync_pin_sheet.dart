@@ -111,7 +111,6 @@ class _SyncPinSheetState extends ConsumerState<SyncPinSheet>
     setState(() {});
   }
 
-
   @override
   void dispose() {
     // Clear controller text so the mnemonic isn't resident in memory

@@ -11,7 +11,11 @@ class MoodEntryMapper {
     return domain.MoodEntry(
       id: row.id,
       memberId: row.memberId,
-      mood: _clamp(row.mood, domain.MoodEntry.minMood, domain.MoodEntry.maxMood),
+      mood: _clamp(
+        row.mood,
+        domain.MoodEntry.minMood,
+        domain.MoodEntry.maxMood,
+      ),
       intensity: _clamp(
         row.intensity,
         domain.MoodEntry.minIntensity,

@@ -43,8 +43,7 @@ class MemberRankingChart extends ConsumerStatefulWidget {
   static const double _slotHorizontalPadding = 3;
 
   @override
-  ConsumerState<MemberRankingChart> createState() =>
-      _MemberRankingChartState();
+  ConsumerState<MemberRankingChart> createState() => _MemberRankingChartState();
 }
 
 class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
@@ -67,10 +66,8 @@ class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
     // subscriptions — fewer rebuilds, single network/db pass, and the same
     // map drives both name measurement and bar rendering.
     final ids = memberStats.map((s) => s.memberId).toList();
-    final memberMapAsync =
-        ref.watch(membersByIdsProvider(memberIdsKey(ids)));
-    final memberMap =
-        memberMapAsync.value ?? const <String, Member>{};
+    final memberMapAsync = ref.watch(membersByIdsProvider(memberIdsKey(ids)));
+    final memberMap = memberMapAsync.value ?? const <String, Member>{};
 
     final textScaler = MediaQuery.textScalerOf(context);
     final labelStyle = theme.textTheme.labelSmall;
@@ -85,10 +82,11 @@ class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
       final width = _measureTextWidth(name, labelStyle, textScaler);
       if (width > widestName) widestName = width;
     }
-    final slotWidth = (widestName +
-            MemberRankingChart._slotHorizontalPadding * 2)
-        .clamp(MemberRankingChart._minSlotWidth,
-            MemberRankingChart._maxSlotWidth);
+    final slotWidth =
+        (widestName + MemberRankingChart._slotHorizontalPadding * 2).clamp(
+          MemberRankingChart._minSlotWidth,
+          MemberRankingChart._maxSlotWidth,
+        );
 
     // Compute the chart row height precisely from the scaled text + fixed
     // pieces, so the ListView is exactly as tall as one bar slot. No
@@ -100,14 +98,17 @@ class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
     // 4px slack absorbs leading/baseline rounding so the column never
     // overflows the ListView; rendered text varies slightly by font.
     const overflowSlack = 4.0;
-    final rowHeight = scaledLabelHeight // % label
-        + MemberRankingChart._gapPctToBar
-        + MemberRankingChart._barHeight
-        + MemberRankingChart._gapBarToAvatar
-        + MemberRankingChart._avatarSize
-        + MemberRankingChart._gapAvatarToName
-        + scaledLabelHeight // member name
-        + overflowSlack;
+    final rowHeight =
+        scaledLabelHeight // % label
+        +
+        MemberRankingChart._gapPctToBar +
+        MemberRankingChart._barHeight +
+        MemberRankingChart._gapBarToAvatar +
+        MemberRankingChart._avatarSize +
+        MemberRankingChart._gapAvatarToName +
+        scaledLabelHeight // member name
+        +
+        overflowSlack;
 
     return PrismSurface(
       padding: const EdgeInsets.fromLTRB(16, 12, 0, 12),
@@ -125,8 +126,7 @@ class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
                   // "Per-{term} Colors" pattern in appearance settings.
                   // Axis hint below stays `singularLower` because that's
                   // the inline noun-modifier pattern.
-                  context.l10n
-                      .statisticsFrontingTimeByMember(terms.singular),
+                  context.l10n.statisticsFrontingTimeByMember(terms.singular),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     // Drop built-in line-height padding so the title sits as
@@ -139,8 +139,9 @@ class _MemberRankingChartState extends ConsumerState<MemberRankingChart> {
                 // system {term}-minutes, not wall-clock fronting time.
                 // See §4.3 of fronting-per-member-sessions.md.
                 Text(
-                  context.l10n
-                      .statisticsMemberMinutesAxisHint(terms.singularLower),
+                  context.l10n.statisticsMemberMinutesAxisHint(
+                    terms.singularLower,
+                  ),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -183,11 +184,7 @@ String _displayName(Member? m) {
   return m.name;
 }
 
-double _measureTextWidth(
-  String text,
-  TextStyle? style,
-  TextScaler scaler,
-) {
+double _measureTextWidth(String text, TextStyle? style, TextScaler scaler) {
   final painter = TextPainter(
     text: TextSpan(text: text, style: style),
     textDirection: TextDirection.ltr,
@@ -224,14 +221,18 @@ class _MemberBar extends StatelessWidget {
     final brightness = theme.brightness;
     final name = _displayName(member);
 
-    final color = (member?.customColorEnabled ?? false) &&
-            member?.customColorHex != null
+    final color =
+        (member?.customColorEnabled ?? false) && member?.customColorHex != null
         ? AppColors.fromHex(member!.customColorHex!)
         : AppColors.generatedColor(
-            rowIndex, theme.colorScheme.primary, brightness);
+            rowIndex,
+            theme.colorScheme.primary,
+            brightness,
+          );
 
-    final fraction =
-        peakMinutes > 0 ? stat.totalTime.inMinutes / peakMinutes : 0.0;
+    final fraction = peakMinutes > 0
+        ? stat.totalTime.inMinutes / peakMinutes
+        : 0.0;
     final filledHeight = (barHeight * fraction).clamp(2.0, barHeight);
     // Bar width scales with the slot so a wider column doesn't leave the
     // bar looking lonely in the middle. Floor + ceiling keep the geometry
@@ -288,7 +289,8 @@ class _MemberBar extends StatelessWidget {
                         color: theme.colorScheme.surfaceContainerHighest
                             .withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(
-                            PrismShapes.of(context).radius(2)),
+                          PrismShapes.of(context).radius(2),
+                        ),
                       ),
                     ),
                     Container(
@@ -296,7 +298,8 @@ class _MemberBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: color,
                         borderRadius: BorderRadius.circular(
-                            PrismShapes.of(context).radius(2)),
+                          PrismShapes.of(context).radius(2),
+                        ),
                       ),
                     ),
                   ],

@@ -57,4 +57,22 @@ repository secrets.
    future builds can't update an installed app.
 
 The first signed build still needs one uninstall if you previously installed
-a debug-signed one.
+a debug-signed one. Export a Prism backup first (Settings → Import & export),
+then import it after installing the signed build.
+
+## In-app updates
+
+Once signing is set up, every push builds a signed APK and publishes it as a
+GitHub release tagged `android-build-<run number>` (the 10 newest are kept).
+The app checks the latest release in the background (at most every 6 hours)
+and shows an "Update available" banner on Home; **Settings → About → App
+updates** has the same controls plus "Check now".
+
+Tapping **Download & install** downloads the APK, verifies its SHA-256
+against the release notes, and opens Android's installer. Android always asks
+you to confirm, and the first time it asks you to allow Prism to "install
+unknown apps". The update installs over the current app, so all data stays.
+
+Debug-signed builds (no signing secrets) are not published, because they
+couldn't install over a signed app. Builds made outside GitHub Actions don't
+check for updates.

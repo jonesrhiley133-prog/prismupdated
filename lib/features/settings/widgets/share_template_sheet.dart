@@ -120,7 +120,10 @@ class _ShareTemplateSheetContentState
       final png = await captureBrandedTemplateCardPng(_cardKey, code: _code);
       if (png == null) {
         if (mounted) {
-          PrismToast.error(context, message: l10n.fieldTemplateShareImageFailed);
+          PrismToast.error(
+            context,
+            message: l10n.fieldTemplateShareImageFailed,
+          );
         }
         return;
       }
@@ -143,7 +146,10 @@ class _ShareTemplateSheetContentState
           PrismToast.show(context, message: l10n.fieldTemplateShareImageSaved);
         } else if (outcome.status != SaveFileStatus.cancelled &&
             outcome.status != SaveFileStatus.alreadyActive) {
-          PrismToast.error(context, message: l10n.fieldTemplateShareImageFailed);
+          PrismToast.error(
+            context,
+            message: l10n.fieldTemplateShareImageFailed,
+          );
         }
       } else {
         final origin = _shareOrigin();
@@ -301,8 +307,7 @@ class _ShareTemplateSheetContentState
                   ),
                 ),
                 const SizedBox(height: 4),
-                for (final item in summary)
-                  FieldTemplateSummaryRow(item: item),
+                for (final item in summary) FieldTemplateSummaryRow(item: item),
               ],
             ),
           ),

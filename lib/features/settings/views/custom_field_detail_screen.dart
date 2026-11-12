@@ -1132,7 +1132,9 @@ List<_MemberReferenceSummary> _memberReferenceSummaries(
       else if (ownerMember != null && id == ownerMember.id)
         _MemberReferenceSummary(
           id: id,
-          label: ownerMember.effectiveName(preferDisplayName: preferDisplayName),
+          label: ownerMember.effectiveName(
+            preferDisplayName: preferDisplayName,
+          ),
           member: ownerMember,
           isUnavailable: false,
         )

@@ -12,7 +12,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  # write: publish each signed build as a GitHub release, which the app's
+  # built-in updater installs over the current version.
+  contents: write
 
 concurrency:
   group: android-apk-${{ github.ref }}
@@ -56,6 +58,7 @@ jobs:
       # installing a newer build means uninstalling the old one first (which
       # erases the app's data).
       - name: Configure release signing
+        id: signing
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -64,7 +67,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
-            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; the APK will be debug-signed. Updates will require uninstalling first."
+            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; the APK will be debug-signed and NOT published for in-app updates (it can't install over a signed build). See docs/deploy/android-apk.md."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
@@ -74,6 +78,7 @@ jobs:
             echo "keyAlias=$ANDROID_KEY_ALIAS"
             echo "keyPassword=${ANDROID_KEY_PASSWORD:-$ANDROID_KEYSTORE_PASSWORD}"
           } > android/app/key.properties
+          echo "signed=true" >> "$GITHUB_OUTPUT"
           echo "Release signing configured."
 
       - name: Build APKs
@@ -83,7 +88,8 @@ jobs:
           flutter build apk --release \
             --target-platform android-arm64,android-arm \
             --no-tree-shake-icons \
-            --build-number "${{ github.run_number }}"
+            --build-number "${{ github.run_number }}" \
+            --dart-define=PRISM_UPDATE_REPO=${{ github.repository }}
 
       - name: Collect APKs
         run: |
@@ -111,6 +117,39 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 30
+
+      # The app checks the latest release whose tag is android-build-<N> and
+      # offers it when N is higher than its own build number. Only signed
+      # builds are published: a debug-signed APK can't replace a signed one.
+      - name: Publish release for in-app updates
+        if: steps.signing.outputs.signed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
+          tag="android-build-${{ github.run_number }}"
+          apk=$(ls dist/*.apk | head -1)
+          sum=$(sha256sum "$apk" | awk '{print $1}')
+          {
+            echo "Automated Android build from \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA::7}."
+            echo
+            echo "Install from inside Prism: Settings → About → App updates. It installs over the current app and keeps your data."
+            echo
+            echo "sha256: ${sum}"
+          } > notes.md
+          gh release create "$tag" dist/*.apk dist/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Prism ${version} (build ${{ github.run_number }})" \
+            --notes-file notes.md \
+            --latest
+          # Keep the 10 newest automated builds.
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,createdAt \
+            --jq '[.[] | select(.tagName | startswith("android-build-"))] | sort_by(.createdAt) | reverse | .[10:] | .[].tagName' \
+          | while read -r old; do
+              gh release delete "$old" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+            done
 
       - name: Remove signing material
         if: always()

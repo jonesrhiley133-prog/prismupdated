@@ -35,10 +35,8 @@ Future<bool?> showPkPushNewMemberDialog(
   return PrismDialog.show<bool>(
     context: context,
     title: l10n.pkPushNewMemberDialogTitle(memberName),
-    builder: (_) => _PkPushNewMemberDialogBody(
-      memberId: memberId,
-      memberName: memberName,
-    ),
+    builder: (_) =>
+        _PkPushNewMemberDialogBody(memberId: memberId, memberName: memberName),
   );
 }
 

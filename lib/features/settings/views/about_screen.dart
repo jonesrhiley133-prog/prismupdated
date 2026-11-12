@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/features/app_update/app_update_widgets.dart';
 import 'package:prism_plurality/features/settings/views/about_section.dart';
+import 'package:prism_plurality/features/whats_new/whats_new.dart';
 import 'package:prism_plurality/shared/widgets/app_shell.dart';
 import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:prism_plurality/shared/widgets/prism_top_bar.dart';
@@ -12,10 +14,16 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: context.l10n.settingsAbout, showBackButton: true),
+      topBar: PrismTopBar(
+        title: context.l10n.settingsAbout,
+        showBackButton: true,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
-        child: const AboutSection(),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [AppUpdateCard(), WhatsNewTile(), AboutSection()],
+        ),
       ),
     );
   }

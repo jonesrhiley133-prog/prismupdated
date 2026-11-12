@@ -57,13 +57,19 @@ class SliderEditState {
       case CommitIntent.delete:
         return SliderEditState.pristine(midpoint: midpoint);
       case CommitIntent.set:
-        return SliderEditState(currentValue: currentValue, initialValue: currentValue);
+        return SliderEditState(
+          currentValue: currentValue,
+          initialValue: currentValue,
+        );
       case CommitIntent.noop:
         return this;
     }
   }
 
-  SliderEditState onExternalReload({double? newValue, required double midpoint}) {
+  SliderEditState onExternalReload({
+    double? newValue,
+    required double midpoint,
+  }) {
     if (newValue == null) return SliderEditState.pristine(midpoint: midpoint);
     return SliderEditState(currentValue: newValue, initialValue: newValue);
   }
@@ -92,7 +98,8 @@ class SliderEditState {
   }
 
   @override
-  int get hashCode => Object.hash(currentValue, initialValue, touched, clearedPending);
+  int get hashCode =>
+      Object.hash(currentValue, initialValue, touched, clearedPending);
 
   @override
   String toString() =>

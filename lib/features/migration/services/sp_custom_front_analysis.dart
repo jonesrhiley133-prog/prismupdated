@@ -5,8 +5,10 @@ import 'package:prism_plurality/features/migration/services/sp_parser.dart';
 /// whole-word occurrences of sleep/asleep/sleeping/nap/napping so that
 /// "Sleep", "Asleep", and "Nap" resolve to [CfDisposition.convertToSleep]
 /// while "overslept" / "unsleep" / "napkin" do not.
-final RegExp _sleepNameRegex =
-    RegExp(r'\b(sleep|asleep|sleeping|nap|napping)\b', caseSensitive: false);
+final RegExp _sleepNameRegex = RegExp(
+  r'\b(sleep|asleep|sleeping|nap|napping)\b',
+  caseSensitive: false,
+);
 
 /// Count how each SP custom front is used across the parsed export.
 ///
@@ -107,8 +109,7 @@ Map<String, CfSuggestion> suggestDefaults(
 
     // Rule 4: primary-heavy (≥ 50% of front-history usage).
     final frontHistoryTotal = stats.asPrimary + stats.asCoFronter;
-    if (frontHistoryTotal > 0 &&
-        stats.asPrimary * 2 >= frontHistoryTotal) {
+    if (frontHistoryTotal > 0 && stats.asPrimary * 2 >= frontHistoryTotal) {
       result[cf.id] = const CfSuggestion(
         disposition: CfDisposition.importAsMember,
         reason: 'Used mostly as primary fronter',

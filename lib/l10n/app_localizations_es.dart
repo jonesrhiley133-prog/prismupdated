@@ -15509,4 +15509,3558 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get insightsSuggestWork =>
       'Fue una jornada larga. Descansar también cuenta.';
+
+  @override
+  String get navCycle => 'Ciclo';
+
+  @override
+  String get navContacts => 'Contactos';
+
+  @override
+  String get dataManagementPreviewCycle => 'Días del ciclo';
+
+  @override
+  String get dataManagementPreviewContacts => 'Contactos';
+
+  @override
+  String get contactsTitle => 'Contactos';
+
+  @override
+  String get contactsNew => 'Nuevo contacto';
+
+  @override
+  String get contactsEdit => 'Editar contacto';
+
+  @override
+  String get contactsName => 'Nombre';
+
+  @override
+  String get contactsPhones => 'Teléfonos (uno por línea)';
+
+  @override
+  String get contactsEmails => 'Correos (uno por línea)';
+
+  @override
+  String get contactsInvalidEmail => 'Uno de los correos no parece correcto.';
+
+  @override
+  String get contactsBirthday => 'Cumpleaños';
+
+  @override
+  String get contactsAddBirthday => 'Añadir cumpleaños';
+
+  @override
+  String get contactsYearUnknown => 'Año desconocido';
+
+  @override
+  String get contactsDeleteTitle => '¿Eliminar contacto?';
+
+  @override
+  String contactsDeleteMessage(String name) {
+    return 'Se eliminará «$name».';
+  }
+
+  @override
+  String get contactsEmptyTitle => 'Aún no hay contactos';
+
+  @override
+  String get contactsEmptySubtitle =>
+      'Añade personas de fuera del sistema o impórtalas con sus cumpleaños desde el teléfono u otra app.';
+
+  @override
+  String get contactsSearch => 'Buscar';
+
+  @override
+  String get contactsUpcomingBirthdays => 'Próximos cumpleaños';
+
+  @override
+  String contactsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count contactos',
+      one: '1 contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contactsTomorrow => 'Mañana';
+
+  @override
+  String get cycleTitle => 'Ciclo';
+
+  @override
+  String get cycleLogToday => 'Registrar ciclo';
+
+  @override
+  String get cycleFlowLabel => 'Flujo';
+
+  @override
+  String get cycleFlowNone => 'Ninguno';
+
+  @override
+  String get cycleFlowSpotting => 'Manchado';
+
+  @override
+  String get cycleFlowLight => 'Leve';
+
+  @override
+  String get cycleFlowMedium => 'Medio';
+
+  @override
+  String get cycleFlowHeavy => 'Abundante';
+
+  @override
+  String get cycleSymptomsLabel => 'Síntomas';
+
+  @override
+  String get cycleDayLabel => 'Día del ciclo';
+
+  @override
+  String get cycleAverageLength => 'Ciclo medio (días)';
+
+  @override
+  String get cyclePeriodLength => 'Periodo medio (días)';
+
+  @override
+  String cycleNextEstimate(String date) {
+    return 'Próximo periodo estimado hacia el $date';
+  }
+
+  @override
+  String get cycleNeedMoreCycles =>
+      'Registra dos o más periodos para ver una estimación.';
+
+  @override
+  String get cycleEstimated => 'Estimación';
+
+  @override
+  String get cycleDisclaimer =>
+      'Las estimaciones son promedios simples de los ciclos registrados. No son predicciones médicas ni sirven como anticonceptivo.';
+
+  @override
+  String get dashboardCustomize => 'Personalizar panel';
+
+  @override
+  String get dashboardWidgetsLabel => 'Widgets';
+
+  @override
+  String get dashboardAddWidget => 'Añadir un widget';
+
+  @override
+  String get dashboardAddAction => 'Añadir una acción';
+
+  @override
+  String get dashboardMoveUp => 'Subir';
+
+  @override
+  String get dashboardMoveDown => 'Bajar';
+
+  @override
+  String get dashboardHide => 'Ocultar';
+
+  @override
+  String get dashboardReset => 'Restablecer';
+
+  @override
+  String get dashboardWidgetNow => 'Ubicación y trabajo';
+
+  @override
+  String get dashboardWidgetQuickActions => 'Acciones rápidas';
+
+  @override
+  String get dashboardWidgetStats => 'Estadísticas de hoy';
+
+  @override
+  String get dashboardWidgetBirthdays => 'Cumpleaños';
+
+  @override
+  String get dashboardWidgetEvents => 'Hoy y mañana';
+
+  @override
+  String get dashboardInsightNoPatterns => 'Abrir el resumen de hoy.';
+
+  @override
+  String dashboardInsightPatterns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cosas que podrías notar',
+      one: '1 cosa que podrías notar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashboardStatSwitches => 'Cambios';
+
+  @override
+  String get dashboardStatFronted => 'Al frente';
+
+  @override
+  String get dashboardStatCoFront => 'Co-frente';
+
+  @override
+  String get dashboardNoSleep => 'No hay sueño registrado anoche.';
+
+  @override
+  String get dashboardCycleEmpty => 'Aún no hay datos del ciclo.';
+
+  @override
+  String get dashboardNoBirthdays =>
+      'No hay cumpleaños en las próximas dos semanas.';
+
+  @override
+  String get dashboardNoEvents => 'Nada planeado.';
+
+  @override
+  String get quickActionSwitch => 'Cambiar';
+
+  @override
+  String get quickActionLogBody => 'Registrar sensación';
+
+  @override
+  String get quickActionJournal => 'Diario';
+
+  @override
+  String get quickActionBirthday => 'Añadir cumpleaños';
+
+  @override
+  String get howWeFeelTitle => 'Cómo nos sentimos';
+
+  @override
+  String get howWeFeelNoData => 'Aún no hay registros esta semana.';
+
+  @override
+  String howWeFeelAverage(String value) {
+    return 'Esta semana la media es $value/5.';
+  }
+
+  @override
+  String howWeFeelUp(String value) {
+    return 'Un poco mejor que la semana pasada ($value/5).';
+  }
+
+  @override
+  String howWeFeelDown(String value) {
+    return 'Algo más pesada que la semana pasada ($value/5). Con calma.';
+  }
+
+  @override
+  String howWeFeelSteady(String value) {
+    return 'Más o menos como la semana pasada ($value/5).';
+  }
+
+  @override
+  String howWeFeelTopEmotions(String emotions) {
+    return 'Lo más sentido: $emotions';
+  }
+
+  @override
+  String insightsGlanceCycleDay(int day) {
+    return 'Día $day del ciclo';
+  }
+
+  @override
+  String get insightsPatternCycleTitle => 'Ciclo y ánimo';
+
+  @override
+  String insightsPatternCycle(
+    String period,
+    String other,
+    int periodCount,
+    int otherCount,
+  ) {
+    return 'Los días de periodo tuvieron un ánimo medio de $period, frente a $other en otros días ($periodCount frente a $otherCount registros).';
+  }
+
+  @override
+  String get timelineSystemTitle => 'Línea temporal del sistema';
+
+  @override
+  String get timelineSystemEmpty => 'No hay nada registrado este día.';
+
+  @override
+  String get timelineKindFront => 'Frente';
+
+  @override
+  String get timelineKindJournal => 'Diario';
+
+  @override
+  String timelineStartedFronting(String name) {
+    return '$name empezó al frente';
+  }
+
+  @override
+  String timelineStoppedFronting(String name) {
+    return '$name dejó el frente';
+  }
+
+  @override
+  String get timelineFellAsleep => 'Se fue a dormir';
+
+  @override
+  String get timelineWokeUp => 'Se despertó';
+
+  @override
+  String timelineArrived(String place) {
+    return 'Llegó a $place';
+  }
+
+  @override
+  String timelineLeft(String place) {
+    return 'Salió de $place';
+  }
+
+  @override
+  String timelineClockedIn(String job) {
+    return 'Fichó entrada: $job';
+  }
+
+  @override
+  String timelineClockedOut(String job) {
+    return 'Fichó salida: $job';
+  }
+
+  @override
+  String get patternsTitle => 'Explorador de patrones';
+
+  @override
+  String get patternsEmotionSleep => 'Ánimo ↔ Sueño';
+
+  @override
+  String get patternsEmotionFronting => 'Ánimo ↔ Frente';
+
+  @override
+  String get patternsEmotionLocation => 'Ánimo ↔ Ubicación';
+
+  @override
+  String get patternsEmotionCycle => 'Ánimo ↔ Ciclo';
+
+  @override
+  String get patternsBodyEmotion => 'Cuerpo ↔ Emoción';
+
+  @override
+  String get patternsWorkMood => 'Trabajo ↔ Ánimo';
+
+  @override
+  String get patternsNoData =>
+      'Aún no hay suficientes registros en este periodo.';
+
+  @override
+  String patternsCheckIns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count registros',
+      one: '1 registro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get patternsDisclaimer =>
+      'Los grupos muestran promedios de lo registrado. Son posibles patrones, no causas ni diagnósticos, y los grupos pequeños pueden confundir.';
+
+  @override
+  String patternsFrontingWindowNote(int days) {
+    return 'Los datos de frente y sueño cubren los últimos $days días.';
+  }
+
+  @override
+  String get patternsSleepUnknown => 'Sin sueño registrado';
+
+  @override
+  String get patternsSleepLt6 => 'Menos de 6 horas';
+
+  @override
+  String get patternsSleep67 => '6–7 horas';
+
+  @override
+  String get patternsSleep78 => '7–8 horas';
+
+  @override
+  String get patternsSleep8plus => '8+ horas';
+
+  @override
+  String get patternsNoFronter => 'Nadie registrado al frente';
+
+  @override
+  String get patternsCoFronting => 'Co-frente';
+
+  @override
+  String get patternsNoLocation => 'Sin sesión de ubicación';
+
+  @override
+  String get patternsCyclePeriod => 'Días de periodo';
+
+  @override
+  String patternsCycleDays(String range) {
+    return 'Días $range del ciclo';
+  }
+
+  @override
+  String get patternsCycleUnknown => 'Día del ciclo desconocido';
+
+  @override
+  String get patternsNoBody => 'Sin sensación corporal';
+
+  @override
+  String get patternsWorkDays => 'Días de trabajo';
+
+  @override
+  String get patternsOffDays => 'Días libres';
+
+  @override
+  String get importCenterTitle => 'Centro de importación';
+
+  @override
+  String get importCenterIntro =>
+      'Trae datos a Prism. Cada importador muestra lo encontrado, lo comprueba, te deja decidir sobre duplicados y solo entonces importa.';
+
+  @override
+  String get importCenterPrismBackup => 'Copia de Prism';
+
+  @override
+  String get importCenterPrismBackupDesc =>
+      'Restaurar una exportación de Prism.';
+
+  @override
+  String get importCenterOtherApps => 'Simply Plural y otras apps';
+
+  @override
+  String get importCenterOtherAppsDesc =>
+      'Miembros, historial de frente, chats y más.';
+
+  @override
+  String get importCenterPluralKit => 'PluralKit';
+
+  @override
+  String get importCenterPluralKitDesc =>
+      'Conectar o importar desde PluralKit.';
+
+  @override
+  String get importCenterBirthdaysDesc =>
+      'Exportación JSON de otra app de cumpleaños. Se repiten cada año.';
+
+  @override
+  String get importCenterDeviceDesc =>
+      'Elige personas de los contactos del teléfono.';
+
+  @override
+  String get importCenterVCardDesc =>
+      'Un archivo .vcf exportado de cualquier app de contactos.';
+
+  @override
+  String get importBirthdaysTitle => 'Cumpleaños de otra app';
+
+  @override
+  String get importVCardTitle => 'Archivo de contactos (vCard)';
+
+  @override
+  String get importDeviceContactsTitle => 'Contactos del dispositivo';
+
+  @override
+  String get importBirthdaysHelp =>
+      'Elige el archivo JSON que exportó tu app de cumpleaños. Prism busca nombres y fechas, te lo muestra todo primero y convierte cada cumpleaños en un recordatorio anual del calendario.';
+
+  @override
+  String get importVCardHelp =>
+      'Elige un archivo .vcf. Se importan nombres, teléfonos, correos, cumpleaños y notas.';
+
+  @override
+  String get importDeviceHelp =>
+      'Prism pedirá permiso para leer tus contactos. Tú eliges a quién importar y nada sale del dispositivo.';
+
+  @override
+  String get importChooseFile => 'Elegir archivo';
+
+  @override
+  String get importAllowAndLoad => 'Permitir acceso y cargar';
+
+  @override
+  String get importOpenSettings => 'Abrir ajustes';
+
+  @override
+  String get importDeviceUnsupported =>
+      'No disponible en este dispositivo. Exporta un archivo .vcf desde tu app de contactos.';
+
+  @override
+  String get importDevicePermissionDenied =>
+      'Prism no tiene permiso para leer los contactos. Puedes permitirlo en Ajustes.';
+
+  @override
+  String get importFileTooLarge => 'Ese archivo supera los 20 MB.';
+
+  @override
+  String get importNoRecords =>
+      'No se encontraron contactos ni cumpleaños en ese archivo.';
+
+  @override
+  String get importNotJson => 'Ese archivo no es JSON válido.';
+
+  @override
+  String importReadFailed(String error) {
+    return 'No se pudo leer el archivo: $error';
+  }
+
+  @override
+  String get importProblem => 'Algo requiere atención';
+
+  @override
+  String get importStepSelect => 'Elegir';
+
+  @override
+  String get importStepPreview => 'Vista previa';
+
+  @override
+  String get importStepValidate => 'Revisar';
+
+  @override
+  String get importStepDuplicates => 'Duplicados';
+
+  @override
+  String get importStepImport => 'Importar';
+
+  @override
+  String get importStepDone => 'Listo';
+
+  @override
+  String importStepOf(int step, int total, String name) {
+    return 'Paso $step de $total: $name';
+  }
+
+  @override
+  String importPreviewSummary(int total, int valid, String file) {
+    return 'Se encontraron $total registros, $valid listos. $file';
+  }
+
+  @override
+  String importAmbiguousTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fechas admiten dos lecturas',
+      one: '1 fecha admite dos lecturas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importAmbiguousBody =>
+      'Fechas como 03/04 pueden ser 4 de marzo o 3 de abril. Elige cómo escribe las fechas tu app.';
+
+  @override
+  String get importAmbiguousShort => 'revisar fecha';
+
+  @override
+  String get importMonthFirst => 'Mes primero (03/04 = 4 mar)';
+
+  @override
+  String get importDayFirst => 'Día primero (03/04 = 3 abr)';
+
+  @override
+  String importSelectedCount(int count) {
+    return '$count seleccionados';
+  }
+
+  @override
+  String get importSelectAll => 'Todos';
+
+  @override
+  String get importSelectNone => 'Ninguno';
+
+  @override
+  String get importNext => 'Siguiente';
+
+  @override
+  String importAllValid(int count) {
+    return 'Los $count registros seleccionados están bien.';
+  }
+
+  @override
+  String importSomeInvalid(int valid, int invalid) {
+    return '$valid registros están bien. $invalid no se pueden importar:';
+  }
+
+  @override
+  String importRowNumber(int number) {
+    return 'Fila $number';
+  }
+
+  @override
+  String get importErrorMissingName => 'sin nombre';
+
+  @override
+  String get importErrorMissingDate => 'sin cumpleaños';
+
+  @override
+  String get importErrorUnreadableDate => 'no se pudo leer la fecha';
+
+  @override
+  String get importErrorInvalidDate =>
+      'la fecha no existe (p. ej. 30 de febrero)';
+
+  @override
+  String get importErrorNotRecord => 'no es un registro';
+
+  @override
+  String get importNoDuplicates => 'No se encontraron duplicados.';
+
+  @override
+  String importDuplicatesFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count posibles duplicados',
+      one: '1 posible duplicado',
+    );
+    return '$_temp0. Elige qué hacer con cada uno.';
+  }
+
+  @override
+  String get importApplyToAll => 'Aplicar a todos';
+
+  @override
+  String get importActionSkip => 'Omitir';
+
+  @override
+  String get importActionUpdate => 'Actualizar';
+
+  @override
+  String get importActionAddAnyway => 'Añadir igualmente';
+
+  @override
+  String importMatchesExisting(String name) {
+    return 'Coincide con «$name» ya en Prism';
+  }
+
+  @override
+  String get importRepeatedInFile => 'Aparece más de una vez en el archivo';
+
+  @override
+  String get importBirthdayConflict => 'Los cumpleaños son distintos.';
+
+  @override
+  String importRun(int count) {
+    return 'Importar $count';
+  }
+
+  @override
+  String get importDoneTitle => 'Importación terminada';
+
+  @override
+  String importDoneSummary(int created, int updated, int skipped) {
+    return '$created añadidos · $updated actualizados · $skipped omitidos';
+  }
+
+  @override
+  String importDoneFailed(int count) {
+    return '$count no se pudieron guardar.';
+  }
+
+  @override
+  String get importBirthdaysRecurring =>
+      'Los cumpleaños importados se repiten cada año y aparecen en el calendario.';
+
+  @override
+  String get appUpdateTitle => 'Actualizaciones';
+
+  @override
+  String get appUpdateTapToCheck =>
+      'Comprueba si hay una versión más reciente de Prism.';
+
+  @override
+  String get appUpdateChecking => 'Buscando actualizaciones…';
+
+  @override
+  String get appUpdateUpToDate => 'Tienes la versión más reciente.';
+
+  @override
+  String appUpdateAvailable(String version, int build) {
+    return 'Actualización disponible: $version (compilación $build)';
+  }
+
+  @override
+  String appUpdateDownloading(int percent) {
+    return 'Descargando actualización… $percent%';
+  }
+
+  @override
+  String get appUpdateNeedsPermission =>
+      'Permite que Prism instale aplicaciones y luego toca Instalar ahora. Android lo pide una sola vez.';
+
+  @override
+  String get appUpdateKeepsData =>
+      'Se instala sobre la app actual. Tus datos se conservan.';
+
+  @override
+  String get appUpdateCheckNow => 'Comprobar ahora';
+
+  @override
+  String get appUpdateDownloadInstall => 'Descargar e instalar';
+
+  @override
+  String get appUpdateInstallNow => 'Instalar ahora';
+
+  @override
+  String get appUpdateOpenSettings => 'Permitir instalaciones';
+
+  @override
+  String get appUpdateLater => 'Más tarde';
+
+  @override
+  String get appUpdateErrorNetwork =>
+      'No se pudo contactar con el servidor de actualizaciones. Revisa tu conexión.';
+
+  @override
+  String get appUpdateErrorChecksum =>
+      'La descarga estaba dañada y se eliminó. Inténtalo de nuevo.';
+
+  @override
+  String get appUpdateErrorDownload =>
+      'La descarga no terminó. Inténtalo de nuevo.';
+
+  @override
+  String get appUpdateErrorInstall => 'No se pudo abrir el instalador.';
+
+  @override
+  String get appUpdateErrorNoApk =>
+      'La última versión no incluye la app de Android.';
+
+  @override
+  String get appUpdateErrorGeneric =>
+      'Algo salió mal al buscar actualizaciones.';
+
+  @override
+  String get navJournal => 'Diario';
+
+  @override
+  String get navDictionary => 'Diccionario';
+
+  @override
+  String get navAchievements => 'Logros';
+
+  @override
+  String get quickActionDictionary => 'Nuevo término';
+
+  @override
+  String get dataManagementPreviewTrackerRecords =>
+      'Diario, diccionario y registros';
+
+  @override
+  String get importCenterDictionaryDesc =>
+      'Términos desde una página o categoría de wiki, un archivo JSON/CSV/texto o texto pegado.';
+
+  @override
+  String get trackerDelete => 'Eliminar';
+
+  @override
+  String get trackerMoveUp => 'Subir';
+
+  @override
+  String get trackerPin => 'Fijar';
+
+  @override
+  String get trackerUnpin => 'Desfijar';
+
+  @override
+  String get trackerPinned => 'Fijadas';
+
+  @override
+  String get trackerPrivate => 'Privado';
+
+  @override
+  String get trackerPrivateHelp =>
+      'Oculto hasta tocarlo y excluido de Inicio y los resúmenes.';
+
+  @override
+  String get trackerPrivateReveal => 'Privado · toca para ver';
+
+  @override
+  String get trackerRename => 'Renombrar';
+
+  @override
+  String get trackerTags => 'Etiquetas';
+
+  @override
+  String get trackerTagsHelp => 'Separa con comas';
+
+  @override
+  String get journalNewEntry => 'Nueva entrada';
+
+  @override
+  String get journalEditEntry => 'Editar entrada';
+
+  @override
+  String get journalTitle => 'Título';
+
+  @override
+  String get journalBody => 'Escribe…';
+
+  @override
+  String get journalMood => 'Ánimo';
+
+  @override
+  String get journalCategory => 'Categoría';
+
+  @override
+  String get journalCategoryName => 'Nombre de la categoría';
+
+  @override
+  String get journalNewCategory => 'Nueva categoría';
+
+  @override
+  String get journalNoCategory => 'Ninguna';
+
+  @override
+  String get journalWrittenBy => 'Escrito por';
+
+  @override
+  String get journalNobodyInParticular => 'Nadie en particular';
+
+  @override
+  String get journalUsePrompt => 'Dame una idea';
+
+  @override
+  String get journalAnotherPrompt => 'Otra idea';
+
+  @override
+  String get journalRemovePrompt => 'Quitar idea';
+
+  @override
+  String get journalPrompt1 => '¿Qué te quitó más energía hoy?';
+
+  @override
+  String get journalPrompt2 => '¿Quién estuvo más al frente y cómo se sintió?';
+
+  @override
+  String get journalPrompt3 => '¿Qué es algo pequeño que salió bien?';
+
+  @override
+  String get journalPrompt4 => '¿Qué necesitas más esta semana?';
+
+  @override
+  String get journalPrompt5 =>
+      'Describe un momento en que te sentiste a salvo.';
+
+  @override
+  String get journalPrompt6 => '¿Qué te gustaría que otro miembro supiera?';
+
+  @override
+  String get journalPrompt7 => '¿Qué es algo que esperas con ganas?';
+
+  @override
+  String get journalPrompt8 =>
+      '¿Qué sentimiento volvía una y otra vez hoy, y por qué?';
+
+  @override
+  String get journalEmptyTitle => 'Aún no hay entradas';
+
+  @override
+  String get journalEmptySubtitle =>
+      'Escribe sobre tu día, un sentimiento o lo que tengas en mente. Las entradas pueden ser privadas.';
+
+  @override
+  String get journalSearch => 'Buscar entradas y #etiquetas';
+
+  @override
+  String get journalFilterAll => 'Todas';
+
+  @override
+  String get journalNoMatches => 'Ninguna entrada coincide.';
+
+  @override
+  String get journalUntitled => 'Sin título';
+
+  @override
+  String get journalStatEntries => 'Entradas';
+
+  @override
+  String get journalStatThisMonth => 'Este mes';
+
+  @override
+  String journalStatStreak(int best) {
+    return 'Racha · mejor $best';
+  }
+
+  @override
+  String get journalStatMood => 'Ánimo medio, 30 días';
+
+  @override
+  String journalDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String journalBy(String name) {
+    return 'por $name';
+  }
+
+  @override
+  String journalHistory(int count) {
+    return 'Historial de versiones ($count)';
+  }
+
+  @override
+  String get journalNoHistory =>
+      'Las versiones anteriores aparecen aquí después de editar la entrada.';
+
+  @override
+  String get journalRestore => 'Restaurar';
+
+  @override
+  String get journalEntryGone => 'Esta entrada se eliminó.';
+
+  @override
+  String get journalDeleteTitle => '¿Eliminar esta entrada?';
+
+  @override
+  String get journalDeleteMessage =>
+      'La entrada y su historial se eliminarán en todos los dispositivos sincronizados.';
+
+  @override
+  String get dictNewTerm => 'Nuevo término';
+
+  @override
+  String get dictEditTerm => 'Editar término';
+
+  @override
+  String get dictTerm => 'Término';
+
+  @override
+  String get dictDefinition => 'Definición';
+
+  @override
+  String get dictPronunciation => 'Pronunciación (opcional)';
+
+  @override
+  String get dictAliases => 'También conocido como';
+
+  @override
+  String get dictAliasesHelp =>
+      'Otros nombres o escrituras, separados por comas';
+
+  @override
+  String get dictExamples => 'Ejemplos';
+
+  @override
+  String get dictExamplesHelp => 'Uno por línea';
+
+  @override
+  String get dictSourceUrl => 'Enlace de la fuente (opcional)';
+
+  @override
+  String get dictInvalidUrl => 'Escribe un enlace que empiece por https://';
+
+  @override
+  String get dictCollection => 'Colección';
+
+  @override
+  String get dictNoCollection => 'Ninguna';
+
+  @override
+  String dictDuplicateWarning(String term) {
+    return 'Ya tienes «$term».';
+  }
+
+  @override
+  String get dictEmptyTitle => 'Tu diccionario está vacío';
+
+  @override
+  String get dictEmptySubtitle =>
+      'Añade tus propios términos o impórtalos desde una wiki, un archivo o texto pegado.';
+
+  @override
+  String get dictSearch => 'Buscar términos, alias y definiciones';
+
+  @override
+  String dictAllTerms(int count) {
+    return 'Todos · $count';
+  }
+
+  @override
+  String get dictManageCollections => 'Colecciones';
+
+  @override
+  String get dictNoMatches => 'Ningún término coincide.';
+
+  @override
+  String get dictStatTerms => 'Términos';
+
+  @override
+  String get dictStatCollections => 'Colecciones';
+
+  @override
+  String get dictStatImported => 'Importados';
+
+  @override
+  String get dictStatOwn => 'Escritos por ti';
+
+  @override
+  String get dictNewCollection => 'Nueva colección';
+
+  @override
+  String get dictNoCollectionsYet =>
+      'Aún no hay colecciones. Agrupan términos, como «Roles» o «Nuestras palabras».';
+
+  @override
+  String dictDeleteCollectionTitle(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get dictDeleteCollectionMessage =>
+      'Sus términos se conservan y salen de la colección.';
+
+  @override
+  String get dictTermGone => 'Este término se eliminó.';
+
+  @override
+  String get dictCopy => 'Copiar';
+
+  @override
+  String dictDeleteTitle(String term) {
+    return '¿Eliminar «$term»?';
+  }
+
+  @override
+  String dictAlsoKnownAs(String names) {
+    return 'También conocido como: $names';
+  }
+
+  @override
+  String dictInCollection(String name) {
+    return 'Colección: $name';
+  }
+
+  @override
+  String get dictNoDefinition => 'Aún no hay definición.';
+
+  @override
+  String get dictMentions => 'Menciona';
+
+  @override
+  String get dictSource => 'Fuente';
+
+  @override
+  String get dictImportTitle => 'Importar términos';
+
+  @override
+  String get dictSourceWiki => 'Wiki';
+
+  @override
+  String get dictSourceFile => 'Archivo';
+
+  @override
+  String get dictSourcePaste => 'Pegar';
+
+  @override
+  String get dictWikiHelp =>
+      'Pega un enlace a una página o categoría de una wiki. Funciona con Wikipedia, Fandom, Miraheze y otros sitios MediaWiki. Cada página se convierte en un término con su introducción como definición y un enlace a la fuente.';
+
+  @override
+  String get dictWikiUrl => 'Enlace a página o categoría';
+
+  @override
+  String get dictWikiWholeCategory => 'Importar toda la categoría';
+
+  @override
+  String dictWikiWholeCategoryHelp(int max) {
+    return 'Todos los artículos de un enlace de categoría, hasta $max páginas.';
+  }
+
+  @override
+  String dictWikiFetching(int done, int total) {
+    return 'Leyendo páginas… $done de $total';
+  }
+
+  @override
+  String get dictWikiErrorUrl =>
+      'Eso no parece un enlace a una página o categoría de wiki.';
+
+  @override
+  String get dictWikiErrorNetwork =>
+      'No se pudo contactar con la wiki. Revisa tu conexión.';
+
+  @override
+  String get dictWikiErrorNotFound => 'Esa página no existe en la wiki.';
+
+  @override
+  String get dictWikiErrorEmptyCategory => 'Esa categoría no tiene artículos.';
+
+  @override
+  String get dictWikiErrorNotWiki =>
+      'Ese sitio no ofrece una API de MediaWiki, así que no se puede importar directamente. Prueba a exportar los términos a un archivo.';
+
+  @override
+  String get dictFileHelp =>
+      'Elige un archivo JSON, CSV/TSV o de texto. El JSON puede ser una lista de objetos \"term\"/\"definition\" o un mapa término → definición; el CSV necesita columnas de término y definición (categoría y alias son opcionales); los de texto usan un «Término: definición» por línea.';
+
+  @override
+  String get dictPasteHelp =>
+      'Un término por línea como «Término: definición», «Término - definición» o «Término = definición». También vale un término en su línea seguido de un párrafo.';
+
+  @override
+  String get dictPasteLabel => 'Términos';
+
+  @override
+  String get dictChooseFile => 'Elegir archivo';
+
+  @override
+  String get dictPreview => 'Vista previa';
+
+  @override
+  String get dictImportProblem => 'No se pudo importar';
+
+  @override
+  String get dictImportNothingFound => 'No se encontraron términos.';
+
+  @override
+  String dictImportSummary(int found, int selected, int invalid, int dups) {
+    return '$found encontrados · $selected seleccionados · $invalid con problemas · $dups ya en tu diccionario';
+  }
+
+  @override
+  String get dictDuplicatesAll => 'Para términos que ya tienes';
+
+  @override
+  String get dictDupSkip => 'Omitir';
+
+  @override
+  String get dictDupReplace => 'Reemplazar';
+
+  @override
+  String get dictDupKeepBoth => 'Conservar ambos';
+
+  @override
+  String get dictUseSourceCategories => 'Usar categorías de la fuente';
+
+  @override
+  String get dictErrorMissingTerm => 'Sin nombre de término';
+
+  @override
+  String get dictErrorMissingDefinition => 'Sin definición';
+
+  @override
+  String get dictErrorFetchFailed => 'No se pudo leer esta página';
+
+  @override
+  String dictAlreadyHave(String term) {
+    return 'Ya está en tu diccionario como «$term»';
+  }
+
+  @override
+  String dictFromCategory(String name) {
+    return 'De: $name';
+  }
+
+  @override
+  String dictImportCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Importar $count términos',
+      one: 'Importar 1 término',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dictImporting => 'Importando…';
+
+  @override
+  String get dictImportDone => 'Importación terminada';
+
+  @override
+  String get dictImportCreated => 'Añadidos';
+
+  @override
+  String get dictImportReplaced => 'Reemplazados';
+
+  @override
+  String get dictImportSkipped => 'Omitidos';
+
+  @override
+  String get dictImportCollections => 'Nuevas colecciones';
+
+  @override
+  String get achUnlocked => 'Desbloqueados';
+
+  @override
+  String get achComplete => 'Completado';
+
+  @override
+  String get achAlmostThere => 'Casi lo tienes';
+
+  @override
+  String get achProgress => 'Progreso';
+
+  @override
+  String achHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get achNoHistory =>
+      'Los logros desbloqueados aparecen aquí con la fecha en que los conseguiste.';
+
+  @override
+  String achProgressOf(int current, int target) {
+    return '$current de $target';
+  }
+
+  @override
+  String achNextTier(String tier, int remaining) {
+    return '$tier con $remaining más';
+  }
+
+  @override
+  String get achLadderComplete => '¡Todos los niveles desbloqueados!';
+
+  @override
+  String achTitle(String tier, String metric, int target) {
+    return '$tier · $metric ($target)';
+  }
+
+  @override
+  String achUnlockedOn(String title, String date) {
+    return '$title — desbloqueado el $date';
+  }
+
+  @override
+  String get achTierBronze => 'Bronce';
+
+  @override
+  String get achTierSilver => 'Plata';
+
+  @override
+  String get achTierGold => 'Oro';
+
+  @override
+  String get achTierPlatinum => 'Platino';
+
+  @override
+  String get achTierDiamond => 'Diamante';
+
+  @override
+  String get achCatSystem => 'Sistema';
+
+  @override
+  String get achCatFronting => 'Frente';
+
+  @override
+  String get achCatWellbeing => 'Bienestar';
+
+  @override
+  String get achCatJournal => 'Escritura';
+
+  @override
+  String get achCatKnowledge => 'Conocimiento';
+
+  @override
+  String get achCatHabits => 'Hábitos';
+
+  @override
+  String get achCatSocial => 'Social';
+
+  @override
+  String get achCatConsistency => 'Constancia';
+
+  @override
+  String get achMetricMembers => 'Miembros añadidos';
+
+  @override
+  String get achMetricFrontSessions => 'Sesiones al frente';
+
+  @override
+  String get achMetricFrontHours => 'Horas de frente registradas';
+
+  @override
+  String get achMetricSleepNights => 'Noches de sueño registradas';
+
+  @override
+  String get achMetricMood => 'Registros de ánimo';
+
+  @override
+  String get achMetricMoodStreak => 'Racha de registros de ánimo (días)';
+
+  @override
+  String get achMetricJournal => 'Entradas de diario';
+
+  @override
+  String get achMetricJournalStreak => 'Racha de diario (días)';
+
+  @override
+  String get achMetricTerms => 'Términos del diccionario';
+
+  @override
+  String get achMetricHabits => 'Hábitos completados';
+
+  @override
+  String get achMetricNotes => 'Notas escritas';
+
+  @override
+  String get achMetricVotes => 'Votos en encuestas';
+
+  @override
+  String get achMetricContacts => 'Contactos';
+
+  @override
+  String get achMetricCycle => 'Días del ciclo registrados';
+
+  @override
+  String get achMetricPlaces => 'Visitas a lugares';
+
+  @override
+  String get achMetricActiveDays => 'Días con actividad';
+
+  @override
+  String get whatsNewTitle => 'Novedades';
+
+  @override
+  String whatsNewVersion(String version) {
+    return 'Versión $version';
+  }
+
+  @override
+  String get whatsNewFeatures => 'Nuevo';
+
+  @override
+  String get whatsNewImprovements => 'Mejorado';
+
+  @override
+  String get whatsNewFixes => 'Corregido';
+
+  @override
+  String get whatsNewDismiss => 'Entendido';
+
+  @override
+  String get whatsNewPrevious => 'Actualizaciones anteriores';
+
+  @override
+  String get whatsNewChangelog => 'Novedades · historial de cambios';
+
+  @override
+  String get navFinance => 'Finanzas';
+
+  @override
+  String get navFitness => 'Ejercicio';
+
+  @override
+  String get navSchool => 'Escuela';
+
+  @override
+  String get finTabOverview => 'Resumen';
+
+  @override
+  String get finTabTransactions => 'Movimientos';
+
+  @override
+  String get finTabBudgets => 'Presupuestos';
+
+  @override
+  String get finTabGoals => 'Metas';
+
+  @override
+  String get finTabRecurring => 'Recurrentes';
+
+  @override
+  String get finIncome => 'Ingresos';
+
+  @override
+  String get finExpense => 'Gasto';
+
+  @override
+  String get finTransfer => 'Transferencia';
+
+  @override
+  String get finSpent => 'Gastado';
+
+  @override
+  String get finNet => 'Neto';
+
+  @override
+  String get finSavingsRate => 'Tasa de ahorro';
+
+  @override
+  String get finSixMonths => 'Últimos 6 meses';
+
+  @override
+  String get finSpendingByCategory => 'Gastos por categoría';
+
+  @override
+  String get finNoSpending => 'Sin gastos este mes.';
+
+  @override
+  String get finAccounts => 'Cuentas';
+
+  @override
+  String get finNoAccounts => 'Añade cuentas para seguir saldos (opcional).';
+
+  @override
+  String finTotalBalance(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get finNewTxn => 'Nuevo movimiento';
+
+  @override
+  String get finEditTxn => 'Editar movimiento';
+
+  @override
+  String get finAmount => 'Importe';
+
+  @override
+  String get finInvalidAmount =>
+      'Escribe un importe mayor que cero, como 12,50';
+
+  @override
+  String get finPayee => 'Pagado a';
+
+  @override
+  String get finFrom => 'De';
+
+  @override
+  String get finDescription => 'Descripción';
+
+  @override
+  String get finCategory => 'Categoría';
+
+  @override
+  String get finCustomCategory => 'Personalizada…';
+
+  @override
+  String get finAccount => 'Cuenta';
+
+  @override
+  String get finFromAccount => 'Desde la cuenta';
+
+  @override
+  String get finToAccount => 'A la cuenta';
+
+  @override
+  String get finNoAccount => 'Ninguna';
+
+  @override
+  String get finTransferNeedsAccounts =>
+      'Añade al menos dos cuentas para registrar transferencias.';
+
+  @override
+  String get finNote => 'Notas';
+
+  @override
+  String get finDeleteTxn => '¿Eliminar este movimiento?';
+
+  @override
+  String get finNewAccount => 'Nueva cuenta';
+
+  @override
+  String get finEditAccount => 'Editar cuenta';
+
+  @override
+  String get finAccountName => 'Nombre de la cuenta';
+
+  @override
+  String get finAccountType => 'Tipo';
+
+  @override
+  String get finOpeningBalance => 'Saldo inicial';
+
+  @override
+  String get finOwed => 'Dinero adeudado';
+
+  @override
+  String get finOwedHelp =>
+      'Actívalo para tarjetas de crédito o deudas, así el saldo cuenta como negativo.';
+
+  @override
+  String get finDeleteAccount =>
+      '¿Eliminar esta cuenta? Sus movimientos se conservan.';
+
+  @override
+  String get finAccCash => 'Efectivo';
+
+  @override
+  String get finAccChecking => 'Cuenta corriente';
+
+  @override
+  String get finAccSavings => 'Ahorros';
+
+  @override
+  String get finAccCredit => 'Tarjeta de crédito';
+
+  @override
+  String get finAccInvestment => 'Inversión';
+
+  @override
+  String get finNewBudget => 'Nuevo presupuesto';
+
+  @override
+  String get finEditBudget => 'Editar presupuesto';
+
+  @override
+  String get finMonthlyLimit => 'Límite mensual';
+
+  @override
+  String get finDeleteBudget => '¿Eliminar este presupuesto?';
+
+  @override
+  String get finNoBudgets =>
+      'Aún no hay presupuestos. Pon un límite mensual a una categoría para ver cómo vas.';
+
+  @override
+  String finBudgetTotal(String spent, String limit) {
+    return '$spent de $limit presupuestado';
+  }
+
+  @override
+  String finOverBudget(String amount) {
+    return '$amount por encima';
+  }
+
+  @override
+  String finLeftInBudget(String amount) {
+    return 'Quedan $amount';
+  }
+
+  @override
+  String get finUnbudgeted => 'Gastos sin presupuesto';
+
+  @override
+  String get finNewGoal => 'Nueva meta de ahorro';
+
+  @override
+  String get finEditGoal => 'Editar meta';
+
+  @override
+  String get finGoalName => 'Ahorro para';
+
+  @override
+  String get finGoalTarget => 'Importe objetivo';
+
+  @override
+  String get finGoalSaved => 'Ahorrado hasta ahora';
+
+  @override
+  String get finGoalDeadline => 'Fecha objetivo';
+
+  @override
+  String get finNoDeadline => 'Sin fecha';
+
+  @override
+  String get finColor => 'Color';
+
+  @override
+  String get finDeleteGoal => '¿Eliminar esta meta?';
+
+  @override
+  String get finNoGoals => 'Aún no hay metas de ahorro.';
+
+  @override
+  String finGoalPerMonth(String amount, String date) {
+    return 'Ahorra $amount al mes para lograrlo en $date';
+  }
+
+  @override
+  String get finGoalReached => '¡Meta alcanzada!';
+
+  @override
+  String get finAddToGoal => 'Añadir dinero';
+
+  @override
+  String finAddToGoalTitle(String name) {
+    return 'Añadir a «$name»';
+  }
+
+  @override
+  String get finNewRecurring => 'Nuevo recurrente';
+
+  @override
+  String get finEditRecurring => 'Editar recurrente';
+
+  @override
+  String get finRecurringName => 'Nombre (alquiler, nómina, streaming…)';
+
+  @override
+  String get finRepeats => 'Se repite';
+
+  @override
+  String get finNextDue => 'Próxima fecha';
+
+  @override
+  String get finAutoAdd => 'Añadir automáticamente';
+
+  @override
+  String get finAutoAddHelp =>
+      'Registra el movimiento en su fecha al abrir Finanzas. Si no, espera a que lo confirmes.';
+
+  @override
+  String get finDeleteRecurring =>
+      '¿Eliminar este recurrente? Los movimientos pasados se conservan.';
+
+  @override
+  String get finNoRecurring =>
+      'Sin recurrentes. Añade alquiler, facturas, suscripciones o días de cobro.';
+
+  @override
+  String get finFixedCosts => 'Gastos fijos / mes';
+
+  @override
+  String get finRegularIncome => 'Ingresos regulares / mes';
+
+  @override
+  String finNextOn(String date) {
+    return 'próximo $date';
+  }
+
+  @override
+  String finDueNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pagos pendientes',
+      one: '1 pago pendiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finAddNow => 'Añadir';
+
+  @override
+  String get finSkip => 'Omitir';
+
+  @override
+  String get finRecurringBadge => 'recurrente';
+
+  @override
+  String get finEveryWeek => 'Semanal';
+
+  @override
+  String get finEveryTwoWeeks => 'Cada 2 semanas';
+
+  @override
+  String get finEveryMonth => 'Mensual';
+
+  @override
+  String get finEveryQuarter => 'Cada 3 meses';
+
+  @override
+  String get finEveryYear => 'Anual';
+
+  @override
+  String get finSearch => 'Buscar movimientos';
+
+  @override
+  String get finNoTxns => 'Aún no hay movimientos.';
+
+  @override
+  String get finHideAmounts => 'Ocultar importes';
+
+  @override
+  String get finShowAmounts => 'Mostrar importes';
+
+  @override
+  String get finSettings => 'Ajustes de finanzas';
+
+  @override
+  String get finCurrency => 'Moneda';
+
+  @override
+  String get finCurrencyHelp =>
+      'Los importes se guardan tal cual; la moneda solo cambia cómo se muestran.';
+
+  @override
+  String get finPreviousMonth => 'Mes anterior';
+
+  @override
+  String get finNextMonth => 'Mes siguiente';
+
+  @override
+  String get finWorkEarnings => 'Ganancias estimadas de Trabajo este mes';
+
+  @override
+  String get finWorkEarningsHelp =>
+      'Según turnos y tarifas por hora. Registrar lo añade como ingreso una vez por trabajo y mes.';
+
+  @override
+  String get finRecord => 'Registrar';
+
+  @override
+  String get finRecorded => 'Registrado';
+
+  @override
+  String get finCatHousing => 'Vivienda';
+
+  @override
+  String get finCatGroceries => 'Supermercado';
+
+  @override
+  String get finCatDining => 'Comer fuera';
+
+  @override
+  String get finCatTransport => 'Transporte';
+
+  @override
+  String get finCatUtilities => 'Servicios y facturas';
+
+  @override
+  String get finCatHealth => 'Salud';
+
+  @override
+  String get finCatPersonal => 'Cuidado personal';
+
+  @override
+  String get finCatEntertainment => 'Ocio';
+
+  @override
+  String get finCatShopping => 'Compras';
+
+  @override
+  String get finCatEducation => 'Educación';
+
+  @override
+  String get finCatSubscriptions => 'Suscripciones';
+
+  @override
+  String get finCatGifts => 'Regalos';
+
+  @override
+  String get finCatPets => 'Mascotas';
+
+  @override
+  String get finCatTravel => 'Viajes';
+
+  @override
+  String get finCatDebt => 'Pago de deudas';
+
+  @override
+  String get finCatSalary => 'Sueldo';
+
+  @override
+  String get finCatFreelance => 'Trabajo independiente';
+
+  @override
+  String get finCatBenefits => 'Prestaciones';
+
+  @override
+  String get finCatRefunds => 'Reembolsos';
+
+  @override
+  String get finCatInterest => 'Intereses';
+
+  @override
+  String get finCatOther => 'Otros';
+
+  @override
+  String get fitWalk => 'Caminar';
+
+  @override
+  String get fitRun => 'Correr';
+
+  @override
+  String get fitCycle => 'Ciclismo';
+
+  @override
+  String get fitSwim => 'Natación';
+
+  @override
+  String get fitStrength => 'Fuerza';
+
+  @override
+  String get fitYoga => 'Yoga';
+
+  @override
+  String get fitHiit => 'HIIT';
+
+  @override
+  String get fitHike => 'Senderismo';
+
+  @override
+  String get fitDance => 'Baile';
+
+  @override
+  String get fitSports => 'Deportes';
+
+  @override
+  String get fitStretch => 'Estiramientos';
+
+  @override
+  String get fitClimb => 'Escalada';
+
+  @override
+  String get fitRow => 'Remo';
+
+  @override
+  String get fitOther => 'Otro';
+
+  @override
+  String get fitNewWorkout => 'Registrar ejercicio';
+
+  @override
+  String get fitEditWorkout => 'Editar ejercicio';
+
+  @override
+  String get fitWorkoutName => 'Nombre (opcional)';
+
+  @override
+  String get fitMinutes => 'Minutos';
+
+  @override
+  String get fitDistanceKm => 'Distancia (km)';
+
+  @override
+  String get fitCalories => 'Calorías';
+
+  @override
+  String get fitHeartRate => 'Pulso medio';
+
+  @override
+  String get fitInvalidNumber => 'Los números deben ser cero o más.';
+
+  @override
+  String get fitEffort => 'Esfuerzo (1–10)';
+
+  @override
+  String get fitMoodAfter => 'Ánimo después';
+
+  @override
+  String get fitExercises => 'Ejercicios';
+
+  @override
+  String get fitAddExercise => 'Añadir ejercicio';
+
+  @override
+  String get fitExercise => 'Ejercicio';
+
+  @override
+  String get fitSets => 'Series';
+
+  @override
+  String get fitReps => 'Repeticiones';
+
+  @override
+  String get fitWeightKg => 'Peso (kg)';
+
+  @override
+  String get fitWho => 'Quién hizo ejercicio';
+
+  @override
+  String get fitDeleteWorkout => '¿Eliminar este ejercicio?';
+
+  @override
+  String get fitNewGoal => 'Nueva meta de ejercicio';
+
+  @override
+  String get fitEditGoal => 'Editar meta';
+
+  @override
+  String get fitGoalMetric => 'Medida';
+
+  @override
+  String get fitGoalPeriod => 'Cada';
+
+  @override
+  String get fitGoalTarget => 'Objetivo';
+
+  @override
+  String get fitPerWeek => 'Semana';
+
+  @override
+  String get fitPerMonth => 'Mes';
+
+  @override
+  String get fitMetricWorkouts => 'Sesiones';
+
+  @override
+  String get fitMetricMinutes => 'Minutos activos';
+
+  @override
+  String get fitMetricDistance => 'Distancia (km)';
+
+  @override
+  String get fitMetricCalories => 'Calorías';
+
+  @override
+  String get fitNoGoals =>
+      'Aún no hay metas. Pon un objetivo semanal o mensual.';
+
+  @override
+  String get fitStartWorkout => 'Empezar ejercicio ahora';
+
+  @override
+  String get fitStartWhich => '¿Qué vas a hacer?';
+
+  @override
+  String get fitFinish => 'Terminar';
+
+  @override
+  String get fitTabHistory => 'Historial';
+
+  @override
+  String get fitThisWeekWorkouts => 'Sesiones esta semana';
+
+  @override
+  String get fitThisWeekMinutes => 'Minutos esta semana';
+
+  @override
+  String get fitThisWeekKm => 'Km esta semana';
+
+  @override
+  String get fitWeekStreak => 'Racha semanal';
+
+  @override
+  String fitWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count semanas',
+      one: '1 semana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fitMinutesPerWeek => 'Minutos activos por semana';
+
+  @override
+  String get fitByActivity => 'Por actividad';
+
+  @override
+  String get fitPersonalBests => 'Mejores marcas';
+
+  @override
+  String fitMinutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get fitEmpty =>
+      'Aún no hay ejercicios. Registra uno o empieza el cronómetro.';
+
+  @override
+  String get fitNoExercises =>
+      'Añade ejercicios con series, repeticiones y peso para ver aquí tu historial.';
+
+  @override
+  String fitSessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sesiones',
+      one: '1 sesión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String fitBestWeight(String kg) {
+    return 'mejor $kg kg';
+  }
+
+  @override
+  String fitBestReps(int count) {
+    return 'mejor $count rep.';
+  }
+
+  @override
+  String fitVolume(int count) {
+    return '$count kg de volumen total';
+  }
+
+  @override
+  String fitLastDone(String date) {
+    return 'Último: $date';
+  }
+
+  @override
+  String fitEffortValue(int count) {
+    return 'esfuerzo $count/10';
+  }
+
+  @override
+  String fitExerciseCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ejercicios',
+      one: '1 ejercicio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schTabToday => 'Hoy';
+
+  @override
+  String get schTabClasses => 'Clases';
+
+  @override
+  String get schTabAssignments => 'Tareas';
+
+  @override
+  String get schTabStudy => 'Estudio';
+
+  @override
+  String get schTabProgress => 'Progreso';
+
+  @override
+  String get schNewClass => 'Nueva clase';
+
+  @override
+  String get schEditClass => 'Editar clase';
+
+  @override
+  String get schClassName => 'Nombre de la clase';
+
+  @override
+  String get schTeacher => 'Profesor/a';
+
+  @override
+  String get schRoom => 'Aula';
+
+  @override
+  String get schCredits => 'Créditos';
+
+  @override
+  String get schTargetGrade => 'Nota objetivo %';
+
+  @override
+  String get schSchedule => 'Horario semanal';
+
+  @override
+  String get schAddMeeting => 'Añadir horario';
+
+  @override
+  String get schNoSchedule => 'Sin horario.';
+
+  @override
+  String get schEndAfterStart =>
+      'La hora de fin debe ser posterior a la de inicio.';
+
+  @override
+  String schDeleteClass(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get schDeleteClassMessage =>
+      'También se eliminan sus tareas y sesiones de estudio.';
+
+  @override
+  String get schNewAssignment => 'Nueva tarea';
+
+  @override
+  String get schEditAssignment => 'Editar tarea';
+
+  @override
+  String get schAssignmentTitle => 'Título';
+
+  @override
+  String get schClass => 'Clase';
+
+  @override
+  String get schNoClass => 'Sin clase';
+
+  @override
+  String get schType => 'Tipo';
+
+  @override
+  String get schDue => 'Entrega';
+
+  @override
+  String get schNoDueDate => 'Sin fecha';
+
+  @override
+  String get schStatus => 'Estado';
+
+  @override
+  String get schTodo => 'Pendiente';
+
+  @override
+  String get schDoing => 'En curso';
+
+  @override
+  String get schDone => 'Hecha';
+
+  @override
+  String get schPriority => 'Prioridad';
+
+  @override
+  String get schPriorityLow => 'Baja';
+
+  @override
+  String get schPriorityNormal => 'Normal';
+
+  @override
+  String get schPriorityHigh => 'Alta';
+
+  @override
+  String get schGrade => 'Nota';
+
+  @override
+  String get schEarned => 'Puntos obtenidos';
+
+  @override
+  String get schPossible => 'Sobre';
+
+  @override
+  String get schGradeInvalid =>
+      'Escribe ambos números; «sobre» debe ser mayor que cero.';
+
+  @override
+  String get schWeight => 'Peso en la nota final (%)';
+
+  @override
+  String get schWeightHelp =>
+      'Opcional. Con pesos, la nota de la clase es una media ponderada.';
+
+  @override
+  String get schDeleteAssignment => '¿Eliminar esta tarea?';
+
+  @override
+  String get schHomework => 'Deberes';
+
+  @override
+  String get schReading => 'Lectura';
+
+  @override
+  String get schEssay => 'Redacción';
+
+  @override
+  String get schProject => 'Proyecto';
+
+  @override
+  String get schLab => 'Laboratorio';
+
+  @override
+  String get schQuiz => 'Prueba';
+
+  @override
+  String get schExam => 'Examen';
+
+  @override
+  String get schPresentation => 'Presentación';
+
+  @override
+  String get schStudySession => 'Sesión de estudio';
+
+  @override
+  String get schFocus => 'Concentración (1–5)';
+
+  @override
+  String get schDeleteStudy => '¿Eliminar esta sesión?';
+
+  @override
+  String get schStartStudying => 'Empezar a estudiar';
+
+  @override
+  String get schStudyWhich => '¿Qué clase?';
+
+  @override
+  String schTodaysClasses(String day) {
+    return 'Clases · $day';
+  }
+
+  @override
+  String get schNoClassesToday => 'Hoy no hay clases.';
+
+  @override
+  String get schNoClassesYet =>
+      'Aún no hay clases. Añádelas con su horario para ver aquí tu día.';
+
+  @override
+  String get schNow => 'Ahora';
+
+  @override
+  String schOverdue(int count) {
+    return 'Atrasadas ($count)';
+  }
+
+  @override
+  String get schDueThisWeek => 'Para los próximos 7 días';
+
+  @override
+  String get schNothingDue => 'Nada para esta semana.';
+
+  @override
+  String schOpenCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pendientes',
+      one: '1 pendiente',
+      zero: 'nada pendiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get schFilterOpen => 'Pendientes';
+
+  @override
+  String get schFilterOverdue => 'Atrasadas';
+
+  @override
+  String get schNoAssignments => 'No hay tareas aquí.';
+
+  @override
+  String get schStudyThisWeek => 'Estudiado en 7 días';
+
+  @override
+  String get schStudyTotal => 'Tiempo total de estudio';
+
+  @override
+  String schHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get schSessions => 'Sesiones';
+
+  @override
+  String get schAvgFocus => 'Concentración media';
+
+  @override
+  String get schLogStudy => 'Registrar estudio';
+
+  @override
+  String get schNoStudy => 'Aún no hay sesiones de estudio.';
+
+  @override
+  String get schGpa => 'Promedio (4.0)';
+
+  @override
+  String get schCompleted => 'Completadas';
+
+  @override
+  String get schOnTime => 'A tiempo';
+
+  @override
+  String get schClassesCount => 'Clases';
+
+  @override
+  String get schGradesByClass => 'Notas por clase';
+
+  @override
+  String get schNoGradesYet => 'Sin notas aún';
+
+  @override
+  String schStudiedHours(String hours) {
+    return '$hours h estudiadas';
+  }
+
+  @override
+  String schTargetIs(int count) {
+    return 'objetivo $count%';
+  }
+
+  @override
+  String schNeedOnRest(String percent) {
+    return 'necesitas $percent% en el resto';
+  }
+
+  @override
+  String get schTargetOutOfReach => 'objetivo ya inalcanzable';
+
+  @override
+  String get schClassGone => 'Esta clase se eliminó.';
+
+  @override
+  String schTeacherIs(String name) {
+    return 'Profesor/a: $name';
+  }
+
+  @override
+  String schRoomIs(String name) {
+    return 'Aula: $name';
+  }
+
+  @override
+  String schCreditsIs(String count) {
+    return 'Créditos: $count';
+  }
+
+  @override
+  String get trackerWholeSystem => 'Todo el sistema';
+
+  @override
+  String get trackerEveryone => 'Todos';
+
+  @override
+  String trackerFrontingNow(String name) {
+    return '$name (al frente)';
+  }
+
+  @override
+  String get finWho => 'Quién';
+
+  @override
+  String get finWhoseGoal => 'De quién es la meta';
+
+  @override
+  String get finSpendingByMember => 'Gastos por miembro';
+
+  @override
+  String get schWhoseClass => 'De quién es la clase';
+
+  @override
+  String get schWhoseAssignment => 'De quién es la tarea';
+
+  @override
+  String get schWhoStudied => 'Quién estudió';
+
+  @override
+  String get dictAddedBy => 'Añadido por';
+
+  @override
+  String get slpAnalysisTitle => 'Análisis del sueño';
+
+  @override
+  String get slpAnalysisEntry => 'Entorno, horario y lo que te ayuda a dormir';
+
+  @override
+  String get slpDetailsTitle => 'Detalles de la noche';
+
+  @override
+  String get slpTemperature => 'Temperatura (°C)';
+
+  @override
+  String get slpLatency => 'Minutos para dormirse';
+
+  @override
+  String get slpInvalidNumbers => 'Revisa la temperatura y los minutos.';
+
+  @override
+  String get slpLighting => 'Iluminación';
+
+  @override
+  String get slpWhere => 'Dónde';
+
+  @override
+  String get slpNoise => 'Sonido';
+
+  @override
+  String get slpSharedWith => 'Durmió con';
+
+  @override
+  String get slpComfort => 'Comodidad (1–5)';
+
+  @override
+  String get slpBeforeBed => 'Antes de dormir';
+
+  @override
+  String get slpDreams => 'Sueños';
+
+  @override
+  String get slpWakeFeeling => 'Descanso al despertar (1–5)';
+
+  @override
+  String get slpWokeUpAs => 'Quién despertó';
+
+  @override
+  String get slpNotSure => 'No sé';
+
+  @override
+  String slpInterruptions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count interrupciones',
+      one: '1 interrupción',
+      zero: 'Sin interrupciones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpDark => 'Oscuro';
+
+  @override
+  String get slpDim => 'Tenue';
+
+  @override
+  String get slpNightlight => 'Luz nocturna';
+
+  @override
+  String get slpBright => 'Luminoso';
+
+  @override
+  String get slpScreenOn => 'Pantalla encendida';
+
+  @override
+  String get slpBed => 'Cama propia';
+
+  @override
+  String get slpCouch => 'Sofá';
+
+  @override
+  String get slpGuestBed => 'Otra cama';
+
+  @override
+  String get slpTravel => 'De viaje';
+
+  @override
+  String get slpFloor => 'Suelo';
+
+  @override
+  String get slpSilent => 'Silencio';
+
+  @override
+  String get slpQuiet => 'Tranquilo';
+
+  @override
+  String get slpWhiteNoise => 'Ruido blanco';
+
+  @override
+  String get slpMusic => 'Música';
+
+  @override
+  String get slpNoisy => 'Ruidoso';
+
+  @override
+  String get slpAlone => 'Solo/a';
+
+  @override
+  String get slpPartner => 'Pareja';
+
+  @override
+  String get slpPet => 'Mascota';
+
+  @override
+  String get slpChild => 'Niño/a';
+
+  @override
+  String get slpOthers => 'Otros';
+
+  @override
+  String get slpNoDreams => 'Ninguno';
+
+  @override
+  String get slpNeutralDreams => 'Neutros';
+
+  @override
+  String get slpPleasant => 'Agradables';
+
+  @override
+  String get slpVivid => 'Vívidos';
+
+  @override
+  String get slpNightmare => 'Pesadilla';
+
+  @override
+  String get slpCaffeine => 'Cafeína';
+
+  @override
+  String get slpAlcohol => 'Alcohol';
+
+  @override
+  String get slpScreens => 'Pantallas';
+
+  @override
+  String get slpExercise => 'Ejercicio';
+
+  @override
+  String get slpLateMeal => 'Cena tardía';
+
+  @override
+  String get slpNap => 'Siesta';
+
+  @override
+  String get slpMedication => 'Medicación';
+
+  @override
+  String get slpStress => 'Estrés';
+
+  @override
+  String get slpPain => 'Dolor';
+
+  @override
+  String get slpReading => 'Lectura';
+
+  @override
+  String get slpMeditation => 'Meditación';
+
+  @override
+  String get slpShower => 'Ducha caliente';
+
+  @override
+  String get slpBathroom => 'Baño';
+
+  @override
+  String get slpNoiseWake => 'Ruido';
+
+  @override
+  String get slpTooHotCold => 'Calor o frío';
+
+  @override
+  String get slpSwitch => 'Cambio de frente';
+
+  @override
+  String get slpAnxiety => 'Ansiedad';
+
+  @override
+  String get slpAvgAsleep7 => 'Media dormida, 7 noches';
+
+  @override
+  String get slpAvgQuality => 'Calidad media, 30 noches';
+
+  @override
+  String get slpAvgLatency => 'Tiempo para dormirse';
+
+  @override
+  String get slpDebt7 => 'Deuda de sueño, 7 noches';
+
+  @override
+  String get slpRegularity => 'Regularidad al acostarse';
+
+  @override
+  String slpPlusMinus(int count) {
+    return '± $count min';
+  }
+
+  @override
+  String get slpAvgInterruptions => 'Interrupciones / noche';
+
+  @override
+  String get slpAvgBedtime => 'Hora media de acostarse';
+
+  @override
+  String get slpAvgWake => 'Hora media de despertar';
+
+  @override
+  String get slpSchedule => 'Horario de sueño';
+
+  @override
+  String get slpSetSchedule => 'Definir horario';
+
+  @override
+  String get slpNoSchedule =>
+      'Define una hora objetivo para acostarte y despertar para ver cómo la cumples.';
+
+  @override
+  String slpScheduleSummary(String bed, String wake, String hours) {
+    return 'Cama $bed · arriba $wake · objetivo $hours h';
+  }
+
+  @override
+  String get slpOnTime => 'A tiempo';
+
+  @override
+  String slpLate(int count) {
+    return '$count min tarde';
+  }
+
+  @override
+  String slpEarly(int count) {
+    return '$count min antes';
+  }
+
+  @override
+  String get slpTargetBedtime => 'Hora objetivo de acostarse';
+
+  @override
+  String get slpTargetWake => 'Hora objetivo de despertar';
+
+  @override
+  String get slpTargetHours => 'Horas de sueño objetivo';
+
+  @override
+  String get slpTargetHoursInvalid => 'Entre 3 y 14 horas';
+
+  @override
+  String get slpLast14 => 'Últimas 14 noches';
+
+  @override
+  String get slpNoNights => 'Aún no hay sesiones de sueño terminadas.';
+
+  @override
+  String slpChartLegend(String hours) {
+    return 'Barras: horas dormidas, color según calidad. Línea: objetivo $hours h.';
+  }
+
+  @override
+  String get slpWhatHelps => 'Qué acompaña a un mejor sueño';
+
+  @override
+  String get slpNeedMoreLogs =>
+      'Añade detalles a algunas noches para comparar entornos y hábitos.';
+
+  @override
+  String get slpImpactNote =>
+      'Medias de noches con detalles (★ calidad sobre 5). Son patrones, no prueba de causa.';
+
+  @override
+  String slpNights(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count noches',
+      one: '1 noche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slpRecentNights => 'Noches recientes';
+
+  @override
+  String get slpAddDetails => 'Añadir detalles';
+
+  @override
+  String get slpDetailsLogged => 'Detalles ✓';
+
+  @override
+  String slpTempRange(String range) {
+    return 'Habitación $range';
+  }
+
+  @override
+  String slpComfortIs(String level) {
+    return 'Comodidad $level';
+  }
+
+  @override
+  String get cycInsightsTitle => 'Análisis del ciclo';
+
+  @override
+  String get cycPatterns => 'Patrones';
+
+  @override
+  String get cycPhasesAndSymptoms => 'Fases y síntomas';
+
+  @override
+  String get cycPhaseMenstrual => 'Menstrual';
+
+  @override
+  String get cycPhaseFollicular => 'Folicular';
+
+  @override
+  String get cycPhaseOvulation => 'Ovulación';
+
+  @override
+  String get cycPhaseLuteal => 'Lútea';
+
+  @override
+  String get cycNoCurrentCycle => 'Sin ciclo actual';
+
+  @override
+  String cycDayN(int count) {
+    return 'Día $count del ciclo';
+  }
+
+  @override
+  String cycPhaseNow(String phase) {
+    return 'Fase $phase';
+  }
+
+  @override
+  String get cycAvgCycle => 'Ciclo medio';
+
+  @override
+  String get cycAvgPeriod => 'Periodo medio';
+
+  @override
+  String get cycVariability => 'Variación (días)';
+
+  @override
+  String get cycCyclesLogged => 'Ciclos medidos';
+
+  @override
+  String get cycPredictions => 'Predicciones';
+
+  @override
+  String get cycNeedTwoCycles =>
+      'Las predicciones aparecen tras registrar dos ciclos completos.';
+
+  @override
+  String cycPeriodAround(String date) {
+    return 'Periodo hacia el $date';
+  }
+
+  @override
+  String cycFertileWindow(String from, String to, String ovulation) {
+    return 'Ventana fértil $from–$to · ovulación ~$ovulation';
+  }
+
+  @override
+  String get cycPredictionDisclaimer =>
+      'Estimaciones según tus ciclos anteriores; no es consejo médico ni anticonceptivo.';
+
+  @override
+  String get cycInsights => 'Observaciones personales';
+
+  @override
+  String get cycNoInsights =>
+      'Sigue registrando síntomas y señales para ver observaciones.';
+
+  @override
+  String cycInsightSymptom(String symptom, int percent, String phase) {
+    return '$symptom aparece en el $percent% de los días de fase $phase registrados.';
+  }
+
+  @override
+  String cycInsightEnergy(String low, String high) {
+    return 'La energía es más baja en la fase $low y más alta en la $high.';
+  }
+
+  @override
+  String cycInsightMood(
+    String low,
+    String lowMood,
+    String high,
+    String highMood,
+  ) {
+    return 'El ánimo medio es $lowMood en la fase $low frente a $highMood en la $high.';
+  }
+
+  @override
+  String cycInsightRegular(String days) {
+    return 'Tus ciclos son regulares (± $days días).';
+  }
+
+  @override
+  String cycInsightIrregular(String days) {
+    return 'La duración de tu ciclo varía unos ± $days días, así que las predicciones son aproximadas.';
+  }
+
+  @override
+  String get cycNoHistory => 'Aún no hay ciclos completos.';
+
+  @override
+  String get cycCurrent => 'Actual';
+
+  @override
+  String cycHistoryLine(int period, int symptoms) {
+    return 'Periodo $period días · $symptoms días con síntomas';
+  }
+
+  @override
+  String cycDaysRange(int from, int to) {
+    return 'Días $from–$to';
+  }
+
+  @override
+  String cycDaysLogged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días registrados',
+      one: '1 día registrado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cycAvgMood(String value) {
+    return 'ánimo $value';
+  }
+
+  @override
+  String cycAvgEnergy(String value) {
+    return 'energía $value';
+  }
+
+  @override
+  String cycAvgPain(String value) {
+    return 'dolor $value';
+  }
+
+  @override
+  String get cycNoSymptomsInPhase => 'Aún no hay síntomas en esta fase.';
+
+  @override
+  String get cycDefaultPhasesInfo =>
+      'Las fases se estiman con tu ciclo y periodo medios. Personalízalas para usar tus propios nombres y días.';
+
+  @override
+  String get cycCustomPhasesOn =>
+      'Usando tus fases personalizadas. Toca una para editarla.';
+
+  @override
+  String get cycCustomizePhases => 'Personalizar fases';
+
+  @override
+  String get cycAddPhase => 'Añadir fase';
+
+  @override
+  String get cycEditPhase => 'Editar fase';
+
+  @override
+  String get cycResetPhases => 'Usar fases estimadas';
+
+  @override
+  String get cycPhaseName => 'Nombre de la fase';
+
+  @override
+  String get cycFromDay => 'Desde el día';
+
+  @override
+  String get cycToDay => 'Hasta el día';
+
+  @override
+  String get cycPhaseInvalid =>
+      'Los días deben ser 1–60 y «hasta» al menos «desde».';
+
+  @override
+  String get cycCustomSymptoms => 'Tus propios síntomas';
+
+  @override
+  String get cycAddSymptom => 'Añadir síntoma';
+
+  @override
+  String get cycFlowAndSymptoms => 'Flujo y síntomas';
+
+  @override
+  String get cycBodySigns => 'Señales del cuerpo';
+
+  @override
+  String get cycEnergy => 'Energía (1–5)';
+
+  @override
+  String get cycPain => 'Dolor (0–10)';
+
+  @override
+  String get cycLibido => 'Libido (1–5)';
+
+  @override
+  String get cycMucus => 'Flujo cervical';
+
+  @override
+  String get cycMucusDry => 'Seco';
+
+  @override
+  String get cycMucusSticky => 'Pegajoso';
+
+  @override
+  String get cycMucusCreamy => 'Cremoso';
+
+  @override
+  String get cycMucusWatery => 'Acuoso';
+
+  @override
+  String get cycMucusEggwhite => 'Clara de huevo';
+
+  @override
+  String get cycOvulationTest => 'Test de ovulación';
+
+  @override
+  String get cycPregnancyTest => 'Test de embarazo';
+
+  @override
+  String get cycPositive => 'Positivo';
+
+  @override
+  String get cycNegative => 'Negativo';
+
+  @override
+  String get cycBbt => 'Temperatura basal (°C)';
+
+  @override
+  String get cycBbtInvalid => 'Escribe una temperatura entre 30 y 45 °C';
+
+  @override
+  String get cycMedication => 'Medicación';
+
+  @override
+  String get pollType => 'Tipo de encuesta';
+
+  @override
+  String get pollTypeChoice => 'Opción';
+
+  @override
+  String get pollTypeYesNo => 'Sí / No';
+
+  @override
+  String get pollTypeScale => 'Escala';
+
+  @override
+  String get pollTypeRanked => 'Por orden';
+
+  @override
+  String get pollTypeRating => 'Valoración';
+
+  @override
+  String get pollTypeChoiceHelp => 'Elige una (o varias) opciones.';
+
+  @override
+  String get pollTypeYesNoHelp => 'Sí, No o Abstención.';
+
+  @override
+  String get pollTypeScaleHelp =>
+      'Elige un número en una escala; los resultados muestran la media y la distribución.';
+
+  @override
+  String get pollTypeRankedHelp =>
+      'Cada miembro ordena las opciones; los resultados usan puntos (recuento Borda).';
+
+  @override
+  String get pollTypeRatingHelp =>
+      'Cada miembro valora cada opción de 1 a 5 estrellas.';
+
+  @override
+  String get pollScaleFrom => 'Desde';
+
+  @override
+  String get pollScaleTo => 'Hasta';
+
+  @override
+  String get pollCategory => 'Categoría (opcional)';
+
+  @override
+  String get pollCategoryHint => 'p. ej. Comida, Planes, Normas';
+
+  @override
+  String get pollYes => 'Sí';
+
+  @override
+  String get pollNo => 'No';
+
+  @override
+  String get pollAbstain => 'Abstención';
+
+  @override
+  String get pollChooseVoter => 'Elige arriba quién vota.';
+
+  @override
+  String get pollClosedSeeResults =>
+      'Esta encuesta está cerrada. Mira los resultados abajo.';
+
+  @override
+  String get pollRankHelp => 'Ordena las opciones, la favorita primero.';
+
+  @override
+  String get pollRateHelp =>
+      'Valora las opciones sobre las que tengas opinión.';
+
+  @override
+  String get pollMoveDown => 'Bajar';
+
+  @override
+  String get pollAnalytics => 'Resultados y análisis';
+
+  @override
+  String pollVoters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count votantes',
+      one: '1 votante',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pollTurnout(int count) {
+    return '$count% de participación';
+  }
+
+  @override
+  String pollBordaPoints(int points, String rank) {
+    return '$points pts · puesto medio $rank';
+  }
+
+  @override
+  String get pollNoRatings => 'Sin valoraciones';
+
+  @override
+  String pollAverageRating(String avg, int count) {
+    return '$avg★ de $count';
+  }
+
+  @override
+  String get pollNoVotesYet => 'Aún no hay votos.';
+
+  @override
+  String pollScaleSummary(String mean, String median, int count) {
+    return 'Media $mean · mediana $median · $count votos';
+  }
+
+  @override
+  String pollLeading(String option) {
+    return 'Gana: $option';
+  }
+
+  @override
+  String pollTied(String options) {
+    return 'Empate: $options';
+  }
+
+  @override
+  String pollNotVotedYet(String names) {
+    return 'Aún sin votar: $names';
+  }
+
+  @override
+  String get pollStatsTitle => 'Historial y estadísticas';
+
+  @override
+  String get pollStatTotal => 'Encuestas';
+
+  @override
+  String get pollStatOpen => 'Abiertas';
+
+  @override
+  String get pollStatVotes => 'Votos';
+
+  @override
+  String get pollStatTurnout => 'Participación media';
+
+  @override
+  String get pollParticipation => 'Participación por miembro';
+
+  @override
+  String pollVotedIn(int count, int total) {
+    return '$count de $total encuestas';
+  }
+
+  @override
+  String get pollNoMembers => 'Aún no hay miembros.';
+
+  @override
+  String get pollByType => 'Por tipo';
+
+  @override
+  String pollHistory(int count) {
+    return 'Historial ($count con votos)';
+  }
+
+  @override
+  String get pollNoPolls => 'Aún no hay encuestas.';
+
+  @override
+  String get navRelationships => 'Relaciones';
+
+  @override
+  String get navSubsystems => 'Subsistemas';
+
+  @override
+  String get navHeadspace => 'Espacio interior';
+
+  @override
+  String get relNew => 'Nueva relación';
+
+  @override
+  String get relEdit => 'Editar relación';
+
+  @override
+  String get relNeedMembers =>
+      'Añade primero miembros del sistema para registrar sus relaciones.';
+
+  @override
+  String get relWhoseRelationship => 'De quién es la relación';
+
+  @override
+  String get relPickMember => 'Elige un miembro';
+
+  @override
+  String get relWith => 'Con';
+
+  @override
+  String get relWithMember => 'Miembro';
+
+  @override
+  String get relWithContact => 'Contacto';
+
+  @override
+  String get relWithPerson => 'Otra persona';
+
+  @override
+  String get relNoContacts =>
+      'Aún no hay contactos. Añádelos en Contactos o elige «Otra persona».';
+
+  @override
+  String get relPersonName => 'Su nombre';
+
+  @override
+  String get relMutual => 'Mutua';
+
+  @override
+  String get relMutualHelp => 'Ambos miembros la ven igual.';
+
+  @override
+  String get relType => 'Tipo';
+
+  @override
+  String get relStatus => 'Estado';
+
+  @override
+  String get relCloseness => 'Cercanía (1–5)';
+
+  @override
+  String get relTrust => 'Confianza (1–5)';
+
+  @override
+  String get relSince => 'Desde';
+
+  @override
+  String get relUnknownDate => 'Desconocido';
+
+  @override
+  String get relDynamics => 'Dinámica';
+
+  @override
+  String get relDynamicsHelp => 'Cómo os lleváis, roles, qué ayuda';
+
+  @override
+  String get relBoundaries => 'Límites';
+
+  @override
+  String get relBoundariesHelp => 'Uno por línea';
+
+  @override
+  String get relDeleteTitle => '¿Eliminar esta relación?';
+
+  @override
+  String get relDeleteMessage => 'También se elimina su historial.';
+
+  @override
+  String get relFriend => 'Amistad';
+
+  @override
+  String get relBestFriend => 'Mejor amistad';
+
+  @override
+  String get relPartner => 'Pareja';
+
+  @override
+  String get relCrush => 'Flechazo';
+
+  @override
+  String get relFamily => 'Familia';
+
+  @override
+  String get relSibling => 'Hermano/a';
+
+  @override
+  String get relParentFigure => 'Figura parental';
+
+  @override
+  String get relChildFigure => 'Figura filial';
+
+  @override
+  String get relCaretaker => 'Cuidador/a';
+
+  @override
+  String get relProtector => 'Protector/a';
+
+  @override
+  String get relMentor => 'Mentor/a';
+
+  @override
+  String get relClassmate => 'Compañero/a de clase';
+
+  @override
+  String get relCoworker => 'Compañero/a de trabajo';
+
+  @override
+  String get relRival => 'Rival';
+
+  @override
+  String get relAcquaintance => 'Conocido/a';
+
+  @override
+  String get relStatusActive => 'Activa';
+
+  @override
+  String get relStatusClose => 'Cercana';
+
+  @override
+  String get relStatusDistant => 'Distante';
+
+  @override
+  String get relStatusComplicated => 'Complicada';
+
+  @override
+  String get relStatusEnded => 'Terminada';
+
+  @override
+  String get relTabAll => 'Todas';
+
+  @override
+  String get relTabMap => 'Mapa';
+
+  @override
+  String get relEmpty =>
+      'Registra relaciones entre miembros y con personas de fuera: tipo, cercanía, límites e historial.';
+
+  @override
+  String get relStatTotal => 'Relaciones';
+
+  @override
+  String get relStatInternal => 'Entre miembros';
+
+  @override
+  String get relStatExternal => 'Con otros';
+
+  @override
+  String get relStatCloseness => 'Cercanía media';
+
+  @override
+  String get relStatTrust => 'Confianza media';
+
+  @override
+  String get relStatEvents30 => 'Eventos, 30 días';
+
+  @override
+  String get relStatPositive => 'Eventos positivos';
+
+  @override
+  String get relStatEnded => 'Terminadas';
+
+  @override
+  String get relByType => 'Por tipo';
+
+  @override
+  String get relMostConnected => 'Con más conexiones';
+
+  @override
+  String relConnections(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conexiones',
+      one: '1 conexión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relRecentHistory => 'Historial reciente';
+
+  @override
+  String get relNoHistory => 'Aún no hay eventos.';
+
+  @override
+  String get relInternalOnly => 'Solo miembros';
+
+  @override
+  String get relNoMatches => 'Ninguna relación coincide.';
+
+  @override
+  String relClosenessValue(int count) {
+    return 'cercanía $count/5';
+  }
+
+  @override
+  String get relMapEmpty =>
+      'Añade relaciones entre al menos dos miembros para ver el mapa.';
+
+  @override
+  String get relMapHelp =>
+      'Las líneas unen miembros; más gruesas significa más cercanía. Pellizca para ampliar.';
+
+  @override
+  String get relGone => 'Esta relación se eliminó.';
+
+  @override
+  String get relAddEvent => 'Añadir evento';
+
+  @override
+  String relSinceDate(String date) {
+    return 'desde $date';
+  }
+
+  @override
+  String relHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get relEventTitle => 'Qué pasó';
+
+  @override
+  String get relEventHint => 'p. ej. Lo hablamos, Nos conocimos';
+
+  @override
+  String get relPositive => 'Positivo';
+
+  @override
+  String get relNeutral => 'Neutral';
+
+  @override
+  String get relDifficult => 'Difícil';
+
+  @override
+  String get subNew => 'Nuevo subsistema';
+
+  @override
+  String get subEdit => 'Editar subsistema';
+
+  @override
+  String get subName => 'Nombre';
+
+  @override
+  String get subEmoji => 'Icono';
+
+  @override
+  String get subDescription => 'Descripción';
+
+  @override
+  String get subPurpose => 'Propósito / rol en el sistema';
+
+  @override
+  String get subPurposeHelp =>
+      'p. ej. Se ocupa de la escuela, Protege a los pequeños';
+
+  @override
+  String get subOrigin => 'Origen e historia';
+
+  @override
+  String get subPartOfLabel => 'Parte de';
+
+  @override
+  String get subTopLevel => 'Nivel superior';
+
+  @override
+  String get subMembersAndRoles => 'Miembros y roles';
+
+  @override
+  String subImportGroup(String name) {
+    return 'Del grupo: $name';
+  }
+
+  @override
+  String subRoleFor(String name) {
+    return 'Rol de $name';
+  }
+
+  @override
+  String get subRoleHint => 'p. ej. Guardián, Anfitrión, Pequeño';
+
+  @override
+  String get subConnections => 'Subsistemas conectados';
+
+  @override
+  String get subRules => 'Normas y acuerdos';
+
+  @override
+  String get subRulesHelp => 'Uno por línea';
+
+  @override
+  String subDeleteTitle(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get subDeleteMessage =>
+      'Los subsistemas anidados suben un nivel. Los miembros no se ven afectados.';
+
+  @override
+  String get subStatSubsystems => 'Subsistemas';
+
+  @override
+  String get subStatTopLevel => 'Nivel superior';
+
+  @override
+  String get subStatAssigned => 'Miembros asignados';
+
+  @override
+  String get subStatUnassigned => 'Sin asignar';
+
+  @override
+  String get subEmpty =>
+      'Agrupa miembros en subsistemas con sus propios miembros, roles, estructura y normas.';
+
+  @override
+  String subMembersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count miembros',
+      one: '1 miembro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subFrontingShare(int count) {
+    return '$count% del frente';
+  }
+
+  @override
+  String get subUnassigned => 'Miembros sin subsistema';
+
+  @override
+  String get subGone => 'Este subsistema se eliminó.';
+
+  @override
+  String get subAddChild => 'Añadir subsistema anidado';
+
+  @override
+  String get subStatMembers => 'Miembros';
+
+  @override
+  String get subStatFronting30 => 'Frente, 30 días';
+
+  @override
+  String get subStatNested => 'Anidados';
+
+  @override
+  String get subStatRelationships => 'Relaciones internas';
+
+  @override
+  String get subNoMembers => 'Aún no hay miembros.';
+
+  @override
+  String get subStructure => 'Estructura';
+
+  @override
+  String subPartOf(String name) {
+    return 'Parte de $name';
+  }
+
+  @override
+  String get subNoStructure =>
+      'No está dentro de otros subsistemas ni los contiene.';
+
+  @override
+  String get subInternalRelationships => 'Relaciones entre sus miembros';
+
+  @override
+  String get hsNewMap => 'Nuevo mapa';
+
+  @override
+  String get hsMapName => 'Nombre del mapa';
+
+  @override
+  String get hsIntro =>
+      'Mapea tu mundo interior: lugares, habitaciones y zonas, cómo se conectan y quién vive dónde.';
+
+  @override
+  String hsMapSummary(int areas, int links) {
+    return '$areas zonas · $links conexiones';
+  }
+
+  @override
+  String get hsMapGone => 'Este mapa se eliminó.';
+
+  @override
+  String get hsShowList => 'Ver como lista';
+
+  @override
+  String get hsShowMap => 'Ver mapa';
+
+  @override
+  String get hsAddArea => 'Añadir zona';
+
+  @override
+  String hsNewAreaName(int count) {
+    return 'Zona $count';
+  }
+
+  @override
+  String get hsConnect => 'Conectar zonas';
+
+  @override
+  String get hsConnectPickFirst => 'Toca la primera zona';
+
+  @override
+  String get hsConnectPickSecond => 'Ahora toca la segunda zona';
+
+  @override
+  String get hsArrange => 'Ordenar';
+
+  @override
+  String get hsMapSettings => 'Ajustes del mapa';
+
+  @override
+  String get hsEmptyMap =>
+      'Añade zonas con +, arrástralas a su sitio y usa Conectar para unirlas.';
+
+  @override
+  String hsConnectedTo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conexiones',
+      one: '1 conexión',
+      zero: 'sin conexiones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hsLinks => 'Conexiones';
+
+  @override
+  String get hsEditLink => 'Editar conexión';
+
+  @override
+  String get hsEditArea => 'Editar zona';
+
+  @override
+  String get hsAreaName => 'Nombre';
+
+  @override
+  String get hsAreaDescription => 'Descripción';
+
+  @override
+  String get hsAreaDescriptionHelp => 'Cómo es, qué se siente, qué pasa allí';
+
+  @override
+  String get hsShape => 'Forma';
+
+  @override
+  String get hsShapeRounded => 'Redondeada';
+
+  @override
+  String get hsShapeRect => 'Cuadrada';
+
+  @override
+  String get hsShapeCircle => 'Círculo';
+
+  @override
+  String get hsSize => 'Tamaño';
+
+  @override
+  String get hsSmall => 'Pequeño';
+
+  @override
+  String get hsMedium => 'Mediano';
+
+  @override
+  String get hsLarge => 'Grande';
+
+  @override
+  String get hsHuge => 'Enorme';
+
+  @override
+  String get hsResidents => 'Quién suele estar aquí';
+
+  @override
+  String hsDeleteArea(String name) {
+    return '¿Eliminar «$name»?';
+  }
+
+  @override
+  String get hsDeleteAreaMessage => 'También se eliminan sus conexiones.';
+
+  @override
+  String get hsLinkLabel => 'Etiqueta (opcional)';
+
+  @override
+  String get hsLinkHint => 'p. ej. Puerta, Camino, Escaleras';
+
+  @override
+  String get hsOneWay => 'Un sentido';
+
+  @override
+  String get hsDeleteMap => 'Eliminar mapa';
+
+  @override
+  String get hsDeleteMapMessage =>
+      'Se eliminan todas las zonas y conexiones de este mapa.';
+
+  @override
+  String get hsFit => 'Ajustar';
 }

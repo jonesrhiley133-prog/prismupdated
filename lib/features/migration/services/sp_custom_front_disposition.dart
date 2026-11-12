@@ -47,10 +47,7 @@ class CfSuggestion {
   final CfDisposition disposition;
   final String reason;
 
-  const CfSuggestion({
-    required this.disposition,
-    required this.reason,
-  });
+  const CfSuggestion({required this.disposition, required this.reason});
 }
 
 /// Resolved per-CF state built once at mapper init, before any mapping

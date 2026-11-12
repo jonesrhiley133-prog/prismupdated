@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/shared/widgets/prism_chip.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
+import 'package:prism_plurality/features/polls/advanced/poll_advanced_widgets.dart';
+import 'package:prism_plurality/features/polls/advanced/poll_advanced.dart';
 import 'package:prism_plurality/features/polls/providers/poll_providers.dart';
 import 'package:prism_plurality/features/settings/providers/terminology_provider.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -52,6 +56,15 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
   bool _hasExpiration = false;
   DateTime? _expiresAt;
   bool _isCreating = false;
+  String _type = PollType.choice;
+  int _scaleMin = 1;
+  int _scaleMax = 5;
+  final _category = TextEditingController();
+
+  bool get _needsOptions =>
+      _type == PollType.choice ||
+      _type == PollType.ranked ||
+      _type == PollType.rating;
 
   bool get _isDirty =>
       _questionController.text.isNotEmpty ||
@@ -69,6 +82,7 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
   void dispose() {
     _questionController.dispose();
     _descriptionController.dispose();
+    _category.dispose();
     for (final c in _optionControllers) {
       c.dispose();
     }
@@ -77,6 +91,7 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
 
   bool get _canCreate {
     if (_questionController.text.trim().isEmpty) return false;
+    if (!_needsOptions) return _type != PollType.scale || _scaleMax > _scaleMin;
     final filledOptions = _optionControllers
         .where((c) => c.text.trim().isNotEmpty)
         .length;
@@ -161,23 +176,34 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
     if (!_canCreate || _isCreating) return;
     setState(() => _isCreating = true);
 
-    final optionTexts = _optionControllers
-        .map((c) => c.text.trim())
-        .where((t) => t.isNotEmpty)
-        .toList();
+    final optionTexts = switch (_type) {
+      PollType.yesNo => [
+        context.l10n.pollYes,
+        context.l10n.pollNo,
+        context.l10n.pollAbstain,
+      ],
+      PollType.scale => [for (var v = _scaleMin; v <= _scaleMax; v++) '$v'],
+      _ =>
+        _optionControllers
+            .map((c) => c.text.trim())
+            .where((t) => t.isNotEmpty)
+            .toList(),
+    };
 
     // Collect colors for non-empty options, preserving order.
     final optionColorHexes = <String?>[];
-    for (var i = 0; i < _optionControllers.length; i++) {
-      if (_optionControllers[i].text.trim().isNotEmpty) {
-        optionColorHexes.add(_optionColors[i]);
+    if (_needsOptions) {
+      for (var i = 0; i < _optionControllers.length; i++) {
+        if (_optionControllers[i].text.trim().isNotEmpty) {
+          optionColorHexes.add(_optionColors[i]);
+        }
       }
     }
 
     final description = _descriptionController.text.trim();
 
     try {
-      await ref
+      final poll = await ref
           .read(pollNotifierProvider.notifier)
           .createPoll(
             question: _questionController.text.trim(),
@@ -185,10 +211,20 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
             optionTexts: optionTexts,
             optionColorHexes: optionColorHexes,
             isAnonymous: _isAnonymous,
-            allowsMultipleVotes: _allowsMultipleVotes,
+            allowsMultipleVotes:
+                PollType.perOption(_type) ||
+                (_type == PollType.choice && _allowsMultipleVotes),
             expiresAt: _hasExpiration ? _expiresAt : null,
-            addOtherOption: _addOtherOption,
+            addOtherOption: _type == PollType.choice && _addOtherOption,
           );
+      await savePollMeta(
+        ref.read(trackerNotifierProvider.notifier),
+        pollId: poll.id,
+        type: _type,
+        category: _category.text.trim(),
+        scaleMin: _type == PollType.scale ? _scaleMin : null,
+        scaleMax: _type == PollType.scale ? _scaleMax : null,
+      );
 
       if (mounted) {
         Haptics.success();
@@ -262,89 +298,153 @@ class _CreatePollSheetState extends ConsumerState<CreatePollSheet> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Options header
                     Text(
-                      context.l10n.pollsOptionsHeader,
+                      context.l10n.pollType,
                       style: theme.textTheme.titleSmall,
                     ),
                     const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final t in PollType.all)
+                          PrismChip(
+                            label: pollTypeLabel(context.l10n, t),
+                            selected: _type == t,
+                            onTap: () => setState(() => _type = t),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      pollTypeHelp(context.l10n, _type),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    if (_type == PollType.scale) ...[
+                      const SizedBox(height: 12),
+                      Text(context.l10n.pollScaleFrom),
+                      Wrap(
+                        spacing: 6,
+                        children: [
+                          for (final v in [0, 1])
+                            PrismChip(
+                              label: '$v',
+                              selected: _scaleMin == v,
+                              onTap: () => setState(() => _scaleMin = v),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(context.l10n.pollScaleTo),
+                      Wrap(
+                        spacing: 6,
+                        children: [
+                          for (final v in [3, 5, 7, 10])
+                            PrismChip(
+                              label: '$v',
+                              selected: _scaleMax == v,
+                              onTap: () => setState(() => _scaleMax = v),
+                            ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    PrismTextField(
+                      controller: _category,
+                      labelText: context.l10n.pollCategory,
+                      hintText: context.l10n.pollCategoryHint,
+                    ),
+                    const SizedBox(height: 16),
+                    if (_needsOptions) ...[
+                      // Options header
+                      Text(
+                        context.l10n.pollsOptionsHeader,
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
 
-                    // Option fields
-                    for (var i = 0; i < _optionControllers.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            // Color dot
-                            _OptionColorDot(
-                              colorHex: _optionColors[i],
-                              onColorSelected: (hex) {
-                                Haptics.selection();
-                                setState(() => _optionColors[i] = hex);
-                              },
-                              onCustomRequested: () => _pickCustomColor(i),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: PrismTextField(
-                                controller: _optionControllers[i],
-                                labelText: context.l10n.pollsOptionLabel(i + 1),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 12,
+                      // Option fields
+                      for (var i = 0; i < _optionControllers.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              // Color dot
+                              _OptionColorDot(
+                                colorHex: _optionColors[i],
+                                onColorSelected: (hex) {
+                                  Haptics.selection();
+                                  setState(() => _optionColors[i] = hex);
+                                },
+                                onCustomRequested: () => _pickCustomColor(i),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: PrismTextField(
+                                  controller: _optionControllers[i],
+                                  labelText: context.l10n.pollsOptionLabel(
+                                    i + 1,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 12,
+                                  ),
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  onChanged: (_) => setState(() {}),
                                 ),
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                onChanged: (_) => setState(() {}),
                               ),
-                            ),
-                            if (_optionControllers.length > 2)
-                              PrismIconButton(
-                                icon: AppIcons.removeCircleOutline,
-                                color: theme.colorScheme.error,
-                                size: 36,
-                                iconSize: 18,
-                                onPressed: () => _removeOption(i),
-                                tooltip: context.l10n.pollsRemoveOptionTooltip,
-                              ),
-                          ],
+                              if (_optionControllers.length > 2)
+                                PrismIconButton(
+                                  icon: AppIcons.removeCircleOutline,
+                                  color: theme.colorScheme.error,
+                                  size: 36,
+                                  iconSize: 18,
+                                  onPressed: () => _removeOption(i),
+                                  tooltip:
+                                      context.l10n.pollsRemoveOptionTooltip,
+                                ),
+                            ],
+                          ),
+                        ),
+
+                      // Add option button
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: PrismButton(
+                          label: context.l10n.pollsAddOption,
+                          onPressed: _addOption,
+                          icon: AppIcons.add,
+                          tone: PrismButtonTone.subtle,
                         ),
                       ),
-
-                    // Add option button
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: PrismButton(
-                        label: context.l10n.pollsAddOption,
-                        onPressed: _addOption,
-                        icon: AppIcons.add,
-                        tone: PrismButtonTone.subtle,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
+                    ],
 
                     // Toggles
-                    PrismSwitchRow(
-                      title: context.l10n.pollsAddOtherOption,
-                      subtitle: context.l10n.pollsAddOtherOptionSubtitle,
-                      value: _addOtherOption,
-                      onChanged: (v) => setState(() => _addOtherOption = v),
-                    ),
+                    if (_type == PollType.choice)
+                      PrismSwitchRow(
+                        title: context.l10n.pollsAddOtherOption,
+                        subtitle: context.l10n.pollsAddOtherOptionSubtitle,
+                        value: _addOtherOption,
+                        onChanged: (v) => setState(() => _addOtherOption = v),
+                      ),
                     PrismSwitchRow(
                       title: context.l10n.pollsAnonymousVoting,
                       subtitle: context.l10n.pollsAnonymousVotingSubtitle,
                       value: _isAnonymous,
                       onChanged: (v) => setState(() => _isAnonymous = v),
                     ),
-                    PrismSwitchRow(
-                      title: context.l10n.pollsAllowMultipleVotes,
-                      subtitle: context.l10n.pollsAllowMultipleVotesSubtitle(
-                        watchTerminology(context, ref).plural,
+                    if (_type == PollType.choice)
+                      PrismSwitchRow(
+                        title: context.l10n.pollsAllowMultipleVotes,
+                        subtitle: context.l10n.pollsAllowMultipleVotesSubtitle(
+                          watchTerminology(context, ref).plural,
+                        ),
+                        value: _allowsMultipleVotes,
+                        onChanged: (v) =>
+                            setState(() => _allowsMultipleVotes = v),
                       ),
-                      value: _allowsMultipleVotes,
-                      onChanged: (v) =>
-                          setState(() => _allowsMultipleVotes = v),
-                    ),
 
                     // Expiration
                     Builder(

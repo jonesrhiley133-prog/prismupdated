@@ -16,8 +16,10 @@ class TimingModeSettingTile extends ConsumerWidget {
     final timingMode = ref.watch(timingModeProvider);
 
     final subtitle = switch (timingMode) {
-      FrontingTimingMode.flexible => context.l10n.frontingTimingModeFlexibleSubtitle,
-      FrontingTimingMode.strict => context.l10n.frontingTimingModeStrictSubtitle,
+      FrontingTimingMode.flexible =>
+        context.l10n.frontingTimingModeFlexibleSubtitle,
+      FrontingTimingMode.strict =>
+        context.l10n.frontingTimingModeStrictSubtitle,
     };
 
     return Padding(

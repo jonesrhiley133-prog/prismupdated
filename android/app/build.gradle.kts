@@ -102,6 +102,8 @@ dependencies {
     // registered regardless of dev_dependency status, but only adds it as debugImplementation.
     // Add it explicitly so release compilation finds the class; R8 will strip unused test code.
     implementation(project(":integration_test"))
+    // FileProvider for handing downloaded update APKs to the system installer.
+    implementation("androidx.core:core:1.13.1")
 }
 
 flutter {

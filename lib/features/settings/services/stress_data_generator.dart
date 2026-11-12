@@ -1531,9 +1531,7 @@ class StressDataGenerator {
     ];
     for (final table in tables) {
       final row = await _db
-          .customSelect(
-            "SELECT 1 FROM $table WHERE id LIKE 'stress-%' LIMIT 1",
-          )
+          .customSelect("SELECT 1 FROM $table WHERE id LIKE 'stress-%' LIMIT 1")
           .getSingleOrNull();
       if (row != null) return true;
     }

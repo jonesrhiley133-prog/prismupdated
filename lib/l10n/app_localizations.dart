@@ -23220,6 +23220,6148 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That was a long work day. Rest counts as productive too.'**
   String get insightsSuggestWork;
+
+  /// navCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get navCycle;
+
+  /// navContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get navContacts;
+
+  /// dataManagementPreviewCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days'**
+  String get dataManagementPreviewCycle;
+
+  /// dataManagementPreviewContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get dataManagementPreviewContacts;
+
+  /// contactsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get contactsTitle;
+
+  /// contactsNew
+  ///
+  /// In en, this message translates to:
+  /// **'New contact'**
+  String get contactsNew;
+
+  /// contactsEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit contact'**
+  String get contactsEdit;
+
+  /// contactsName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get contactsName;
+
+  /// contactsPhones
+  ///
+  /// In en, this message translates to:
+  /// **'Phone numbers (one per line)'**
+  String get contactsPhones;
+
+  /// contactsEmails
+  ///
+  /// In en, this message translates to:
+  /// **'Emails (one per line)'**
+  String get contactsEmails;
+
+  /// contactsInvalidEmail
+  ///
+  /// In en, this message translates to:
+  /// **'One of the emails doesn\'t look right.'**
+  String get contactsInvalidEmail;
+
+  /// contactsBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get contactsBirthday;
+
+  /// contactsAddBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Add birthday'**
+  String get contactsAddBirthday;
+
+  /// contactsYearUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Year unknown'**
+  String get contactsYearUnknown;
+
+  /// contactsDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete contact?'**
+  String get contactsDeleteTitle;
+
+  /// contactsDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed.'**
+  String contactsDeleteMessage(String name);
+
+  /// contactsEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet'**
+  String get contactsEmptyTitle;
+
+  /// contactsEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add people outside your system, or import them with their birthdays from your phone or another app.'**
+  String get contactsEmptySubtitle;
+
+  /// contactsSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get contactsSearch;
+
+  /// contactsUpcomingBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming birthdays'**
+  String get contactsUpcomingBirthdays;
+
+  /// contactsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 contact} other{{count} contacts}}'**
+  String contactsCount(int count);
+
+  /// contactsTomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get contactsTomorrow;
+
+  /// cycleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get cycleTitle;
+
+  /// cycleLogToday
+  ///
+  /// In en, this message translates to:
+  /// **'Log cycle'**
+  String get cycleLogToday;
+
+  /// cycleFlowLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Flow'**
+  String get cycleFlowLabel;
+
+  /// cycleFlowNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get cycleFlowNone;
+
+  /// cycleFlowSpotting
+  ///
+  /// In en, this message translates to:
+  /// **'Spotting'**
+  String get cycleFlowSpotting;
+
+  /// cycleFlowLight
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get cycleFlowLight;
+
+  /// cycleFlowMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get cycleFlowMedium;
+
+  /// cycleFlowHeavy
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get cycleFlowHeavy;
+
+  /// cycleSymptomsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get cycleSymptomsLabel;
+
+  /// cycleDayLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day'**
+  String get cycleDayLabel;
+
+  /// cycleAverageLength
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. cycle (days)'**
+  String get cycleAverageLength;
+
+  /// cyclePeriodLength
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. period (days)'**
+  String get cyclePeriodLength;
+
+  /// cycleNextEstimate
+  ///
+  /// In en, this message translates to:
+  /// **'Next period estimated around {date}'**
+  String cycleNextEstimate(String date);
+
+  /// cycleNeedMoreCycles
+  ///
+  /// In en, this message translates to:
+  /// **'Log two or more periods to see an estimate.'**
+  String get cycleNeedMoreCycles;
+
+  /// cycleEstimated
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get cycleEstimated;
+
+  /// cycleDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates are simple averages of the cycles you logged. They aren\'t medical predictions and can\'t be used for contraception.'**
+  String get cycleDisclaimer;
+
+  /// dashboardCustomize
+  ///
+  /// In en, this message translates to:
+  /// **'Customize dashboard'**
+  String get dashboardCustomize;
+
+  /// dashboardWidgetsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Widgets'**
+  String get dashboardWidgetsLabel;
+
+  /// dashboardAddWidget
+  ///
+  /// In en, this message translates to:
+  /// **'Add a widget'**
+  String get dashboardAddWidget;
+
+  /// dashboardAddAction
+  ///
+  /// In en, this message translates to:
+  /// **'Add an action'**
+  String get dashboardAddAction;
+
+  /// dashboardMoveUp
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get dashboardMoveUp;
+
+  /// dashboardMoveDown
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get dashboardMoveDown;
+
+  /// dashboardHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get dashboardHide;
+
+  /// dashboardReset
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get dashboardReset;
+
+  /// dashboardWidgetNow
+  ///
+  /// In en, this message translates to:
+  /// **'Location & work sessions'**
+  String get dashboardWidgetNow;
+
+  /// dashboardWidgetQuickActions
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get dashboardWidgetQuickActions;
+
+  /// dashboardWidgetStats
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s system stats'**
+  String get dashboardWidgetStats;
+
+  /// dashboardWidgetBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdays'**
+  String get dashboardWidgetBirthdays;
+
+  /// dashboardWidgetEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Today & tomorrow'**
+  String get dashboardWidgetEvents;
+
+  /// dashboardInsightNoPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Open today\'s summary.'**
+  String get dashboardInsightNoPatterns;
+
+  /// dashboardInsightPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 thing you might notice} other{{count} things you might notice}}'**
+  String dashboardInsightPatterns(int count);
+
+  /// dashboardStatSwitches
+  ///
+  /// In en, this message translates to:
+  /// **'Switches'**
+  String get dashboardStatSwitches;
+
+  /// dashboardStatFronted
+  ///
+  /// In en, this message translates to:
+  /// **'Fronted'**
+  String get dashboardStatFronted;
+
+  /// dashboardStatCoFront
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting'**
+  String get dashboardStatCoFront;
+
+  /// dashboardNoSleep
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep logged for last night.'**
+  String get dashboardNoSleep;
+
+  /// dashboardCycleEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No cycle data yet.'**
+  String get dashboardCycleEmpty;
+
+  /// dashboardNoBirthdays
+  ///
+  /// In en, this message translates to:
+  /// **'No birthdays in the next two weeks.'**
+  String get dashboardNoBirthdays;
+
+  /// dashboardNoEvents
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned.'**
+  String get dashboardNoEvents;
+
+  /// quickActionSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get quickActionSwitch;
+
+  /// quickActionLogBody
+  ///
+  /// In en, this message translates to:
+  /// **'Log body sensation'**
+  String get quickActionLogBody;
+
+  /// quickActionJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get quickActionJournal;
+
+  /// quickActionBirthday
+  ///
+  /// In en, this message translates to:
+  /// **'Add birthday'**
+  String get quickActionBirthday;
+
+  /// howWeFeelTitle
+  ///
+  /// In en, this message translates to:
+  /// **'How we feel'**
+  String get howWeFeelTitle;
+
+  /// howWeFeelNoData
+  ///
+  /// In en, this message translates to:
+  /// **'No check-ins this week yet.'**
+  String get howWeFeelNoData;
+
+  /// howWeFeelAverage
+  ///
+  /// In en, this message translates to:
+  /// **'This week averaged {value}/5.'**
+  String howWeFeelAverage(String value);
+
+  /// howWeFeelUp
+  ///
+  /// In en, this message translates to:
+  /// **'A little brighter than last week ({value}/5).'**
+  String howWeFeelUp(String value);
+
+  /// howWeFeelDown
+  ///
+  /// In en, this message translates to:
+  /// **'A bit heavier than last week ({value}/5). Go gently.'**
+  String howWeFeelDown(String value);
+
+  /// howWeFeelSteady
+  ///
+  /// In en, this message translates to:
+  /// **'About the same as last week ({value}/5).'**
+  String howWeFeelSteady(String value);
+
+  /// howWeFeelTopEmotions
+  ///
+  /// In en, this message translates to:
+  /// **'Most felt: {emotions}'**
+  String howWeFeelTopEmotions(String emotions);
+
+  /// insightsGlanceCycleDay
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day {day}'**
+  String insightsGlanceCycleDay(int day);
+
+  /// insightsPatternCycleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle and mood'**
+  String get insightsPatternCycleTitle;
+
+  /// insightsPatternCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Period days averaged a mood of {period}, compared with {other} on other days ({periodCount} vs {otherCount} check-ins).'**
+  String insightsPatternCycle(
+    String period,
+    String other,
+    int periodCount,
+    int otherCount,
+  );
+
+  /// timelineSystemTitle
+  ///
+  /// In en, this message translates to:
+  /// **'System timeline'**
+  String get timelineSystemTitle;
+
+  /// timelineSystemEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded on this day.'**
+  String get timelineSystemEmpty;
+
+  /// timelineKindFront
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting'**
+  String get timelineKindFront;
+
+  /// timelineKindJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get timelineKindJournal;
+
+  /// timelineStartedFronting
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started fronting'**
+  String timelineStartedFronting(String name);
+
+  /// timelineStoppedFronting
+  ///
+  /// In en, this message translates to:
+  /// **'{name} stopped fronting'**
+  String timelineStoppedFronting(String name);
+
+  /// timelineFellAsleep
+  ///
+  /// In en, this message translates to:
+  /// **'Went to sleep'**
+  String get timelineFellAsleep;
+
+  /// timelineWokeUp
+  ///
+  /// In en, this message translates to:
+  /// **'Woke up'**
+  String get timelineWokeUp;
+
+  /// timelineArrived
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at {place}'**
+  String timelineArrived(String place);
+
+  /// timelineLeft
+  ///
+  /// In en, this message translates to:
+  /// **'Left {place}'**
+  String timelineLeft(String place);
+
+  /// timelineClockedIn
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in: {job}'**
+  String timelineClockedIn(String job);
+
+  /// timelineClockedOut
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked out: {job}'**
+  String timelineClockedOut(String job);
+
+  /// patternsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern explorer'**
+  String get patternsTitle;
+
+  /// patternsEmotionSleep
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Sleep'**
+  String get patternsEmotionSleep;
+
+  /// patternsEmotionFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Fronting'**
+  String get patternsEmotionFronting;
+
+  /// patternsEmotionLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Location'**
+  String get patternsEmotionLocation;
+
+  /// patternsEmotionCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Mood ↔ Cycle'**
+  String get patternsEmotionCycle;
+
+  /// patternsBodyEmotion
+  ///
+  /// In en, this message translates to:
+  /// **'Body ↔ Emotion'**
+  String get patternsBodyEmotion;
+
+  /// patternsWorkMood
+  ///
+  /// In en, this message translates to:
+  /// **'Work ↔ Mood'**
+  String get patternsWorkMood;
+
+  /// patternsNoData
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough check-ins in this range yet.'**
+  String get patternsNoData;
+
+  /// patternsCheckIns
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 check-in} other{{count} check-ins}}'**
+  String patternsCheckIns(int count);
+
+  /// patternsDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Groups show averages of what you logged. They\'re possible patterns, not causes or diagnoses, and small groups can be misleading.'**
+  String get patternsDisclaimer;
+
+  /// patternsFrontingWindowNote
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting and sleep data covers the last {days} days.'**
+  String patternsFrontingWindowNote(int days);
+
+  /// patternsSleepUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep logged'**
+  String get patternsSleepUnknown;
+
+  /// patternsSleepLt6
+  ///
+  /// In en, this message translates to:
+  /// **'Under 6 hours of sleep'**
+  String get patternsSleepLt6;
+
+  /// patternsSleep67
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours of sleep'**
+  String get patternsSleep67;
+
+  /// patternsSleep78
+  ///
+  /// In en, this message translates to:
+  /// **'7–8 hours of sleep'**
+  String get patternsSleep78;
+
+  /// patternsSleep8plus
+  ///
+  /// In en, this message translates to:
+  /// **'8+ hours of sleep'**
+  String get patternsSleep8plus;
+
+  /// patternsNoFronter
+  ///
+  /// In en, this message translates to:
+  /// **'No one logged as fronting'**
+  String get patternsNoFronter;
+
+  /// patternsCoFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Co-fronting'**
+  String get patternsCoFronting;
+
+  /// patternsNoLocation
+  ///
+  /// In en, this message translates to:
+  /// **'No location session'**
+  String get patternsNoLocation;
+
+  /// patternsCyclePeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Period days'**
+  String get patternsCyclePeriod;
+
+  /// patternsCycleDays
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days {range}'**
+  String patternsCycleDays(String range);
+
+  /// patternsCycleUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day unknown'**
+  String get patternsCycleUnknown;
+
+  /// patternsNoBody
+  ///
+  /// In en, this message translates to:
+  /// **'No body sensation logged'**
+  String get patternsNoBody;
+
+  /// patternsWorkDays
+  ///
+  /// In en, this message translates to:
+  /// **'Work days'**
+  String get patternsWorkDays;
+
+  /// patternsOffDays
+  ///
+  /// In en, this message translates to:
+  /// **'Days off'**
+  String get patternsOffDays;
+
+  /// importCenterTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import Center'**
+  String get importCenterTitle;
+
+  /// importCenterIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Bring data into Prism. Every importer previews what it found, checks it, lets you decide about duplicates, and only then imports.'**
+  String get importCenterIntro;
+
+  /// importCenterPrismBackup
+  ///
+  /// In en, this message translates to:
+  /// **'Prism backup'**
+  String get importCenterPrismBackup;
+
+  /// importCenterPrismBackupDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Restore an export from Prism.'**
+  String get importCenterPrismBackupDesc;
+
+  /// importCenterOtherApps
+  ///
+  /// In en, this message translates to:
+  /// **'Simply Plural & other plural apps'**
+  String get importCenterOtherApps;
+
+  /// importCenterOtherAppsDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Members, fronting history, chats and more.'**
+  String get importCenterOtherAppsDesc;
+
+  /// importCenterPluralKit
+  ///
+  /// In en, this message translates to:
+  /// **'PluralKit'**
+  String get importCenterPluralKit;
+
+  /// importCenterPluralKitDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Connect or import from PluralKit.'**
+  String get importCenterPluralKitDesc;
+
+  /// importCenterBirthdaysDesc
+  ///
+  /// In en, this message translates to:
+  /// **'JSON export from another birthday app. Birthdays repeat every year.'**
+  String get importCenterBirthdaysDesc;
+
+  /// importCenterDeviceDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people from your phone\'s contacts.'**
+  String get importCenterDeviceDesc;
+
+  /// importCenterVCardDesc
+  ///
+  /// In en, this message translates to:
+  /// **'A .vcf file exported from any contacts app.'**
+  String get importCenterVCardDesc;
+
+  /// importBirthdaysTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdays from another app'**
+  String get importBirthdaysTitle;
+
+  /// importVCardTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts file (vCard)'**
+  String get importVCardTitle;
+
+  /// importDeviceContactsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts on this device'**
+  String get importDeviceContactsTitle;
+
+  /// importBirthdaysHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the JSON file your birthday app exported. Prism looks for names and dates, shows you everything first, and turns each birthday into a yearly reminder on the calendar.'**
+  String get importBirthdaysHelp;
+
+  /// importVCardHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a .vcf file. Names, phone numbers, emails, birthdays and notes are imported.'**
+  String get importVCardHelp;
+
+  /// importDeviceHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Prism will ask for permission to read your contacts. You choose exactly who to import, and nothing leaves your device.'**
+  String get importDeviceHelp;
+
+  /// importChooseFile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get importChooseFile;
+
+  /// importAllowAndLoad
+  ///
+  /// In en, this message translates to:
+  /// **'Allow access & load contacts'**
+  String get importAllowAndLoad;
+
+  /// importOpenSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get importOpenSettings;
+
+  /// importDeviceUnsupported
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on this device. Export a .vcf file from your contacts app instead.'**
+  String get importDeviceUnsupported;
+
+  /// importDevicePermissionDenied
+  ///
+  /// In en, this message translates to:
+  /// **'Prism doesn\'t have permission to read contacts. You can allow it in Settings.'**
+  String get importDevicePermissionDenied;
+
+  /// importFileTooLarge
+  ///
+  /// In en, this message translates to:
+  /// **'That file is larger than 20 MB.'**
+  String get importFileTooLarge;
+
+  /// importNoRecords
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts or birthdays were found in that file.'**
+  String get importNoRecords;
+
+  /// importNotJson
+  ///
+  /// In en, this message translates to:
+  /// **'That file isn\'t valid JSON.'**
+  String get importNotJson;
+
+  /// importReadFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the file: {error}'**
+  String importReadFailed(String error);
+
+  /// importProblem
+  ///
+  /// In en, this message translates to:
+  /// **'Something needs attention'**
+  String get importProblem;
+
+  /// importStepSelect
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get importStepSelect;
+
+  /// importStepPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get importStepPreview;
+
+  /// importStepValidate
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get importStepValidate;
+
+  /// importStepDuplicates
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates'**
+  String get importStepDuplicates;
+
+  /// importStepImport
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importStepImport;
+
+  /// importStepDone
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get importStepDone;
+
+  /// importStepOf
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}: {name}'**
+  String importStepOf(int step, int total, String name);
+
+  /// importPreviewSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Found {total} records, {valid} ready to import. {file}'**
+  String importPreviewSummary(int total, int valid, String file);
+
+  /// importAmbiguousTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 date could be read two ways} other{{count} dates could be read two ways}}'**
+  String importAmbiguousTitle(int count);
+
+  /// importAmbiguousBody
+  ///
+  /// In en, this message translates to:
+  /// **'Dates like 03/04 could mean March 4 or April 3. Choose how your app writes dates.'**
+  String get importAmbiguousBody;
+
+  /// importAmbiguousShort
+  ///
+  /// In en, this message translates to:
+  /// **'check date'**
+  String get importAmbiguousShort;
+
+  /// importMonthFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Month first (03/04 = Mar 4)'**
+  String get importMonthFirst;
+
+  /// importDayFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Day first (03/04 = 3 Apr)'**
+  String get importDayFirst;
+
+  /// importSelectedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String importSelectedCount(int count);
+
+  /// importSelectAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get importSelectAll;
+
+  /// importSelectNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get importSelectNone;
+
+  /// importNext
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get importNext;
+
+  /// importAllValid
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} selected records look good.'**
+  String importAllValid(int count);
+
+  /// importSomeInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'{valid} selected records look good. {invalid} can\'t be imported:'**
+  String importSomeInvalid(int valid, int invalid);
+
+  /// importRowNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Row {number}'**
+  String importRowNumber(int number);
+
+  /// importErrorMissingName
+  ///
+  /// In en, this message translates to:
+  /// **'no name found'**
+  String get importErrorMissingName;
+
+  /// importErrorMissingDate
+  ///
+  /// In en, this message translates to:
+  /// **'no birthday found'**
+  String get importErrorMissingDate;
+
+  /// importErrorUnreadableDate
+  ///
+  /// In en, this message translates to:
+  /// **'the date couldn\'t be read'**
+  String get importErrorUnreadableDate;
+
+  /// importErrorInvalidDate
+  ///
+  /// In en, this message translates to:
+  /// **'the date doesn\'t exist (e.g. February 30)'**
+  String get importErrorInvalidDate;
+
+  /// importErrorNotRecord
+  ///
+  /// In en, this message translates to:
+  /// **'not a record'**
+  String get importErrorNotRecord;
+
+  /// importNoDuplicates
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates found.'**
+  String get importNoDuplicates;
+
+  /// importDuplicatesFound
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 possible duplicate} other{{count} possible duplicates}}. Choose what to do with each.'**
+  String importDuplicatesFound(int count);
+
+  /// importApplyToAll
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to all'**
+  String get importApplyToAll;
+
+  /// importActionSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get importActionSkip;
+
+  /// importActionUpdate
+  ///
+  /// In en, this message translates to:
+  /// **'Update existing'**
+  String get importActionUpdate;
+
+  /// importActionAddAnyway
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get importActionAddAnyway;
+
+  /// importMatchesExisting
+  ///
+  /// In en, this message translates to:
+  /// **'Matches \"{name}\" already in Prism'**
+  String importMatchesExisting(String name);
+
+  /// importRepeatedInFile
+  ///
+  /// In en, this message translates to:
+  /// **'Appears more than once in this file'**
+  String get importRepeatedInFile;
+
+  /// importBirthdayConflict
+  ///
+  /// In en, this message translates to:
+  /// **'The birthdays are different.'**
+  String get importBirthdayConflict;
+
+  /// importRun
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count}'**
+  String importRun(int count);
+
+  /// importDoneTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import finished'**
+  String get importDoneTitle;
+
+  /// importDoneSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{created} added · {updated} updated · {skipped} skipped'**
+  String importDoneSummary(int created, int updated, int skipped);
+
+  /// importDoneFailed
+  ///
+  /// In en, this message translates to:
+  /// **'{count} couldn\'t be saved.'**
+  String importDoneFailed(int count);
+
+  /// importBirthdaysRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Imported birthdays repeat every year and appear on your calendar.'**
+  String get importBirthdaysRecurring;
+
+  /// appUpdateTitle
+  ///
+  /// In en, this message translates to:
+  /// **'App updates'**
+  String get appUpdateTitle;
+
+  /// appUpdateTapToCheck
+  ///
+  /// In en, this message translates to:
+  /// **'Check whether a newer version of Prism is available.'**
+  String get appUpdateTapToCheck;
+
+  /// appUpdateChecking
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates…'**
+  String get appUpdateChecking;
+
+  /// appUpdateUpToDate
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on the latest version.'**
+  String get appUpdateUpToDate;
+
+  /// appUpdateAvailable
+  ///
+  /// In en, this message translates to:
+  /// **'Update available: {version} (build {build})'**
+  String appUpdateAvailable(String version, int build);
+
+  /// appUpdateDownloading
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update… {percent}%'**
+  String appUpdateDownloading(int percent);
+
+  /// appUpdateNeedsPermission
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Prism to install apps, then tap Install now. Android asks for this once.'**
+  String get appUpdateNeedsPermission;
+
+  /// appUpdateKeepsData
+  ///
+  /// In en, this message translates to:
+  /// **'Installs over the current app. Your data stays.'**
+  String get appUpdateKeepsData;
+
+  /// appUpdateCheckNow
+  ///
+  /// In en, this message translates to:
+  /// **'Check now'**
+  String get appUpdateCheckNow;
+
+  /// appUpdateDownloadInstall
+  ///
+  /// In en, this message translates to:
+  /// **'Download & install'**
+  String get appUpdateDownloadInstall;
+
+  /// appUpdateInstallNow
+  ///
+  /// In en, this message translates to:
+  /// **'Install now'**
+  String get appUpdateInstallNow;
+
+  /// appUpdateOpenSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Allow installs'**
+  String get appUpdateOpenSettings;
+
+  /// appUpdateLater
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appUpdateLater;
+
+  /// appUpdateErrorNetwork
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the update server. Check your connection.'**
+  String get appUpdateErrorNetwork;
+
+  /// appUpdateErrorChecksum
+  ///
+  /// In en, this message translates to:
+  /// **'The download was corrupted and was deleted. Try again.'**
+  String get appUpdateErrorChecksum;
+
+  /// appUpdateErrorDownload
+  ///
+  /// In en, this message translates to:
+  /// **'The download didn\'t finish. Try again.'**
+  String get appUpdateErrorDownload;
+
+  /// appUpdateErrorInstall
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the installer.'**
+  String get appUpdateErrorInstall;
+
+  /// appUpdateErrorNoApk
+  ///
+  /// In en, this message translates to:
+  /// **'The latest release has no Android app attached.'**
+  String get appUpdateErrorNoApk;
+
+  /// appUpdateErrorGeneric
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong checking for updates.'**
+  String get appUpdateErrorGeneric;
+
+  /// navJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get navJournal;
+
+  /// navDictionary
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary'**
+  String get navDictionary;
+
+  /// navAchievements
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get navAchievements;
+
+  /// quickActionDictionary
+  ///
+  /// In en, this message translates to:
+  /// **'New term'**
+  String get quickActionDictionary;
+
+  /// dataManagementPreviewTrackerRecords
+  ///
+  /// In en, this message translates to:
+  /// **'Journal, dictionary & trackers'**
+  String get dataManagementPreviewTrackerRecords;
+
+  /// importCenterDictionaryDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Terms from a wiki page or category, a JSON/CSV/text file, or pasted text.'**
+  String get importCenterDictionaryDesc;
+
+  /// trackerDelete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get trackerDelete;
+
+  /// trackerMoveUp
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get trackerMoveUp;
+
+  /// trackerPin
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get trackerPin;
+
+  /// trackerUnpin
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get trackerUnpin;
+
+  /// trackerPinned
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get trackerPinned;
+
+  /// trackerPrivate
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get trackerPrivate;
+
+  /// trackerPrivateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden until tapped, and left out of Home and summaries.'**
+  String get trackerPrivateHelp;
+
+  /// trackerPrivateReveal
+  ///
+  /// In en, this message translates to:
+  /// **'Private · tap to reveal'**
+  String get trackerPrivateReveal;
+
+  /// trackerRename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get trackerRename;
+
+  /// trackerTags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get trackerTags;
+
+  /// trackerTagsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Separate with commas'**
+  String get trackerTagsHelp;
+
+  /// journalNewEntry
+  ///
+  /// In en, this message translates to:
+  /// **'New entry'**
+  String get journalNewEntry;
+
+  /// journalEditEntry
+  ///
+  /// In en, this message translates to:
+  /// **'Edit entry'**
+  String get journalEditEntry;
+
+  /// journalTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get journalTitle;
+
+  /// journalBody
+  ///
+  /// In en, this message translates to:
+  /// **'Write…'**
+  String get journalBody;
+
+  /// journalMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get journalMood;
+
+  /// journalCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get journalCategory;
+
+  /// journalCategoryName
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get journalCategoryName;
+
+  /// journalNewCategory
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get journalNewCategory;
+
+  /// journalNoCategory
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get journalNoCategory;
+
+  /// journalWrittenBy
+  ///
+  /// In en, this message translates to:
+  /// **'Written by'**
+  String get journalWrittenBy;
+
+  /// journalNobodyInParticular
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody in particular'**
+  String get journalNobodyInParticular;
+
+  /// journalUsePrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Give me a prompt'**
+  String get journalUsePrompt;
+
+  /// journalAnotherPrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Another prompt'**
+  String get journalAnotherPrompt;
+
+  /// journalRemovePrompt
+  ///
+  /// In en, this message translates to:
+  /// **'Remove prompt'**
+  String get journalRemovePrompt;
+
+  /// journalPrompt1
+  ///
+  /// In en, this message translates to:
+  /// **'What took most of your energy today?'**
+  String get journalPrompt1;
+
+  /// journalPrompt2
+  ///
+  /// In en, this message translates to:
+  /// **'Who fronted the most, and how did it feel?'**
+  String get journalPrompt2;
+
+  /// journalPrompt3
+  ///
+  /// In en, this message translates to:
+  /// **'What is one small thing that went well?'**
+  String get journalPrompt3;
+
+  /// journalPrompt4
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need more of this week?'**
+  String get journalPrompt4;
+
+  /// journalPrompt5
+  ///
+  /// In en, this message translates to:
+  /// **'Describe a moment you felt safe.'**
+  String get journalPrompt5;
+
+  /// journalPrompt6
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like another headmate to know?'**
+  String get journalPrompt6;
+
+  /// journalPrompt7
+  ///
+  /// In en, this message translates to:
+  /// **'What is something you are looking forward to?'**
+  String get journalPrompt7;
+
+  /// journalPrompt8
+  ///
+  /// In en, this message translates to:
+  /// **'Which feeling kept coming back today, and why?'**
+  String get journalPrompt8;
+
+  /// journalEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries yet'**
+  String get journalEmptyTitle;
+
+  /// journalEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Write about your day, a feeling, or anything on your mind. Entries can be private.'**
+  String get journalEmptySubtitle;
+
+  /// journalSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search entries and #tags'**
+  String get journalSearch;
+
+  /// journalFilterAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get journalFilterAll;
+
+  /// journalNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No entries match.'**
+  String get journalNoMatches;
+
+  /// journalUntitled
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get journalUntitled;
+
+  /// journalStatEntries
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get journalStatEntries;
+
+  /// journalStatThisMonth
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get journalStatThisMonth;
+
+  /// journalStatStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak · best {best}'**
+  String journalStatStreak(int best);
+
+  /// journalStatMood
+  ///
+  /// In en, this message translates to:
+  /// **'Avg mood, 30 days'**
+  String get journalStatMood;
+
+  /// journalDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String journalDays(int count);
+
+  /// journalBy
+  ///
+  /// In en, this message translates to:
+  /// **'by {name}'**
+  String journalBy(String name);
+
+  /// journalHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Version history ({count})'**
+  String journalHistory(int count);
+
+  /// journalNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier versions appear here after you edit the entry.'**
+  String get journalNoHistory;
+
+  /// journalRestore
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get journalRestore;
+
+  /// journalEntryGone
+  ///
+  /// In en, this message translates to:
+  /// **'This entry was deleted.'**
+  String get journalEntryGone;
+
+  /// journalDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this entry?'**
+  String get journalDeleteTitle;
+
+  /// journalDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'The entry and its version history will be removed on all synced devices.'**
+  String get journalDeleteMessage;
+
+  /// dictNewTerm
+  ///
+  /// In en, this message translates to:
+  /// **'New term'**
+  String get dictNewTerm;
+
+  /// dictEditTerm
+  ///
+  /// In en, this message translates to:
+  /// **'Edit term'**
+  String get dictEditTerm;
+
+  /// dictTerm
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get dictTerm;
+
+  /// dictDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'Definition'**
+  String get dictDefinition;
+
+  /// dictPronunciation
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation (optional)'**
+  String get dictPronunciation;
+
+  /// dictAliases
+  ///
+  /// In en, this message translates to:
+  /// **'Also known as'**
+  String get dictAliases;
+
+  /// dictAliasesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Other names or spellings, separated by commas'**
+  String get dictAliasesHelp;
+
+  /// dictExamples
+  ///
+  /// In en, this message translates to:
+  /// **'Examples'**
+  String get dictExamples;
+
+  /// dictExamplesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get dictExamplesHelp;
+
+  /// dictSourceUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Source link (optional)'**
+  String get dictSourceUrl;
+
+  /// dictInvalidUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a link starting with https://'**
+  String get dictInvalidUrl;
+
+  /// dictCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection'**
+  String get dictCollection;
+
+  /// dictNoCollection
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get dictNoCollection;
+
+  /// dictDuplicateWarning
+  ///
+  /// In en, this message translates to:
+  /// **'You already have \"{term}\".'**
+  String dictDuplicateWarning(String term);
+
+  /// dictEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Your dictionary is empty'**
+  String get dictEmptyTitle;
+
+  /// dictEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own terms or import them from a wiki, a file or pasted text.'**
+  String get dictEmptySubtitle;
+
+  /// dictSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search terms, aliases and definitions'**
+  String get dictSearch;
+
+  /// dictAllTerms
+  ///
+  /// In en, this message translates to:
+  /// **'All · {count}'**
+  String dictAllTerms(int count);
+
+  /// dictManageCollections
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get dictManageCollections;
+
+  /// dictNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match.'**
+  String get dictNoMatches;
+
+  /// dictStatTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get dictStatTerms;
+
+  /// dictStatCollections
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get dictStatCollections;
+
+  /// dictStatImported
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get dictStatImported;
+
+  /// dictStatOwn
+  ///
+  /// In en, this message translates to:
+  /// **'Written by you'**
+  String get dictStatOwn;
+
+  /// dictNewCollection
+  ///
+  /// In en, this message translates to:
+  /// **'New collection'**
+  String get dictNewCollection;
+
+  /// dictNoCollectionsYet
+  ///
+  /// In en, this message translates to:
+  /// **'No collections yet. Collections group terms, like \"Roles\" or \"Our words\".'**
+  String get dictNoCollectionsYet;
+
+  /// dictDeleteCollectionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String dictDeleteCollectionTitle(String name);
+
+  /// dictDeleteCollectionMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its terms are kept and moved out of the collection.'**
+  String get dictDeleteCollectionMessage;
+
+  /// dictTermGone
+  ///
+  /// In en, this message translates to:
+  /// **'This term was deleted.'**
+  String get dictTermGone;
+
+  /// dictCopy
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get dictCopy;
+
+  /// dictDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{term}\"?'**
+  String dictDeleteTitle(String term);
+
+  /// dictAlsoKnownAs
+  ///
+  /// In en, this message translates to:
+  /// **'Also known as: {names}'**
+  String dictAlsoKnownAs(String names);
+
+  /// dictInCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection: {name}'**
+  String dictInCollection(String name);
+
+  /// dictNoDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'No definition yet.'**
+  String get dictNoDefinition;
+
+  /// dictMentions
+  ///
+  /// In en, this message translates to:
+  /// **'Mentions'**
+  String get dictMentions;
+
+  /// dictSource
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get dictSource;
+
+  /// dictImportTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Import terms'**
+  String get dictImportTitle;
+
+  /// dictSourceWiki
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get dictSourceWiki;
+
+  /// dictSourceFile
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get dictSourceFile;
+
+  /// dictSourcePaste
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get dictSourcePaste;
+
+  /// dictWikiHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a link to a wiki page or category. Works with Wikipedia, Fandom, Miraheze and other MediaWiki sites. Each page becomes a term with its introduction as the definition and a link back to the source.'**
+  String get dictWikiHelp;
+
+  /// dictWikiUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki page or category link'**
+  String get dictWikiUrl;
+
+  /// dictWikiWholeCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Import the whole category'**
+  String get dictWikiWholeCategory;
+
+  /// dictWikiWholeCategoryHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Every article in a category link, up to {max} pages.'**
+  String dictWikiWholeCategoryHelp(int max);
+
+  /// dictWikiFetching
+  ///
+  /// In en, this message translates to:
+  /// **'Reading pages… {done} of {total}'**
+  String dictWikiFetching(int done, int total);
+
+  /// dictWikiErrorUrl
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t look like a wiki page or category link.'**
+  String get dictWikiErrorUrl;
+
+  /// dictWikiErrorNetwork
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the wiki. Check your connection.'**
+  String get dictWikiErrorNetwork;
+
+  /// dictWikiErrorNotFound
+  ///
+  /// In en, this message translates to:
+  /// **'That page doesn\'t exist on the wiki.'**
+  String get dictWikiErrorNotFound;
+
+  /// dictWikiErrorEmptyCategory
+  ///
+  /// In en, this message translates to:
+  /// **'That category has no articles.'**
+  String get dictWikiErrorEmptyCategory;
+
+  /// dictWikiErrorNotWiki
+  ///
+  /// In en, this message translates to:
+  /// **'That site doesn\'t offer a MediaWiki API, so it can\'t be imported directly. Try exporting the terms to a file instead.'**
+  String get dictWikiErrorNotWiki;
+
+  /// dictFileHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a JSON, CSV/TSV or text file. JSON can be a list of \"term\"/\"definition\" objects or a term → definition map; CSV needs term and definition columns (category and aliases are optional); text files use one \"Term: definition\" per line.'**
+  String get dictFileHelp;
+
+  /// dictPasteHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One term per line as \"Term: definition\", \"Term - definition\" or \"Term = definition\". A term on its own line followed by a paragraph also works.'**
+  String get dictPasteHelp;
+
+  /// dictPasteLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get dictPasteLabel;
+
+  /// dictChooseFile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get dictChooseFile;
+
+  /// dictPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get dictPreview;
+
+  /// dictImportProblem
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t import'**
+  String get dictImportProblem;
+
+  /// dictImportNothingFound
+  ///
+  /// In en, this message translates to:
+  /// **'No terms were found.'**
+  String get dictImportNothingFound;
+
+  /// dictImportSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{found} found · {selected} selected · {invalid} with problems · {dups} already in your dictionary'**
+  String dictImportSummary(int found, int selected, int invalid, int dups);
+
+  /// dictDuplicatesAll
+  ///
+  /// In en, this message translates to:
+  /// **'For terms you already have'**
+  String get dictDuplicatesAll;
+
+  /// dictDupSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get dictDupSkip;
+
+  /// dictDupReplace
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get dictDupReplace;
+
+  /// dictDupKeepBoth
+  ///
+  /// In en, this message translates to:
+  /// **'Keep both'**
+  String get dictDupKeepBoth;
+
+  /// dictUseSourceCategories
+  ///
+  /// In en, this message translates to:
+  /// **'Use source categories'**
+  String get dictUseSourceCategories;
+
+  /// dictErrorMissingTerm
+  ///
+  /// In en, this message translates to:
+  /// **'No term name'**
+  String get dictErrorMissingTerm;
+
+  /// dictErrorMissingDefinition
+  ///
+  /// In en, this message translates to:
+  /// **'No definition'**
+  String get dictErrorMissingDefinition;
+
+  /// dictErrorFetchFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read this page'**
+  String get dictErrorFetchFailed;
+
+  /// dictAlreadyHave
+  ///
+  /// In en, this message translates to:
+  /// **'Already in your dictionary as \"{term}\"'**
+  String dictAlreadyHave(String term);
+
+  /// dictFromCategory
+  ///
+  /// In en, this message translates to:
+  /// **'From: {name}'**
+  String dictFromCategory(String name);
+
+  /// dictImportCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Import 1 term} other{Import {count} terms}}'**
+  String dictImportCount(int count);
+
+  /// dictImporting
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get dictImporting;
+
+  /// dictImportDone
+  ///
+  /// In en, this message translates to:
+  /// **'Import finished'**
+  String get dictImportDone;
+
+  /// dictImportCreated
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get dictImportCreated;
+
+  /// dictImportReplaced
+  ///
+  /// In en, this message translates to:
+  /// **'Replaced'**
+  String get dictImportReplaced;
+
+  /// dictImportSkipped
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get dictImportSkipped;
+
+  /// dictImportCollections
+  ///
+  /// In en, this message translates to:
+  /// **'New collections'**
+  String get dictImportCollections;
+
+  /// achUnlocked
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get achUnlocked;
+
+  /// achComplete
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get achComplete;
+
+  /// achAlmostThere
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there'**
+  String get achAlmostThere;
+
+  /// achProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get achProgress;
+
+  /// achHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String achHistory(int count);
+
+  /// achNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked achievements appear here with the date you earned them.'**
+  String get achNoHistory;
+
+  /// achProgressOf
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {target}'**
+  String achProgressOf(int current, int target);
+
+  /// achNextTier
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} in {remaining} more'**
+  String achNextTier(String tier, int remaining);
+
+  /// achLadderComplete
+  ///
+  /// In en, this message translates to:
+  /// **'All tiers unlocked!'**
+  String get achLadderComplete;
+
+  /// achTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} · {metric} ({target})'**
+  String achTitle(String tier, String metric, int target);
+
+  /// achUnlockedOn
+  ///
+  /// In en, this message translates to:
+  /// **'{title} — unlocked {date}'**
+  String achUnlockedOn(String title, String date);
+
+  /// achTierBronze
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get achTierBronze;
+
+  /// achTierSilver
+  ///
+  /// In en, this message translates to:
+  /// **'Silver'**
+  String get achTierSilver;
+
+  /// achTierGold
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get achTierGold;
+
+  /// achTierPlatinum
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum'**
+  String get achTierPlatinum;
+
+  /// achTierDiamond
+  ///
+  /// In en, this message translates to:
+  /// **'Diamond'**
+  String get achTierDiamond;
+
+  /// achCatSystem
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get achCatSystem;
+
+  /// achCatFronting
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting'**
+  String get achCatFronting;
+
+  /// achCatWellbeing
+  ///
+  /// In en, this message translates to:
+  /// **'Wellbeing'**
+  String get achCatWellbeing;
+
+  /// achCatJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Writing'**
+  String get achCatJournal;
+
+  /// achCatKnowledge
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge'**
+  String get achCatKnowledge;
+
+  /// achCatHabits
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get achCatHabits;
+
+  /// achCatSocial
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get achCatSocial;
+
+  /// achCatConsistency
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get achCatConsistency;
+
+  /// achMetricMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members added'**
+  String get achMetricMembers;
+
+  /// achMetricFrontSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting sessions'**
+  String get achMetricFrontSessions;
+
+  /// achMetricFrontHours
+  ///
+  /// In en, this message translates to:
+  /// **'Hours tracked fronting'**
+  String get achMetricFrontHours;
+
+  /// achMetricSleepNights
+  ///
+  /// In en, this message translates to:
+  /// **'Nights of sleep logged'**
+  String get achMetricSleepNights;
+
+  /// achMetricMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-ins'**
+  String get achMetricMood;
+
+  /// achMetricMoodStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-in streak (days)'**
+  String get achMetricMoodStreak;
+
+  /// achMetricJournal
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries'**
+  String get achMetricJournal;
+
+  /// achMetricJournalStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Journal streak (days)'**
+  String get achMetricJournalStreak;
+
+  /// achMetricTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary terms'**
+  String get achMetricTerms;
+
+  /// achMetricHabits
+  ///
+  /// In en, this message translates to:
+  /// **'Habit completions'**
+  String get achMetricHabits;
+
+  /// achMetricNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Notes written'**
+  String get achMetricNotes;
+
+  /// achMetricVotes
+  ///
+  /// In en, this message translates to:
+  /// **'Poll votes'**
+  String get achMetricVotes;
+
+  /// achMetricContacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get achMetricContacts;
+
+  /// achMetricCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle days logged'**
+  String get achMetricCycle;
+
+  /// achMetricPlaces
+  ///
+  /// In en, this message translates to:
+  /// **'Place visits'**
+  String get achMetricPlaces;
+
+  /// achMetricActiveDays
+  ///
+  /// In en, this message translates to:
+  /// **'Days with activity'**
+  String get achMetricActiveDays;
+
+  /// whatsNewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new'**
+  String get whatsNewTitle;
+
+  /// whatsNewVersion
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String whatsNewVersion(String version);
+
+  /// whatsNewFeatures
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get whatsNewFeatures;
+
+  /// whatsNewImprovements
+  ///
+  /// In en, this message translates to:
+  /// **'Improved'**
+  String get whatsNewImprovements;
+
+  /// whatsNewFixes
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed'**
+  String get whatsNewFixes;
+
+  /// whatsNewDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get whatsNewDismiss;
+
+  /// whatsNewPrevious
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier updates'**
+  String get whatsNewPrevious;
+
+  /// whatsNewChangelog
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new · changelog'**
+  String get whatsNewChangelog;
+
+  /// navFinance
+  ///
+  /// In en, this message translates to:
+  /// **'Finance'**
+  String get navFinance;
+
+  /// navFitness
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness'**
+  String get navFitness;
+
+  /// navSchool
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get navSchool;
+
+  /// finTabOverview
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get finTabOverview;
+
+  /// finTabTransactions
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get finTabTransactions;
+
+  /// finTabBudgets
+  ///
+  /// In en, this message translates to:
+  /// **'Budgets'**
+  String get finTabBudgets;
+
+  /// finTabGoals
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get finTabGoals;
+
+  /// finTabRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring'**
+  String get finTabRecurring;
+
+  /// finIncome
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get finIncome;
+
+  /// finExpense
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get finExpense;
+
+  /// finTransfer
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get finTransfer;
+
+  /// finSpent
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get finSpent;
+
+  /// finNet
+  ///
+  /// In en, this message translates to:
+  /// **'Net'**
+  String get finNet;
+
+  /// finSavingsRate
+  ///
+  /// In en, this message translates to:
+  /// **'Savings rate'**
+  String get finSavingsRate;
+
+  /// finSixMonths
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get finSixMonths;
+
+  /// finSpendingByCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Spending by category'**
+  String get finSpendingByCategory;
+
+  /// finNoSpending
+  ///
+  /// In en, this message translates to:
+  /// **'No spending this month.'**
+  String get finNoSpending;
+
+  /// finAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get finAccounts;
+
+  /// finNoAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Add accounts to track balances (optional).'**
+  String get finNoAccounts;
+
+  /// finTotalBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String finTotalBalance(String amount);
+
+  /// finNewTxn
+  ///
+  /// In en, this message translates to:
+  /// **'New transaction'**
+  String get finNewTxn;
+
+  /// finEditTxn
+  ///
+  /// In en, this message translates to:
+  /// **'Edit transaction'**
+  String get finEditTxn;
+
+  /// finAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get finAmount;
+
+  /// finInvalidAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero, like 12.50'**
+  String get finInvalidAmount;
+
+  /// finPayee
+  ///
+  /// In en, this message translates to:
+  /// **'Paid to'**
+  String get finPayee;
+
+  /// finFrom
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get finFrom;
+
+  /// finDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get finDescription;
+
+  /// finCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get finCategory;
+
+  /// finCustomCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Custom…'**
+  String get finCustomCategory;
+
+  /// finAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get finAccount;
+
+  /// finFromAccount
+  ///
+  /// In en, this message translates to:
+  /// **'From account'**
+  String get finFromAccount;
+
+  /// finToAccount
+  ///
+  /// In en, this message translates to:
+  /// **'To account'**
+  String get finToAccount;
+
+  /// finNoAccount
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get finNoAccount;
+
+  /// finTransferNeedsAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two accounts to record transfers.'**
+  String get finTransferNeedsAccounts;
+
+  /// finNote
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get finNote;
+
+  /// finDeleteTxn
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this transaction?'**
+  String get finDeleteTxn;
+
+  /// finNewAccount
+  ///
+  /// In en, this message translates to:
+  /// **'New account'**
+  String get finNewAccount;
+
+  /// finEditAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Edit account'**
+  String get finEditAccount;
+
+  /// finAccountName
+  ///
+  /// In en, this message translates to:
+  /// **'Account name'**
+  String get finAccountName;
+
+  /// finAccountType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get finAccountType;
+
+  /// finOpeningBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Starting balance'**
+  String get finOpeningBalance;
+
+  /// finOwed
+  ///
+  /// In en, this message translates to:
+  /// **'Money owed'**
+  String get finOwed;
+
+  /// finOwedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on for credit cards or debts, so the balance counts as negative.'**
+  String get finOwedHelp;
+
+  /// finDeleteAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this account? Its transactions are kept.'**
+  String get finDeleteAccount;
+
+  /// finAccCash
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get finAccCash;
+
+  /// finAccChecking
+  ///
+  /// In en, this message translates to:
+  /// **'Checking'**
+  String get finAccChecking;
+
+  /// finAccSavings
+  ///
+  /// In en, this message translates to:
+  /// **'Savings'**
+  String get finAccSavings;
+
+  /// finAccCredit
+  ///
+  /// In en, this message translates to:
+  /// **'Credit card'**
+  String get finAccCredit;
+
+  /// finAccInvestment
+  ///
+  /// In en, this message translates to:
+  /// **'Investment'**
+  String get finAccInvestment;
+
+  /// finNewBudget
+  ///
+  /// In en, this message translates to:
+  /// **'New budget'**
+  String get finNewBudget;
+
+  /// finEditBudget
+  ///
+  /// In en, this message translates to:
+  /// **'Edit budget'**
+  String get finEditBudget;
+
+  /// finMonthlyLimit
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly limit'**
+  String get finMonthlyLimit;
+
+  /// finDeleteBudget
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this budget?'**
+  String get finDeleteBudget;
+
+  /// finNoBudgets
+  ///
+  /// In en, this message translates to:
+  /// **'No budgets yet. Set a monthly limit for a category to see how you are doing.'**
+  String get finNoBudgets;
+
+  /// finBudgetTotal
+  ///
+  /// In en, this message translates to:
+  /// **'{spent} of {limit} budgeted'**
+  String finBudgetTotal(String spent, String limit);
+
+  /// finOverBudget
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} over budget'**
+  String finOverBudget(String amount);
+
+  /// finLeftInBudget
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left'**
+  String finLeftInBudget(String amount);
+
+  /// finUnbudgeted
+  ///
+  /// In en, this message translates to:
+  /// **'Spending without a budget'**
+  String get finUnbudgeted;
+
+  /// finNewGoal
+  ///
+  /// In en, this message translates to:
+  /// **'New savings goal'**
+  String get finNewGoal;
+
+  /// finEditGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get finEditGoal;
+
+  /// finGoalName
+  ///
+  /// In en, this message translates to:
+  /// **'Saving for'**
+  String get finGoalName;
+
+  /// finGoalTarget
+  ///
+  /// In en, this message translates to:
+  /// **'Target amount'**
+  String get finGoalTarget;
+
+  /// finGoalSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved so far'**
+  String get finGoalSaved;
+
+  /// finGoalDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'Target date'**
+  String get finGoalDeadline;
+
+  /// finNoDeadline
+  ///
+  /// In en, this message translates to:
+  /// **'No date'**
+  String get finNoDeadline;
+
+  /// finColor
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get finColor;
+
+  /// finDeleteGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this goal?'**
+  String get finDeleteGoal;
+
+  /// finNoGoals
+  ///
+  /// In en, this message translates to:
+  /// **'No savings goals yet.'**
+  String get finNoGoals;
+
+  /// finGoalPerMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Save {amount} a month to reach it by {date}'**
+  String finGoalPerMonth(String amount, String date);
+
+  /// finGoalReached
+  ///
+  /// In en, this message translates to:
+  /// **'Goal reached!'**
+  String get finGoalReached;
+
+  /// finAddToGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Add money'**
+  String get finAddToGoal;
+
+  /// finAddToGoalTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add to \"{name}\"'**
+  String finAddToGoalTitle(String name);
+
+  /// finNewRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'New recurring item'**
+  String get finNewRecurring;
+
+  /// finEditRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Edit recurring item'**
+  String get finEditRecurring;
+
+  /// finRecurringName
+  ///
+  /// In en, this message translates to:
+  /// **'Name (rent, salary, streaming…)'**
+  String get finRecurringName;
+
+  /// finRepeats
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats'**
+  String get finRepeats;
+
+  /// finNextDue
+  ///
+  /// In en, this message translates to:
+  /// **'Next date'**
+  String get finNextDue;
+
+  /// finAutoAdd
+  ///
+  /// In en, this message translates to:
+  /// **'Add automatically'**
+  String get finAutoAdd;
+
+  /// finAutoAddHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Record the transaction on its date when you open Finance. Otherwise it waits for you to confirm.'**
+  String get finAutoAddHelp;
+
+  /// finDeleteRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this recurring item? Past transactions are kept.'**
+  String get finDeleteRecurring;
+
+  /// finNoRecurring
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring items. Add rent, bills, subscriptions or pay days.'**
+  String get finNoRecurring;
+
+  /// finFixedCosts
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed costs / month'**
+  String get finFixedCosts;
+
+  /// finRegularIncome
+  ///
+  /// In en, this message translates to:
+  /// **'Regular income / month'**
+  String get finRegularIncome;
+
+  /// finNextOn
+  ///
+  /// In en, this message translates to:
+  /// **'next {date}'**
+  String finNextOn(String date);
+
+  /// finDueNow
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment due} other{{count} payments due}}'**
+  String finDueNow(int count);
+
+  /// finAddNow
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get finAddNow;
+
+  /// finSkip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get finSkip;
+
+  /// finRecurringBadge
+  ///
+  /// In en, this message translates to:
+  /// **'recurring'**
+  String get finRecurringBadge;
+
+  /// finEveryWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get finEveryWeek;
+
+  /// finEveryTwoWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'Every 2 weeks'**
+  String get finEveryTwoWeeks;
+
+  /// finEveryMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get finEveryMonth;
+
+  /// finEveryQuarter
+  ///
+  /// In en, this message translates to:
+  /// **'Every 3 months'**
+  String get finEveryQuarter;
+
+  /// finEveryYear
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get finEveryYear;
+
+  /// finSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search transactions'**
+  String get finSearch;
+
+  /// finNoTxns
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet.'**
+  String get finNoTxns;
+
+  /// finHideAmounts
+  ///
+  /// In en, this message translates to:
+  /// **'Hide amounts'**
+  String get finHideAmounts;
+
+  /// finShowAmounts
+  ///
+  /// In en, this message translates to:
+  /// **'Show amounts'**
+  String get finShowAmounts;
+
+  /// finSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Finance settings'**
+  String get finSettings;
+
+  /// finCurrency
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get finCurrency;
+
+  /// finCurrencyHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts are stored as entered; the currency only changes how they are shown.'**
+  String get finCurrencyHelp;
+
+  /// finPreviousMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get finPreviousMonth;
+
+  /// finNextMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get finNextMonth;
+
+  /// finWorkEarnings
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated earnings from Work this month'**
+  String get finWorkEarnings;
+
+  /// finWorkEarningsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Based on tracked shifts and hourly rates. Record adds it as income once per job and month.'**
+  String get finWorkEarningsHelp;
+
+  /// finRecord
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get finRecord;
+
+  /// finRecorded
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get finRecorded;
+
+  /// finCatHousing
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get finCatHousing;
+
+  /// finCatGroceries
+  ///
+  /// In en, this message translates to:
+  /// **'Groceries'**
+  String get finCatGroceries;
+
+  /// finCatDining
+  ///
+  /// In en, this message translates to:
+  /// **'Eating out'**
+  String get finCatDining;
+
+  /// finCatTransport
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get finCatTransport;
+
+  /// finCatUtilities
+  ///
+  /// In en, this message translates to:
+  /// **'Utilities & bills'**
+  String get finCatUtilities;
+
+  /// finCatHealth
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get finCatHealth;
+
+  /// finCatPersonal
+  ///
+  /// In en, this message translates to:
+  /// **'Personal care'**
+  String get finCatPersonal;
+
+  /// finCatEntertainment
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get finCatEntertainment;
+
+  /// finCatShopping
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get finCatShopping;
+
+  /// finCatEducation
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get finCatEducation;
+
+  /// finCatSubscriptions
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions'**
+  String get finCatSubscriptions;
+
+  /// finCatGifts
+  ///
+  /// In en, this message translates to:
+  /// **'Gifts'**
+  String get finCatGifts;
+
+  /// finCatPets
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get finCatPets;
+
+  /// finCatTravel
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get finCatTravel;
+
+  /// finCatDebt
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payments'**
+  String get finCatDebt;
+
+  /// finCatSalary
+  ///
+  /// In en, this message translates to:
+  /// **'Salary & wages'**
+  String get finCatSalary;
+
+  /// finCatFreelance
+  ///
+  /// In en, this message translates to:
+  /// **'Freelance'**
+  String get finCatFreelance;
+
+  /// finCatBenefits
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get finCatBenefits;
+
+  /// finCatRefunds
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get finCatRefunds;
+
+  /// finCatInterest
+  ///
+  /// In en, this message translates to:
+  /// **'Interest'**
+  String get finCatInterest;
+
+  /// finCatOther
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get finCatOther;
+
+  /// fitWalk
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get fitWalk;
+
+  /// fitRun
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get fitRun;
+
+  /// fitCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get fitCycle;
+
+  /// fitSwim
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get fitSwim;
+
+  /// fitStrength
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get fitStrength;
+
+  /// fitYoga
+  ///
+  /// In en, this message translates to:
+  /// **'Yoga'**
+  String get fitYoga;
+
+  /// fitHiit
+  ///
+  /// In en, this message translates to:
+  /// **'HIIT'**
+  String get fitHiit;
+
+  /// fitHike
+  ///
+  /// In en, this message translates to:
+  /// **'Hike'**
+  String get fitHike;
+
+  /// fitDance
+  ///
+  /// In en, this message translates to:
+  /// **'Dance'**
+  String get fitDance;
+
+  /// fitSports
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get fitSports;
+
+  /// fitStretch
+  ///
+  /// In en, this message translates to:
+  /// **'Stretching'**
+  String get fitStretch;
+
+  /// fitClimb
+  ///
+  /// In en, this message translates to:
+  /// **'Climbing'**
+  String get fitClimb;
+
+  /// fitRow
+  ///
+  /// In en, this message translates to:
+  /// **'Rowing'**
+  String get fitRow;
+
+  /// fitOther
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get fitOther;
+
+  /// fitNewWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Log workout'**
+  String get fitNewWorkout;
+
+  /// fitEditWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Edit workout'**
+  String get fitEditWorkout;
+
+  /// fitWorkoutName
+  ///
+  /// In en, this message translates to:
+  /// **'Name (optional)'**
+  String get fitWorkoutName;
+
+  /// fitMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get fitMinutes;
+
+  /// fitDistanceKm
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km)'**
+  String get fitDistanceKm;
+
+  /// fitCalories
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get fitCalories;
+
+  /// fitHeartRate
+  ///
+  /// In en, this message translates to:
+  /// **'Avg heart rate'**
+  String get fitHeartRate;
+
+  /// fitInvalidNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers must be zero or more.'**
+  String get fitInvalidNumber;
+
+  /// fitEffort
+  ///
+  /// In en, this message translates to:
+  /// **'Effort (1–10)'**
+  String get fitEffort;
+
+  /// fitMoodAfter
+  ///
+  /// In en, this message translates to:
+  /// **'Mood afterwards'**
+  String get fitMoodAfter;
+
+  /// fitExercises
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get fitExercises;
+
+  /// fitAddExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get fitAddExercise;
+
+  /// fitExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get fitExercise;
+
+  /// fitSets
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get fitSets;
+
+  /// fitReps
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get fitReps;
+
+  /// fitWeightKg
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get fitWeightKg;
+
+  /// fitWho
+  ///
+  /// In en, this message translates to:
+  /// **'Who exercised'**
+  String get fitWho;
+
+  /// fitDeleteWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this workout?'**
+  String get fitDeleteWorkout;
+
+  /// fitNewGoal
+  ///
+  /// In en, this message translates to:
+  /// **'New fitness goal'**
+  String get fitNewGoal;
+
+  /// fitEditGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get fitEditGoal;
+
+  /// fitGoalMetric
+  ///
+  /// In en, this message translates to:
+  /// **'Measure'**
+  String get fitGoalMetric;
+
+  /// fitGoalPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Every'**
+  String get fitGoalPeriod;
+
+  /// fitGoalTarget
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get fitGoalTarget;
+
+  /// fitPerWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get fitPerWeek;
+
+  /// fitPerMonth
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get fitPerMonth;
+
+  /// fitMetricWorkouts
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get fitMetricWorkouts;
+
+  /// fitMetricMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes'**
+  String get fitMetricMinutes;
+
+  /// fitMetricDistance
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km)'**
+  String get fitMetricDistance;
+
+  /// fitMetricCalories
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get fitMetricCalories;
+
+  /// fitNoGoals
+  ///
+  /// In en, this message translates to:
+  /// **'No goals yet. Set a weekly or monthly target.'**
+  String get fitNoGoals;
+
+  /// fitStartWorkout
+  ///
+  /// In en, this message translates to:
+  /// **'Start a workout now'**
+  String get fitStartWorkout;
+
+  /// fitStartWhich
+  ///
+  /// In en, this message translates to:
+  /// **'What are you doing?'**
+  String get fitStartWhich;
+
+  /// fitFinish
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get fitFinish;
+
+  /// fitTabHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get fitTabHistory;
+
+  /// fitThisWeekWorkouts
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts this week'**
+  String get fitThisWeekWorkouts;
+
+  /// fitThisWeekMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes this week'**
+  String get fitThisWeekMinutes;
+
+  /// fitThisWeekKm
+  ///
+  /// In en, this message translates to:
+  /// **'Km this week'**
+  String get fitThisWeekKm;
+
+  /// fitWeekStreak
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly streak'**
+  String get fitWeekStreak;
+
+  /// fitWeeks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String fitWeeks(int count);
+
+  /// fitMinutesPerWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes per week'**
+  String get fitMinutesPerWeek;
+
+  /// fitByActivity
+  ///
+  /// In en, this message translates to:
+  /// **'By activity'**
+  String get fitByActivity;
+
+  /// fitPersonalBests
+  ///
+  /// In en, this message translates to:
+  /// **'Personal bests'**
+  String get fitPersonalBests;
+
+  /// fitMinutesShort
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String fitMinutesShort(int count);
+
+  /// fitEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No workouts yet. Log one or start the timer.'**
+  String get fitEmpty;
+
+  /// fitNoExercises
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercises with sets, reps and weight to a workout to see your history here.'**
+  String get fitNoExercises;
+
+  /// fitSessions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session} other{{count} sessions}}'**
+  String fitSessions(int count);
+
+  /// fitBestWeight
+  ///
+  /// In en, this message translates to:
+  /// **'best {kg} kg'**
+  String fitBestWeight(String kg);
+
+  /// fitBestReps
+  ///
+  /// In en, this message translates to:
+  /// **'best {count} reps'**
+  String fitBestReps(int count);
+
+  /// fitVolume
+  ///
+  /// In en, this message translates to:
+  /// **'{count} kg total volume'**
+  String fitVolume(int count);
+
+  /// fitLastDone
+  ///
+  /// In en, this message translates to:
+  /// **'Last done {date}'**
+  String fitLastDone(String date);
+
+  /// fitEffortValue
+  ///
+  /// In en, this message translates to:
+  /// **'effort {count}/10'**
+  String fitEffortValue(int count);
+
+  /// fitExerciseCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String fitExerciseCount(int count);
+
+  /// schTabToday
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get schTabToday;
+
+  /// schTabClasses
+  ///
+  /// In en, this message translates to:
+  /// **'Classes'**
+  String get schTabClasses;
+
+  /// schTabAssignments
+  ///
+  /// In en, this message translates to:
+  /// **'Assignments'**
+  String get schTabAssignments;
+
+  /// schTabStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Study'**
+  String get schTabStudy;
+
+  /// schTabProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get schTabProgress;
+
+  /// schNewClass
+  ///
+  /// In en, this message translates to:
+  /// **'New class'**
+  String get schNewClass;
+
+  /// schEditClass
+  ///
+  /// In en, this message translates to:
+  /// **'Edit class'**
+  String get schEditClass;
+
+  /// schClassName
+  ///
+  /// In en, this message translates to:
+  /// **'Class name'**
+  String get schClassName;
+
+  /// schTeacher
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher'**
+  String get schTeacher;
+
+  /// schRoom
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get schRoom;
+
+  /// schCredits
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get schCredits;
+
+  /// schTargetGrade
+  ///
+  /// In en, this message translates to:
+  /// **'Target grade %'**
+  String get schTargetGrade;
+
+  /// schSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly schedule'**
+  String get schSchedule;
+
+  /// schAddMeeting
+  ///
+  /// In en, this message translates to:
+  /// **'Add time'**
+  String get schAddMeeting;
+
+  /// schNoSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'No schedule set.'**
+  String get schNoSchedule;
+
+  /// schEndAfterStart
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be after start time.'**
+  String get schEndAfterStart;
+
+  /// schDeleteClass
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String schDeleteClass(String name);
+
+  /// schDeleteClassMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its assignments and study sessions are deleted too.'**
+  String get schDeleteClassMessage;
+
+  /// schNewAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'New assignment'**
+  String get schNewAssignment;
+
+  /// schEditAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Edit assignment'**
+  String get schEditAssignment;
+
+  /// schAssignmentTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get schAssignmentTitle;
+
+  /// schClass
+  ///
+  /// In en, this message translates to:
+  /// **'Class'**
+  String get schClass;
+
+  /// schNoClass
+  ///
+  /// In en, this message translates to:
+  /// **'No class'**
+  String get schNoClass;
+
+  /// schType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get schType;
+
+  /// schDue
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get schDue;
+
+  /// schNoDueDate
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get schNoDueDate;
+
+  /// schStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get schStatus;
+
+  /// schTodo
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get schTodo;
+
+  /// schDoing
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get schDoing;
+
+  /// schDone
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get schDone;
+
+  /// schPriority
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get schPriority;
+
+  /// schPriorityLow
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get schPriorityLow;
+
+  /// schPriorityNormal
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get schPriorityNormal;
+
+  /// schPriorityHigh
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get schPriorityHigh;
+
+  /// schGrade
+  ///
+  /// In en, this message translates to:
+  /// **'Grade'**
+  String get schGrade;
+
+  /// schEarned
+  ///
+  /// In en, this message translates to:
+  /// **'Points earned'**
+  String get schEarned;
+
+  /// schPossible
+  ///
+  /// In en, this message translates to:
+  /// **'Out of'**
+  String get schPossible;
+
+  /// schGradeInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter both numbers; \"out of\" must be more than zero.'**
+  String get schGradeInvalid;
+
+  /// schWeight
+  ///
+  /// In en, this message translates to:
+  /// **'Weight in final grade (%)'**
+  String get schWeight;
+
+  /// schWeightHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. With weights, the class grade is a weighted average.'**
+  String get schWeightHelp;
+
+  /// schDeleteAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this assignment?'**
+  String get schDeleteAssignment;
+
+  /// schHomework
+  ///
+  /// In en, this message translates to:
+  /// **'Homework'**
+  String get schHomework;
+
+  /// schReading
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get schReading;
+
+  /// schEssay
+  ///
+  /// In en, this message translates to:
+  /// **'Essay'**
+  String get schEssay;
+
+  /// schProject
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get schProject;
+
+  /// schLab
+  ///
+  /// In en, this message translates to:
+  /// **'Lab'**
+  String get schLab;
+
+  /// schQuiz
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz'**
+  String get schQuiz;
+
+  /// schExam
+  ///
+  /// In en, this message translates to:
+  /// **'Exam'**
+  String get schExam;
+
+  /// schPresentation
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation'**
+  String get schPresentation;
+
+  /// schStudySession
+  ///
+  /// In en, this message translates to:
+  /// **'Study session'**
+  String get schStudySession;
+
+  /// schFocus
+  ///
+  /// In en, this message translates to:
+  /// **'Focus (1–5)'**
+  String get schFocus;
+
+  /// schDeleteStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this study session?'**
+  String get schDeleteStudy;
+
+  /// schStartStudying
+  ///
+  /// In en, this message translates to:
+  /// **'Start studying'**
+  String get schStartStudying;
+
+  /// schStudyWhich
+  ///
+  /// In en, this message translates to:
+  /// **'Which class?'**
+  String get schStudyWhich;
+
+  /// schTodaysClasses
+  ///
+  /// In en, this message translates to:
+  /// **'Classes · {day}'**
+  String schTodaysClasses(String day);
+
+  /// schNoClassesToday
+  ///
+  /// In en, this message translates to:
+  /// **'No classes today.'**
+  String get schNoClassesToday;
+
+  /// schNoClassesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No classes yet. Add your classes with their schedule to see your day here.'**
+  String get schNoClassesYet;
+
+  /// schNow
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get schNow;
+
+  /// schOverdue
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue ({count})'**
+  String schOverdue(int count);
+
+  /// schDueThisWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Due in the next 7 days'**
+  String get schDueThisWeek;
+
+  /// schNothingDue
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing due this week.'**
+  String get schNothingDue;
+
+  /// schOpenCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{nothing open} =1{1 open} other{{count} open}}'**
+  String schOpenCount(int count);
+
+  /// schFilterOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get schFilterOpen;
+
+  /// schFilterOverdue
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get schFilterOverdue;
+
+  /// schNoAssignments
+  ///
+  /// In en, this message translates to:
+  /// **'No assignments here.'**
+  String get schNoAssignments;
+
+  /// schStudyThisWeek
+  ///
+  /// In en, this message translates to:
+  /// **'Studied in the last 7 days'**
+  String get schStudyThisWeek;
+
+  /// schStudyTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Total study time'**
+  String get schStudyTotal;
+
+  /// schHours
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String schHours(String hours);
+
+  /// schSessions
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions'**
+  String get schSessions;
+
+  /// schAvgFocus
+  ///
+  /// In en, this message translates to:
+  /// **'Average focus'**
+  String get schAvgFocus;
+
+  /// schLogStudy
+  ///
+  /// In en, this message translates to:
+  /// **'Log study time'**
+  String get schLogStudy;
+
+  /// schNoStudy
+  ///
+  /// In en, this message translates to:
+  /// **'No study sessions yet.'**
+  String get schNoStudy;
+
+  /// schGpa
+  ///
+  /// In en, this message translates to:
+  /// **'GPA (4.0)'**
+  String get schGpa;
+
+  /// schCompleted
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get schCompleted;
+
+  /// schOnTime
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get schOnTime;
+
+  /// schClassesCount
+  ///
+  /// In en, this message translates to:
+  /// **'Classes'**
+  String get schClassesCount;
+
+  /// schGradesByClass
+  ///
+  /// In en, this message translates to:
+  /// **'Grades by class'**
+  String get schGradesByClass;
+
+  /// schNoGradesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No grades yet'**
+  String get schNoGradesYet;
+
+  /// schStudiedHours
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h studied'**
+  String schStudiedHours(String hours);
+
+  /// schTargetIs
+  ///
+  /// In en, this message translates to:
+  /// **'target {count}%'**
+  String schTargetIs(int count);
+
+  /// schNeedOnRest
+  ///
+  /// In en, this message translates to:
+  /// **'need {percent}% on the rest'**
+  String schNeedOnRest(String percent);
+
+  /// schTargetOutOfReach
+  ///
+  /// In en, this message translates to:
+  /// **'target no longer reachable'**
+  String get schTargetOutOfReach;
+
+  /// schClassGone
+  ///
+  /// In en, this message translates to:
+  /// **'This class was deleted.'**
+  String get schClassGone;
+
+  /// schTeacherIs
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher: {name}'**
+  String schTeacherIs(String name);
+
+  /// schRoomIs
+  ///
+  /// In en, this message translates to:
+  /// **'Room: {name}'**
+  String schRoomIs(String name);
+
+  /// schCreditsIs
+  ///
+  /// In en, this message translates to:
+  /// **'Credits: {count}'**
+  String schCreditsIs(String count);
+
+  /// trackerWholeSystem
+  ///
+  /// In en, this message translates to:
+  /// **'Whole system'**
+  String get trackerWholeSystem;
+
+  /// trackerEveryone
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get trackerEveryone;
+
+  /// trackerFrontingNow
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (fronting)'**
+  String trackerFrontingNow(String name);
+
+  /// finWho
+  ///
+  /// In en, this message translates to:
+  /// **'Who'**
+  String get finWho;
+
+  /// finWhoseGoal
+  ///
+  /// In en, this message translates to:
+  /// **'Whose goal'**
+  String get finWhoseGoal;
+
+  /// finSpendingByMember
+  ///
+  /// In en, this message translates to:
+  /// **'Spending by member'**
+  String get finSpendingByMember;
+
+  /// schWhoseClass
+  ///
+  /// In en, this message translates to:
+  /// **'Whose class'**
+  String get schWhoseClass;
+
+  /// schWhoseAssignment
+  ///
+  /// In en, this message translates to:
+  /// **'Whose assignment'**
+  String get schWhoseAssignment;
+
+  /// schWhoStudied
+  ///
+  /// In en, this message translates to:
+  /// **'Who studied'**
+  String get schWhoStudied;
+
+  /// dictAddedBy
+  ///
+  /// In en, this message translates to:
+  /// **'Added by'**
+  String get dictAddedBy;
+
+  /// slpAnalysisTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep analysis'**
+  String get slpAnalysisTitle;
+
+  /// slpAnalysisEntry
+  ///
+  /// In en, this message translates to:
+  /// **'Environment, schedule and what helps you sleep'**
+  String get slpAnalysisEntry;
+
+  /// slpDetailsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Night details'**
+  String get slpDetailsTitle;
+
+  /// slpTemperature
+  ///
+  /// In en, this message translates to:
+  /// **'Room temperature (°C)'**
+  String get slpTemperature;
+
+  /// slpLatency
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes to fall asleep'**
+  String get slpLatency;
+
+  /// slpInvalidNumbers
+  ///
+  /// In en, this message translates to:
+  /// **'Check the temperature and minutes.'**
+  String get slpInvalidNumbers;
+
+  /// slpLighting
+  ///
+  /// In en, this message translates to:
+  /// **'Lighting'**
+  String get slpLighting;
+
+  /// slpWhere
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get slpWhere;
+
+  /// slpNoise
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get slpNoise;
+
+  /// slpSharedWith
+  ///
+  /// In en, this message translates to:
+  /// **'Slept with'**
+  String get slpSharedWith;
+
+  /// slpComfort
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort (1–5)'**
+  String get slpComfort;
+
+  /// slpBeforeBed
+  ///
+  /// In en, this message translates to:
+  /// **'Before bed'**
+  String get slpBeforeBed;
+
+  /// slpDreams
+  ///
+  /// In en, this message translates to:
+  /// **'Dreams'**
+  String get slpDreams;
+
+  /// slpWakeFeeling
+  ///
+  /// In en, this message translates to:
+  /// **'How rested on waking (1–5)'**
+  String get slpWakeFeeling;
+
+  /// slpWokeUpAs
+  ///
+  /// In en, this message translates to:
+  /// **'Who woke up'**
+  String get slpWokeUpAs;
+
+  /// slpNotSure
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get slpNotSure;
+
+  /// slpInterruptions
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No interruptions} =1{1 interruption} other{{count} interruptions}}'**
+  String slpInterruptions(int count);
+
+  /// slpDark
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get slpDark;
+
+  /// slpDim
+  ///
+  /// In en, this message translates to:
+  /// **'Dim'**
+  String get slpDim;
+
+  /// slpNightlight
+  ///
+  /// In en, this message translates to:
+  /// **'Night light'**
+  String get slpNightlight;
+
+  /// slpBright
+  ///
+  /// In en, this message translates to:
+  /// **'Bright'**
+  String get slpBright;
+
+  /// slpScreenOn
+  ///
+  /// In en, this message translates to:
+  /// **'Screen on'**
+  String get slpScreenOn;
+
+  /// slpBed
+  ///
+  /// In en, this message translates to:
+  /// **'Own bed'**
+  String get slpBed;
+
+  /// slpCouch
+  ///
+  /// In en, this message translates to:
+  /// **'Couch'**
+  String get slpCouch;
+
+  /// slpGuestBed
+  ///
+  /// In en, this message translates to:
+  /// **'Other bed'**
+  String get slpGuestBed;
+
+  /// slpTravel
+  ///
+  /// In en, this message translates to:
+  /// **'Travelling'**
+  String get slpTravel;
+
+  /// slpFloor
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get slpFloor;
+
+  /// slpSilent
+  ///
+  /// In en, this message translates to:
+  /// **'Silent'**
+  String get slpSilent;
+
+  /// slpQuiet
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet'**
+  String get slpQuiet;
+
+  /// slpWhiteNoise
+  ///
+  /// In en, this message translates to:
+  /// **'White noise'**
+  String get slpWhiteNoise;
+
+  /// slpMusic
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get slpMusic;
+
+  /// slpNoisy
+  ///
+  /// In en, this message translates to:
+  /// **'Noisy'**
+  String get slpNoisy;
+
+  /// slpAlone
+  ///
+  /// In en, this message translates to:
+  /// **'Alone'**
+  String get slpAlone;
+
+  /// slpPartner
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get slpPartner;
+
+  /// slpPet
+  ///
+  /// In en, this message translates to:
+  /// **'Pet'**
+  String get slpPet;
+
+  /// slpChild
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get slpChild;
+
+  /// slpOthers
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get slpOthers;
+
+  /// slpNoDreams
+  ///
+  /// In en, this message translates to:
+  /// **'None remembered'**
+  String get slpNoDreams;
+
+  /// slpNeutralDreams
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get slpNeutralDreams;
+
+  /// slpPleasant
+  ///
+  /// In en, this message translates to:
+  /// **'Pleasant'**
+  String get slpPleasant;
+
+  /// slpVivid
+  ///
+  /// In en, this message translates to:
+  /// **'Vivid'**
+  String get slpVivid;
+
+  /// slpNightmare
+  ///
+  /// In en, this message translates to:
+  /// **'Nightmare'**
+  String get slpNightmare;
+
+  /// slpCaffeine
+  ///
+  /// In en, this message translates to:
+  /// **'Caffeine'**
+  String get slpCaffeine;
+
+  /// slpAlcohol
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol'**
+  String get slpAlcohol;
+
+  /// slpScreens
+  ///
+  /// In en, this message translates to:
+  /// **'Screens'**
+  String get slpScreens;
+
+  /// slpExercise
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get slpExercise;
+
+  /// slpLateMeal
+  ///
+  /// In en, this message translates to:
+  /// **'Late meal'**
+  String get slpLateMeal;
+
+  /// slpNap
+  ///
+  /// In en, this message translates to:
+  /// **'Napped'**
+  String get slpNap;
+
+  /// slpMedication
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get slpMedication;
+
+  /// slpStress
+  ///
+  /// In en, this message translates to:
+  /// **'Stress'**
+  String get slpStress;
+
+  /// slpPain
+  ///
+  /// In en, this message translates to:
+  /// **'Pain'**
+  String get slpPain;
+
+  /// slpReading
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get slpReading;
+
+  /// slpMeditation
+  ///
+  /// In en, this message translates to:
+  /// **'Meditation'**
+  String get slpMeditation;
+
+  /// slpShower
+  ///
+  /// In en, this message translates to:
+  /// **'Warm shower'**
+  String get slpShower;
+
+  /// slpBathroom
+  ///
+  /// In en, this message translates to:
+  /// **'Bathroom'**
+  String get slpBathroom;
+
+  /// slpNoiseWake
+  ///
+  /// In en, this message translates to:
+  /// **'Noise'**
+  String get slpNoiseWake;
+
+  /// slpTooHotCold
+  ///
+  /// In en, this message translates to:
+  /// **'Too hot or cold'**
+  String get slpTooHotCold;
+
+  /// slpSwitch
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get slpSwitch;
+
+  /// slpAnxiety
+  ///
+  /// In en, this message translates to:
+  /// **'Anxiety'**
+  String get slpAnxiety;
+
+  /// slpAvgAsleep7
+  ///
+  /// In en, this message translates to:
+  /// **'Avg asleep, 7 nights'**
+  String get slpAvgAsleep7;
+
+  /// slpAvgQuality
+  ///
+  /// In en, this message translates to:
+  /// **'Avg quality, 30 nights'**
+  String get slpAvgQuality;
+
+  /// slpAvgLatency
+  ///
+  /// In en, this message translates to:
+  /// **'Time to fall asleep'**
+  String get slpAvgLatency;
+
+  /// slpDebt7
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep debt, 7 nights'**
+  String get slpDebt7;
+
+  /// slpRegularity
+  ///
+  /// In en, this message translates to:
+  /// **'Bedtime regularity'**
+  String get slpRegularity;
+
+  /// slpPlusMinus
+  ///
+  /// In en, this message translates to:
+  /// **'± {count} min'**
+  String slpPlusMinus(int count);
+
+  /// slpAvgInterruptions
+  ///
+  /// In en, this message translates to:
+  /// **'Interruptions / night'**
+  String get slpAvgInterruptions;
+
+  /// slpAvgBedtime
+  ///
+  /// In en, this message translates to:
+  /// **'Average bedtime'**
+  String get slpAvgBedtime;
+
+  /// slpAvgWake
+  ///
+  /// In en, this message translates to:
+  /// **'Average wake time'**
+  String get slpAvgWake;
+
+  /// slpSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep schedule'**
+  String get slpSchedule;
+
+  /// slpSetSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Set schedule'**
+  String get slpSetSchedule;
+
+  /// slpNoSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Set a target bedtime and wake time to see how well you keep to them.'**
+  String get slpNoSchedule;
+
+  /// slpScheduleSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Bed {bed} · up {wake} · {hours} h target'**
+  String slpScheduleSummary(String bed, String wake, String hours);
+
+  /// slpOnTime
+  ///
+  /// In en, this message translates to:
+  /// **'On schedule'**
+  String get slpOnTime;
+
+  /// slpLate
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min late'**
+  String slpLate(int count);
+
+  /// slpEarly
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min early'**
+  String slpEarly(int count);
+
+  /// slpTargetBedtime
+  ///
+  /// In en, this message translates to:
+  /// **'Target bedtime'**
+  String get slpTargetBedtime;
+
+  /// slpTargetWake
+  ///
+  /// In en, this message translates to:
+  /// **'Target wake time'**
+  String get slpTargetWake;
+
+  /// slpTargetHours
+  ///
+  /// In en, this message translates to:
+  /// **'Target hours of sleep'**
+  String get slpTargetHours;
+
+  /// slpTargetHoursInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Between 3 and 14 hours'**
+  String get slpTargetHoursInvalid;
+
+  /// slpLast14
+  ///
+  /// In en, this message translates to:
+  /// **'Last 14 nights'**
+  String get slpLast14;
+
+  /// slpNoNights
+  ///
+  /// In en, this message translates to:
+  /// **'No finished sleep sessions yet.'**
+  String get slpNoNights;
+
+  /// slpChartLegend
+  ///
+  /// In en, this message translates to:
+  /// **'Bars: hours asleep, coloured by quality. Line: {hours} h target.'**
+  String slpChartLegend(String hours);
+
+  /// slpWhatHelps
+  ///
+  /// In en, this message translates to:
+  /// **'What goes with better sleep'**
+  String get slpWhatHelps;
+
+  /// slpNeedMoreLogs
+  ///
+  /// In en, this message translates to:
+  /// **'Add details to a few nights to compare environments and habits.'**
+  String get slpNeedMoreLogs;
+
+  /// slpImpactNote
+  ///
+  /// In en, this message translates to:
+  /// **'Averages over nights with details (★ quality out of 5). Patterns, not proof of cause.'**
+  String get slpImpactNote;
+
+  /// slpNights
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night} other{{count} nights}}'**
+  String slpNights(int count);
+
+  /// slpRecentNights
+  ///
+  /// In en, this message translates to:
+  /// **'Recent nights'**
+  String get slpRecentNights;
+
+  /// slpAddDetails
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get slpAddDetails;
+
+  /// slpDetailsLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Details ✓'**
+  String get slpDetailsLogged;
+
+  /// slpTempRange
+  ///
+  /// In en, this message translates to:
+  /// **'Room {range}'**
+  String slpTempRange(String range);
+
+  /// slpComfortIs
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort {level}'**
+  String slpComfortIs(String level);
+
+  /// cycInsightsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle insights'**
+  String get cycInsightsTitle;
+
+  /// cycPatterns
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns'**
+  String get cycPatterns;
+
+  /// cycPhasesAndSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Phases & symptoms'**
+  String get cycPhasesAndSymptoms;
+
+  /// cycPhaseMenstrual
+  ///
+  /// In en, this message translates to:
+  /// **'Menstrual'**
+  String get cycPhaseMenstrual;
+
+  /// cycPhaseFollicular
+  ///
+  /// In en, this message translates to:
+  /// **'Follicular'**
+  String get cycPhaseFollicular;
+
+  /// cycPhaseOvulation
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation'**
+  String get cycPhaseOvulation;
+
+  /// cycPhaseLuteal
+  ///
+  /// In en, this message translates to:
+  /// **'Luteal'**
+  String get cycPhaseLuteal;
+
+  /// cycNoCurrentCycle
+  ///
+  /// In en, this message translates to:
+  /// **'No current cycle'**
+  String get cycNoCurrentCycle;
+
+  /// cycDayN
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day {count}'**
+  String cycDayN(int count);
+
+  /// cycPhaseNow
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} phase'**
+  String cycPhaseNow(String phase);
+
+  /// cycAvgCycle
+  ///
+  /// In en, this message translates to:
+  /// **'Average cycle'**
+  String get cycAvgCycle;
+
+  /// cycAvgPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Average period'**
+  String get cycAvgPeriod;
+
+  /// cycVariability
+  ///
+  /// In en, this message translates to:
+  /// **'Variation (days)'**
+  String get cycVariability;
+
+  /// cycCyclesLogged
+  ///
+  /// In en, this message translates to:
+  /// **'Cycles measured'**
+  String get cycCyclesLogged;
+
+  /// cycPredictions
+  ///
+  /// In en, this message translates to:
+  /// **'Predictions'**
+  String get cycPredictions;
+
+  /// cycNeedTwoCycles
+  ///
+  /// In en, this message translates to:
+  /// **'Predictions appear after two full cycles are logged.'**
+  String get cycNeedTwoCycles;
+
+  /// cycPeriodAround
+  ///
+  /// In en, this message translates to:
+  /// **'Period around {date}'**
+  String cycPeriodAround(String date);
+
+  /// cycFertileWindow
+  ///
+  /// In en, this message translates to:
+  /// **'Fertile window {from}–{to} · ovulation ~{ovulation}'**
+  String cycFertileWindow(String from, String to, String ovulation);
+
+  /// cycPredictionDisclaimer
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates from your past cycles, not medical advice or contraception.'**
+  String get cycPredictionDisclaimer;
+
+  /// cycInsights
+  ///
+  /// In en, this message translates to:
+  /// **'Personal insights'**
+  String get cycInsights;
+
+  /// cycNoInsights
+  ///
+  /// In en, this message translates to:
+  /// **'Keep logging symptoms and body signs to see insights.'**
+  String get cycNoInsights;
+
+  /// cycInsightSymptom
+  ///
+  /// In en, this message translates to:
+  /// **'{symptom} shows up on {percent}% of logged {phase} days.'**
+  String cycInsightSymptom(String symptom, int percent, String phase);
+
+  /// cycInsightEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'Energy is lowest in the {low} phase and highest in the {high} phase.'**
+  String cycInsightEnergy(String low, String high);
+
+  /// cycInsightMood
+  ///
+  /// In en, this message translates to:
+  /// **'Mood averages {lowMood} in the {low} phase vs {highMood} in the {high} phase.'**
+  String cycInsightMood(
+    String low,
+    String lowMood,
+    String high,
+    String highMood,
+  );
+
+  /// cycInsightRegular
+  ///
+  /// In en, this message translates to:
+  /// **'Your cycles are regular (± {days} days).'**
+  String cycInsightRegular(String days);
+
+  /// cycInsightIrregular
+  ///
+  /// In en, this message translates to:
+  /// **'Your cycle length varies by about ± {days} days, so predictions are rougher.'**
+  String cycInsightIrregular(String days);
+
+  /// cycNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No complete cycles yet.'**
+  String get cycNoHistory;
+
+  /// cycCurrent
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get cycCurrent;
+
+  /// cycHistoryLine
+  ///
+  /// In en, this message translates to:
+  /// **'Period {period} days · {symptoms} days with symptoms'**
+  String cycHistoryLine(int period, int symptoms);
+
+  /// cycDaysRange
+  ///
+  /// In en, this message translates to:
+  /// **'Days {from}–{to}'**
+  String cycDaysRange(int from, int to);
+
+  /// cycDaysLogged
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day logged} other{{count} days logged}}'**
+  String cycDaysLogged(int count);
+
+  /// cycAvgMood
+  ///
+  /// In en, this message translates to:
+  /// **'mood {value}'**
+  String cycAvgMood(String value);
+
+  /// cycAvgEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'energy {value}'**
+  String cycAvgEnergy(String value);
+
+  /// cycAvgPain
+  ///
+  /// In en, this message translates to:
+  /// **'pain {value}'**
+  String cycAvgPain(String value);
+
+  /// cycNoSymptomsInPhase
+  ///
+  /// In en, this message translates to:
+  /// **'No symptoms logged in this phase yet.'**
+  String get cycNoSymptomsInPhase;
+
+  /// cycDefaultPhasesInfo
+  ///
+  /// In en, this message translates to:
+  /// **'Phases are estimated from your average cycle and period length. Customize them to use your own names and day ranges.'**
+  String get cycDefaultPhasesInfo;
+
+  /// cycCustomPhasesOn
+  ///
+  /// In en, this message translates to:
+  /// **'Using your custom phases. Tap one to edit.'**
+  String get cycCustomPhasesOn;
+
+  /// cycCustomizePhases
+  ///
+  /// In en, this message translates to:
+  /// **'Customize phases'**
+  String get cycCustomizePhases;
+
+  /// cycAddPhase
+  ///
+  /// In en, this message translates to:
+  /// **'Add phase'**
+  String get cycAddPhase;
+
+  /// cycEditPhase
+  ///
+  /// In en, this message translates to:
+  /// **'Edit phase'**
+  String get cycEditPhase;
+
+  /// cycResetPhases
+  ///
+  /// In en, this message translates to:
+  /// **'Use estimated phases'**
+  String get cycResetPhases;
+
+  /// cycPhaseName
+  ///
+  /// In en, this message translates to:
+  /// **'Phase name'**
+  String get cycPhaseName;
+
+  /// cycFromDay
+  ///
+  /// In en, this message translates to:
+  /// **'From day'**
+  String get cycFromDay;
+
+  /// cycToDay
+  ///
+  /// In en, this message translates to:
+  /// **'To day'**
+  String get cycToDay;
+
+  /// cycPhaseInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Days must be 1–60 and \"to\" at least \"from\".'**
+  String get cycPhaseInvalid;
+
+  /// cycCustomSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Your own symptoms'**
+  String get cycCustomSymptoms;
+
+  /// cycAddSymptom
+  ///
+  /// In en, this message translates to:
+  /// **'Add symptom'**
+  String get cycAddSymptom;
+
+  /// cycFlowAndSymptoms
+  ///
+  /// In en, this message translates to:
+  /// **'Flow & symptoms'**
+  String get cycFlowAndSymptoms;
+
+  /// cycBodySigns
+  ///
+  /// In en, this message translates to:
+  /// **'Body signs'**
+  String get cycBodySigns;
+
+  /// cycEnergy
+  ///
+  /// In en, this message translates to:
+  /// **'Energy (1–5)'**
+  String get cycEnergy;
+
+  /// cycPain
+  ///
+  /// In en, this message translates to:
+  /// **'Pain (0–10)'**
+  String get cycPain;
+
+  /// cycLibido
+  ///
+  /// In en, this message translates to:
+  /// **'Libido (1–5)'**
+  String get cycLibido;
+
+  /// cycMucus
+  ///
+  /// In en, this message translates to:
+  /// **'Cervical fluid'**
+  String get cycMucus;
+
+  /// cycMucusDry
+  ///
+  /// In en, this message translates to:
+  /// **'Dry'**
+  String get cycMucusDry;
+
+  /// cycMucusSticky
+  ///
+  /// In en, this message translates to:
+  /// **'Sticky'**
+  String get cycMucusSticky;
+
+  /// cycMucusCreamy
+  ///
+  /// In en, this message translates to:
+  /// **'Creamy'**
+  String get cycMucusCreamy;
+
+  /// cycMucusWatery
+  ///
+  /// In en, this message translates to:
+  /// **'Watery'**
+  String get cycMucusWatery;
+
+  /// cycMucusEggwhite
+  ///
+  /// In en, this message translates to:
+  /// **'Egg white'**
+  String get cycMucusEggwhite;
+
+  /// cycOvulationTest
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation test'**
+  String get cycOvulationTest;
+
+  /// cycPregnancyTest
+  ///
+  /// In en, this message translates to:
+  /// **'Pregnancy test'**
+  String get cycPregnancyTest;
+
+  /// cycPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get cycPositive;
+
+  /// cycNegative
+  ///
+  /// In en, this message translates to:
+  /// **'Negative'**
+  String get cycNegative;
+
+  /// cycBbt
+  ///
+  /// In en, this message translates to:
+  /// **'Basal temperature (°C)'**
+  String get cycBbt;
+
+  /// cycBbtInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a temperature between 30 and 45 °C'**
+  String get cycBbtInvalid;
+
+  /// cycMedication
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get cycMedication;
+
+  /// pollType
+  ///
+  /// In en, this message translates to:
+  /// **'Poll type'**
+  String get pollType;
+
+  /// pollTypeChoice
+  ///
+  /// In en, this message translates to:
+  /// **'Choice'**
+  String get pollTypeChoice;
+
+  /// pollTypeYesNo
+  ///
+  /// In en, this message translates to:
+  /// **'Yes / No'**
+  String get pollTypeYesNo;
+
+  /// pollTypeScale
+  ///
+  /// In en, this message translates to:
+  /// **'Scale'**
+  String get pollTypeScale;
+
+  /// pollTypeRanked
+  ///
+  /// In en, this message translates to:
+  /// **'Ranked'**
+  String get pollTypeRanked;
+
+  /// pollTypeRating
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get pollTypeRating;
+
+  /// pollTypeChoiceHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one (or several) options.'**
+  String get pollTypeChoiceHelp;
+
+  /// pollTypeYesNoHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, No or Abstain.'**
+  String get pollTypeYesNoHelp;
+
+  /// pollTypeScaleHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a number on a scale; results show the average and spread.'**
+  String get pollTypeScaleHelp;
+
+  /// pollTypeRankedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Each member orders the options; results use points (Borda count).'**
+  String get pollTypeRankedHelp;
+
+  /// pollTypeRatingHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Each member rates every option from 1 to 5 stars.'**
+  String get pollTypeRatingHelp;
+
+  /// pollScaleFrom
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get pollScaleFrom;
+
+  /// pollScaleTo
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get pollScaleTo;
+
+  /// pollCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category (optional)'**
+  String get pollCategory;
+
+  /// pollCategoryHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Food, Plans, Rules'**
+  String get pollCategoryHint;
+
+  /// pollYes
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get pollYes;
+
+  /// pollNo
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get pollNo;
+
+  /// pollAbstain
+  ///
+  /// In en, this message translates to:
+  /// **'Abstain'**
+  String get pollAbstain;
+
+  /// pollChooseVoter
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who is voting above.'**
+  String get pollChooseVoter;
+
+  /// pollClosedSeeResults
+  ///
+  /// In en, this message translates to:
+  /// **'This poll is closed. See the results below.'**
+  String get pollClosedSeeResults;
+
+  /// pollRankHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Put the options in order, favourite first.'**
+  String get pollRankHelp;
+
+  /// pollRateHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the options you have an opinion on.'**
+  String get pollRateHelp;
+
+  /// pollMoveDown
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get pollMoveDown;
+
+  /// pollAnalytics
+  ///
+  /// In en, this message translates to:
+  /// **'Results & analytics'**
+  String get pollAnalytics;
+
+  /// pollVoters
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 voter} other{{count} voters}}'**
+  String pollVoters(int count);
+
+  /// pollTurnout
+  ///
+  /// In en, this message translates to:
+  /// **'{count}% turnout'**
+  String pollTurnout(int count);
+
+  /// pollBordaPoints
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts · avg rank {rank}'**
+  String pollBordaPoints(int points, String rank);
+
+  /// pollNoRatings
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings'**
+  String get pollNoRatings;
+
+  /// pollAverageRating
+  ///
+  /// In en, this message translates to:
+  /// **'{avg}★ from {count}'**
+  String pollAverageRating(String avg, int count);
+
+  /// pollNoVotesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No votes yet.'**
+  String get pollNoVotesYet;
+
+  /// pollScaleSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Average {mean} · median {median} · {count} votes'**
+  String pollScaleSummary(String mean, String median, int count);
+
+  /// pollLeading
+  ///
+  /// In en, this message translates to:
+  /// **'Leading: {option}'**
+  String pollLeading(String option);
+
+  /// pollTied
+  ///
+  /// In en, this message translates to:
+  /// **'Tied: {options}'**
+  String pollTied(String options);
+
+  /// pollNotVotedYet
+  ///
+  /// In en, this message translates to:
+  /// **'Not voted yet: {names}'**
+  String pollNotVotedYet(String names);
+
+  /// pollStatsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Poll history & stats'**
+  String get pollStatsTitle;
+
+  /// pollStatTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Polls'**
+  String get pollStatTotal;
+
+  /// pollStatOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pollStatOpen;
+
+  /// pollStatVotes
+  ///
+  /// In en, this message translates to:
+  /// **'Votes cast'**
+  String get pollStatVotes;
+
+  /// pollStatTurnout
+  ///
+  /// In en, this message translates to:
+  /// **'Average turnout'**
+  String get pollStatTurnout;
+
+  /// pollParticipation
+  ///
+  /// In en, this message translates to:
+  /// **'Participation by member'**
+  String get pollParticipation;
+
+  /// pollVotedIn
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} polls'**
+  String pollVotedIn(int count, int total);
+
+  /// pollNoMembers
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet.'**
+  String get pollNoMembers;
+
+  /// pollByType
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get pollByType;
+
+  /// pollHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count} with votes)'**
+  String pollHistory(int count);
+
+  /// pollNoPolls
+  ///
+  /// In en, this message translates to:
+  /// **'No polls yet.'**
+  String get pollNoPolls;
+
+  /// navRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships'**
+  String get navRelationships;
+
+  /// navSubsystems
+  ///
+  /// In en, this message translates to:
+  /// **'Subsystems'**
+  String get navSubsystems;
+
+  /// navHeadspace
+  ///
+  /// In en, this message translates to:
+  /// **'Headspace'**
+  String get navHeadspace;
+
+  /// relNew
+  ///
+  /// In en, this message translates to:
+  /// **'New relationship'**
+  String get relNew;
+
+  /// relEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit relationship'**
+  String get relEdit;
+
+  /// relNeedMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Add system members first to track their relationships.'**
+  String get relNeedMembers;
+
+  /// relWhoseRelationship
+  ///
+  /// In en, this message translates to:
+  /// **'Whose relationship'**
+  String get relWhoseRelationship;
+
+  /// relPickMember
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a member'**
+  String get relPickMember;
+
+  /// relWith
+  ///
+  /// In en, this message translates to:
+  /// **'With'**
+  String get relWith;
+
+  /// relWithMember
+  ///
+  /// In en, this message translates to:
+  /// **'Headmate'**
+  String get relWithMember;
+
+  /// relWithContact
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get relWithContact;
+
+  /// relWithPerson
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else'**
+  String get relWithPerson;
+
+  /// relNoContacts
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet. Add them in Contacts, or choose \"Someone else\".'**
+  String get relNoContacts;
+
+  /// relPersonName
+  ///
+  /// In en, this message translates to:
+  /// **'Their name'**
+  String get relPersonName;
+
+  /// relMutual
+  ///
+  /// In en, this message translates to:
+  /// **'Mutual'**
+  String get relMutual;
+
+  /// relMutualHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Both headmates see it the same way.'**
+  String get relMutualHelp;
+
+  /// relType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get relType;
+
+  /// relStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get relStatus;
+
+  /// relCloseness
+  ///
+  /// In en, this message translates to:
+  /// **'Closeness (1–5)'**
+  String get relCloseness;
+
+  /// relTrust
+  ///
+  /// In en, this message translates to:
+  /// **'Trust (1–5)'**
+  String get relTrust;
+
+  /// relSince
+  ///
+  /// In en, this message translates to:
+  /// **'Known since'**
+  String get relSince;
+
+  /// relUnknownDate
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get relUnknownDate;
+
+  /// relDynamics
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamics'**
+  String get relDynamics;
+
+  /// relDynamicsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'How you get along, roles, what helps'**
+  String get relDynamicsHelp;
+
+  /// relBoundaries
+  ///
+  /// In en, this message translates to:
+  /// **'Boundaries'**
+  String get relBoundaries;
+
+  /// relBoundariesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get relBoundariesHelp;
+
+  /// relDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this relationship?'**
+  String get relDeleteTitle;
+
+  /// relDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its history is deleted too.'**
+  String get relDeleteMessage;
+
+  /// relFriend
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get relFriend;
+
+  /// relBestFriend
+  ///
+  /// In en, this message translates to:
+  /// **'Best friend'**
+  String get relBestFriend;
+
+  /// relPartner
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get relPartner;
+
+  /// relCrush
+  ///
+  /// In en, this message translates to:
+  /// **'Crush'**
+  String get relCrush;
+
+  /// relFamily
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get relFamily;
+
+  /// relSibling
+  ///
+  /// In en, this message translates to:
+  /// **'Sibling'**
+  String get relSibling;
+
+  /// relParentFigure
+  ///
+  /// In en, this message translates to:
+  /// **'Parent figure'**
+  String get relParentFigure;
+
+  /// relChildFigure
+  ///
+  /// In en, this message translates to:
+  /// **'Child figure'**
+  String get relChildFigure;
+
+  /// relCaretaker
+  ///
+  /// In en, this message translates to:
+  /// **'Caretaker'**
+  String get relCaretaker;
+
+  /// relProtector
+  ///
+  /// In en, this message translates to:
+  /// **'Protector'**
+  String get relProtector;
+
+  /// relMentor
+  ///
+  /// In en, this message translates to:
+  /// **'Mentor'**
+  String get relMentor;
+
+  /// relClassmate
+  ///
+  /// In en, this message translates to:
+  /// **'Classmate'**
+  String get relClassmate;
+
+  /// relCoworker
+  ///
+  /// In en, this message translates to:
+  /// **'Coworker'**
+  String get relCoworker;
+
+  /// relRival
+  ///
+  /// In en, this message translates to:
+  /// **'Rival'**
+  String get relRival;
+
+  /// relAcquaintance
+  ///
+  /// In en, this message translates to:
+  /// **'Acquaintance'**
+  String get relAcquaintance;
+
+  /// relStatusActive
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get relStatusActive;
+
+  /// relStatusClose
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get relStatusClose;
+
+  /// relStatusDistant
+  ///
+  /// In en, this message translates to:
+  /// **'Distant'**
+  String get relStatusDistant;
+
+  /// relStatusComplicated
+  ///
+  /// In en, this message translates to:
+  /// **'Complicated'**
+  String get relStatusComplicated;
+
+  /// relStatusEnded
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get relStatusEnded;
+
+  /// relTabAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get relTabAll;
+
+  /// relTabMap
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get relTabMap;
+
+  /// relEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Track relationships between headmates and with people outside the system: types, closeness, boundaries and history.'**
+  String get relEmpty;
+
+  /// relStatTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships'**
+  String get relStatTotal;
+
+  /// relStatInternal
+  ///
+  /// In en, this message translates to:
+  /// **'Between headmates'**
+  String get relStatInternal;
+
+  /// relStatExternal
+  ///
+  /// In en, this message translates to:
+  /// **'With others'**
+  String get relStatExternal;
+
+  /// relStatCloseness
+  ///
+  /// In en, this message translates to:
+  /// **'Avg closeness'**
+  String get relStatCloseness;
+
+  /// relStatTrust
+  ///
+  /// In en, this message translates to:
+  /// **'Avg trust'**
+  String get relStatTrust;
+
+  /// relStatEvents30
+  ///
+  /// In en, this message translates to:
+  /// **'Events, 30 days'**
+  String get relStatEvents30;
+
+  /// relStatPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive events'**
+  String get relStatPositive;
+
+  /// relStatEnded
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get relStatEnded;
+
+  /// relByType
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get relByType;
+
+  /// relMostConnected
+  ///
+  /// In en, this message translates to:
+  /// **'Most connected'**
+  String get relMostConnected;
+
+  /// relConnections
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 connection} other{{count} connections}}'**
+  String relConnections(int count);
+
+  /// relRecentHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Recent history'**
+  String get relRecentHistory;
+
+  /// relNoHistory
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet.'**
+  String get relNoHistory;
+
+  /// relInternalOnly
+  ///
+  /// In en, this message translates to:
+  /// **'Headmates only'**
+  String get relInternalOnly;
+
+  /// relNoMatches
+  ///
+  /// In en, this message translates to:
+  /// **'No relationships match.'**
+  String get relNoMatches;
+
+  /// relClosenessValue
+  ///
+  /// In en, this message translates to:
+  /// **'closeness {count}/5'**
+  String relClosenessValue(int count);
+
+  /// relMapEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Add relationships between at least two headmates to see the map.'**
+  String get relMapEmpty;
+
+  /// relMapHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Lines connect headmates; thicker means closer. Pinch to zoom.'**
+  String get relMapHelp;
+
+  /// relGone
+  ///
+  /// In en, this message translates to:
+  /// **'This relationship was deleted.'**
+  String get relGone;
+
+  /// relAddEvent
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get relAddEvent;
+
+  /// relSinceDate
+  ///
+  /// In en, this message translates to:
+  /// **'since {date}'**
+  String relSinceDate(String date);
+
+  /// relHistory
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String relHistory(int count);
+
+  /// relEventTitle
+  ///
+  /// In en, this message translates to:
+  /// **'What happened'**
+  String get relEventTitle;
+
+  /// relEventHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Talked it out, Met for the first time'**
+  String get relEventHint;
+
+  /// relPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get relPositive;
+
+  /// relNeutral
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get relNeutral;
+
+  /// relDifficult
+  ///
+  /// In en, this message translates to:
+  /// **'Difficult'**
+  String get relDifficult;
+
+  /// subNew
+  ///
+  /// In en, this message translates to:
+  /// **'New subsystem'**
+  String get subNew;
+
+  /// subEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit subsystem'**
+  String get subEdit;
+
+  /// subName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get subName;
+
+  /// subEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get subEmoji;
+
+  /// subDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get subDescription;
+
+  /// subPurpose
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose / role in the system'**
+  String get subPurpose;
+
+  /// subPurposeHelp
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Handles school, Protects littles'**
+  String get subPurposeHelp;
+
+  /// subOrigin
+  ///
+  /// In en, this message translates to:
+  /// **'Origin & history'**
+  String get subOrigin;
+
+  /// subPartOfLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Part of'**
+  String get subPartOfLabel;
+
+  /// subTopLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get subTopLevel;
+
+  /// subMembersAndRoles
+  ///
+  /// In en, this message translates to:
+  /// **'Members & roles'**
+  String get subMembersAndRoles;
+
+  /// subImportGroup
+  ///
+  /// In en, this message translates to:
+  /// **'From group: {name}'**
+  String subImportGroup(String name);
+
+  /// subRoleFor
+  ///
+  /// In en, this message translates to:
+  /// **'Role of {name}'**
+  String subRoleFor(String name);
+
+  /// subRoleHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Gatekeeper, Host, Little'**
+  String get subRoleHint;
+
+  /// subConnections
+  ///
+  /// In en, this message translates to:
+  /// **'Connected subsystems'**
+  String get subConnections;
+
+  /// subRules
+  ///
+  /// In en, this message translates to:
+  /// **'Rules & agreements'**
+  String get subRules;
+
+  /// subRulesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'One per line'**
+  String get subRulesHelp;
+
+  /// subDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String subDeleteTitle(String name);
+
+  /// subDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Nested subsystems move up a level. Members are not affected.'**
+  String get subDeleteMessage;
+
+  /// subStatSubsystems
+  ///
+  /// In en, this message translates to:
+  /// **'Subsystems'**
+  String get subStatSubsystems;
+
+  /// subStatTopLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Top level'**
+  String get subStatTopLevel;
+
+  /// subStatAssigned
+  ///
+  /// In en, this message translates to:
+  /// **'Members in one'**
+  String get subStatAssigned;
+
+  /// subStatUnassigned
+  ///
+  /// In en, this message translates to:
+  /// **'Not in any'**
+  String get subStatUnassigned;
+
+  /// subEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Group headmates into subsystems with their own members, roles, structure and rules.'**
+  String get subEmpty;
+
+  /// subMembersCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String subMembersCount(int count);
+
+  /// subFrontingShare
+  ///
+  /// In en, this message translates to:
+  /// **'{count}% of fronting'**
+  String subFrontingShare(int count);
+
+  /// subUnassigned
+  ///
+  /// In en, this message translates to:
+  /// **'Members not in a subsystem'**
+  String get subUnassigned;
+
+  /// subGone
+  ///
+  /// In en, this message translates to:
+  /// **'This subsystem was deleted.'**
+  String get subGone;
+
+  /// subAddChild
+  ///
+  /// In en, this message translates to:
+  /// **'Add nested subsystem'**
+  String get subAddChild;
+
+  /// subStatMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get subStatMembers;
+
+  /// subStatFronting30
+  ///
+  /// In en, this message translates to:
+  /// **'Fronting, 30 days'**
+  String get subStatFronting30;
+
+  /// subStatNested
+  ///
+  /// In en, this message translates to:
+  /// **'Nested'**
+  String get subStatNested;
+
+  /// subStatRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships inside'**
+  String get subStatRelationships;
+
+  /// subNoMembers
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet.'**
+  String get subNoMembers;
+
+  /// subStructure
+  ///
+  /// In en, this message translates to:
+  /// **'Structure'**
+  String get subStructure;
+
+  /// subPartOf
+  ///
+  /// In en, this message translates to:
+  /// **'Part of {name}'**
+  String subPartOf(String name);
+
+  /// subNoStructure
+  ///
+  /// In en, this message translates to:
+  /// **'Not nested in or containing other subsystems.'**
+  String get subNoStructure;
+
+  /// subInternalRelationships
+  ///
+  /// In en, this message translates to:
+  /// **'Relationships between its members'**
+  String get subInternalRelationships;
+
+  /// hsNewMap
+  ///
+  /// In en, this message translates to:
+  /// **'New map'**
+  String get hsNewMap;
+
+  /// hsMapName
+  ///
+  /// In en, this message translates to:
+  /// **'Map name'**
+  String get hsMapName;
+
+  /// hsIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Map your inner world: places, rooms and areas, how they connect, and who lives where.'**
+  String get hsIntro;
+
+  /// hsMapSummary
+  ///
+  /// In en, this message translates to:
+  /// **'{areas} areas · {links} connections'**
+  String hsMapSummary(int areas, int links);
+
+  /// hsMapGone
+  ///
+  /// In en, this message translates to:
+  /// **'This map was deleted.'**
+  String get hsMapGone;
+
+  /// hsShowList
+  ///
+  /// In en, this message translates to:
+  /// **'Show as list'**
+  String get hsShowList;
+
+  /// hsShowMap
+  ///
+  /// In en, this message translates to:
+  /// **'Show map'**
+  String get hsShowMap;
+
+  /// hsAddArea
+  ///
+  /// In en, this message translates to:
+  /// **'Add area'**
+  String get hsAddArea;
+
+  /// hsNewAreaName
+  ///
+  /// In en, this message translates to:
+  /// **'Area {count}'**
+  String hsNewAreaName(int count);
+
+  /// hsConnect
+  ///
+  /// In en, this message translates to:
+  /// **'Connect areas'**
+  String get hsConnect;
+
+  /// hsConnectPickFirst
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the first area'**
+  String get hsConnectPickFirst;
+
+  /// hsConnectPickSecond
+  ///
+  /// In en, this message translates to:
+  /// **'Now tap the second area'**
+  String get hsConnectPickSecond;
+
+  /// hsArrange
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange'**
+  String get hsArrange;
+
+  /// hsMapSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Map settings'**
+  String get hsMapSettings;
+
+  /// hsEmptyMap
+  ///
+  /// In en, this message translates to:
+  /// **'Add areas with +, drag them into place, and use Connect to link them.'**
+  String get hsEmptyMap;
+
+  /// hsConnectedTo
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no connections} =1{1 connection} other{{count} connections}}'**
+  String hsConnectedTo(int count);
+
+  /// hsLinks
+  ///
+  /// In en, this message translates to:
+  /// **'Connections'**
+  String get hsLinks;
+
+  /// hsEditLink
+  ///
+  /// In en, this message translates to:
+  /// **'Edit connection'**
+  String get hsEditLink;
+
+  /// hsEditArea
+  ///
+  /// In en, this message translates to:
+  /// **'Edit area'**
+  String get hsEditArea;
+
+  /// hsAreaName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hsAreaName;
+
+  /// hsAreaDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get hsAreaDescription;
+
+  /// hsAreaDescriptionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'What it looks like, how it feels, what happens there'**
+  String get hsAreaDescriptionHelp;
+
+  /// hsShape
+  ///
+  /// In en, this message translates to:
+  /// **'Shape'**
+  String get hsShape;
+
+  /// hsShapeRounded
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded'**
+  String get hsShapeRounded;
+
+  /// hsShapeRect
+  ///
+  /// In en, this message translates to:
+  /// **'Square'**
+  String get hsShapeRect;
+
+  /// hsShapeCircle
+  ///
+  /// In en, this message translates to:
+  /// **'Circle'**
+  String get hsShapeCircle;
+
+  /// hsSize
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get hsSize;
+
+  /// hsSmall
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get hsSmall;
+
+  /// hsMedium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get hsMedium;
+
+  /// hsLarge
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get hsLarge;
+
+  /// hsHuge
+  ///
+  /// In en, this message translates to:
+  /// **'Huge'**
+  String get hsHuge;
+
+  /// hsResidents
+  ///
+  /// In en, this message translates to:
+  /// **'Who is usually here'**
+  String get hsResidents;
+
+  /// hsDeleteArea
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String hsDeleteArea(String name);
+
+  /// hsDeleteAreaMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its connections are removed too.'**
+  String get hsDeleteAreaMessage;
+
+  /// hsLinkLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get hsLinkLabel;
+
+  /// hsLinkHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Door, Path, Stairs'**
+  String get hsLinkHint;
+
+  /// hsOneWay
+  ///
+  /// In en, this message translates to:
+  /// **'One way'**
+  String get hsOneWay;
+
+  /// hsDeleteMap
+  ///
+  /// In en, this message translates to:
+  /// **'Delete map'**
+  String get hsDeleteMap;
+
+  /// hsDeleteMapMessage
+  ///
+  /// In en, this message translates to:
+  /// **'All areas and connections on this map are deleted.'**
+  String get hsDeleteMapMessage;
+
+  /// hsFit
+  ///
+  /// In en, this message translates to:
+  /// **'Fit'**
+  String get hsFit;
 }
 
 class _AppLocalizationsDelegate
