@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -174,5 +175,27 @@ void main() {
     );
     expect(seen.size.width, closeTo(tester.view.physicalSize.width / tester.view.devicePixelRatio / 1.25, 0.5));
     expect(seen.disableAnimations, isTrue);
+  });
+
+  testWidgets('backgrounds are baked once into a cached image and reused', (tester) async {
+    final dir = Directory.systemTemp.createTempSync('bg');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final photo = img.Image(width: 800, height: 1200);
+    img.fill(photo, color: img.ColorRgb8(200, 80, 120));
+    File('${dir.path}/p.jpg').writeAsBytesSync(img.encodeJpg(photo));
+    for (final spec in [
+      const BgSpec(kind: BgKind.builtin, builtin: 'aurora', overlay: BgOverlay.vignette),
+      const BgSpec(kind: BgKind.image, image: 'p.jpg', blur: 20, brightness: -0.2, saturation: 0.5, opacity: 0.8),
+      const BgSpec(kind: BgKind.gradient, colors: [0xFF000000, 0xFFFFFFFF, 0xFF7C4DFF], gradient: GradientKind.radial),
+    ]) {
+      final req = BakeRequest(spec: spec, dir: dir.path, portrait: true, longestPx: 1200, base: 0xFF101010, reduceEffects: false, reduceTransparency: false);
+      final first = await tester.runAsync(() => bakeBackground(req));
+      expect(first, isNotNull, reason: spec.kind.name);
+      expect(first!.height, spec.blur > 0 ? 600 : 1200, reason: 'blurred backgrounds bake at half size');
+      final again = await tester.runAsync(() => bakeBackground(req));
+      expect(identical(first, again), isTrue, reason: 'second request comes from the cache');
+    }
+    final missing = BakeRequest(spec: const BgSpec(kind: BgKind.image, image: 'nope.jpg'), dir: dir.path, portrait: true, longestPx: 800, base: 0, reduceEffects: false, reduceTransparency: false);
+    expect(await tester.runAsync(() => bakeBackground(missing)), isNull);
   });
 }

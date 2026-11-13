@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
@@ -8,6 +9,7 @@ import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
 import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
+import 'package:prism_plurality/features/social/services/social_onboarding.dart';
 import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/home_widgets/services/home_widget_controller.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
@@ -307,6 +309,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(a11ySyncProvider, (_, _) {});
     // The one app-wide music controller lives as long as the app.
     ref.listen(musicControllerProvider, (_, _) {});
+    // One-time: make the Bulletin Board and Stories easy to find.
+    ref.listen(socialOnboardingProvider, (_, _) {});
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
     // `db.transaction(...)` (drift_sync_adapter.dart `_frontingSessionsEntity`
@@ -466,6 +470,18 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           lightTheme = AppTheme.withLetterSpacing(lightTheme, letterSpacing);
           darkTheme = AppTheme.withLetterSpacing(darkTheme, letterSpacing);
         }
+
+        // Light, GPU-friendly page transitions on Android (the zoom
+        // transition renders whole pages into offscreen layers).
+        const transitions = PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          },
+        );
+        lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);
+        darkTheme = darkTheme.copyWith(pageTransitionsTheme: transitions);
 
         // Accessibility first (colour-vision palette, contrast, spacing),
         // then the appearance preset on top.

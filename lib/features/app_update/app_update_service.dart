@@ -130,21 +130,29 @@ class AppUpdateService {
 
   Future<int> currentBuildNumber() => _currentBuild();
 
-  /// Returns the newer release, or null when this build is current.
+  /// Returns the newest release, or null when this build is current.
+  ///
+  /// Reads the recent releases and picks the highest build number rather
+  /// than trusting GitHub's "latest" flag: builds from different branches
+  /// can finish out of order, and the one marked latest is not always the
+  /// newest.
   Future<AppUpdateInfo?> checkForUpdate() async {
     if (!repo.contains('/')) throw const AppUpdateException('unsupported');
     final http.Response res;
     try {
       res = await _client
           .get(
-            Uri.https('api.github.com', '/repos/$repo/releases/latest'),
-            headers: const {'Accept': 'application/vnd.github+json'},
+            Uri.https('api.github.com', '/repos/$repo/releases', {'per_page': '15'}),
+            headers: const {'Accept': 'application/vnd.github+json', 'Cache-Control': 'no-cache'},
           )
           .timeout(const Duration(seconds: 20));
     } on Exception catch (e) {
       throw AppUpdateException('network', '$e');
     }
     if (res.statusCode == 404) return null; // No releases yet.
+    if (res.statusCode == 403 || res.statusCode == 429) {
+      throw AppUpdateException('rate_limited', 'HTTP ${res.statusCode}');
+    }
     if (res.statusCode != 200) {
       throw AppUpdateException('bad_response', 'HTTP ${res.statusCode}');
     }
@@ -154,80 +162,128 @@ class AppUpdateService {
     } on FormatException catch (e) {
       throw AppUpdateException('bad_response', e.message);
     }
-    if (decoded is! Map<String, dynamic>) {
-      throw const AppUpdateException('bad_response');
-    }
-    final info = parseReleaseJson(decoded);
-    if (info == null) throw const AppUpdateException('no_apk');
+    final candidates = <AppUpdateInfo>[
+      if (decoded is List)
+        for (final r in decoded)
+          if (r is Map<String, dynamic> && r['draft'] != true && r['prerelease'] != true) ?parseReleaseJson(r),
+      if (decoded is Map<String, dynamic>) ?parseReleaseJson(decoded),
+    ];
+    if (candidates.isEmpty) throw const AppUpdateException('no_apk');
+    candidates.sort((a, b) => b.buildNumber.compareTo(a.buildNumber));
+    final newest = candidates.first;
     final current = await _currentBuild();
-    return info.buildNumber > current ? info : null;
+    return newest.buildNumber > current ? newest : null;
   }
 
   /// Downloads the APK into the cache, reporting progress from 0 to 1, and
   /// verifies its checksum. Returns the file path.
+  ///
+  /// Interrupted downloads resume where they stopped (HTTP range requests),
+  /// both automatically on a dropped connection and on the next attempt,
+  /// so a large update never has to start over.
   Future<String> download(
     AppUpdateInfo info, {
     void Function(double progress)? onProgress,
+    int maxAttempts = 4,
   }) async {
     final dir = Directory('${(await _cacheDir()).path}/updates');
-    if (dir.existsSync()) {
-      for (final f in dir.listSync()) {
+    dir.createSync(recursive: true);
+    final name = 'prism-update-${info.buildNumber}.apk';
+    final file = File('${dir.path}/$name');
+    final partial = File('${file.path}.part');
+    // Clear files from other (older) updates, keep this one's partial.
+    for (final f in dir.listSync()) {
+      final base = f.uri.pathSegments.isEmpty ? '' : f.uri.pathSegments.last;
+      if (base != name && base != '$name.part') {
         try {
           f.deleteSync(recursive: true);
         } on FileSystemException {
-          // An old update file in use; leave it.
+          // In use; leave it.
         }
       }
-    } else {
-      dir.createSync(recursive: true);
     }
-    final file = File('${dir.path}/prism-update-${info.buildNumber}.apk');
-    final http.StreamedResponse res;
-    try {
-      res = await _client
-          .send(http.Request('GET', Uri.parse(info.apkUrl)))
-          .timeout(const Duration(seconds: 30));
-    } on Exception catch (e) {
-      throw AppUpdateException('network', '$e');
+    if (file.existsSync() && await _verify(file, info)) {
+      onProgress?.call(1);
+      return file.path;
     }
-    if (res.statusCode != 200) {
-      throw AppUpdateException('download_failed', 'HTTP ${res.statusCode}');
-    }
-    final total = res.contentLength ?? info.sizeBytes;
-    final sink = file.openWrite();
-    final digestSink = _DigestSink();
-    final hasher = sha256.startChunkedConversion(digestSink);
-    var received = 0;
-    try {
-      await for (final chunk in res.stream.timeout(
-        const Duration(seconds: 60),
-      )) {
-        sink.add(chunk);
-        hasher.add(chunk);
-        received += chunk.length;
-        if (total > 0) {
-          onProgress?.call((received / total).clamp(0, 1).toDouble());
+    if (file.existsSync()) file.deleteSync();
+
+    Object? lastError;
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      if (attempt > 0) await Future<void>.delayed(Duration(seconds: 2 * attempt));
+      try {
+        final done = await _downloadOnce(info, partial, onProgress);
+        if (done) break;
+      } on AppUpdateException catch (e) {
+        lastError = e;
+        // A server that rejects the range (or a corrupt partial): start over.
+        if (e.code == 'restart') {
+          if (partial.existsSync()) partial.deleteSync();
+          continue;
         }
+        if (e.code != 'network' && e.code != 'download_failed') rethrow;
       }
-      await sink.flush();
-    } on Exception catch (e) {
-      await sink.close();
-      if (file.existsSync()) file.deleteSync();
-      throw AppUpdateException('download_failed', '$e');
+      if (attempt == maxAttempts - 1) {
+        throw lastError is AppUpdateException ? lastError : const AppUpdateException('download_failed');
+      }
     }
-    await sink.close();
-    hasher.close();
-    if (total > 0 && received != total) {
-      file.deleteSync();
-      throw const AppUpdateException('download_failed', 'incomplete');
-    }
-    final expected = info.sha256;
-    if (expected != null && digestSink.value.toString() != expected) {
+    partial.renameSync(file.path);
+    if (!await _verify(file, info)) {
       file.deleteSync();
       throw const AppUpdateException('checksum_mismatch');
     }
     onProgress?.call(1);
     return file.path;
+  }
+
+  /// One request; returns true when the file is complete.
+  Future<bool> _downloadOnce(AppUpdateInfo info, File partial, void Function(double)? onProgress) async {
+    final have = partial.existsSync() ? partial.lengthSync() : 0;
+    if (info.sizeBytes > 0 && have == info.sizeBytes) return true;
+    if (info.sizeBytes > 0 && have > info.sizeBytes) throw const AppUpdateException('restart');
+    final req = http.Request('GET', Uri.parse(info.apkUrl));
+    if (have > 0) req.headers['Range'] = 'bytes=$have-';
+    final http.StreamedResponse res;
+    try {
+      res = await _client.send(req).timeout(const Duration(seconds: 30));
+    } on Exception catch (e) {
+      throw AppUpdateException('network', '$e');
+    }
+    final resumed = res.statusCode == 206;
+    if (have > 0 && res.statusCode == 200) {
+      // Server ignored the range: drain and restart from the beginning.
+      await res.stream.drain<void>();
+      throw const AppUpdateException('restart');
+    }
+    if (res.statusCode == 416) throw const AppUpdateException('restart');
+    if (res.statusCode != 200 && !resumed) {
+      throw AppUpdateException('download_failed', 'HTTP ${res.statusCode}');
+    }
+    final total = info.sizeBytes > 0 ? info.sizeBytes : (resumed ? have + (res.contentLength ?? 0) : (res.contentLength ?? 0));
+    final sink = partial.openWrite(mode: resumed ? FileMode.append : FileMode.write);
+    var received = resumed ? have : 0;
+    try {
+      await for (final chunk in res.stream.timeout(const Duration(seconds: 45))) {
+        sink.add(chunk);
+        received += chunk.length;
+        if (total > 0) onProgress?.call((received / total).clamp(0, 1).toDouble());
+      }
+      await sink.flush();
+    } on Exception catch (e) {
+      await sink.close();
+      throw AppUpdateException('network', '$e');
+    }
+    await sink.close();
+    if (total > 0 && received < total) throw const AppUpdateException('network', 'incomplete');
+    return true;
+  }
+
+  Future<bool> _verify(File file, AppUpdateInfo info) async {
+    if (info.sizeBytes > 0 && file.lengthSync() != info.sizeBytes) return false;
+    final expected = info.sha256;
+    if (expected == null) return true;
+    final digest = await sha256.bind(file.openRead()).first;
+    return digest.toString() == expected;
   }
 
   /// Whether Android lets Prism open the installer ("Install unknown apps").
@@ -246,12 +302,4 @@ class AppUpdateService {
   }
 }
 
-class _DigestSink implements Sink<Digest> {
-  late Digest value;
 
-  @override
-  void add(Digest data) => value = data;
-
-  @override
-  void close() {}
-}

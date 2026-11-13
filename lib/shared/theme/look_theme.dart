@@ -276,17 +276,6 @@ const builtInBackgrounds = <String, BuiltInBackground>{
   ]),
 };
 
-class _BuiltInPainter extends CustomPainter {
-  const _BuiltInPainter(this.bg);
-  final BuiltInBackground bg;
-
-  @override
-  void paint(Canvas canvas, Size size) => bg.paint(canvas, size);
-
-  @override
-  bool shouldRepaint(_BuiltInPainter old) => old.bg != bg;
-}
-
 /// 5×4 colour matrix for brightness, contrast and saturation.
 List<double> adjustMatrix({double brightness = 0, double contrast = 1, double saturation = 1}) {
   const lr = 0.2126, lg = 0.7152, lb = 0.0722;
@@ -318,9 +307,14 @@ Gradient gradientFor(BgSpec bg) {
   }
 }
 
-/// Paints a [BgSpec]. Static content sits in its own repaint boundary so
-/// scrolling a page never repaints (or re-blurs) the background.
-class LookBackground extends StatelessWidget {
+/// Paints a [BgSpec].
+///
+/// Blur, colour adjustments, opacity and overlays are baked once into a
+/// single cached image (see [bakeBackground]); drawing it afterwards is a
+/// plain texture copy. Flutter's Android renderer does not cache layers
+/// between frames, so applying the filters live would redo a full-screen
+/// blur on every frame and make scrolling and page changes stutter.
+class LookBackground extends StatefulWidget {
   const LookBackground({super.key, required this.spec, this.dir, this.reduceEffects = false, this.reduceTransparency = false});
 
   final BgSpec spec;
@@ -329,80 +323,219 @@ class LookBackground extends StatelessWidget {
   final bool reduceTransparency;
 
   @override
+  State<LookBackground> createState() => _LookBackgroundState();
+}
+
+class _LookBackgroundState extends State<LookBackground> {
+  ui.Image? _image;
+  String? _key;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _request();
+  }
+
+  @override
+  void didUpdateWidget(LookBackground old) {
+    super.didUpdateWidget(old);
+    _request();
+  }
+
+  void _request() {
+    if (widget.spec.kind == BgKind.theme || widget.spec.kind == BgKind.color) return;
+    final mq = MediaQuery.maybeOf(context);
+    final size = mq?.size ?? const Size(400, 800);
+    final dpr = mq?.devicePixelRatio ?? 2;
+    final base = Theme.of(context).scaffoldBackgroundColor;
+    final req = BakeRequest(
+      spec: widget.spec,
+      dir: widget.dir,
+      // Orientation matters, small size changes (keyboard, insets) don't.
+      portrait: size.height >= size.width,
+      longestPx: (size.longestSide * dpr).clamp(320, 1600).round(),
+      base: base.toARGB32(),
+      reduceEffects: widget.reduceEffects,
+      reduceTransparency: widget.reduceTransparency,
+    );
+    if (req.key == _key) return;
+    _key = req.key;
+    final cached = backgroundCache[req.key];
+    if (cached != null) {
+      _image = cached;
+      return;
+    }
+    _image = null;
+    bakeBackground(req).then((img) {
+      if (!mounted || _key != req.key) return;
+      setState(() => _image = img);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final spec = widget.spec;
     final theme = Theme.of(context);
-    Widget? layer;
-    switch (spec.kind) {
-      case BgKind.theme:
-        return const SizedBox.shrink();
-      case BgKind.color:
-        layer = ColoredBox(color: Color(spec.color));
-      case BgKind.gradient:
-        layer = Opacity(
-          opacity: spec.intensity,
-          child: DecoratedBox(decoration: BoxDecoration(gradient: gradientFor(spec))),
-        );
-      case BgKind.builtin:
-        final b = builtInBackgrounds[spec.builtin] ?? builtInBackgrounds.values.first;
-        layer = CustomPaint(painter: _BuiltInPainter(b));
-      case BgKind.image:
-        final path = dir == null || spec.image == null ? null : '$dir/${spec.image}';
-        if (path == null) return const SizedBox.shrink();
-        final width = (MediaQuery.sizeOf(context).longestSide * MediaQuery.devicePixelRatioOf(context)).round().clamp(480, 2400);
-        layer = Image.file(
-          File(path),
-          fit: BoxFit.cover,
-          gaplessPlayback: true,
-          // Decode at screen size, not the photo's full resolution.
-          cacheWidth: spec.blur > 0 ? (width / 3).round() : width,
-          excludeFromSemantics: true,
-          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-        );
+    if (spec.kind == BgKind.theme) return const SizedBox.shrink();
+    if (spec.kind == BgKind.color) {
+      return ColoredBox(color: Color(spec.color).withValues(alpha: widget.reduceTransparency ? 1 : spec.opacity));
     }
-    final adjusted = spec.brightness != 0 || spec.contrast != 1 || spec.saturation != 1;
-    if (adjusted) {
-      layer = ColorFiltered(
-        colorFilter: ColorFilter.matrix(adjustMatrix(brightness: spec.brightness, contrast: spec.contrast, saturation: spec.saturation)),
-        child: layer,
-      );
-    }
-    if (spec.blur > 0 && !reduceEffects) {
-      layer = ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(sigmaX: spec.blur, sigmaY: spec.blur, tileMode: TileMode.clamp),
-        child: layer,
-      );
-    }
-    final opacity = reduceTransparency ? 1.0 : spec.opacity;
-    final overlay = reduceEffects ? BgOverlay.none : spec.overlay;
-    final oc = Color(spec.overlayColor);
+    final img = _image;
     return ExcludeSemantics(
       child: RepaintBoundary(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ColoredBox(color: theme.scaffoldBackgroundColor),
-            if (opacity >= 1) layer else Opacity(opacity: opacity, child: layer),
-            if (overlay == BgOverlay.scrim) ColoredBox(color: oc.withValues(alpha: spec.overlayStrength)),
-            if (overlay == BgOverlay.vignette)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(radius: 1.0, colors: [oc.withValues(alpha: 0), oc.withValues(alpha: spec.overlayStrength)], stops: const [0.45, 1]),
-                ),
-              ),
-            if (overlay == BgOverlay.glow)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [oc.withValues(alpha: spec.overlayStrength), oc.withValues(alpha: 0), oc.withValues(alpha: spec.overlayStrength * 0.6)],
-                    stops: const [0, 0.5, 1],
-                  ),
-                ),
-              ),
-          ],
-        ),
+        child: img == null
+            // Cheap placeholder in the background's main colour while the
+            // baked image is prepared (usually one frame, then cached).
+            ? ColoredBox(color: backgroundBaseColor(spec) ?? theme.scaffoldBackgroundColor)
+            : RawImage(image: img, fit: BoxFit.cover, filterQuality: FilterQuality.low),
       ),
     );
+  }
+}
+
+/// What to bake; [key] identifies the result in [backgroundCache].
+@immutable
+class BakeRequest {
+  const BakeRequest({
+    required this.spec,
+    required this.dir,
+    required this.portrait,
+    required this.longestPx,
+    required this.base,
+    required this.reduceEffects,
+    required this.reduceTransparency,
+  });
+
+  final BgSpec spec;
+  final String? dir;
+  final bool portrait;
+  final int longestPx;
+  final int base;
+  final bool reduceEffects;
+  final bool reduceTransparency;
+
+  /// Blurred backgrounds are baked smaller: the blur hides it and it is
+  /// much cheaper to keep in memory.
+  int get targetLongest => spec.blur > 0 && !reduceEffects ? (longestPx / 2).round().clamp(320, 900) : longestPx;
+
+  String get key => '${spec.toJson()}|$dir|$portrait|$targetLongest|$base|$reduceEffects|$reduceTransparency';
+}
+
+/// Baked backgrounds, newest last; small so memory stays bounded.
+final backgroundCache = _LruImages(4);
+
+class _LruImages {
+  _LruImages(this.capacity);
+  final int capacity;
+  final _map = <String, ui.Image>{};
+  final _pending = <String, Future<ui.Image?>>{};
+
+  ui.Image? operator [](String key) {
+    final v = _map.remove(key);
+    if (v != null) _map[key] = v;
+    return v;
+  }
+
+  void put(String key, ui.Image img) {
+    _map.remove(key)?.dispose();
+    _map[key] = img;
+    while (_map.length > capacity) {
+      final oldest = _map.keys.first;
+      // Not disposed: a page may still be showing it; the GC frees it.
+      _map.remove(oldest);
+    }
+  }
+}
+
+Future<ui.Image?> bakeBackground(BakeRequest r) {
+  final hit = backgroundCache[r.key];
+  if (hit != null) return Future.value(hit);
+  // Block body: returning the removed Future from whenComplete would make
+  // the bake wait on itself forever.
+  return backgroundCache._pending[r.key] ??= _bake(r).whenComplete(() {
+    backgroundCache._pending.remove(r.key);
+  });
+}
+
+Future<ui.Image?> _bake(BakeRequest r) async {
+  try {
+    final spec = r.spec;
+    final longest = r.targetLongest.toDouble();
+    // Phone-shaped canvas (9:19.5) in the current orientation.
+    final short = (longest * 9 / 19.5).roundToDouble();
+    final w = r.portrait ? short : longest;
+    final h = r.portrait ? longest : short;
+    final rect = Rect.fromLTWH(0, 0, w, h);
+    ui.Image? photo;
+    if (spec.kind == BgKind.image) {
+      final path = r.dir == null || spec.image == null ? null : '${r.dir}/${spec.image}';
+      if (path == null || !File(path).existsSync()) return null;
+      final codec = await ui.instantiateImageCodec(await File(path).readAsBytes(), targetWidth: (r.portrait ? w : h).round().clamp(64, 1600));
+      photo = (await codec.getNextFrame()).image;
+    }
+    final rec = ui.PictureRecorder();
+    final canvas = Canvas(rec, rect);
+    canvas.drawRect(rect, Paint()..color = Color(r.base));
+    final adjusted = spec.brightness != 0 || spec.contrast != 1 || spec.saturation != 1;
+    final blur = r.reduceEffects ? 0.0 : spec.blur * (w / 400);
+    final layerPaint = Paint()..color = Color.fromRGBO(0, 0, 0, r.reduceTransparency ? 1 : spec.opacity);
+    if (adjusted) {
+      layerPaint.colorFilter = ColorFilter.matrix(adjustMatrix(brightness: spec.brightness, contrast: spec.contrast, saturation: spec.saturation));
+    }
+    if (blur > 0) layerPaint.imageFilter = ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur, tileMode: TileMode.clamp);
+    canvas.saveLayer(rect, layerPaint);
+    switch (spec.kind) {
+      case BgKind.gradient:
+        canvas.drawRect(rect, Paint()..color = Color(r.base));
+        canvas.drawRect(rect, Paint()..shader = gradientFor(spec).createShader(rect)..color = Color.fromRGBO(0, 0, 0, spec.intensity));
+      case BgKind.builtin:
+        (builtInBackgrounds[spec.builtin] ?? builtInBackgrounds.values.first).paint(canvas, rect.size);
+      case BgKind.image:
+        final p = photo!;
+        final scale = (w / p.width) > (h / p.height) ? w / p.width : h / p.height;
+        final dw = p.width * scale, dh = p.height * scale;
+        canvas.drawImageRect(
+          p,
+          Rect.fromLTWH(0, 0, p.width.toDouble(), p.height.toDouble()),
+          Rect.fromLTWH((w - dw) / 2, (h - dh) / 2, dw, dh),
+          Paint()..filterQuality = FilterQuality.medium,
+        );
+      case BgKind.color || BgKind.theme:
+        break;
+    }
+    canvas.restore();
+    final overlay = r.reduceEffects ? BgOverlay.none : spec.overlay;
+    final oc = Color(spec.overlayColor);
+    switch (overlay) {
+      case BgOverlay.scrim:
+        canvas.drawRect(rect, Paint()..color = oc.withValues(alpha: spec.overlayStrength));
+      case BgOverlay.vignette:
+        canvas.drawRect(
+          rect,
+          Paint()
+            ..shader = RadialGradient(radius: 1.0, colors: [oc.withValues(alpha: 0), oc.withValues(alpha: spec.overlayStrength)], stops: const [0.45, 1])
+                .createShader(rect),
+        );
+      case BgOverlay.glow:
+        canvas.drawRect(
+          rect,
+          Paint()
+            ..shader = LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [oc.withValues(alpha: spec.overlayStrength), oc.withValues(alpha: 0), oc.withValues(alpha: spec.overlayStrength * 0.6)],
+              stops: const [0, 0.5, 1],
+            ).createShader(rect),
+        );
+      case BgOverlay.none:
+        break;
+    }
+    // GPU-side image; rasterised once off the UI thread.
+    final img = rec.endRecording().toImageSync(w.round(), h.round());
+    photo?.dispose();
+    backgroundCache.put(r.key, img);
+    return img;
+  } catch (_) {
+    return null;
   }
 }

@@ -21989,4 +21989,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stoDefaultAudience => 'Quién ve las historias nuevas por defecto';
+
+  @override
+  String appUpdateInstalled(String version, String build) {
+    return 'Instalada: $version (compilación $build)';
+  }
+
+  @override
+  String get appUpdateErrorRateLimited =>
+      'GitHub está limitando las comprobaciones desde esta red. Inténtalo en unos minutos.';
 }

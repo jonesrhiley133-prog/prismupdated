@@ -32,6 +32,80 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.23.0',
+    date: DateTime(2026, 11, 13),
+    features: const [
+      LocalizedText(
+        'Bulletin Board feed: alters post text, pictures, polls, questions '
+            'and videos; react with any emoji, comment in threads, reblog '
+            'and quote with credit, follow each other, pin posts, use '
+            '#tags and search, save drafts and schedule posts, choose who '
+            'sees each post, and block, mute, hide or report. Activity shows '
+            'reactions, replies, mentions and new followers. Every post '
+            "belongs to the alter who wrote it, whoever is fronting. Each "
+            'alter gets a blog with a banner, colours and layout.',
+        'Tablón: los alters publican texto, fotos, encuestas, preguntas y '
+            'vídeos; reaccionan con cualquier emoji, comentan en hilos, '
+            'rebloguean y citan con crédito, se siguen, fijan publicaciones, '
+            'usan #etiquetas y búsqueda, guardan borradores y programan, '
+            'eligen quién ve cada publicación y bloquean, silencian, ocultan '
+            'o denuncian. Cada alter tiene su blog con banner y colores.',
+      ),
+      LocalizedText(
+        'Alter Stories: photo, video and text stories with stickers, GIFs, '
+            'fonts, colours and music from your library, several slides at '
+            'a time, views, reactions and replies, highlights with '
+            'categories, and an archive. Stories last 24 hours and anyone '
+            'can watch them without switching front. New Stories section on '
+            'Home (Customize to hide it).',
+        'Historias de alters: historias de foto, vídeo y texto con '
+            'pegatinas, GIF, fuentes, colores y música de tu biblioteca, '
+            'varias diapositivas, vistas, reacciones y respuestas, '
+            'destacadas con categorías y archivo. Duran 24 horas y '
+            'cualquiera puede verlas sin cambiar el frente. Nueva sección '
+            'de Historias en Inicio.',
+      ),
+      LocalizedText(
+        'Headmates: optional profile banners on each card, with cropping '
+            'and positioning (Headmates display settings → Show alter '
+            'banners).',
+        'Headmates: banners de perfil opcionales en cada tarjeta, con '
+            'recorte y posición.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Much smoother with a theme or background: backgrounds are now '
+            'prepared once instead of being blurred again on every frame, '
+            'which could freeze pages like Headmates.',
+        'Mucho más fluido con un tema o fondo: los fondos se preparan una '
+            'vez en lugar de desenfocarse en cada fotograma, lo que podía '
+            'congelar páginas como Headmates.',
+      ),
+      LocalizedText(
+        'Lighter page transitions and a cheaper blurred-artwork effect in '
+            'the music player.',
+        'Transiciones más ligeras y un efecto de portada desenfocada más '
+            'eficiente en el reproductor.',
+      ),
+      LocalizedText(
+        'App updates: downloads resume after a dropped connection instead '
+            'of starting over, the newest build is always found, and the '
+            'update card checks again when you open it and shows your '
+            'installed version.',
+        'Actualizaciones: las descargas se reanudan si se corta la '
+            'conexión, siempre se encuentra la compilación más nueva y la '
+            'tarjeta vuelve a comprobar al abrirla y muestra tu versión.',
+      ),
+      LocalizedText(
+        'The Bulletin Board and Stories are now easy to find: in Settings, '
+            'in the navigation "More" menu and on Home.',
+        'El Tablón y las Historias ahora son fáciles de encontrar: en '
+            'Ajustes, en el menú "Más" y en Inicio.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.22.0',
     date: DateTime(2026, 11, 13),
     features: const [

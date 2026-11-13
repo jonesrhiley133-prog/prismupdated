@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,21 +56,17 @@ class ArtworkBackdrop extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final path = trackArtPath(ref.watch(musicDirPathProvider), track);
     if (path == null) return const SizedBox.shrink();
-    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    Widget img = Image.file(
+    // A tiny decode stretched to fill looks like a heavy blur but costs
+    // almost nothing; a live blur filter would be redone every frame.
+    final Widget img = Image.file(
       File(path),
       fit: BoxFit.cover,
       gaplessPlayback: true,
-      cacheWidth: 240,
+      cacheWidth: blur ? 20 : 240,
+      filterQuality: blur ? FilterQuality.medium : FilterQuality.low,
       excludeFromSemantics: true,
       errorBuilder: (_, _, _) => const SizedBox.shrink(),
     );
-    if (blur) {
-      img = ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(sigmaX: reduce ? 12 : 28, sigmaY: reduce ? 12 : 28, tileMode: TileMode.clamp),
-        child: img,
-      );
-    }
     return RepaintBoundary(
       child: Stack(
         fit: StackFit.expand,
