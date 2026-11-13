@@ -275,14 +275,14 @@ class GraphControls extends StatelessWidget {
           IconButton(tooltip: tr(context, 'Zoom in', 'Acercar'), icon: Icon(PhosphorIcons.magnifyingGlassPlus()), onPressed: () => onZoom(1.25)),
           IconButton(tooltip: tr(context, 'Zoom out', 'Alejar'), icon: Icon(PhosphorIcons.magnifyingGlassMinus()), onPressed: () => onZoom(0.8)),
           IconButton(tooltip: tr(context, 'Fit to screen', 'Ajustar'), icon: Icon(PhosphorIcons.cornersOut()), onPressed: onFit),
-          PopupMenuButton<GraphLayout>(
+          PrismPopupMenu<GraphLayout>(
             tooltip: tr(context, 'Layout', 'Diseño'),
-            icon: Icon(PhosphorIcons.shapes()),
-            initialValue: layout,
+            icon: PhosphorIcons.shapes(),
             onSelected: onLayout,
-            itemBuilder: (ctx) => [
+            items: [
               for (final l in GraphLayout.values)
-                if (includeFree || l != GraphLayout.free) PopupMenuItem(value: l, child: Text(label(ctx, l))),
+                if (includeFree || l != GraphLayout.free)
+                  PrismMenuItem(value: l, label: label(context, l), icon: l == layout ? AppIcons.check : PhosphorIcons.circle()),
             ],
           ),
         ],

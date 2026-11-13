@@ -513,7 +513,7 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
   }
 
   Future<int?> _time(int m) async {
-    final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60));
+    final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60));
     return t == null ? null : t.hour * 60 + t.minute;
   }
 
@@ -617,7 +617,7 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
               child: PrismButton(
                 label: _from == null ? tr(context, 'Starts: any time', 'Inicio: siempre') : dfmt.format(_from!),
                 onPressed: () async {
-                  final d = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _from ?? DateTime.now());
+                  final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _from ?? DateTime.now());
                   setState(() => _from = d);
                 },
               ),
@@ -627,7 +627,7 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
               child: PrismButton(
                 label: _until == null ? tr(context, 'Ends: never', 'Fin: nunca') : dfmt.format(_until!),
                 onPressed: () async {
-                  final d = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _until ?? DateTime.now());
+                  final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _until ?? DateTime.now());
                   setState(() => _until = d);
                 },
               ),
@@ -680,9 +680,9 @@ class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
   }
 
   Future<DateTime?> _pick(DateTime initial) async {
-    final d = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: initial);
+    final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: initial);
     if (d == null || !mounted) return null;
-    final t = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
+    final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
     if (t == null) return null;
     return DateTime(d.year, d.month, d.day, t.hour, t.minute);
   }

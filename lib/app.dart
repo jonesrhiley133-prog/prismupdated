@@ -318,7 +318,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(musicControllerProvider, (_, _) {});
     // One-time: make the Bulletin Board and Stories easy to find.
     ref.listen(socialOnboardingProvider, (_, _) {});
-    ref.listen(automationEngineProvider, (_, _) {});
+    ref.listen(automationBootProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a

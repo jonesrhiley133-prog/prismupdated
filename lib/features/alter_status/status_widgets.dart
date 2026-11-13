@@ -90,7 +90,7 @@ class MemberStatusPanel extends ConsumerWidget {
                 ? Text(tr(context, 'Set a status', 'Poner un estado'))
                 : StatusLine(status: s),
           ),
-          Icon(AppIcons.edit, size: 18),
+          Icon(AppIcons.chevronRight, size: 18),
         ],
       ),
     );
@@ -230,9 +230,9 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
                 selected: _customUntil != null,
                 onTap: () async {
                   final now = DateTime.now();
-                  final d = await showDatePicker(context: context, firstDate: now, lastDate: now.add(const Duration(days: 365)), initialDate: now);
+                  final d = await showPrismDatePicker(context: context, firstDate: now, lastDate: now.add(const Duration(days: 365)), initialDate: now);
                   if (d == null || !context.mounted) return;
-                  final t = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(now.add(const Duration(hours: 1))));
+                  final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(now.add(const Duration(hours: 1))));
                   if (t == null) return;
                   setState(() => _customUntil = DateTime(d.year, d.month, d.day, t.hour, t.minute));
                 },

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:image/image.dart' as img;
@@ -276,6 +278,8 @@ Widget _buildSubject({
       if (frontingTerms != null)
         frontingTermsSettingProvider.overrideWithValue(frontingTerms),
       allGroupsProvider.overrideWith((ref) => Stream.value(groups)),
+      // Statuses, intro cards and record links (0.24) read tracker records.
+      trackerRecordsProvider.overrideWith((ref) => Stream.value(const <TrackerRecord>[])),
       allGroupEntriesProvider.overrideWith((ref) => Stream.value(entries)),
       groupByIdProvider.overrideWith((ref, groupId) {
         final matching = groups.where((group) => group.id == groupId);

@@ -657,9 +657,9 @@ class _MealEditorState extends ConsumerState<_MealEditor> {
             label: DateFormat.yMMMEd(context.dateLocale).add_jm().format(_at),
             icon: AppIcons.calendarToday,
             onPressed: () async {
-              final d = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime.now().add(const Duration(days: 365)), initialDate: _at);
+              final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime.now().add(const Duration(days: 365)), initialDate: _at);
               if (d == null || !context.mounted) return;
-              final t = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_at));
+              final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_at));
               setState(() => _at = DateTime(d.year, d.month, d.day, t?.hour ?? _at.hour, t?.minute ?? _at.minute));
             },
           ),

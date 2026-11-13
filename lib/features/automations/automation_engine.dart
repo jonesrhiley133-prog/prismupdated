@@ -571,3 +571,12 @@ final automationEngineProvider = Provider<AutomationEngine>((ref) {
   ref.onDispose(e.dispose);
   return e;
 });
+
+/// Starts the engine a few seconds after launch so it never competes with
+/// opening the app.
+final automationBootProvider = Provider<void>((ref) {
+  final t = Timer(const Duration(seconds: 5), () {
+    if (ref.mounted) ref.read(automationEngineProvider);
+  });
+  ref.onDispose(t.cancel);
+});

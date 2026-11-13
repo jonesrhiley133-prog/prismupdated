@@ -166,10 +166,12 @@ final linksForRecordProvider =
     Provider.family<List<(RecordLink, RecordInfo)>, String>((ref, key) {
       final self = RecordRef.parse(key);
       if (self == null) return const [];
+      final mine = [for (final l in ref.watch(recordLinksProvider)) if (l.a == self || l.b == self) l];
+      // Only build the full catalogue when there is something to show.
+      if (mine.isEmpty) return const [];
       final catalog = ref.watch(recordCatalogProvider);
       final out = <(RecordLink, RecordInfo)>[];
-      for (final l in ref.watch(recordLinksProvider)) {
-        if (l.a != self && l.b != self) continue;
+      for (final l in mine) {
         final info = catalog[l.other(self).key];
         if (info != null) out.add((l, info));
       }

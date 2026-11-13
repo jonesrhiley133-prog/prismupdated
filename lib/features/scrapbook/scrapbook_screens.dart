@@ -564,7 +564,7 @@ class _PageDetailsSheetState extends ConsumerState<_PageDetailsSheet> {
           icon: AppIcons.calendarToday,
           onPressed: () async {
             if (!canEdit) return;
-            final d = await showDatePicker(context: context, firstDate: DateTime(1900), lastDate: DateTime(2100), initialDate: _date ?? DateTime.now());
+            final d = await showPrismDatePicker(context: context, firstDate: DateTime(1900), lastDate: DateTime(2100), initialDate: _date ?? DateTime.now());
             if (d != null) setState(() => _date = d);
           },
         ),

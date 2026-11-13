@@ -1,11 +1,7 @@
+import 'dart:async';
+
 import 'package:prism_plurality/features/alter_status/status_models.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
-
-/// Ticks every 30 s so expired statuses disappear on their own.
-final statusClockProvider = StreamProvider<DateTime>((ref) async* {
-  yield DateTime.now();
-  yield* Stream.periodic(const Duration(seconds: 30), (_) => DateTime.now());
-});
 
 final statusTypesProvider = Provider.family<List<StatusType>, String>((ref, lang) {
   final custom = ref.watch(trackerKindProvider(TrackerKind.statusCustom)).value ?? const [];
@@ -32,7 +28,7 @@ final hiddenStatusTypesProvider = Provider<Set<String>>((ref) {
 
 /// Current, unexpired statuses by member id.
 final alterStatusesProvider = Provider.family<Map<String, AlterStatus>, String>((ref, lang) {
-  final now = ref.watch(statusClockProvider).value ?? DateTime.now();
+  final now = DateTime.now();
   final types = {for (final t in ref.watch(statusTypesProvider(lang))) t.key: t};
   final out = <String, AlterStatus>{};
   for (final r in ref.watch(trackerKindProvider(TrackerKind.statusCurrent)).value ?? const <TrackerRecord>[]) {
@@ -41,6 +37,12 @@ final alterStatusesProvider = Provider.family<Map<String, AlterStatus>, String>(
     final s = statusFromRecord(r, types);
     if (s == null || s.isExpired(now)) continue;
     out[mid] = s;
+  }
+  // Rebuild when the next status expires (no timer when nothing expires).
+  final next = [for (final s in out.values) ?s.expiresAt]..sort();
+  if (next.isNotEmpty) {
+    final t = Timer(next.first.difference(now) + const Duration(seconds: 1), ref.invalidateSelf);
+    ref.onDispose(t.cancel);
   }
   return out;
 });

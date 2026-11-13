@@ -627,7 +627,7 @@ Widget _timeButton(BuildContext context, String label, Map<String, Object?> map,
     label: '$label ${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}',
     icon: PhosphorIcons.clock(),
     onPressed: () async {
-      final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60));
+      final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60));
       if (t == null) return;
       map[key] = t.hour * 60 + t.minute;
       onChanged();

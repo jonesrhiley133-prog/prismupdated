@@ -221,8 +221,6 @@ class _MemberDetailBody extends ConsumerWidget {
     return [
       const SizedBox(height: 16),
       MemberProfileHeader(member: member, isFronting: isFronting),
-      MemberStatusPanel(memberId: member.id),
-      MemberIntroCardTile(memberId: member.id),
       if (member.pronouns?.trim().isNotEmpty ?? false) ...[
         const SizedBox(height: 12),
         Text(
@@ -261,10 +259,6 @@ class _MemberDetailBody extends ConsumerWidget {
         key: const ValueKey('notes'),
         child: NotesSection(memberId: member.id),
       ),
-      RelatedRecordsSection(
-        self: RecordRef(RecordRef.member, member.id),
-        padding: const EdgeInsets.only(bottom: 16),
-      ),
       _RetainedProfileSection(
         key: const ValueKey('groups'),
         child: MemberGroupsSection(
@@ -302,6 +296,9 @@ class _MemberDetailBody extends ConsumerWidget {
         key: const ValueKey('boardMessages'),
         child: BoardMessageSection(memberId: member.id),
       ),
+      MemberStatusPanel(memberId: member.id),
+      MemberIntroCardTile(memberId: member.id),
+      RelatedRecordsSection(self: RecordRef(RecordRef.member, member.id)),
       const SizedBox(height: 24),
       _MemberCreatedAtFooter(member: member),
       const SizedBox(height: 32),

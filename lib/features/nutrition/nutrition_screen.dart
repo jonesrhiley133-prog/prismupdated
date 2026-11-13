@@ -361,7 +361,7 @@ class _DrinkEditorState extends ConsumerState<_DrinkEditor> {
               label: DateFormat.MMMd(context.dateLocale).add_jm().format(_at),
               icon: AppIcons.history,
               onPressed: () async {
-                final t = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_at));
+                final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_at));
                 if (t != null) setState(() => _at = DateTime(_at.year, _at.month, _at.day, t.hour, t.minute));
               },
             ),
@@ -850,14 +850,14 @@ class _NutriSettingsSheetState extends ConsumerState<_NutriSettingsSheet> {
               PrismButton(
                 label: '${tr(context, 'From', 'Desde')} ${hm(_remStart)}',
                 onPressed: () async {
-                  final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _remStart ~/ 60, minute: _remStart % 60));
+                  final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay(hour: _remStart ~/ 60, minute: _remStart % 60));
                   if (t != null) setState(() => _remStart = t.hour * 60 + t.minute);
                 },
               ),
               PrismButton(
                 label: '${tr(context, 'Until', 'Hasta')} ${hm(_remEnd)}',
                 onPressed: () async {
-                  final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: _remEnd ~/ 60, minute: _remEnd % 60));
+                  final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay(hour: _remEnd ~/ 60, minute: _remEnd % 60));
                   if (t != null) setState(() => _remEnd = t.hour * 60 + t.minute);
                 },
               ),
