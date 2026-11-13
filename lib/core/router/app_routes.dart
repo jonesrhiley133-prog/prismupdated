@@ -35,6 +35,7 @@ abstract final class AppRoutePaths {
   static const subsystems = '/subsystems';
   static const headspace = '/headspace';
   static const music = '/music';
+  static const stories = '/stories';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -48,6 +49,16 @@ abstract final class AppRoutePaths {
       '/home-widgets/studio/$type${id == null ? '' : '?id=$id'}';
   static const todos = '/todos';
   static const nowPlaying = '/now-playing';
+  static const boardMessages = '/boards/messages';
+  static const socialPostRoute = '/social/post/:id';
+  static const socialAlterRoute = '/social/alter/:id';
+  static const socialTagRoute = '/social/tag/:tag';
+  static const socialDrafts = '/social/drafts';
+  static const socialReports = '/social/reports';
+  static const headmateBanners = '/headmate-banners';
+  static String socialPost(String id) => '/social/post/$id';
+  static String socialAlter(String id) => '/social/alter/$id';
+  static String socialTag(String tag) => '/social/tag/${Uri.encodeComponent(tag)}';
   static const appearanceStudio = '/appearance-studio';
   static const accessibilityQuick = '/accessibility-quick';
 
@@ -217,6 +228,7 @@ enum AppShellTabId {
   subsystems,
   headspace,
   music,
+  stories,
 }
 
 class AppShellTab {
@@ -292,6 +304,7 @@ class AppShellTab {
       AppShellTabId.subsystems => l10n.navSubsystems,
       AppShellTabId.headspace => l10n.navHeadspace,
       AppShellTabId.music => l10n.navMusic,
+      AppShellTabId.stories => l10n.navStories,
     };
   }
 
@@ -339,6 +352,7 @@ class AppShellTab {
       AppShellTabId.subsystems => true,
       AppShellTabId.headspace => true,
       AppShellTabId.music => true,
+      AppShellTabId.stories => true,
     };
   }
 }
@@ -593,6 +607,14 @@ final appShellTabs = [
     branchIndex: 30,
     rootLocation: AppRoutePaths.music,
   ),
+  AppShellTab(
+    id: AppShellTabId.stories,
+    label: 'Stories',
+    icon: AppIcons.navStories,
+    activeIcon: AppIcons.navStoriesActive,
+    branchIndex: 31,
+    rootLocation: AppRoutePaths.stories,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -622,6 +644,7 @@ const defaultNavBarOverflowTabIds = [
   'subsystems',
   'headspace',
   'music',
+  'stories',
   'notes',
   'reminders',
   'statistics',

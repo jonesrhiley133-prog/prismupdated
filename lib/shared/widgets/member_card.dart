@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -35,7 +37,20 @@ class MemberCard extends StatelessWidget {
     this.dragHandleHint,
     this.deferAvatarLookup = false,
     this.selected = false,
+    this.bannerImageData,
+    this.bannerAlignment = Alignment.center,
+    this.bannerZoom = 1,
   });
+
+  /// Optional profile banner shown behind the trailing side of the card,
+  /// fading out under the name so text stays readable.
+  final Uint8List? bannerImageData;
+
+  /// Which part of the banner shows (set by the user's banner position).
+  final Alignment bannerAlignment;
+
+  /// Extra zoom (1 = fill) for cropping in on part of the banner.
+  final double bannerZoom;
 
   final Member member;
 
@@ -105,132 +120,197 @@ class MemberCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: radius,
-            child: Row(
-              children: [
-                // Custom color accent strip
-                if (hasCustomColor)
-                  Container(width: 4, height: 64, color: accentColor),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: hasCustomColor ? 12 : 16,
-                      right: 16,
-                      top: 12,
-                      bottom: 12,
-                    ),
-                    child: Row(
-                      children: [
-                        MemberAvatar(
-                          avatarImageData: member.avatarImageData,
-                          memberId: member.id,
-                          deferAvatarLookup: deferAvatarLookup,
-                          memberName: resolvedName ?? member.name,
-                          emoji: member.emoji,
-                          customColorEnabled: member.customColorEnabled,
-                          customColorHex: member.customColorHex,
-                          size: 44,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      primaryName,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (!member.isActive) ...[
-                                    const SizedBox(width: 6),
-                                    Icon(
-                                      AppIcons.visibilityOffOutlined,
-                                      size: 16,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                      semanticLabel:
-                                          context.l10n.memberInactiveChip,
-                                    ),
-                                  ],
-                                  if (secondary != null &&
-                                      secondary.isNotEmpty) ...[
-                                    const SizedBox(width: 6),
+            child: _withBanner(
+              context,
+              Row(
+                children: [
+                  // Custom color accent strip
+                  if (hasCustomColor)
+                    Container(width: 4, height: 64, color: accentColor),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: hasCustomColor ? 12 : 16,
+                        right: 16,
+                        top: 12,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          MemberAvatar(
+                            avatarImageData: member.avatarImageData,
+                            memberId: member.id,
+                            deferAvatarLookup: deferAvatarLookup,
+                            memberName: resolvedName ?? member.name,
+                            emoji: member.emoji,
+                            customColorEnabled: member.customColorEnabled,
+                            customColorHex: member.customColorHex,
+                            size: 44,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
                                     Flexible(
                                       child: Text(
-                                        secondary,
-                                        style: theme.textTheme.bodySmall
+                                        primaryName,
+                                        style: theme.textTheme.titleMedium
                                             ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
+                                    if (!member.isActive) ...[
+                                      const SizedBox(width: 6),
+                                      Icon(
+                                        AppIcons.visibilityOffOutlined,
+                                        size: 16,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                        semanticLabel:
+                                            context.l10n.memberInactiveChip,
+                                      ),
+                                    ],
+                                    if (secondary != null &&
+                                        secondary.isNotEmpty) ...[
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          secondary,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
-                              ),
-                              if (showPronouns &&
-                                  member.pronouns != null &&
-                                  member.pronouns!.isNotEmpty)
-                                Text(
-                                  member.pronouns!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                            ],
+                                if (showPronouns &&
+                                    member.pronouns != null &&
+                                    member.pronouns!.isNotEmpty)
+                                  Text(
+                                    member.pronouns!,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                        if (trailing != null) ...[
-                          const SizedBox(width: 8),
-                          trailing!,
-                        ],
-                        if (reorderIndex != null) ...[
-                          const SizedBox(width: 4),
-                          Semantics(
-                            label: context.l10n.groupMemberDragHandleLabel,
-                            hint:
-                                dragHandleHint ??
-                                context.l10n.groupMemberDragHandleHintManual,
-                            button: true,
-                            child: Tooltip(
-                              message:
-                                  context.l10n.groupMemberDragHandleTooltip,
-                              child: ReorderableDragStartListener(
-                                index: reorderIndex!,
-                                child: SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Icon(
-                                    AppIcons.dragHandle,
-                                    color: theme.colorScheme.onSurfaceVariant
-                                        .withValues(alpha: 0.5),
+                          if (trailing != null) ...[
+                            const SizedBox(width: 8),
+                            trailing!,
+                          ],
+                          if (reorderIndex != null) ...[
+                            const SizedBox(width: 4),
+                            Semantics(
+                              label: context.l10n.groupMemberDragHandleLabel,
+                              hint:
+                                  dragHandleHint ??
+                                  context.l10n.groupMemberDragHandleHintManual,
+                              button: true,
+                              child: Tooltip(
+                                message:
+                                    context.l10n.groupMemberDragHandleTooltip,
+                                child: ReorderableDragStartListener(
+                                  index: reorderIndex!,
+                                  child: SizedBox(
+                                    width: 44,
+                                    height: 44,
+                                    child: Icon(
+                                      AppIcons.dragHandle,
+                                      color: theme.colorScheme.onSurfaceVariant
+                                          .withValues(alpha: 0.5),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _withBanner(BuildContext context, Widget row) {
+    final bytes = bannerImageData;
+    if (bytes == null || bytes.isEmpty) return row;
+    final theme = Theme.of(context);
+    final cardColor = Color.alphaBlend(
+      selected
+          ? theme.colorScheme.primary.withValues(alpha: 0.14)
+          : theme.colorScheme.onSurface.withValues(alpha: 0.06),
+      theme.scaffoldBackgroundColor,
+    );
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: FractionallySizedBox(
+              widthFactor: 0.68,
+              heightFactor: 1,
+              child: ExcludeSemantics(
+                child: ClipRect(
+                  child: Transform.scale(
+                    scale: bannerZoom.clamp(1, 3),
+                    alignment: bannerAlignment,
+                    child: Image.memory(
+                      bytes,
+                      fit: BoxFit.cover,
+                      alignment: bannerAlignment,
+                      gaplessPlayback: true,
+                      // Decode at card size, not the banner's full size.
+                      cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 520)
+                          .round(),
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    cardColor,
+                    cardColor,
+                    cardColor.withValues(alpha: 0.82),
+                    cardColor.withValues(alpha: 0.35),
+                  ],
+                  stops: const [0, 0.34, 0.6, 1],
+                ),
+              ),
+            ),
+          ),
+        ),
+        row,
+      ],
     );
   }
 }

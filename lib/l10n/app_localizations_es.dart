@@ -20928,4 +20928,1065 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get apTopBar => 'Temas';
+
+  @override
+  String get navStories => 'Historias';
+
+  @override
+  String get socBoardTitle => 'Tablón';
+
+  @override
+  String get socFeed => 'Inicio';
+
+  @override
+  String get socExplore => 'Explorar';
+
+  @override
+  String get socActivity => 'Actividad';
+
+  @override
+  String socActivityN(int count) {
+    return 'Actividad ($count)';
+  }
+
+  @override
+  String get socMessages => 'Mensajes';
+
+  @override
+  String get socForYou => 'Para ti';
+
+  @override
+  String get socFollowing => 'Siguiendo';
+
+  @override
+  String get socLatest => 'Recientes';
+
+  @override
+  String get socNewPost => 'Nueva publicación';
+
+  @override
+  String get socDraftsScheduled => 'Borradores y programadas';
+
+  @override
+  String get socActAs => 'Actuar como';
+
+  @override
+  String socActingAs(String value) {
+    return 'Como $value';
+  }
+
+  @override
+  String socActingAsLabel(String value) {
+    return 'Actuando como $value';
+  }
+
+  @override
+  String get socSwitchActorHint =>
+      'Elige qué alter lee, publica y reacciona. No cambia quién está al frente.';
+
+  @override
+  String get socPickAlter => 'Elige un alter';
+
+  @override
+  String get socNobody => 'nadie';
+
+  @override
+  String get socUnknownAlter => 'Alter desconocido';
+
+  @override
+  String get socJustNow => 'ahora';
+
+  @override
+  String get socEdited => 'editado';
+
+  @override
+  String get socScheduled => 'programado';
+
+  @override
+  String get socDraft => 'borrador';
+
+  @override
+  String get socPinned => 'Fijado';
+
+  @override
+  String get socPostOptions => 'Opciones de la publicación';
+
+  @override
+  String socRebloggedBy(String who, String author) {
+    return '$who rebloggeó a $author';
+  }
+
+  @override
+  String socQuoting(String value) {
+    return 'Citando a $value';
+  }
+
+  @override
+  String get socOriginalGone => 'La publicación original se eliminó.';
+
+  @override
+  String socTagLabel(String value) {
+    return 'Etiqueta $value';
+  }
+
+  @override
+  String socComments(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comentarios',
+      one: '1 comentario',
+      zero: 'Comentarios',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socReblogs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reblogs',
+      one: '1 reblog',
+      zero: 'Rebloguear o citar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socAnswer => 'Responder';
+
+  @override
+  String get socShare => 'Compartir';
+
+  @override
+  String get socReblog => 'Rebloguear';
+
+  @override
+  String get socReblogHelp => 'Compártela en tu blog tal cual.';
+
+  @override
+  String get socReblogComment => 'Rebloguear con comentario';
+
+  @override
+  String get socQuote => 'Citar';
+
+  @override
+  String get socQuoteHelp => 'Escribe tu publicación con esta incrustada.';
+
+  @override
+  String get socReblogged => 'Rebloggeado';
+
+  @override
+  String get socYourComment => 'Tu comentario';
+
+  @override
+  String socCwLabel(String value) {
+    return 'Aviso de contenido: $value';
+  }
+
+  @override
+  String get socTapToShow => 'Toca para mostrar';
+
+  @override
+  String get socShow => 'Mostrar';
+
+  @override
+  String get socAskedEveryone => 'Pregunta para todos';
+
+  @override
+  String socAskedTo(String value) {
+    return 'Pregunta para $value';
+  }
+
+  @override
+  String socPollOptionResult(String option, int count) {
+    return '$option, $count por ciento';
+  }
+
+  @override
+  String socVoters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count votos',
+      one: '1 voto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socPollMulti => 'varias opciones';
+
+  @override
+  String get socPollClosed => 'cerrada';
+
+  @override
+  String socAnswersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count respuestas',
+      one: '1 respuesta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socEdit => 'Editar';
+
+  @override
+  String get socPin => 'Fijar en el blog';
+
+  @override
+  String get socUnpin => 'Desfijar';
+
+  @override
+  String get socDeleteTitle => '¿Eliminar esta publicación?';
+
+  @override
+  String get socDeleteMessage =>
+      'También se eliminan sus comentarios y reacciones. Los reblogs desaparecen; las citas conservan su texto.';
+
+  @override
+  String socViewBlog(String value) {
+    return 'Blog de $value';
+  }
+
+  @override
+  String get socHide => 'Ocultar esta publicación';
+
+  @override
+  String get socUnhide => 'Volver a mostrar';
+
+  @override
+  String socMute(String value) {
+    return 'Silenciar a $value';
+  }
+
+  @override
+  String socUnmute(String value) {
+    return 'Dejar de silenciar a $value';
+  }
+
+  @override
+  String socBlock(String value) {
+    return 'Bloquear a $value';
+  }
+
+  @override
+  String socUnblock(String value) {
+    return 'Desbloquear a $value';
+  }
+
+  @override
+  String get socBlockHelp =>
+      'Ninguno verá las publicaciones o historias del otro, se dejan de seguir y no recibirás su actividad.';
+
+  @override
+  String get socReport => 'Denunciar';
+
+  @override
+  String get socReportHelp =>
+      'La oculta para ti y la marca para que el sistema la revise.';
+
+  @override
+  String get socReportReason => '¿Qué pasa con ella?';
+
+  @override
+  String get socReported => 'Denunciada y oculta';
+
+  @override
+  String get socReact => 'Reaccionar';
+
+  @override
+  String get socAddReaction => 'Añadir reacción';
+
+  @override
+  String get socAnyEmoji => 'O escribe cualquier emoji';
+
+  @override
+  String socReactionCount(String emoji, int count) {
+    return '$emoji $count';
+  }
+
+  @override
+  String get socImageMissing => 'Imagen aún no disponible';
+
+  @override
+  String get socAudEveryone => 'Todos';
+
+  @override
+  String get socAudFollowers => 'Seguidores';
+
+  @override
+  String get socAudSelected => 'Alters elegidos';
+
+  @override
+  String get socAudSelf => 'Solo yo';
+
+  @override
+  String get socAudienceNote =>
+      'La audiencia controla qué ve cada alter al actuar como sí mismo en Prism. Cualquiera con este dispositivo puede cambiar como quién actúa.';
+
+  @override
+  String get socEditPost => 'Editar publicación';
+
+  @override
+  String get socAnswerTitle => 'Responder';
+
+  @override
+  String get socPost => 'Publicar';
+
+  @override
+  String get socSchedule => 'Programar';
+
+  @override
+  String socPostingAs(String value) {
+    return 'Publicando como $value';
+  }
+
+  @override
+  String get socChange => 'Cambiar';
+
+  @override
+  String get socWhoIsPosting => '¿Quién publica?';
+
+  @override
+  String get socTypeText => 'Texto';
+
+  @override
+  String get socTypeImage => 'Imágenes';
+
+  @override
+  String get socTypePoll => 'Encuesta';
+
+  @override
+  String get socTypeQuestion => 'Pregunta';
+
+  @override
+  String get socTypeMedia => 'Vídeo y multimedia';
+
+  @override
+  String get socAskWho => '¿A quién preguntas?';
+
+  @override
+  String get socAnyone => 'Cualquiera';
+
+  @override
+  String get socTitleOptional => 'Título (opcional)';
+
+  @override
+  String get socYourQuestion => 'Tu pregunta';
+
+  @override
+  String get socCaption => 'Descripción';
+
+  @override
+  String get socYourAnswer => 'Tu respuesta';
+
+  @override
+  String get socWhatsOnYourMind => '¿Qué tienes en mente?';
+
+  @override
+  String get socBodyHelp => 'Usa #etiquetas y @nombres para temas y menciones.';
+
+  @override
+  String get socPollOptions => 'Opciones';
+
+  @override
+  String socOptionN(int count) {
+    return 'Opción $count';
+  }
+
+  @override
+  String get socRemoveOption => 'Quitar opción';
+
+  @override
+  String get socAddOption => 'Añadir opción';
+
+  @override
+  String get socPollMultiAllow => 'Permitir varias opciones';
+
+  @override
+  String get socRemoveImage => 'Quitar imagen';
+
+  @override
+  String get socRemoveVideo => 'Quitar vídeo';
+
+  @override
+  String get socAddImages => 'Añadir imágenes';
+
+  @override
+  String get socAddVideo => 'Añadir vídeo';
+
+  @override
+  String get socVideoNote =>
+      'Los vídeos se quedan en el dispositivo donde se añadieron (son demasiado grandes para sincronizar). Las imágenes se sincronizan.';
+
+  @override
+  String get socVideoElsewhere =>
+      'Este vídeo se añadió en otro dispositivo. Los vídeos no se sincronizan.';
+
+  @override
+  String get socVideoTooLarge => 'Ese vídeo supera los 200 MB.';
+
+  @override
+  String get socVideoFormat =>
+      'Formato de vídeo no compatible. Usa MP4, MOV, WebM o 3GP.';
+
+  @override
+  String get socVideoFailed => 'No se pudo añadir el vídeo.';
+
+  @override
+  String socImageUnreadable(String value) {
+    return 'No se pudo leer $value como imagen.';
+  }
+
+  @override
+  String get socTags => 'Etiquetas';
+
+  @override
+  String get socTagsHelp => 'Sepáralas con espacios, p. ej. arte headspace';
+
+  @override
+  String get socContentWarning => 'Aviso de contenido';
+
+  @override
+  String get socCwText => 'Texto del aviso';
+
+  @override
+  String get socWhoCanSee => 'Quién puede verlo';
+
+  @override
+  String get socScheduleLater => 'Programar';
+
+  @override
+  String socScheduledFor(String value) {
+    return 'Programado para $value';
+  }
+
+  @override
+  String get socPostNow => 'Publicar ya';
+
+  @override
+  String get socSaveDraft => 'Guardar borrador';
+
+  @override
+  String get socDraftSaved => 'Borrador guardado';
+
+  @override
+  String get socPosted => 'Publicado';
+
+  @override
+  String get socSaved => 'Guardado';
+
+  @override
+  String get socPostGone => 'Esta publicación se eliminó.';
+
+  @override
+  String get socPostHidden =>
+      'Esta publicación no es visible para el alter con el que actúas.';
+
+  @override
+  String get socAnswersTitle => 'Respuestas';
+
+  @override
+  String get socQuotesTitle => 'Citas';
+
+  @override
+  String get socNoComments =>
+      'Aún no hay comentarios. Empieza la conversación.';
+
+  @override
+  String get socEditingComment => 'Editando tu comentario';
+
+  @override
+  String socReplyingTo(String value) {
+    return 'Respondiendo a $value';
+  }
+
+  @override
+  String socCommentAs(String value) {
+    return 'Comentar como $value';
+  }
+
+  @override
+  String get socSend => 'Enviar';
+
+  @override
+  String get socReply => 'Responder';
+
+  @override
+  String get socDeleteCommentTitle =>
+      '¿Eliminar este comentario y sus respuestas?';
+
+  @override
+  String get socEmptyFeed => 'Aún no hay nada';
+
+  @override
+  String get socEmptyFeedHelp =>
+      'Aquí aparecen las publicaciones de todos los alters. ¡Escribe la primera!';
+
+  @override
+  String get socEmptyFollowing => 'Sin publicaciones de alters que sigues';
+
+  @override
+  String get socEmptyFollowingHelp =>
+      'Sigue a alters desde su blog o Explorar.';
+
+  @override
+  String get socSearchHint => 'Buscar publicaciones, etiquetas y alters';
+
+  @override
+  String socResults(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resultados',
+      one: '1 resultado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socAlters => 'Alters';
+
+  @override
+  String get socTrendingTags => 'Etiquetas populares';
+
+  @override
+  String get socNoTags => 'Aún no hay etiquetas';
+
+  @override
+  String socReportsToReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count denuncias por revisar',
+      one: '1 denuncia por revisar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socNoActivity => 'Aún no hay actividad';
+
+  @override
+  String get socNoActivityHelp =>
+      'Aquí aparecen reacciones, comentarios, reblogs, menciones y nuevos seguidores.';
+
+  @override
+  String socNReactPost(String who, String emoji) {
+    return '$who reaccionó $emoji a tu publicación';
+  }
+
+  @override
+  String socNReactComment(String who, String emoji) {
+    return '$who reaccionó $emoji a tu comentario';
+  }
+
+  @override
+  String socNReactStory(String who, String emoji) {
+    return '$who reaccionó $emoji a tu historia';
+  }
+
+  @override
+  String socNComment(String who) {
+    return '$who comentó tu publicación';
+  }
+
+  @override
+  String socNReply(String who) {
+    return '$who respondió a tu comentario';
+  }
+
+  @override
+  String socNStoryReply(String who) {
+    return '$who respondió a tu historia';
+  }
+
+  @override
+  String socNReblog(String who) {
+    return '$who rebloggeó tu publicación';
+  }
+
+  @override
+  String socNQuote(String who) {
+    return '$who citó tu publicación';
+  }
+
+  @override
+  String socNMention(String who) {
+    return '$who te mencionó';
+  }
+
+  @override
+  String socNQuestion(String who) {
+    return '$who te hizo una pregunta';
+  }
+
+  @override
+  String socNFollow(String who) {
+    return '$who empezó a seguirte';
+  }
+
+  @override
+  String socNVote(String who) {
+    return '$who votó en tu encuesta';
+  }
+
+  @override
+  String get socNoTagPosts => 'No hay publicaciones visibles con esta etiqueta';
+
+  @override
+  String get socScheduledTitle => 'Programadas';
+
+  @override
+  String get socNoScheduled => 'Nada programado';
+
+  @override
+  String get socDraftsTitle => 'Borradores';
+
+  @override
+  String get socNoDrafts => 'Sin borradores';
+
+  @override
+  String get socUntitledDraft => 'Borrador sin título';
+
+  @override
+  String get socReportsTitle => 'Publicaciones denunciadas';
+
+  @override
+  String get socReportsHelp =>
+      'Publicaciones que los alters denunciaron. Descarta la denuncia o elimina la publicación.';
+
+  @override
+  String get socNoReports => 'Nada que revisar';
+
+  @override
+  String socReportedBy(String who, String reason) {
+    return 'Denunciada por $who: $reason';
+  }
+
+  @override
+  String get socDismissReport => 'Descartar';
+
+  @override
+  String get socDeletePost => 'Eliminar publicación';
+
+  @override
+  String get socBlog => 'Blog';
+
+  @override
+  String socBlogOf(String value) {
+    return 'Blog de $value';
+  }
+
+  @override
+  String socPostsN(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count publicaciones',
+      one: '1 publicación',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socFollowersN(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seguidores',
+      one: '1 seguidor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socFollowingN(int count) {
+    return '$count siguiendo';
+  }
+
+  @override
+  String get socFollowersTitle => 'Seguidores';
+
+  @override
+  String get socFollowingTitle => 'Siguiendo';
+
+  @override
+  String get socCustomizeBlog => 'Personalizar blog';
+
+  @override
+  String get socFollow => 'Seguir';
+
+  @override
+  String get socUnfollow => 'Siguiendo';
+
+  @override
+  String get socMuteShort => 'Silenciar';
+
+  @override
+  String get socUnmuteShort => 'Quitar silencio';
+
+  @override
+  String get socBlockShort => 'Bloquear';
+
+  @override
+  String get socUnblockShort => 'Desbloquear';
+
+  @override
+  String get socFollowsYou => 'Te sigue';
+
+  @override
+  String get socBlockedBlog => 'Este blog está bloqueado.';
+
+  @override
+  String get socNoPostsYet => 'Aún no hay publicaciones';
+
+  @override
+  String get socNobodyYet => 'Nadie aún';
+
+  @override
+  String get socBanner => 'Banner';
+
+  @override
+  String get socChooseBanner => 'Elegir banner';
+
+  @override
+  String get socUseProfileBanner => 'Usar banner del perfil';
+
+  @override
+  String get socBannerHelp =>
+      'Sin banner de blog se usa el banner del perfil del alter.';
+
+  @override
+  String get socBio => 'Biografía';
+
+  @override
+  String get socAccent => 'Color de acento';
+
+  @override
+  String get socBlogBackground => 'Fondo del blog';
+
+  @override
+  String get socTitleFont => 'Estilo del nombre';
+
+  @override
+  String get socFontBold => 'Negrita';
+
+  @override
+  String get socLayout => 'Diseño de publicaciones';
+
+  @override
+  String get socLayoutCards => 'Tarjetas completas';
+
+  @override
+  String get socLayoutCompact => 'Compacto';
+
+  @override
+  String get socCustomReactions => 'Tus reacciones';
+
+  @override
+  String get socCustomReactionsHelp =>
+      'Emoji que aparecen primero al reaccionar, separados por espacios.';
+
+  @override
+  String get socNoBanner => 'Aún no hay banner';
+
+  @override
+  String get socBannerPositionLabel => 'Posición del banner';
+
+  @override
+  String get socBannerPositionHint =>
+      'Arrastra para elegir qué parte se ve. Desliza arriba o abajo para ajustar.';
+
+  @override
+  String get socDragToPosition => 'Arrastra para colocar';
+
+  @override
+  String socBannerPositionFor(String value) {
+    return 'Posición del banner de $value';
+  }
+
+  @override
+  String get socBannerZoom => 'Zoom';
+
+  @override
+  String get socBannersTitle => 'Banners de headmates';
+
+  @override
+  String get socBannersAdjust => 'Recortar y colocar banners';
+
+  @override
+  String get socShowBanners => 'Mostrar banners de alters';
+
+  @override
+  String get socShowBannersHelp =>
+      'El banner de perfil de cada alter aparece tras su tarjeta en Headmates.';
+
+  @override
+  String get socBannersAdjustHelp =>
+      'Arrastra una tarjeta para elegir qué parte del banner se ve y usa el zoom para recortar. Los alters sin banner no aparecen; añádelo en su perfil.';
+
+  @override
+  String get stoTitle => 'Historias de alters';
+
+  @override
+  String get stoYourStory => 'Tu historia';
+
+  @override
+  String get stoAddStory => 'Añadir historia';
+
+  @override
+  String get stoViewYours => 'Ver tu historia';
+
+  @override
+  String stoNewFrom(String value) {
+    return 'Historia nueva de $value';
+  }
+
+  @override
+  String stoSeenFrom(String value) {
+    return 'Historia de $value, vista';
+  }
+
+  @override
+  String get stoNoneYet => 'Sin historias en las últimas 24 horas';
+
+  @override
+  String get stoIntro =>
+      'Las historias duran 24 horas. Cualquiera en el sistema puede verlas aquí sin cambiar el frente.';
+
+  @override
+  String get stoEmpty => 'No hay historias ahora';
+
+  @override
+  String get stoHighlights => 'Destacadas';
+
+  @override
+  String stoHighlightLabel(String value) {
+    return 'Destacada $value';
+  }
+
+  @override
+  String get stoNewHighlight => 'Nueva destacada';
+
+  @override
+  String get stoNew => 'Nueva';
+
+  @override
+  String get stoArchive => 'Archivo';
+
+  @override
+  String get stoArchiveIntro =>
+      'Historias caducadas que guardaste. Solo tú ves el archivo.';
+
+  @override
+  String get stoArchiveEmpty => 'Sin historias archivadas';
+
+  @override
+  String get stoNoStoriesForHighlight =>
+      'Publica o archiva una historia primero';
+
+  @override
+  String get stoHighlightName => 'Nombre de la destacada';
+
+  @override
+  String get stoCategory => 'Categoría';
+
+  @override
+  String get stoCategoryHelp => 'Opcional, p. ej. Arte, Headspace, Viajes';
+
+  @override
+  String get stoPickStories => 'Historias a incluir';
+
+  @override
+  String get stoRename => 'Renombrar';
+
+  @override
+  String get stoSetCategory => 'Elegir categoría';
+
+  @override
+  String get stoSetCover => 'Elegir portada';
+
+  @override
+  String get stoDeleteHighlight => 'Eliminar destacada';
+
+  @override
+  String get stoNothing => 'No hay historias';
+
+  @override
+  String stoSlideOf(int index, int total) {
+    return 'Diapositiva $index de $total';
+  }
+
+  @override
+  String get stoPrevious => 'Anterior';
+
+  @override
+  String get stoNext => 'Siguiente';
+
+  @override
+  String stoPlayTrack(String value) {
+    return 'Reproducir $value';
+  }
+
+  @override
+  String stoSeenBy(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Visto por $count',
+      one: 'Visto por 1',
+      zero: 'Sin vistas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stoReplyTo(String value) {
+    return 'Responder a $value';
+  }
+
+  @override
+  String stoReactWith(String value) {
+    return 'Reaccionar con $value';
+  }
+
+  @override
+  String get stoReplySent => 'Respuesta enviada';
+
+  @override
+  String get stoActivity => 'Actividad de la historia';
+
+  @override
+  String get stoReplies => 'Respuestas';
+
+  @override
+  String get stoArchiveOn => 'Se guarda en el archivo tras 24 h';
+
+  @override
+  String get stoArchiveOff => 'Desaparece tras 24 h';
+
+  @override
+  String get stoArchiveHelp =>
+      'Toca para cambiar. Las historias archivadas pueden ir a destacadas.';
+
+  @override
+  String stoAddToHighlight(String value) {
+    return 'Añadir a $value';
+  }
+
+  @override
+  String stoAddedToHighlight(String value) {
+    return 'Añadida a $value';
+  }
+
+  @override
+  String get stoDelete => 'Eliminar historia';
+
+  @override
+  String get stoNewStory => 'Nueva historia';
+
+  @override
+  String get stoStickers => 'Pegatinas';
+
+  @override
+  String get stoTextSticker => 'Pegatina de texto';
+
+  @override
+  String get stoGifSticker => 'GIF o imagen';
+
+  @override
+  String get stoStickerText => 'Texto de la pegatina';
+
+  @override
+  String get stoNoMusic => 'Importa música en la pestaña Música primero';
+
+  @override
+  String get stoAddMusic => 'Añadir música';
+
+  @override
+  String get stoNoSong => 'Sin música';
+
+  @override
+  String get stoPosted => 'Historia compartida';
+
+  @override
+  String get stoStickerHint =>
+      'Arrastra para mover, doble toque para cambiar tamaño, mantén pulsado para quitar';
+
+  @override
+  String get stoAddSlide => 'Añadir diapositiva';
+
+  @override
+  String get stoSlidesHelp =>
+      'Toca una diapositiva para editarla, mantén pulsado para quitarla.';
+
+  @override
+  String get stoPhoto => 'Foto';
+
+  @override
+  String get stoCamera => 'Cámara';
+
+  @override
+  String get stoVideo => 'Vídeo';
+
+  @override
+  String get stoSticker => 'Pegatina';
+
+  @override
+  String get stoRemoveMedia => 'Quitar foto/vídeo';
+
+  @override
+  String get stoText => 'Texto';
+
+  @override
+  String get stoCaption => 'Pie';
+
+  @override
+  String get stoFont => 'Fuente';
+
+  @override
+  String get stoFontScript => 'Manuscrita';
+
+  @override
+  String get stoAlignTop => 'Arriba';
+
+  @override
+  String get stoAlignCenter => 'Centro';
+
+  @override
+  String get stoAlignBottom => 'Abajo';
+
+  @override
+  String get stoTextSize => 'Tamaño del texto';
+
+  @override
+  String get stoTextColor => 'Color del texto';
+
+  @override
+  String get stoBackground => 'Fondo';
+
+  @override
+  String get stoBackground2 => 'Degradado hacia';
+
+  @override
+  String get stoDuration => 'Duración';
+
+  @override
+  String get stoKeepArchive => 'Guardar en el archivo tras 24 horas';
+
+  @override
+  String get stoKeepArchiveHelp =>
+      'Si no, desaparece para siempre. Solo tú ves el archivo.';
+
+  @override
+  String get stoShare => 'Compartir historia';
+
+  @override
+  String get stoDefaultAudience => 'Quién ve las historias nuevas por defecto';
 }

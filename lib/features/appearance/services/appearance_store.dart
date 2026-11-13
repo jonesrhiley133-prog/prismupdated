@@ -75,6 +75,19 @@ class AppearanceNotifier extends AsyncNotifier<AppearanceState> {
   /// Takes over newer settings that arrived from another device.
   Future<void> adoptRemote(Map<String, dynamic> json) => _save(AppearanceState.fromJson(json), touch: false);
 
+  Future<void> setShowMemberBanners(bool v) async => _save((await _cur()).copyWith(showMemberBanners: v));
+
+  Future<void> setBannerPosition(String memberId, double x, double y, double zoom) async {
+    final s = await _cur();
+    final next = Map<String, ({double x, double y, double zoom})>.of(s.bannerPositions);
+    if (x == 0 && y == 0 && zoom == 1) {
+      next.remove(memberId);
+    } else {
+      next[memberId] = (x: x, y: y, zoom: zoom);
+    }
+    await _save(s.copyWith(bannerPositions: next));
+  }
+
   Future<void> activate(String id) async => _save((await _cur()).copyWith(activeId: id));
 
   Future<void> setAuto({bool? auto, String? lightId, String? darkId}) async =>
@@ -182,3 +195,28 @@ final appearanceSyncProvider = Provider<void>((ref) {
     listenLocal: (cb) => ref.listen(appearanceProvider, (_, _) => cb()),
   );
 });
+
+/// Headmates display setting: banners on member cards.
+final showMemberBannersProvider = Provider<bool>(
+  (ref) => ref.watch(appearanceProvider.select((s) => s.value?.showMemberBanners ?? false)),
+);
+
+/// Banner crop per member for Headmates cards. Compared by value so the
+/// list only rebuilds when a position actually changes.
+@immutable
+class BannerPositions {
+  const BannerPositions(this.map);
+  final Map<String, ({double x, double y, double zoom})> map;
+
+  ({double x, double y, double zoom})? operator [](String id) => map[id];
+
+  @override
+  bool operator ==(Object other) => other is BannerPositions && mapEquals(other.map, map);
+
+  @override
+  int get hashCode => Object.hashAllUnordered(map.entries.map((e) => Object.hash(e.key, e.value)));
+}
+
+final memberBannerPositionsProvider = Provider<BannerPositions>(
+  (ref) => BannerPositions(ref.watch(appearanceProvider.select((s) => s.value?.bannerPositions ?? const {}))),
+);

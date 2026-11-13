@@ -444,7 +444,15 @@ class AppearanceState {
     this.darkId = 'prism',
     this.pageLooks = const {},
     this.modifiedAt = 0,
+    this.showMemberBanners = false,
+    this.bannerPositions = const {},
   });
+
+  /// Banner crop per member id: focal point (−1…1) and zoom (1…3).
+  final Map<String, ({double x, double y, double zoom})> bannerPositions;
+
+  /// Show each alter's profile banner on Headmates cards.
+  final bool showMemberBanners;
 
   /// The user's own presets.
   final List<PrismLook> looks;
@@ -478,7 +486,11 @@ class AppearanceState {
     String? darkId,
     Map<String, String>? pageLooks,
     int? modifiedAt,
+    bool? showMemberBanners,
+    Map<String, ({double x, double y, double zoom})>? bannerPositions,
   }) => AppearanceState(
+    showMemberBanners: showMemberBanners ?? this.showMemberBanners,
+    bannerPositions: bannerPositions ?? this.bannerPositions,
     looks: looks ?? this.looks,
     activeId: activeId ?? this.activeId,
     auto: auto ?? this.auto,
@@ -496,6 +508,8 @@ class AppearanceState {
     'darkId': darkId,
     'pageLooks': pageLooks,
     'modifiedAt': modifiedAt,
+    'showMemberBanners': showMemberBanners,
+    'bannerPositions': {for (final e in bannerPositions.entries) e.key: [e.value.x, e.value.y, e.value.zoom]},
   };
 
   static AppearanceState fromJson(Object? j) {
@@ -516,6 +530,17 @@ class AppearanceState {
             if (e.key is String && e.value is String) e.key as String: e.value as String,
       },
       modifiedAt: j['modifiedAt'] is int ? j['modifiedAt'] as int : 0,
+      showMemberBanners: j['showMemberBanners'] == true,
+      bannerPositions: {
+        if (j['bannerPositions'] is Map)
+          for (final e in (j['bannerPositions'] as Map).entries)
+            if (e.key is String && e.value is List && (e.value as List).length == 3 && (e.value as List).every((v) => v is num))
+              e.key as String: (
+                x: ((e.value as List)[0] as num).toDouble().clamp(-1, 1).toDouble(),
+                y: ((e.value as List)[1] as num).toDouble().clamp(-1, 1).toDouble(),
+                zoom: ((e.value as List)[2] as num).toDouble().clamp(1, 3).toDouble(),
+              ),
+      },
     );
   }
 }

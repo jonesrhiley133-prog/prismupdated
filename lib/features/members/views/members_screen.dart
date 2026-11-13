@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/system_settings.dart';
 import 'package:prism_plurality/domain/preferences/fronting_terms.dart';
 import 'package:prism_plurality/domain/preferences/member_name_presentation.dart';
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/shared/providers/member_avatar_image_provider.dart';
 import 'package:prism_plurality/features/fronting/providers/fronting_providers.dart';
 import 'package:prism_plurality/features/members/navigation/member_navigation_branch.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -64,6 +67,25 @@ String _memberOptimisticKey(Member member) => member.id;
 
 enum _MemberDetailPaneMode { detail, edit, customFieldGroup }
 
+/// Watches one member's banner only while banners are on and the card is
+/// built, so the list never loads banners it does not show.
+class _BannerScope extends ConsumerWidget {
+  const _BannerScope({
+    required this.memberId,
+    required this.enabled,
+    required this.builder,
+  });
+
+  final String memberId;
+  final bool enabled;
+  final Widget Function(Uint8List? banner) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => builder(
+    enabled ? ref.watch(memberBannerImageDataProvider(memberId)).value : null,
+  );
+}
+
 class _MemberTilePrefs {
   const _MemberTilePrefs({
     required this.showPronouns,
@@ -72,7 +94,22 @@ class _MemberTilePrefs {
     required this.frontingActionBusy,
     required this.namePresentation,
     required this.frontingTerms,
+    this.showBanners = false,
+    this.bannerPositions = const BannerPositions({}),
   });
+
+  /// Show Alter Banners (Appearance / Headmates display settings).
+  final bool showBanners;
+
+  /// Per-member banner focal point and zoom chosen by the user.
+  final BannerPositions bannerPositions;
+
+  Alignment bannerAlignment(String id) {
+    final p = bannerPositions[id];
+    return p == null ? Alignment.center : Alignment(p.x, p.y);
+  }
+
+  double bannerZoom(String id) => bannerPositions[id]?.zoom ?? 1;
 
   final bool showPronouns;
   final bool showFrontButtons;
@@ -670,6 +707,8 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
       frontingActionBusy: frontingActionBusy,
       namePresentation: namePresentation,
       frontingTerms: frontingTerms,
+      showBanners: ref.watch(showMemberBannersProvider),
+      bannerPositions: ref.watch(memberBannerPositionsProvider),
     );
     final showGroups = ref.watch(membersShowGroupsProvider);
     final showGroupedSections = viewMode == MembersListViewMode.groupedSections;
@@ -1313,97 +1352,105 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
         return MemberFrontActionsMenu(
           member: member,
           additionalActions: actions,
-          child: MemberCard(
-            member: member,
-            resolvedName: resolvedName,
-            subtitleName: alternateNameFor(
-              member,
-              memberTilePrefs.namePresentation,
-            ),
-            deferAvatarLookup: true,
-            showPronouns: memberTilePrefs.showPronouns,
-            selected: isDetailSelected(member.id),
-            onTap: () => _selectMember(
-              member.id,
-              navigate: () => unawaited(context.push(_memberPath(member.id))),
-            ),
-            trailing: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxTrailingWidth),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isFronting) ...[
-                    Flexible(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final label =
-                              memberTilePrefs.frontingTerms.activeSectionLabel;
-                          final iconOnly =
-                              constraints.maxWidth <
-                              _kFrontingPillMinimumLabelWidth;
-                          final pill = PrismPill(
-                            label: iconOnly ? '' : label,
-                            icon: AppIcons.flashOn,
-                            color: AppColors.fronting(theme.brightness),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                          );
-                          if (!iconOnly) return pill;
-                          return Semantics(
-                            container: true,
-                            label: label,
-                            child: Tooltip(
-                              message: label,
-                              child: ExcludeSemantics(child: pill),
-                            ),
-                          );
-                        },
+          child: _BannerScope(
+            memberId: member.id,
+            enabled: memberTilePrefs.showBanners,
+            builder: (banner) => MemberCard(
+              member: member,
+              bannerImageData: banner,
+              bannerAlignment: memberTilePrefs.bannerAlignment(member.id),
+              bannerZoom: memberTilePrefs.bannerZoom(member.id),
+              resolvedName: resolvedName,
+              subtitleName: alternateNameFor(
+                member,
+                memberTilePrefs.namePresentation,
+              ),
+              deferAvatarLookup: true,
+              showPronouns: memberTilePrefs.showPronouns,
+              selected: isDetailSelected(member.id),
+              onTap: () => _selectMember(
+                member.id,
+                navigate: () => unawaited(context.push(_memberPath(member.id))),
+              ),
+              trailing: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxTrailingWidth),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isFronting) ...[
+                      Flexible(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final label = memberTilePrefs
+                                .frontingTerms
+                                .activeSectionLabel;
+                            final iconOnly =
+                                constraints.maxWidth <
+                                _kFrontingPillMinimumLabelWidth;
+                            final pill = PrismPill(
+                              label: iconOnly ? '' : label,
+                              icon: AppIcons.flashOn,
+                              color: AppColors.fronting(theme.brightness),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                            );
+                            if (!iconOnly) return pill;
+                            return Semantics(
+                              container: true,
+                              label: label,
+                              child: Tooltip(
+                                message: label,
+                                child: ExcludeSemantics(child: pill),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                  ],
-                  if (memberTilePrefs.showFrontButtons && !isFronting) ...[
-                    IconButton(
-                      tooltip: frontButtonLabel,
-                      icon: Icon(AppIcons.add),
-                      onPressed: memberTilePrefs.frontingActionBusy
-                          ? null
-                          : () {
-                              Haptics.selection();
-                              unawaited(_startFronting(member));
-                            },
-                    ),
-                    const SizedBox(width: 4),
-                  ],
-                  if (reorderIndex != null)
-                    Semantics(
-                      container: true,
-                      label: context.l10n.groupMemberDragHandleLabel,
-                      hint: context.l10n.groupMemberDragHandleHintManual,
-                      child: Tooltip(
-                        message: context.l10n.groupMemberDragHandleTooltip,
-                        child: ReorderableDragStartListener(
-                          index: reorderIndex,
-                          child: SizedBox(
-                            width: 48,
-                            height: 48,
-                            child: ColoredBox(
-                              color: Colors.transparent,
-                              child: Center(
-                                child: Icon(
-                                  AppIcons.dragHandle,
-                                  color: theme.colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.4),
+                      const SizedBox(width: 4),
+                    ],
+                    if (memberTilePrefs.showFrontButtons && !isFronting) ...[
+                      IconButton(
+                        tooltip: frontButtonLabel,
+                        icon: Icon(AppIcons.add),
+                        onPressed: memberTilePrefs.frontingActionBusy
+                            ? null
+                            : () {
+                                Haptics.selection();
+                                unawaited(_startFronting(member));
+                              },
+                      ),
+                      const SizedBox(width: 4),
+                    ],
+                    if (reorderIndex != null)
+                      Semantics(
+                        container: true,
+                        label: context.l10n.groupMemberDragHandleLabel,
+                        hint: context.l10n.groupMemberDragHandleHintManual,
+                        child: Tooltip(
+                          message: context.l10n.groupMemberDragHandleTooltip,
+                          child: ReorderableDragStartListener(
+                            index: reorderIndex,
+                            child: SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: ColoredBox(
+                                color: Colors.transparent,
+                                child: Center(
+                                  child: Icon(
+                                    AppIcons.dragHandle,
+                                    color: theme.colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.4),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

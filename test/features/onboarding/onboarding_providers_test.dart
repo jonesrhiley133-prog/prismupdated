@@ -401,6 +401,7 @@ void main() {
         AppShellTabId.subsystems,
         AppShellTabId.headspace,
         AppShellTabId.music,
+        AppShellTabId.stories,
         AppShellTabId.notes,
         AppShellTabId.reminders,
         AppShellTabId.statistics,

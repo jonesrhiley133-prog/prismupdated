@@ -32656,6 +32656,1740 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Themes'**
   String get apTopBar;
+
+  /// navStories
+  ///
+  /// In en, this message translates to:
+  /// **'Stories'**
+  String get navStories;
+
+  /// socBoardTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Bulletin Board'**
+  String get socBoardTitle;
+
+  /// socFeed
+  ///
+  /// In en, this message translates to:
+  /// **'Feed'**
+  String get socFeed;
+
+  /// socExplore
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get socExplore;
+
+  /// socActivity
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get socActivity;
+
+  /// socActivityN
+  ///
+  /// In en, this message translates to:
+  /// **'Activity ({count})'**
+  String socActivityN(int count);
+
+  /// socMessages
+  ///
+  /// In en, this message translates to:
+  /// **'Messages board'**
+  String get socMessages;
+
+  /// socForYou
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get socForYou;
+
+  /// socFollowing
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get socFollowing;
+
+  /// socLatest
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get socLatest;
+
+  /// socNewPost
+  ///
+  /// In en, this message translates to:
+  /// **'New post'**
+  String get socNewPost;
+
+  /// socDraftsScheduled
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts & scheduled'**
+  String get socDraftsScheduled;
+
+  /// socActAs
+  ///
+  /// In en, this message translates to:
+  /// **'Act as'**
+  String get socActAs;
+
+  /// socActingAs
+  ///
+  /// In en, this message translates to:
+  /// **'Acting as {value}'**
+  String socActingAs(String value);
+
+  /// socActingAsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Acting as {value}'**
+  String socActingAsLabel(String value);
+
+  /// socSwitchActorHint
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which alter reads, posts and reacts. This does not change who is fronting.'**
+  String get socSwitchActorHint;
+
+  /// socPickAlter
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an alter'**
+  String get socPickAlter;
+
+  /// socNobody
+  ///
+  /// In en, this message translates to:
+  /// **'nobody'**
+  String get socNobody;
+
+  /// socUnknownAlter
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown alter'**
+  String get socUnknownAlter;
+
+  /// socJustNow
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get socJustNow;
+
+  /// socEdited
+  ///
+  /// In en, this message translates to:
+  /// **'edited'**
+  String get socEdited;
+
+  /// socScheduled
+  ///
+  /// In en, this message translates to:
+  /// **'scheduled'**
+  String get socScheduled;
+
+  /// socDraft
+  ///
+  /// In en, this message translates to:
+  /// **'draft'**
+  String get socDraft;
+
+  /// socPinned
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get socPinned;
+
+  /// socPostOptions
+  ///
+  /// In en, this message translates to:
+  /// **'Post options'**
+  String get socPostOptions;
+
+  /// socRebloggedBy
+  ///
+  /// In en, this message translates to:
+  /// **'{who} reblogged {author}'**
+  String socRebloggedBy(String who, String author);
+
+  /// socQuoting
+  ///
+  /// In en, this message translates to:
+  /// **'Quoting {value}'**
+  String socQuoting(String value);
+
+  /// socOriginalGone
+  ///
+  /// In en, this message translates to:
+  /// **'The original post was deleted.'**
+  String get socOriginalGone;
+
+  /// socTagLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Tag {value}'**
+  String socTagLabel(String value);
+
+  /// socComments
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Comments} =1{1 comment} other{{count} comments}}'**
+  String socComments(int count);
+
+  /// socReblogs
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Reblog or quote} =1{1 reblog} other{{count} reblogs}}'**
+  String socReblogs(int count);
+
+  /// socAnswer
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get socAnswer;
+
+  /// socShare
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get socShare;
+
+  /// socReblog
+  ///
+  /// In en, this message translates to:
+  /// **'Reblog'**
+  String get socReblog;
+
+  /// socReblogHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Share it on your blog as it is.'**
+  String get socReblogHelp;
+
+  /// socReblogComment
+  ///
+  /// In en, this message translates to:
+  /// **'Reblog with a comment'**
+  String get socReblogComment;
+
+  /// socQuote
+  ///
+  /// In en, this message translates to:
+  /// **'Quote'**
+  String get socQuote;
+
+  /// socQuoteHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Write your own post with this one embedded.'**
+  String get socQuoteHelp;
+
+  /// socReblogged
+  ///
+  /// In en, this message translates to:
+  /// **'Reblogged'**
+  String get socReblogged;
+
+  /// socYourComment
+  ///
+  /// In en, this message translates to:
+  /// **'Your comment'**
+  String get socYourComment;
+
+  /// socCwLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Content warning: {value}'**
+  String socCwLabel(String value);
+
+  /// socTapToShow
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to show'**
+  String get socTapToShow;
+
+  /// socShow
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get socShow;
+
+  /// socAskedEveryone
+  ///
+  /// In en, this message translates to:
+  /// **'Question for everyone'**
+  String get socAskedEveryone;
+
+  /// socAskedTo
+  ///
+  /// In en, this message translates to:
+  /// **'Question for {value}'**
+  String socAskedTo(String value);
+
+  /// socPollOptionResult
+  ///
+  /// In en, this message translates to:
+  /// **'{option}, {count} percent'**
+  String socPollOptionResult(String option, int count);
+
+  /// socVoters
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 vote} other{{count} votes}}'**
+  String socVoters(int count);
+
+  /// socPollMulti
+  ///
+  /// In en, this message translates to:
+  /// **'several choices allowed'**
+  String get socPollMulti;
+
+  /// socPollClosed
+  ///
+  /// In en, this message translates to:
+  /// **'closed'**
+  String get socPollClosed;
+
+  /// socAnswersCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 answer} other{{count} answers}}'**
+  String socAnswersCount(int count);
+
+  /// socEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get socEdit;
+
+  /// socPin
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to blog'**
+  String get socPin;
+
+  /// socUnpin
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get socUnpin;
+
+  /// socDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this post?'**
+  String get socDeleteTitle;
+
+  /// socDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Its comments and reactions are deleted too. Reblogs of it disappear; quotes keep their own text.'**
+  String get socDeleteMessage;
+
+  /// socViewBlog
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s blog'**
+  String socViewBlog(String value);
+
+  /// socHide
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this post'**
+  String get socHide;
+
+  /// socUnhide
+  ///
+  /// In en, this message translates to:
+  /// **'Show this post again'**
+  String get socUnhide;
+
+  /// socMute
+  ///
+  /// In en, this message translates to:
+  /// **'Mute {value}'**
+  String socMute(String value);
+
+  /// socUnmute
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute {value}'**
+  String socUnmute(String value);
+
+  /// socBlock
+  ///
+  /// In en, this message translates to:
+  /// **'Block {value}'**
+  String socBlock(String value);
+
+  /// socUnblock
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock {value}'**
+  String socUnblock(String value);
+
+  /// socBlockHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Neither of you will see the other\'s posts or stories, follows end, and you won\'t get activity from them.'**
+  String get socBlockHelp;
+
+  /// socReport
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get socReport;
+
+  /// socReportHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Hides it for you and flags it for the system to review.'**
+  String get socReportHelp;
+
+  /// socReportReason
+  ///
+  /// In en, this message translates to:
+  /// **'What is wrong with it?'**
+  String get socReportReason;
+
+  /// socReported
+  ///
+  /// In en, this message translates to:
+  /// **'Reported and hidden'**
+  String get socReported;
+
+  /// socReact
+  ///
+  /// In en, this message translates to:
+  /// **'React'**
+  String get socReact;
+
+  /// socAddReaction
+  ///
+  /// In en, this message translates to:
+  /// **'Add a reaction'**
+  String get socAddReaction;
+
+  /// socAnyEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Or type any emoji'**
+  String get socAnyEmoji;
+
+  /// socReactionCount
+  ///
+  /// In en, this message translates to:
+  /// **'{emoji} {count}'**
+  String socReactionCount(String emoji, int count);
+
+  /// socImageMissing
+  ///
+  /// In en, this message translates to:
+  /// **'Image not available yet'**
+  String get socImageMissing;
+
+  /// socAudEveryone
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get socAudEveryone;
+
+  /// socAudFollowers
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get socAudFollowers;
+
+  /// socAudSelected
+  ///
+  /// In en, this message translates to:
+  /// **'Selected alters'**
+  String get socAudSelected;
+
+  /// socAudSelf
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get socAudSelf;
+
+  /// socAudienceNote
+  ///
+  /// In en, this message translates to:
+  /// **'Audience controls what each alter sees while acting as themselves in Prism. Anyone using this device can switch who they act as.'**
+  String get socAudienceNote;
+
+  /// socEditPost
+  ///
+  /// In en, this message translates to:
+  /// **'Edit post'**
+  String get socEditPost;
+
+  /// socAnswerTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get socAnswerTitle;
+
+  /// socPost
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get socPost;
+
+  /// socSchedule
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get socSchedule;
+
+  /// socPostingAs
+  ///
+  /// In en, this message translates to:
+  /// **'Posting as {value}'**
+  String socPostingAs(String value);
+
+  /// socChange
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get socChange;
+
+  /// socWhoIsPosting
+  ///
+  /// In en, this message translates to:
+  /// **'Who is posting?'**
+  String get socWhoIsPosting;
+
+  /// socTypeText
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get socTypeText;
+
+  /// socTypeImage
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get socTypeImage;
+
+  /// socTypePoll
+  ///
+  /// In en, this message translates to:
+  /// **'Poll'**
+  String get socTypePoll;
+
+  /// socTypeQuestion
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get socTypeQuestion;
+
+  /// socTypeMedia
+  ///
+  /// In en, this message translates to:
+  /// **'Video & media'**
+  String get socTypeMedia;
+
+  /// socAskWho
+  ///
+  /// In en, this message translates to:
+  /// **'Ask who?'**
+  String get socAskWho;
+
+  /// socAnyone
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get socAnyone;
+
+  /// socTitleOptional
+  ///
+  /// In en, this message translates to:
+  /// **'Title (optional)'**
+  String get socTitleOptional;
+
+  /// socYourQuestion
+  ///
+  /// In en, this message translates to:
+  /// **'Your question'**
+  String get socYourQuestion;
+
+  /// socCaption
+  ///
+  /// In en, this message translates to:
+  /// **'Caption'**
+  String get socCaption;
+
+  /// socYourAnswer
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer'**
+  String get socYourAnswer;
+
+  /// socWhatsOnYourMind
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind?'**
+  String get socWhatsOnYourMind;
+
+  /// socBodyHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Use #tags and @names to tag topics and mention alters.'**
+  String get socBodyHelp;
+
+  /// socPollOptions
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get socPollOptions;
+
+  /// socOptionN
+  ///
+  /// In en, this message translates to:
+  /// **'Option {count}'**
+  String socOptionN(int count);
+
+  /// socRemoveOption
+  ///
+  /// In en, this message translates to:
+  /// **'Remove option'**
+  String get socRemoveOption;
+
+  /// socAddOption
+  ///
+  /// In en, this message translates to:
+  /// **'Add option'**
+  String get socAddOption;
+
+  /// socPollMultiAllow
+  ///
+  /// In en, this message translates to:
+  /// **'Allow several choices'**
+  String get socPollMultiAllow;
+
+  /// socRemoveImage
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get socRemoveImage;
+
+  /// socRemoveVideo
+  ///
+  /// In en, this message translates to:
+  /// **'Remove video'**
+  String get socRemoveVideo;
+
+  /// socAddImages
+  ///
+  /// In en, this message translates to:
+  /// **'Add images'**
+  String get socAddImages;
+
+  /// socAddVideo
+  ///
+  /// In en, this message translates to:
+  /// **'Add video'**
+  String get socAddVideo;
+
+  /// socVideoNote
+  ///
+  /// In en, this message translates to:
+  /// **'Videos stay on the device they were added on (they are too large to sync). Images sync to all your devices.'**
+  String get socVideoNote;
+
+  /// socVideoElsewhere
+  ///
+  /// In en, this message translates to:
+  /// **'This video was added on another device. Videos do not sync between devices.'**
+  String get socVideoElsewhere;
+
+  /// socVideoTooLarge
+  ///
+  /// In en, this message translates to:
+  /// **'That video is larger than 200 MB.'**
+  String get socVideoTooLarge;
+
+  /// socVideoFormat
+  ///
+  /// In en, this message translates to:
+  /// **'That video format is not supported. Use MP4, MOV, WebM or 3GP.'**
+  String get socVideoFormat;
+
+  /// socVideoFailed
+  ///
+  /// In en, this message translates to:
+  /// **'The video could not be added.'**
+  String get socVideoFailed;
+
+  /// socImageUnreadable
+  ///
+  /// In en, this message translates to:
+  /// **'{value} could not be read as an image.'**
+  String socImageUnreadable(String value);
+
+  /// socTags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get socTags;
+
+  /// socTagsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Separate with spaces, e.g. art headspace'**
+  String get socTagsHelp;
+
+  /// socContentWarning
+  ///
+  /// In en, this message translates to:
+  /// **'Content warning'**
+  String get socContentWarning;
+
+  /// socCwText
+  ///
+  /// In en, this message translates to:
+  /// **'Warning text'**
+  String get socCwText;
+
+  /// socWhoCanSee
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see this'**
+  String get socWhoCanSee;
+
+  /// socScheduleLater
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule for later'**
+  String get socScheduleLater;
+
+  /// socScheduledFor
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled for {value}'**
+  String socScheduledFor(String value);
+
+  /// socPostNow
+  ///
+  /// In en, this message translates to:
+  /// **'Post now instead'**
+  String get socPostNow;
+
+  /// socSaveDraft
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get socSaveDraft;
+
+  /// socDraftSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Draft saved'**
+  String get socDraftSaved;
+
+  /// socPosted
+  ///
+  /// In en, this message translates to:
+  /// **'Posted'**
+  String get socPosted;
+
+  /// socSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get socSaved;
+
+  /// socPostGone
+  ///
+  /// In en, this message translates to:
+  /// **'This post was deleted.'**
+  String get socPostGone;
+
+  /// socPostHidden
+  ///
+  /// In en, this message translates to:
+  /// **'This post is not visible to the alter you are acting as.'**
+  String get socPostHidden;
+
+  /// socAnswersTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Answers'**
+  String get socAnswersTitle;
+
+  /// socQuotesTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Quotes'**
+  String get socQuotesTitle;
+
+  /// socNoComments
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet. Start the conversation.'**
+  String get socNoComments;
+
+  /// socEditingComment
+  ///
+  /// In en, this message translates to:
+  /// **'Editing your comment'**
+  String get socEditingComment;
+
+  /// socReplyingTo
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {value}'**
+  String socReplyingTo(String value);
+
+  /// socCommentAs
+  ///
+  /// In en, this message translates to:
+  /// **'Comment as {value}'**
+  String socCommentAs(String value);
+
+  /// socSend
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get socSend;
+
+  /// socReply
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get socReply;
+
+  /// socDeleteCommentTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this comment and its replies?'**
+  String get socDeleteCommentTitle;
+
+  /// socEmptyFeed
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get socEmptyFeed;
+
+  /// socEmptyFeedHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Posts from every alter appear here. Write the first one!'**
+  String get socEmptyFeedHelp;
+
+  /// socEmptyFollowing
+  ///
+  /// In en, this message translates to:
+  /// **'No posts from alters you follow'**
+  String get socEmptyFollowing;
+
+  /// socEmptyFollowingHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Follow alters from their blog or Explore.'**
+  String get socEmptyFollowingHelp;
+
+  /// socSearchHint
+  ///
+  /// In en, this message translates to:
+  /// **'Search posts, tags and alters'**
+  String get socSearchHint;
+
+  /// socResults
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 result} other{{count} results}}'**
+  String socResults(int count);
+
+  /// socAlters
+  ///
+  /// In en, this message translates to:
+  /// **'Alters'**
+  String get socAlters;
+
+  /// socTrendingTags
+  ///
+  /// In en, this message translates to:
+  /// **'Popular tags'**
+  String get socTrendingTags;
+
+  /// socNoTags
+  ///
+  /// In en, this message translates to:
+  /// **'No tags yet'**
+  String get socNoTags;
+
+  /// socReportsToReview
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report to review} other{{count} reports to review}}'**
+  String socReportsToReview(int count);
+
+  /// socNoActivity
+  ///
+  /// In en, this message translates to:
+  /// **'No activity yet'**
+  String get socNoActivity;
+
+  /// socNoActivityHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Reactions, comments, reblogs, mentions and new followers show up here.'**
+  String get socNoActivityHelp;
+
+  /// socNReactPost
+  ///
+  /// In en, this message translates to:
+  /// **'{who} reacted {emoji} to your post'**
+  String socNReactPost(String who, String emoji);
+
+  /// socNReactComment
+  ///
+  /// In en, this message translates to:
+  /// **'{who} reacted {emoji} to your comment'**
+  String socNReactComment(String who, String emoji);
+
+  /// socNReactStory
+  ///
+  /// In en, this message translates to:
+  /// **'{who} reacted {emoji} to your story'**
+  String socNReactStory(String who, String emoji);
+
+  /// socNComment
+  ///
+  /// In en, this message translates to:
+  /// **'{who} commented on your post'**
+  String socNComment(String who);
+
+  /// socNReply
+  ///
+  /// In en, this message translates to:
+  /// **'{who} replied to your comment'**
+  String socNReply(String who);
+
+  /// socNStoryReply
+  ///
+  /// In en, this message translates to:
+  /// **'{who} replied to your story'**
+  String socNStoryReply(String who);
+
+  /// socNReblog
+  ///
+  /// In en, this message translates to:
+  /// **'{who} reblogged your post'**
+  String socNReblog(String who);
+
+  /// socNQuote
+  ///
+  /// In en, this message translates to:
+  /// **'{who} quoted your post'**
+  String socNQuote(String who);
+
+  /// socNMention
+  ///
+  /// In en, this message translates to:
+  /// **'{who} mentioned you'**
+  String socNMention(String who);
+
+  /// socNQuestion
+  ///
+  /// In en, this message translates to:
+  /// **'{who} asked you a question'**
+  String socNQuestion(String who);
+
+  /// socNFollow
+  ///
+  /// In en, this message translates to:
+  /// **'{who} followed you'**
+  String socNFollow(String who);
+
+  /// socNVote
+  ///
+  /// In en, this message translates to:
+  /// **'{who} voted in your poll'**
+  String socNVote(String who);
+
+  /// socNoTagPosts
+  ///
+  /// In en, this message translates to:
+  /// **'No visible posts with this tag'**
+  String get socNoTagPosts;
+
+  /// socScheduledTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get socScheduledTitle;
+
+  /// socNoScheduled
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing scheduled'**
+  String get socNoScheduled;
+
+  /// socDraftsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts'**
+  String get socDraftsTitle;
+
+  /// socNoDrafts
+  ///
+  /// In en, this message translates to:
+  /// **'No drafts'**
+  String get socNoDrafts;
+
+  /// socUntitledDraft
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled draft'**
+  String get socUntitledDraft;
+
+  /// socReportsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reported posts'**
+  String get socReportsTitle;
+
+  /// socReportsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Posts alters reported. Dismiss the report or delete the post.'**
+  String get socReportsHelp;
+
+  /// socNoReports
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to review'**
+  String get socNoReports;
+
+  /// socReportedBy
+  ///
+  /// In en, this message translates to:
+  /// **'Reported by {who}: {reason}'**
+  String socReportedBy(String who, String reason);
+
+  /// socDismissReport
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get socDismissReport;
+
+  /// socDeletePost
+  ///
+  /// In en, this message translates to:
+  /// **'Delete post'**
+  String get socDeletePost;
+
+  /// socBlog
+  ///
+  /// In en, this message translates to:
+  /// **'Blog'**
+  String get socBlog;
+
+  /// socBlogOf
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s blog'**
+  String socBlogOf(String value);
+
+  /// socPostsN
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 post} other{{count} posts}}'**
+  String socPostsN(int count);
+
+  /// socFollowersN
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 follower} other{{count} followers}}'**
+  String socFollowersN(int count);
+
+  /// socFollowingN
+  ///
+  /// In en, this message translates to:
+  /// **'{count} following'**
+  String socFollowingN(int count);
+
+  /// socFollowersTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get socFollowersTitle;
+
+  /// socFollowingTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get socFollowingTitle;
+
+  /// socCustomizeBlog
+  ///
+  /// In en, this message translates to:
+  /// **'Customize blog'**
+  String get socCustomizeBlog;
+
+  /// socFollow
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get socFollow;
+
+  /// socUnfollow
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get socUnfollow;
+
+  /// socMuteShort
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get socMuteShort;
+
+  /// socUnmuteShort
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get socUnmuteShort;
+
+  /// socBlockShort
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get socBlockShort;
+
+  /// socUnblockShort
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get socUnblockShort;
+
+  /// socFollowsYou
+  ///
+  /// In en, this message translates to:
+  /// **'Follows you'**
+  String get socFollowsYou;
+
+  /// socBlockedBlog
+  ///
+  /// In en, this message translates to:
+  /// **'This blog is blocked.'**
+  String get socBlockedBlog;
+
+  /// socNoPostsYet
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet'**
+  String get socNoPostsYet;
+
+  /// socNobodyYet
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody yet'**
+  String get socNobodyYet;
+
+  /// socBanner
+  ///
+  /// In en, this message translates to:
+  /// **'Banner'**
+  String get socBanner;
+
+  /// socChooseBanner
+  ///
+  /// In en, this message translates to:
+  /// **'Choose banner'**
+  String get socChooseBanner;
+
+  /// socUseProfileBanner
+  ///
+  /// In en, this message translates to:
+  /// **'Use profile banner'**
+  String get socUseProfileBanner;
+
+  /// socBannerHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Without a blog banner, the alter\'s profile banner is used.'**
+  String get socBannerHelp;
+
+  /// socBio
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get socBio;
+
+  /// socAccent
+  ///
+  /// In en, this message translates to:
+  /// **'Accent colour'**
+  String get socAccent;
+
+  /// socBlogBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Blog background'**
+  String get socBlogBackground;
+
+  /// socTitleFont
+  ///
+  /// In en, this message translates to:
+  /// **'Name style'**
+  String get socTitleFont;
+
+  /// socFontBold
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get socFontBold;
+
+  /// socLayout
+  ///
+  /// In en, this message translates to:
+  /// **'Post layout'**
+  String get socLayout;
+
+  /// socLayoutCards
+  ///
+  /// In en, this message translates to:
+  /// **'Full cards'**
+  String get socLayoutCards;
+
+  /// socLayoutCompact
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get socLayoutCompact;
+
+  /// socCustomReactions
+  ///
+  /// In en, this message translates to:
+  /// **'Your reactions'**
+  String get socCustomReactions;
+
+  /// socCustomReactionsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji shown first in the reaction picker, separated by spaces.'**
+  String get socCustomReactionsHelp;
+
+  /// socNoBanner
+  ///
+  /// In en, this message translates to:
+  /// **'No banner yet'**
+  String get socNoBanner;
+
+  /// socBannerPositionLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Banner position'**
+  String get socBannerPositionLabel;
+
+  /// socBannerPositionHint
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to choose which part shows. Swipe up or down to adjust.'**
+  String get socBannerPositionHint;
+
+  /// socDragToPosition
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to position'**
+  String get socDragToPosition;
+
+  /// socBannerPositionFor
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\'s banner position'**
+  String socBannerPositionFor(String value);
+
+  /// socBannerZoom
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get socBannerZoom;
+
+  /// socBannersTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Headmate banners'**
+  String get socBannersTitle;
+
+  /// socBannersAdjust
+  ///
+  /// In en, this message translates to:
+  /// **'Crop & position banners'**
+  String get socBannersAdjust;
+
+  /// socShowBanners
+  ///
+  /// In en, this message translates to:
+  /// **'Show alter banners'**
+  String get socShowBanners;
+
+  /// socShowBannersHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Each alter\'s profile banner fades in behind their card on Headmates.'**
+  String get socShowBannersHelp;
+
+  /// socBannersAdjustHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Drag a card to choose which part of the banner shows, and zoom to crop in. Alters without a profile banner are not listed; add one in their profile.'**
+  String get socBannersAdjustHelp;
+
+  /// stoTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Alter Stories'**
+  String get stoTitle;
+
+  /// stoYourStory
+  ///
+  /// In en, this message translates to:
+  /// **'Your story'**
+  String get stoYourStory;
+
+  /// stoAddStory
+  ///
+  /// In en, this message translates to:
+  /// **'Add story'**
+  String get stoAddStory;
+
+  /// stoViewYours
+  ///
+  /// In en, this message translates to:
+  /// **'View your story'**
+  String get stoViewYours;
+
+  /// stoNewFrom
+  ///
+  /// In en, this message translates to:
+  /// **'New story from {value}'**
+  String stoNewFrom(String value);
+
+  /// stoSeenFrom
+  ///
+  /// In en, this message translates to:
+  /// **'Story from {value}, seen'**
+  String stoSeenFrom(String value);
+
+  /// stoNoneYet
+  ///
+  /// In en, this message translates to:
+  /// **'No stories in the last 24 hours'**
+  String get stoNoneYet;
+
+  /// stoIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Stories last 24 hours. Anyone in the system can watch them from here without switching front.'**
+  String get stoIntro;
+
+  /// stoEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No stories right now'**
+  String get stoEmpty;
+
+  /// stoHighlights
+  ///
+  /// In en, this message translates to:
+  /// **'Highlights'**
+  String get stoHighlights;
+
+  /// stoHighlightLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Highlight {value}'**
+  String stoHighlightLabel(String value);
+
+  /// stoNewHighlight
+  ///
+  /// In en, this message translates to:
+  /// **'New highlight'**
+  String get stoNewHighlight;
+
+  /// stoNew
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get stoNew;
+
+  /// stoArchive
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get stoArchive;
+
+  /// stoArchiveIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Expired stories you kept. Only you can see the archive.'**
+  String get stoArchiveIntro;
+
+  /// stoArchiveEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No archived stories'**
+  String get stoArchiveEmpty;
+
+  /// stoNoStoriesForHighlight
+  ///
+  /// In en, this message translates to:
+  /// **'Post or archive a story first'**
+  String get stoNoStoriesForHighlight;
+
+  /// stoHighlightName
+  ///
+  /// In en, this message translates to:
+  /// **'Highlight name'**
+  String get stoHighlightName;
+
+  /// stoCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get stoCategory;
+
+  /// stoCategoryHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Optional, e.g. Art, Headspace, Trips'**
+  String get stoCategoryHelp;
+
+  /// stoPickStories
+  ///
+  /// In en, this message translates to:
+  /// **'Stories to include'**
+  String get stoPickStories;
+
+  /// stoRename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get stoRename;
+
+  /// stoSetCategory
+  ///
+  /// In en, this message translates to:
+  /// **'Set category'**
+  String get stoSetCategory;
+
+  /// stoSetCover
+  ///
+  /// In en, this message translates to:
+  /// **'Choose cover'**
+  String get stoSetCover;
+
+  /// stoDeleteHighlight
+  ///
+  /// In en, this message translates to:
+  /// **'Delete highlight'**
+  String get stoDeleteHighlight;
+
+  /// stoNothing
+  ///
+  /// In en, this message translates to:
+  /// **'No stories to show'**
+  String get stoNothing;
+
+  /// stoSlideOf
+  ///
+  /// In en, this message translates to:
+  /// **'Slide {index} of {total}'**
+  String stoSlideOf(int index, int total);
+
+  /// stoPrevious
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get stoPrevious;
+
+  /// stoNext
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get stoNext;
+
+  /// stoPlayTrack
+  ///
+  /// In en, this message translates to:
+  /// **'Play {value}'**
+  String stoPlayTrack(String value);
+
+  /// stoSeenBy
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Not seen yet} =1{Seen by 1} other{Seen by {count}}}'**
+  String stoSeenBy(int count);
+
+  /// stoReplyTo
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to {value}'**
+  String stoReplyTo(String value);
+
+  /// stoReactWith
+  ///
+  /// In en, this message translates to:
+  /// **'React with {value}'**
+  String stoReactWith(String value);
+
+  /// stoReplySent
+  ///
+  /// In en, this message translates to:
+  /// **'Reply sent'**
+  String get stoReplySent;
+
+  /// stoActivity
+  ///
+  /// In en, this message translates to:
+  /// **'Story activity'**
+  String get stoActivity;
+
+  /// stoReplies
+  ///
+  /// In en, this message translates to:
+  /// **'Replies'**
+  String get stoReplies;
+
+  /// stoArchiveOn
+  ///
+  /// In en, this message translates to:
+  /// **'Kept in archive after 24 h'**
+  String get stoArchiveOn;
+
+  /// stoArchiveOff
+  ///
+  /// In en, this message translates to:
+  /// **'Disappears after 24 h'**
+  String get stoArchiveOff;
+
+  /// stoArchiveHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change. Archived stories can be added to highlights.'**
+  String get stoArchiveHelp;
+
+  /// stoAddToHighlight
+  ///
+  /// In en, this message translates to:
+  /// **'Add to {value}'**
+  String stoAddToHighlight(String value);
+
+  /// stoAddedToHighlight
+  ///
+  /// In en, this message translates to:
+  /// **'Added to {value}'**
+  String stoAddedToHighlight(String value);
+
+  /// stoDelete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete story'**
+  String get stoDelete;
+
+  /// stoNewStory
+  ///
+  /// In en, this message translates to:
+  /// **'New story'**
+  String get stoNewStory;
+
+  /// stoStickers
+  ///
+  /// In en, this message translates to:
+  /// **'Stickers'**
+  String get stoStickers;
+
+  /// stoTextSticker
+  ///
+  /// In en, this message translates to:
+  /// **'Text sticker'**
+  String get stoTextSticker;
+
+  /// stoGifSticker
+  ///
+  /// In en, this message translates to:
+  /// **'GIF or image'**
+  String get stoGifSticker;
+
+  /// stoStickerText
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker text'**
+  String get stoStickerText;
+
+  /// stoNoMusic
+  ///
+  /// In en, this message translates to:
+  /// **'Import music in the Music tab first'**
+  String get stoNoMusic;
+
+  /// stoAddMusic
+  ///
+  /// In en, this message translates to:
+  /// **'Add music'**
+  String get stoAddMusic;
+
+  /// stoNoSong
+  ///
+  /// In en, this message translates to:
+  /// **'No music'**
+  String get stoNoSong;
+
+  /// stoPosted
+  ///
+  /// In en, this message translates to:
+  /// **'Story shared'**
+  String get stoPosted;
+
+  /// stoStickerHint
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move, double-tap to resize, hold to remove'**
+  String get stoStickerHint;
+
+  /// stoAddSlide
+  ///
+  /// In en, this message translates to:
+  /// **'Add slide'**
+  String get stoAddSlide;
+
+  /// stoSlidesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a slide to edit it, hold to remove it.'**
+  String get stoSlidesHelp;
+
+  /// stoPhoto
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get stoPhoto;
+
+  /// stoCamera
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get stoCamera;
+
+  /// stoVideo
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get stoVideo;
+
+  /// stoSticker
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker'**
+  String get stoSticker;
+
+  /// stoRemoveMedia
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo/video'**
+  String get stoRemoveMedia;
+
+  /// stoText
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get stoText;
+
+  /// stoCaption
+  ///
+  /// In en, this message translates to:
+  /// **'Caption'**
+  String get stoCaption;
+
+  /// stoFont
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get stoFont;
+
+  /// stoFontScript
+  ///
+  /// In en, this message translates to:
+  /// **'Script'**
+  String get stoFontScript;
+
+  /// stoAlignTop
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get stoAlignTop;
+
+  /// stoAlignCenter
+  ///
+  /// In en, this message translates to:
+  /// **'Middle'**
+  String get stoAlignCenter;
+
+  /// stoAlignBottom
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom'**
+  String get stoAlignBottom;
+
+  /// stoTextSize
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get stoTextSize;
+
+  /// stoTextColor
+  ///
+  /// In en, this message translates to:
+  /// **'Text colour'**
+  String get stoTextColor;
+
+  /// stoBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get stoBackground;
+
+  /// stoBackground2
+  ///
+  /// In en, this message translates to:
+  /// **'Gradient to'**
+  String get stoBackground2;
+
+  /// stoDuration
+  ///
+  /// In en, this message translates to:
+  /// **'Slide length'**
+  String get stoDuration;
+
+  /// stoKeepArchive
+  ///
+  /// In en, this message translates to:
+  /// **'Keep in archive after 24 hours'**
+  String get stoKeepArchive;
+
+  /// stoKeepArchiveHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Otherwise it disappears for good. Only you see the archive.'**
+  String get stoKeepArchiveHelp;
+
+  /// stoShare
+  ///
+  /// In en, this message translates to:
+  /// **'Share story'**
+  String get stoShare;
+
+  /// stoDefaultAudience
+  ///
+  /// In en, this message translates to:
+  /// **'Who sees new stories by default'**
+  String get stoDefaultAudience;
 }
 
 class _AppLocalizationsDelegate

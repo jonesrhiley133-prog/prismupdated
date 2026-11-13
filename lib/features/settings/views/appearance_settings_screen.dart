@@ -71,6 +71,15 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                   onPressed: () => context.push(AppRoutePaths.appearanceStudio),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: context.l10n.socBannersTitle,
+                  icon: Icons.panorama_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.headmateBanners),
+                ),
+              ),
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(

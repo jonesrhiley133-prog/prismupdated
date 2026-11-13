@@ -69,6 +69,8 @@ abstract final class AppIcons {
   static final navHeadspaceActive = PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill);
   static final navMusic = PhosphorIcons.musicNotes();
   static final navMusicActive = PhosphorIcons.musicNotes(PhosphorIconsStyle.fill);
+  static final navStories = PhosphorIcons.aperture();
+  static final navStoriesActive = PhosphorIcons.aperture(PhosphorIconsStyle.fill);
   static final navSubsystems = PhosphorIcons.treeStructure();
   static final navSubsystemsActive = PhosphorIcons.treeStructure(PhosphorIconsStyle.fill);
   static final whatsNew = PhosphorIcons.megaphone();

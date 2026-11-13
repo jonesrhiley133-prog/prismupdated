@@ -20,6 +20,10 @@ import '../../features/polls/advanced/poll_stats_screen.dart';
 import '../../features/fronting_notification/views/fronting_notification_settings_screen.dart';
 import '../../features/home_widgets/views/home_widgets_screen.dart';
 import '../../features/music/views/now_playing_screen.dart';
+import '../../features/social/views/alter_blog_screen.dart';
+import '../../features/social/views/banner_positions_screen.dart';
+import '../../features/social/views/bulletin_screen.dart';
+import '../../features/social/views/post_thread_screen.dart';
 import '../../features/appearance/views/appearance_studio_screen.dart';
 import '../../features/accessibility/a11y_views.dart';
 import '../../features/home_widgets/views/todo_screen.dart';
@@ -77,6 +81,7 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/social/views/stories_screen.dart';
 import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
 import '../../features/subsystems/views/subsystems_screen.dart';
@@ -174,6 +179,9 @@ final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _musicNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'music',
+);
+final _storiesNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'stories',
 );
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
@@ -442,6 +450,36 @@ final routerProvider = Provider<GoRouter>((ref) {
           transitionsBuilder: (context, animation, _, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialPostRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => PostThreadScreen(postId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialAlterRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => AlterBlogScreen(memberId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialTagRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => TagScreen(tag: state.pathParameters['tag']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialDrafts,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DraftsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.headmateBanners,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const BannerPositionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialReports,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ReportsScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.homeWidgets,
@@ -1090,8 +1128,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final flags = ref.read(featureFlagsProvider);
                   return flags.boards ? null : AppRoutePaths.home;
                 },
-                builder: (context, state) => const BoardsScreen(),
+                builder: (context, state) => const BulletinScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'messages',
+                    builder: (context, state) => const BoardsScreen(),
+                  ),
                   GoRoute(
                     name: AppRouteNames.memberBoard,
                     path: 'member/:memberId',
@@ -1357,6 +1399,16 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.music,
                 builder: (context, state) => const MusicScreen(),
+              ),
+            ],
+          ),
+          // Branch 31: Stories (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _storiesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.stories,
+                builder: (context, state) => const StoriesScreen(),
               ),
             ],
           ),

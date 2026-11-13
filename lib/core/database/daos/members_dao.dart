@@ -263,6 +263,32 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   Stream<Member?> watchMemberById(String id) =>
       (select(members)..where((m) => m.id.equals(id))).watchSingleOrNull();
 
+  /// The banner a member card should show (Prism or PluralKit header,
+  /// following the member's own header choice), without loading the rest.
+  Stream<Uint8List?> watchBannerImageData(String id) {
+    return customSelect(
+      '''
+      SELECT profile_header_source, profile_header_visible,
+             profile_header_image_data, pk_banner_image_data
+      FROM members
+      WHERE id = ? AND is_deleted = 0
+      LIMIT 1
+      ''',
+      variables: [Variable.withString(id)],
+      readsFrom: {members},
+    ).watchSingleOrNull().map((row) {
+      if (row == null || row.read<bool>('profile_header_visible') == false) return null;
+      final prism = row.read<Uint8List?>('profile_header_image_data');
+      final pk = row.read<Uint8List?>('pk_banner_image_data');
+      // Source 0 = PluralKit, 1 = Prism (MemberProfileHeaderSource order).
+      final preferPk = row.read<int?>('profile_header_source') == 0;
+      final first = preferPk ? pk : prism;
+      final second = preferPk ? prism : pk;
+      if (first != null && first.isNotEmpty) return first;
+      return second != null && second.isNotEmpty ? second : null;
+    });
+  }
+
   Stream<Uint8List?> watchAvatarImageData(String id) {
     return customSelect(
       '''
