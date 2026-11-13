@@ -34402,6 +34402,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GitHub is limiting update checks from this network right now. Try again in a few minutes.'**
   String get appUpdateErrorRateLimited;
+
+  /// freezeReportTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Prism stopped responding last time'**
+  String get freezeReportTitle;
+
+  /// freezeReportBody
+  ///
+  /// In en, this message translates to:
+  /// **'A short technical report was saved. It lists pages and app components, not your data. Copy it and send it to the developer to help fix the problem.'**
+  String get freezeReportBody;
+
+  /// freezeReportCopy
+  ///
+  /// In en, this message translates to:
+  /// **'Copy report'**
+  String get freezeReportCopy;
+
+  /// freezeReportDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get freezeReportDismiss;
+
+  /// freezeReportCopied
+  ///
+  /// In en, this message translates to:
+  /// **'Report copied'**
+  String get freezeReportCopied;
+
+  /// freezeReportToast
+  ///
+  /// In en, this message translates to:
+  /// **'Prism froze last time. A report is in Settings → About.'**
+  String get freezeReportToast;
 }
 
 class _AppLocalizationsDelegate

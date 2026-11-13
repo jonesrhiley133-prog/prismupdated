@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -661,6 +662,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
 
   @override
   Widget build(BuildContext context) {
+    FreezeWatchdog.crumb('members: build');
     ref.listen<TabSelectionEvent?>(tabSelectionProvider, (_, next) {
       if (next?.branchIndex != _shellBranchIndex) return;
       _resetPaneForTabSelection();
@@ -728,6 +730,10 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
       onSelectDetail: _openMemberInDetailPane,
       detail: (context) => _buildDetailPane(terms, membersAsync, showInactive),
       list: (context, isWide) {
+        FreezeWatchdog.crumb(
+          'members: list (${membersAsync.value?.length ?? 'loading'} items, '
+          '${groups.length} groups, $viewMode)',
+        );
         setListDetailWide(isWide);
         if (isWide && _paneGroupStack.isNotEmpty) {
           return _listPane(

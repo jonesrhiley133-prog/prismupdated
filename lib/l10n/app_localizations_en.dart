@@ -21757,4 +21757,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get appUpdateErrorRateLimited =>
       'GitHub is limiting update checks from this network right now. Try again in a few minutes.';
+
+  @override
+  String get freezeReportTitle => 'Prism stopped responding last time';
+
+  @override
+  String get freezeReportBody =>
+      'A short technical report was saved. It lists pages and app components, not your data. Copy it and send it to the developer to help fix the problem.';
+
+  @override
+  String get freezeReportCopy => 'Copy report';
+
+  @override
+  String get freezeReportDismiss => 'Dismiss';
+
+  @override
+  String get freezeReportCopied => 'Report copied';
+
+  @override
+  String get freezeReportToast =>
+      'Prism froze last time. A report is in Settings → About.';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/core/diagnostics/freeze_report_card.dart';
 import 'package:prism_plurality/features/app_update/app_update_widgets.dart';
 import 'package:prism_plurality/features/settings/views/about_section.dart';
 import 'package:prism_plurality/features/whats_new/whats_new.dart';
@@ -22,7 +23,12 @@ class AboutScreen extends StatelessWidget {
         padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [AppUpdateCard(), WhatsNewTile(), AboutSection()],
+          children: [
+            FreezeReportCard(),
+            AppUpdateCard(),
+            WhatsNewTile(),
+            AboutSection(),
+          ],
         ),
       ),
     );

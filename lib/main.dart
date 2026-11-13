@@ -19,6 +19,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:prism_plurality/core/database/database_encryption.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/diagnostics/boot_timings.dart';
+import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
 import 'package:prism_plurality/core/diagnostics/main_isolate_stalls.dart';
 import 'package:prism_plurality/core/reset/full_reset_service.dart';
 import 'package:prism_plurality/core/reset/reset_recovery_app.dart';
@@ -351,12 +352,20 @@ void main() async {
         if (retryCount >= 3) return null;
         return Duration(seconds: 1 << retryCount); // 1s, 2s, 4s
       },
-      observers: [if (kDebugMode) _DebugProviderObserver()],
+      observers: [
+        if (kDebugMode) _DebugProviderObserver(),
+        const FreezeTrailObserver(),
+      ],
       child: const PrismApp(),
     ),
   );
 
   _scheduleLinuxEmojiFontLoad();
+  if (!kIsWeb) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(FreezeWatchdog.start());
+    });
+  }
 
   // TODO(background-sync): workmanager initialization is intentionally disabled.
   // callbackDispatcher in pluralkit_background_service.dart is a no-op stub.

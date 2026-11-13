@@ -32,6 +32,20 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.23.1',
+    date: DateTime(2026, 11, 13),
+    improvements: const [
+      LocalizedText(
+        'Freeze recorder: if Prism stops responding, a short technical '
+            'report (pages and app components, never your data) is saved. '
+            'Copy it from Settings → About and send it to the developer.',
+        'Registro de bloqueos: si Prism deja de responder, se guarda un '
+            'breve informe técnico (páginas y componentes, nunca tus datos). '
+            'Cópialo en Ajustes → Acerca de y envíalo al desarrollador.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.23.0',
     date: DateTime(2026, 11, 13),
     features: const [

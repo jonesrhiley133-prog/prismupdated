@@ -120,6 +120,7 @@ import '../../features/settings/views/media_settings_screen.dart';
 import '../../features/onboarding/views/onboarding_screen.dart';
 import '../../features/settings/providers/settings_providers.dart';
 import '../../shared/widgets/app_shell.dart';
+import '../diagnostics/freeze_watchdog.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _homeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'home');
@@ -146,28 +147,18 @@ final _locationsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'locations',
 );
 final _workNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'work');
-final _insightsNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'insights',
-);
+final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _cycleNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cycle');
-final _journalNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'journal',
-);
+final _journalNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'journal');
 final _dictionaryNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'dictionary',
 );
 final _achievementsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'achievements',
 );
-final _fitnessNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'fitness',
-);
-final _financeNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'finance',
-);
-final _schoolNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'school',
-);
+final _fitnessNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'fitness');
+final _financeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'finance');
+final _schoolNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'school');
 final _relationshipsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'relationships',
 );
@@ -177,15 +168,9 @@ final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
 final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'headspace',
 );
-final _musicNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'music',
-);
-final _storiesNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'stories',
-);
-final _contactsNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'contacts',
-);
+final _musicNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'music');
+final _storiesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'stories');
+final _contactsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'contacts');
 
 /// Notifier that triggers GoRouter redirect re-evaluation when onboarding
 /// status changes.
@@ -352,7 +337,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     return flags.chat ? null : AppRoutePaths.home;
   }
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutePaths.home,
     refreshListenable: _onboardingRedirectNotifier,
@@ -368,6 +353,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
     },
     redirect: (context, state) async {
+      FreezeWatchdog.crumb(
+        'redirect ${state.fullPath ?? state.matchedLocation}',
+      );
       return resolveOnboardingRedirect(
         hasCompleted: _onboardingRedirectNotifier.hasCompleted,
         isOnboarding: state.matchedLocation == AppRoutePaths.onboarding,
@@ -426,9 +414,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           fullscreenDialog: true,
           child: const NowPlayingScreen(),
           transitionsBuilder: (context, animation, _, child) => SlideTransition(
-            position: Tween(begin: const Offset(0, 1), end: Offset.zero)
-                .chain(CurveTween(curve: Curves.easeOutCubic))
-                .animate(animation),
+            position: Tween(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation),
             child: child,
           ),
         ),
@@ -454,17 +443,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutePaths.socialPostRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => PostThreadScreen(postId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            PostThreadScreen(postId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialAlterRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => AlterBlogScreen(memberId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            AlterBlogScreen(memberId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialTagRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => TagScreen(tag: state.pathParameters['tag']!),
+        builder: (context, state) =>
+            TagScreen(tag: state.pathParameters['tag']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialDrafts,
@@ -1416,8 +1408,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-});
+  void logRoute() {
+    final c = router.routerDelegate.currentConfiguration;
+    FreezeWatchdog.crumb('page ${c.isEmpty ? '-' : c.fullPath}');
+  }
 
+  router.routerDelegate.addListener(logRoute);
+  ref.onDispose(() => router.routerDelegate.removeListener(logRoute));
+  return router;
+});
 
 /// Keyboard shortcut target (Alt+Shift+A): the quick accessibility panel.
 class _QuickA11yPage extends StatelessWidget {
@@ -1431,7 +1430,10 @@ class _QuickA11yPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        child: const Padding(padding: EdgeInsets.only(top: 16), child: A11yQuickPanel()),
+        child: const Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: A11yQuickPanel(),
+        ),
       ),
     ),
   );
