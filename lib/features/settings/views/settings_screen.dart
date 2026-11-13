@@ -223,6 +223,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       title: context.l10n.fnTitle,
                       route: AppRoutePaths.frontingNotification,
                     ),
+                    _SettingsLink(
+                      icon: Icons.dynamic_feed_outlined,
+                      iconColor: Colors.deepOrange,
+                      title: context.l10n.socBoardTitle,
+                      onTap: () async {
+                        // The Bulletin Board lives behind the Boards switch.
+                        if (!ref.read(boardsEnabledProvider)) {
+                          await ref
+                              .read(settingsNotifierProvider.notifier)
+                              .updateFeatureToggle(boardsEnabled: true);
+                        }
+                        if (context.mounted) context.go(AppRoutePaths.boards);
+                      },
+                    ),
+                    _SettingsLink(
+                      icon: Icons.auto_awesome_outlined,
+                      iconColor: Colors.pink,
+                      title: context.l10n.stoTitle,
+                      onTap: () => context.go(AppRoutePaths.stories),
+                    ),
                     _navLink(
                       icon: Icons.palette_outlined,
                       iconColor: Colors.pinkAccent,

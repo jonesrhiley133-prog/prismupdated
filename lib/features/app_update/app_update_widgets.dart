@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -15,6 +16,7 @@ String appUpdateErrorText(AppLocalizations l10n, String? code) =>
       'download_failed' => l10n.appUpdateErrorDownload,
       'install_failed' => l10n.appUpdateErrorInstall,
       'no_apk' => l10n.appUpdateErrorNoApk,
+      'rate_limited' => l10n.appUpdateErrorRateLimited,
       _ => l10n.appUpdateErrorGeneric,
     };
 
@@ -49,11 +51,32 @@ class _ProgressBar extends StatelessWidget {
 
 /// Full update controls for the About screen: current build, check button,
 /// download progress, install permission prompt and errors.
-class AppUpdateCard extends ConsumerWidget {
+class AppUpdateCard extends ConsumerStatefulWidget {
   const AppUpdateCard({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppUpdateCard> createState() => _AppUpdateCardState();
+}
+
+class _AppUpdateCardState extends ConsumerState<AppUpdateCard> {
+  late final Future<PackageInfo?> _installed = PackageInfo.fromPlatform().then<PackageInfo?>((p) => p).catchError((Object _) => null);
+
+  @override
+  void initState() {
+    super.initState();
+    // Opening the card always shows a fresh answer, not one remembered
+    // from an earlier automatic check.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final n = ref.read(appUpdateNotifierProvider.notifier);
+      final s = ref.read(appUpdateNotifierProvider);
+      final stale = s.lastChecked == null || DateTime.now().difference(s.lastChecked!) > const Duration(minutes: 1);
+      if (n.isSupported && stale && !s.busy && s.phase != AppUpdatePhase.available) n.check();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notifier = ref.read(appUpdateNotifierProvider.notifier);
     if (!notifier.isSupported) return const SizedBox.shrink();
     final s = ref.watch(appUpdateNotifierProvider);
@@ -127,6 +150,20 @@ class AppUpdateCard extends ConsumerWidget {
               const SizedBox(height: 12),
               _ProgressBar(s.progress),
             ],
+            FutureBuilder<PackageInfo?>(
+              future: _installed,
+              builder: (context, snap) {
+                final p = snap.data;
+                if (p == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    l10n.appUpdateInstalled(p.version, p.buildNumber),
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 8),
             Text(
               l10n.appUpdateKeepsData,

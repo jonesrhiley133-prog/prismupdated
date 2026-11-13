@@ -69,11 +69,9 @@ void main() {
 
   test('reports an update only when the release build is newer', () async {
     final client = MockClient((req) async {
-      expect(
-        req.url.toString(),
-        'https://api.github.com/repos/o/r/releases/latest',
-      );
-      return http.Response(jsonEncode(_release()), 200);
+      expect(req.url.path, '/repos/o/r/releases');
+      // Out of order on purpose: the newest build wins, not the first.
+      return http.Response(jsonEncode([_release(build: 30), _release(), _release(build: 35)]), 200);
     });
     expect((await service(client).checkForUpdate())!.buildNumber, 42);
     expect(await service(client, current: 42).checkForUpdate(), isNull);
@@ -130,6 +128,41 @@ void main() {
     expect(Directory('${tmp.path}/updates').listSync(), isEmpty);
   });
 
+  test('drafts, prereleases and non-APK releases are ignored', () async {
+    final client = MockClient(
+      (req) async => http.Response(
+        jsonEncode([
+          {..._release(build: 99), 'draft': true},
+          {..._release(build: 98), 'prerelease': true},
+          _release(build: 97, apk: false),
+          _release(build: 20),
+        ]),
+        200,
+      ),
+    );
+    expect((await service(client).checkForUpdate())!.buildNumber, 20);
+  });
+
+  test('an interrupted download resumes where it stopped', () async {
+    var calls = 0;
+    final ranges = <String?>[];
+    final client = MockClient.streaming((req, _) async {
+      calls++;
+      ranges.add(req.headers['Range']);
+      if (calls == 1) {
+        // Half the file, then the connection drops.
+        final half = _apkBytes.sublist(0, 2000);
+        final stream = Stream<List<int>>.fromIterable([half]).followedBy(Stream.error(const SocketException('dropped')));
+        return http.StreamedResponse(stream, 200, contentLength: _apkBytes.length);
+      }
+      final from = int.parse(req.headers['Range']!.substring(6, req.headers['Range']!.length - 1));
+      return http.StreamedResponse(Stream.value(_apkBytes.sublist(from)), 206, contentLength: _apkBytes.length - from);
+    });
+    final path = await service(client).download(parseReleaseJson(_release())!);
+    expect(File(path).readAsBytesSync(), _apkBytes);
+    expect(ranges, [null, 'bytes=2000-']);
+  });
+
   test('notifier: check, download, permission prompt, install', () async {
     const channel = MethodChannel('test/app_update');
     var allowed = false;
@@ -179,4 +212,11 @@ void main() {
     n.dismiss();
     expect(c.read(appUpdateNotifierProvider).dismissedBuild, 42);
   });
+}
+
+extension<T> on Stream<T> {
+  Stream<T> followedBy(Stream<T> other) async* {
+    yield* this;
+    yield* other;
+  }
 }

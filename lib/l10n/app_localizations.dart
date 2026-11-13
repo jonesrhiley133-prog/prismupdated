@@ -34390,6 +34390,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Who sees new stories by default'**
   String get stoDefaultAudience;
+
+  /// appUpdateInstalled
+  ///
+  /// In en, this message translates to:
+  /// **'Installed: {version} (build {build})'**
+  String appUpdateInstalled(String version, String build);
+
+  /// appUpdateErrorRateLimited
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub is limiting update checks from this network right now. Try again in a few minutes.'**
+  String get appUpdateErrorRateLimited;
 }
 
 class _AppLocalizationsDelegate

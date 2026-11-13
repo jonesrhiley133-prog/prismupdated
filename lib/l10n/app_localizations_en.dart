@@ -21748,4 +21748,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stoDefaultAudience => 'Who sees new stories by default';
+
+  @override
+  String appUpdateInstalled(String version, String build) {
+    return 'Installed: $version (build $build)';
+  }
+
+  @override
+  String get appUpdateErrorRateLimited =>
+      'GitHub is limiting update checks from this network right now. Try again in a few minutes.';
 }

@@ -18307,5 +18307,9 @@
   "stoShare": "Share story",
   "@stoShare": {"description": "stoShare"},
   "stoDefaultAudience": "Who sees new stories by default",
-  "@stoDefaultAudience": {"description": "stoDefaultAudience"}
+  "@stoDefaultAudience": {"description": "stoDefaultAudience"},
+  "appUpdateInstalled": "Installed: {version} (build {build})",
+  "@appUpdateInstalled": {"description": "appUpdateInstalled", "placeholders": {"version": {"type": "String"}, "build": {"type": "String"}}},
+  "appUpdateErrorRateLimited": "GitHub is limiting update checks from this network right now. Try again in a few minutes.",
+  "@appUpdateErrorRateLimited": {"description": "appUpdateErrorRateLimited"}
 }

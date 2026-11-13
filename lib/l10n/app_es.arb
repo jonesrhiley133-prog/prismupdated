@@ -7456,5 +7456,7 @@
   "stoKeepArchive": "Guardar en el archivo tras 24 horas",
   "stoKeepArchiveHelp": "Si no, desaparece para siempre. Solo tú ves el archivo.",
   "stoShare": "Compartir historia",
-  "stoDefaultAudience": "Quién ve las historias nuevas por defecto"
+  "stoDefaultAudience": "Quién ve las historias nuevas por defecto",
+  "appUpdateInstalled": "Instalada: {version} (compilación {build})",
+  "appUpdateErrorRateLimited": "GitHub está limitando las comprobaciones desde esta red. Inténtalo en unos minutos."
 }
