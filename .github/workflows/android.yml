@@ -26,6 +26,27 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
+      # The hosted runner has ~14 GB free, which the two-ABI Flutter + Rust
+      # release build can exceed ("No space left on device"). Remove large
+      # preinstalled toolchains Prism never uses. The Android SDK/NDK, Java
+      # and Rust are left alone.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /opt/ghc /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL \
+            /usr/local/share/boost \
+            /usr/share/swift \
+            /usr/local/share/powershell \
+            /usr/local/share/chromium \
+            /usr/local/lib/node_modules \
+            /opt/microsoft /opt/google/chrome || true
+          sudo docker image prune --all --force > /dev/null 2>&1 || true
+          sudo apt-get clean || true
+          df -h /
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-java@v4
