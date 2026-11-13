@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/links/models/record_ref.dart';
+import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -172,6 +174,10 @@ class JournalEntrySheet extends ConsumerWidget {
                       ],
                     ],
                   ),
+                ),
+                RelatedRecordsSection(
+                  self: RecordRef(RecordRef.rec, entry.id),
+                  padding: const EdgeInsets.only(bottom: 12),
                 ),
                 TrackerLabel(l10n.journalHistory(history.length)),
                 if (history.isEmpty)

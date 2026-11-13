@@ -36,6 +36,12 @@ abstract final class AppRoutePaths {
   static const headspace = '/headspace';
   static const music = '/music';
   static const stories = '/stories';
+  static const nutrition = '/nutrition';
+  static const scrapbook = '/scrapbook';
+  static const connections = '/connections';
+  static const analytics = '/analytics';
+  static const availability = '/availability';
+  static const introductions = '/introductions';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -229,6 +235,12 @@ enum AppShellTabId {
   headspace,
   music,
   stories,
+  nutrition,
+  scrapbook,
+  connections,
+  analytics,
+  availability,
+  introductions,
 }
 
 class AppShellTab {
@@ -305,6 +317,12 @@ class AppShellTab {
       AppShellTabId.headspace => l10n.navHeadspace,
       AppShellTabId.music => l10n.navMusic,
       AppShellTabId.stories => l10n.navStories,
+      AppShellTabId.nutrition => l10n.navNutrition,
+      AppShellTabId.scrapbook => l10n.navScrapbook,
+      AppShellTabId.connections => l10n.navConnections,
+      AppShellTabId.analytics => l10n.navAnalytics,
+      AppShellTabId.availability => l10n.navAvailability,
+      AppShellTabId.introductions => l10n.navIntroductions,
     };
   }
 
@@ -353,6 +371,12 @@ class AppShellTab {
       AppShellTabId.headspace => true,
       AppShellTabId.music => true,
       AppShellTabId.stories => true,
+      AppShellTabId.nutrition => true,
+      AppShellTabId.scrapbook => true,
+      AppShellTabId.connections => true,
+      AppShellTabId.analytics => true,
+      AppShellTabId.availability => true,
+      AppShellTabId.introductions => true,
     };
   }
 }
@@ -615,6 +639,54 @@ final appShellTabs = [
     branchIndex: 31,
     rootLocation: AppRoutePaths.stories,
   ),
+  AppShellTab(
+    id: AppShellTabId.nutrition,
+    label: 'Nourish',
+    icon: AppIcons.navNutrition,
+    activeIcon: AppIcons.navNutritionActive,
+    branchIndex: 32,
+    rootLocation: AppRoutePaths.nutrition,
+  ),
+  AppShellTab(
+    id: AppShellTabId.scrapbook,
+    label: 'Scrapbook',
+    icon: AppIcons.navScrapbook,
+    activeIcon: AppIcons.navScrapbookActive,
+    branchIndex: 33,
+    rootLocation: AppRoutePaths.scrapbook,
+  ),
+  AppShellTab(
+    id: AppShellTabId.connections,
+    label: 'Connections',
+    icon: AppIcons.navConnections,
+    activeIcon: AppIcons.navConnectionsActive,
+    branchIndex: 34,
+    rootLocation: AppRoutePaths.connections,
+  ),
+  AppShellTab(
+    id: AppShellTabId.analytics,
+    label: 'Analytics',
+    icon: AppIcons.navAnalytics,
+    activeIcon: AppIcons.navAnalyticsActive,
+    branchIndex: 35,
+    rootLocation: AppRoutePaths.analytics,
+  ),
+  AppShellTab(
+    id: AppShellTabId.availability,
+    label: 'Availability',
+    icon: AppIcons.navAvailability,
+    activeIcon: AppIcons.navAvailabilityActive,
+    branchIndex: 36,
+    rootLocation: AppRoutePaths.availability,
+  ),
+  AppShellTab(
+    id: AppShellTabId.introductions,
+    label: 'Introductions',
+    icon: AppIcons.navIntroductions,
+    activeIcon: AppIcons.navIntroductionsActive,
+    branchIndex: 37,
+    rootLocation: AppRoutePaths.introductions,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -645,6 +717,12 @@ const defaultNavBarOverflowTabIds = [
   'headspace',
   'music',
   'stories',
+  'nutrition',
+  'scrapbook',
+  'connections',
+  'analytics',
+  'availability',
+  'introductions',
   'notes',
   'reminders',
   'statistics',

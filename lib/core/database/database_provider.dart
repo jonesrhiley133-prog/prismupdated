@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:prism_plurality/features/demo/demo_mode.dart';
 import 'dart:math';
 
 import 'package:drift/drift.dart';
@@ -661,7 +662,8 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 /// encryption key. ZERO secure-storage reads in this path.
 LazyDatabase _openVerifiedConnection(String hexKey) {
   return LazyDatabase(() async {
-    final file = await getDatabaseFile();
+    // Demo Mode opens its own file; the real prism.db is never touched.
+    final file = DemoMode.active ? await DemoMode.demoFile() : await getDatabaseFile();
     await excludeFromiCloudBackup(file.path);
     return openNativeDatabaseInBackground(
       file,

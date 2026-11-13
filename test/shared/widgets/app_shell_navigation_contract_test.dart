@@ -1504,6 +1504,12 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.headspace, _headspaceRootTitle),
       (AppRoutePaths.music, _musicRootTitle),
       (AppRoutePaths.stories, _storiesRootTitle),
+      (AppRoutePaths.nutrition, _nutritionRootTitle),
+      (AppRoutePaths.scrapbook, _scrapbookRootTitle),
+      (AppRoutePaths.connections, _connectionsRootTitle),
+      (AppRoutePaths.analytics, _analyticsRootTitle),
+      (AppRoutePaths.availability, _availabilityRootTitle),
+      (AppRoutePaths.introductions, _introductionsRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1568,6 +1574,12 @@ String _rootTitle(String location) {
     AppRoutePaths.headspace => _headspaceRootTitle,
     AppRoutePaths.music => _musicRootTitle,
     AppRoutePaths.stories => _storiesRootTitle,
+    AppRoutePaths.nutrition => _nutritionRootTitle,
+    AppRoutePaths.scrapbook => _scrapbookRootTitle,
+    AppRoutePaths.connections => _connectionsRootTitle,
+    AppRoutePaths.analytics => _analyticsRootTitle,
+    AppRoutePaths.availability => _availabilityRootTitle,
+    AppRoutePaths.introductions => _introductionsRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1728,6 +1740,12 @@ const _subsystemsRootTitle = 'Route contract: subsystems root';
 const _headspaceRootTitle = 'Route contract: headspace root';
 const _musicRootTitle = 'Route contract: music root';
 const _storiesRootTitle = 'Route contract: stories root';
+const _nutritionRootTitle = 'Route contract: nutrition root';
+const _scrapbookRootTitle = 'Route contract: scrapbook root';
+const _connectionsRootTitle = 'Route contract: connections root';
+const _analyticsRootTitle = 'Route contract: analytics root';
+const _availabilityRootTitle = 'Route contract: availability root';
+const _introductionsRootTitle = 'Route contract: introductions root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';

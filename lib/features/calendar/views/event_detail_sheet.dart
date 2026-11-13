@@ -1,4 +1,6 @@
 import 'package:collection/collection.dart';
+import 'package:prism_plurality/features/links/models/record_ref.dart';
+import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -128,6 +130,7 @@ class EventDetailSheet extends ConsumerWidget {
             const SizedBox(height: 12),
             SelectableText(e.description!, style: theme.textTheme.bodyMedium),
           ],
+          RelatedRecordsSection(self: RecordRef(RecordRef.event, e.id)),
           const SizedBox(height: 20),
           Wrap(
             spacing: 8,

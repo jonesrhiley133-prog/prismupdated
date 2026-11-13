@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/alter_status/status_widgets.dart' show StatusesDashboardCard;
+import 'package:prism_plurality/features/automations/automations_screen.dart' show AutomationDashboardCard;
+import 'package:prism_plurality/features/availability/availability_screen.dart' show AvailabilityNowCard;
+import 'package:prism_plurality/features/nutrition/nutrition_screen.dart' show HydrationDashboardCard;
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -68,6 +73,10 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     DashboardWidgetId.achievements => l10n.navAchievements,
     DashboardWidgetId.journal => l10n.navJournal,
     DashboardWidgetId.stories => l10n.stoTitle,
+    DashboardWidgetId.statuses => tr(context, 'Statuses', 'Estados'),
+    DashboardWidgetId.hydration => tr(context, 'Hydration', 'Hidratación'),
+    DashboardWidgetId.availability => tr(context, 'Availability', 'Disponibilidad'),
+    DashboardWidgetId.automation => tr(context, 'Automations', 'Automatizaciones'),
     _ => id,
   };
 }
@@ -175,13 +184,13 @@ class HomeDashboard extends ConsumerWidget {
           ),
           const AppUpdateBanner(),
           const WhatsNewLauncher(),
-          for (final id in ids) _widgetFor(id),
+          for (final id in ids) _widgetFor(context, id),
         ],
       ),
     );
   }
 
-  Widget _widgetFor(String id) {
+  Widget _widgetFor(BuildContext context, String id) {
     final child = switch (id) {
       DashboardWidgetId.now => const HomeNowSection(showQuickChips: false),
       DashboardWidgetId.quickActions => const _QuickActions(),
@@ -195,6 +204,10 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.achievements => const _AchievementsWidget(),
       DashboardWidgetId.journal => const _JournalWidget(),
       DashboardWidgetId.stories => const StoriesRow(),
+      DashboardWidgetId.statuses => StatusesDashboardCard(onOpenAll: () => context.push('/statuses')),
+      DashboardWidgetId.hydration => HydrationDashboardCard(onOpen: () => context.go('/nutrition')),
+      DashboardWidgetId.availability => AvailabilityNowCard(onOpen: () => context.go('/availability')),
+      DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
       _ => const SizedBox.shrink(),
     };
     return Padding(padding: const EdgeInsets.only(bottom: 8), child: child);

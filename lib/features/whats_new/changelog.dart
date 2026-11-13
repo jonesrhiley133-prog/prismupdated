@@ -32,6 +32,42 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.24.0',
+    date: DateTime(2026, 11, 13),
+    features: const [
+      LocalizedText(
+        'System Scrapbook: shared memory books with freeform pages — photos, GIFs, videos, voice clips, drawings, notes, stickers, tape and shapes, with themes, layouts, captions, timeline and gallery views, and contributor permissions.',
+        'Álbum del sistema: álbumes compartidos con páginas libres — fotos, GIF, vídeos, audios, dibujos, notas, pegatinas, cinta y formas, con temas, diseños, pies de foto, cronología, galería y permisos.',
+      ),
+      LocalizedText(
+        'Connected records: link alters, fronting, moods, journal entries, dreams, meals, events, places, sleep and more; see links on each page and in a visual explorer with custom categories.',
+        'Registros conectados: enlaza alters, frente, ánimos, diario, sueños, comidas, eventos, lugares, sueño y más; mira los enlaces en cada página y en un explorador visual.',
+      ),
+      LocalizedText(
+        'Co-fronting analytics and mood correlations: rankings, combinations, calendar, timeline, and mood compared with fronting, sleep, food, activity, places and more — with confidence levels, on-device insights and downloadable reports.',
+        'Análisis de co-frente y correlaciones de ánimo: clasificaciones, combinaciones, calendario, cronología y el ánimo comparado con frente, sueño, comida, actividad, lugares y más, con niveles de confianza, observaciones e informes.',
+      ),
+      LocalizedText(
+        'Internal Connections maps, Nourish (nutrition & hydration), alter statuses, availability schedules, tarot-style introduction cards, a Dream Journal tab, custom automations and Demo Mode.',
+        'Mapas de conexiones internas, Nutrición e hidratación, estados de alters, disponibilidad, tarjetas de presentación estilo tarot, pestaña de sueños, automatizaciones y modo demo.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.23.1',
+    date: DateTime(2026, 11, 13),
+    improvements: const [
+      LocalizedText(
+        'Freeze recorder: if Prism stops responding, a short technical '
+            'report (pages and app components, never your data) is saved. '
+            'Copy it from Settings → About and send it to the developer.',
+        'Registro de bloqueos: si Prism deja de responder, se guarda un '
+            'breve informe técnico (páginas y componentes, nunca tus datos). '
+            'Cópialo en Ajustes → Acerca de y envíalo al desarrollador.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.23.0',
     date: DateTime(2026, 11, 13),
     features: const [

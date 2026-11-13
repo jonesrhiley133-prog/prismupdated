@@ -81,6 +81,12 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/intro_cards/intro_cards_screen.dart';
+import '../../features/availability/availability_screen.dart';
+import '../../features/analytics/analytics_hub_screen.dart';
+import '../../features/connections/connections_screens.dart';
+import '../../features/scrapbook/scrapbook_screens.dart';
+import '../../features/nutrition/nutrition_screen.dart';
 import '../../features/social/views/stories_screen.dart';
 import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
@@ -120,8 +126,18 @@ import '../../features/settings/views/media_settings_screen.dart';
 import '../../features/onboarding/views/onboarding_screen.dart';
 import '../../features/settings/providers/settings_providers.dart';
 import '../../shared/widgets/app_shell.dart';
+import '../diagnostics/freeze_watchdog.dart';
+import '../../features/alter_status/statuses_screen.dart';
+import '../../features/analytics/cofront_screen.dart';
+import '../../features/analytics/mood_correlation_screen.dart';
+import '../../features/automations/automations_screen.dart';
+import '../../features/demo/demo_mode_screen.dart';
+import '../../features/links/views/link_explorer_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// The app's root navigator (used to show in-app messages from services).
+GlobalKey<NavigatorState> get appRootNavigatorKey => _rootNavigatorKey;
 final _homeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'home');
 final _chatNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'chat');
 final _habitsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'habits');
@@ -146,28 +162,18 @@ final _locationsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'locations',
 );
 final _workNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'work');
-final _insightsNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'insights',
-);
+final _insightsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'insights');
 final _cycleNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cycle');
-final _journalNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'journal',
-);
+final _journalNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'journal');
 final _dictionaryNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'dictionary',
 );
 final _achievementsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'achievements',
 );
-final _fitnessNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'fitness',
-);
-final _financeNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'finance',
-);
-final _schoolNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'school',
-);
+final _fitnessNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'fitness');
+final _financeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'finance');
+final _schoolNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'school');
 final _relationshipsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'relationships',
 );
@@ -177,15 +183,27 @@ final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
 final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'headspace',
 );
-final _musicNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'music',
+final _musicNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'music');
+final _storiesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'stories');
+final _nutritionNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'nutrition',
 );
-final _storiesNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'stories',
+final _scrapbookNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'scrapbook',
 );
-final _contactsNavigatorKey = GlobalKey<NavigatorState>(
-  debugLabel: 'contacts',
+final _connectionsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'connections',
 );
+final _analyticsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'analytics',
+);
+final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'availability',
+);
+final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'introductions',
+);
+final _contactsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'contacts');
 
 /// Notifier that triggers GoRouter redirect re-evaluation when onboarding
 /// status changes.
@@ -352,7 +370,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     return flags.chat ? null : AppRoutePaths.home;
   }
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutePaths.home,
     refreshListenable: _onboardingRedirectNotifier,
@@ -368,6 +386,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
     },
     redirect: (context, state) async {
+      FreezeWatchdog.crumb(
+        'redirect ${state.fullPath ?? state.matchedLocation}',
+      );
       return resolveOnboardingRedirect(
         hasCompleted: _onboardingRedirectNotifier.hasCompleted,
         isOnboarding: state.matchedLocation == AppRoutePaths.onboarding,
@@ -395,9 +416,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             final String value when value.trim().isNotEmpty => value,
             _ => ref.read(pendingMnemonicProvider),
           };
-          return SecretKeySetupScreen(
-            mnemonic: mnemonic,
-            onComplete: () => context.goNamed(AppRouteNames.settingsSync),
+          return DemoGuard(
+            child: SecretKeySetupScreen(
+              mnemonic: mnemonic,
+              onComplete: () => context.goNamed(AppRouteNames.settingsSync),
+            ),
           );
         },
       ),
@@ -406,7 +429,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.syncSetup,
         path: AppRoutePaths.syncSetup,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const SyncSetupScreen(),
+        builder: (context, state) => const DemoGuard(child: SyncSetupScreen()),
       ),
       GoRoute(
         path: AppRoutePaths.importCenter,
@@ -426,9 +449,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           fullscreenDialog: true,
           child: const NowPlayingScreen(),
           transitionsBuilder: (context, animation, _, child) => SlideTransition(
-            position: Tween(begin: const Offset(0, 1), end: Offset.zero)
-                .chain(CurveTween(curve: Curves.easeOutCubic))
-                .animate(animation),
+            position: Tween(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation),
             child: child,
           ),
         ),
@@ -454,22 +478,71 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutePaths.socialPostRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => PostThreadScreen(postId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            PostThreadScreen(postId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialAlterRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => AlterBlogScreen(memberId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            AlterBlogScreen(memberId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialTagRoute,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => TagScreen(tag: state.pathParameters['tag']!),
+        builder: (context, state) =>
+            TagScreen(tag: state.pathParameters['tag']!),
       ),
       GoRoute(
         path: AppRoutePaths.socialDrafts,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const DraftsScreen(),
+      ),
+      GoRoute(
+        path: '/links',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const LinkExplorerScreen(),
+      ),
+      GoRoute(
+        path: '/statuses',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const StatusesScreen(),
+      ),
+      GoRoute(
+        path: '/automations',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AutomationsScreen(),
+      ),
+      GoRoute(
+        path: '/demo',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DemoModeScreen(),
+      ),
+      GoRoute(
+        path: '/analytics/cofronting',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CoFrontingScreen(),
+      ),
+      GoRoute(
+        path: '/analytics/mood',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MoodCorrelationScreen(),
+      ),
+      GoRoute(
+        path: '/scrapbook/book/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => ScrapBookScreen(
+          bookId: state.pathParameters['id']!,
+          initialPageId: state.uri.queryParameters['page'],
+        ),
+      ),
+      GoRoute(
+        path: '/connections/map/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => ConnectionMapScreen(
+          mapId: state.pathParameters['id']!,
+          focusNodeId: state.uri.queryParameters['node'],
+        ),
       ),
       GoRoute(
         path: AppRoutePaths.headmateBanners,
@@ -734,7 +807,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     name: AppRouteNames.settingsSync,
                     path: 'sync',
-                    builder: (context, state) => const SyncSettingsScreen(),
+                    builder: (context, state) =>
+                        const DemoGuard(child: SyncSettingsScreen()),
                     routes: [
                       GoRoute(
                         name: AppRouteNames.settingsSyncVerifyBackup,
@@ -821,7 +895,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'pluralkit',
-                    builder: (context, state) => const PluralKitSetupScreen(),
+                    builder: (context, state) =>
+                        const DemoGuard(child: PluralKitSetupScreen()),
                     routes: [
                       GoRoute(
                         path: 'sync-debug',
@@ -1412,12 +1487,79 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // Branch 32: Nourish (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _nutritionNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.nutrition,
+                builder: (context, state) => const NutritionScreen(),
+              ),
+            ],
+          ),
+          // Branch 33: Scrapbook (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _scrapbookNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.scrapbook,
+                builder: (context, state) => const ScrapbooksScreen(),
+              ),
+            ],
+          ),
+          // Branch 34: Connections (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _connectionsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.connections,
+                builder: (context, state) => const ConnectionsScreen(),
+              ),
+            ],
+          ),
+          // Branch 35: Analytics (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _analyticsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.analytics,
+                builder: (context, state) => const AnalyticsHubScreen(),
+              ),
+            ],
+          ),
+          // Branch 36: Availability (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _availabilityNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.availability,
+                builder: (context, state) => const AvailabilityScreen(),
+              ),
+            ],
+          ),
+          // Branch 37: Introductions (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _introductionsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.introductions,
+                builder: (context, state) => const IntroCardsScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
   );
-});
+  void logRoute() {
+    final c = router.routerDelegate.currentConfiguration;
+    FreezeWatchdog.crumb('page ${c.isEmpty ? '-' : c.fullPath}');
+  }
 
+  router.routerDelegate.addListener(logRoute);
+  ref.onDispose(() => router.routerDelegate.removeListener(logRoute));
+  return router;
+});
 
 /// Keyboard shortcut target (Alt+Shift+A): the quick accessibility panel.
 class _QuickA11yPage extends StatelessWidget {
@@ -1431,7 +1573,10 @@ class _QuickA11yPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        child: const Padding(padding: EdgeInsets.only(top: 16), child: A11yQuickPanel()),
+        child: const Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: A11yQuickPanel(),
+        ),
       ),
     ),
   );

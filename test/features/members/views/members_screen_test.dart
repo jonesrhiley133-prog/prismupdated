@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:image/image.dart' as img;
@@ -276,6 +278,8 @@ Widget _buildSubject({
       if (frontingTerms != null)
         frontingTermsSettingProvider.overrideWithValue(frontingTerms),
       allGroupsProvider.overrideWith((ref) => Stream.value(groups)),
+      // Statuses, intro cards and record links (0.24) read tracker records.
+      trackerRecordsProvider.overrideWith((ref) => Stream.value(const <TrackerRecord>[])),
       allGroupEntriesProvider.overrideWith((ref) => Stream.value(entries)),
       groupByIdProvider.overrideWith((ref, groupId) {
         final matching = groups.where((group) => group.id == groupId);
@@ -2395,8 +2399,8 @@ void main() {
 
   // Regression: real database (avatars + banners loaded through the real
   // DAO queries) inside the full app theme.
-  for (final (banners, themed, withData) in [(false, false, true), (false, true, false), (false, true, true), (true, true, true)]) {
-    testWidgets('opens with real stored members (banners $banners themed $themed data $withData)', (tester) async {
+  for (final (banners, themed, withData, boards) in [(false, false, true, false), (false, true, false, false), (false, true, true, false), (true, true, true, false), (false, true, true, true), (true, true, true, true)]) {
+    testWidgets('opens with real stored members (banners $banners themed $themed data $withData boards $boards)', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 844);
       addTearDown(tester.view.resetPhysicalSize);
@@ -2429,7 +2433,9 @@ void main() {
             memberDatabase: database,
             imageInfra: imageInfra,
             withRouter: true,
-            settings: const SystemSettings(notesEnabled: false, boardsEnabled: false, membersShowFrontButtons: false),
+            settings: boards
+                ? const SystemSettings(notesEnabled: true, boardsEnabled: true, membersShowFrontButtons: true)
+                : const SystemSettings(notesEnabled: false, boardsEnabled: false, membersShowFrontButtons: false),
             theme: themed ? applyLook(applyAccessibility(AppTheme.dark(), const A11ySettings()), plainLook) : null,
             appBuilder: themed ? (context, child) => A11yScope(child: MusicPlayerHost(child: child!)) : null,
             extraOverrides: [

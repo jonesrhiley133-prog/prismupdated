@@ -19,6 +19,9 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:prism_plurality/core/database/database_encryption.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/diagnostics/boot_timings.dart';
+import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
+import 'package:prism_plurality/features/demo/demo_mode.dart';
+import 'package:prism_plurality/features/demo/demo_mode_screen.dart';
 import 'package:prism_plurality/core/diagnostics/main_isolate_stalls.dart';
 import 'package:prism_plurality/core/reset/full_reset_service.dart';
 import 'package:prism_plurality/core/reset/reset_recovery_app.dart';
@@ -236,6 +239,9 @@ void main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
+  DemoMode.load(prefs);
+  await DemoMode.wipeIfRequested(prefs);
+  await DemoMode.cleanupIfRequested(prefs);
   try {
     await _applyStartupScreenPrivacy(prefs);
   } catch (e) {
@@ -302,61 +308,71 @@ void main() async {
 
   BootTimings.mark('runApp');
   runApp(
-    ProviderScope(
-      overrides: [
-        // §6 probe results threaded into the riverpod tree. These overrides
-        // satisfy the throw-by-default providers declared in §3/§5.
-        verifiedStartupKeyProvider.overrideWithValue(appProbe.keyInMemory),
-        databaseSchemaVersionBeforeOpenProvider.overrideWith(
-          (ref) async => appProbe.schemaVersionBeforeOpen,
-        ),
-        syncDatabaseStartupReportStateProvider.overrideWith(
-          () => SyncDatabaseStartupReportNotifier(syncProbe),
-        ),
-        // §10 — make the captured per-boot diagnostic reachable by the
-        // in-app banner / settings entry / recovery UI.
-        bootSecureStorageDiagnosticProvider.overrideWithValue(
-          combinedDiagnostic,
-        ),
-        cachedThemeBrightnessProvider.overrideWith(
-          () => CachedThemeBrightnessNotifier(cachedBrightness),
-        ),
-        cachedThemeStyleProvider.overrideWith(
-          () => CachedThemeStyleNotifier(cachedStyle),
-        ),
-        cachedPaletteSourceProvider.overrideWith(
-          () => CachedPaletteSourceNotifier(cachedPaletteSource),
-        ),
-        cachedAccentColorHexProvider.overrideWith(
-          () => CachedAccentColorHexNotifier(cachedAccentColorHex),
-        ),
-        cachedPaletteSeedColorHexProvider.overrideWith(
-          () => CachedPaletteSeedColorHexNotifier(cachedPaletteSeedColorHex),
-        ),
-        cachedPaletteMoodProvider.overrideWith(
-          () => CachedPaletteMoodNotifier(cachedPaletteMood),
-        ),
-        cachedPaletteContrastProvider.overrideWith(
-          () => CachedPaletteContrastNotifier(cachedPaletteContrast),
-        ),
-        cachedCornerStyleProvider.overrideWith(
-          () => CachedCornerStyleNotifier(cachedCornerStyle),
-        ),
-      ],
-      // Explicit retry filter — prevent infinite retry on programmer bugs.
-      retry: (retryCount, error) {
-        // Don't retry format/type errors (programmer bugs)
-        if (error is FormatException || error is TypeError) return null;
-        // Max 3 retries with exponential backoff
-        if (retryCount >= 3) return null;
-        return Duration(seconds: 1 << retryCount); // 1s, 2s, 4s
-      },
-      observers: [if (kDebugMode) _DebugProviderObserver()],
-      child: const PrismApp(),
+    AppRestartScope(
+      child: ProviderScope(
+        overrides: [
+          // §6 probe results threaded into the riverpod tree. These overrides
+          // satisfy the throw-by-default providers declared in §3/§5.
+          verifiedStartupKeyProvider.overrideWithValue(appProbe.keyInMemory),
+          databaseSchemaVersionBeforeOpenProvider.overrideWith(
+            (ref) async => appProbe.schemaVersionBeforeOpen,
+          ),
+          syncDatabaseStartupReportStateProvider.overrideWith(
+            () => SyncDatabaseStartupReportNotifier(syncProbe),
+          ),
+          // §10 — make the captured per-boot diagnostic reachable by the
+          // in-app banner / settings entry / recovery UI.
+          bootSecureStorageDiagnosticProvider.overrideWithValue(
+            combinedDiagnostic,
+          ),
+          cachedThemeBrightnessProvider.overrideWith(
+            () => CachedThemeBrightnessNotifier(cachedBrightness),
+          ),
+          cachedThemeStyleProvider.overrideWith(
+            () => CachedThemeStyleNotifier(cachedStyle),
+          ),
+          cachedPaletteSourceProvider.overrideWith(
+            () => CachedPaletteSourceNotifier(cachedPaletteSource),
+          ),
+          cachedAccentColorHexProvider.overrideWith(
+            () => CachedAccentColorHexNotifier(cachedAccentColorHex),
+          ),
+          cachedPaletteSeedColorHexProvider.overrideWith(
+            () => CachedPaletteSeedColorHexNotifier(cachedPaletteSeedColorHex),
+          ),
+          cachedPaletteMoodProvider.overrideWith(
+            () => CachedPaletteMoodNotifier(cachedPaletteMood),
+          ),
+          cachedPaletteContrastProvider.overrideWith(
+            () => CachedPaletteContrastNotifier(cachedPaletteContrast),
+          ),
+          cachedCornerStyleProvider.overrideWith(
+            () => CachedCornerStyleNotifier(cachedCornerStyle),
+          ),
+        ],
+        // Explicit retry filter — prevent infinite retry on programmer bugs.
+        retry: (retryCount, error) {
+          // Don't retry format/type errors (programmer bugs)
+          if (error is FormatException || error is TypeError) return null;
+          // Max 3 retries with exponential backoff
+          if (retryCount >= 3) return null;
+          return Duration(seconds: 1 << retryCount); // 1s, 2s, 4s
+        },
+        observers: [
+          if (kDebugMode) _DebugProviderObserver(),
+          const FreezeTrailObserver(),
+        ],
+        child: const DemoSeedGate(child: PrismApp()),
+      ),
     ),
   );
 
   _scheduleLinuxEmojiFontLoad();
+  if (!kIsWeb) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(FreezeWatchdog.start());
+    });
+  }
 
   // TODO(background-sync): workmanager initialization is intentionally disabled.
   // callbackDispatcher in pluralkit_background_service.dart is a no-op stub.

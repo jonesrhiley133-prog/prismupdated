@@ -45,8 +45,10 @@ class AddMemberPerfEntry {
   final int memberCount;
 
   int get _otherMs =>
-      (totalMs - customFieldCommitMs - memberWriteMs - pkReloadMs)
-          .clamp(0, totalMs);
+      (totalMs - customFieldCommitMs - memberWriteMs - pkReloadMs).clamp(
+        0,
+        totalMs,
+      );
 
   /// One-line copyable summary.
   String format() {

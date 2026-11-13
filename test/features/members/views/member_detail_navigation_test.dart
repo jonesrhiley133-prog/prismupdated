@@ -837,6 +837,10 @@ void main() {
     await tester.tap(find.text('Back from session'));
     await tester.pumpAndSettle();
 
+    // The profile is longer now (status, intro card, connected records), so
+    // scroll back to the header before checking it.
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, 3000));
+    await tester.pumpAndSettle();
     expect(find.text('Alice'), findsOneWidget);
     expect(
       router.routerDelegate.currentConfiguration.uri.toString(),

@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:prism_plurality/features/alter_status/status_widgets.dart';
+import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
+import 'package:prism_plurality/features/links/models/record_ref.dart';
+import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -292,6 +296,9 @@ class _MemberDetailBody extends ConsumerWidget {
         key: const ValueKey('boardMessages'),
         child: BoardMessageSection(memberId: member.id),
       ),
+      MemberStatusPanel(memberId: member.id),
+      MemberIntroCardTile(memberId: member.id),
+      RelatedRecordsSection(self: RecordRef(RecordRef.member, member.id)),
       const SizedBox(height: 24),
       _MemberCreatedAtFooter(member: member),
       const SizedBox(height: 32),
