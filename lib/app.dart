@@ -10,6 +10,13 @@ import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/social/services/social_onboarding.dart';
+import 'package:prism_plurality/features/automations/automation_engine.dart';
+import 'package:prism_plurality/features/connections/connections_screens.dart' show registerConnOpeners;
+import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
+import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
+import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners;
+import 'package:prism_plurality/features/nutrition/nutrition_meals.dart' show registerNutritionOpeners;
+import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart' show registerScrapOpeners;
 import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/home_widgets/services/home_widget_controller.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
@@ -311,6 +318,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(musicControllerProvider, (_, _) {});
     // One-time: make the Bulletin Board and Stories easy to find.
     ref.listen(socialOnboardingProvider, (_, _) {});
+    ref.listen(automationEngineProvider, (_, _) {});
+    registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
     // `db.transaction(...)` (drift_sync_adapter.dart `_frontingSessionsEntity`
@@ -539,7 +548,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),
               child: PrismKeyboardDismissScope(
-                child: PrismToastHost(child: MusicPlayerHost(child: result)),
+                child: PrismToastHost(
+                  child: MusicPlayerHost(child: DemoBanner(child: result)),
+                ),
               ),
             );
           },
@@ -790,4 +801,17 @@ class _DatabaseStartupError extends StatelessWidget {
       ),
     );
   }
+}
+
+
+bool _openersRegistered = false;
+
+/// Lets the connections explorer open records owned by the newer modules.
+void registerAdvancedRecordOpeners() {
+  if (_openersRegistered) return;
+  _openersRegistered = true;
+  registerDreamOpener(recordKindOpeners);
+  registerNutritionOpeners(recordKindOpeners);
+  registerScrapOpeners(recordKindOpeners);
+  registerConnOpeners(recordKindOpeners);
 }

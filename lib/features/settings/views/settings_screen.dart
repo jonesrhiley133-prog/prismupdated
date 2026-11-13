@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -242,6 +243,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       iconColor: Colors.pink,
                       title: context.l10n.stoTitle,
                       onTap: () => context.go(AppRoutePaths.stories),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.restaurant_outlined,
+                      iconColor: Colors.deepOrangeAccent,
+                      title: tr(context, 'Nutrition & hydration', 'Nutrición e hidratación'),
+                      onTap: () => context.go('/nutrition'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.collections_bookmark_outlined,
+                      iconColor: Colors.pinkAccent,
+                      title: tr(context, 'System Scrapbook', 'Álbum del sistema'),
+                      onTap: () => context.go('/scrapbook'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.hub_outlined,
+                      iconColor: Colors.brown,
+                      title: tr(context, 'Internal Connections', 'Conexiones internas'),
+                      onTap: () => context.go('/connections'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.link,
+                      iconColor: Colors.cyan,
+                      title: tr(context, 'Connected records explorer', 'Explorador de registros conectados'),
+                      onTap: () => context.push('/links'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.insights_outlined,
+                      iconColor: Colors.amber,
+                      title: tr(context, 'Analytics', 'Análisis'),
+                      onTap: () => context.go('/analytics'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.circle_notifications_outlined,
+                      iconColor: Colors.green,
+                      title: tr(context, 'Alter statuses', 'Estados de alters'),
+                      onTap: () => context.push('/statuses'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.event_available_outlined,
+                      iconColor: Colors.teal,
+                      title: tr(context, 'Availability', 'Disponibilidad'),
+                      onTap: () => context.go('/availability'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.style_outlined,
+                      iconColor: Colors.purple,
+                      title: tr(context, 'Introduction cards', 'Tarjetas de presentación'),
+                      onTap: () => context.go('/introductions'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.bolt_outlined,
+                      iconColor: Colors.indigoAccent,
+                      title: tr(context, 'Automations', 'Automatizaciones'),
+                      onTap: () => context.push('/automations'),
+                    ),
+                    _SettingsLink(
+                      icon: Icons.science_outlined,
+                      iconColor: Colors.orange,
+                      title: tr(context, 'Demo Mode', 'Modo demo'),
+                      onTap: () => context.push('/demo'),
                     ),
                     _navLink(
                       icon: Icons.palette_outlined,

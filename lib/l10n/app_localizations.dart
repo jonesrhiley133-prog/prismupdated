@@ -34438,6 +34438,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prism froze last time. A report is in Settings → About.'**
   String get freezeReportToast;
+
+  /// navNutrition
+  ///
+  /// In en, this message translates to:
+  /// **'Nourish'**
+  String get navNutrition;
+
+  /// navScrapbook
+  ///
+  /// In en, this message translates to:
+  /// **'Scrapbook'**
+  String get navScrapbook;
+
+  /// navConnections
+  ///
+  /// In en, this message translates to:
+  /// **'Connections'**
+  String get navConnections;
+
+  /// navAnalytics
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get navAnalytics;
+
+  /// navAvailability
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get navAvailability;
+
+  /// navIntroductions
+  ///
+  /// In en, this message translates to:
+  /// **'Introductions'**
+  String get navIntroductions;
 }
 
 class _AppLocalizationsDelegate

@@ -7464,5 +7464,11 @@
   "freezeReportCopy": "Copiar informe",
   "freezeReportDismiss": "Descartar",
   "freezeReportCopied": "Informe copiado",
-  "freezeReportToast": "Prism se congeló la última vez. Hay un informe en Ajustes → Acerca de."
+  "freezeReportToast": "Prism se congeló la última vez. Hay un informe en Ajustes → Acerca de.",
+  "navNutrition": "Nutrición",
+  "navScrapbook": "Álbum",
+  "navConnections": "Conexiones",
+  "navAnalytics": "Análisis",
+  "navAvailability": "Disponibilidad",
+  "navIntroductions": "Presentaciones"
 }

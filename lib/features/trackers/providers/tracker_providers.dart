@@ -108,8 +108,22 @@ class TrackerNotifier extends Notifier<void> {
       for (final d in doomed) {
         await repo.delete(d);
       }
+      await _dropLinksTo(all, doomed);
     } else {
       await repo.delete(id);
+      await _dropLinksTo(await repo.getAll(), {id});
+    }
+  }
+
+  /// Keeps record links consistent: links pointing at deleted records go too.
+  Future<void> _dropLinksTo(List<TrackerRecord> all, Set<String> ids) async {
+    final keys = {for (final id in ids) 'rec:$id'};
+    final repo = ref.read(trackerRecordRepositoryProvider);
+    for (final r in all) {
+      if (r.kind != 'link.edge' || ids.contains(r.id)) continue;
+      if (keys.contains(r.str('a')) || keys.contains(r.str('b'))) {
+        await repo.delete(r.id);
+      }
     }
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/links/models/record_ref.dart';
+import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -193,6 +195,7 @@ class _SleepDetailsState extends ConsumerState<SleepDetailsSheet> {
                 : '${fmt.format(s.startTime)} → ${fmt.format(s.endTime!)}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
+          RelatedRecordsSection(self: RecordRef(RecordRef.front, s.id), padding: const EdgeInsets.only(top: 8)),
           const SizedBox(height: 12),
           Row(
             children: [

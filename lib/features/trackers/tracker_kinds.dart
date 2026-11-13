@@ -38,6 +38,44 @@ abstract final class TrackerKind {
   static const cyclePhase = 'cycle.phase';
   static const cycleWellness = 'cycle.wellness';
 
+  // Advanced expansion (0.24)
+  static const linkEdge = 'link.edge';
+  static const linkCategory = 'link.category';
+
+  static const scrapBook = 'scrap.book';
+  static const scrapPage = 'scrap.page';
+  static const scrapTemplate = 'scrap.template';
+
+  static const connMap = 'conn.map';
+  static const connNode = 'conn.node';
+  static const connEdge = 'conn.edge';
+
+  static const nutriMeal = 'nutri.meal';
+  static const nutriDrink = 'nutri.drink';
+  static const nutriFood = 'nutri.food';
+  static const nutriCollection = 'nutri.collection';
+  static const nutriCategory = 'nutri.category';
+  static const nutriBeverage = 'nutri.beverage';
+  static const nutriSettings = 'nutri.settings';
+
+  static const statusCurrent = 'status.current';
+  static const statusLog = 'status.log';
+  static const statusCustom = 'status.custom';
+  static const statusSettings = 'status.settings';
+
+  static const availRule = 'avail.rule';
+  static const availOverride = 'avail.override';
+  static const availCategory = 'avail.category';
+
+  static const introCard = 'intro.card';
+  static const introTemplate = 'intro.template';
+
+  static const autoRule = 'auto.rule';
+  static const autoLog = 'auto.log';
+  static const autoCounter = 'auto.counter';
+
+  static const dreamEntry = 'dream.entry';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/dreams/dream_journal.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/shared/widgets/prism_segmented_control.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -42,6 +45,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   String? _category;
   String? _tag;
   String? _member;
+  bool _dreams = false;
 
   @override
   void dispose() {
@@ -65,13 +69,17 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.journalNewEntry,
-            onPressed: () => showJournalEditor(context, categoryId: _category),
+            onPressed: () => _dreams
+                ? showDreamEditor(context)
+                : showJournalEditor(context, categoryId: _category),
           ),
         ],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       bodyPadding: EdgeInsets.zero,
-      body: async.when(
+      body: _withTabs(
+        context,
+        async.when(
         loading: () => const PrismLoadingState(),
         error: (e, _) => Center(child: Text(l10n.errorWithDetail(e))),
         data: (entries) {
@@ -244,9 +252,31 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             ],
           );
         },
+        ),
       ),
     );
   }
+
+  /// Journal / Dreams switcher above the page body.
+  Widget _withTabs(BuildContext context, Widget journal) => Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+          child: PrismSegmentedControl<bool>(
+            segments: [
+              PrismSegment(value: false, label: context.l10n.navJournal),
+              PrismSegment(value: true, label: tr(context, 'Dreams', 'Sueños')),
+            ],
+            selected: _dreams,
+            onChanged: (v) => setState(() => _dreams = v),
+          ),
+        ),
+      ),
+      Expanded(child: _dreams ? const DreamJournalView() : journal),
+    ],
+  );
 }
 
 class _EntryCard extends ConsumerWidget {

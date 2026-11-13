@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:prism_plurality/features/demo/demo_mode.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
@@ -790,6 +791,8 @@ class PluralKitSyncService {
   }
 
   Future<String?> _getToken() async {
+    // Demo Mode never talks to PluralKit (sample data must not be pushed).
+    if (DemoMode.active) return null;
     if (_tokenOverride != null) return _tokenOverride;
     // Classified read — cipher / transient / unknown failures resolve to
     // null. The PK token is reconstructable (user re-enters it), so a
@@ -1111,6 +1114,7 @@ class PluralKitSyncService {
   /// success (and check the write result), and on ANY validation failure (401
   /// or transport) leave the stored token and DB connection state untouched.
   Future<void> setToken(String token) async {
+    if (DemoMode.active) throw StateError('PluralKit is not available in Demo Mode');
     final trimmed = token.trim();
     debugPrint('[PK_SVC] setToken: trimmed length=${trimmed.length}');
     if (trimmed.isEmpty) {

@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:prism_plurality/features/alter_status/status_widgets.dart';
+import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
+import 'package:prism_plurality/features/links/models/record_ref.dart';
+import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -217,6 +221,8 @@ class _MemberDetailBody extends ConsumerWidget {
     return [
       const SizedBox(height: 16),
       MemberProfileHeader(member: member, isFronting: isFronting),
+      MemberStatusPanel(memberId: member.id),
+      MemberIntroCardTile(memberId: member.id),
       if (member.pronouns?.trim().isNotEmpty ?? false) ...[
         const SizedBox(height: 12),
         Text(
@@ -254,6 +260,10 @@ class _MemberDetailBody extends ConsumerWidget {
       _RetainedProfileSection(
         key: const ValueKey('notes'),
         child: NotesSection(memberId: member.id),
+      ),
+      RelatedRecordsSection(
+        self: RecordRef(RecordRef.member, member.id),
+        padding: const EdgeInsets.only(bottom: 16),
       ),
       _RetainedProfileSection(
         key: const ValueKey('groups'),

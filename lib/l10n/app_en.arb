@@ -18323,5 +18323,17 @@
   "freezeReportCopied": "Report copied",
   "@freezeReportCopied": {"description": "freezeReportCopied"},
   "freezeReportToast": "Prism froze last time. A report is in Settings → About.",
-  "@freezeReportToast": {"description": "freezeReportToast"}
+  "@freezeReportToast": {"description": "freezeReportToast"},
+  "navNutrition": "Nourish",
+  "@navNutrition": {"description": "navNutrition"},
+  "navScrapbook": "Scrapbook",
+  "@navScrapbook": {"description": "navScrapbook"},
+  "navConnections": "Connections",
+  "@navConnections": {"description": "navConnections"},
+  "navAnalytics": "Analytics",
+  "@navAnalytics": {"description": "navAnalytics"},
+  "navAvailability": "Availability",
+  "@navAvailability": {"description": "navAvailability"},
+  "navIntroductions": "Introductions",
+  "@navIntroductions": {"description": "navIntroductions"}
 }

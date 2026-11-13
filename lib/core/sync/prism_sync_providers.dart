@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:prism_plurality/features/demo/demo_mode.dart';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
@@ -992,6 +993,10 @@ class PrismSyncHandleNotifier extends AsyncNotifier<ffi.PrismSyncHandle?> {
       _handle?.dispose();
       _handle = null;
     });
+
+    // Demo Mode: sync stays off so sample data can never leave the device
+    // or reach the real sync group.
+    if (DemoMode.active) return null;
 
     // Auto-create handle if sync credentials exist from a previous session
     final syncIdB64 = await _safeReadValue(kSyncIdKey);

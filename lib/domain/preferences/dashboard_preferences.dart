@@ -15,6 +15,10 @@ abstract final class DashboardWidgetId {
   static const achievements = 'achievements';
   static const journal = 'journal';
   static const stories = 'stories';
+  static const statuses = 'statuses';
+  static const hydration = 'hydration';
+  static const availability = 'availability';
+  static const automation = 'automation';
 
   static const all = [
     stories,
@@ -29,6 +33,10 @@ abstract final class DashboardWidgetId {
     events,
     achievements,
     journal,
+    statuses,
+    hydration,
+    availability,
+    automation,
   ];
   static const defaults = [
     stories,

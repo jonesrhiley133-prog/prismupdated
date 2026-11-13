@@ -22018,4 +22018,22 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get freezeReportToast =>
       'Prism se congeló la última vez. Hay un informe en Ajustes → Acerca de.';
+
+  @override
+  String get navNutrition => 'Nutrición';
+
+  @override
+  String get navScrapbook => 'Álbum';
+
+  @override
+  String get navConnections => 'Conexiones';
+
+  @override
+  String get navAnalytics => 'Análisis';
+
+  @override
+  String get navAvailability => 'Disponibilidad';
+
+  @override
+  String get navIntroductions => 'Presentaciones';
 }

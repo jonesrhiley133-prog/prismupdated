@@ -21777,4 +21777,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freezeReportToast =>
       'Prism froze last time. A report is in Settings → About.';
+
+  @override
+  String get navNutrition => 'Nourish';
+
+  @override
+  String get navScrapbook => 'Scrapbook';
+
+  @override
+  String get navConnections => 'Connections';
+
+  @override
+  String get navAnalytics => 'Analytics';
+
+  @override
+  String get navAvailability => 'Availability';
+
+  @override
+  String get navIntroductions => 'Introductions';
 }

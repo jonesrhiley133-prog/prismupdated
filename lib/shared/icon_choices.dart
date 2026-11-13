@@ -1,0 +1,75 @@
+import 'package:flutter/widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+/// Icons users can pick for statuses, categories, map nodes and beverages.
+/// Keys are stored; keep them stable.
+final Map<String, IconData> iconChoices = {
+  'circle': PhosphorIcons.circle(PhosphorIconsStyle.fill),
+  'check': PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+  'moon': PhosphorIcons.moon(PhosphorIconsStyle.fill),
+  'minus': PhosphorIcons.minusCircle(PhosphorIconsStyle.fill),
+  'eyeSlash': PhosphorIcons.eyeSlash(),
+  'briefcase': PhosphorIcons.briefcase(),
+  'clock': PhosphorIcons.clock(),
+  'bed': PhosphorIcons.bed(),
+  'hand': PhosphorIcons.handWaving(),
+  'heart': PhosphorIcons.heart(PhosphorIconsStyle.fill),
+  'star': PhosphorIcons.star(PhosphorIconsStyle.fill),
+  'sparkle': PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+  'lightning': PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+  'game': PhosphorIcons.gameController(),
+  'book': PhosphorIcons.bookOpen(),
+  'music': PhosphorIcons.musicNotes(),
+  'paint': PhosphorIcons.paintBrush(),
+  'coffee': PhosphorIcons.coffee(),
+  'leaf': PhosphorIcons.leaf(),
+  'flower': PhosphorIcons.flower(),
+  'sun': PhosphorIcons.sun(),
+  'cloud': PhosphorIcons.cloud(),
+  'fire': PhosphorIcons.fire(),
+  'ghost': PhosphorIcons.ghost(),
+  'cat': PhosphorIcons.cat(),
+  'dog': PhosphorIcons.dog(),
+  'shield': PhosphorIcons.shield(),
+  'house': PhosphorIcons.house(),
+  'tree': PhosphorIcons.tree(),
+  'door': PhosphorIcons.door(),
+  'mountain': PhosphorIcons.mountains(),
+  'water': PhosphorIcons.waves(),
+  'castle': PhosphorIcons.castleTurret(),
+  'key': PhosphorIcons.key(),
+  'crown': PhosphorIcons.crown(),
+  'baby': PhosphorIcons.baby(),
+  'users': PhosphorIcons.users(),
+  'brain': PhosphorIcons.brain(),
+  'drop': PhosphorIcons.drop(),
+  'cup': PhosphorIcons.coffee(),
+  'wine': PhosphorIcons.wine(),
+  'beer': PhosphorIcons.beerStein(),
+  'orange': PhosphorIcons.orangeSlice(),
+  'bottle': PhosphorIcons.pintGlass(),
+  'tea': PhosphorIcons.cookingPot(),
+  'pizza': PhosphorIcons.pizza(),
+  'apple': PhosphorIcons.appleLogo(),
+  'bowl': PhosphorIcons.bowlFood(),
+  'cake': PhosphorIcons.cake(),
+  'carrot': PhosphorIcons.carrot(),
+  'egg': PhosphorIcons.egg(),
+  'bread': PhosphorIcons.bread(),
+  'cookie': PhosphorIcons.cookie(),
+  'fish': PhosphorIcons.fish(),
+  'pin': PhosphorIcons.mapPin(),
+  'chat': PhosphorIcons.chatCircle(),
+  'warning': PhosphorIcons.warning(),
+  'question': PhosphorIcons.question(),
+};
+
+IconData iconFor(String? key, {IconData? fallback}) =>
+    iconChoices[key] ?? fallback ?? iconChoices['circle']!;
+
+/// Colours offered by the colour pickers in the new modules.
+const List<int> colorChoices = [
+  0xFF3BA55C, 0xFFFAA61A, 0xFFED4245, 0xFF747F8D, 0xFF5865F2, 0xFFEB459E,
+  0xFF57F287, 0xFF00A8FC, 0xFF9B59B6, 0xFFE67E22, 0xFF1ABC9C, 0xFF95A5A6,
+  0xFFF1C40F, 0xFFB07AA1, 0xFF8E7CC3, 0xFF4E9BD6,
+];
