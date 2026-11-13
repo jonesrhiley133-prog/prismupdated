@@ -19,6 +19,9 @@ import '../../features/cycle/views/cycle_insights_screen.dart';
 import '../../features/polls/advanced/poll_stats_screen.dart';
 import '../../features/fronting_notification/views/fronting_notification_settings_screen.dart';
 import '../../features/home_widgets/views/home_widgets_screen.dart';
+import '../../features/music/views/now_playing_screen.dart';
+import '../../features/appearance/views/appearance_studio_screen.dart';
+import '../../features/accessibility/a11y_views.dart';
 import '../../features/home_widgets/views/todo_screen.dart';
 import '../../features/home_widgets/views/widget_studio_screen.dart';
 import '../../features/fronting/views/timeline_screen.dart';
@@ -74,6 +77,7 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
 import '../../features/subsystems/views/subsystems_screen.dart';
 import '../../features/relationships/views/relationships_screen.dart';
@@ -167,6 +171,9 @@ final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'headspace',
+);
+final _musicNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'music',
 );
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
@@ -402,6 +409,39 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.systemTimeline,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.nowPlaying,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          child: const NowPlayingScreen(),
+          transitionsBuilder: (context, animation, _, child) => SlideTransition(
+            position: Tween(begin: const Offset(0, 1), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOutCubic))
+                .animate(animation),
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.appearanceStudio,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AppearanceStudioScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.accessibilityQuick,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          opaque: false,
+          barrierDismissible: true,
+          barrierColor: Colors.black54,
+          child: const _QuickA11yPage(),
+          transitionsBuilder: (context, animation, _, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
       ),
       GoRoute(
         path: AppRoutePaths.homeWidgets,
@@ -1310,8 +1350,37 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // Branch 30: Music (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _musicNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.music,
+                builder: (context, state) => const MusicScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
   );
 });
+
+
+/// Keyboard shortcut target (Alt+Shift+A): the quick accessibility panel.
+class _QuickA11yPage extends StatelessWidget {
+  const _QuickA11yPage();
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 460, maxHeight: 640),
+      child: Material(
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        child: const Padding(padding: EdgeInsets.only(top: 16), child: A11yQuickPanel()),
+      ),
+    ),
+  );
+}

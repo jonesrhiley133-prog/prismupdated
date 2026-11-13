@@ -81,9 +81,11 @@ void main() {
       ),
     );
 
+    // Only the two synced sheet preferences wait for loading; the newer
+    // accessibility options (device settings) stay usable.
     final switches = tester.widgetList<Switch>(find.byType(Switch)).toList();
 
-    expect(switches, hasLength(2));
+    expect(switches.length, greaterThanOrEqualTo(2));
     expect(
       switches.where((switchWidget) => switchWidget.onChanged == null),
       hasLength(2),

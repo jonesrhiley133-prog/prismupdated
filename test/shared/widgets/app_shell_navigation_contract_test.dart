@@ -1502,6 +1502,7 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.relationships, _relationshipsRootTitle),
       (AppRoutePaths.subsystems, _subsystemsRootTitle),
       (AppRoutePaths.headspace, _headspaceRootTitle),
+      (AppRoutePaths.music, _musicRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1564,6 +1565,7 @@ String _rootTitle(String location) {
     AppRoutePaths.relationships => _relationshipsRootTitle,
     AppRoutePaths.subsystems => _subsystemsRootTitle,
     AppRoutePaths.headspace => _headspaceRootTitle,
+    AppRoutePaths.music => _musicRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1722,6 +1724,7 @@ const _schoolRootTitle = 'Route contract: school root';
 const _relationshipsRootTitle = 'Route contract: relationships root';
 const _subsystemsRootTitle = 'Route contract: subsystems root';
 const _headspaceRootTitle = 'Route contract: headspace root';
+const _musicRootTitle = 'Route contract: music root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/accessibility/a11y_views.dart';
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/features/settings/widgets/font_settings_section.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -105,6 +106,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const A11ySections(),
         ],
       ),
     );

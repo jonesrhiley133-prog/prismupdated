@@ -31174,6 +31174,1488 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Widgets'**
   String get hwTopBar;
+
+  /// navMusic
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get navMusic;
+
+  /// musTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get musTitle;
+
+  /// musImport
+  ///
+  /// In en, this message translates to:
+  /// **'Import music'**
+  String get musImport;
+
+  /// musImported
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No songs added} =1{1 song added} other{{count} songs added}}'**
+  String musImported(int count);
+
+  /// musImportReport
+  ///
+  /// In en, this message translates to:
+  /// **'Import finished'**
+  String get musImportReport;
+
+  /// musUnsupportedFormat
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported format (Prism plays {value}):'**
+  String musUnsupportedFormat(String value);
+
+  /// musImportFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Could not be read or copied:'**
+  String get musImportFailed;
+
+  /// musPickerFailed
+  ///
+  /// In en, this message translates to:
+  /// **'The file picker could not open those files. Try again, or pick them from a different folder.'**
+  String get musPickerFailed;
+
+  /// musWebUnsupported
+  ///
+  /// In en, this message translates to:
+  /// **'Importing music is not available in the web version.'**
+  String get musWebUnsupported;
+
+  /// musAllSongs
+  ///
+  /// In en, this message translates to:
+  /// **'Songs'**
+  String get musAllSongs;
+
+  /// musPlaylists
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists'**
+  String get musPlaylists;
+
+  /// musFavorites
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get musFavorites;
+
+  /// musRecent
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get musRecent;
+
+  /// musSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search title, artist or album'**
+  String get musSearch;
+
+  /// musSortTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get musSortTitle;
+
+  /// musSortArtist
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get musSortArtist;
+
+  /// musSortAlbum
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get musSortAlbum;
+
+  /// musSortAdded
+  ///
+  /// In en, this message translates to:
+  /// **'Recently added'**
+  String get musSortAdded;
+
+  /// musSortPlayed
+  ///
+  /// In en, this message translates to:
+  /// **'Most played'**
+  String get musSortPlayed;
+
+  /// musPlayAll
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get musPlayAll;
+
+  /// musShuffle
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle'**
+  String get musShuffle;
+
+  /// musSongCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song} other{{count} songs}}'**
+  String musSongCount(int count);
+
+  /// musEmptyTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Your music library is empty'**
+  String get musEmptyTitle;
+
+  /// musEmptyMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Import audio files from this device ({value} and more). Prism keeps its own copy, so songs keep playing even if the original is moved.'**
+  String musEmptyMessage(String value);
+
+  /// musNoFavorites
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet. Tap the heart on a song.'**
+  String get musNoFavorites;
+
+  /// musNoRecent
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing played yet'**
+  String get musNoRecent;
+
+  /// musNoResults
+  ///
+  /// In en, this message translates to:
+  /// **'No songs match'**
+  String get musNoResults;
+
+  /// musUnknownArtist
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown artist'**
+  String get musUnknownArtist;
+
+  /// musTrackLabel
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {artist}'**
+  String musTrackLabel(String title, String artist);
+
+  /// musTrackOptions
+  ///
+  /// In en, this message translates to:
+  /// **'Song options'**
+  String get musTrackOptions;
+
+  /// musFavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get musFavorite;
+
+  /// musUnfavorite
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get musUnfavorite;
+
+  /// musPlayNext
+  ///
+  /// In en, this message translates to:
+  /// **'Play next'**
+  String get musPlayNext;
+
+  /// musAddToQueue
+  ///
+  /// In en, this message translates to:
+  /// **'Add to queue'**
+  String get musAddToQueue;
+
+  /// musAddToPlaylist
+  ///
+  /// In en, this message translates to:
+  /// **'Add to playlist'**
+  String get musAddToPlaylist;
+
+  /// musEditInfo
+  ///
+  /// In en, this message translates to:
+  /// **'Edit song info'**
+  String get musEditInfo;
+
+  /// musDeleteTrack
+  ///
+  /// In en, this message translates to:
+  /// **'Delete from library'**
+  String get musDeleteTrack;
+
+  /// musDeleteTrackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this song?'**
+  String get musDeleteTrackTitle;
+
+  /// musDeleteTrackMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{value}\" will be removed from Prism and from your playlists. The original file on your device is not touched.'**
+  String musDeleteTrackMessage(String value);
+
+  /// musNewPlaylist
+  ///
+  /// In en, this message translates to:
+  /// **'New playlist'**
+  String get musNewPlaylist;
+
+  /// musPlaylistName
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist name'**
+  String get musPlaylistName;
+
+  /// musAddedTo
+  ///
+  /// In en, this message translates to:
+  /// **'Added to {value}'**
+  String musAddedTo(String value);
+
+  /// musNoPlaylists
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists yet'**
+  String get musNoPlaylists;
+
+  /// musNoPlaylistsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Create one, then add songs from the song menu.'**
+  String get musNoPlaylistsHelp;
+
+  /// musRename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get musRename;
+
+  /// musDeletePlaylistTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this playlist?'**
+  String get musDeletePlaylistTitle;
+
+  /// musDeletePlaylistMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{value}\" will be deleted. The songs stay in your library.'**
+  String musDeletePlaylistMessage(String value);
+
+  /// musPlaylistEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'This playlist is empty'**
+  String get musPlaylistEmpty;
+
+  /// musPlaylistEmptyHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Add songs from the song menu.'**
+  String get musPlaylistEmptyHelp;
+
+  /// musRemoveFromPlaylist
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from playlist'**
+  String get musRemoveFromPlaylist;
+
+  /// musReorder
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to reorder'**
+  String get musReorder;
+
+  /// musChooseCover
+  ///
+  /// In en, this message translates to:
+  /// **'Choose cover'**
+  String get musChooseCover;
+
+  /// musRemoveCover
+  ///
+  /// In en, this message translates to:
+  /// **'Remove cover'**
+  String get musRemoveCover;
+
+  /// musFieldTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get musFieldTitle;
+
+  /// musFieldArtist
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get musFieldArtist;
+
+  /// musFieldAlbum
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get musFieldAlbum;
+
+  /// musPlay
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get musPlay;
+
+  /// musPause
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get musPause;
+
+  /// musNext
+  ///
+  /// In en, this message translates to:
+  /// **'Next song'**
+  String get musNext;
+
+  /// musPrevious
+  ///
+  /// In en, this message translates to:
+  /// **'Previous song'**
+  String get musPrevious;
+
+  /// musMinimize
+  ///
+  /// In en, this message translates to:
+  /// **'Minimize player'**
+  String get musMinimize;
+
+  /// musOpenPlayer
+  ///
+  /// In en, this message translates to:
+  /// **'Open player'**
+  String get musOpenPlayer;
+
+  /// musClosePlayer
+  ///
+  /// In en, this message translates to:
+  /// **'Close player'**
+  String get musClosePlayer;
+
+  /// musPlayerRegion
+  ///
+  /// In en, this message translates to:
+  /// **'Music player'**
+  String get musPlayerRegion;
+
+  /// musBubbleLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Music player, {value}'**
+  String musBubbleLabel(String value);
+
+  /// musProgress
+  ///
+  /// In en, this message translates to:
+  /// **'Playback progress'**
+  String get musProgress;
+
+  /// musNowPlaying
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get musNowPlaying;
+
+  /// musNothingPlaying
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing playing'**
+  String get musNothingPlaying;
+
+  /// musCannotPlay
+  ///
+  /// In en, this message translates to:
+  /// **'\"{value}\" could not be played. The file may be missing or in a format this device cannot decode.'**
+  String musCannotPlay(String value);
+
+  /// musRepeatOff
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat off'**
+  String get musRepeatOff;
+
+  /// musRepeatAll
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat all'**
+  String get musRepeatAll;
+
+  /// musRepeatOne
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat this song'**
+  String get musRepeatOne;
+
+  /// musVolumeValue
+  ///
+  /// In en, this message translates to:
+  /// **'Volume {count} percent'**
+  String musVolumeValue(int count);
+
+  /// musQueue
+  ///
+  /// In en, this message translates to:
+  /// **'Queue'**
+  String get musQueue;
+
+  /// musQueueTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Queue ({count})'**
+  String musQueueTitle(int count);
+
+  /// musQueueEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'The queue is empty'**
+  String get musQueueEmpty;
+
+  /// musRemoveFromQueue
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from queue'**
+  String get musRemoveFromQueue;
+
+  /// musPlayerLook
+  ///
+  /// In en, this message translates to:
+  /// **'Player appearance'**
+  String get musPlayerLook;
+
+  /// musLayout
+  ///
+  /// In en, this message translates to:
+  /// **'Player on other pages'**
+  String get musLayout;
+
+  /// musLayoutBar
+  ///
+  /// In en, this message translates to:
+  /// **'Compact bar'**
+  String get musLayoutBar;
+
+  /// musLayoutBubble
+  ///
+  /// In en, this message translates to:
+  /// **'Floating'**
+  String get musLayoutBubble;
+
+  /// musLayoutHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get musLayoutHidden;
+
+  /// musLayoutHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Music keeps playing in every layout, including Hidden. Drag the floating player anywhere; double-tap it to play or pause, hold it to bring back the bar.'**
+  String get musLayoutHelp;
+
+  /// musPlacement
+  ///
+  /// In en, this message translates to:
+  /// **'Bar position'**
+  String get musPlacement;
+
+  /// musPlacementBottom
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom'**
+  String get musPlacementBottom;
+
+  /// musPlacementTop
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get musPlacementTop;
+
+  /// musArtworkBg
+  ///
+  /// In en, this message translates to:
+  /// **'Album artwork background'**
+  String get musArtworkBg;
+
+  /// musArtworkBgHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the cover art behind the player when a song has one.'**
+  String get musArtworkBgHelp;
+
+  /// musBlurArtwork
+  ///
+  /// In en, this message translates to:
+  /// **'Blur the artwork'**
+  String get musBlurArtwork;
+
+  /// musPlayerColor
+  ///
+  /// In en, this message translates to:
+  /// **'Player color'**
+  String get musPlayerColor;
+
+  /// musColorTheme
+  ///
+  /// In en, this message translates to:
+  /// **'Follow theme'**
+  String get musColorTheme;
+
+  /// apStudioTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Themes & backgrounds'**
+  String get apStudioTitle;
+
+  /// apOpenStudio
+  ///
+  /// In en, this message translates to:
+  /// **'Themes, backgrounds & element styles'**
+  String get apOpenStudio;
+
+  /// apStudioIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a preset or build your own: backgrounds, colours, corners, borders and shadows for every part of Prism. Changes apply instantly.'**
+  String get apStudioIntro;
+
+  /// apNewTheme
+  ///
+  /// In en, this message translates to:
+  /// **'New theme'**
+  String get apNewTheme;
+
+  /// apMyTheme
+  ///
+  /// In en, this message translates to:
+  /// **'My theme'**
+  String get apMyTheme;
+
+  /// apImport
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get apImport;
+
+  /// apImportHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Import a theme someone shared with you (a .prismtheme.json file or copied text). Pictures are not included in shared themes.'**
+  String get apImportHelp;
+
+  /// apImportFile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get apImportFile;
+
+  /// apImportPaste
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get apImportPaste;
+
+  /// apImportInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'That is not a Prism theme. Check you copied the whole theme text or picked the right file.'**
+  String get apImportInvalid;
+
+  /// apImported
+  ///
+  /// In en, this message translates to:
+  /// **'Imported \"{value}\"'**
+  String apImported(String value);
+
+  /// apCopied
+  ///
+  /// In en, this message translates to:
+  /// **'Theme copied to the clipboard'**
+  String get apCopied;
+
+  /// apPresets
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get apPresets;
+
+  /// apActive
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get apActive;
+
+  /// apBuiltIn
+  ///
+  /// In en, this message translates to:
+  /// **'Built in'**
+  String get apBuiltIn;
+
+  /// apYours
+  ///
+  /// In en, this message translates to:
+  /// **'Yours'**
+  String get apYours;
+
+  /// apPresetActive
+  ///
+  /// In en, this message translates to:
+  /// **'{value}, in use'**
+  String apPresetActive(String value);
+
+  /// apPresetHint
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to use, hold for options'**
+  String get apPresetHint;
+
+  /// apApply
+  ///
+  /// In en, this message translates to:
+  /// **'Use this theme'**
+  String get apApply;
+
+  /// apEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get apEdit;
+
+  /// apCustomizeCopy
+  ///
+  /// In en, this message translates to:
+  /// **'Customize a copy'**
+  String get apCustomizeCopy;
+
+  /// apDuplicate
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get apDuplicate;
+
+  /// apRename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get apRename;
+
+  /// apExport
+  ///
+  /// In en, this message translates to:
+  /// **'Export / share'**
+  String get apExport;
+
+  /// apCopyOf
+  ///
+  /// In en, this message translates to:
+  /// **'{value} copy'**
+  String apCopyOf(String value);
+
+  /// apDeleteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this theme?'**
+  String get apDeleteTitle;
+
+  /// apDeleteMessage
+  ///
+  /// In en, this message translates to:
+  /// **'\"{value}\" will be deleted. Pages using it go back to the app theme.'**
+  String apDeleteMessage(String value);
+
+  /// apAuto
+  ///
+  /// In en, this message translates to:
+  /// **'Switch with light/dark mode'**
+  String get apAuto;
+
+  /// apAutoHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Use one theme in light mode and another in dark mode.'**
+  String get apAutoHelp;
+
+  /// apForLight
+  ///
+  /// In en, this message translates to:
+  /// **'Light mode'**
+  String get apForLight;
+
+  /// apForDark
+  ///
+  /// In en, this message translates to:
+  /// **'Dark mode'**
+  String get apForDark;
+
+  /// apPageThemes
+  ///
+  /// In en, this message translates to:
+  /// **'Themes for individual pages'**
+  String get apPageThemes;
+
+  /// apPageThemesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Give a page a different theme from the rest of Prism.'**
+  String get apPageThemesHelp;
+
+  /// apSameAsApp
+  ///
+  /// In en, this message translates to:
+  /// **'Same as app'**
+  String get apSameAsApp;
+
+  /// apOwnBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Own background'**
+  String get apOwnBackground;
+
+  /// apEditTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit theme'**
+  String get apEditTitle;
+
+  /// apPresetName
+  ///
+  /// In en, this message translates to:
+  /// **'Theme name'**
+  String get apPresetName;
+
+  /// apSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved and applied \"{value}\"'**
+  String apSaved(String value);
+
+  /// apDiscardTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get apDiscardTitle;
+
+  /// apDiscardMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Your edits to this theme have not been saved.'**
+  String get apDiscardMessage;
+
+  /// apDiscard
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get apDiscard;
+
+  /// apKeepEditing
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get apKeepEditing;
+
+  /// apBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get apBackground;
+
+  /// apElements
+  ///
+  /// In en, this message translates to:
+  /// **'Elements'**
+  String get apElements;
+
+  /// apPages
+  ///
+  /// In en, this message translates to:
+  /// **'Pages'**
+  String get apPages;
+
+  /// apPagesHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Give pages their own background. Everything else uses the theme background.'**
+  String get apPagesHelp;
+
+  /// apUseAppBackground
+  ///
+  /// In en, this message translates to:
+  /// **'Use the theme background'**
+  String get apUseAppBackground;
+
+  /// apPreview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get apPreview;
+
+  /// apSampleCard
+  ///
+  /// In en, this message translates to:
+  /// **'A card with an icon and a badge'**
+  String get apSampleCard;
+
+  /// apSampleInput
+  ///
+  /// In en, this message translates to:
+  /// **'Text field'**
+  String get apSampleInput;
+
+  /// apSampleButton
+  ///
+  /// In en, this message translates to:
+  /// **'Button'**
+  String get apSampleButton;
+
+  /// apBgTheme
+  ///
+  /// In en, this message translates to:
+  /// **'Theme default'**
+  String get apBgTheme;
+
+  /// apBgColor
+  ///
+  /// In en, this message translates to:
+  /// **'Solid colour'**
+  String get apBgColor;
+
+  /// apBgGradient
+  ///
+  /// In en, this message translates to:
+  /// **'Gradient'**
+  String get apBgGradient;
+
+  /// apBgImage
+  ///
+  /// In en, this message translates to:
+  /// **'Your image'**
+  String get apBgImage;
+
+  /// apBgCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection'**
+  String get apBgCollection;
+
+  /// apGradLinear
+  ///
+  /// In en, this message translates to:
+  /// **'Linear'**
+  String get apGradLinear;
+
+  /// apGradDiagonal
+  ///
+  /// In en, this message translates to:
+  /// **'Diagonal'**
+  String get apGradDiagonal;
+
+  /// apGradRadial
+  ///
+  /// In en, this message translates to:
+  /// **'Radial'**
+  String get apGradRadial;
+
+  /// apGradColorN
+  ///
+  /// In en, this message translates to:
+  /// **'Colour {count}'**
+  String apGradColorN(int count);
+
+  /// apAddColor
+  ///
+  /// In en, this message translates to:
+  /// **'Add colour'**
+  String get apAddColor;
+
+  /// apRemoveColor
+  ///
+  /// In en, this message translates to:
+  /// **'Remove colour'**
+  String get apRemoveColor;
+
+  /// apDirection
+  ///
+  /// In en, this message translates to:
+  /// **'Direction'**
+  String get apDirection;
+
+  /// apIntensity
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity'**
+  String get apIntensity;
+
+  /// apUploadImage
+  ///
+  /// In en, this message translates to:
+  /// **'Upload image'**
+  String get apUploadImage;
+
+  /// apChangeImage
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get apChangeImage;
+
+  /// apImageHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Prism stores a resized copy on this device, so large photos stay fast. Pictures are not synced to other devices.'**
+  String get apImageHelp;
+
+  /// apImageFailed
+  ///
+  /// In en, this message translates to:
+  /// **'That image could not be read. Try a JPEG or PNG.'**
+  String get apImageFailed;
+
+  /// apOpacity
+  ///
+  /// In en, this message translates to:
+  /// **'Opacity'**
+  String get apOpacity;
+
+  /// apBlur
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get apBlur;
+
+  /// apBrightness
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness'**
+  String get apBrightness;
+
+  /// apContrast
+  ///
+  /// In en, this message translates to:
+  /// **'Contrast'**
+  String get apContrast;
+
+  /// apSaturation
+  ///
+  /// In en, this message translates to:
+  /// **'Saturation'**
+  String get apSaturation;
+
+  /// apOverlay
+  ///
+  /// In en, this message translates to:
+  /// **'Overlay'**
+  String get apOverlay;
+
+  /// apOverlayNone
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get apOverlayNone;
+
+  /// apOverlayScrim
+  ///
+  /// In en, this message translates to:
+  /// **'Tint'**
+  String get apOverlayScrim;
+
+  /// apOverlayVignette
+  ///
+  /// In en, this message translates to:
+  /// **'Vignette'**
+  String get apOverlayVignette;
+
+  /// apOverlayGlow
+  ///
+  /// In en, this message translates to:
+  /// **'Edge glow'**
+  String get apOverlayGlow;
+
+  /// apOverlayColor
+  ///
+  /// In en, this message translates to:
+  /// **'Overlay colour'**
+  String get apOverlayColor;
+
+  /// apOverlayStrength
+  ///
+  /// In en, this message translates to:
+  /// **'Overlay strength'**
+  String get apOverlayStrength;
+
+  /// apElButtons
+  ///
+  /// In en, this message translates to:
+  /// **'Buttons'**
+  String get apElButtons;
+
+  /// apElCards
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get apElCards;
+
+  /// apElNav
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation bar'**
+  String get apElNav;
+
+  /// apElHeader
+  ///
+  /// In en, this message translates to:
+  /// **'Headers'**
+  String get apElHeader;
+
+  /// apElInputs
+  ///
+  /// In en, this message translates to:
+  /// **'Text fields'**
+  String get apElInputs;
+
+  /// apElDialogs
+  ///
+  /// In en, this message translates to:
+  /// **'Dialogs & menus'**
+  String get apElDialogs;
+
+  /// apElDividers
+  ///
+  /// In en, this message translates to:
+  /// **'Dividers'**
+  String get apElDividers;
+
+  /// apElIcons
+  ///
+  /// In en, this message translates to:
+  /// **'Icons'**
+  String get apElIcons;
+
+  /// apElBadges
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get apElBadges;
+
+  /// apElText
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get apElText;
+
+  /// apColor
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get apColor;
+
+  /// apGradientWith
+  ///
+  /// In en, this message translates to:
+  /// **'Blend into (gradient)'**
+  String get apGradientWith;
+
+  /// apTransparency
+  ///
+  /// In en, this message translates to:
+  /// **'Transparency'**
+  String get apTransparency;
+
+  /// apCorners
+  ///
+  /// In en, this message translates to:
+  /// **'Corner radius'**
+  String get apCorners;
+
+  /// apBorder
+  ///
+  /// In en, this message translates to:
+  /// **'Border'**
+  String get apBorder;
+
+  /// apThickness
+  ///
+  /// In en, this message translates to:
+  /// **'Thickness'**
+  String get apThickness;
+
+  /// apBorderColor
+  ///
+  /// In en, this message translates to:
+  /// **'Border colour'**
+  String get apBorderColor;
+
+  /// apShadow
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow'**
+  String get apShadow;
+
+  /// apSpacing
+  ///
+  /// In en, this message translates to:
+  /// **'Spacing'**
+  String get apSpacing;
+
+  /// apResetElement
+  ///
+  /// In en, this message translates to:
+  /// **'Reset {value}'**
+  String apResetElement(String value);
+
+  /// apDefault
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get apDefault;
+
+  /// apReset
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get apReset;
+
+  /// apPageHome
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get apPageHome;
+
+  /// apPageMembers
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get apPageMembers;
+
+  /// apPageChat
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get apPageChat;
+
+  /// apPageCalendar
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get apPageCalendar;
+
+  /// apPageDictionary
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary'**
+  String get apPageDictionary;
+
+  /// apPagePolls
+  ///
+  /// In en, this message translates to:
+  /// **'Polls'**
+  String get apPagePolls;
+
+  /// apPageHabits
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get apPageHabits;
+
+  /// apPageStatistics
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get apPageStatistics;
+
+  /// apPageSettings
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get apPageSettings;
+
+  /// a11yQuickPanel
+  ///
+  /// In en, this message translates to:
+  /// **'Quick accessibility'**
+  String get a11yQuickPanel;
+
+  /// a11yAllSettings
+  ///
+  /// In en, this message translates to:
+  /// **'All accessibility settings'**
+  String get a11yAllSettings;
+
+  /// a11yResetAll
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get a11yResetAll;
+
+  /// a11yResetTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reset accessibility settings?'**
+  String get a11yResetTitle;
+
+  /// a11yResetMessage
+  ///
+  /// In en, this message translates to:
+  /// **'All options on this page go back to their defaults.'**
+  String get a11yResetMessage;
+
+  /// a11yVisual
+  ///
+  /// In en, this message translates to:
+  /// **'Visual'**
+  String get a11yVisual;
+
+  /// a11yUiScale
+  ///
+  /// In en, this message translates to:
+  /// **'Interface size'**
+  String get a11yUiScale;
+
+  /// a11yLineHeight
+  ///
+  /// In en, this message translates to:
+  /// **'Line height'**
+  String get a11yLineHeight;
+
+  /// a11yWordSpacing
+  ///
+  /// In en, this message translates to:
+  /// **'Word spacing'**
+  String get a11yWordSpacing;
+
+  /// a11yBold
+  ///
+  /// In en, this message translates to:
+  /// **'Bold text'**
+  String get a11yBold;
+
+  /// a11yHighContrast
+  ///
+  /// In en, this message translates to:
+  /// **'High contrast'**
+  String get a11yHighContrast;
+
+  /// a11yHighContrastHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum contrast text, solid surfaces and stronger outlines.'**
+  String get a11yHighContrastHelp;
+
+  /// a11yContrast
+  ///
+  /// In en, this message translates to:
+  /// **'Extra contrast'**
+  String get a11yContrast;
+
+  /// a11yReduceTransparency
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce transparency'**
+  String get a11yReduceTransparency;
+
+  /// a11yReduceTransparencyHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Glass and see-through surfaces become solid.'**
+  String get a11yReduceTransparencyHelp;
+
+  /// a11yReduceEffects
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce visual effects'**
+  String get a11yReduceEffects;
+
+  /// a11yReduceEffectsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'No blur, shadows or background overlays.'**
+  String get a11yReduceEffectsHelp;
+
+  /// a11yColorVision
+  ///
+  /// In en, this message translates to:
+  /// **'Colour palette'**
+  String get a11yColorVision;
+
+  /// a11yColorVisionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Colours chosen to stay distinguishable with each type of colour blindness.'**
+  String get a11yColorVisionHelp;
+
+  /// a11yCvStandard
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get a11yCvStandard;
+
+  /// a11yCvProtan
+  ///
+  /// In en, this message translates to:
+  /// **'Protanopia (red-blind)'**
+  String get a11yCvProtan;
+
+  /// a11yCvDeutan
+  ///
+  /// In en, this message translates to:
+  /// **'Deuteranopia (green-blind)'**
+  String get a11yCvDeutan;
+
+  /// a11yCvTritan
+  ///
+  /// In en, this message translates to:
+  /// **'Tritanopia (blue-blind)'**
+  String get a11yCvTritan;
+
+  /// a11yCvMono
+  ///
+  /// In en, this message translates to:
+  /// **'Greyscale'**
+  String get a11yCvMono;
+
+  /// a11yFocus
+  ///
+  /// In en, this message translates to:
+  /// **'Strong focus outline'**
+  String get a11yFocus;
+
+  /// a11yFocusHelp
+  ///
+  /// In en, this message translates to:
+  /// **'A thick outline shows where you are when using a keyboard or switch access.'**
+  String get a11yFocusHelp;
+
+  /// a11yLargeIcons
+  ///
+  /// In en, this message translates to:
+  /// **'Larger icons'**
+  String get a11yLargeIcons;
+
+  /// a11yMotion
+  ///
+  /// In en, this message translates to:
+  /// **'Motion'**
+  String get a11yMotion;
+
+  /// a11yReduceMotion
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce motion'**
+  String get a11yReduceMotion;
+
+  /// a11yReduceMotionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Turns off page transitions, ripples and decorative animation. Backgrounds never move.'**
+  String get a11yReduceMotionHelp;
+
+  /// a11yAnimSpeed
+  ///
+  /// In en, this message translates to:
+  /// **'Animation speed'**
+  String get a11yAnimSpeed;
+
+  /// a11yNormal
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get a11yNormal;
+
+  /// a11yInteraction
+  ///
+  /// In en, this message translates to:
+  /// **'Interaction'**
+  String get a11yInteraction;
+
+  /// a11yTouch
+  ///
+  /// In en, this message translates to:
+  /// **'Touch target size'**
+  String get a11yTouch;
+
+  /// a11yHaptics
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration feedback'**
+  String get a11yHaptics;
+
+  /// a11yHapticsHelp
+  ///
+  /// In en, this message translates to:
+  /// **'A small vibration when you tap, switch or confirm.'**
+  String get a11yHapticsHelp;
+
+  /// a11yConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm important actions'**
+  String get a11yConfirm;
+
+  /// a11yConfirmHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Ask before removing items, even where Prism normally would not.'**
+  String get a11yConfirmHelp;
+
+  /// a11yConfirmYes
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, continue'**
+  String get a11yConfirmYes;
+
+  /// a11ySimplifyNav
+  ///
+  /// In en, this message translates to:
+  /// **'Simplify navigation (choose fewer tabs)'**
+  String get a11ySimplifyNav;
+
+  /// a11yReading
+  ///
+  /// In en, this message translates to:
+  /// **'Reading & navigation'**
+  String get a11yReading;
+
+  /// a11yAnnounce
+  ///
+  /// In en, this message translates to:
+  /// **'Announce changes'**
+  String get a11yAnnounce;
+
+  /// a11yAnnounceHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Screen readers hear messages and what started playing without moving focus.'**
+  String get a11yAnnounceHelp;
+
+  /// a11yKeyboardHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard: Tab moves between controls, Enter or Space activates. Alt+Shift+A opens quick accessibility. Media keys control music anywhere; on the player, Space plays or pauses and Ctrl+arrows skip.'**
+  String get a11yKeyboardHelp;
+
+  /// apTopBar
+  ///
+  /// In en, this message translates to:
+  /// **'Themes'**
+  String get apTopBar;
 }
 
 class _AppLocalizationsDelegate

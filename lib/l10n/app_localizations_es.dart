@@ -20111,4 +20111,821 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get hwTopBar => 'Widgets';
+
+  @override
+  String get navMusic => 'Música';
+
+  @override
+  String get musTitle => 'Música';
+
+  @override
+  String get musImport => 'Importar música';
+
+  @override
+  String musImported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count canciones añadidas',
+      one: '1 canción añadida',
+      zero: 'No se añadieron canciones',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get musImportReport => 'Importación terminada';
+
+  @override
+  String musUnsupportedFormat(String value) {
+    return 'Formato no compatible (Prism reproduce $value):';
+  }
+
+  @override
+  String get musImportFailed => 'No se pudieron leer o copiar:';
+
+  @override
+  String get musPickerFailed =>
+      'El selector no pudo abrir esos archivos. Inténtalo de nuevo o elígelos desde otra carpeta.';
+
+  @override
+  String get musWebUnsupported =>
+      'Importar música no está disponible en la versión web.';
+
+  @override
+  String get musAllSongs => 'Canciones';
+
+  @override
+  String get musPlaylists => 'Listas';
+
+  @override
+  String get musFavorites => 'Favoritas';
+
+  @override
+  String get musRecent => 'Recientes';
+
+  @override
+  String get musSearch => 'Buscar título, artista o álbum';
+
+  @override
+  String get musSortTitle => 'Título';
+
+  @override
+  String get musSortArtist => 'Artista';
+
+  @override
+  String get musSortAlbum => 'Álbum';
+
+  @override
+  String get musSortAdded => 'Añadidas recientemente';
+
+  @override
+  String get musSortPlayed => 'Más escuchadas';
+
+  @override
+  String get musPlayAll => 'Reproducir';
+
+  @override
+  String get musShuffle => 'Aleatorio';
+
+  @override
+  String musSongCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count canciones',
+      one: '1 canción',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get musEmptyTitle => 'Tu biblioteca está vacía';
+
+  @override
+  String musEmptyMessage(String value) {
+    return 'Importa archivos de audio de este dispositivo ($value y más). Prism guarda su propia copia, así que seguirán sonando aunque muevas el original.';
+  }
+
+  @override
+  String get musNoFavorites =>
+      'Aún no hay favoritas. Toca el corazón de una canción.';
+
+  @override
+  String get musNoRecent => 'Aún no se ha reproducido nada';
+
+  @override
+  String get musNoResults => 'Ninguna canción coincide';
+
+  @override
+  String get musUnknownArtist => 'Artista desconocido';
+
+  @override
+  String musTrackLabel(String title, String artist) {
+    return '$title, $artist';
+  }
+
+  @override
+  String get musTrackOptions => 'Opciones de la canción';
+
+  @override
+  String get musFavorite => 'Añadir a favoritas';
+
+  @override
+  String get musUnfavorite => 'Quitar de favoritas';
+
+  @override
+  String get musPlayNext => 'Reproducir a continuación';
+
+  @override
+  String get musAddToQueue => 'Añadir a la cola';
+
+  @override
+  String get musAddToPlaylist => 'Añadir a una lista';
+
+  @override
+  String get musEditInfo => 'Editar información';
+
+  @override
+  String get musDeleteTrack => 'Eliminar de la biblioteca';
+
+  @override
+  String get musDeleteTrackTitle => '¿Eliminar esta canción?';
+
+  @override
+  String musDeleteTrackMessage(String value) {
+    return '\"$value\" se eliminará de Prism y de tus listas. El archivo original de tu dispositivo no se toca.';
+  }
+
+  @override
+  String get musNewPlaylist => 'Nueva lista';
+
+  @override
+  String get musPlaylistName => 'Nombre de la lista';
+
+  @override
+  String musAddedTo(String value) {
+    return 'Añadida a $value';
+  }
+
+  @override
+  String get musNoPlaylists => 'Aún no hay listas';
+
+  @override
+  String get musNoPlaylistsHelp =>
+      'Crea una y añade canciones desde el menú de cada canción.';
+
+  @override
+  String get musRename => 'Renombrar';
+
+  @override
+  String get musDeletePlaylistTitle => '¿Eliminar esta lista?';
+
+  @override
+  String musDeletePlaylistMessage(String value) {
+    return '\"$value\" se eliminará. Las canciones siguen en tu biblioteca.';
+  }
+
+  @override
+  String get musPlaylistEmpty => 'Esta lista está vacía';
+
+  @override
+  String get musPlaylistEmptyHelp =>
+      'Añade canciones desde el menú de cada canción.';
+
+  @override
+  String get musRemoveFromPlaylist => 'Quitar de la lista';
+
+  @override
+  String get musReorder => 'Arrastra para reordenar';
+
+  @override
+  String get musChooseCover => 'Elegir portada';
+
+  @override
+  String get musRemoveCover => 'Quitar portada';
+
+  @override
+  String get musFieldTitle => 'Título';
+
+  @override
+  String get musFieldArtist => 'Artista';
+
+  @override
+  String get musFieldAlbum => 'Álbum';
+
+  @override
+  String get musPlay => 'Reproducir';
+
+  @override
+  String get musPause => 'Pausar';
+
+  @override
+  String get musNext => 'Siguiente';
+
+  @override
+  String get musPrevious => 'Anterior';
+
+  @override
+  String get musMinimize => 'Minimizar reproductor';
+
+  @override
+  String get musOpenPlayer => 'Abrir reproductor';
+
+  @override
+  String get musClosePlayer => 'Cerrar reproductor';
+
+  @override
+  String get musPlayerRegion => 'Reproductor de música';
+
+  @override
+  String musBubbleLabel(String value) {
+    return 'Reproductor de música, $value';
+  }
+
+  @override
+  String get musProgress => 'Progreso';
+
+  @override
+  String get musNowPlaying => 'Reproduciendo';
+
+  @override
+  String get musNothingPlaying => 'Nada en reproducción';
+
+  @override
+  String musCannotPlay(String value) {
+    return 'No se pudo reproducir \"$value\". Puede que falte el archivo o que este dispositivo no pueda decodificar el formato.';
+  }
+
+  @override
+  String get musRepeatOff => 'Repetir desactivado';
+
+  @override
+  String get musRepeatAll => 'Repetir todo';
+
+  @override
+  String get musRepeatOne => 'Repetir esta canción';
+
+  @override
+  String musVolumeValue(int count) {
+    return 'Volumen $count por ciento';
+  }
+
+  @override
+  String get musQueue => 'Cola';
+
+  @override
+  String musQueueTitle(int count) {
+    return 'Cola ($count)';
+  }
+
+  @override
+  String get musQueueEmpty => 'La cola está vacía';
+
+  @override
+  String get musRemoveFromQueue => 'Quitar de la cola';
+
+  @override
+  String get musPlayerLook => 'Aspecto del reproductor';
+
+  @override
+  String get musLayout => 'Reproductor en otras páginas';
+
+  @override
+  String get musLayoutBar => 'Barra compacta';
+
+  @override
+  String get musLayoutBubble => 'Flotante';
+
+  @override
+  String get musLayoutHidden => 'Oculto';
+
+  @override
+  String get musLayoutHelp =>
+      'La música sigue sonando en todos los modos, también en Oculto. Arrastra el reproductor flotante adonde quieras; doble toque para reproducir o pausar, mantén pulsado para volver a la barra.';
+
+  @override
+  String get musPlacement => 'Posición de la barra';
+
+  @override
+  String get musPlacementBottom => 'Abajo';
+
+  @override
+  String get musPlacementTop => 'Arriba';
+
+  @override
+  String get musArtworkBg => 'Fondo con la portada';
+
+  @override
+  String get musArtworkBgHelp =>
+      'Usa la portada detrás del reproductor cuando la canción tiene una.';
+
+  @override
+  String get musBlurArtwork => 'Desenfocar la portada';
+
+  @override
+  String get musPlayerColor => 'Color del reproductor';
+
+  @override
+  String get musColorTheme => 'Según el tema';
+
+  @override
+  String get apStudioTitle => 'Temas y fondos';
+
+  @override
+  String get apOpenStudio => 'Temas, fondos y estilos';
+
+  @override
+  String get apStudioIntro =>
+      'Elige un tema o crea el tuyo: fondos, colores, esquinas, bordes y sombras para cada parte de Prism. Los cambios se aplican al instante.';
+
+  @override
+  String get apNewTheme => 'Nuevo tema';
+
+  @override
+  String get apMyTheme => 'Mi tema';
+
+  @override
+  String get apImport => 'Importar';
+
+  @override
+  String get apImportHelp =>
+      'Importa un tema que alguien compartió contigo (archivo .prismtheme.json o texto copiado). Los temas compartidos no incluyen imágenes.';
+
+  @override
+  String get apImportFile => 'Elegir archivo';
+
+  @override
+  String get apImportPaste => 'Pegar del portapapeles';
+
+  @override
+  String get apImportInvalid =>
+      'Eso no es un tema de Prism. Comprueba que copiaste todo el texto o elegiste el archivo correcto.';
+
+  @override
+  String apImported(String value) {
+    return 'Importado \"$value\"';
+  }
+
+  @override
+  String get apCopied => 'Tema copiado al portapapeles';
+
+  @override
+  String get apPresets => 'Temas';
+
+  @override
+  String get apActive => 'En uso';
+
+  @override
+  String get apBuiltIn => 'Incluido';
+
+  @override
+  String get apYours => 'Tuyo';
+
+  @override
+  String apPresetActive(String value) {
+    return '$value, en uso';
+  }
+
+  @override
+  String get apPresetHint => 'Toca para usar, mantén pulsado para opciones';
+
+  @override
+  String get apApply => 'Usar este tema';
+
+  @override
+  String get apEdit => 'Editar';
+
+  @override
+  String get apCustomizeCopy => 'Personalizar una copia';
+
+  @override
+  String get apDuplicate => 'Duplicar';
+
+  @override
+  String get apRename => 'Renombrar';
+
+  @override
+  String get apExport => 'Exportar / compartir';
+
+  @override
+  String apCopyOf(String value) {
+    return 'Copia de $value';
+  }
+
+  @override
+  String get apDeleteTitle => '¿Eliminar este tema?';
+
+  @override
+  String apDeleteMessage(String value) {
+    return '\"$value\" se eliminará. Las páginas que lo usan vuelven al tema de la app.';
+  }
+
+  @override
+  String get apAuto => 'Cambiar con el modo claro/oscuro';
+
+  @override
+  String get apAutoHelp => 'Usa un tema en modo claro y otro en modo oscuro.';
+
+  @override
+  String get apForLight => 'Modo claro';
+
+  @override
+  String get apForDark => 'Modo oscuro';
+
+  @override
+  String get apPageThemes => 'Temas por página';
+
+  @override
+  String get apPageThemesHelp =>
+      'Da a una página un tema distinto al del resto de Prism.';
+
+  @override
+  String get apSameAsApp => 'Igual que la app';
+
+  @override
+  String get apOwnBackground => 'Fondo propio';
+
+  @override
+  String get apEditTitle => 'Editar tema';
+
+  @override
+  String get apPresetName => 'Nombre del tema';
+
+  @override
+  String apSaved(String value) {
+    return 'Guardado y aplicado \"$value\"';
+  }
+
+  @override
+  String get apDiscardTitle => '¿Descartar cambios?';
+
+  @override
+  String get apDiscardMessage => 'No has guardado los cambios de este tema.';
+
+  @override
+  String get apDiscard => 'Descartar';
+
+  @override
+  String get apKeepEditing => 'Seguir editando';
+
+  @override
+  String get apBackground => 'Fondo';
+
+  @override
+  String get apElements => 'Elementos';
+
+  @override
+  String get apPages => 'Páginas';
+
+  @override
+  String get apPagesHelp =>
+      'Da a las páginas su propio fondo. El resto usa el fondo del tema.';
+
+  @override
+  String get apUseAppBackground => 'Usar el fondo del tema';
+
+  @override
+  String get apPreview => 'Vista previa';
+
+  @override
+  String get apSampleCard => 'Una tarjeta con icono e insignia';
+
+  @override
+  String get apSampleInput => 'Campo de texto';
+
+  @override
+  String get apSampleButton => 'Botón';
+
+  @override
+  String get apBgTheme => 'Del tema';
+
+  @override
+  String get apBgColor => 'Color sólido';
+
+  @override
+  String get apBgGradient => 'Degradado';
+
+  @override
+  String get apBgImage => 'Tu imagen';
+
+  @override
+  String get apBgCollection => 'Colección';
+
+  @override
+  String get apGradLinear => 'Lineal';
+
+  @override
+  String get apGradDiagonal => 'Diagonal';
+
+  @override
+  String get apGradRadial => 'Radial';
+
+  @override
+  String apGradColorN(int count) {
+    return 'Color $count';
+  }
+
+  @override
+  String get apAddColor => 'Añadir color';
+
+  @override
+  String get apRemoveColor => 'Quitar color';
+
+  @override
+  String get apDirection => 'Dirección';
+
+  @override
+  String get apIntensity => 'Intensidad';
+
+  @override
+  String get apUploadImage => 'Subir imagen';
+
+  @override
+  String get apChangeImage => 'Cambiar imagen';
+
+  @override
+  String get apImageHelp =>
+      'Prism guarda una copia reducida en este dispositivo para que las fotos grandes vayan rápido. Las imágenes no se sincronizan.';
+
+  @override
+  String get apImageFailed =>
+      'No se pudo leer esa imagen. Prueba con JPEG o PNG.';
+
+  @override
+  String get apOpacity => 'Opacidad';
+
+  @override
+  String get apBlur => 'Desenfoque';
+
+  @override
+  String get apBrightness => 'Brillo';
+
+  @override
+  String get apContrast => 'Contraste';
+
+  @override
+  String get apSaturation => 'Saturación';
+
+  @override
+  String get apOverlay => 'Capa';
+
+  @override
+  String get apOverlayNone => 'Ninguna';
+
+  @override
+  String get apOverlayScrim => 'Tinte';
+
+  @override
+  String get apOverlayVignette => 'Viñeta';
+
+  @override
+  String get apOverlayGlow => 'Brillo en bordes';
+
+  @override
+  String get apOverlayColor => 'Color de la capa';
+
+  @override
+  String get apOverlayStrength => 'Fuerza de la capa';
+
+  @override
+  String get apElButtons => 'Botones';
+
+  @override
+  String get apElCards => 'Tarjetas';
+
+  @override
+  String get apElNav => 'Barra de navegación';
+
+  @override
+  String get apElHeader => 'Encabezados';
+
+  @override
+  String get apElInputs => 'Campos de texto';
+
+  @override
+  String get apElDialogs => 'Diálogos y menús';
+
+  @override
+  String get apElDividers => 'Separadores';
+
+  @override
+  String get apElIcons => 'Iconos';
+
+  @override
+  String get apElBadges => 'Insignias';
+
+  @override
+  String get apElText => 'Texto';
+
+  @override
+  String get apColor => 'Color';
+
+  @override
+  String get apGradientWith => 'Mezclar con (degradado)';
+
+  @override
+  String get apTransparency => 'Transparencia';
+
+  @override
+  String get apCorners => 'Radio de esquinas';
+
+  @override
+  String get apBorder => 'Borde';
+
+  @override
+  String get apThickness => 'Grosor';
+
+  @override
+  String get apBorderColor => 'Color del borde';
+
+  @override
+  String get apShadow => 'Sombra';
+
+  @override
+  String get apSpacing => 'Espaciado';
+
+  @override
+  String apResetElement(String value) {
+    return 'Restablecer $value';
+  }
+
+  @override
+  String get apDefault => 'Predeterminado';
+
+  @override
+  String get apReset => 'Restablecer';
+
+  @override
+  String get apPageHome => 'Inicio';
+
+  @override
+  String get apPageMembers => 'Miembros';
+
+  @override
+  String get apPageChat => 'Chat';
+
+  @override
+  String get apPageCalendar => 'Calendario';
+
+  @override
+  String get apPageDictionary => 'Diccionario';
+
+  @override
+  String get apPagePolls => 'Encuestas';
+
+  @override
+  String get apPageHabits => 'Hábitos';
+
+  @override
+  String get apPageStatistics => 'Estadísticas';
+
+  @override
+  String get apPageSettings => 'Ajustes';
+
+  @override
+  String get a11yQuickPanel => 'Accesibilidad rápida';
+
+  @override
+  String get a11yAllSettings => 'Todos los ajustes de accesibilidad';
+
+  @override
+  String get a11yResetAll => 'Restablecer';
+
+  @override
+  String get a11yResetTitle => '¿Restablecer accesibilidad?';
+
+  @override
+  String get a11yResetMessage =>
+      'Todas las opciones de esta página vuelven a sus valores predeterminados.';
+
+  @override
+  String get a11yVisual => 'Visual';
+
+  @override
+  String get a11yUiScale => 'Tamaño de la interfaz';
+
+  @override
+  String get a11yLineHeight => 'Interlineado';
+
+  @override
+  String get a11yWordSpacing => 'Espacio entre palabras';
+
+  @override
+  String get a11yBold => 'Texto en negrita';
+
+  @override
+  String get a11yHighContrast => 'Alto contraste';
+
+  @override
+  String get a11yHighContrastHelp =>
+      'Texto con contraste máximo, superficies sólidas y contornos más marcados.';
+
+  @override
+  String get a11yContrast => 'Contraste adicional';
+
+  @override
+  String get a11yReduceTransparency => 'Reducir transparencia';
+
+  @override
+  String get a11yReduceTransparencyHelp =>
+      'Las superficies translúcidas se vuelven sólidas.';
+
+  @override
+  String get a11yReduceEffects => 'Reducir efectos visuales';
+
+  @override
+  String get a11yReduceEffectsHelp =>
+      'Sin desenfoque, sombras ni capas de fondo.';
+
+  @override
+  String get a11yColorVision => 'Paleta de colores';
+
+  @override
+  String get a11yColorVisionHelp =>
+      'Colores elegidos para distinguirse con cada tipo de daltonismo.';
+
+  @override
+  String get a11yCvStandard => 'Estándar';
+
+  @override
+  String get a11yCvProtan => 'Protanopia (rojo)';
+
+  @override
+  String get a11yCvDeutan => 'Deuteranopia (verde)';
+
+  @override
+  String get a11yCvTritan => 'Tritanopia (azul)';
+
+  @override
+  String get a11yCvMono => 'Escala de grises';
+
+  @override
+  String get a11yFocus => 'Contorno de foco marcado';
+
+  @override
+  String get a11yFocusHelp =>
+      'Un contorno grueso muestra dónde estás al usar teclado o acceso por interruptor.';
+
+  @override
+  String get a11yLargeIcons => 'Iconos más grandes';
+
+  @override
+  String get a11yMotion => 'Movimiento';
+
+  @override
+  String get a11yReduceMotion => 'Reducir movimiento';
+
+  @override
+  String get a11yReduceMotionHelp =>
+      'Desactiva transiciones, ondas y animaciones decorativas. Los fondos nunca se mueven.';
+
+  @override
+  String get a11yAnimSpeed => 'Velocidad de animación';
+
+  @override
+  String get a11yNormal => 'Normal';
+
+  @override
+  String get a11yInteraction => 'Interacción';
+
+  @override
+  String get a11yTouch => 'Tamaño de zonas táctiles';
+
+  @override
+  String get a11yHaptics => 'Vibración';
+
+  @override
+  String get a11yHapticsHelp =>
+      'Una pequeña vibración al tocar, cambiar o confirmar.';
+
+  @override
+  String get a11yConfirm => 'Confirmar acciones importantes';
+
+  @override
+  String get a11yConfirmHelp =>
+      'Preguntar antes de quitar elementos, incluso donde Prism normalmente no lo haría.';
+
+  @override
+  String get a11yConfirmYes => 'Sí, continuar';
+
+  @override
+  String get a11ySimplifyNav => 'Simplificar la navegación (menos pestañas)';
+
+  @override
+  String get a11yReading => 'Lectura y navegación';
+
+  @override
+  String get a11yAnnounce => 'Anunciar cambios';
+
+  @override
+  String get a11yAnnounceHelp =>
+      'Los lectores de pantalla escuchan mensajes y lo que empieza a sonar sin mover el foco.';
+
+  @override
+  String get a11yKeyboardHelp =>
+      'Teclado: Tab se mueve entre controles, Intro o Espacio activa. Alt+Mayús+A abre la accesibilidad rápida. Las teclas multimedia controlan la música; en el reproductor, Espacio reproduce o pausa y Ctrl+flechas saltan.';
+
+  @override
+  String get apTopBar => 'Temas';
 }

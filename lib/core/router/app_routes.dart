@@ -34,6 +34,7 @@ abstract final class AppRoutePaths {
   static const relationships = '/relationships';
   static const subsystems = '/subsystems';
   static const headspace = '/headspace';
+  static const music = '/music';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -46,6 +47,9 @@ abstract final class AppRoutePaths {
   static String widgetStudio(String type, {int? id}) =>
       '/home-widgets/studio/$type${id == null ? '' : '?id=$id'}';
   static const todos = '/todos';
+  static const nowPlaying = '/now-playing';
+  static const appearanceStudio = '/appearance-studio';
+  static const accessibilityQuick = '/accessibility-quick';
 
   // Settings sub-routes
   static const settingsMembers = '/settings/members';
@@ -212,6 +216,7 @@ enum AppShellTabId {
   relationships,
   subsystems,
   headspace,
+  music,
 }
 
 class AppShellTab {
@@ -286,6 +291,7 @@ class AppShellTab {
       AppShellTabId.relationships => l10n.navRelationships,
       AppShellTabId.subsystems => l10n.navSubsystems,
       AppShellTabId.headspace => l10n.navHeadspace,
+      AppShellTabId.music => l10n.navMusic,
     };
   }
 
@@ -332,6 +338,7 @@ class AppShellTab {
       AppShellTabId.relationships => true,
       AppShellTabId.subsystems => true,
       AppShellTabId.headspace => true,
+      AppShellTabId.music => true,
     };
   }
 }
@@ -578,6 +585,14 @@ final appShellTabs = [
     branchIndex: 29,
     rootLocation: AppRoutePaths.headspace,
   ),
+  AppShellTab(
+    id: AppShellTabId.music,
+    label: 'Music',
+    icon: AppIcons.navMusic,
+    activeIcon: AppIcons.navMusicActive,
+    branchIndex: 30,
+    rootLocation: AppRoutePaths.music,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -606,6 +621,7 @@ const defaultNavBarOverflowTabIds = [
   'relationships',
   'subsystems',
   'headspace',
+  'music',
   'notes',
   'reminders',
   'statistics',
