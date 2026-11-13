@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,6 +61,25 @@ class AppearanceSettingsScreen extends ConsumerWidget {
           return ListView(
             padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: PrismButton(
+                  label: context.l10n.apOpenStudio,
+                  icon: Icons.palette_outlined,
+                  tone: PrismButtonTone.filled,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.appearanceStudio),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: context.l10n.socBannersTitle,
+                  icon: Icons.panorama_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.headmateBanners),
+                ),
+              ),
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(

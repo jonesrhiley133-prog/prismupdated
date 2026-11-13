@@ -32,6 +32,69 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.22.0',
+    date: DateTime(2026, 11, 13),
+    features: const [
+      LocalizedText(
+        'Music player: import your own songs (MP3, M4A, AAC, WAV, OGG and '
+            'more), build playlists, favourites and a queue, edit song info '
+            'and covers. Music keeps playing while you move around Prism, '
+            'with a compact bar or floating player on every page, a full '
+            'player with artwork, and lock-screen / notification controls '
+            'on Android.',
+        'Reproductor de música: importa tus canciones (MP3, M4A, AAC, WAV, '
+            'OGG y más), crea listas, favoritas y una cola, y edita datos y '
+            'portadas. La música sigue sonando mientras navegas por Prism, '
+            'con barra compacta o reproductor flotante en cada página, '
+            'reproductor completo con portada y controles en la pantalla '
+            'de bloqueo en Android.',
+      ),
+      LocalizedText(
+        'Themes & backgrounds: eight designed presets plus your own. Upload '
+            'backgrounds or pick from a collection, use solid colours or '
+            'multi-colour gradients, adjust blur, brightness, contrast and '
+            'saturation, and add overlays. Style buttons, cards, the '
+            'navigation bar, headers, text fields, dialogs, dividers, icons '
+            'and badges. Different backgrounds or themes per page, automatic '
+            'light/dark switching, live preview, and import/export to share '
+            'themes. Settings → Themes & backgrounds.',
+        'Temas y fondos: ocho temas diseñados y los tuyos. Sube fondos o '
+            'elige de una colección, usa colores sólidos o degradados, ajusta '
+            'desenfoque, brillo, contraste y saturación, y añade capas. '
+            'Estiliza botones, tarjetas, la barra de navegación, '
+            'encabezados, campos, diálogos, separadores, iconos e insignias. '
+            'Fondos o temas por página, cambio automático claro/oscuro, '
+            'vista previa e importar/exportar temas.',
+      ),
+      LocalizedText(
+        'Accessibility: interface size, line height and word spacing, bold '
+            'text, high and adjustable contrast, reduced transparency and '
+            'effects, colour-blind palettes, a strong keyboard-focus '
+            'outline, larger icons and touch targets, reduce motion and '
+            'animation speed, vibration and confirmation options, and a '
+            'quick accessibility panel (Alt+Shift+A).',
+        'Accesibilidad: tamaño de la interfaz, interlineado y espacio entre '
+            'palabras, negrita, contraste alto y ajustable, menos '
+            'transparencia y efectos, paletas para daltonismo, contorno de '
+            'foco marcado, iconos y zonas táctiles más grandes, reducir '
+            'movimiento y velocidad de animación, vibración, confirmaciones '
+            'y panel de accesibilidad rápida (Alt+Mayús+A).',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Appearance and accessibility settings sync across your devices '
+            '(uploaded pictures stay on the device they were added on).',
+        'Los ajustes de apariencia y accesibilidad se sincronizan entre '
+            'dispositivos (las imágenes subidas se quedan en su dispositivo).',
+      ),
+      LocalizedText(
+        'Home screen widgets no longer gather data until one is placed.',
+        'Los widgets de inicio ya no recopilan datos hasta que colocas uno.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.21.0',
     date: DateTime(2026, 11, 12),
     features: const [

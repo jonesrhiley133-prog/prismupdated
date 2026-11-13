@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/domain/models/tracker_record.dart';
+import 'package:prism_plurality/features/accessibility/a11y_views.dart';
 import 'package:prism_plurality/features/home_widgets/services/home_widget_models.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
@@ -180,7 +181,9 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                               label: l10n.delete,
                               density: PrismControlDensity.compact,
                               tone: PrismButtonTone.destructive,
-                              onPressed: () => notifier.delete(t.id),
+                              onPressed: () async {
+                                if (await confirmIfAsked(context, ref, title: l10n.delete, message: t.title)) await notifier.delete(t.id);
+                              },
                             ),
                           ],
                         ),

@@ -400,6 +400,8 @@ void main() {
         AppShellTabId.relationships,
         AppShellTabId.subsystems,
         AppShellTabId.headspace,
+        AppShellTabId.music,
+        AppShellTabId.stories,
         AppShellTabId.notes,
         AppShellTabId.reminders,
         AppShellTabId.statistics,

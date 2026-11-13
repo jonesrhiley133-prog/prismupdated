@@ -2,6 +2,13 @@ import 'dart:async';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/music/views/mini_player.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
+import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart';
+import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/home_widgets/services/home_widget_controller.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_controller.dart';
@@ -294,6 +301,12 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(frontingNotificationListenerProvider, (_, _) {});
     ref.listen(frontingNotificationActionsProvider, (_, _) {});
     ref.listen(homeWidgetListenerProvider, (_, _) {});
+    ref.listen(homeWidgetSyncProvider, (_, _) {});
+    // Appearance and accessibility follow the user across devices.
+    ref.listen(appearanceSyncProvider, (_, _) {});
+    ref.listen(a11ySyncProvider, (_, _) {});
+    // The one app-wide music controller lives as long as the app.
+    ref.listen(musicControllerProvider, (_, _) {});
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
     // `db.transaction(...)` (drift_sync_adapter.dart `_frontingSessionsEntity`
@@ -379,6 +392,10 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             .whenOrNull(data: (value) => value) ??
         typographyLetterSpacingPreference.defaultValue;
     final appFontFamily = fontFamily.assetFontFamily;
+    final a11y = ref.watch(a11ySettingsProvider);
+    final lightLook = ref.watch(activeLookProvider(false));
+    final darkLook = ref.watch(activeLookProvider(true));
+    final backgroundDir = ref.watch(backgroundsDirProvider).value?.path;
     final fontScale = rawFontScale
         .clamp(fontFamily.minimumScale, fontFamily.maximumScale)
         .toDouble();
@@ -450,6 +467,25 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           darkTheme = AppTheme.withLetterSpacing(darkTheme, letterSpacing);
         }
 
+        // Accessibility first (colour-vision palette, contrast, spacing),
+        // then the appearance preset on top.
+        lightTheme = applyAccessibility(lightTheme, a11y);
+        darkTheme = applyAccessibility(darkTheme, a11y);
+        lightTheme = applyLook(
+          lightTheme,
+          lightLook,
+          reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
+          reduceEffects: a11y.reduceEffects,
+          backgroundDir: backgroundDir,
+        );
+        darkTheme = applyLook(
+          darkTheme,
+          darkLook,
+          reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
+          reduceEffects: a11y.reduceEffects,
+          backgroundDir: backgroundDir,
+        );
+
         return MaterialApp.router(
           title: 'Prism',
           localizationsDelegates: const [
@@ -481,8 +517,14 @@ class _PrismAppState extends ConsumerState<PrismApp> {
                 child: result,
               );
             }
-            return PrismKeyboardDismissScope(
-              child: PrismToastHost(child: result),
+            // The player host sits above the navigator so music and its
+            // controls survive every page change.
+            return A11yScope(
+              onOpenQuickPanel: () =>
+                  router.push(AppRoutePaths.accessibilityQuick),
+              child: PrismKeyboardDismissScope(
+                child: PrismToastHost(child: MusicPlayerHost(child: result)),
+              ),
             );
           },
           debugShowCheckedModeBanner: false,

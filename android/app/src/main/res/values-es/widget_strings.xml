@@ -47,4 +47,9 @@
     <plurals name="widget_in_days"><item quantity="one">en %d día</item><item quantity="other">en %d días</item></plurals>
     <plurals name="widget_days_ago"><item quantity="one">hace %d día</item><item quantity="other">hace %d días</item></plurals>
     <string name="widget_refresh">Actualizar</string>
+    <string name="music_channel_name">Reproducción de música</string>
+    <string name="music_play">Reproducir</string>
+    <string name="music_pause">Pausar</string>
+    <string name="music_next">Siguiente</string>
+    <string name="music_previous">Anterior</string>
 </resources>

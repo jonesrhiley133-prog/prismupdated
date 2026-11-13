@@ -1,3 +1,5 @@
+import 'package:prism_plurality/features/appearance/models/look.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:flutter/material.dart';
 
 /// A sliver that pins a [PrismTopBar] at the top of a [CustomScrollView],
@@ -72,7 +74,16 @@ class _PinnedTopBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+    final look = LookTheme.of(context);
+    // A custom header colour wins; over a picture background the bar fades
+    // more softly so the image stays visible.
+    final scaffoldBg =
+        look?.fill(LookElement.header) ??
+        (look != null && look.look.background.kind == BgKind.image
+            ? Theme.of(context).scaffoldBackgroundColor.withValues(
+                alpha: look.reduceTransparency ? 1 : 0.6,
+              )
+            : Theme.of(context).scaffoldBackgroundColor);
 
     return Center(
       child: ConstrainedBox(

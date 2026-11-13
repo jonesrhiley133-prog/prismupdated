@@ -52,6 +52,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onDestroy() {
         PrismWidgets.channel = null
+        MusicPlayback.channel = null
+        MusicPlayback.clear(this)
         super.onDestroy()
     }
 
@@ -171,6 +173,24 @@ class MainActivity : FlutterFragmentActivity() {
                             )
                             result.success(ok)
                         }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
+        MusicPlayback.channel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "com.prismplural.prism/music",
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "update" -> {
+                        MusicPlayback.update(this, call.arguments as? Map<*, *> ?: emptyMap<String, Any>())
+                        result.success(null)
+                    }
+                    "clear" -> {
+                        MusicPlayback.clear(this)
+                        result.success(null)
                     }
                     else -> result.notImplemented()
                 }

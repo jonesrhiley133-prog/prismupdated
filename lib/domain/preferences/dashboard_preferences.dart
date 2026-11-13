@@ -14,8 +14,10 @@ abstract final class DashboardWidgetId {
   static const events = 'events';
   static const achievements = 'achievements';
   static const journal = 'journal';
+  static const stories = 'stories';
 
   static const all = [
+    stories,
     now,
     quickActions,
     howWeFeel,
@@ -29,6 +31,7 @@ abstract final class DashboardWidgetId {
     journal,
   ];
   static const defaults = [
+    stories,
     now,
     quickActions,
     howWeFeel,

@@ -19,6 +19,13 @@ import '../../features/cycle/views/cycle_insights_screen.dart';
 import '../../features/polls/advanced/poll_stats_screen.dart';
 import '../../features/fronting_notification/views/fronting_notification_settings_screen.dart';
 import '../../features/home_widgets/views/home_widgets_screen.dart';
+import '../../features/music/views/now_playing_screen.dart';
+import '../../features/social/views/alter_blog_screen.dart';
+import '../../features/social/views/banner_positions_screen.dart';
+import '../../features/social/views/bulletin_screen.dart';
+import '../../features/social/views/post_thread_screen.dart';
+import '../../features/appearance/views/appearance_studio_screen.dart';
+import '../../features/accessibility/a11y_views.dart';
 import '../../features/home_widgets/views/todo_screen.dart';
 import '../../features/home_widgets/views/widget_studio_screen.dart';
 import '../../features/fronting/views/timeline_screen.dart';
@@ -74,6 +81,8 @@ import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
+import '../../features/social/views/stories_screen.dart';
+import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
 import '../../features/subsystems/views/subsystems_screen.dart';
 import '../../features/relationships/views/relationships_screen.dart';
@@ -167,6 +176,12 @@ final _subsystemsNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _headspaceNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'headspace',
+);
+final _musicNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'music',
+);
+final _storiesNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'stories',
 );
 final _contactsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'contacts',
@@ -402,6 +417,69 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.systemTimeline,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SystemTimelineScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.nowPlaying,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          child: const NowPlayingScreen(),
+          transitionsBuilder: (context, animation, _, child) => SlideTransition(
+            position: Tween(begin: const Offset(0, 1), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOutCubic))
+                .animate(animation),
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.appearanceStudio,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AppearanceStudioScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.accessibilityQuick,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          opaque: false,
+          barrierDismissible: true,
+          barrierColor: Colors.black54,
+          child: const _QuickA11yPage(),
+          transitionsBuilder: (context, animation, _, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialPostRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => PostThreadScreen(postId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialAlterRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => AlterBlogScreen(memberId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialTagRoute,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => TagScreen(tag: state.pathParameters['tag']!),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialDrafts,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DraftsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.headmateBanners,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const BannerPositionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.socialReports,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ReportsScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.homeWidgets,
@@ -1050,8 +1128,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final flags = ref.read(featureFlagsProvider);
                   return flags.boards ? null : AppRoutePaths.home;
                 },
-                builder: (context, state) => const BoardsScreen(),
+                builder: (context, state) => const BulletinScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'messages',
+                    builder: (context, state) => const BoardsScreen(),
+                  ),
                   GoRoute(
                     name: AppRouteNames.memberBoard,
                     path: 'member/:memberId',
@@ -1310,8 +1392,47 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // Branch 30: Music (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _musicNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.music,
+                builder: (context, state) => const MusicScreen(),
+              ),
+            ],
+          ),
+          // Branch 31: Stories (optional top-level tab)
+          StatefulShellBranch(
+            navigatorKey: _storiesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.stories,
+                builder: (context, state) => const StoriesScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
   );
 });
+
+
+/// Keyboard shortcut target (Alt+Shift+A): the quick accessibility panel.
+class _QuickA11yPage extends StatelessWidget {
+  const _QuickA11yPage();
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 460, maxHeight: 640),
+      child: Material(
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        child: const Padding(padding: EdgeInsets.only(top: 16), child: A11yQuickPanel()),
+      ),
+    ),
+  );
+}

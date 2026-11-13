@@ -197,6 +197,13 @@ class _BoardsTopBar extends StatelessWidget implements PreferredSizeWidget {
       title: context.l10n.boardsScreenTitle,
       leading: const _BoardsMemberFilterButton(),
       actions: [
+        // Opened from the Bulletin Board: offer a way back.
+        if (GoRouter.maybeOf(context)?.canPop() ?? false)
+          PrismTopBarAction(
+            icon: AppIcons.arrowBack,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => GoRouter.of(context).pop(),
+          ),
         const BoardActorSelector(),
         PrismTopBarAction(
           icon: AppIcons.add,

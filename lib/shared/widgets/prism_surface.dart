@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/appearance/models/look.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/utils/animations.dart';
@@ -119,23 +121,46 @@ class _PrismSurfaceState extends State<PrismSurface> {
               }
             : _surfaceBorderColor(theme, widget.tone, _pressed, _hovered));
 
+    // Appearance presets restyle plain cards; accent/explicit fills keep
+    // their meaning (selection, member colours).
+    final look = LookTheme.of(context);
+    final styled =
+        look != null && widget.fillColor == null && !useAccentFill;
+    final cardStyle = styled ? look.style(LookElement.card) : null;
+    final lookGradient = styled ? look.gradient(LookElement.card) : null;
+    final lookBorder = styled ? look.border(LookElement.card) : null;
+    final lookShadow = styled ? look.shadow(LookElement.card) : null;
+    final padScale = cardStyle?.padding ?? 1.0;
+
     final borderRadius = BorderRadius.circular(
-      PrismShapes.of(context).radius(widget.borderRadius),
+      cardStyle?.radius ?? PrismShapes.of(context).radius(widget.borderRadius),
     );
-    final content = ClipRRect(
+    final clipped = ClipRRect(
       borderRadius: borderRadius,
       clipBehavior: Clip.antiAlias,
       child: AnimatedContainer(
         duration: widget.transitionDuration,
-        padding: widget.padding,
+        padding: padScale == 1.0 ? widget.padding : widget.padding * padScale,
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: lookGradient == null ? backgroundColor : null,
+          gradient: lookGradient,
           borderRadius: borderRadius,
-          border: borderColor.a == 0 ? null : Border.all(color: borderColor),
+          border:
+              lookBorder ??
+              (borderColor.a == 0 ? null : Border.all(color: borderColor)),
         ),
         child: widget.child,
       ),
     );
+    final Widget content = lookShadow == null
+        ? clipped
+        : DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              boxShadow: lookShadow,
+            ),
+            child: clipped,
+          );
 
     return Padding(
       padding: widget.margin,

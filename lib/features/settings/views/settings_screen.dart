@@ -224,6 +224,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       route: AppRoutePaths.frontingNotification,
                     ),
                     _navLink(
+                      icon: Icons.palette_outlined,
+                      iconColor: Colors.pinkAccent,
+                      title: context.l10n.apStudioTitle,
+                      route: AppRoutePaths.appearanceStudio,
+                    ),
+                    _navLink(
                       icon: AppIcons.dashboardCustomize,
                       iconColor: Colors.indigo,
                       title: context.l10n.hwTitle,

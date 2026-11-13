@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_button.dart';
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/domain/models/system_settings.dart';
@@ -267,6 +271,19 @@ class MemberListViewSettingsSheet extends ConsumerWidget {
                             .updateMembersShowPronouns(value);
                       },
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  PrismSwitchRow(
+                    title: l10n.socShowBanners,
+                    subtitle: l10n.socShowBannersHelp,
+                    value: ref.watch(showMemberBannersProvider),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    onChanged: (v) => ref.read(appearanceProvider.notifier).setShowMemberBanners(v),
+                  ),
+                  PrismButton(
+                    label: l10n.socBannersAdjust,
+                    icon: Icons.crop_rounded,
+                    onPressed: () => context.push(AppRoutePaths.headmateBanners),
                   ),
                 ],
               ),

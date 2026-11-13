@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/social/widgets/stories_row.dart';
 import 'package:prism_plurality/features/app_update/app_update_widgets.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
@@ -66,6 +67,7 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     DashboardWidgetId.events => l10n.dashboardWidgetEvents,
     DashboardWidgetId.achievements => l10n.navAchievements,
     DashboardWidgetId.journal => l10n.navJournal,
+    DashboardWidgetId.stories => l10n.stoTitle,
     _ => id,
   };
 }
@@ -192,6 +194,7 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.events => const _EventsWidget(),
       DashboardWidgetId.achievements => const _AchievementsWidget(),
       DashboardWidgetId.journal => const _JournalWidget(),
+      DashboardWidgetId.stories => const StoriesRow(),
       _ => const SizedBox.shrink(),
     };
     return Padding(padding: const EdgeInsets.only(bottom: 8), child: child);

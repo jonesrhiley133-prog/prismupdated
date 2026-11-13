@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/appearance/models/look.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
@@ -2096,9 +2098,44 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
   ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final baseColor = isDark
-        ? colors.surfaceContainerHigh.withValues(alpha: 0.50)
-        : colors.surfaceContainer.withValues(alpha: 0.54);
+    final look = LookTheme.of(context);
+    final navStyle = look?.style(LookElement.nav);
+    final navFill = look?.fill(LookElement.nav);
+    final baseColor =
+        navFill ??
+        (isDark
+            ? colors.surfaceContainerHigh.withValues(
+                alpha: look?.reduceTransparency ?? false ? 1 : 0.50,
+              )
+            : colors.surfaceContainer.withValues(
+                alpha: look?.reduceTransparency ?? false ? 1 : 0.54,
+              ));
+    if (navFill != null) {
+      return BoxDecoration(
+        color: look!.gradient(LookElement.nav) == null ? navFill : null,
+        gradient: look.gradient(LookElement.nav),
+        borderRadius: BorderRadius.circular(
+          navStyle?.radius ?? shapes.radius(radius),
+        ),
+        border:
+            look.border(LookElement.nav) ??
+            Border.all(
+              width: _kNavBarBorderWidth,
+              color: colors.outlineVariant.withValues(
+                alpha: isDark ? 0.42 : 0.56,
+              ),
+            ),
+        boxShadow:
+            look.shadow(LookElement.nav) ??
+            [
+              BoxShadow(
+                color: colors.shadow.withValues(alpha: isDark ? 0.34 : 0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+      );
+    }
 
     return BoxDecoration(
       color: Color.alphaBlend(

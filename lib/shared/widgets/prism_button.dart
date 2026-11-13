@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/features/appearance/models/look.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/accent_legibility.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
@@ -158,9 +160,16 @@ class _PrismButtonState extends State<PrismButton> {
             : theme.colorScheme.onPrimary.withValues(alpha: 0.6),
       _ => canPress ? color : color.withValues(alpha: 0.4),
     };
+    final look = LookTheme.of(context);
+    final buttonStyle = look?.style(LookElement.button);
     final buttonRadius = BorderRadius.circular(
-      PrismShapes.of(context).radius(999),
+      buttonStyle?.radius ?? PrismShapes.of(context).radius(999),
     );
+    final filledLook = tone == PrismButtonTone.filled && canPress;
+    final lookGradient = filledLook ? look?.gradient(LookElement.button) : null;
+    final lookBorder = look?.border(LookElement.button);
+    final lookShadow = filledLook ? look?.shadow(LookElement.button) : null;
+    final padScale = buttonStyle?.padding ?? 1.0;
 
     Widget button = Semantics(
       button: true,
@@ -196,13 +205,15 @@ class _PrismButtonState extends State<PrismButton> {
               duration: const Duration(milliseconds: 150),
               width: widget.expanded ? double.infinity : null,
               padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding,
-                vertical: verticalPadding,
+                horizontal: horizontalPadding * padScale,
+                vertical: verticalPadding * padScale,
               ),
               decoration: BoxDecoration(
                 borderRadius: buttonRadius,
-                color: backgroundColor,
-                border: Border.all(color: borderColor),
+                color: lookGradient == null ? backgroundColor : null,
+                gradient: lookGradient,
+                border: lookBorder ?? Border.all(color: borderColor),
+                boxShadow: lookShadow,
               ),
               child: widget.isLoading
                   ? PrismSpinner(color: foregroundColor, size: 20)

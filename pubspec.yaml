@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.21.0+21000
+version: 0.22.0+22000
 
 environment:
   sdk: ^3.11.1
@@ -127,6 +127,8 @@ dependencies:
       ref: 899b9692ea048b90ffa114c25b471b06d495ef7b
   package_info_plus: ^9.0.1
   flutter_contacts: 2.1.0
+  just_audio: ^0.10.6
+  audio_metadata_reader: ^1.8.1
 
 dev_dependencies:
   flutter_test:

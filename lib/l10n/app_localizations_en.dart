@@ -19873,4 +19873,1879 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hwTopBar => 'Widgets';
+
+  @override
+  String get navMusic => 'Music';
+
+  @override
+  String get musTitle => 'Music';
+
+  @override
+  String get musImport => 'Import music';
+
+  @override
+  String musImported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs added',
+      one: '1 song added',
+      zero: 'No songs added',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get musImportReport => 'Import finished';
+
+  @override
+  String musUnsupportedFormat(String value) {
+    return 'Unsupported format (Prism plays $value):';
+  }
+
+  @override
+  String get musImportFailed => 'Could not be read or copied:';
+
+  @override
+  String get musPickerFailed =>
+      'The file picker could not open those files. Try again, or pick them from a different folder.';
+
+  @override
+  String get musWebUnsupported =>
+      'Importing music is not available in the web version.';
+
+  @override
+  String get musAllSongs => 'Songs';
+
+  @override
+  String get musPlaylists => 'Playlists';
+
+  @override
+  String get musFavorites => 'Favorites';
+
+  @override
+  String get musRecent => 'Recent';
+
+  @override
+  String get musSearch => 'Search title, artist or album';
+
+  @override
+  String get musSortTitle => 'Title';
+
+  @override
+  String get musSortArtist => 'Artist';
+
+  @override
+  String get musSortAlbum => 'Album';
+
+  @override
+  String get musSortAdded => 'Recently added';
+
+  @override
+  String get musSortPlayed => 'Most played';
+
+  @override
+  String get musPlayAll => 'Play';
+
+  @override
+  String get musShuffle => 'Shuffle';
+
+  @override
+  String musSongCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs',
+      one: '1 song',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get musEmptyTitle => 'Your music library is empty';
+
+  @override
+  String musEmptyMessage(String value) {
+    return 'Import audio files from this device ($value and more). Prism keeps its own copy, so songs keep playing even if the original is moved.';
+  }
+
+  @override
+  String get musNoFavorites => 'No favorites yet. Tap the heart on a song.';
+
+  @override
+  String get musNoRecent => 'Nothing played yet';
+
+  @override
+  String get musNoResults => 'No songs match';
+
+  @override
+  String get musUnknownArtist => 'Unknown artist';
+
+  @override
+  String musTrackLabel(String title, String artist) {
+    return '$title, $artist';
+  }
+
+  @override
+  String get musTrackOptions => 'Song options';
+
+  @override
+  String get musFavorite => 'Add to favorites';
+
+  @override
+  String get musUnfavorite => 'Remove from favorites';
+
+  @override
+  String get musPlayNext => 'Play next';
+
+  @override
+  String get musAddToQueue => 'Add to queue';
+
+  @override
+  String get musAddToPlaylist => 'Add to playlist';
+
+  @override
+  String get musEditInfo => 'Edit song info';
+
+  @override
+  String get musDeleteTrack => 'Delete from library';
+
+  @override
+  String get musDeleteTrackTitle => 'Delete this song?';
+
+  @override
+  String musDeleteTrackMessage(String value) {
+    return '\"$value\" will be removed from Prism and from your playlists. The original file on your device is not touched.';
+  }
+
+  @override
+  String get musNewPlaylist => 'New playlist';
+
+  @override
+  String get musPlaylistName => 'Playlist name';
+
+  @override
+  String musAddedTo(String value) {
+    return 'Added to $value';
+  }
+
+  @override
+  String get musNoPlaylists => 'No playlists yet';
+
+  @override
+  String get musNoPlaylistsHelp =>
+      'Create one, then add songs from the song menu.';
+
+  @override
+  String get musRename => 'Rename';
+
+  @override
+  String get musDeletePlaylistTitle => 'Delete this playlist?';
+
+  @override
+  String musDeletePlaylistMessage(String value) {
+    return '\"$value\" will be deleted. The songs stay in your library.';
+  }
+
+  @override
+  String get musPlaylistEmpty => 'This playlist is empty';
+
+  @override
+  String get musPlaylistEmptyHelp => 'Add songs from the song menu.';
+
+  @override
+  String get musRemoveFromPlaylist => 'Remove from playlist';
+
+  @override
+  String get musReorder => 'Drag to reorder';
+
+  @override
+  String get musChooseCover => 'Choose cover';
+
+  @override
+  String get musRemoveCover => 'Remove cover';
+
+  @override
+  String get musFieldTitle => 'Title';
+
+  @override
+  String get musFieldArtist => 'Artist';
+
+  @override
+  String get musFieldAlbum => 'Album';
+
+  @override
+  String get musPlay => 'Play';
+
+  @override
+  String get musPause => 'Pause';
+
+  @override
+  String get musNext => 'Next song';
+
+  @override
+  String get musPrevious => 'Previous song';
+
+  @override
+  String get musMinimize => 'Minimize player';
+
+  @override
+  String get musOpenPlayer => 'Open player';
+
+  @override
+  String get musClosePlayer => 'Close player';
+
+  @override
+  String get musPlayerRegion => 'Music player';
+
+  @override
+  String musBubbleLabel(String value) {
+    return 'Music player, $value';
+  }
+
+  @override
+  String get musProgress => 'Playback progress';
+
+  @override
+  String get musNowPlaying => 'Now playing';
+
+  @override
+  String get musNothingPlaying => 'Nothing playing';
+
+  @override
+  String musCannotPlay(String value) {
+    return '\"$value\" could not be played. The file may be missing or in a format this device cannot decode.';
+  }
+
+  @override
+  String get musRepeatOff => 'Repeat off';
+
+  @override
+  String get musRepeatAll => 'Repeat all';
+
+  @override
+  String get musRepeatOne => 'Repeat this song';
+
+  @override
+  String musVolumeValue(int count) {
+    return 'Volume $count percent';
+  }
+
+  @override
+  String get musQueue => 'Queue';
+
+  @override
+  String musQueueTitle(int count) {
+    return 'Queue ($count)';
+  }
+
+  @override
+  String get musQueueEmpty => 'The queue is empty';
+
+  @override
+  String get musRemoveFromQueue => 'Remove from queue';
+
+  @override
+  String get musPlayerLook => 'Player appearance';
+
+  @override
+  String get musLayout => 'Player on other pages';
+
+  @override
+  String get musLayoutBar => 'Compact bar';
+
+  @override
+  String get musLayoutBubble => 'Floating';
+
+  @override
+  String get musLayoutHidden => 'Hidden';
+
+  @override
+  String get musLayoutHelp =>
+      'Music keeps playing in every layout, including Hidden. Drag the floating player anywhere; double-tap it to play or pause, hold it to bring back the bar.';
+
+  @override
+  String get musPlacement => 'Bar position';
+
+  @override
+  String get musPlacementBottom => 'Bottom';
+
+  @override
+  String get musPlacementTop => 'Top';
+
+  @override
+  String get musArtworkBg => 'Album artwork background';
+
+  @override
+  String get musArtworkBgHelp =>
+      'Uses the cover art behind the player when a song has one.';
+
+  @override
+  String get musBlurArtwork => 'Blur the artwork';
+
+  @override
+  String get musPlayerColor => 'Player color';
+
+  @override
+  String get musColorTheme => 'Follow theme';
+
+  @override
+  String get apStudioTitle => 'Themes & backgrounds';
+
+  @override
+  String get apOpenStudio => 'Themes, backgrounds & element styles';
+
+  @override
+  String get apStudioIntro =>
+      'Pick a preset or build your own: backgrounds, colours, corners, borders and shadows for every part of Prism. Changes apply instantly.';
+
+  @override
+  String get apNewTheme => 'New theme';
+
+  @override
+  String get apMyTheme => 'My theme';
+
+  @override
+  String get apImport => 'Import';
+
+  @override
+  String get apImportHelp =>
+      'Import a theme someone shared with you (a .prismtheme.json file or copied text). Pictures are not included in shared themes.';
+
+  @override
+  String get apImportFile => 'Choose file';
+
+  @override
+  String get apImportPaste => 'Paste from clipboard';
+
+  @override
+  String get apImportInvalid =>
+      'That is not a Prism theme. Check you copied the whole theme text or picked the right file.';
+
+  @override
+  String apImported(String value) {
+    return 'Imported \"$value\"';
+  }
+
+  @override
+  String get apCopied => 'Theme copied to the clipboard';
+
+  @override
+  String get apPresets => 'Presets';
+
+  @override
+  String get apActive => 'In use';
+
+  @override
+  String get apBuiltIn => 'Built in';
+
+  @override
+  String get apYours => 'Yours';
+
+  @override
+  String apPresetActive(String value) {
+    return '$value, in use';
+  }
+
+  @override
+  String get apPresetHint => 'Tap to use, hold for options';
+
+  @override
+  String get apApply => 'Use this theme';
+
+  @override
+  String get apEdit => 'Edit';
+
+  @override
+  String get apCustomizeCopy => 'Customize a copy';
+
+  @override
+  String get apDuplicate => 'Duplicate';
+
+  @override
+  String get apRename => 'Rename';
+
+  @override
+  String get apExport => 'Export / share';
+
+  @override
+  String apCopyOf(String value) {
+    return '$value copy';
+  }
+
+  @override
+  String get apDeleteTitle => 'Delete this theme?';
+
+  @override
+  String apDeleteMessage(String value) {
+    return '\"$value\" will be deleted. Pages using it go back to the app theme.';
+  }
+
+  @override
+  String get apAuto => 'Switch with light/dark mode';
+
+  @override
+  String get apAutoHelp =>
+      'Use one theme in light mode and another in dark mode.';
+
+  @override
+  String get apForLight => 'Light mode';
+
+  @override
+  String get apForDark => 'Dark mode';
+
+  @override
+  String get apPageThemes => 'Themes for individual pages';
+
+  @override
+  String get apPageThemesHelp =>
+      'Give a page a different theme from the rest of Prism.';
+
+  @override
+  String get apSameAsApp => 'Same as app';
+
+  @override
+  String get apOwnBackground => 'Own background';
+
+  @override
+  String get apEditTitle => 'Edit theme';
+
+  @override
+  String get apPresetName => 'Theme name';
+
+  @override
+  String apSaved(String value) {
+    return 'Saved and applied \"$value\"';
+  }
+
+  @override
+  String get apDiscardTitle => 'Discard changes?';
+
+  @override
+  String get apDiscardMessage =>
+      'Your edits to this theme have not been saved.';
+
+  @override
+  String get apDiscard => 'Discard';
+
+  @override
+  String get apKeepEditing => 'Keep editing';
+
+  @override
+  String get apBackground => 'Background';
+
+  @override
+  String get apElements => 'Elements';
+
+  @override
+  String get apPages => 'Pages';
+
+  @override
+  String get apPagesHelp =>
+      'Give pages their own background. Everything else uses the theme background.';
+
+  @override
+  String get apUseAppBackground => 'Use the theme background';
+
+  @override
+  String get apPreview => 'Preview';
+
+  @override
+  String get apSampleCard => 'A card with an icon and a badge';
+
+  @override
+  String get apSampleInput => 'Text field';
+
+  @override
+  String get apSampleButton => 'Button';
+
+  @override
+  String get apBgTheme => 'Theme default';
+
+  @override
+  String get apBgColor => 'Solid colour';
+
+  @override
+  String get apBgGradient => 'Gradient';
+
+  @override
+  String get apBgImage => 'Your image';
+
+  @override
+  String get apBgCollection => 'Collection';
+
+  @override
+  String get apGradLinear => 'Linear';
+
+  @override
+  String get apGradDiagonal => 'Diagonal';
+
+  @override
+  String get apGradRadial => 'Radial';
+
+  @override
+  String apGradColorN(int count) {
+    return 'Colour $count';
+  }
+
+  @override
+  String get apAddColor => 'Add colour';
+
+  @override
+  String get apRemoveColor => 'Remove colour';
+
+  @override
+  String get apDirection => 'Direction';
+
+  @override
+  String get apIntensity => 'Intensity';
+
+  @override
+  String get apUploadImage => 'Upload image';
+
+  @override
+  String get apChangeImage => 'Change image';
+
+  @override
+  String get apImageHelp =>
+      'Prism stores a resized copy on this device, so large photos stay fast. Pictures are not synced to other devices.';
+
+  @override
+  String get apImageFailed =>
+      'That image could not be read. Try a JPEG or PNG.';
+
+  @override
+  String get apOpacity => 'Opacity';
+
+  @override
+  String get apBlur => 'Blur';
+
+  @override
+  String get apBrightness => 'Brightness';
+
+  @override
+  String get apContrast => 'Contrast';
+
+  @override
+  String get apSaturation => 'Saturation';
+
+  @override
+  String get apOverlay => 'Overlay';
+
+  @override
+  String get apOverlayNone => 'None';
+
+  @override
+  String get apOverlayScrim => 'Tint';
+
+  @override
+  String get apOverlayVignette => 'Vignette';
+
+  @override
+  String get apOverlayGlow => 'Edge glow';
+
+  @override
+  String get apOverlayColor => 'Overlay colour';
+
+  @override
+  String get apOverlayStrength => 'Overlay strength';
+
+  @override
+  String get apElButtons => 'Buttons';
+
+  @override
+  String get apElCards => 'Cards';
+
+  @override
+  String get apElNav => 'Navigation bar';
+
+  @override
+  String get apElHeader => 'Headers';
+
+  @override
+  String get apElInputs => 'Text fields';
+
+  @override
+  String get apElDialogs => 'Dialogs & menus';
+
+  @override
+  String get apElDividers => 'Dividers';
+
+  @override
+  String get apElIcons => 'Icons';
+
+  @override
+  String get apElBadges => 'Badges';
+
+  @override
+  String get apElText => 'Text';
+
+  @override
+  String get apColor => 'Colour';
+
+  @override
+  String get apGradientWith => 'Blend into (gradient)';
+
+  @override
+  String get apTransparency => 'Transparency';
+
+  @override
+  String get apCorners => 'Corner radius';
+
+  @override
+  String get apBorder => 'Border';
+
+  @override
+  String get apThickness => 'Thickness';
+
+  @override
+  String get apBorderColor => 'Border colour';
+
+  @override
+  String get apShadow => 'Shadow';
+
+  @override
+  String get apSpacing => 'Spacing';
+
+  @override
+  String apResetElement(String value) {
+    return 'Reset $value';
+  }
+
+  @override
+  String get apDefault => 'Default';
+
+  @override
+  String get apReset => 'Reset';
+
+  @override
+  String get apPageHome => 'Home';
+
+  @override
+  String get apPageMembers => 'Members';
+
+  @override
+  String get apPageChat => 'Chat';
+
+  @override
+  String get apPageCalendar => 'Calendar';
+
+  @override
+  String get apPageDictionary => 'Dictionary';
+
+  @override
+  String get apPagePolls => 'Polls';
+
+  @override
+  String get apPageHabits => 'Habits';
+
+  @override
+  String get apPageStatistics => 'Statistics';
+
+  @override
+  String get apPageSettings => 'Settings';
+
+  @override
+  String get a11yQuickPanel => 'Quick accessibility';
+
+  @override
+  String get a11yAllSettings => 'All accessibility settings';
+
+  @override
+  String get a11yResetAll => 'Reset';
+
+  @override
+  String get a11yResetTitle => 'Reset accessibility settings?';
+
+  @override
+  String get a11yResetMessage =>
+      'All options on this page go back to their defaults.';
+
+  @override
+  String get a11yVisual => 'Visual';
+
+  @override
+  String get a11yUiScale => 'Interface size';
+
+  @override
+  String get a11yLineHeight => 'Line height';
+
+  @override
+  String get a11yWordSpacing => 'Word spacing';
+
+  @override
+  String get a11yBold => 'Bold text';
+
+  @override
+  String get a11yHighContrast => 'High contrast';
+
+  @override
+  String get a11yHighContrastHelp =>
+      'Maximum contrast text, solid surfaces and stronger outlines.';
+
+  @override
+  String get a11yContrast => 'Extra contrast';
+
+  @override
+  String get a11yReduceTransparency => 'Reduce transparency';
+
+  @override
+  String get a11yReduceTransparencyHelp =>
+      'Glass and see-through surfaces become solid.';
+
+  @override
+  String get a11yReduceEffects => 'Reduce visual effects';
+
+  @override
+  String get a11yReduceEffectsHelp =>
+      'No blur, shadows or background overlays.';
+
+  @override
+  String get a11yColorVision => 'Colour palette';
+
+  @override
+  String get a11yColorVisionHelp =>
+      'Colours chosen to stay distinguishable with each type of colour blindness.';
+
+  @override
+  String get a11yCvStandard => 'Standard';
+
+  @override
+  String get a11yCvProtan => 'Protanopia (red-blind)';
+
+  @override
+  String get a11yCvDeutan => 'Deuteranopia (green-blind)';
+
+  @override
+  String get a11yCvTritan => 'Tritanopia (blue-blind)';
+
+  @override
+  String get a11yCvMono => 'Greyscale';
+
+  @override
+  String get a11yFocus => 'Strong focus outline';
+
+  @override
+  String get a11yFocusHelp =>
+      'A thick outline shows where you are when using a keyboard or switch access.';
+
+  @override
+  String get a11yLargeIcons => 'Larger icons';
+
+  @override
+  String get a11yMotion => 'Motion';
+
+  @override
+  String get a11yReduceMotion => 'Reduce motion';
+
+  @override
+  String get a11yReduceMotionHelp =>
+      'Turns off page transitions, ripples and decorative animation. Backgrounds never move.';
+
+  @override
+  String get a11yAnimSpeed => 'Animation speed';
+
+  @override
+  String get a11yNormal => 'Normal';
+
+  @override
+  String get a11yInteraction => 'Interaction';
+
+  @override
+  String get a11yTouch => 'Touch target size';
+
+  @override
+  String get a11yHaptics => 'Vibration feedback';
+
+  @override
+  String get a11yHapticsHelp =>
+      'A small vibration when you tap, switch or confirm.';
+
+  @override
+  String get a11yConfirm => 'Confirm important actions';
+
+  @override
+  String get a11yConfirmHelp =>
+      'Ask before removing items, even where Prism normally would not.';
+
+  @override
+  String get a11yConfirmYes => 'Yes, continue';
+
+  @override
+  String get a11ySimplifyNav => 'Simplify navigation (choose fewer tabs)';
+
+  @override
+  String get a11yReading => 'Reading & navigation';
+
+  @override
+  String get a11yAnnounce => 'Announce changes';
+
+  @override
+  String get a11yAnnounceHelp =>
+      'Screen readers hear messages and what started playing without moving focus.';
+
+  @override
+  String get a11yKeyboardHelp =>
+      'Keyboard: Tab moves between controls, Enter or Space activates. Alt+Shift+A opens quick accessibility. Media keys control music anywhere; on the player, Space plays or pauses and Ctrl+arrows skip.';
+
+  @override
+  String get apTopBar => 'Themes';
+
+  @override
+  String get navStories => 'Stories';
+
+  @override
+  String get socBoardTitle => 'Bulletin Board';
+
+  @override
+  String get socFeed => 'Feed';
+
+  @override
+  String get socExplore => 'Explore';
+
+  @override
+  String get socActivity => 'Activity';
+
+  @override
+  String socActivityN(int count) {
+    return 'Activity ($count)';
+  }
+
+  @override
+  String get socMessages => 'Messages board';
+
+  @override
+  String get socForYou => 'For you';
+
+  @override
+  String get socFollowing => 'Following';
+
+  @override
+  String get socLatest => 'Latest';
+
+  @override
+  String get socNewPost => 'New post';
+
+  @override
+  String get socDraftsScheduled => 'Drafts & scheduled';
+
+  @override
+  String get socActAs => 'Act as';
+
+  @override
+  String socActingAs(String value) {
+    return 'Acting as $value';
+  }
+
+  @override
+  String socActingAsLabel(String value) {
+    return 'Acting as $value';
+  }
+
+  @override
+  String get socSwitchActorHint =>
+      'Choose which alter reads, posts and reacts. This does not change who is fronting.';
+
+  @override
+  String get socPickAlter => 'Pick an alter';
+
+  @override
+  String get socNobody => 'nobody';
+
+  @override
+  String get socUnknownAlter => 'Unknown alter';
+
+  @override
+  String get socJustNow => 'now';
+
+  @override
+  String get socEdited => 'edited';
+
+  @override
+  String get socScheduled => 'scheduled';
+
+  @override
+  String get socDraft => 'draft';
+
+  @override
+  String get socPinned => 'Pinned';
+
+  @override
+  String get socPostOptions => 'Post options';
+
+  @override
+  String socRebloggedBy(String who, String author) {
+    return '$who reblogged $author';
+  }
+
+  @override
+  String socQuoting(String value) {
+    return 'Quoting $value';
+  }
+
+  @override
+  String get socOriginalGone => 'The original post was deleted.';
+
+  @override
+  String socTagLabel(String value) {
+    return 'Tag $value';
+  }
+
+  @override
+  String socComments(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comments',
+      one: '1 comment',
+      zero: 'Comments',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socReblogs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reblogs',
+      one: '1 reblog',
+      zero: 'Reblog or quote',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socAnswer => 'Answer';
+
+  @override
+  String get socShare => 'Share';
+
+  @override
+  String get socReblog => 'Reblog';
+
+  @override
+  String get socReblogHelp => 'Share it on your blog as it is.';
+
+  @override
+  String get socReblogComment => 'Reblog with a comment';
+
+  @override
+  String get socQuote => 'Quote';
+
+  @override
+  String get socQuoteHelp => 'Write your own post with this one embedded.';
+
+  @override
+  String get socReblogged => 'Reblogged';
+
+  @override
+  String get socYourComment => 'Your comment';
+
+  @override
+  String socCwLabel(String value) {
+    return 'Content warning: $value';
+  }
+
+  @override
+  String get socTapToShow => 'Tap to show';
+
+  @override
+  String get socShow => 'Show';
+
+  @override
+  String get socAskedEveryone => 'Question for everyone';
+
+  @override
+  String socAskedTo(String value) {
+    return 'Question for $value';
+  }
+
+  @override
+  String socPollOptionResult(String option, int count) {
+    return '$option, $count percent';
+  }
+
+  @override
+  String socVoters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count votes',
+      one: '1 vote',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socPollMulti => 'several choices allowed';
+
+  @override
+  String get socPollClosed => 'closed';
+
+  @override
+  String socAnswersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socEdit => 'Edit';
+
+  @override
+  String get socPin => 'Pin to blog';
+
+  @override
+  String get socUnpin => 'Unpin';
+
+  @override
+  String get socDeleteTitle => 'Delete this post?';
+
+  @override
+  String get socDeleteMessage =>
+      'Its comments and reactions are deleted too. Reblogs of it disappear; quotes keep their own text.';
+
+  @override
+  String socViewBlog(String value) {
+    return '$value\'s blog';
+  }
+
+  @override
+  String get socHide => 'Hide this post';
+
+  @override
+  String get socUnhide => 'Show this post again';
+
+  @override
+  String socMute(String value) {
+    return 'Mute $value';
+  }
+
+  @override
+  String socUnmute(String value) {
+    return 'Unmute $value';
+  }
+
+  @override
+  String socBlock(String value) {
+    return 'Block $value';
+  }
+
+  @override
+  String socUnblock(String value) {
+    return 'Unblock $value';
+  }
+
+  @override
+  String get socBlockHelp =>
+      'Neither of you will see the other\'s posts or stories, follows end, and you won\'t get activity from them.';
+
+  @override
+  String get socReport => 'Report';
+
+  @override
+  String get socReportHelp =>
+      'Hides it for you and flags it for the system to review.';
+
+  @override
+  String get socReportReason => 'What is wrong with it?';
+
+  @override
+  String get socReported => 'Reported and hidden';
+
+  @override
+  String get socReact => 'React';
+
+  @override
+  String get socAddReaction => 'Add a reaction';
+
+  @override
+  String get socAnyEmoji => 'Or type any emoji';
+
+  @override
+  String socReactionCount(String emoji, int count) {
+    return '$emoji $count';
+  }
+
+  @override
+  String get socImageMissing => 'Image not available yet';
+
+  @override
+  String get socAudEveryone => 'Everyone';
+
+  @override
+  String get socAudFollowers => 'Followers';
+
+  @override
+  String get socAudSelected => 'Selected alters';
+
+  @override
+  String get socAudSelf => 'Only me';
+
+  @override
+  String get socAudienceNote =>
+      'Audience controls what each alter sees while acting as themselves in Prism. Anyone using this device can switch who they act as.';
+
+  @override
+  String get socEditPost => 'Edit post';
+
+  @override
+  String get socAnswerTitle => 'Answer';
+
+  @override
+  String get socPost => 'Post';
+
+  @override
+  String get socSchedule => 'Schedule';
+
+  @override
+  String socPostingAs(String value) {
+    return 'Posting as $value';
+  }
+
+  @override
+  String get socChange => 'Change';
+
+  @override
+  String get socWhoIsPosting => 'Who is posting?';
+
+  @override
+  String get socTypeText => 'Text';
+
+  @override
+  String get socTypeImage => 'Images';
+
+  @override
+  String get socTypePoll => 'Poll';
+
+  @override
+  String get socTypeQuestion => 'Question';
+
+  @override
+  String get socTypeMedia => 'Video & media';
+
+  @override
+  String get socAskWho => 'Ask who?';
+
+  @override
+  String get socAnyone => 'Anyone';
+
+  @override
+  String get socTitleOptional => 'Title (optional)';
+
+  @override
+  String get socYourQuestion => 'Your question';
+
+  @override
+  String get socCaption => 'Caption';
+
+  @override
+  String get socYourAnswer => 'Your answer';
+
+  @override
+  String get socWhatsOnYourMind => 'What\'s on your mind?';
+
+  @override
+  String get socBodyHelp =>
+      'Use #tags and @names to tag topics and mention alters.';
+
+  @override
+  String get socPollOptions => 'Options';
+
+  @override
+  String socOptionN(int count) {
+    return 'Option $count';
+  }
+
+  @override
+  String get socRemoveOption => 'Remove option';
+
+  @override
+  String get socAddOption => 'Add option';
+
+  @override
+  String get socPollMultiAllow => 'Allow several choices';
+
+  @override
+  String get socRemoveImage => 'Remove image';
+
+  @override
+  String get socRemoveVideo => 'Remove video';
+
+  @override
+  String get socAddImages => 'Add images';
+
+  @override
+  String get socAddVideo => 'Add video';
+
+  @override
+  String get socVideoNote =>
+      'Videos stay on the device they were added on (they are too large to sync). Images sync to all your devices.';
+
+  @override
+  String get socVideoElsewhere =>
+      'This video was added on another device. Videos do not sync between devices.';
+
+  @override
+  String get socVideoTooLarge => 'That video is larger than 200 MB.';
+
+  @override
+  String get socVideoFormat =>
+      'That video format is not supported. Use MP4, MOV, WebM or 3GP.';
+
+  @override
+  String get socVideoFailed => 'The video could not be added.';
+
+  @override
+  String socImageUnreadable(String value) {
+    return '$value could not be read as an image.';
+  }
+
+  @override
+  String get socTags => 'Tags';
+
+  @override
+  String get socTagsHelp => 'Separate with spaces, e.g. art headspace';
+
+  @override
+  String get socContentWarning => 'Content warning';
+
+  @override
+  String get socCwText => 'Warning text';
+
+  @override
+  String get socWhoCanSee => 'Who can see this';
+
+  @override
+  String get socScheduleLater => 'Schedule for later';
+
+  @override
+  String socScheduledFor(String value) {
+    return 'Scheduled for $value';
+  }
+
+  @override
+  String get socPostNow => 'Post now instead';
+
+  @override
+  String get socSaveDraft => 'Save draft';
+
+  @override
+  String get socDraftSaved => 'Draft saved';
+
+  @override
+  String get socPosted => 'Posted';
+
+  @override
+  String get socSaved => 'Saved';
+
+  @override
+  String get socPostGone => 'This post was deleted.';
+
+  @override
+  String get socPostHidden =>
+      'This post is not visible to the alter you are acting as.';
+
+  @override
+  String get socAnswersTitle => 'Answers';
+
+  @override
+  String get socQuotesTitle => 'Quotes';
+
+  @override
+  String get socNoComments => 'No comments yet. Start the conversation.';
+
+  @override
+  String get socEditingComment => 'Editing your comment';
+
+  @override
+  String socReplyingTo(String value) {
+    return 'Replying to $value';
+  }
+
+  @override
+  String socCommentAs(String value) {
+    return 'Comment as $value';
+  }
+
+  @override
+  String get socSend => 'Send';
+
+  @override
+  String get socReply => 'Reply';
+
+  @override
+  String get socDeleteCommentTitle => 'Delete this comment and its replies?';
+
+  @override
+  String get socEmptyFeed => 'Nothing here yet';
+
+  @override
+  String get socEmptyFeedHelp =>
+      'Posts from every alter appear here. Write the first one!';
+
+  @override
+  String get socEmptyFollowing => 'No posts from alters you follow';
+
+  @override
+  String get socEmptyFollowingHelp =>
+      'Follow alters from their blog or Explore.';
+
+  @override
+  String get socSearchHint => 'Search posts, tags and alters';
+
+  @override
+  String socResults(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socAlters => 'Alters';
+
+  @override
+  String get socTrendingTags => 'Popular tags';
+
+  @override
+  String get socNoTags => 'No tags yet';
+
+  @override
+  String socReportsToReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports to review',
+      one: '1 report to review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get socNoActivity => 'No activity yet';
+
+  @override
+  String get socNoActivityHelp =>
+      'Reactions, comments, reblogs, mentions and new followers show up here.';
+
+  @override
+  String socNReactPost(String who, String emoji) {
+    return '$who reacted $emoji to your post';
+  }
+
+  @override
+  String socNReactComment(String who, String emoji) {
+    return '$who reacted $emoji to your comment';
+  }
+
+  @override
+  String socNReactStory(String who, String emoji) {
+    return '$who reacted $emoji to your story';
+  }
+
+  @override
+  String socNComment(String who) {
+    return '$who commented on your post';
+  }
+
+  @override
+  String socNReply(String who) {
+    return '$who replied to your comment';
+  }
+
+  @override
+  String socNStoryReply(String who) {
+    return '$who replied to your story';
+  }
+
+  @override
+  String socNReblog(String who) {
+    return '$who reblogged your post';
+  }
+
+  @override
+  String socNQuote(String who) {
+    return '$who quoted your post';
+  }
+
+  @override
+  String socNMention(String who) {
+    return '$who mentioned you';
+  }
+
+  @override
+  String socNQuestion(String who) {
+    return '$who asked you a question';
+  }
+
+  @override
+  String socNFollow(String who) {
+    return '$who followed you';
+  }
+
+  @override
+  String socNVote(String who) {
+    return '$who voted in your poll';
+  }
+
+  @override
+  String get socNoTagPosts => 'No visible posts with this tag';
+
+  @override
+  String get socScheduledTitle => 'Scheduled';
+
+  @override
+  String get socNoScheduled => 'Nothing scheduled';
+
+  @override
+  String get socDraftsTitle => 'Drafts';
+
+  @override
+  String get socNoDrafts => 'No drafts';
+
+  @override
+  String get socUntitledDraft => 'Untitled draft';
+
+  @override
+  String get socReportsTitle => 'Reported posts';
+
+  @override
+  String get socReportsHelp =>
+      'Posts alters reported. Dismiss the report or delete the post.';
+
+  @override
+  String get socNoReports => 'Nothing to review';
+
+  @override
+  String socReportedBy(String who, String reason) {
+    return 'Reported by $who: $reason';
+  }
+
+  @override
+  String get socDismissReport => 'Dismiss';
+
+  @override
+  String get socDeletePost => 'Delete post';
+
+  @override
+  String get socBlog => 'Blog';
+
+  @override
+  String socBlogOf(String value) {
+    return '$value\'s blog';
+  }
+
+  @override
+  String socPostsN(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count posts',
+      one: '1 post',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socFollowersN(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count followers',
+      one: '1 follower',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String socFollowingN(int count) {
+    return '$count following';
+  }
+
+  @override
+  String get socFollowersTitle => 'Followers';
+
+  @override
+  String get socFollowingTitle => 'Following';
+
+  @override
+  String get socCustomizeBlog => 'Customize blog';
+
+  @override
+  String get socFollow => 'Follow';
+
+  @override
+  String get socUnfollow => 'Following';
+
+  @override
+  String get socMuteShort => 'Mute';
+
+  @override
+  String get socUnmuteShort => 'Unmute';
+
+  @override
+  String get socBlockShort => 'Block';
+
+  @override
+  String get socUnblockShort => 'Unblock';
+
+  @override
+  String get socFollowsYou => 'Follows you';
+
+  @override
+  String get socBlockedBlog => 'This blog is blocked.';
+
+  @override
+  String get socNoPostsYet => 'No posts yet';
+
+  @override
+  String get socNobodyYet => 'Nobody yet';
+
+  @override
+  String get socBanner => 'Banner';
+
+  @override
+  String get socChooseBanner => 'Choose banner';
+
+  @override
+  String get socUseProfileBanner => 'Use profile banner';
+
+  @override
+  String get socBannerHelp =>
+      'Without a blog banner, the alter\'s profile banner is used.';
+
+  @override
+  String get socBio => 'Bio';
+
+  @override
+  String get socAccent => 'Accent colour';
+
+  @override
+  String get socBlogBackground => 'Blog background';
+
+  @override
+  String get socTitleFont => 'Name style';
+
+  @override
+  String get socFontBold => 'Bold';
+
+  @override
+  String get socLayout => 'Post layout';
+
+  @override
+  String get socLayoutCards => 'Full cards';
+
+  @override
+  String get socLayoutCompact => 'Compact';
+
+  @override
+  String get socCustomReactions => 'Your reactions';
+
+  @override
+  String get socCustomReactionsHelp =>
+      'Emoji shown first in the reaction picker, separated by spaces.';
+
+  @override
+  String get socNoBanner => 'No banner yet';
+
+  @override
+  String get socBannerPositionLabel => 'Banner position';
+
+  @override
+  String get socBannerPositionHint =>
+      'Drag to choose which part shows. Swipe up or down to adjust.';
+
+  @override
+  String get socDragToPosition => 'Drag to position';
+
+  @override
+  String socBannerPositionFor(String value) {
+    return '$value\'s banner position';
+  }
+
+  @override
+  String get socBannerZoom => 'Zoom';
+
+  @override
+  String get socBannersTitle => 'Headmate banners';
+
+  @override
+  String get socBannersAdjust => 'Crop & position banners';
+
+  @override
+  String get socShowBanners => 'Show alter banners';
+
+  @override
+  String get socShowBannersHelp =>
+      'Each alter\'s profile banner fades in behind their card on Headmates.';
+
+  @override
+  String get socBannersAdjustHelp =>
+      'Drag a card to choose which part of the banner shows, and zoom to crop in. Alters without a profile banner are not listed; add one in their profile.';
+
+  @override
+  String get stoTitle => 'Alter Stories';
+
+  @override
+  String get stoYourStory => 'Your story';
+
+  @override
+  String get stoAddStory => 'Add story';
+
+  @override
+  String get stoViewYours => 'View your story';
+
+  @override
+  String stoNewFrom(String value) {
+    return 'New story from $value';
+  }
+
+  @override
+  String stoSeenFrom(String value) {
+    return 'Story from $value, seen';
+  }
+
+  @override
+  String get stoNoneYet => 'No stories in the last 24 hours';
+
+  @override
+  String get stoIntro =>
+      'Stories last 24 hours. Anyone in the system can watch them from here without switching front.';
+
+  @override
+  String get stoEmpty => 'No stories right now';
+
+  @override
+  String get stoHighlights => 'Highlights';
+
+  @override
+  String stoHighlightLabel(String value) {
+    return 'Highlight $value';
+  }
+
+  @override
+  String get stoNewHighlight => 'New highlight';
+
+  @override
+  String get stoNew => 'New';
+
+  @override
+  String get stoArchive => 'Archive';
+
+  @override
+  String get stoArchiveIntro =>
+      'Expired stories you kept. Only you can see the archive.';
+
+  @override
+  String get stoArchiveEmpty => 'No archived stories';
+
+  @override
+  String get stoNoStoriesForHighlight => 'Post or archive a story first';
+
+  @override
+  String get stoHighlightName => 'Highlight name';
+
+  @override
+  String get stoCategory => 'Category';
+
+  @override
+  String get stoCategoryHelp => 'Optional, e.g. Art, Headspace, Trips';
+
+  @override
+  String get stoPickStories => 'Stories to include';
+
+  @override
+  String get stoRename => 'Rename';
+
+  @override
+  String get stoSetCategory => 'Set category';
+
+  @override
+  String get stoSetCover => 'Choose cover';
+
+  @override
+  String get stoDeleteHighlight => 'Delete highlight';
+
+  @override
+  String get stoNothing => 'No stories to show';
+
+  @override
+  String stoSlideOf(int index, int total) {
+    return 'Slide $index of $total';
+  }
+
+  @override
+  String get stoPrevious => 'Previous';
+
+  @override
+  String get stoNext => 'Next';
+
+  @override
+  String stoPlayTrack(String value) {
+    return 'Play $value';
+  }
+
+  @override
+  String stoSeenBy(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Seen by $count',
+      one: 'Seen by 1',
+      zero: 'Not seen yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stoReplyTo(String value) {
+    return 'Reply to $value';
+  }
+
+  @override
+  String stoReactWith(String value) {
+    return 'React with $value';
+  }
+
+  @override
+  String get stoReplySent => 'Reply sent';
+
+  @override
+  String get stoActivity => 'Story activity';
+
+  @override
+  String get stoReplies => 'Replies';
+
+  @override
+  String get stoArchiveOn => 'Kept in archive after 24 h';
+
+  @override
+  String get stoArchiveOff => 'Disappears after 24 h';
+
+  @override
+  String get stoArchiveHelp =>
+      'Tap to change. Archived stories can be added to highlights.';
+
+  @override
+  String stoAddToHighlight(String value) {
+    return 'Add to $value';
+  }
+
+  @override
+  String stoAddedToHighlight(String value) {
+    return 'Added to $value';
+  }
+
+  @override
+  String get stoDelete => 'Delete story';
+
+  @override
+  String get stoNewStory => 'New story';
+
+  @override
+  String get stoStickers => 'Stickers';
+
+  @override
+  String get stoTextSticker => 'Text sticker';
+
+  @override
+  String get stoGifSticker => 'GIF or image';
+
+  @override
+  String get stoStickerText => 'Sticker text';
+
+  @override
+  String get stoNoMusic => 'Import music in the Music tab first';
+
+  @override
+  String get stoAddMusic => 'Add music';
+
+  @override
+  String get stoNoSong => 'No music';
+
+  @override
+  String get stoPosted => 'Story shared';
+
+  @override
+  String get stoStickerHint =>
+      'Drag to move, double-tap to resize, hold to remove';
+
+  @override
+  String get stoAddSlide => 'Add slide';
+
+  @override
+  String get stoSlidesHelp => 'Tap a slide to edit it, hold to remove it.';
+
+  @override
+  String get stoPhoto => 'Photo';
+
+  @override
+  String get stoCamera => 'Camera';
+
+  @override
+  String get stoVideo => 'Video';
+
+  @override
+  String get stoSticker => 'Sticker';
+
+  @override
+  String get stoRemoveMedia => 'Remove photo/video';
+
+  @override
+  String get stoText => 'Text';
+
+  @override
+  String get stoCaption => 'Caption';
+
+  @override
+  String get stoFont => 'Font';
+
+  @override
+  String get stoFontScript => 'Script';
+
+  @override
+  String get stoAlignTop => 'Top';
+
+  @override
+  String get stoAlignCenter => 'Middle';
+
+  @override
+  String get stoAlignBottom => 'Bottom';
+
+  @override
+  String get stoTextSize => 'Text size';
+
+  @override
+  String get stoTextColor => 'Text colour';
+
+  @override
+  String get stoBackground => 'Background';
+
+  @override
+  String get stoBackground2 => 'Gradient to';
+
+  @override
+  String get stoDuration => 'Slide length';
+
+  @override
+  String get stoKeepArchive => 'Keep in archive after 24 hours';
+
+  @override
+  String get stoKeepArchiveHelp =>
+      'Otherwise it disappears for good. Only you see the archive.';
+
+  @override
+  String get stoShare => 'Share story';
+
+  @override
+  String get stoDefaultAudience => 'Who sees new stories by default';
 }

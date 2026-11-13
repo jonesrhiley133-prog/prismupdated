@@ -7,3 +7,9 @@ final memberAvatarImageDataProvider = StreamProvider.autoDispose
     .family<Uint8List?, String>((ref, memberId) {
       return ref.watch(membersDaoProvider).watchAvatarImageData(memberId);
     });
+
+/// Banner bytes for a member card (loaded only for visible cards).
+final memberBannerImageDataProvider = StreamProvider.autoDispose
+    .family<Uint8List?, String>((ref, memberId) {
+      return ref.watch(membersDaoProvider).watchBannerImageData(memberId);
+    });

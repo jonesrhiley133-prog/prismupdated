@@ -333,25 +333,35 @@ final homeWidgetControllerProvider = Provider<HomeWidgetController>((ref) {
   return c;
 });
 
-/// Keep alive from the app root: refreshes widgets on every data or
-/// configuration change and wires up widget taps.
+/// Whether any Prism widget is on the home screen. Until one is, Prism
+/// does not gather widget data at all.
+class HasPlacedWidgets extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  Future<void> refresh() async {
+    final any = (await ref.read(homeWidgetPlatformProvider).listWidgets()).isNotEmpty;
+    if (ref.mounted && state != any) state = any;
+  }
+}
+
+final hasPlacedWidgetsProvider = NotifierProvider<HasPlacedWidgets, bool>(HasPlacedWidgets.new);
+
+/// Keep alive from the app root: wires up widget taps.
 final homeWidgetListenerProvider = Provider<void>((ref) {
   final platform = ref.watch(homeWidgetPlatformProvider);
   if (!platform.isSupported) return;
   final controller = ref.watch(homeWidgetControllerProvider);
   platform.setHandlers(
-    onWidgetsChanged: () => controller.schedule(force: true, delay: const Duration(milliseconds: 300)),
+    onWidgetsChanged: () {
+      unawaited(ref.read(hasPlacedWidgetsProvider.notifier).refresh());
+      controller.schedule(force: true, delay: const Duration(milliseconds: 300));
+    },
     onDataAction: controller.runDataAction,
     onOpen: controller.open,
   );
-  ref.listen(homeWidgetDataProvider, (_, _) => controller.schedule(), fireImmediately: true);
-  ref.listen(homeWidgetsProvider, (_, _) => controller.schedule(delay: const Duration(milliseconds: 250)));
-  // Relative times ("5 min ago", countdowns) move even when data does not.
-  final tick = Timer.periodic(const Duration(minutes: 15), (_) {
-    ref.invalidate(homeWidgetDataProvider);
-  });
-  ref.onDispose(tick.cancel);
   unawaited(() async {
+    await ref.read(hasPlacedWidgetsProvider.notifier).refresh();
     // Quick actions tapped while Prism was closed run now, in order.
     for (final q in await platform.takeQueue()) {
       await controller.runDataAction(q.id, q.action);
@@ -361,3 +371,16 @@ final homeWidgetListenerProvider = Provider<void>((ref) {
   }());
 });
 
+/// Keep alive from the app root: refreshes widgets on every data or
+/// configuration change, but only while widgets are actually placed.
+final homeWidgetSyncProvider = Provider<void>((ref) {
+  if (!ref.watch(hasPlacedWidgetsProvider)) return;
+  final controller = ref.watch(homeWidgetControllerProvider);
+  ref.listen(homeWidgetDataProvider, (_, _) => controller.schedule(), fireImmediately: true);
+  ref.listen(homeWidgetsProvider, (_, _) => controller.schedule(delay: const Duration(milliseconds: 250)));
+  // Relative times ("5 min ago", countdowns) move even when data does not.
+  final tick = Timer.periodic(const Duration(minutes: 15), (_) {
+    ref.invalidate(homeWidgetDataProvider);
+  });
+  ref.onDispose(tick.cancel);
+});
