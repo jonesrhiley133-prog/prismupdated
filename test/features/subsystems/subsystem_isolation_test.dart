@@ -31,7 +31,7 @@ Future<List<String>> _visible(ProviderContainer c) async {
   c.listen(isolationSyncProvider, (_, _) {});
   await c.read(trackerRecordsProvider.future);
   await c.read(activeMemberListProvider.future);
-  await Future<void>.delayed(Duration.zero);
+  await Future<void>.delayed(const Duration(milliseconds: 450));
   await Future<void>.delayed(Duration.zero);
   return [for (final m in c.read(userVisibleMemberListProvider).value ?? const <Member>[]) m.id];
 }

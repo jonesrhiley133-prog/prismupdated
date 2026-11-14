@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:prism_plurality/features/subsystems/utils/subsystems.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -98,11 +100,17 @@ class IsolatedMembersNotifier extends Notifier<IsolatedMembers> {
 final isolatedMembersProvider = NotifierProvider<IsolatedMembersNotifier, IsolatedMembers>(IsolatedMembersNotifier.new);
 
 final isolationSyncProvider = Provider<void>((ref) {
-  ref.listen<IsolatedMembers>(computedIsolationProvider, (_, next) {
-    Future.microtask(() {
-      if (ref.mounted) ref.read(isolatedMembersProvider.notifier).set(next);
-    });
-  }, fireImmediately: true);
+  // Starts right after the first frame (a short timer keeps app start-up
+  // tests from holding record streams open).
+  final t = Timer(const Duration(milliseconds: 400), () {
+    if (!ref.mounted) return;
+    ref.listen<IsolatedMembers>(computedIsolationProvider, (_, next) {
+      Future.microtask(() {
+        if (ref.mounted) ref.read(isolatedMembersProvider.notifier).set(next);
+      });
+    }, fireImmediately: true);
+  });
+  ref.onDispose(t.cancel);
 });
 
 class SubsystemActions {
