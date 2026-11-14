@@ -32,6 +32,27 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.26.0',
+    date: DateTime(2026, 11, 14),
+    features: const [
+      LocalizedText(
+        'Habit & Routine Center: complete habits as many times a day as you need, with daily targets, counts, minutes or amounts, one-tap logging, partial progress, timers, notes, ratings, photos, places and alter attribution for every completion.',
+        'Centro de hábitos y rutinas: completa hábitos tantas veces al día como necesites, con metas diarias, veces, minutos o cantidades, registro con un toque, progreso parcial, temporizador, notas, valoraciones, fotos, lugares y alter en cada registro.',
+      ),
+      LocalizedText(
+        'Every habit has its own dashboard: progress ring, today’s timeline, weekly chart, rhythm heatmap, streaks, who completes it, your patterns, milestones, reflections and connected records.',
+        'Cada hábito tiene su panel: anillo de progreso, actividad de hoy, gráfico semanal, mapa de ritmo, rachas, quién lo completa, tus patrones, hitos, reflexiones y registros conectados.',
+      ),
+      LocalizedText(
+        'Routines and templates (morning, evening, school, self-care, music practice, wellness), “up next” suggestions, skip and pause without losing streaks, rest days, monthly habits, multiple reminders with an evening nudge, automatic counting from drinks, meals, workouts, journal, dreams, mood and sleep, challenges and shared system habits. Habits also appear in the calendar.',
+        'Rutinas y plantillas, sugerencias de lo siguiente, omitir y pausar sin perder rachas, días de descanso, hábitos mensuales, varios recordatorios, conteo automático desde bebidas, comidas, entrenos, diario, sueños, ánimo y sueño, retos y hábitos compartidos. Los hábitos aparecen también en el calendario.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText('Nourish now uses your theme’s colours throughout.', 'Nutrición usa ahora los colores de tu tema en todo.'),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.25.1',
     date: DateTime(2026, 11, 14),
     fixes: const [

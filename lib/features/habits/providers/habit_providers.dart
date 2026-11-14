@@ -306,6 +306,7 @@ class HabitNotifier extends AsyncNotifier<void> {
     int? rating,
     bool wasFronting = false,
     DateTime? completedAt,
+    String? completionId,
   }) async {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(habitRepositoryProvider);
@@ -314,7 +315,7 @@ class HabitNotifier extends AsyncNotifier<void> {
       if (habit == null) return;
 
       final completion = HabitCompletion(
-        id: _uuid.v4(),
+        id: completionId ?? _uuid.v4(),
         habitId: habitId,
         completedAt: completedAt ?? now,
         completedByMemberId: completedByMemberId,

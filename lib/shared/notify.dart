@@ -6,6 +6,7 @@ abstract final class PrismNotify {
   static const availabilityBase = 1500000000;
   static const hydrationBase = 1500001000;
   static const automationBase = 1500002000;
+  static const habitBase = 1500003000;
   static const range = 1000;
 
   static NotificationDetails details(String channelId, String channelName) {

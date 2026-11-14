@@ -14,7 +14,10 @@ import 'package:prism_plurality/features/automations/automation_engine.dart';
 import 'package:prism_plurality/features/connections/connections_screens.dart' show registerConnOpeners;
 import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
 import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
-import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners;
+import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
+import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
+import 'package:prism_plurality/features/links/models/record_ref.dart' show RecordRef;
+import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners, recordTypeOpeners;
 import 'package:prism_plurality/features/nutrition/nutrition_meals.dart' show registerNutritionOpeners;
 import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart' show registerScrapOpeners;
 import 'package:prism_plurality/features/music/services/music_player.dart';
@@ -319,6 +322,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     // One-time: make the Bulletin Board and Stories easy to find.
     ref.listen(socialOnboardingProvider, (_, _) {});
     ref.listen(automationBootProvider, (_, _) {});
+    ref.listen(habitCenterBootProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
@@ -826,6 +830,7 @@ void registerAdvancedRecordOpeners() {
   registerNutritionOpeners(recordKindOpeners);
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
+  recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
 }
 
 /// Notes theme switches (it sits below the app theme) so implicit

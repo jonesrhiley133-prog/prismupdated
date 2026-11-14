@@ -45,7 +45,7 @@ class PlateRing extends ConsumerWidget {
           width: 130,
           height: 130,
           child: CustomPaint(
-            painter: _PlatePainter([for (final c in cats) (Color(c.color), counts[c.id]! > 0)], theme.colorScheme.surfaceContainerHighest),
+            painter: _PlatePainter([for (final c in cats) (catColor(context, c), counts[c.id]! > 0)], theme.colorScheme.surfaceContainerHighest),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -70,10 +70,10 @@ class PlateRing extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                     child: Row(
                       children: [
-                        Icon(iconFor(c.icon), size: 16, color: Color(c.color)),
+                        Icon(iconFor(c.icon), size: 16, color: catColor(context, c)),
                         const SizedBox(width: 6),
                         Expanded(child: Text(c.title, style: theme.textTheme.bodyMedium)),
-                        Text(counts[c.id]! > 0 ? '✓ ${counts[c.id]}' : '+', style: theme.textTheme.labelLarge?.copyWith(color: Color(c.color))),
+                        Text(counts[c.id]! > 0 ? '✓ ${counts[c.id]}' : '+', style: theme.textTheme.labelLarge?.copyWith(color: catColor(context, c))),
                       ],
                     ),
                   ),
@@ -139,7 +139,7 @@ class MetricTotals extends ConsumerWidget {
                   Expanded(
                     child: s.metricGoals[key] == null
                         ? const SizedBox.shrink()
-                        : TrackerBar(value: ((totals[key] ?? 0) / s.metricGoals[key]!).clamp(0, 1).toDouble(), color: NutriColors.saffron),
+                        : TrackerBar(value: ((totals[key] ?? 0) / s.metricGoals[key]!).clamp(0, 1).toDouble(), color: context.nutri.saffron),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -179,7 +179,7 @@ class MealTile extends ConsumerWidget {
               height: 48,
               child: media.isNotEmpty && !meal.isPrivate
                   ? PrismMediaView(id: media.first)
-                  : ColoredBox(color: Color(c?.color ?? 0xFF8C8C8C).withValues(alpha: 0.18), child: Icon(iconFor(c?.icon), color: Color(c?.color ?? 0xFF8C8C8C))),
+                  : ColoredBox(color: catColor(context, c).withValues(alpha: 0.18), child: Icon(iconFor(c?.icon), color: catColor(context, c))),
             ),
           ),
           const SizedBox(width: 10),
@@ -253,7 +253,7 @@ class _FoodChip extends ConsumerWidget {
                 child: SizedBox(
                   width: 60,
                   height: 60,
-                  child: media.isNotEmpty ? PrismMediaView(id: media.first) : ColoredBox(color: NutriColors.basil.withValues(alpha: 0.2), child: Icon(PhosphorIcons.bowlFood(), color: NutriColors.basil)),
+                  child: media.isNotEmpty ? PrismMediaView(id: media.first) : ColoredBox(color: context.nutri.basil.withValues(alpha: 0.2), child: Icon(PhosphorIcons.bowlFood(), color: context.nutri.basil)),
                 ),
               ),
               const SizedBox(height: 4),
@@ -350,12 +350,12 @@ class _MealsViewState extends ConsumerState<MealsView> {
               padding: const EdgeInsets.only(top: 8, bottom: 4),
               child: Row(
                 children: [
-                  Icon(iconFor(c.icon), size: 18, color: Color(c.color)),
+                  Icon(iconFor(c.icon), size: 18, color: catColor(context, c)),
                   const SizedBox(width: 6),
                   Expanded(child: Text(c.title, style: theme.textTheme.titleSmall)),
                   IconButton(
                     tooltip: tr(context, 'Add to ${c.title}', 'Añadir a ${c.title}'),
-                    icon: Icon(AppIcons.addCircleOutline, color: Color(c.color)),
+                    icon: Icon(AppIcons.addCircleOutline, color: catColor(context, c)),
                     onPressed: () => showMealEditor(context, category: c.id, memberId: widget.member, date: _day),
                   ),
                 ],
@@ -410,7 +410,7 @@ class _MealCalendar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         for (var k = 0; k < math.min(counts[d] ?? 0, 4); k++)
-                          Container(width: 5, height: 5, margin: const EdgeInsets.all(1), decoration: const BoxDecoration(color: NutriColors.tomato, shape: BoxShape.circle)),
+                          Container(width: 5, height: 5, margin: const EdgeInsets.all(1), decoration: BoxDecoration(color: context.nutri.tomato, shape: BoxShape.circle)),
                       ],
                     ),
                   ],
@@ -625,7 +625,7 @@ class _MealEditorState extends ConsumerState<_MealEditor> {
         for (final f in suggestions)
           PrismListRow(
             dense: true,
-            leading: Icon(PhosphorIcons.heart(), color: NutriColors.basil),
+            leading: Icon(PhosphorIcons.heart(), color: context.nutri.basil),
             title: Text(tr(context, 'Use saved: ${f.title}', 'Usar guardada: ${f.title}')),
             onTap: () => setState(() {
               _title.text = f.title;
@@ -643,10 +643,10 @@ class _MealEditorState extends ConsumerState<_MealEditor> {
           children: [
             for (final c in cats)
               PrismChip(
-                avatar: Icon(iconFor(c.icon), size: 14, color: Color(c.color)),
+                avatar: Icon(iconFor(c.icon), size: 14, color: catColor(context, c)),
                 label: c.title,
                 selected: _cat == c.id,
-                selectedColor: Color(c.color),
+                selectedColor: catColor(context, c),
                 onTap: () => setState(() => _cat = c.id),
               ),
           ],
@@ -832,7 +832,7 @@ class _PantryViewState extends ConsumerState<PantryView> {
                     child: PrismChip(
                       label: c.title,
                       selected: _collection == c.id,
-                      selectedColor: Color(c.integer('color') ?? NutriColors.basil.toARGB32()),
+                      selectedColor: Color(c.integer('color') ?? context.nutri.basil.toARGB32()),
                       onTap: () => setState(() => _collection = c.id),
                     ),
                   ),
@@ -859,7 +859,7 @@ class _PantryViewState extends ConsumerState<PantryView> {
         for (final f in shown)
           PrismListRow(
             leading: f.strings('media').isEmpty
-                ? Icon(f.flag('favorite') ? PhosphorIcons.heart(PhosphorIconsStyle.fill) : PhosphorIcons.bowlFood(), color: NutriColors.basil)
+                ? Icon(f.flag('favorite') ? PhosphorIcons.heart(PhosphorIconsStyle.fill) : PhosphorIcons.bowlFood(), color: context.nutri.basil)
                 : ClipRRect(borderRadius: BorderRadius.circular(8), child: SizedBox(width: 40, height: 40, child: PrismMediaView(id: f.strings('media').first))),
             title: Text(f.title),
             subtitle: Text([
@@ -923,7 +923,7 @@ Future<void> showMealCategoryManager(BuildContext context) => PrismSheet.show(
         children: [
           for (final c in cats)
             PrismListRow(
-              leading: Icon(iconFor(c.icon), color: Color(c.color)),
+              leading: Icon(iconFor(c.icon), color: catColor(context, c)),
               title: Text(c.title),
               subtitle: Text(c.record == null ? tr(ctx, 'Built-in', 'Predeterminada') : tr(ctx, 'Custom', 'Personalizada')),
               trailing: c.record == null
@@ -1063,7 +1063,7 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
                     sections: [
                       for (final c in cats)
                         if ((catCounts[c.id] ?? 0) > 0)
-                          PieChartSectionData(value: catCounts[c.id]!.toDouble(), color: Color(c.color), radius: 34, title: '${catCounts[c.id]}', titleStyle: theme.textTheme.labelSmall?.copyWith(color: Colors.white)),
+                          PieChartSectionData(value: catCounts[c.id]!.toDouble(), color: catColor(context, c), radius: 34, title: '${catCounts[c.id]}', titleStyle: theme.textTheme.labelSmall?.copyWith(color: Colors.white)),
                     ],
                   ),
                 ),
@@ -1073,7 +1073,7 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (final c in cats)
-                    Row(children: [Icon(iconFor(c.icon), size: 14, color: Color(c.color)), const SizedBox(width: 4), Text('${c.title} ${catCounts[c.id] ?? 0}', style: theme.textTheme.labelSmall)]),
+                    Row(children: [Icon(iconFor(c.icon), size: 14, color: catColor(context, c)), const SizedBox(width: 4), Text('${c.title} ${catCounts[c.id] ?? 0}', style: theme.textTheme.labelSmall)]),
                 ],
               ),
             ],
@@ -1097,7 +1097,7 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
               ),
               barGroups: [
                 for (var h = 0; h < 24; h++)
-                  BarChartGroupData(x: h, barRods: [BarChartRodData(toY: hourCounts[h].toDouble(), color: NutriColors.saffron, width: 6, borderRadius: BorderRadius.circular(2))]),
+                  BarChartGroupData(x: h, barRods: [BarChartRodData(toY: hourCounts[h].toDouble(), color: context.nutri.saffron, width: 6, borderRadius: BorderRadius.circular(2))]),
               ],
             ),
           ),
@@ -1128,17 +1128,17 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
                       titlesData: const FlTitlesData(topTitles: AxisTitles(), rightTitles: AxisTitles(), bottomTitles: AxisTitles()),
                       extraLinesData: ExtraLinesData(
                         horizontalLines: [
-                          if (s.metricGoals[_metric] != null) HorizontalLine(y: s.metricGoals[_metric]!.toDouble(), color: NutriColors.basil, dashArray: [6, 4]),
+                          if (s.metricGoals[_metric] != null) HorizontalLine(y: s.metricGoals[_metric]!.toDouble(), color: context.nutri.basil, dashArray: [6, 4]),
                         ],
                       ),
                       lineBarsData: [
                         LineChartBarData(
                           spots: [for (var i = 0; i < days.length; i++) FlSpot(i.toDouble(), perDayMetric[days[i]]!)],
                           isCurved: true,
-                          color: NutriColors.tomato,
+                          color: context.nutri.tomato,
                           barWidth: 3,
                           dotData: FlDotData(show: _days <= 30),
-                          belowBarData: BarAreaData(show: true, color: NutriColors.tomato.withValues(alpha: 0.12)),
+                          belowBarData: BarAreaData(show: true, color: context.nutri.tomato.withValues(alpha: 0.12)),
                         ),
                       ],
                     ),
@@ -1159,10 +1159,10 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
                 LineChartBarData(
                   spots: [for (var i = 0; i < days.length; i++) FlSpot(i.toDouble(), (hyd[days[i]] ?? 0).toDouble())],
                   isCurved: true,
-                  color: NutriColors.water,
+                  color: context.nutri.water,
                   barWidth: 3,
                   dotData: const FlDotData(show: false),
-                  belowBarData: BarAreaData(show: true, color: NutriColors.water.withValues(alpha: 0.15)),
+                  belowBarData: BarAreaData(show: true, color: context.nutri.water.withValues(alpha: 0.15)),
                 ),
               ],
             ),

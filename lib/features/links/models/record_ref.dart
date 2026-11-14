@@ -21,6 +21,8 @@ class RecordRef {
   static const location = 'location';
   static const event = 'event';
   static const rec = 'rec';
+  static const habit = 'habit';
+  static const habitLog = 'hlog';
 
   String get key => '$type:$id';
 
@@ -94,6 +96,7 @@ final List<RecordModule> recordModules = [
   RecordModule('event', 'Calendar', 'Calendario', PhosphorIcons.calendarBlank(), const Color(0xFFE15759)),
   RecordModule('nutri', 'Nutrition', 'Nutrición', PhosphorIcons.forkKnife(), const Color(0xFFF28E2B)),
   RecordModule('drink', 'Hydration', 'Hidratación', PhosphorIcons.drop(), const Color(0xFF4E9BD6)),
+  RecordModule('habit', 'Habits', 'Hábitos', PhosphorIcons.checkSquareOffset(), const Color(0xFF26A69A)),
   RecordModule('fitness', 'Activity', 'Actividad', PhosphorIcons.personSimpleRun(), const Color(0xFF76B7B2)),
   RecordModule('scrap', 'Scrapbook', 'Álbum', PhosphorIcons.images(), const Color(0xFFFF9DA7)),
   RecordModule('conn', 'Connections', 'Conexiones', PhosphorIcons.graph(), const Color(0xFF9C755F)),
