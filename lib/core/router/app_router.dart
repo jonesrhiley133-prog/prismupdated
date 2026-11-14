@@ -89,7 +89,8 @@ import '../../features/nutrition/nutrition_screen.dart';
 import '../../features/social/views/stories_screen.dart';
 import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
-import '../../features/subsystems/views/subsystems_screen.dart';
+import '../../features/subsystems/hub/subsystem_hub.dart';
+import '../../features/subsystems/hub/subsystem_profile.dart';
 import '../../features/relationships/views/relationships_screen.dart';
 import '../../features/school/views/school_screen.dart';
 import '../../features/finance/views/finance_screen.dart';
@@ -1452,7 +1453,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.subsystems,
-                builder: (context, state) => const SubsystemsScreen(),
+                builder: (context, state) => const SubsystemHubScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => SubsystemProfileScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

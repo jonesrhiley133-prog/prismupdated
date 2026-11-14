@@ -262,7 +262,7 @@ class _AddFrontSessionSheetState extends ConsumerState<AddFrontSessionSheet>
     final theme = Theme.of(context);
     final terms = watchTerminology(context, ref);
     final frontingTerms = watchFrontingTerms(context, ref);
-    final membersAsync = ref.watch(activeMemberListProvider);
+    final membersAsync = ref.watch(pickableMemberListProvider);
     final activeSessionsAsync = ref.watch(activeSessionsProvider);
     final activeSessions = activeSessionsAsync.whenOrNull(data: (s) => s) ?? [];
     // Per-member model: each session is one member's continuous presence.

@@ -43,7 +43,7 @@ class TrackerMemberPicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final members = ref.watch(activeMembersProvider).value ?? const <Member>[];
+    final members = ref.watch(userVisibleMembersProvider).value ?? const <Member>[];
     if (members.isEmpty) return const SizedBox.shrink();
     final fronterId = ref.watch(currentFronterProvider).value?.id;
     return Column(

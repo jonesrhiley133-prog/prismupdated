@@ -34,6 +34,19 @@ abstract final class TrackerKind {
 
   static const subsystem = 'subsystem';
 
+  /// Subsystem extensions: membership per alter (parent = subsystem),
+  /// internal groups, rules, notes, journal and messages.
+  static const subMember = 'subsystem.member';
+  static const subGroup = 'subsystem.group';
+  static const subRule = 'subsystem.rule';
+  static const subNote = 'subsystem.note';
+  static const subJournal = 'subsystem.journal';
+  static const subMessage = 'subsystem.message';
+
+  /// Extended alter profile (parent = member id) and saved templates.
+  static const memberProfile = 'member.profile';
+  static const profileTemplate = 'member.profileTemplate';
+
   static const sleepLog = 'sleep.log';
   static const cyclePhase = 'cycle.phase';
   static const cycleWellness = 'cycle.wellness';

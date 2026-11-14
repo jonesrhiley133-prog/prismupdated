@@ -84,7 +84,7 @@ class _AddCoFronterSheetState extends ConsumerState<AddCoFronterSheet> {
     final theme = Theme.of(context);
     final terms = watchTerminology(context, ref);
     final frontingTerms = watchFrontingTerms(context, ref);
-    final membersAsync = ref.watch(activeMemberListProvider);
+    final membersAsync = ref.watch(pickableMemberListProvider);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
 
     final availableForSearch =

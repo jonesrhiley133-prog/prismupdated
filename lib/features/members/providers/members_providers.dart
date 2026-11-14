@@ -10,6 +10,7 @@ import 'package:prism_plurality/domain/models/models.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 
 /// Watches all members (active and inactive).
 ///
@@ -86,8 +87,9 @@ final pkSyncRelevantMembersProvider = StreamProvider<List<Member>>((ref) {
 /// bytes.
 final userVisibleMembersProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(activeMembersProvider);
+  final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId).toList(),
+    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
   );
 });
 
@@ -98,15 +100,17 @@ final userVisibleMembersProvider = Provider<AsyncValue<List<Member>>>((ref) {
 /// bytes.
 final userVisibleAllMembersProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(allMembersProvider);
+  final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId).toList(),
+    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
   );
 });
 
 final userVisibleMemberListProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(activeMemberListProvider);
+  final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId).toList(),
+    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
   );
 });
 
@@ -114,9 +118,17 @@ final userVisibleAllMemberListProvider = Provider<AsyncValue<List<Member>>>((
   ref,
 ) {
   final async = ref.watch(allMemberListProvider);
+  final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId).toList(),
+    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
   );
+});
+
+/// Active members minus alters isolated inside a subsystem (keeps the
+/// Unknown sentinel, for pickers that offer it).
+final pickableMemberListProvider = Provider<AsyncValue<List<Member>>>((ref) {
+  final hidden = ref.watch(isolatedMembersProvider).ids;
+  return ref.watch(activeMemberListProvider).whenData((members) => hidden.isEmpty ? members : members.where((m) => !hidden.contains(m.id)).toList());
 });
 
 /// Single member by ID.
