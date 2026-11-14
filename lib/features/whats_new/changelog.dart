@@ -32,6 +32,42 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.27.0',
+    date: DateTime(2026, 11, 14),
+    features: const [
+      LocalizedText(
+        'A new cosmic Subsystems hub: your subsystems orbit your system on glowing rings in a dark, starry space, with a create button front and centre when you have none and a Learn more guide.',
+        'Nuevo centro cósmico de Subsistemas: tus subsistemas orbitan tu sistema en anillos brillantes dentro de un espacio oscuro y estrellado, con un botón de crear bien visible cuando no tienes ninguno y una guía «Más información».',
+      ),
+      LocalizedText(
+        'Create a subsystem step by step: pick a founding alter, give it a name, icon, description and colours, add members with their own subsystem roles and permissions, then choose its settings.',
+        'Crea un subsistema paso a paso: elige un alter fundador, dale nombre, icono, descripción y colores, añade miembros con sus propios roles y permisos, y elige sus ajustes.',
+      ),
+      LocalizedText(
+        'Every subsystem is a small system of its own: overview, members, internal relationships, fronting history, journal, notes, internal groups, nested subsystems, rules and boundaries, connections, chat and announcements, and settings for general, members, structure, fronting, communication, privacy, appearance and data.',
+        'Cada subsistema es un pequeño sistema propio: resumen, miembros, relaciones internas, historial de frente, diario, notas, grupos internos, subsistemas anidados, normas y límites, conexiones, chat y anuncios, y ajustes de general, miembros, estructura, frente, comunicación, privacidad, apariencia y datos.',
+      ),
+      LocalizedText(
+        'Profile Studio: design an alter’s profile in four sections — basic identity, appearance, personality & identity, and advanced settings — with a live preview, undo and redo, autosaved drafts, templates, presets and import/export.',
+        'Profile Studio: diseña el perfil de un alter en cuatro secciones —identidad básica, apariencia, personalidad e identidad, y ajustes avanzados— con vista previa en vivo, deshacer y rehacer, borradores guardados, plantillas, preajustes e importación/exportación.',
+      ),
+      LocalizedText(
+        'Roles typed with spaces become separate pills you can colour, style, hide and drag into order, and appear on the banner as “Host · Protector · …”.',
+        'Los roles escritos con espacios se convierten en píldoras que puedes colorear, estilizar, ocultar y reordenar, y aparecen en el banner como «Anfitrión · Protector · …».',
+      ),
+      LocalizedText(
+        'Profiles gain alternative names, pronoun sets, gender, age range, species, origin, subtitle and status, traits with intensity, interests and favourites, memories, music, links, a gallery, custom cards and a pinned note — with modules you can reorder or hide, four layouts, per-field labels and privacy, animated avatars and banners, avatar shapes, fonts, borders and stickers.',
+        'Los perfiles suman nombres alternativos, pronombres, género, rango de edad, especie, origen, subtítulo y estado, rasgos con intensidad, intereses y favoritos, recuerdos, música, enlaces, galería, tarjetas personalizadas y nota fijada —con módulos que puedes reordenar u ocultar, cuatro diseños, etiquetas y privacidad por campo, avatares y banners animados, formas de avatar, fuentes, bordes y pegatinas.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Members of an isolated subsystem only appear inside that subsystem — not in Headmates, alter searches or other system-wide member pickers. Adding an alter to a subsystem creates a membership record; the alter is never copied and their main profile stays the same.',
+        'Los miembros de un subsistema aislado solo aparecen dentro de él —no en Headmates, búsquedas ni otros selectores del sistema. Añadir un alter crea un registro de membresía: el alter nunca se copia y su perfil principal no cambia.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.26.0',
     date: DateTime(2026, 11, 14),
     features: const [

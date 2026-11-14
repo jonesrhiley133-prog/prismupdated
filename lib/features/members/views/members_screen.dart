@@ -1,4 +1,7 @@
 import 'dart:typed_data';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/features/members/studio/profile_studio.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
 import 'dart:async';
 
@@ -233,6 +236,22 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
                   _openSearch(availableMembers);
                 }
               : null,
+        );
+      },
+      (ctx, close) {
+        final theme = Theme.of(ctx);
+        return PrismListRow(
+          dense: true,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          leading: Icon(PhosphorIcons.paintBrushBroad(), size: 20),
+          title: Text(
+            tr(ctx, 'Create in Profile Studio', 'Crear en Profile Studio'),
+            style: theme.textTheme.bodyMedium,
+          ),
+          onTap: () {
+            close();
+            openProfileStudio(context);
+          },
         );
       },
       (ctx, close) {

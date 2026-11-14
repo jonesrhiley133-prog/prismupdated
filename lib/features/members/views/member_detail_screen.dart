@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/features/members/studio/profile_studio.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/features/members/studio/profile_view.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/alter_status/status_widgets.dart';
 import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
@@ -222,6 +226,7 @@ class _MemberDetailBody extends ConsumerWidget {
     return [
       const SizedBox(height: 16),
       MemberProfileHeader(member: member, isFronting: isFronting),
+      StudioHeaderExtras(member: member),
       if (member.pronouns?.trim().isNotEmpty ?? false) ...[
         const SizedBox(height: 12),
         Text(
@@ -246,6 +251,7 @@ class _MemberDetailBody extends ConsumerWidget {
           memberName: member.name,
         ),
       ],
+      StudioProfileSection(member: member),
       const SizedBox(height: 24),
       _RetainedProfileSection(
         key: const ValueKey('customFields'),
@@ -328,6 +334,8 @@ class _MemberDetailBody extends ConsumerWidget {
     _MenuAction action,
   ) async {
     switch (action) {
+      case _MenuAction.studio:
+        await openProfileStudio(context, memberId: member.id);
       case _MenuAction.setFronter:
         try {
           await ref.read(frontingNotifierProvider.notifier).startFronting([
@@ -970,7 +978,7 @@ class _MemberConversationsList extends ConsumerWidget {
 
 // ── Shared helpers ──────────────────────────────────────────────────────────
 
-enum _MenuAction { setFronter, toggleActive, delete }
+enum _MenuAction { setFronter, studio, toggleActive, delete }
 
 class _SectionCard extends StatelessWidget {
   const _SectionCard({
@@ -1070,6 +1078,12 @@ class _MoreMenuButton extends ConsumerWidget {
         destructive: false,
       ),
       (
+        action: _MenuAction.studio,
+        label: tr(context, 'Profile Studio', 'Profile Studio'),
+        icon: PhosphorIcons.paintBrushBroad(),
+        destructive: false,
+      ),
+      (
         action: _MenuAction.toggleActive,
         label: member.isActive ? l10n.deactivate : l10n.activate,
         icon: member.isActive ? AppIcons.visibilityOff : AppIcons.visibility,
@@ -1087,7 +1101,7 @@ class _MoreMenuButton extends ConsumerWidget {
       trigger: BlurPopupTrigger.tap,
       preferredDirection: BlurPopupDirection.down,
       width: 200,
-      maxHeight: 240,
+      maxHeight: 300,
       itemCount: items.length,
       itemBuilder: (context, index, close) {
         final item = items[index];
