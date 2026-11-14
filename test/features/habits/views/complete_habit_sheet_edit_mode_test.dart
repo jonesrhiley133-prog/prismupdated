@@ -572,6 +572,7 @@ class _SpyHabitNotifier extends HabitNotifier {
     int? rating,
     bool wasFronting = false,
     DateTime? completedAt,
+    String? completionId,
   }) async {
     completeHabitCalls.add(
       _CompleteHabitArgs(
