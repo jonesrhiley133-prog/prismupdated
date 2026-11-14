@@ -496,16 +496,20 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         // then the appearance preset on top.
         lightTheme = applyAccessibility(lightTheme, a11y);
         darkTheme = applyAccessibility(darkTheme, a11y);
+        final lightBase = lightTheme;
+        final darkBase = darkTheme;
         lightTheme = applyLook(
-          lightTheme,
+          lightBase,
           lightLook,
+          opposite: darkBase,
           reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
           reduceEffects: a11y.reduceEffects,
           backgroundDir: backgroundDir,
         );
         darkTheme = applyLook(
-          darkTheme,
+          darkBase,
           darkLook,
+          opposite: lightBase,
           reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
           reduceEffects: a11y.reduceEffects,
           backgroundDir: backgroundDir,
@@ -523,6 +527,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           locale: ref.watch(localeOverrideProvider),
           theme: lightTheme,
           darkTheme: darkTheme,
+          // Switch themes in a single frame: a cross-fade made some parts
+          // (backgrounds, cards) lag behind the rest.
+          themeAnimationDuration: Duration.zero,
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
@@ -549,7 +556,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
                   router.push(AppRoutePaths.accessibilityQuick),
               child: PrismKeyboardDismissScope(
                 child: PrismToastHost(
-                  child: MusicPlayerHost(child: DemoBanner(child: result)),
+                  child: MusicPlayerHost(
+                    child: DemoBanner(child: _ThemeSwitchObserver(child: result)),
+                  ),
                 ),
               ),
             );
@@ -629,6 +638,9 @@ class _DatabaseStartupApp extends ConsumerWidget {
           supportedLocales: const [Locale('en'), Locale('es')],
           theme: lightTheme,
           darkTheme: darkTheme,
+          // Switch themes in a single frame: a cross-fade made some parts
+          // (backgrounds, cards) lag behind the rest.
+          themeAnimationDuration: Duration.zero,
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
@@ -814,4 +826,18 @@ void registerAdvancedRecordOpeners() {
   registerNutritionOpeners(recordKindOpeners);
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
+}
+
+/// Notes theme switches (it sits below the app theme) so implicit
+/// animations can skip their tween for that frame.
+class _ThemeSwitchObserver extends StatelessWidget {
+  const _ThemeSwitchObserver({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    ThemeSwitch.observe((t.brightness, t.colorScheme.primary, t.colorScheme.surface, t.extension<LookTheme>()?.look.id));
+    return child;
+  }
 }

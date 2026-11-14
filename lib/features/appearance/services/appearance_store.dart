@@ -9,8 +9,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/core/database/database_providers.dart';
+import 'package:prism_plurality/domain/models/system_settings.dart';
+import 'package:prism_plurality/domain/preferences/preference_registry.dart';
 import 'package:prism_plurality/features/appearance/models/look.dart';
 import 'package:prism_plurality/features/appearance/services/synced_setting.dart';
+import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
+import 'package:prism_plurality/shared/theme/prism_shapes.dart' as ui_shapes;
 
 const _prefsKey = 'appearance.state.v1';
 const appearanceSettingKind = 'settings.appearance';
@@ -70,6 +75,65 @@ class AppearanceNotifier extends AsyncNotifier<AppearanceState> {
     } catch (_) {
       // Kept in memory for this session.
     }
+  }
+
+  /// Puts the appearance back to how Prism looks out of the box: the plain
+  /// Prism theme everywhere, no per-page themes or automatic light/dark
+  /// switching, and — with [everything] — also removes saved themes and
+  /// uploaded background images. Banner settings are not appearance and
+  /// stay as they are.
+  Future<void> resetAppearance({bool everything = false}) async {
+    final s = await _cur();
+    if (everything) {
+      final dir = await ref.read(backgroundsDirProvider.future);
+      if (dir != null) {
+        try {
+          for (final f in dir.listSync().whereType<File>()) {
+            await f.delete();
+          }
+        } catch (_) {}
+      }
+    }
+    await _save(
+      AppearanceState(
+        looks: everything ? const [] : s.looks,
+        showMemberBanners: s.showMemberBanners,
+        bannerPositions: s.bannerPositions,
+      ),
+    );
+    // Theme style, accent, palette, corners and fonts back to defaults.
+    // These go through the settings notifier so the startup theme cache is
+    // refreshed too (no old theme flashing on the next launch).
+    const d0 = SystemSettings();
+    final settings = ref.read(settingsNotifierProvider.notifier);
+    await settings.updateThemeBrightness(d0.themeBrightness);
+    await settings.updateThemeStyle(d0.themeStyle);
+    await settings.updateAccentColor(d0.accentColorHex);
+    await settings.updateCornerStyle(ui_shapes.CornerStyle.rounded);
+    await settings.updatePaletteSource(d0.paletteSource);
+    await settings.updatePaletteSeedColorHex(d0.paletteSeedColorHex);
+    await settings.updatePaletteMood(d0.paletteMood);
+    await settings.updatePaletteContrast(d0.paletteContrast);
+    final repo = ref.read(systemSettingsRepositoryProvider);
+    final cur = await repo.getSettings();
+    const d = SystemSettings();
+    await repo.updateSettings(
+      cur.copyWith(
+        accentColorHex: d.accentColorHex,
+        themeBrightness: d.themeBrightness,
+        themeStyle: d.themeStyle,
+        themeMode: d.themeMode,
+        cornerStyle: d.cornerStyle,
+        paletteSource: d.paletteSource,
+        paletteSeedColorHex: d.paletteSeedColorHex,
+        paletteMood: d.paletteMood,
+        paletteContrast: d.paletteContrast,
+        fontFamily: d.fontFamily,
+        fontScale: d.fontScale,
+        displayFontInAppBar: d.displayFontInAppBar,
+      ),
+    );
+    await ref.read(appPreferenceRepositoryProvider).set(typographyLetterSpacingPreference, typographyLetterSpacingPreference.defaultValue);
   }
 
   /// Takes over newer settings that arrived from another device.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/accent_legibility.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
@@ -87,7 +88,7 @@ class PrismChip extends StatelessWidget {
       selected: selected,
       label: label,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
+        duration: themeAware(const Duration(milliseconds: 160)),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(

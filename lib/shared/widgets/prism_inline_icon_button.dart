@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/utils/animations.dart';
@@ -75,7 +76,7 @@ class _PrismInlineIconButtonState extends State<PrismInlineIconButton> {
             },
             borderRadius: borderRadius,
             child: AnimatedContainer(
-              duration: Anim.xs,
+              duration: themeAware(Anim.xs),
               curve: Anim.standard,
               width: widget.size,
               height: widget.size,

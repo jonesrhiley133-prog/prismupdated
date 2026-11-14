@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -69,10 +70,41 @@ String pageLabel(AppLocalizations l10n, String page) => switch (page) {
   'habits' => l10n.apPageHabits,
   'music' => l10n.navMusic,
   'statistics' => l10n.apPageStatistics,
+  'boards' => l10n.navBoards,
+  'stories' => l10n.navStories,
+  'nutrition' => l10n.navNutrition,
+  'scrapbook' => l10n.navScrapbook,
+  'connections' => l10n.navConnections,
+  'analytics' => l10n.navAnalytics,
+  'availability' => l10n.navAvailability,
+  'introductions' => l10n.navIntroductions,
+  'locations' => l10n.navLocations,
+  'reminders' => l10n.navReminders,
   _ => l10n.apPageSettings,
 };
 
-enum _Tab { background, elements, pages }
+/// Labels and help for the colour roles.
+(String, String) colorRoleLabel(BuildContext context, String role) => switch (role) {
+  LookColor.accent => (tr(context, 'Accent', 'Acento'), tr(context, 'Buttons, selections, highlights', 'Botones, selecciones, resaltados')),
+  LookColor.secondary => (tr(context, 'Secondary', 'Secundario'), tr(context, 'Secondary buttons and tags', 'Botones y etiquetas secundarios')),
+  LookColor.highlight => (tr(context, 'Highlight', 'Resalte'), tr(context, 'Badges and special accents', 'Insignias y acentos especiales')),
+  LookColor.background => (tr(context, 'Page background', 'Fondo de página'), tr(context, 'Behind everything (when no picture is set)', 'Detrás de todo (si no hay imagen)')),
+  LookColor.surface => (tr(context, 'Surfaces', 'Superficies'), tr(context, 'Cards, sheets, lists and menus', 'Tarjetas, hojas, listas y menús')),
+  LookColor.raised => (tr(context, 'Raised surfaces', 'Superficies elevadas'), tr(context, 'Strong cards, fields and pressed areas', 'Tarjetas destacadas, campos y zonas pulsadas')),
+  LookColor.text => (tr(context, 'Text', 'Texto'), tr(context, 'Main text and icons (kept readable automatically)', 'Texto e iconos (siempre legibles)')),
+  LookColor.mutedText => (tr(context, 'Secondary text', 'Texto secundario'), tr(context, 'Subtitles, hints and captions', 'Subtítulos, pistas y leyendas')),
+  LookColor.outline => (tr(context, 'Lines & borders', 'Líneas y bordes'), tr(context, 'Dividers and outlines', 'Divisores y contornos')),
+  LookColor.error => (tr(context, 'Error', 'Error'), tr(context, 'Warnings that need attention, delete buttons', 'Avisos importantes, botones de borrar')),
+  LookColor.success => (tr(context, 'Success', 'Éxito'), tr(context, 'Confirmations and positive changes', 'Confirmaciones y cambios positivos')),
+  LookColor.warning => (tr(context, 'Caution', 'Precaución'), tr(context, 'Gentle warnings', 'Avisos suaves')),
+  LookColor.chip => (tr(context, 'Chips', 'Fichas'), tr(context, 'Selected filter and choice chips', 'Fichas de filtro seleccionadas')),
+  LookColor.toggle => (tr(context, 'Switches & checkboxes', 'Interruptores y casillas'), tr(context, 'When turned on', 'Cuando están activados')),
+  LookColor.progress => (tr(context, 'Progress & sliders', 'Progreso y deslizadores'), tr(context, 'Loading bars, sliders and gauges', 'Barras, deslizadores e indicadores')),
+  LookColor.link => (tr(context, 'Links & cursor', 'Enlaces y cursor'), tr(context, 'Links, text cursor and selection', 'Enlaces, cursor y selección de texto')),
+  _ => (role, ''),
+};
+
+enum _Tab { colors, background, elements, pages }
 
 /// Edits one preset. While open, the draft is previewed across the whole
 /// app; nothing is kept until Save.
@@ -87,7 +119,7 @@ class LookEditorScreen extends ConsumerStatefulWidget {
 
 class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
   late PrismLook _draft = widget.initial;
-  _Tab _tab = _Tab.background;
+  _Tab _tab = _Tab.colors;
   String _element = LookElement.card;
   bool _dirty = false;
   late final LookPreview _preview;
@@ -151,6 +183,7 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
       const SizedBox(height: 12),
       PrismSegmentedControl<_Tab>(
         segments: [
+          PrismSegment(value: _Tab.colors, label: tr(context, 'Colours', 'Colores')),
           PrismSegment(value: _Tab.background, label: l10n.apBackground),
           PrismSegment(value: _Tab.elements, label: l10n.apElements),
           PrismSegment(value: _Tab.pages, label: l10n.apPages),
@@ -160,6 +193,7 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
       ),
       const SizedBox(height: 8),
       ...switch (_tab) {
+        _Tab.colors => _colors(),
         _Tab.background => [BackgroundEditor(spec: _draft.background, onChanged: (b) => _set(_draft.copyWith(background: b)))],
         _Tab.elements => _elements(l10n),
         _Tab.pages => _pages(l10n),
@@ -196,6 +230,46 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _colors() {
+    final theme = Theme.of(context);
+    return [
+      Text(
+        tr(context, 'Pick colours for every part of the app. Anything left on “Default” keeps the standard colour. Text is adjusted automatically if it would be hard to read.',
+            'Elige colores para cada parte de la app. Lo que quede en «Predeterminado» mantiene el color estándar. El texto se ajusta solo si fuera difícil de leer.'),
+        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+      ),
+      const SizedBox(height: 8),
+      PrismSegmentedControl<String>(
+        segments: [
+          PrismSegment(value: 'auto', label: tr(context, 'Fits light & dark', 'Claro y oscuro')),
+          PrismSegment(value: 'light', label: tr(context, 'Light design', 'Diseño claro')),
+          PrismSegment(value: 'dark', label: tr(context, 'Dark design', 'Diseño oscuro')),
+        ],
+        selected: _draft.dark == null ? 'auto' : (_draft.dark! ? 'dark' : 'light'),
+        onChanged: (v) => _set(_draft.copyWith(dark: v == 'auto' ? null : v == 'dark')),
+      ),
+      const SizedBox(height: 4),
+      PrismButton(
+        label: tr(context, 'Clear all colours', 'Quitar todos los colores'),
+        icon: Icons.format_color_reset_outlined,
+        onPressed: _draft.colors.isEmpty ? () {} : () => _set(_draft.copyWith(colors: const {})),
+      ),
+      for (final role in LookColor.all)
+        PrismSurface(
+          margin: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.fromLTRB(14, 4, 14, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ColorChoiceRow(label: colorRoleLabel(context, role).$1, value: _draft.color(role), onChanged: (v) => _set(_draft.withColor(role, v))),
+              const SizedBox(height: 4),
+              Text(colorRoleLabel(context, role).$2, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
+        ),
+    ];
   }
 
   List<Widget> _elements(AppLocalizations l10n) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 
@@ -110,7 +111,7 @@ class _TermChoiceTile<T> extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: themeAware(const Duration(milliseconds: 150)),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected
