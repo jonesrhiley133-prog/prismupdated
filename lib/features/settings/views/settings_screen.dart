@@ -235,32 +235,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               .read(settingsNotifierProvider.notifier)
                               .updateFeatureToggle(boardsEnabled: true);
                         }
-                        if (context.mounted) context.go(AppRoutePaths.boards);
+                        if (context.mounted) context.push(AppRoutePaths.boards);
                       },
                     ),
                     _SettingsLink(
                       icon: Icons.auto_awesome_outlined,
                       iconColor: Colors.pink,
                       title: context.l10n.stoTitle,
-                      onTap: () => context.go(AppRoutePaths.stories),
+                      onTap: () => context.push(AppRoutePaths.stories),
                     ),
                     _SettingsLink(
                       icon: Icons.restaurant_outlined,
                       iconColor: Colors.deepOrangeAccent,
                       title: tr(context, 'Nutrition & hydration', 'Nutrición e hidratación'),
-                      onTap: () => context.go('/nutrition'),
+                      onTap: () => context.push('/nutrition'),
                     ),
                     _SettingsLink(
                       icon: Icons.collections_bookmark_outlined,
                       iconColor: Colors.pinkAccent,
                       title: tr(context, 'System Scrapbook', 'Álbum del sistema'),
-                      onTap: () => context.go('/scrapbook'),
+                      onTap: () => context.push('/scrapbook'),
                     ),
                     _SettingsLink(
                       icon: Icons.hub_outlined,
                       iconColor: Colors.brown,
                       title: tr(context, 'Internal Connections', 'Conexiones internas'),
-                      onTap: () => context.go('/connections'),
+                      onTap: () => context.push('/connections'),
                     ),
                     _SettingsLink(
                       icon: Icons.link,
@@ -272,7 +272,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       icon: Icons.insights_outlined,
                       iconColor: Colors.amber,
                       title: tr(context, 'Analytics', 'Análisis'),
-                      onTap: () => context.go('/analytics'),
+                      onTap: () => context.push('/analytics'),
                     ),
                     _SettingsLink(
                       icon: Icons.circle_notifications_outlined,
@@ -284,13 +284,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       icon: Icons.event_available_outlined,
                       iconColor: Colors.teal,
                       title: tr(context, 'Availability', 'Disponibilidad'),
-                      onTap: () => context.go('/availability'),
+                      onTap: () => context.push('/availability'),
                     ),
                     _SettingsLink(
                       icon: Icons.style_outlined,
                       iconColor: Colors.purple,
                       title: tr(context, 'Introduction cards', 'Tarjetas de presentación'),
-                      onTap: () => context.go('/introductions'),
+                      onTap: () => context.push('/introductions'),
                     ),
                     _SettingsLink(
                       icon: Icons.bolt_outlined,

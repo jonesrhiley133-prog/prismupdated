@@ -202,7 +202,7 @@ class _PrismButtonState extends State<PrismButton> {
             splashFactory: NoSplash.splashFactory,
             borderRadius: buttonRadius,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: themeAware(const Duration(milliseconds: 150)),
               width: widget.expanded ? double.infinity : null,
               padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding * padScale,
@@ -433,7 +433,7 @@ class _PrismIconButtonState extends State<PrismIconButton> {
             radius: widget.size / 2,
             customBorder: PrismShapes.of(context).circleOrSquareBorder(),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
+              duration: themeAware(const Duration(milliseconds: 100)),
               width: widget.size,
               height: widget.size,
               decoration: BoxDecoration(

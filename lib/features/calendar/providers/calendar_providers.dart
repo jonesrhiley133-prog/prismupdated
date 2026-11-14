@@ -16,17 +16,22 @@ class CalendarOverlays {
     this.birthdays = true,
     this.mood = true,
     this.reminders = false,
+    this.habits = true,
   });
+
+  /// Scheduled habits in the day view.
+  final bool habits;
 
   final bool birthdays;
   final bool mood;
   final bool reminders;
 
-  CalendarOverlays copyWith({bool? birthdays, bool? mood, bool? reminders}) =>
+  CalendarOverlays copyWith({bool? birthdays, bool? mood, bool? reminders, bool? habits}) =>
       CalendarOverlays(
         birthdays: birthdays ?? this.birthdays,
         mood: mood ?? this.mood,
         reminders: reminders ?? this.reminders,
+        habits: habits ?? this.habits,
       );
 }
 

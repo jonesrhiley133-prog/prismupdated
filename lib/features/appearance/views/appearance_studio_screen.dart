@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -180,6 +181,40 @@ class AppearanceStudioScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _reset(BuildContext context, WidgetRef ref) async {
+    final choice = await PrismSheet.show<String>(
+      context: context,
+      title: tr(context, 'Reset appearance?', '¿Restablecer la apariencia?'),
+      builder: (sheet) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(tr(sheet, 'Your data is not affected — only how the app looks.', 'Tus datos no se ven afectados, solo el aspecto de la app.')),
+            const SizedBox(height: 12),
+            PrismButton(
+              label: tr(sheet, 'Reset, keep my saved themes', 'Restablecer y conservar mis temas'),
+              tone: PrismButtonTone.filled,
+              onPressed: () => Navigator.of(sheet).pop('keep'),
+            ),
+            const SizedBox(height: 8),
+            PrismButton(
+              label: tr(sheet, 'Reset everything, delete my themes and pictures', 'Restablecer todo y borrar mis temas e imágenes'),
+              tone: PrismButtonTone.destructive,
+              onPressed: () => Navigator.of(sheet).pop('all'),
+            ),
+            const SizedBox(height: 8),
+            PrismButton(label: context.l10n.cancel, onPressed: () => Navigator.of(sheet).pop()),
+          ],
+        ),
+      ),
+    );
+    if (choice == null) return;
+    await ref.read(appearanceProvider.notifier).resetAppearance(everything: choice == 'all');
+    if (context.mounted) PrismToast.show(context, message: tr(context, 'Appearance reset', 'Apariencia restablecida'));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -309,6 +344,21 @@ class AppearanceStudioScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+            const SizedBox(height: 20),
+            Text(tr(context, 'Start over', 'Empezar de nuevo'), style: theme.textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              tr(context, 'Put Prism back to how it looked when you first installed it: the Prism theme, standard colours, light/dark following your phone, default fonts and corners, and no page themes.',
+                  'Devuelve Prism a su aspecto original: el tema Prism, colores estándar, claro/oscuro según el teléfono, fuentes y esquinas predeterminadas y sin temas por página.'),
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            PrismButton(
+              label: tr(context, 'Reset appearance', 'Restablecer apariencia'),
+              icon: Icons.restart_alt_rounded,
+              tone: PrismButtonTone.destructive,
+              onPressed: () => _reset(context, ref),
+            ),
             SizedBox(height: NavBarInset.of(context) + 24),
           ];
           return ListView(
@@ -372,7 +422,7 @@ class _PresetCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final base = theme.copyWith(extensions: const []);
-    final styled = applyLook(base, look, backgroundDir: LookTheme.of(context)?.backgroundDir);
+    final styled = LookTheme.of(context)?.themeFor(look, base.brightness) ?? applyLook(base, look);
     final card = look.element(LookElement.card);
     final button = look.element(LookElement.button);
     return Semantics(

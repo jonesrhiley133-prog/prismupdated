@@ -14,7 +14,10 @@ import 'package:prism_plurality/features/automations/automation_engine.dart';
 import 'package:prism_plurality/features/connections/connections_screens.dart' show registerConnOpeners;
 import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
 import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
-import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners;
+import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
+import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
+import 'package:prism_plurality/features/links/models/record_ref.dart' show RecordRef;
+import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners, recordTypeOpeners;
 import 'package:prism_plurality/features/nutrition/nutrition_meals.dart' show registerNutritionOpeners;
 import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart' show registerScrapOpeners;
 import 'package:prism_plurality/features/music/services/music_player.dart';
@@ -319,6 +322,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     // One-time: make the Bulletin Board and Stories easy to find.
     ref.listen(socialOnboardingProvider, (_, _) {});
     ref.listen(automationBootProvider, (_, _) {});
+    ref.listen(habitCenterBootProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
@@ -496,16 +500,20 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         // then the appearance preset on top.
         lightTheme = applyAccessibility(lightTheme, a11y);
         darkTheme = applyAccessibility(darkTheme, a11y);
+        final lightBase = lightTheme;
+        final darkBase = darkTheme;
         lightTheme = applyLook(
-          lightTheme,
+          lightBase,
           lightLook,
+          opposite: darkBase,
           reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
           reduceEffects: a11y.reduceEffects,
           backgroundDir: backgroundDir,
         );
         darkTheme = applyLook(
-          darkTheme,
+          darkBase,
           darkLook,
+          opposite: lightBase,
           reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
           reduceEffects: a11y.reduceEffects,
           backgroundDir: backgroundDir,
@@ -523,6 +531,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           locale: ref.watch(localeOverrideProvider),
           theme: lightTheme,
           darkTheme: darkTheme,
+          // Switch themes in a single frame: a cross-fade made some parts
+          // (backgrounds, cards) lag behind the rest.
+          themeAnimationDuration: Duration.zero,
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
@@ -549,7 +560,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
                   router.push(AppRoutePaths.accessibilityQuick),
               child: PrismKeyboardDismissScope(
                 child: PrismToastHost(
-                  child: MusicPlayerHost(child: DemoBanner(child: result)),
+                  child: MusicPlayerHost(
+                    child: DemoBanner(child: _ThemeSwitchObserver(child: result)),
+                  ),
                 ),
               ),
             );
@@ -629,6 +642,9 @@ class _DatabaseStartupApp extends ConsumerWidget {
           supportedLocales: const [Locale('en'), Locale('es')],
           theme: lightTheme,
           darkTheme: darkTheme,
+          // Switch themes in a single frame: a cross-fade made some parts
+          // (backgrounds, cards) lag behind the rest.
+          themeAnimationDuration: Duration.zero,
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
@@ -814,4 +830,19 @@ void registerAdvancedRecordOpeners() {
   registerNutritionOpeners(recordKindOpeners);
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
+  recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
+}
+
+/// Notes theme switches (it sits below the app theme) so implicit
+/// animations can skip their tween for that frame.
+class _ThemeSwitchObserver extends StatelessWidget {
+  const _ThemeSwitchObserver({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    ThemeSwitch.observe((t.brightness, t.colorScheme.primary, t.colorScheme.surface, t.extension<LookTheme>()?.look.id));
+    return child;
+  }
 }

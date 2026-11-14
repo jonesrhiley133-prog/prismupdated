@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/habits/center/habit_center_screen.dart' show CalendarHabitsForDay;
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -562,6 +564,7 @@ class _DayPanel extends ConsumerWidget {
                   return context.formatTime(DateTime(2000, 1, 1, int.parse(p[0]), int.parse(p[1])));
                 }).join(', ')}',
           ),
+        if (data.overlays.habits) CalendarHabitsForDay(day: day),
         if (occurrences.isEmpty &&
             birthdays.isEmpty &&
             reminders.isEmpty &&
@@ -1132,6 +1135,12 @@ class _FilterSheet extends ConsumerWidget {
             icon: AppIcons.notificationsNoneRounded,
             value: overlays.reminders,
             onChanged: (v) => notifier.set(overlays.copyWith(reminders: v)),
+          ),
+          PrismSwitchRow(
+            title: tr(context, 'Show habits', 'Mostrar hábitos'),
+            icon: AppIcons.navHabits,
+            value: overlays.habits,
+            onChanged: (v) => notifier.set(overlays.copyWith(habits: v)),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),

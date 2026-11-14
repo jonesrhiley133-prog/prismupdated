@@ -76,6 +76,13 @@ abstract final class TrackerKind {
 
   static const dreamEntry = 'dream.entry';
 
+  // Habit & Routine Center: extensions of the synced habits/completions.
+  static const habitMeta = 'habit.meta';
+  static const habitLog = 'habit.log';
+  static const habitSkip = 'habit.skip';
+  static const habitGroup = 'habit.group';
+  static const habitTimer = 'habit.timer';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

@@ -139,7 +139,7 @@ class _PrismSurfaceState extends State<PrismSurface> {
       borderRadius: borderRadius,
       clipBehavior: Clip.antiAlias,
       child: AnimatedContainer(
-        duration: widget.transitionDuration,
+        duration: themeAware(widget.transitionDuration),
         padding: padScale == 1.0 ? widget.padding : widget.padding * padScale,
         decoration: BoxDecoration(
           color: lookGradient == null ? backgroundColor : null,

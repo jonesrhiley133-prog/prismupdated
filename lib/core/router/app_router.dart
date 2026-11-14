@@ -77,7 +77,6 @@ import '../../features/pluralkit/views/pluralkit_setup_screen.dart';
 import '../../features/sharing/views/sharing_screen.dart';
 import '../../features/sharing/views/friend_detail_screen.dart';
 import '../../features/calendar/views/calendar_screen.dart';
-import '../../features/habits/views/habits_list_screen.dart';
 import '../../features/connected/views/pattern_explorer_screen.dart';
 import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
@@ -104,7 +103,6 @@ import '../../features/insights/views/daily_insights_screen.dart';
 import '../../features/locations/views/locations_screen.dart';
 import '../../features/work/views/work_screen.dart';
 import '../../features/mood/views/mood_screen.dart';
-import '../../features/habits/views/habit_detail_screen.dart';
 import '../../features/data_management/views/import_export_screen.dart';
 import '../../features/settings/views/features_settings_screen.dart';
 import '../../features/settings/views/chat_feature_settings_screen.dart';
@@ -127,6 +125,8 @@ import '../../features/onboarding/views/onboarding_screen.dart';
 import '../../features/settings/providers/settings_providers.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../diagnostics/freeze_watchdog.dart';
+import '../../features/habits/center/habit_center_screen.dart';
+import '../../features/habits/center/habit_dashboard.dart';
 import '../../features/alter_status/statuses_screen.dart';
 import '../../features/analytics/cofront_screen.dart';
 import '../../features/analytics/mood_correlation_screen.dart';
@@ -682,13 +682,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final flags = ref.read(featureFlagsProvider);
                   return flags.habits ? null : AppRoutePaths.home;
                 },
-                builder: (context, state) =>
-                    const HabitsListScreen(branch: HabitsListBranch.habits),
+                builder: (context, state) => const HabitCenterScreen(),
                 routes: [
                   GoRoute(
                     path: ':id',
-                    builder: (context, state) =>
-                        HabitDetailScreen(habitId: state.pathParameters['id']!),
+                    builder: (context, state) => HabitDashboardScreen(
+                      habitId: state.pathParameters['id']!,
+                    ),
                   ),
                 ],
               ),
@@ -788,13 +788,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'habits',
-                    builder: (context, state) => const HabitsListScreen(
-                      branch: HabitsListBranch.settings,
-                    ),
+                    builder: (context, state) =>
+                        const HabitCenterScreen(inSettings: true),
                     routes: [
                       GoRoute(
                         path: ':id',
-                        builder: (context, state) => HabitDetailScreen(
+                        builder: (context, state) => HabitDashboardScreen(
                           habitId: state.pathParameters['id']!,
                         ),
                       ),

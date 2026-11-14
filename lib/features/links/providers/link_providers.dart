@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
+import 'package:prism_plurality/domain/models/habit.dart';
+import 'package:prism_plurality/features/habits/providers/habit_providers.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
@@ -77,6 +79,24 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
       title: e.title,
       subtitle: e.location,
       date: e.startAt,
+    );
+  }
+  final habitNames = <String, String>{};
+  for (final h in ref.watch(habitsProvider).value ?? const <Habit>[]) {
+    habitNames[h.id] = h.name;
+    final r = RecordRef(RecordRef.habit, h.id);
+    out[r.key] = RecordInfo(ref: r, module: 'habit', title: '${h.icon ?? ''} ${h.name}'.trim(), subtitle: h.description, date: h.createdAt, isPrivate: h.isPrivate);
+  }
+  final completions = [...?ref.watch(allCompletionsProvider).value]..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+  for (final c in completions.take(600)) {
+    final r = RecordRef(RecordRef.habitLog, c.id);
+    out[r.key] = RecordInfo(
+      ref: r,
+      module: 'habit',
+      title: '✓ ${habitNames[c.habitId] ?? 'Habit'}',
+      subtitle: c.notes,
+      date: c.completedAt,
+      memberId: c.completedByMemberId,
     );
   }
   for (final t in ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[]) {
@@ -229,6 +249,8 @@ class LinkActions {
       if (catalog.containsKey(r.key)) return true;
       return switch (r.type) {
         RecordRef.front => (await repo.getSessionById(r.id)) != null,
+        RecordRef.habitLog => (await ref.read(habitRepositoryProvider).getCompletionById(r.id)) != null,
+        RecordRef.habit => (await ref.read(habitRepositoryProvider).getHabitById(r.id)) != null,
         RecordRef.rec => allTracker.contains(r.id),
         _ => false,
       };
@@ -237,7 +259,8 @@ class LinkActions {
     final loaded = ref.read(allMembersProvider).hasValue &&
         ref.read(moodEntriesProvider).hasValue &&
         ref.read(savedLocationsProvider).hasValue &&
-        ref.read(calendarEventsProvider).hasValue;
+        ref.read(calendarEventsProvider).hasValue &&
+        ref.read(habitsProvider).hasValue;
     if (!loaded) return 0;
     for (final l in ref.read(recordLinksProvider)) {
       if (!await exists(l.a) || !await exists(l.b)) {

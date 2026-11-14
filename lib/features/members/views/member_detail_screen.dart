@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/alter_status/status_widgets.dart';
 import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
@@ -459,16 +460,20 @@ class _MemberProfileTheme extends StatelessWidget {
     final accent = accentColor;
     if (accent == null) return child;
 
-    final profileTheme = usePaletteTheme
-        ? AppTheme.localPaletteTheme(
-            baseTheme,
-            seedColor: accent,
-            paletteMood: paletteMood,
-            paletteContrast: paletteContrast,
-          )
-        : baseTheme.copyWith(
-            colorScheme: baseTheme.colorScheme.copyWith(primary: accent),
-          );
+    // The alter's colour becomes the accent; the active appearance preset
+    // (backgrounds, surfaces, text, element styles) keeps applying.
+    final profileTheme = withAccent(
+      baseTheme,
+      accent,
+      palette: usePaletteTheme
+          ? AppTheme.localPaletteTheme(
+              baseTheme,
+              seedColor: accent,
+              paletteMood: paletteMood,
+              paletteContrast: paletteContrast,
+            )
+          : null,
+    );
 
     if (!usePaletteTheme || MediaQuery.of(context).disableAnimations) {
       return Theme(data: profileTheme, child: child);

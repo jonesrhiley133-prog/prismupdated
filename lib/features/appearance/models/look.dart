@@ -160,6 +160,30 @@ abstract final class LookElement {
   static const all = [button, card, nav, header, input, dialog, divider, icon, badge, text];
 }
 
+/// Colour roles every theme can set. Together they recolour the whole app:
+/// Prism's components read these through the Material colour scheme and
+/// component themes, so a theme no longer only changes the accent.
+abstract final class LookColor {
+  static const accent = 'accent';
+  static const secondary = 'secondary';
+  static const highlight = 'highlight';
+  static const background = 'background';
+  static const surface = 'surface';
+  static const raised = 'raised';
+  static const text = 'text';
+  static const mutedText = 'mutedText';
+  static const outline = 'outline';
+  static const error = 'error';
+  static const success = 'success';
+  static const warning = 'warning';
+  static const chip = 'chip';
+  static const toggle = 'toggle';
+  static const progress = 'progress';
+  static const link = 'link';
+
+  static const all = [accent, secondary, highlight, background, surface, raised, text, mutedText, outline, error, success, warning, chip, toggle, progress, link];
+}
+
 /// Style overrides for one kind of element. Null means "leave as the
 /// theme has it".
 @immutable
@@ -228,7 +252,12 @@ class PrismLook {
     this.elements = const {},
     this.builtIn = false,
     this.dark,
+    this.colors = const {},
   });
+
+  /// Colour palette (role → ARGB), see [LookColor]. Missing roles keep the
+  /// base theme's colour.
+  final Map<String, int> colors;
 
   final String id;
   final String name;
@@ -248,7 +277,15 @@ class PrismLook {
   BgSpec backgroundFor(String? page) => (page == null ? null : pageBackgrounds[page]) ?? background;
 
   /// True when the look changes nothing (the plain Prism theme).
-  bool get isPlain => !background.isCustom && pageBackgrounds.isEmpty && elements.values.every((e) => e.isEmpty);
+  bool get isPlain => !background.isCustom && pageBackgrounds.isEmpty && colors.isEmpty && elements.values.every((e) => e.isEmpty);
+
+  int? color(String role) => colors[role];
+
+  PrismLook withColor(String role, int? value) {
+    final next = Map<String, int>.of(colors);
+    value == null ? next.remove(role) : next[role] = value;
+    return copyWith(colors: next);
+  }
 
   PrismLook copyWith({
     String? id,
@@ -257,6 +294,8 @@ class PrismLook {
     Map<String, BgSpec>? pageBackgrounds,
     Map<String, ElementStyle>? elements,
     bool? builtIn,
+    Map<String, int>? colors,
+    Object? dark = _keep,
   }) => PrismLook(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -264,7 +303,8 @@ class PrismLook {
     pageBackgrounds: pageBackgrounds ?? this.pageBackgrounds,
     elements: elements ?? this.elements,
     builtIn: builtIn ?? this.builtIn,
-    dark: dark,
+    dark: identical(dark, _keep) ? this.dark : dark as bool?,
+    colors: colors ?? this.colors,
   );
 
   PrismLook withElement(String key, ElementStyle style) {
@@ -284,6 +324,7 @@ class PrismLook {
     'id': id,
     'name': name,
     'dark': dark,
+    'colors': colors,
     'background': background.toJson(),
     'pageBackgrounds': {for (final e in pageBackgrounds.entries) e.key: e.value.toJson()},
     'elements': {for (final e in elements.entries) e.key: e.value.toJson()},
@@ -295,6 +336,11 @@ class PrismLook {
       id: j['id'] is String ? j['id'] as String : 'imported',
       name: (j['name'] as String).trim().isEmpty ? 'Theme' : (j['name'] as String).trim(),
       dark: j['dark'] is bool ? j['dark'] as bool : null,
+      colors: {
+        if (j['colors'] is Map)
+          for (final e in (j['colors'] as Map).entries)
+            if (e.key is String && LookColor.all.contains(e.key) && e.value is int) e.key as String: e.value as int,
+      },
       background: BgSpec.fromJson(j['background']),
       pageBackgrounds: {
         if (j['pageBackgrounds'] is Map)
@@ -310,6 +356,8 @@ class PrismLook {
   }
 }
 
+const _keep = Object();
+
 const plainLook = PrismLook(id: 'prism', name: 'Prism', builtIn: true);
 
 /// Designed presets that ship with Prism.
@@ -320,6 +368,7 @@ const builtInLooks = <PrismLook>[
     name: 'Aurora glass',
     builtIn: true,
     dark: true,
+    colors: {'accent': 0xFFB388FF, 'secondary': 0xFF18FFFF, 'background': 0xFF151226, 'surface': 0xFF1D1933, 'raised': 0xFF29234A, 'text': 0xFFF3F0FF, 'mutedText': 0xFFBDB6E0, 'outline': 0x55FFFFFF},
     background: BgSpec(kind: BgKind.builtin, builtin: 'aurora', overlay: BgOverlay.scrim, overlayStrength: 0.25),
     elements: {
       'card': ElementStyle(color: 0xFFFFFFFF, opacity: 0.10, radius: 22, borderWidth: 1, borderColor: 0x33FFFFFF),
@@ -337,6 +386,7 @@ const builtInLooks = <PrismLook>[
     name: 'Sunrise',
     builtIn: true,
     dark: false,
+    colors: {'accent': 0xFFE8613C, 'secondary': 0xFF8E5BA8, 'background': 0xFFFFF3EA, 'surface': 0xFFFFFFFF, 'raised': 0xFFFFE9DC, 'text': 0xFF3A2320, 'mutedText': 0xFF7A5A55, 'outline': 0xFFE9C8BD},
     background: BgSpec(kind: BgKind.gradient, colors: [0xFFFFE9D6, 0xFFFFC7C2, 0xFFE3D4FF], gradient: GradientKind.diagonal),
     elements: {
       'card': ElementStyle(color: 0xFFFFFFFF, opacity: 0.72, radius: 20, shadow: 0.25),
@@ -352,6 +402,7 @@ const builtInLooks = <PrismLook>[
     name: 'Midnight neon',
     builtIn: true,
     dark: true,
+    colors: {'accent': 0xFF00E5FF, 'secondary': 0xFFFF4081, 'background': 0xFF000000, 'surface': 0xFF0B0B10, 'raised': 0xFF15151E, 'text': 0xFFEFFFFF, 'mutedText': 0xFF8FA7B0, 'outline': 0xFF1F2A33},
     background: BgSpec(kind: BgKind.color, color: 0xFF000000),
     elements: {
       'card': ElementStyle(color: 0xFF0B0B10, radius: 14, borderWidth: 1, borderColor: 0xFF2A2A3A),
@@ -369,6 +420,7 @@ const builtInLooks = <PrismLook>[
     name: 'Forest',
     builtIn: true,
     dark: true,
+    colors: {'accent': 0xFF8BC34A, 'secondary': 0xFFE3C26B, 'background': 0xFF0F1F17, 'surface': 0xFF16291E, 'raised': 0xFF1E3628, 'text': 0xFFEAF4E4, 'mutedText': 0xFFA7C2A0, 'outline': 0xFF2E4A39},
     background: BgSpec(kind: BgKind.builtin, builtin: 'forest'),
     elements: {
       'card': ElementStyle(color: 0xFF12261D, opacity: 0.82, radius: 18),
@@ -384,6 +436,7 @@ const builtInLooks = <PrismLook>[
     name: 'Ocean',
     builtIn: true,
     dark: true,
+    colors: {'accent': 0xFF4FC3F7, 'secondary': 0xFF80CBC4, 'background': 0xFF06182B, 'surface': 0xFF0C2440, 'raised': 0xFF123154, 'text': 0xFFE6F4FF, 'mutedText': 0xFF9CB8D0, 'outline': 0xFF1E4266},
     background: BgSpec(kind: BgKind.builtin, builtin: 'ocean'),
     elements: {
       'card': ElementStyle(color: 0xFF0E2A3F, opacity: 0.78, radius: 24),
@@ -398,6 +451,7 @@ const builtInLooks = <PrismLook>[
     name: 'Paper',
     builtIn: true,
     dark: false,
+    colors: {'accent': 0xFF8D6E63, 'secondary': 0xFF5E7D6A, 'background': 0xFFFAF6EE, 'surface': 0xFFFFFDF8, 'raised': 0xFFF2EBDD, 'text': 0xFF33291F, 'mutedText': 0xFF7B6C5C, 'outline': 0xFFE0D4C0},
     background: BgSpec(kind: BgKind.color, color: 0xFFFAF6EE),
     elements: {
       'card': ElementStyle(color: 0xFFFFFFFF, radius: 4, borderWidth: 1, borderColor: 0xFFD9D0C0),
@@ -415,6 +469,7 @@ const builtInLooks = <PrismLook>[
     name: 'Dusk',
     builtIn: true,
     dark: true,
+    colors: {'accent': 0xFFFF8A65, 'secondary': 0xFFBA68C8, 'background': 0xFF1E1528, 'surface': 0xFF281C36, 'raised': 0xFF332446, 'text': 0xFFF8ECF4, 'mutedText': 0xFFC9AFC4, 'outline': 0xFF4A3660},
     background: BgSpec(kind: BgKind.builtin, builtin: 'dusk', overlay: BgOverlay.vignette, overlayStrength: 0.35),
     elements: {
       'card': ElementStyle(color: 0xFF2B1B3D, opacity: 0.7, radius: 20, borderWidth: 1, borderColor: 0x22FFFFFF),
@@ -428,9 +483,10 @@ const builtInLooks = <PrismLook>[
 
 /// Pages that can have their own background or theme.
 const lookPages = [
-  'home', 'members', 'chat', 'journal', 'notes', 'mood', 'calendar', 'sleep', 'cycle', 'fitness', 'school',
-  'finance', 'relationships', 'subsystems', 'headspace', 'achievements', 'dictionary', 'polls', 'habits',
-  'music', 'statistics', 'settings',
+  'home', 'members', 'chat', 'boards', 'stories', 'journal', 'notes', 'mood', 'calendar', 'sleep', 'cycle',
+  'fitness', 'school', 'finance', 'relationships', 'subsystems', 'headspace', 'achievements', 'dictionary',
+  'polls', 'habits', 'music', 'statistics', 'nutrition', 'scrapbook', 'connections', 'analytics',
+  'availability', 'introductions', 'locations', 'reminders', 'settings',
 ];
 
 /// Everything the appearance system remembers.

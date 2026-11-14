@@ -34,7 +34,7 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Availability', 'Disponibilidad'),
-        showBackButton: widget.showBackButton,
+        showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
         actions: [
           PrismTopBarAction(
             icon: AppIcons.add,

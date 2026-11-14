@@ -20,6 +20,9 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 /// its own so this file does not depend on all of them.
 final Map<String, void Function(BuildContext context, String id)> recordKindOpeners = {};
 
+/// Openers for whole record types owned by other modules (habits).
+final Map<String, void Function(BuildContext context, String id)> recordTypeOpeners = {};
+
 /// Opens the right screen or sheet for [info].
 Future<void> openRecord(BuildContext context, WidgetRef ref, RecordInfo info) async {
   final id = info.ref.id;
@@ -45,6 +48,10 @@ Future<void> openRecord(BuildContext context, WidgetRef ref, RecordInfo info) as
       if (e != null) {
         await showEventDetailSheet(context, CalendarOccurrence(event: e, start: e.startAt, end: e.endAt));
       }
+    case RecordRef.habit:
+      await context.push(AppRoutePaths.habit(id));
+    case RecordRef.habitLog:
+      recordTypeOpeners[RecordRef.habitLog]?.call(context, id);
     case RecordRef.rec:
       final kind = info.kind;
       if (kind == TrackerKind.journalEntry) {

@@ -23,7 +23,7 @@ class AnalyticsHubScreen extends StatelessWidget {
           tr(context, 'A short look at today and recent days.', 'Un vistazo a hoy y los últimos días.'), AppRoutePaths.insights, const Color(0xFF59A14F)),
     ];
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: tr(context, 'Analytics', 'Análisis'), showBackButton: showBackButton),
+      topBar: PrismTopBar(title: tr(context, 'Analytics', 'Análisis'), showBackButton: showBackButton || Navigator.of(context).canPop()),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       body: ListView(
         padding: EdgeInsets.only(top: 8, bottom: NavBarInset.of(context) + 16),

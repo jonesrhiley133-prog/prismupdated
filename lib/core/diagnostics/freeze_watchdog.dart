@@ -105,7 +105,14 @@ abstract final class FreezeWatchdog {
         _port?.send(state == AppLifecycleState.resumed ? 'active' : 'idle');
       },
     );
+    var lastTick = _clock.elapsed;
     _beat = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      // A late tick means the app's own code (UI thread) was busy.
+      final gap = _clock.elapsed - lastTick;
+      lastTick = _clock.elapsed;
+      if (_foreground && gap > const Duration(milliseconds: 1500)) {
+        crumb('UI thread busy ${(gap.inMilliseconds / 1000).toStringAsFixed(1)}s (app code, not drawing)');
+      }
       // Frames requested but none finished: the GPU/raster side is stuck
       // even though Dart is still running.
       final waiting =
@@ -117,7 +124,7 @@ abstract final class FreezeWatchdog {
           _clock.elapsed - _lastFrame > const Duration(seconds: 4)) {
         _stallLogged = true;
         crumb(
-          'frames stalled ${(_clock.elapsed - _lastFrame).inSeconds}s (rendering side)',
+          'frames stalled ${(_clock.elapsed - _lastFrame).inSeconds}s',
         );
         _port?.send(_trail.join('\n'));
         _port?.send('stall');
@@ -169,7 +176,7 @@ void _watch(List<Object?> args) {
           'Prism stopped drawing the screen\n'
           'Version: $version\n'
           'When: ${now.toIso8601String()}\n'
-          'No frames for over 4s while app code kept running (rendering side).\n'
+          'No frames for over 4s. If a "UI thread busy" line is just above, app code was blocking; otherwise drawing (GPU) was stuck.\n'
           '\nLast events (seconds since start):\n$trail\n',
         );
       } catch (_) {}

@@ -25,12 +25,10 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dark = theme.brightness == Brightness.dark;
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Nourish', 'Nutrición'),
-        showBackButton: widget.showBackButton,
+        showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
         actions: [
           PrismTopBarAction(
             icon: PhosphorIcons.gearSix(),
@@ -45,17 +43,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
         ],
       ),
       bodyPadding: EdgeInsets.zero,
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: dark
-                ? [const Color(0xFF2A1F17).withValues(alpha: 0.55), Colors.transparent]
-                : [NutriColors.cream, NutriColors.cream.withValues(alpha: 0)],
-            stops: const [0, 0.5],
-          ),
-        ),
+      body: SizedBox.expand(
         child: Column(
           children: [
             _NutriTabBar(tab: _tab, onTab: (t) => setState(() => _tab = t)),
@@ -90,11 +78,11 @@ class _NutriTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final items = [
-      (NutriTab.today, PhosphorIcons.sunHorizon(), tr(context, 'Today', 'Hoy'), NutriColors.saffron),
-      (NutriTab.meals, PhosphorIcons.forkKnife(), tr(context, 'Meals', 'Comidas'), NutriColors.tomato),
-      (NutriTab.water, PhosphorIcons.drop(), tr(context, 'Water', 'Agua'), NutriColors.water),
-      (NutriTab.pantry, PhosphorIcons.basket(), tr(context, 'Pantry', 'Despensa'), NutriColors.basil),
-      (NutriTab.insights, PhosphorIcons.chartDonut(), tr(context, 'Insights', 'Resumen'), NutriColors.plum),
+      (NutriTab.today, PhosphorIcons.sunHorizon(), tr(context, 'Today', 'Hoy'), context.nutri.saffron),
+      (NutriTab.meals, PhosphorIcons.forkKnife(), tr(context, 'Meals', 'Comidas'), context.nutri.tomato),
+      (NutriTab.water, PhosphorIcons.drop(), tr(context, 'Water', 'Agua'), context.nutri.water),
+      (NutriTab.pantry, PhosphorIcons.basket(), tr(context, 'Pantry', 'Despensa'), context.nutri.basil),
+      (NutriTab.insights, PhosphorIcons.chartDonut(), tr(context, 'Insights', 'Resumen'), context.nutri.plum),
     ];
     return SizedBox(
       height: 64,
@@ -158,7 +146,7 @@ class WaterVessel extends StatelessWidget {
           width: size * 0.72,
           height: size,
           child: CustomPaint(
-            painter: _VesselPainter(v, NutriColors.water, theme.colorScheme.outlineVariant),
+            painter: _VesselPainter(v, context.nutri.water, theme.colorScheme.outlineVariant),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -234,7 +222,7 @@ class QuickDrinks extends ConsumerWidget {
         for (final b in bevs)
           ActionChipLike(
             icon: iconFor(b.icon),
-            color: Color(b.color),
+            color: bevColor(context, b),
             label: '${b.title} · ${fmtVolume(b.serving, unit)}',
             onTap: () async {
               await ref.read(nutritionActionsProvider).logDrink(bev: b, ml: b.serving, memberId: member ?? currentFronterId(ref));
@@ -340,10 +328,10 @@ class _DrinkEditorState extends ConsumerState<_DrinkEditor> {
               children: [
                 for (final b in bevs)
                   PrismChip(
-                    avatar: Icon(iconFor(b.icon), size: 14, color: Color(b.color)),
+                    avatar: Icon(iconFor(b.icon), size: 14, color: bevColor(context, b)),
                     label: b.title,
                     selected: _bev?.id == b.id,
-                    selectedColor: Color(b.color),
+                    selectedColor: bevColor(context, b),
                     onTap: () => setState(() => _bev = b),
                   ),
               ],
@@ -425,7 +413,7 @@ class _Today extends ConsumerWidget {
       'water': _Card(
         title: tr(context, 'Hydration', 'Hidratación'),
         icon: PhosphorIcons.drop(),
-        color: NutriColors.water,
+        color: context.nutri.water,
         onMore: () => onTab(NutriTab.water),
         child: Row(
           children: [
@@ -438,7 +426,7 @@ class _Today extends ConsumerWidget {
       'plate': _Card(
         title: tr(context, 'Today’s plate', 'El plato de hoy'),
         icon: PhosphorIcons.forkKnife(),
-        color: NutriColors.tomato,
+        color: context.nutri.tomato,
         onMore: () => onTab(NutriTab.meals),
         child: PlateRing(meals: meals, member: member),
       ),
@@ -446,13 +434,13 @@ class _Today extends ConsumerWidget {
         'metrics': _Card(
           title: tr(context, 'Nutrition today', 'Nutrición de hoy'),
           icon: PhosphorIcons.chartBar(),
-          color: NutriColors.saffron,
+          color: context.nutri.saffron,
           child: MetricTotals(meals: meals),
         ),
       'recent': _Card(
         title: tr(context, 'Logged today', 'Registrado hoy'),
         icon: PhosphorIcons.listChecks(),
-        color: NutriColors.plum,
+        color: context.nutri.plum,
         child: meals.isEmpty && drinks.isEmpty
             ? Text(tr(context, 'Nothing logged yet today. That’s okay — log whatever is helpful.', 'Nada registrado hoy. Está bien: registra lo que te sirva.'),
                 style: theme.textTheme.bodySmall)
@@ -462,7 +450,7 @@ class _Today extends ConsumerWidget {
                   for (final d in drinks.take(6))
                     PrismListRow(
                       dense: true,
-                      leading: Icon(PhosphorIcons.drop(), color: NutriColors.water),
+                      leading: Icon(PhosphorIcons.drop(), color: context.nutri.water),
                       title: Text('${d.title} · ${fmtVolume(drinkMl(d), s.unit)}'),
                       subtitle: Text(DateFormat.jm(context.dateLocale).format(d.occurredAt ?? d.createdAt)),
                       onTap: () => showDrinkEditor(context, editing: d),
@@ -473,7 +461,7 @@ class _Today extends ConsumerWidget {
       'favorites': _Card(
         title: tr(context, 'Favourites', 'Favoritos'),
         icon: PhosphorIcons.heart(),
-        color: NutriColors.basil,
+        color: context.nutri.basil,
         onMore: () => onTab(NutriTab.pantry),
         child: FavoriteFoodsStrip(member: member),
       ),
@@ -660,7 +648,7 @@ class _WaterViewState extends ConsumerState<_WaterView> {
               borderData: FlBorderData(show: false),
               extraLinesData: ExtraLinesData(
                 horizontalLines: [
-                  if (s.goalMl != null) HorizontalLine(y: s.goalMl!.toDouble(), color: NutriColors.basil, strokeWidth: 2, dashArray: [6, 4]),
+                  if (s.goalMl != null) HorizontalLine(y: s.goalMl!.toDouble(), color: context.nutri.basil, strokeWidth: 2, dashArray: [6, 4]),
                 ],
               ),
               titlesData: FlTitlesData(
@@ -695,7 +683,7 @@ class _WaterViewState extends ConsumerState<_WaterView> {
                       BarChartRodData(
                         toY: values[i].toDouble(),
                         width: _range <= 7 ? 18 : (_range <= 30 ? 6 : 2),
-                        color: s.goalMl != null && values[i] >= s.goalMl! ? NutriColors.basil : NutriColors.water,
+                        color: s.goalMl != null && values[i] >= s.goalMl! ? context.nutri.basil : context.nutri.water,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ],
@@ -723,7 +711,7 @@ class _WaterViewState extends ConsumerState<_WaterView> {
         for (final d in todays)
           PrismListRow(
             dense: true,
-            leading: Icon(PhosphorIcons.drop(), color: NutriColors.water),
+            leading: Icon(PhosphorIcons.drop(), color: context.nutri.water),
             title: Text('${d.title} · ${fmtVolume(drinkMl(d), s.unit)}'),
             subtitle: Text([DateFormat.jm(context.dateLocale).format(d.occurredAt ?? d.createdAt), ?memberNameFor(ref, d.memberId)].join(' · ')),
             onTap: () => showDrinkEditor(context, editing: d),
@@ -895,7 +883,7 @@ Future<void> showBeverageManager(BuildContext context) => PrismSheet.show(
         children: [
           for (final b in bevs)
             PrismListRow(
-              leading: Icon(iconFor(b.icon), color: Color(b.color)),
+              leading: Icon(iconFor(b.icon), color: bevColor(context, b)),
               title: Text(b.title),
               subtitle: Text('${fmtVolume(b.serving, unit)}${b.quick ? tr(ctx, ' · quick add', ' · acceso rápido') : ''}'),
               showChevron: true,

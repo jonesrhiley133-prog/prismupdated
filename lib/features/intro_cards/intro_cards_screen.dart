@@ -59,7 +59,7 @@ class _IntroCardsScreenState extends ConsumerState<IntroCardsScreen> {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Introductions', 'Presentaciones'),
-        showBackButton: widget.showBackButton,
+        showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
         actions: [
           PrismTopBarAction(
             icon: PhosphorIcons.palette(),

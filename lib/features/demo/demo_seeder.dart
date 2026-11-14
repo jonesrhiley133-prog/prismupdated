@@ -3,11 +3,13 @@ import 'dart:math' as math;
 import 'package:drift/drift.dart' show Batch;
 import 'package:uuid/uuid.dart';
 
-import 'package:prism_plurality/core/database/app_database.dart' hide Member, FrontingSession;
+import 'package:prism_plurality/core/database/app_database.dart' hide Member, FrontingSession, Habit, HabitCompletion;
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/data/mappers/calendar_event_mapper.dart';
 import 'package:prism_plurality/data/mappers/fronting_session_mapper.dart';
+import 'package:prism_plurality/data/mappers/habit_completion_mapper.dart';
+import 'package:prism_plurality/data/mappers/habit_mapper.dart';
 import 'package:prism_plurality/data/mappers/location_session_mapper.dart';
 import 'package:prism_plurality/data/mappers/member_mapper.dart';
 import 'package:prism_plurality/data/mappers/mood_entry_mapper.dart';
@@ -15,6 +17,8 @@ import 'package:prism_plurality/data/mappers/saved_location_mapper.dart';
 import 'package:prism_plurality/data/mappers/tracker_record_mapper.dart';
 import 'package:prism_plurality/domain/models/calendar_event.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
+import 'package:prism_plurality/domain/models/habit.dart';
+import 'package:prism_plurality/domain/models/habit_completion.dart';
 import 'package:prism_plurality/domain/models/location.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
@@ -49,6 +53,8 @@ class DemoSeeder {
   final _places = <SavedLocationsCompanion>[];
   final _visits = <LocationSessionsCompanion>[];
   final _tracker = <TrackerRecordsCompanion>[];
+  final _habits = <HabitsCompanion>[];
+  final _habitDone = <HabitCompletionsCompanion>[];
 
   T _pick<T>(List<T> xs) => xs[_r.nextInt(xs.length)];
   bool _chance(double p) => _r.nextDouble() < p;
@@ -137,6 +143,30 @@ class DemoSeeder {
     final garden = _rec(TrackerKind.subsystem, title: 'The Garden', body: 'A sunny inner space where Mira and Wren spend most of their time.', at: start, fields: {'members': [byName['Mira']!.id, byName['Wren']!.id], 'color': 0xFF5E9E6E});
     _rec(TrackerKind.nutriSettings, fields: {'unit': 'ml', 'goalMl': 2000, 'metrics': ['kcal', 'protein', 'carbs', 'fat'], 'calendar': true, 'reminders': false, 'prefs': 'Warm breakfasts help mornings. Mira likes pancakes; Kai skips lunch when stressed.', 'restrictions': ['vegetarian'], 'sensitivities': ['lactose']}, at: start);
 
+    // Habits with several completions a day.
+    final routine = _rec(TrackerKind.habitGroup, title: 'Daily self-care', fields: {'habits': <String>[]}, at: start);
+    final demoHabits = [
+      ('Drink water', '💧', 8, 'glass', HabitFrequency.daily, null, 'nutri.drink'),
+      ('Practice', '🎵', 3, 'session', HabitFrequency.weekly, [1, 2, 3, 4, 5], null),
+      ('Take meds', '💊', 2, 'dose', HabitFrequency.daily, null, null),
+      ('Stretch', '🧘', 1, null, HabitFrequency.daily, null, null),
+    ];
+    final habitIds = <String>[];
+    for (final (name, icon, target, label, freq, days, auto) in demoHabits) {
+      final id = _uuid.v4();
+      habitIds.add(id);
+      _habits.add(HabitMapper.toCompanion(Habit(id: id, name: name, icon: icon, frequency: freq, weeklyDays: days, createdAt: start, modifiedAt: start)));
+      _rec(TrackerKind.habitMeta, parentId: id, at: start, fields: {
+        'target': target,
+        'unit': 'times',
+        'unitLabel': ?label,
+        'defaultMinutes': name == 'Practice' ? 25 : 10,
+        'group': routine.id,
+        'autoLog': ?auto,
+        if (name == 'Practice') 'recovery': ['6', '7'],
+      });
+    }
+
     // Per-day simulation.
     final weights = {
       'Juniper': 5.0, 'Kai': 3.5, 'Mira': 1.2, 'Rowan': 0.8, 'Sol': 1.6, 'Ash': 1.0, 'Wren': 1.5,
@@ -155,7 +185,12 @@ class DemoSeeder {
     var lastJournal = start;
     for (var di = 0; di < days; di++) {
       final day = start.add(Duration(days: di));
-      if (di % 20 == 0) onProgress?.call(0.05 + 0.75 * di / days, 'history');
+      if (di % 7 == 0) {
+        onProgress?.call(0.05 + 0.75 * di / days, 'history');
+        // Let the screen draw between weeks of generated history; doing
+        // years in one go blocked the app for several seconds.
+        await Future<void>.delayed(Duration.zero);
+      }
       final weekend = day.weekday >= 6;
       // Sleep for the night before this day.
       final bed = day.subtract(Duration(minutes: 60 + _between(0, 120)));
@@ -293,6 +328,28 @@ class DemoSeeder {
           createdAt: at,
           modifiedAt: at,
         )));
+      }
+      // Habit completions (water, practice, meds, stretch).
+      for (final (hi, (name, _, target, _, freq, days, _)) in demoHabits.indexed) {
+        if (freq == HabitFrequency.weekly && !(days ?? const <int>[]).contains(day.weekday % 7)) continue;
+        final n = _between((target * 0.4).round(), target + (name == 'Drink water' ? 1 : 0));
+        for (var k = 0; k < n; k++) {
+          final at = DateTime(day.year, day.month, day.day, 8 + (k * 13 ~/ math.max(1, n)), _between(0, 59));
+          if (at.isAfter(now)) break;
+          final who = todaysFronters.isEmpty ? 'Juniper' : _pick(todaysFronters);
+          final cid = _uuid.v4();
+          _habitDone.add(HabitCompletionMapper.toCompanion(HabitCompletion(
+            id: cid,
+            habitId: habitIds[hi],
+            completedAt: at,
+            completedByMemberId: byName[who]!.id,
+            rating: name == 'Practice' ? _between(2, 5) : null,
+            notes: name == 'Practice' && _chance(0.3) ? _pick(['Scales felt smoother', 'Learned a new bar', 'Hard focus today']) : null,
+            createdAt: at,
+            modifiedAt: at,
+          )));
+          if (name == 'Practice') _rec(TrackerKind.habitLog, parentId: cid, at: at, memberId: byName[who]!.id, fields: {'habitId': habitIds[hi], 'minutes': _pick([20, 25, 30, 40])});
+        }
       }
       // Activity.
       if (_chance(0.28)) {
@@ -465,6 +522,7 @@ class DemoSeeder {
       for (var i = 0; i < rows.length; i += 400) {
         final part = rows.sublist(i, math.min(i + 400, rows.length));
         await db.batch((b) => add(b, part));
+        await Future<void>.delayed(Duration.zero);
       }
     }
 
@@ -475,6 +533,8 @@ class DemoSeeder {
     await chunked(_events, (b, p) => b.insertAll(db.calendarEvents, p));
     await chunked(_visits, (b, p) => b.insertAll(db.locationSessions, p));
     await chunked(_tracker, (b, p) => b.insertAll(db.trackerRecords, p));
+    await chunked(_habits, (b, p) => b.insertAll(db.habits, p));
+    await chunked(_habitDone, (b, p) => b.insertAll(db.habitCompletions, p));
   }
 }
 

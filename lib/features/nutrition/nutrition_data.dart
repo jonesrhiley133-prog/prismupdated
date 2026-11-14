@@ -4,14 +4,38 @@ import 'package:prism_plurality/core/services/local_notification_service.dart';
 import 'package:prism_plurality/shared/notify.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
-/// Nutrition page accent colours (its own identity within Prism).
-abstract final class NutriColors {
-  static const tomato = Color(0xFFE8613C);
-  static const saffron = Color(0xFFF2A93B);
-  static const basil = Color(0xFF5E9E6E);
-  static const water = Color(0xFF3A8DDE);
-  static const plum = Color(0xFF8E5BA8);
-  static const cream = Color(0xFFFFF4E4);
+/// Nutrition colours, taken from the active app theme so Nourish matches
+/// every preset (and the user's own palette) instead of a fixed palette.
+class NutriPalette {
+  const NutriPalette(this.s);
+  final ColorScheme s;
+  Color get water => s.primary;
+  Color get tomato => s.primary;
+  Color get saffron => s.tertiary;
+  Color get basil => s.secondary;
+  Color get plum => Color.lerp(s.primary, s.tertiary, 0.5)!;
+
+  /// Theme-derived colours for built-in categories and drinks, by index.
+  Color indexed(int i) => [s.primary, s.secondary, s.tertiary, Color.lerp(s.primary, s.secondary, 0.5)!, Color.lerp(s.secondary, s.tertiary, 0.5)!][i % 5];
+}
+
+extension NutriThemeX on BuildContext {
+  NutriPalette get nutri => NutriPalette(Theme.of(this).colorScheme);
+}
+
+/// Built-in categories and drinks store 0 as their colour, meaning "use
+/// the theme"; custom ones keep the colour the user chose.
+Color catColor(BuildContext context, MealCategory? c) {
+  if (c == null) return Theme.of(context).colorScheme.outline;
+  if (c.color != 0) return Color(c.color);
+  final i = builtInMealCategories.indexWhere((b) => b.$1 == c.id);
+  return context.nutri.indexed(i < 0 ? 0 : i);
+}
+
+Color bevColor(BuildContext context, Beverage b) {
+  if (b.color != 0) return Color(b.color);
+  final i = builtInBeverages.indexWhere((x) => x.$1 == b.id);
+  return context.nutri.indexed(i < 0 ? 0 : i);
 }
 
 class MealCategory {
@@ -24,10 +48,10 @@ class MealCategory {
 }
 
 const builtInMealCategories = [
-  ('breakfast', 'Breakfast', 'Desayuno', 'egg', 0xFFF2A93B),
-  ('lunch', 'Lunch', 'Almuerzo', 'bowl', 0xFF5E9E6E),
-  ('dinner', 'Dinner', 'Cena', 'pizza', 0xFFE8613C),
-  ('snack', 'Snacks', 'Tentempiés', 'cookie', 0xFF8E5BA8),
+  ('breakfast', 'Breakfast', 'Desayuno', 'egg', 0),
+  ('lunch', 'Lunch', 'Almuerzo', 'bowl', 0),
+  ('dinner', 'Dinner', 'Cena', 'pizza', 0),
+  ('snack', 'Snacks', 'Tentempiés', 'cookie', 0),
 ];
 
 /// Nutrition metrics users may track; none are required.
@@ -66,14 +90,14 @@ class Beverage {
 }
 
 const builtInBeverages = [
-  ('water', 'Water', 'Agua', 'drop', 0xFF3A8DDE, 250),
-  ('tea', 'Tea', 'Té', 'tea', 0xFF8BAA5B, 250),
-  ('coffee', 'Coffee', 'Café', 'coffee', 0xFF7A5230, 200),
-  ('juice', 'Juice', 'Zumo', 'orange', 0xFFF2A93B, 200),
-  ('milk', 'Milk', 'Leche', 'bottle', 0xFFD9D4C7, 250),
-  ('sparkling', 'Sparkling water', 'Agua con gas', 'water', 0xFF6EC6E8, 330),
-  ('smoothie', 'Smoothie', 'Batido', 'cup', 0xFFE86FA0, 300),
-  ('soda', 'Soft drink', 'Refresco', 'bottle', 0xFFC0392B, 330),
+  ('water', 'Water', 'Agua', 'drop', 0, 250),
+  ('tea', 'Tea', 'Té', 'tea', 0, 250),
+  ('coffee', 'Coffee', 'Café', 'coffee', 0, 200),
+  ('juice', 'Juice', 'Zumo', 'orange', 0, 200),
+  ('milk', 'Milk', 'Leche', 'bottle', 0, 250),
+  ('sparkling', 'Sparkling water', 'Agua con gas', 'water', 0, 330),
+  ('smoothie', 'Smoothie', 'Batido', 'cup', 0, 300),
+  ('soda', 'Soft drink', 'Refresco', 'bottle', 0, 330),
 ];
 
 /// Display units for volumes.

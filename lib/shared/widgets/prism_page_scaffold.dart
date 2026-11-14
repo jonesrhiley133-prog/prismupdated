@@ -97,14 +97,11 @@ class PrismPageScaffold extends StatelessWidget {
                 ],
               );
         if (pageLook != null) {
+          // Built from the clean base theme that suits the page preset's
+          // colours, so it never stacks on the app preset or ends up with
+          // dark text on a dark page (or the reverse).
           built = Theme(
-            data: applyLook(
-              Theme.of(context),
-              pageLook,
-              reduceTransparency: look.reduceTransparency,
-              reduceEffects: look.reduceEffects,
-              backgroundDir: look.backgroundDir,
-            ),
+            data: look.themeFor(pageLook, Theme.of(context).brightness),
             child: Builder(
               builder: (context) => Material(
                 type: MaterialType.transparency,

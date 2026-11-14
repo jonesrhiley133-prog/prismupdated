@@ -32,6 +32,73 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.26.0',
+    date: DateTime(2026, 11, 14),
+    features: const [
+      LocalizedText(
+        'Habit & Routine Center: complete habits as many times a day as you need, with daily targets, counts, minutes or amounts, one-tap logging, partial progress, timers, notes, ratings, photos, places and alter attribution for every completion.',
+        'Centro de hábitos y rutinas: completa hábitos tantas veces al día como necesites, con metas diarias, veces, minutos o cantidades, registro con un toque, progreso parcial, temporizador, notas, valoraciones, fotos, lugares y alter en cada registro.',
+      ),
+      LocalizedText(
+        'Every habit has its own dashboard: progress ring, today’s timeline, weekly chart, rhythm heatmap, streaks, who completes it, your patterns, milestones, reflections and connected records.',
+        'Cada hábito tiene su panel: anillo de progreso, actividad de hoy, gráfico semanal, mapa de ritmo, rachas, quién lo completa, tus patrones, hitos, reflexiones y registros conectados.',
+      ),
+      LocalizedText(
+        'Routines and templates (morning, evening, school, self-care, music practice, wellness), “up next” suggestions, skip and pause without losing streaks, rest days, monthly habits, multiple reminders with an evening nudge, automatic counting from drinks, meals, workouts, journal, dreams, mood and sleep, challenges and shared system habits. Habits also appear in the calendar.',
+        'Rutinas y plantillas, sugerencias de lo siguiente, omitir y pausar sin perder rachas, días de descanso, hábitos mensuales, varios recordatorios, conteo automático desde bebidas, comidas, entrenos, diario, sueños, ánimo y sueño, retos y hábitos compartidos. Los hábitos aparecen también en el calendario.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText('Nourish now uses your theme’s colours throughout.', 'Nutrición usa ahora los colores de tu tema en todo.'),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.25.1',
+    date: DateTime(2026, 11, 14),
+    fixes: const [
+      LocalizedText(
+        'New pages (Nourish, Scrapbook, Connections, Analytics, Availability, Introductions, Bulletin Board, Stories) now slide in like the rest of the app when opened from Settings or Home.',
+        'Las páginas nuevas ahora se deslizan al abrirse desde Ajustes o Inicio, como el resto de la app.',
+      ),
+      LocalizedText(
+        'Alter profiles: the top bar now takes the profile’s colours straight away instead of only after scrolling.',
+        'Perfiles de alters: la barra superior toma los colores del perfil al instante, no solo al desplazarse.',
+      ),
+      LocalizedText(
+        'Starting Demo Mode no longer freezes the screen while sample data is prepared.',
+        'Iniciar el modo demo ya no congela la pantalla mientras se preparan los datos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.25.0',
+    date: DateTime(2026, 11, 14),
+    features: const [
+      LocalizedText(
+        'Themes rewritten: every theme now has a full colour palette — accent, secondary, highlight, page background, surfaces, raised surfaces, text, secondary text, lines, error, success, caution, chips, switches, progress and links — so colours change across the whole app, not just the accent.',
+        'Temas reescritos: cada tema tiene una paleta completa (acento, secundario, resalte, fondo, superficies, texto, líneas, error, éxito, precaución, fichas, interruptores, progreso y enlaces), así que los colores cambian en toda la app, no solo el acento.',
+      ),
+      LocalizedText(
+        'Reset appearance: put Prism back to how it looked on install, keeping or deleting your saved themes and pictures.',
+        'Restablecer apariencia: devuelve Prism a su aspecto original, conservando o borrando tus temas e imágenes.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Pages with their own theme no longer break: they are built from a clean base that fits their colours, with text kept readable.',
+        'Las páginas con su propio tema ya no se rompen: se construyen desde una base limpia acorde a sus colores y con texto legible.',
+      ),
+      LocalizedText(
+        'Switching between light and dark now changes everything at once (no slow backgrounds or cards).',
+        'Cambiar entre claro y oscuro ahora cambia todo a la vez (sin fondos ni tarjetas lentos).',
+      ),
+      LocalizedText(
+        'Alter profiles now follow the active theme fully; the alter’s colour only replaces the accent.',
+        'Los perfiles de alters siguen el tema activo por completo; el color del alter solo reemplaza el acento.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.24.0',
     date: DateTime(2026, 11, 13),
     features: const [

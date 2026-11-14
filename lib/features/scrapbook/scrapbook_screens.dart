@@ -51,7 +51,7 @@ class ScrapbooksScreen extends ConsumerWidget {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'System Scrapbook', 'Álbum del sistema'),
-        showBackButton: showBackButton,
+        showBackButton: showBackButton || Navigator.of(context).canPop(),
         actions: [PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New scrapbook', 'Nuevo álbum'), onPressed: () => showBookEditor(context))],
       ),
       bodyPadding: EdgeInsets.zero,
