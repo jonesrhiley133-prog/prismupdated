@@ -155,7 +155,12 @@ class DemoSeeder {
     var lastJournal = start;
     for (var di = 0; di < days; di++) {
       final day = start.add(Duration(days: di));
-      if (di % 20 == 0) onProgress?.call(0.05 + 0.75 * di / days, 'history');
+      if (di % 7 == 0) {
+        onProgress?.call(0.05 + 0.75 * di / days, 'history');
+        // Let the screen draw between weeks of generated history; doing
+        // years in one go blocked the app for several seconds.
+        await Future<void>.delayed(Duration.zero);
+      }
       final weekend = day.weekday >= 6;
       // Sleep for the night before this day.
       final bed = day.subtract(Duration(minutes: 60 + _between(0, 120)));
@@ -465,6 +470,7 @@ class DemoSeeder {
       for (var i = 0; i < rows.length; i += 400) {
         final part = rows.sublist(i, math.min(i + 400, rows.length));
         await db.batch((b) => add(b, part));
+        await Future<void>.delayed(Duration.zero);
       }
     }
 

@@ -135,7 +135,7 @@ void runQuickAction(BuildContext context, WidgetRef ref, String id) {
     case QuickActionId.cycle:
       showCycleDaySheet(context, DateTime(now.year, now.month, now.day));
     case QuickActionId.insights:
-      context.go(AppRoutePaths.insights);
+      context.push(AppRoutePaths.insights);
     case QuickActionId.timeline:
       context.push(AppRoutePaths.systemTimeline);
     case QuickActionId.importCenter:
@@ -205,8 +205,8 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.journal => const _JournalWidget(),
       DashboardWidgetId.stories => const StoriesRow(),
       DashboardWidgetId.statuses => StatusesDashboardCard(onOpenAll: () => context.push('/statuses')),
-      DashboardWidgetId.hydration => HydrationDashboardCard(onOpen: () => context.go('/nutrition')),
-      DashboardWidgetId.availability => AvailabilityNowCard(onOpen: () => context.go('/availability')),
+      DashboardWidgetId.hydration => HydrationDashboardCard(onOpen: () => context.push('/nutrition')),
+      DashboardWidgetId.availability => AvailabilityNowCard(onOpen: () => context.push('/availability')),
       DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
       _ => const SizedBox.shrink(),
     };
@@ -248,7 +248,7 @@ class _HowWeFeelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      HowWeFeelCard(onTap: () => context.go(AppRoutePaths.mood));
+      HowWeFeelCard(onTap: () => context.push(AppRoutePaths.mood));
 }
 
 DateTime _today() {
@@ -267,7 +267,7 @@ class _InsightWidget extends ConsumerWidget {
     if (insight == null) return const SizedBox.shrink();
     final m = insight.today.averageMood;
     return PrismSurface(
-      onTap: () => context.go(AppRoutePaths.insights),
+      onTap: () => context.push(AppRoutePaths.insights),
       child: Row(
         children: [
           if (m != null) ...[
@@ -352,7 +352,7 @@ class _SleepWidget extends ConsumerWidget {
     final theme = Theme.of(context);
     final t = ref.watch(dailyInsightProvider(_today()))?.today;
     return PrismSurface(
-      onTap: () => context.go(AppRoutePaths.sleep),
+      onTap: () => context.push(AppRoutePaths.sleep),
       child: Row(
         children: [
           Icon(AppIcons.bedtimeOutlined, color: theme.colorScheme.primary),
@@ -381,7 +381,7 @@ class _CycleWidget extends ConsumerWidget {
     final stats = ref.watch(cycleStatsProvider);
     final next = stats.nextPeriodEstimate;
     return PrismSurface(
-      onTap: () => context.go(AppRoutePaths.cycle),
+      onTap: () => context.push(AppRoutePaths.cycle),
       child: Row(
         children: [
           Icon(AppIcons.navCycle, color: Colors.pink.shade300),
@@ -447,7 +447,7 @@ class _BirthdaysWidget extends ConsumerWidget {
               (d, m.effectiveName(preferDisplayName: prefer)),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     return PrismSurface(
-      onTap: () => context.go(AppRoutePaths.contacts),
+      onTap: () => context.push(AppRoutePaths.contacts),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -497,7 +497,7 @@ class _EventsWidget extends ConsumerWidget {
         data?.occurrencesBetween(today, today.add(const Duration(days: 2))) ??
         const [];
     return PrismSurface(
-      onTap: () => context.go(AppRoutePaths.calendar),
+      onTap: () => context.push(AppRoutePaths.calendar),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

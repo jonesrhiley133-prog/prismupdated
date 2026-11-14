@@ -30,7 +30,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Nourish', 'Nutrición'),
-        showBackButton: widget.showBackButton,
+        showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
         actions: [
           PrismTopBarAction(
             icon: PhosphorIcons.gearSix(),

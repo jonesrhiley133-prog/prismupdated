@@ -32,6 +32,24 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.25.1',
+    date: DateTime(2026, 11, 14),
+    fixes: const [
+      LocalizedText(
+        'New pages (Nourish, Scrapbook, Connections, Analytics, Availability, Introductions, Bulletin Board, Stories) now slide in like the rest of the app when opened from Settings or Home.',
+        'Las páginas nuevas ahora se deslizan al abrirse desde Ajustes o Inicio, como el resto de la app.',
+      ),
+      LocalizedText(
+        'Alter profiles: the top bar now takes the profile’s colours straight away instead of only after scrolling.',
+        'Perfiles de alters: la barra superior toma los colores del perfil al instante, no solo al desplazarse.',
+      ),
+      LocalizedText(
+        'Starting Demo Mode no longer freezes the screen while sample data is prepared.',
+        'Iniciar el modo demo ya no congela la pantalla mientras se preparan los datos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.25.0',
     date: DateTime(2026, 11, 14),
     features: const [

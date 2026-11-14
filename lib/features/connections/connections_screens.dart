@@ -65,7 +65,7 @@ class ConnectionsScreen extends ConsumerWidget {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Internal Connections', 'Conexiones internas'),
-        showBackButton: showBackButton,
+        showBackButton: showBackButton || Navigator.of(context).canPop(),
         actions: [
           PrismTopBarAction(icon: PhosphorIcons.graph(), tooltip: tr(context, 'Record connections explorer', 'Explorador de registros'), onPressed: () => context.push('/links')),
           PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New map', 'Nuevo mapa'), onPressed: () => _newMap(context, ref)),

@@ -37,6 +37,10 @@ class SliverPinnedTopBar extends StatelessWidget {
         barHeight: barHeight,
         gradientHeight: gradientHeight,
         maxWidth: maxWidth,
+        // Pinned headers only rebuild when the delegate changes, not when
+        // an inherited theme does; passing the theme in keeps the bar in
+        // step with page/profile themes without needing a scroll.
+        theme: Theme.of(context),
       ),
     );
   }
@@ -48,7 +52,10 @@ class _PinnedTopBarDelegate extends SliverPersistentHeaderDelegate {
     required this.barHeight,
     required this.gradientHeight,
     required this.maxWidth,
+    required this.theme,
   });
+
+  final ThemeData theme;
 
   final PreferredSizeWidget child;
   final double barHeight;
@@ -66,7 +73,8 @@ class _PinnedTopBarDelegate extends SliverPersistentHeaderDelegate {
       child != oldDelegate.child ||
       barHeight != oldDelegate.barHeight ||
       gradientHeight != oldDelegate.gradientHeight ||
-      maxWidth != oldDelegate.maxWidth;
+      maxWidth != oldDelegate.maxWidth ||
+      theme != oldDelegate.theme;
 
   @override
   Widget build(
