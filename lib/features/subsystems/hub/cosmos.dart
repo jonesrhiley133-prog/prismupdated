@@ -212,7 +212,7 @@ class GlowButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (icon != null) ...[Icon(icon, size: large ? 20 : 17, color: Colors.black), const SizedBox(width: 8)],
-                    Text(label, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: large ? 16 : 14)),
+                    Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: large ? 16 : 14))),
                   ],
                 ),
               ),

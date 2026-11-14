@@ -66,7 +66,7 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
           backgroundColor: Cosmos.black,
           topBar: PrismTopBar(
             title: tr(context, 'Subsystems', 'Subsistemas'),
-            showBackButton: context.canPop(),
+            showBackButton: Navigator.of(context).canPop(),
             actions: [if (subs.isNotEmpty) PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New subsystem', 'Nuevo subsistema'), onPressed: () => showSubsystemWizard(context))],
           ),
           body: Stack(

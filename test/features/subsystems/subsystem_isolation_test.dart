@@ -28,8 +28,10 @@ Future<List<String>> _visible(ProviderContainer c) async {
   c.listen(userVisibleMemberListProvider, (_, _) {});
   c.listen(pickableMemberListProvider, (_, _) {});
   c.listen(subMembershipsProvider, (_, _) {});
+  c.listen(isolationSyncProvider, (_, _) {});
   await c.read(trackerRecordsProvider.future);
   await c.read(activeMemberListProvider.future);
+  await Future<void>.delayed(Duration.zero);
   await Future<void>.delayed(Duration.zero);
   return [for (final m in c.read(userVisibleMemberListProvider).value ?? const <Member>[]) m.id];
 }
@@ -56,7 +58,7 @@ void main() {
     await _visible(c);
     final ms = c.read(subMembershipsProvider).where((m) => m.memberId == 'b').toList();
     expect(ms.map((m) => m.subsystemId), unorderedEquals(['s1', 's2']));
-    expect(c.read(isolatedMembersProvider).ids, {'b'});
+    expect(c.read(computedIsolationProvider).ids, {'b'});
   });
 
   test('legacy member lists are read as memberships', () async {

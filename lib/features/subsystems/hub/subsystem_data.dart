@@ -77,10 +77,32 @@ class IsolatedMembers {
   int get hashCode => _key.hashCode;
 }
 
-final isolatedMembersProvider = Provider<IsolatedMembers>((ref) {
+/// Computed isolation set (reads subsystem records).
+final computedIsolationProvider = Provider<IsolatedMembers>((ref) {
   final subs = {for (final s in ref.watch(subsystemsProvider)) if (SubSettings(s).isolate) s.id};
   if (subs.isEmpty) return IsolatedMembers(const {});
   return IsolatedMembers({for (final m in ref.watch(subMembershipsProvider)) if (subs.contains(m.subsystemId)) m.memberId});
+});
+
+class IsolatedMembersNotifier extends Notifier<IsolatedMembers> {
+  @override
+  IsolatedMembers build() => IsolatedMembers(const {});
+  void set(IsolatedMembers v) {
+    if (v != state) state = v;
+  }
+}
+
+/// The isolation set member lists filter by. Kept in sync by
+/// [isolationSyncProvider] (listened to by the app), so member lists don't
+/// open record streams themselves.
+final isolatedMembersProvider = NotifierProvider<IsolatedMembersNotifier, IsolatedMembers>(IsolatedMembersNotifier.new);
+
+final isolationSyncProvider = Provider<void>((ref) {
+  ref.listen<IsolatedMembers>(computedIsolationProvider, (_, next) {
+    Future.microtask(() {
+      if (ref.mounted) ref.read(isolatedMembersProvider.notifier).set(next);
+    });
+  }, fireImmediately: true);
 });
 
 class SubsystemActions {

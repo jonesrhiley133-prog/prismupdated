@@ -61,9 +61,10 @@ void main() {
     final m = TrackerRecord(id: 'm1', kind: TrackerKind.subMember, parentId: 's1', memberId: 'b', createdAt: _t, modifiedAt: _t).withFields({'roles': ['Guard'], 'founder': true});
     await tester.pumpWidget(_app(const SubsystemProfileScreen(id: 's1', initial: SubTab.members), [s, m]));
     await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Bee'), findsWidgets);
     expect(find.text('Guard'), findsOneWidget);
-    expect(find.text('Rules'), findsOneWidget);
+    expect(find.text('Relationships'), findsOneWidget);
   });
 
   testWidgets('profile view shows roles as pills and a banner line', (tester) async {

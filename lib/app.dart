@@ -15,6 +15,7 @@ import 'package:prism_plurality/features/connections/connections_screens.dart' s
 import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
 import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
 import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart' show isolationSyncProvider;
 import 'package:prism_plurality/features/subsystems/hub/subsystem_profile.dart' show subsystemFrontNotifierProvider;
 import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
 import 'package:prism_plurality/features/links/models/record_ref.dart' show RecordRef;
@@ -325,6 +326,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(automationBootProvider, (_, _) {});
     ref.listen(habitCenterBootProvider, (_, _) {});
     ref.listen(subsystemFrontNotifierProvider, (_, _) {});
+    ref.listen(isolationSyncProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a

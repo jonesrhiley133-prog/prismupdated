@@ -243,22 +243,6 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
         return PrismListRow(
           dense: true,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          leading: Icon(PhosphorIcons.paintBrushBroad(), size: 20),
-          title: Text(
-            tr(ctx, 'Create in Profile Studio', 'Crear en Profile Studio'),
-            style: theme.textTheme.bodyMedium,
-          ),
-          onTap: () {
-            close();
-            openProfileStudio(context);
-          },
-        );
-      },
-      (ctx, close) {
-        final theme = Theme.of(ctx);
-        return PrismListRow(
-          dense: true,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           leading: Icon(AppIcons.visibilityOutlined, size: 20),
           title: Text(
             ctx.l10n.memberShowInactive,
@@ -364,6 +348,25 @@ class _MembersScreenState extends ConsumerState<MembersScreen>
         ),
       ]);
     }
+
+    entries.add(
+      (ctx, close) {
+        final theme = Theme.of(ctx);
+        return PrismListRow(
+          dense: true,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          leading: Icon(PhosphorIcons.paintBrushBroad(), size: 20),
+          title: Text(
+            tr(ctx, 'Create in Profile Studio', 'Crear en Profile Studio'),
+            style: theme.textTheme.bodyMedium,
+          ),
+          onTap: () {
+            close();
+            openProfileStudio(context);
+          },
+        );
+      },
+    );
 
     return BlurPopupAnchor(
       key: _optionsPopupKey,
