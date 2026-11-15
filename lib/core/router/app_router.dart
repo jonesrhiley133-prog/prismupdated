@@ -91,7 +91,8 @@ import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
 import '../../features/subsystems/hub/subsystem_hub.dart';
 import '../../features/subsystems/hub/subsystem_profile.dart';
-import '../../features/relationships/views/relationships_screen.dart';
+import '../../features/relationships/hub/rel_hub_screen.dart';
+import '../../features/relationships/hub/rel_profile.dart';
 import '../../features/school/views/school_screen.dart';
 import '../../features/finance/views/finance_screen.dart';
 import '../../features/fitness/views/fitness_screen.dart';
@@ -1443,7 +1444,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.relationships,
-                builder: (context, state) => const RelationshipsScreen(),
+                builder: (context, state) => const RelationshipsHubScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'r/:id',
+                    builder: (context, state) => RelationshipProfileScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

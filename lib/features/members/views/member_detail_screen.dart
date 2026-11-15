@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:prism_plurality/features/members/studio/profile_studio.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/features/members/studio/profile_view.dart';
+import 'package:prism_plurality/features/relationships/hub/member_relationships.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/alter_status/status_widgets.dart';
 import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
@@ -305,6 +306,7 @@ class _MemberDetailBody extends ConsumerWidget {
       ),
       MemberStatusPanel(memberId: member.id),
       MemberIntroCardTile(memberId: member.id),
+      MemberRelationshipsSection(memberId: member.id),
       RelatedRecordsSection(self: RecordRef(RecordRef.member, member.id)),
       const SizedBox(height: 24),
       _MemberCreatedAtFooter(member: member),

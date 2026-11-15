@@ -27,6 +27,10 @@ abstract final class TrackerKind {
 
   static const relationship = 'rel.person';
   static const relationshipEvent = 'rel.event';
+  static const relationshipNote = 'rel.note';
+  static const relationshipCheckin = 'rel.checkin';
+  static const relationshipSettings = 'rel.settings';
+  static const relationshipFamilyNote = 'rel.familyNote';
 
   static const headspaceMap = 'headspace.map';
   static const headspaceArea = 'headspace.area';

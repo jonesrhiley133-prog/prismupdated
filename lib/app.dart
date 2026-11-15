@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
@@ -15,6 +17,7 @@ import 'package:prism_plurality/features/connections/connections_screens.dart' s
 import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
 import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
 import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
+import 'package:prism_plurality/features/relationships/hub/rel_profile.dart' show relRoute;
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart' show isolationSyncProvider;
 import 'package:prism_plurality/features/subsystems/hub/subsystem_profile.dart' show subsystemFrontNotifierProvider;
 import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
@@ -835,6 +838,7 @@ void registerAdvancedRecordOpeners() {
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
   recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
+  recordKindOpeners[TrackerKind.relationship] = (context, id) => GoRouter.of(context).push(relRoute(id));
 }
 
 /// Notes theme switches (it sits below the app theme) so implicit
