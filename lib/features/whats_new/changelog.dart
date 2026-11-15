@@ -40,6 +40,10 @@ final List<ChangelogRelease> prismChangelog = [
         'Tocar una tarjeta de presentación en la mesa vuelve a girarla; mantén pulsado o usa Ampliar en su menú para verla en grande.',
       ),
       LocalizedText(
+        'Headmate banners fill the whole row in the Headmates list instead of a panel on the right, with an even dim (no fade) and light text so names stay readable.',
+        'Los banners de los headmates ocupan toda la fila en la lista en lugar de un panel a la derecha, con un oscurecido uniforme (sin degradado) y texto claro para que los nombres se lean bien.',
+      ),
+      LocalizedText(
         'The navigation bar opens smoothly: its extra rows stay ready instead of being built in the first frame of the animation.',
         'La barra de navegación se abre con fluidez: sus filas extra quedan preparadas en lugar de crearse en el primer fotograma de la animación.',
       ),
