@@ -110,6 +110,8 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
   bool _showPreview = false;
   bool _loading = true;
   bool _saving = false;
+  bool _avatarChanged = false;
+  bool _headerChanged = false;
   Map<String, Object?>? _draft;
 
   String get _draftKey => 'profile_studio_draft_${widget.memberId ?? 'new'}';
@@ -127,8 +129,31 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
         _original = m;
         _b = _Basic.of(m);
       }
-      final existing = ref.read(memberProfileProvider(_id));
-      if (existing != null) _cfg = existing.clone();
+      // Wait for the saved records so the editor always opens on the
+      // current profile (never on an empty one that would overwrite it).
+      final keep = ref.listenManual(trackerRecordsProvider, (_, _) {});
+      try {
+        final all = await ref.read(trackerRecordsProvider.future).timeout(const Duration(seconds: 10));
+        final rec = all.where((r) => r.kind == TrackerKind.memberProfile && r.parentId == _id).firstOrNull;
+        final raw = rec?.fields['cfg'];
+        if (raw is Map) _cfg = ProfileConfig(raw.cast<String, Object?>()).clone();
+      } catch (_) {
+        final existing = ref.read(memberProfileProvider(_id));
+        if (existing != null) _cfg = existing.clone();
+      } finally {
+        keep.close();
+      }
+      // Older studio versions kept a separate description next to the bio,
+      // which made the bio look appended. Fold it into the bio once.
+      final desc = _cfg.str('description').trim();
+      if (desc.isNotEmpty) {
+        if (_b.bio.trim().isEmpty) {
+          _b.bio = desc;
+          _cfg = _cfg.set('description', null);
+        } else if (_b.bio.contains(desc)) {
+          _cfg = _cfg.set('description', null);
+        }
+      }
     }
     _start = _Snap(_b.copy(), _cfg.clone());
     try {
@@ -229,6 +254,8 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
         ..avatar = o.avatar
         ..header = o.header
         ..color = o.color;
+      _avatarChanged = false;
+      _headerChanged = false;
     }
     _rev++;
   });
@@ -260,8 +287,11 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
         profileHeaderImageData: _b.header,
       );
     } else {
+      // Start from the member as saved right now so nothing edited elsewhere
+      // is lost, and only touch images the user changed in the studio.
+      final latest = await ref.read(memberRepositoryProvider).getMemberById(_id) ?? _original!;
       await notifier.updateMember(
-        _original!.copyWith(
+        latest.copyWith(
           name: _b.name.trim(),
           displayName: opt(_b.displayName),
           pronouns: opt(_b.pronouns),
@@ -269,10 +299,10 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
           age: opt(_b.age),
           bio: opt(_b.bio),
           birthday: _b.birthday,
-          customColorEnabled: hex != null,
-          customColorHex: hex,
-          avatarImageData: _b.avatar,
-          profileHeaderImageData: _b.header,
+          customColorEnabled: _b.color != _start.basic.color ? hex != null : latest.customColorEnabled,
+          customColorHex: _b.color != _start.basic.color ? hex : latest.customColorHex,
+          avatarImageData: _avatarChanged ? _b.avatar : latest.avatarImageData,
+          profileHeaderImageData: _headerChanged ? _b.header : latest.profileHeaderImageData,
         ),
       );
     }
@@ -281,6 +311,40 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
     if (!mounted) return;
     PrismToast.show(context, message: tr(context, 'Profile saved', 'Perfil guardado'), icon: PhosphorIcons.check());
     Navigator.of(context).pop(_id);
+  }
+
+  /// Leaves without saving (after confirming) and drops the draft.
+  Future<void> _cancel() async {
+    if (_undo.isNotEmpty) {
+      final ok = await PrismDialog.confirm(
+        context: context,
+        title: tr(context, 'Discard changes?', '¿Descartar cambios?'),
+        message: tr(context, 'The profile stays exactly as it was last saved.', 'El perfil queda tal como se guardó por última vez.'),
+        destructive: true,
+        confirmLabel: tr(context, 'Discard', 'Descartar'),
+        cancelLabel: tr(context, 'Keep editing', 'Seguir editando'),
+      );
+      if (ok != true) return;
+    }
+    await _clearDraft();
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  /// Puts every field back to the last saved values.
+  Future<void> _resetAll() async {
+    final ok = await PrismDialog.confirm(
+      context: context,
+      title: tr(context, 'Reset all changes?', '¿Restablecer todos los cambios?'),
+      message: tr(context, 'Every field goes back to what was last saved.', 'Todos los campos vuelven a lo último guardado.'),
+      confirmLabel: tr(context, 'Reset', 'Restablecer'),
+      cancelLabel: context.l10n.cancel,
+    );
+    if (ok != true) return;
+    _edit(() {
+      _restore(_start);
+      _avatarChanged = false;
+      _headerChanged = false;
+    });
   }
 
   Future<bool> _confirmLeave() async {
@@ -353,6 +417,22 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
             ],
           ),
           bodyPadding: EdgeInsets.zero,
+          bottomBar: SafeArea(
+            top: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant))),
+              child: Row(
+                children: [
+                  PrismButton(label: context.l10n.cancel, onPressed: _cancel),
+                  const SizedBox(width: 8),
+                  PrismButton(label: tr(context, 'Reset', 'Restablecer'), icon: PhosphorIcons.arrowCounterClockwise(), onPressed: _undo.isEmpty ? () {} : _resetAll, enabled: _undo.isNotEmpty),
+                  const Spacer(),
+                  PrismButton(label: tr(context, 'Save', 'Guardar'), icon: PhosphorIcons.check(), tone: PrismButtonTone.filled, isLoading: _saving, onPressed: _saving ? () {} : _save),
+                ],
+              ),
+            ),
+          ),
           body: LayoutBuilder(
             builder: (context, box) {
               final wide = box.maxWidth >= 980;
@@ -546,9 +626,10 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
       const SizedBox(height: 12),
       _cfgText('species'),
       _cfgText('origin'),
-      _heading(tr(context, 'Description', 'Descripción')),
-      _cfgText('description', maxLines: 6, label: tr(context, 'Short description', 'Descripción corta')),
-      _text(tr(context, 'Bio (shared with the main profile)', 'Bio (compartida con el perfil principal)'), _b.bio, (v) => _b.bio = v, maxLines: 10),
+      _heading(tr(context, 'Bio', 'Bio'), sub: tr(context, 'This is the alter’s bio — editing it here changes the same bio shown on their profile.', 'Esta es la bio del alter: editarla aquí cambia la misma bio de su perfil.')),
+      _text(tr(context, 'Bio', 'Bio'), _b.bio, (v) => _b.bio = v, maxLines: 12),
+      if (_cfg.str('description').isNotEmpty || _start.cfg.str('description').isNotEmpty)
+        _cfgText('description', maxLines: 4, label: tr(context, 'Extra description (shown under About)', 'Descripción extra (en «Sobre mí»)')),
     ];
   }
 
@@ -556,14 +637,20 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
 
   Future<void> _pickAvatar() async {
     final bytes = await AvatarImagePicker.pickCroppedAvatarBytes(context);
-    if (bytes != null) _edit(() => _b.avatar = bytes);
+    if (bytes != null) _edit(() {
+      _b.avatar = bytes;
+      _avatarChanged = true;
+    });
   }
 
   Future<void> _pickBanner() async {
     final x = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (x == null) return;
     final prepared = await compute(prepareSocialImage, await x.readAsBytes());
-    if (prepared != null) _edit(() => _b.header = prepared.bytes);
+    if (prepared != null) _edit(() {
+      _b.header = prepared.bytes;
+      _headerChanged = true;
+    });
   }
 
   Future<String?> _pickMedia() => PrismMedia.pickImage(ref, owner: _id);
@@ -595,6 +682,7 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
           if (_b.avatar != null || look.look('avatarMedia') != null)
             PrismButton(label: tr(context, 'Remove', 'Quitar'), tone: PrismButtonTone.destructive, onPressed: () => _edit(() {
               _b.avatar = null;
+              _avatarChanged = true;
               _cfg = _cfg.withLook('avatarMedia', null);
             })),
         ],
@@ -619,6 +707,7 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
           if (_b.header != null || look.look('bannerMedia') != null)
             PrismButton(label: tr(context, 'Remove', 'Quitar'), tone: PrismButtonTone.destructive, onPressed: () => _edit(() {
               _b.header = null;
+              _headerChanged = true;
               _cfg = _cfg.withLook('bannerMedia', null);
             })),
         ],

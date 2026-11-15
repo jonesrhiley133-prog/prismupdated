@@ -87,13 +87,6 @@ class _HabitCenterScreenState extends ConsumerState<HabitCenterScreen> {
             )
           : Stack(
               children: [
-                Positioned(
-                  top: -140,
-                  left: -60,
-                  right: -60,
-                  height: 380,
-                  child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [primary.withValues(alpha: 0.14), primary.withValues(alpha: 0)])))),
-                ),
                 ListView(
                   padding: EdgeInsets.fromLTRB(16, 4, 16, NavBarInset.of(context) + 24),
                   children: [

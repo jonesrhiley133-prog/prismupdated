@@ -10,7 +10,7 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 
 const subsystemEmojis = ['✦', '🌙', '🌸', '🪐', '🌊', '🔥', '🌿', '🦋', '⭐', '🛡️', '🎨', '🕯️', '🌈', '❄️', '🍄', '🐾'];
-const subsystemColors = [0xFFB9A6FF, 0xFFFF8FD8, 0xFF7FB6FF, 0xFF8FF0D8, 0xFFFFC37F, 0xFFFF8A8A, 0xFFE3E3FF, 0xFF9EE37F];
+const subsystemColors = [0xFFC98B8B, 0xFFE29A86, 0xFF8B6A5C, 0xFFEAD9C6, 0xFFB5838D, 0xFFD3B48C, 0xFF9CA88B, 0xFF8E8AA0];
 
 /// Splits role input on spaces/commas; quote multi-word roles ("Inner Self Helper").
 List<String> parseRoles(String input) {
@@ -109,10 +109,9 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
   Widget build(BuildContext context) {
     final steps = [tr(context, 'Founder', 'Fundador'), tr(context, 'Members', 'Miembros'), tr(context, 'Settings', 'Ajustes'), tr(context, 'Review', 'Revisar')];
     return ColoredBox(
-      color: Cosmos.black,
+      color: Colors.transparent,
       child: Stack(
         children: [
-          const Positioned.fill(child: CustomPaint(painter: _StaticSky())),
           Column(
             children: [
               Padding(
@@ -123,8 +122,8 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(tr(context, 'Step ${_step + 1} of 4', 'Paso ${_step + 1} de 4'), style: const TextStyle(color: Cosmos.faint, fontSize: 12, letterSpacing: 1.2)),
-                          Text(steps[_step], style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
+                          Text(tr(context, 'Step ${_step + 1} of 4', 'Paso ${_step + 1} de 4'), style: TextStyle(color: context.sp.faint, fontSize: 12, letterSpacing: 1.2)),
+                          Text(steps[_step], style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text)),
                         ],
                       ),
                     ),
@@ -142,7 +141,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                           duration: const Duration(milliseconds: 250),
                           height: 4,
                           margin: EdgeInsets.only(right: i == 3 ? 0 : 6),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), gradient: i <= _step ? Cosmos.glow : null, color: i <= _step ? null : Cosmos.line),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: i <= _step ? context.sp.primary : context.sp.line),
                         ),
                       ),
                   ],
@@ -203,11 +202,11 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
       Center(child: SubOrb(emoji: _emoji, color: Color(_color), color2: Color(_color2), size: 84)),
       const SizedBox(height: 18),
       CosmicHeading(tr(context, 'Founding alter', 'Alter fundador')),
-      Text(tr(context, 'The founder becomes the subsystem’s first member.', 'El fundador será el primer miembro del subsistema.'), style: const TextStyle(color: Cosmos.dim)),
+      Text(tr(context, 'The founder becomes the subsystem’s first member.', 'El fundador será el primer miembro del subsistema.'), style: TextStyle(color: context.sp.dim)),
       const SizedBox(height: 10),
       if (members.length > 8) ...[PrismTextField(controller: _search, hintText: tr(context, 'Search alters', 'Buscar alters'), prefixIcon: Icon(AppIcons.search), onChanged: (_) => setState(() {})), const SizedBox(height: 10)],
       if (members.isEmpty)
-        Text(tr(context, 'Add an alter in Headmates first.', 'Añade primero un alter en Headmates.'), style: const TextStyle(color: Cosmos.dim))
+        Text(tr(context, 'Add an alter in Headmates first.', 'Añade primero un alter en Headmates.'), style: TextStyle(color: context.sp.dim))
       else
         Wrap(
           spacing: 8,
@@ -225,7 +224,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
               ),
           ],
         ),
-      CosmicHeading(tr(context, 'Identity', 'Identidad'), color: Cosmos.pink),
+      CosmicHeading(tr(context, 'Identity', 'Identidad'), color: context.sp.secondary),
       PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), onChanged: (_) => setState(() {}), textCapitalization: TextCapitalization.words),
       const SizedBox(height: 10),
       PrismTextField(controller: _desc, labelText: tr(context, 'Description', 'Descripción'), minLines: 2, maxLines: 4),
@@ -242,7 +241,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                 width: 42,
                 height: 42,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: _emoji == e ? Color(_color).withValues(alpha: 0.25) : Cosmos.panel, border: Border.all(color: _emoji == e ? Color(_color) : Cosmos.line)),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: _emoji == e ? Color(_color).withValues(alpha: 0.25) : context.sp.panel, border: Border.all(color: _emoji == e ? Color(_color) : context.sp.line)),
                 child: Text(e, style: const TextStyle(fontSize: 20)),
               ),
             ),
@@ -264,14 +263,14 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
     return [
       Text(
         tr(context, 'Pick who belongs here. Alters can belong to more than one subsystem — they are never copied, and their main profile stays the same.', 'Elige quién pertenece aquí. Un alter puede estar en varios subsistemas: nunca se copia y su perfil principal no cambia.'),
-        style: const TextStyle(color: Cosmos.dim, height: 1.4),
+        style: TextStyle(color: context.sp.dim, height: 1.4),
       ),
       const SizedBox(height: 12),
       PrismTextField(controller: _search, hintText: tr(context, 'Search alters', 'Buscar alters'), prefixIcon: Icon(AppIcons.search), onChanged: (_) => setState(() {})),
       const SizedBox(height: 8),
-      if (_picks.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(tr(context, '${_picks.length} selected', '${_picks.length} seleccionados'), style: const TextStyle(color: Cosmos.pink, fontWeight: FontWeight.w700))),
+      if (_picks.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(tr(context, '${_picks.length} selected', '${_picks.length} seleccionados'), style: TextStyle(color: context.sp.secondary, fontWeight: FontWeight.w700))),
       for (final m in members) Padding(padding: const EdgeInsets.only(bottom: 8), child: _memberPick(context, m)),
-      if (members.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(tr(context, 'No other alters match.', 'Ningún otro alter coincide.'), style: const TextStyle(color: Cosmos.dim))),
+      if (members.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(tr(context, 'No other alters match.', 'Ningún otro alter coincide.'), style: TextStyle(color: context.sp.dim))),
     ];
   }
 
@@ -279,7 +278,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final p = _picks[m.id];
     return CosmicPanel(
-      accent: p != null ? Color(_color) : Cosmos.line,
+      accent: p != null ? Color(_color) : context.sp.line,
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       onTap: () => setState(() => p == null ? _picks[m.id] = _Pick(m.id) : _picks.remove(m.id)),
       child: Column(
@@ -289,8 +288,8 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
             children: [
               _avatar(m),
               const SizedBox(width: 12),
-              Expanded(child: Text(m.effectiveName(preferDisplayName: prefer), style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white))),
-              Icon(p != null ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : PhosphorIcons.circle(), color: p != null ? Color(_color) : Cosmos.faint),
+              Expanded(child: Text(m.effectiveName(preferDisplayName: prefer), style: TextStyle(fontWeight: FontWeight.w600, color: context.sp.text))),
+              Icon(p != null ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : PhosphorIcons.circle(), color: p != null ? Color(_color) : context.sp.faint),
             ],
           ),
           if (p != null) ...[
@@ -318,7 +317,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
   List<Widget> _settings(BuildContext context) {
     final subs = ref.watch(subsystemsProvider);
     return [
-      CosmicHeading(tr(context, 'Privacy', 'Privacidad'), color: Cosmos.blue),
+      CosmicHeading(tr(context, 'Privacy', 'Privacidad'), color: context.sp.tertiary),
       PrismSwitchRow(
         title: tr(context, 'Member isolation', 'Aislamiento de miembros'),
         subtitle: tr(context, 'Members only appear inside this subsystem, not in Headmates or system-wide lists.', 'Los miembros solo aparecen dentro de este subsistema, no en Headmates ni listas del sistema.'),
@@ -334,11 +333,11 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
       CosmicHeading(tr(context, 'Fronting', 'Frente')),
       PrismSwitchRow(title: tr(context, 'Allow co-fronting', 'Permitir co-frente'), value: _coFront, onChanged: (v) => setState(() => _coFront = v)),
       PrismSwitchRow(title: tr(context, 'Notify when a member fronts', 'Avisar cuando un miembro esté al frente'), value: _notify, onChanged: (v) => setState(() => _notify = v)),
-      CosmicHeading(tr(context, 'Communication & data', 'Comunicación y datos'), color: Cosmos.pink),
+      CosmicHeading(tr(context, 'Communication & data', 'Comunicación y datos'), color: context.sp.secondary),
       PrismSwitchRow(title: tr(context, 'Internal chat & announcements', 'Chat interno y anuncios'), value: _chat, onChanged: (v) => setState(() => _chat = v)),
       PrismSwitchRow(title: tr(context, 'Separate journal & notes', 'Diario y notas propios'), value: _journal, onChanged: (v) => setState(() => _journal = v)),
-      CosmicHeading(tr(context, 'Structure', 'Estructura'), color: Cosmos.blue),
-      Text(tr(context, 'Nest inside another subsystem', 'Anidar dentro de otro subsistema'), style: const TextStyle(color: Cosmos.dim)),
+      CosmicHeading(tr(context, 'Structure', 'Estructura'), color: context.sp.tertiary),
+      Text(tr(context, 'Nest inside another subsystem', 'Anidar dentro de otro subsistema'), style: TextStyle(color: context.sp.dim)),
       const SizedBox(height: 8),
       Wrap(
         spacing: 6,
@@ -365,15 +364,15 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
           children: [
             SubOrb(emoji: _emoji, color: Color(_color), color2: Color(_color2), size: 72),
             const SizedBox(height: 12),
-            Text(_name.text.trim(), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
-            if (_desc.text.trim().isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_desc.text.trim(), textAlign: TextAlign.center, style: const TextStyle(color: Cosmos.dim))),
+            Text(_name.text.trim(), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text)),
+            if (_desc.text.trim().isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_desc.text.trim(), textAlign: TextAlign.center, style: TextStyle(color: context.sp.dim))),
             const SizedBox(height: 14),
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 6,
               runSpacing: 6,
               children: [
-                if (founder != null) GlowPill('👑 ${founder.effectiveName(preferDisplayName: prefer)}', color: Cosmos.pink),
+                if (founder != null) GlowPill('👑 ${founder.effectiveName(preferDisplayName: prefer)}', color: context.sp.secondary),
                 for (final p in _picks.values)
                   if (index[p.id] != null) GlowPill(index[p.id]!.effectiveName(preferDisplayName: prefer), color: Color(_color)),
               ],
@@ -384,10 +383,10 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                if (_isolate) GlowPill(tr(context, 'Isolated', 'Aislado'), icon: PhosphorIcons.lockSimple(), color: Cosmos.blue),
-                if (_coFront) GlowPill(tr(context, 'Co-fronting', 'Co-frente'), color: Cosmos.lavender),
-                if (_chat) GlowPill(tr(context, 'Chat', 'Chat'), color: Cosmos.pink),
-                if (_journal) GlowPill(tr(context, 'Own journal', 'Diario propio'), color: Cosmos.blue),
+                if (_isolate) GlowPill(tr(context, 'Isolated', 'Aislado'), icon: PhosphorIcons.lockSimple(), color: context.sp.tertiary),
+                if (_coFront) GlowPill(tr(context, 'Co-fronting', 'Co-frente'), color: context.sp.primary),
+                if (_chat) GlowPill(tr(context, 'Chat', 'Chat'), color: context.sp.secondary),
+                if (_journal) GlowPill(tr(context, 'Own journal', 'Diario propio'), color: context.sp.tertiary),
               ],
             ),
           ],
@@ -397,16 +396,8 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
       Text(
         tr(context, 'You can change everything later in the subsystem’s settings.', 'Puedes cambiarlo todo después en los ajustes del subsistema.'),
         textAlign: TextAlign.center,
-        style: const TextStyle(color: Cosmos.faint),
+        style: TextStyle(color: context.sp.faint),
       ),
     ];
   }
-}
-
-class _StaticSky extends CustomPainter {
-  const _StaticSky();
-  @override
-  void paint(Canvas canvas, Size size) => CosmosPainter().paint(canvas, size);
-  @override
-  bool shouldRepaint(_StaticSky oldDelegate) => false;
 }

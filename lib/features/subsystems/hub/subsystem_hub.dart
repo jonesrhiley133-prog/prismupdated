@@ -10,6 +10,7 @@ import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_wizard.dart';
 import 'package:prism_plurality/features/subsystems/utils/subsystems.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/shared/widgets/prism_expandable_section.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 
 /// Subsystems hub: the user's subsystems orbit their system in a dark,
@@ -27,12 +28,8 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final still = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    if (still) {
-      _spin.stop();
-    } else if (!_spin.isAnimating) {
-      _spin.repeat();
-    }
+    // The orbit stays still: subtle and understated.
+    _spin.stop();
   }
 
   @override
@@ -63,7 +60,6 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
     return CosmicScope(
       child: Builder(
         builder: (context) => PrismPageScaffold(
-          backgroundColor: Cosmos.black,
           topBar: PrismTopBar(
             title: tr(context, 'Subsystems', 'Subsistemas'),
             showBackButton: Navigator.of(context).canPop(),
@@ -71,7 +67,6 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
           ),
           body: Stack(
             children: [
-              Positioned.fill(child: AnimatedBuilder(animation: _spin, builder: (_, _) => CustomPaint(painter: CosmosPainter(phase: _spin.value)))),
               CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
@@ -154,15 +149,12 @@ class _OrbitStage extends StatelessWidget {
               return Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned.fill(child: CustomPaint(painter: CosmosPainter(rings: rings, center: c, phase: t))),
+                  Positioned.fill(child: CustomPaint(painter: OrbitPainter(rings: rings, center: c, color: context.sp.line, phase: t))),
                   Positioned(left: c.dx - 46, top: c.dy - 46, child: _Core(extra: extra, empty: subs.isEmpty)),
                   for (final (s, ring, a) in placed)
                     Builder(
                       builder: (context) {
-                        // Cards drift slowly along their ring and bob gently.
-                        final drift = a + t * 2 * math.pi * (ring.isEven ? 0.08 : -0.06);
-                        final bob = math.sin(t * 2 * math.pi * 6 + a * 3) * 4;
-                        final p = Offset(c.dx + rings[ring] * math.cos(drift), c.dy + rings[ring] * 0.86 * math.sin(drift) + bob);
+                        final p = Offset(c.dx + rings[ring] * math.cos(a), c.dy + rings[ring] * 0.86 * math.sin(a));
                         return Positioned(
                           left: p.dx - cardW / 2,
                           top: p.dy - cardW / 2,
@@ -186,27 +178,20 @@ class _Core extends StatelessWidget {
   final int extra;
   final bool empty;
   @override
-  Widget build(BuildContext context) => Container(
-    width: 92,
-    height: 92,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      gradient: const RadialGradient(colors: [Color(0xFFFFFFFF), Cosmos.lavender, Color(0xFF3B2F7A), Color(0x003B2F7A)], stops: [0, 0.18, 0.55, 1]),
-      boxShadow: [BoxShadow(color: Cosmos.lavender.withValues(alpha: 0.5), blurRadius: 40), BoxShadow(color: Cosmos.pink.withValues(alpha: 0.25), blurRadius: 70)],
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: 28),
-        Text(
-          extra > 0 ? '+$extra' : tr(context, empty ? 'Your system' : 'System', empty ? 'Tu sistema' : 'Sistema'),
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.6, shadows: [Shadow(color: Colors.black, blurRadius: 6)]),
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 92,
+      height: 92,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.surfaceContainerHigh, border: Border.all(color: theme.colorScheme.outlineVariant)),
+      child: Text(
+        extra > 0 ? '+$extra' : tr(context, empty ? 'Your system' : 'System', empty ? 'Tu sistema' : 'Sistema'),
+        textAlign: TextAlign.center,
+        style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
 }
 
 class _FloatingCard extends ConsumerWidget {
@@ -226,22 +211,21 @@ class _FloatingCard extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(6, 10, 6, 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            color: Cosmos.panel.withValues(alpha: 0.82),
-            border: Border.all(color: color.withValues(alpha: 0.5)),
-            boxShadow: [BoxShadow(color: color.withValues(alpha: 0.28), blurRadius: 22, spreadRadius: -4)],
+            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SubOrb(emoji: subEmoji(s), color: color, color2: subColor2(s), size: size * 0.42),
               const SizedBox(height: 6),
-              Text(s.title, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+              Text(s.title, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: context.sp.text, fontSize: 12, fontWeight: FontWeight.w700)),
               Text(
                 nested > 0 ? '$members · ◎$nested' : tr(context, '$members members', '$members miembros'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Cosmos.faint, fontSize: 10),
+                style: TextStyle(color: context.sp.faint, fontSize: 10),
               ),
             ],
           ),
@@ -262,7 +246,7 @@ class _EmptyCall extends StatelessWidget {
         Text(
           tr(context, 'No subsystems yet', 'Aún no hay subsistemas'),
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text),
         ),
         const SizedBox(height: 8),
         Text(
@@ -272,7 +256,7 @@ class _EmptyCall extends StatelessWidget {
             'Un subsistema es un pequeño sistema dentro del tuyo, con sus propios miembros, frentes, normas e historial. Empieza con un alter fundador y crece desde ahí.',
           ),
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Cosmos.dim, height: 1.45),
+          style: TextStyle(color: context.sp.dim, height: 1.45),
         ),
         const SizedBox(height: 22),
         GlowButton(label: tr(context, 'Create a subsystem', 'Crear un subsistema'), icon: PhosphorIcons.planet(), large: true, onPressed: onCreate),
@@ -299,16 +283,16 @@ class _SubsystemRow extends ConsumerWidget {
       onTap: () => context.push('${AppRoutePaths.subsystems}/${s.id}'),
       child: Row(
         children: [
-          if (depth > 0) Padding(padding: const EdgeInsets.only(right: 8), child: Icon(PhosphorIcons.arrowElbowDownRight(), size: 16, color: Cosmos.faint)),
+          if (depth > 0) Padding(padding: const EdgeInsets.only(right: 8), child: Icon(PhosphorIcons.arrowElbowDownRight(), size: 16, color: context.sp.faint)),
           SubOrb(emoji: subEmoji(s), color: color, color2: subColor2(s), size: 42),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(s.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                Text(s.title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: context.sp.text)),
                 if ((s.body ?? '').trim().isNotEmpty)
-                  Padding(padding: const EdgeInsets.only(top: 2), child: Text(s.body!.trim(), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Cosmos.dim, fontSize: 12.5))),
+                  Padding(padding: const EdgeInsets.only(top: 2), child: Text(s.body!.trim(), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.sp.dim, fontSize: 12.5))),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -321,7 +305,7 @@ class _SubsystemRow extends ConsumerWidget {
                             Positioned(
                               left: i * 16.0,
                               child: Container(
-                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Cosmos.black, width: 1.5)),
+                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: context.sp.bg, width: 1.5)),
                                 child: MemberAvatar(
                                   avatarImageData: shown[i].avatarImageData,
                                   memberName: shown[i].effectiveName(preferDisplayName: prefer),
@@ -336,14 +320,14 @@ class _SubsystemRow extends ConsumerWidget {
                       ),
                     ),
                     if (shown.isNotEmpty) const SizedBox(width: 8),
-                    Text(tr(context, '${members.length} members', '${members.length} miembros'), style: const TextStyle(color: Cosmos.faint, fontSize: 12)),
-                    if (SubSettings(s).isolate) ...[const SizedBox(width: 8), Icon(PhosphorIcons.lockSimple(), size: 13, color: Cosmos.faint)],
+                    Text(tr(context, '${members.length} members', '${members.length} miembros'), style: TextStyle(color: context.sp.faint, fontSize: 12)),
+                    if (SubSettings(s).isolate) ...[const SizedBox(width: 8), Icon(PhosphorIcons.lockSimple(), size: 13, color: context.sp.faint)],
                   ],
                 ),
               ],
             ),
           ),
-          Icon(PhosphorIcons.caretRight(), size: 16, color: Cosmos.faint),
+          Icon(PhosphorIcons.caretRight(), size: 16, color: context.sp.faint),
         ],
       ),
     );
@@ -355,62 +339,37 @@ class _LearnMore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (PhosphorIcons.planet(), Cosmos.lavender, tr(context, 'What is a subsystem?', '¿Qué es un subsistema?'),
+      (PhosphorIcons.planet(), context.sp.primary, tr(context, 'What is a subsystem?', '¿Qué es un subsistema?'),
           tr(context, 'A group of alters who form their own smaller system — with its own members, fronters, roles, relationships, rules and history — while still being part of your whole system.', 'Un grupo de alters que forman su propio sistema más pequeño —con sus miembros, frentes, roles, relaciones, normas e historial— sin dejar de ser parte de todo tu sistema.')),
-      (PhosphorIcons.crown(), Cosmos.pink, tr(context, 'Founders, roles & permissions', 'Fundadores, roles y permisos'),
+      (PhosphorIcons.crown(), context.sp.secondary, tr(context, 'Founders, roles & permissions', 'Fundadores, roles y permisos'),
           tr(context, 'Every subsystem starts with a founding alter. Members get subsystem-only roles and permissions; an alter can belong to several subsystems without being copied, and their main profile never changes.', 'Cada subsistema empieza con un alter fundador. Los miembros tienen roles y permisos propios del subsistema; un alter puede estar en varios subsistemas sin copiarse, y su perfil principal no cambia.')),
-      (PhosphorIcons.lockSimple(), Cosmos.blue, tr(context, 'Private membership', 'Membresía privada'),
+      (PhosphorIcons.lockSimple(), context.sp.tertiary, tr(context, 'Private membership', 'Membresía privada'),
           tr(context, 'With member isolation on (the default), a subsystem’s members appear only inside that subsystem — not in Headmates, alter searches or other system-wide member lists.', 'Con el aislamiento activado (por defecto), los miembros de un subsistema solo aparecen dentro de él —no en Headmates, búsquedas de alters ni otras listas del sistema.')),
-      (PhosphorIcons.treeStructure(), Cosmos.lavender, tr(context, 'Nesting & groups', 'Anidación y grupos'),
+      (PhosphorIcons.treeStructure(), context.sp.primary, tr(context, 'Nesting & groups', 'Anidación y grupos'),
           tr(context, 'Subsystems can hold nested subsystems and internal groups, so layered or branching structures stay readable.', 'Los subsistemas pueden contener subsistemas anidados y grupos internos, para que las estructuras por capas o ramas sean claras.')),
-      (PhosphorIcons.graph(), Cosmos.pink, tr(context, 'Its own space', 'Su propio espacio'),
+      (PhosphorIcons.graph(), context.sp.secondary, tr(context, 'Its own space', 'Su propio espacio'),
           tr(context, 'Each subsystem keeps its own fronting history, journal, notes, chat and announcements, rules and boundaries, and connections to the main system and other subsystems.', 'Cada subsistema guarda su historial de frente, diario, notas, chat y anuncios, normas y límites, y conexiones con el sistema principal y otros subsistemas.')),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CosmicHeading(tr(context, 'Learn more', 'Más información'), color: Cosmos.blue),
+        CosmicHeading(tr(context, 'Learn more', 'Más información'), color: context.sp.tertiary),
         for (final (icon, color, title, body) in items) Padding(padding: const EdgeInsets.only(bottom: 8), child: _Expander(icon: icon, color: color, title: title, body: body)),
       ],
     );
   }
 }
 
-class _Expander extends StatefulWidget {
+class _Expander extends StatelessWidget {
   const _Expander({required this.icon, required this.color, required this.title, required this.body});
   final IconData icon;
   final Color color;
   final String title;
   final String body;
   @override
-  State<_Expander> createState() => _ExpanderState();
-}
-
-class _ExpanderState extends State<_Expander> {
-  bool _open = false;
-  @override
-  Widget build(BuildContext context) => CosmicPanel(
-    accent: widget.color,
-    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-    onTap: () => setState(() => _open = !_open),
-    child: AnimatedSize(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
-      alignment: Alignment.topCenter,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(widget.icon, size: 18, color: widget.color),
-              const SizedBox(width: 12),
-              Expanded(child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white))),
-              AnimatedRotation(turns: _open ? 0.5 : 0, duration: const Duration(milliseconds: 200), child: Icon(PhosphorIcons.caretDown(), size: 16, color: Cosmos.faint)),
-            ],
-          ),
-          if (_open) Padding(padding: const EdgeInsets.only(top: 10, left: 30), child: Text(widget.body, style: const TextStyle(color: Cosmos.dim, height: 1.5))),
-        ],
-      ),
-    ),
+  Widget build(BuildContext context) => PrismExpandableSection(
+    leading: Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+    title: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+    children: [Text(body, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5))],
   );
 }

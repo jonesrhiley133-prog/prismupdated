@@ -79,16 +79,6 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
       bodyPadding: EdgeInsets.zero,
       body: Stack(
         children: [
-          // Soft atmospheric glow in the habit colour behind the header.
-          Positioned(
-            top: -120,
-            left: -80,
-            right: -80,
-            height: 420,
-            child: IgnorePointer(
-              child: DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [color.withValues(alpha: 0.18), color.withValues(alpha: 0)]))),
-            ),
-          ),
           ListView(
             padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 24),
             children: [
@@ -325,7 +315,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                   child: Column(
                     children: [
                       Expanded(child: Container(width: 2, color: i == 0 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
-                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle, boxShadow: [BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.5), blurRadius: 6)])),
+                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
                       Expanded(child: Container(width: 2, color: i == todays.length - 1 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
                     ],
                   ),

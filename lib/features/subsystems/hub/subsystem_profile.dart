@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
@@ -61,9 +60,8 @@ class _SubsystemProfileScreenState extends ConsumerState<SubsystemProfileScreen>
     if (s == null) {
       return CosmicScope(
         child: PrismPageScaffold(
-          backgroundColor: Cosmos.black,
           topBar: PrismTopBar(title: tr(context, 'Subsystem', 'Subsistema'), showBackButton: true),
-          body: Center(child: Text(tr(context, 'This subsystem isn’t available.', 'Este subsistema no está disponible.'), style: const TextStyle(color: Cosmos.dim))),
+          body: Center(child: Text(tr(context, 'This subsystem isn’t available.', 'Este subsistema no está disponible.'), style: TextStyle(color: context.sp.dim))),
         ),
       );
     }
@@ -80,7 +78,6 @@ class _SubsystemProfileScreenState extends ConsumerState<SubsystemProfileScreen>
       accent: color,
       child: Builder(
         builder: (context) => PrismPageScaffold(
-          backgroundColor: Cosmos.black,
           topBar: PrismTopBar(
             title: s.title,
             showBackButton: true,
@@ -93,7 +90,7 @@ class _SubsystemProfileScreenState extends ConsumerState<SubsystemProfileScreen>
                 pinned: true,
                 delegate: _TabBarDelegate(
                   child: Container(
-                    color: Cosmos.black,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     height: 52,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
@@ -176,24 +173,7 @@ class _TabPill extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Semantics(
-    selected: selected,
-    button: true,
-    child: GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
-          color: selected ? color.withValues(alpha: 0.2) : Cosmos.panel,
-          border: Border.all(color: selected ? color : Cosmos.line),
-          boxShadow: selected ? [BoxShadow(color: color.withValues(alpha: 0.35), blurRadius: 14, spreadRadius: -4)] : null,
-        ),
-        child: Text(label, style: TextStyle(color: selected ? Colors.white : Cosmos.dim, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, fontSize: 13)),
-      ),
-    ),
-  );
+  Widget build(BuildContext context) => PrismChip(label: label, selected: selected, onTap: onTap);
 }
 
 Widget memberAvatar(WidgetRef ref, Member m, {double size = 36}) {
@@ -220,15 +200,17 @@ class _Hero extends ConsumerWidget {
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
-              gradient: switch (style) {
-                'aurora' => LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.color.withValues(alpha: 0.55), subColor2(s).withValues(alpha: 0.4), Cosmos.black]),
-                'eclipse' => RadialGradient(center: const Alignment(0, -0.2), radius: 0.9, colors: [Cosmos.black, c.color.withValues(alpha: 0.5), Cosmos.black], stops: const [0.25, 0.42, 1]),
-                _ => RadialGradient(center: const Alignment(0.6, -0.8), radius: 1.3, colors: [c.color.withValues(alpha: 0.55), subColor2(s).withValues(alpha: 0.22), Cosmos.black]),
-              },
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: switch (style) {
+                  'aurora' => [c.color.withValues(alpha: 0.24), subColor2(s).withValues(alpha: 0.12), context.sp.bg],
+                  'eclipse' => [context.sp.panel, context.sp.bg],
+                  _ => [c.color.withValues(alpha: 0.18), context.sp.bg],
+                },
+              ),
             ),
           ),
-          const CustomPaint(painter: _HeroStars()),
-          const Positioned(left: 0, right: 0, bottom: 0, height: 80, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x00000000), Cosmos.black])))),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
             child: Column(
@@ -236,7 +218,7 @@ class _Hero extends ConsumerWidget {
               children: [
                 SubOrb(emoji: subEmoji(s), color: c.color, color2: subColor2(s), size: 76),
                 const SizedBox(height: 12),
-                Text(s.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
+                Text(s.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text)),
                 const SizedBox(height: 4),
                 Text(
                   [
@@ -245,7 +227,7 @@ class _Hero extends ConsumerWidget {
                     if (parent != null) tr(context, 'in ${parent.title}', 'en ${parent.title}'),
                   ].join(' · '),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Cosmos.dim, fontSize: 13),
+                  style: TextStyle(color: context.sp.dim, fontSize: 13),
                 ),
                 if (s.tags.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -258,22 +240,6 @@ class _Hero extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _HeroStars extends CustomPainter {
-  const _HeroStars();
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rnd = math.Random(3);
-    final p = Paint();
-    for (var i = 0; i < 50; i++) {
-      p.color = Colors.white.withValues(alpha: 0.1 + rnd.nextDouble() * 0.5);
-      canvas.drawCircle(Offset(rnd.nextDouble() * size.width, rnd.nextDouble() * size.height), 0.4 + rnd.nextDouble(), p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_HeroStars oldDelegate) => false;
 }
 
 // ───────────────────────── Overview ─────────────────────────
@@ -295,9 +261,9 @@ class _Overview extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CosmicHeading(tr(context, 'Fronting now', 'Al frente ahora'), color: Cosmos.pink),
+        CosmicHeading(tr(context, 'Fronting now', 'Al frente ahora'), color: context.sp.secondary),
         if (fronting.isEmpty)
-          Text(tr(context, 'No one from this subsystem is fronting.', 'Nadie de este subsistema está al frente.'), style: const TextStyle(color: Cosmos.dim))
+          Text(tr(context, 'No one from this subsystem is fronting.', 'Nadie de este subsistema está al frente.'), style: TextStyle(color: context.sp.dim))
         else
           Wrap(
             spacing: 10,
@@ -305,7 +271,7 @@ class _Overview extends ConsumerWidget {
             children: [
               for (final m in fronting)
                 CosmicPanel(
-                  accent: Cosmos.pink,
+                  accent: context.sp.secondary,
                   padding: const EdgeInsets.fromLTRB(8, 8, 14, 8),
                   radius: 999,
                   child: Row(mainAxisSize: MainAxisSize.min, children: [memberAvatar(ref, m, size: 28), const SizedBox(width: 8), Text(memberName(ref, m), style: const TextStyle(fontWeight: FontWeight.w700))]),
@@ -320,14 +286,14 @@ class _Overview extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (about[0].isNotEmpty) Text(about[0], style: const TextStyle(height: 1.5)),
-                if (about[1].isNotEmpty) ...[const SizedBox(height: 10), Text(tr(context, 'Purpose', 'Propósito'), style: const TextStyle(color: Cosmos.faint, fontSize: 12)), Text(about[1])],
-                if (about[2].isNotEmpty) ...[const SizedBox(height: 10), Text(tr(context, 'Origin', 'Origen'), style: const TextStyle(color: Cosmos.faint, fontSize: 12)), Text(about[2])],
+                if (about[1].isNotEmpty) ...[const SizedBox(height: 10), Text(tr(context, 'Purpose', 'Propósito'), style: TextStyle(color: context.sp.faint, fontSize: 12)), Text(about[1])],
+                if (about[2].isNotEmpty) ...[const SizedBox(height: 10), Text(tr(context, 'Origin', 'Origen'), style: TextStyle(color: context.sp.faint, fontSize: 12)), Text(about[2])],
               ],
             ),
           ),
         ],
         if (announcements.isNotEmpty) ...[
-          CosmicHeading(tr(context, 'Latest announcement', 'Último anuncio'), color: Cosmos.blue),
+          CosmicHeading(tr(context, 'Latest announcement', 'Último anuncio'), color: context.sp.tertiary),
           _MessageCard(c: c, m: announcements.first),
         ],
         CosmicHeading(tr(context, 'Members', 'Miembros'), trailing: _Link(tr(context, 'See all', 'Ver todos'), () => go(SubTab.members))),
@@ -346,7 +312,7 @@ class _Overview extends ConsumerWidget {
                         children: [
                           Stack(clipBehavior: Clip.none, children: [memberAvatar(ref, m, size: 48), if (mm.founder) const Positioned(right: -4, top: -6, child: Text('👑', style: TextStyle(fontSize: 14)))]),
                           const SizedBox(height: 6),
-                          Text(memberName(ref, m), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, color: Cosmos.dim)),
+                          Text(memberName(ref, m), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: context.sp.dim)),
                         ],
                       ),
                     ),
@@ -355,7 +321,7 @@ class _Overview extends ConsumerWidget {
           ),
         ),
         if (rules.isNotEmpty) ...[
-          CosmicHeading(tr(context, 'Rules & boundaries', 'Normas y límites'), color: Cosmos.pink, trailing: _Link(tr(context, 'All', 'Todas'), () => go(SubTab.rules))),
+          CosmicHeading(tr(context, 'Rules & boundaries', 'Normas y límites'), color: context.sp.secondary, trailing: _Link(tr(context, 'All', 'Todas'), () => go(SubTab.rules))),
           for (final r in rules)
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -363,7 +329,7 @@ class _Overview extends ConsumerWidget {
             ),
         ],
         if (nested.isNotEmpty) ...[
-          CosmicHeading(tr(context, 'Nested subsystems', 'Subsistemas anidados'), color: Cosmos.blue),
+          CosmicHeading(tr(context, 'Nested subsystems', 'Subsistemas anidados'), color: context.sp.tertiary),
           for (final n in nested)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -371,7 +337,7 @@ class _Overview extends ConsumerWidget {
                 accent: subColor(n),
                 padding: const EdgeInsets.all(12),
                 onTap: () => context.push('${AppRoutePaths.subsystems}/${n.id}'),
-                child: Row(children: [SubOrb(emoji: subEmoji(n), color: subColor(n), size: 34), const SizedBox(width: 12), Expanded(child: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w700))), Icon(PhosphorIcons.caretRight(), size: 16, color: Cosmos.faint)]),
+                child: Row(children: [SubOrb(emoji: subEmoji(n), color: subColor(n), size: 34), const SizedBox(width: 12), Expanded(child: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w700))), Icon(PhosphorIcons.caretRight(), size: 16, color: context.sp.faint)]),
               ),
             ),
         ],
@@ -405,7 +371,7 @@ class _Members extends ConsumerWidget {
                 c.settings.isolate
                     ? tr(context, 'These members are private to this subsystem.', 'Estos miembros son privados de este subsistema.')
                     : tr(context, 'These members also appear in Headmates.', 'Estos miembros también aparecen en Headmates.'),
-                style: const TextStyle(color: Cosmos.dim, fontSize: 13),
+                style: TextStyle(color: context.sp.dim, fontSize: 13),
               ),
             ),
             GlowButton(label: tr(context, 'Add', 'Añadir'), icon: AppIcons.add, onPressed: () => showAddSubMembers(context, c)),
@@ -417,7 +383,7 @@ class _Members extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: CosmicPanel(
-                accent: mm.founder ? Cosmos.pink : c.color,
+                accent: mm.founder ? context.sp.secondary : c.color,
                 padding: const EdgeInsets.all(12),
                 onTap: () => _editMembership(context, ref, c, mm),
                 child: Row(
@@ -436,13 +402,13 @@ class _Members extends ConsumerWidget {
                           const SizedBox(height: 4),
                           Text(
                             tr(context, 'Joined ${DateFormat.yMMMd(context.dateLocale).format(mm.joined)}', 'Se unió el ${DateFormat.yMMMd(context.dateLocale).format(mm.joined)}'),
-                            style: const TextStyle(color: Cosmos.faint, fontSize: 11.5),
+                            style: TextStyle(color: context.sp.faint, fontSize: 11.5),
                           ),
                         ],
                       ),
                     ),
-                    if (mm.permissions.contains('manage')) Padding(padding: const EdgeInsets.only(left: 6), child: Icon(PhosphorIcons.shieldCheck(), size: 16, color: Cosmos.blue)),
-                    Icon(PhosphorIcons.caretRight(), size: 16, color: Cosmos.faint),
+                    if (mm.permissions.contains('manage')) Padding(padding: const EdgeInsets.only(left: 6), child: Icon(PhosphorIcons.shieldCheck(), size: 16, color: context.sp.tertiary)),
+                    Icon(PhosphorIcons.caretRight(), size: 16, color: context.sp.faint),
                   ],
                 ),
               ),
@@ -546,7 +512,7 @@ class _AddMembersState extends ConsumerState<_AddMembers> {
     final all = ref.watch(memberIndexProvider).values.where((m) => !widget.c.ids.contains(m.id) && m.id != unknownSentinelMemberId).toList()..sort((a, b) => memberName(ref, a).compareTo(memberName(ref, b)));
     final shown = [for (final m in all) if (q.isEmpty || memberName(ref, m).toLowerCase().contains(q)) m];
     return ColoredBox(
-      color: Cosmos.black,
+      color: Colors.transparent,
       child: Column(
         children: [
           Padding(
@@ -563,7 +529,7 @@ class _AddMembersState extends ConsumerState<_AddMembers> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: CosmicPanel(
-                      accent: _sel.contains(m.id) ? widget.c.color : Cosmos.line,
+                      accent: _sel.contains(m.id) ? widget.c.color : context.sp.line,
                       padding: const EdgeInsets.all(10),
                       onTap: () => setState(() => _sel.contains(m.id) ? _sel.remove(m.id) : _sel.add(m.id)),
                       child: Row(
@@ -571,7 +537,7 @@ class _AddMembersState extends ConsumerState<_AddMembers> {
                           memberAvatar(ref, m),
                           const SizedBox(width: 12),
                           Expanded(child: Text(memberName(ref, m), style: const TextStyle(fontWeight: FontWeight.w600))),
-                          Icon(_sel.contains(m.id) ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : PhosphorIcons.circle(), color: _sel.contains(m.id) ? widget.c.color : Cosmos.faint),
+                          Icon(_sel.contains(m.id) ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : PhosphorIcons.circle(), color: _sel.contains(m.id) ? widget.c.color : context.sp.faint),
                         ],
                       ),
                     ),
@@ -618,7 +584,7 @@ class _Relationships extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Relationships between this subsystem’s members.', 'Relaciones entre los miembros de este subsistema.'), style: const TextStyle(color: Cosmos.dim, fontSize: 13))),
+            Expanded(child: Text(tr(context, 'Relationships between this subsystem’s members.', 'Relaciones entre los miembros de este subsistema.'), style: TextStyle(color: context.sp.dim, fontSize: 13))),
             GlowButton(label: tr(context, 'Add', 'Añadir'), icon: AppIcons.add, onPressed: c.members.isEmpty ? null : () => showRelationshipEditor(context, memberId: c.members.first.id)),
           ],
         ),
@@ -642,7 +608,7 @@ class _Relationships extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('${memberName(ref, c.index[r.memberId])} & ${memberName(ref, c.index[r.str(RelField.otherId)])}', style: const TextStyle(fontWeight: FontWeight.w700)),
-                        Text(relTypeLabel(context.l10n, r.str(RelField.type) ?? 'other'), style: const TextStyle(color: Cosmos.dim, fontSize: 12.5)),
+                        Text(relTypeLabel(context.l10n, r.str(RelField.type) ?? 'other'), style: TextStyle(color: context.sp.dim, fontSize: 12.5)),
                       ],
                     ),
                   ),
@@ -659,7 +625,7 @@ class _Empty extends StatelessWidget {
   const _Empty(this.text);
   final String text;
   @override
-  Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 24), child: Text(text, textAlign: TextAlign.center, style: const TextStyle(color: Cosmos.faint)));
+  Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 24), child: Text(text, textAlign: TextAlign.center, style: TextStyle(color: context.sp.faint)));
 }
 
 // ───────────────────────── Fronting ─────────────────────────
@@ -682,7 +648,7 @@ class _Fronting extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CosmicHeading(tr(context, 'Last 30 days', 'Últimos 30 días'), color: Cosmos.pink),
+        CosmicHeading(tr(context, 'Last 30 days', 'Últimos 30 días'), color: context.sp.secondary),
         if (ranked.isEmpty) _Empty(tr(context, 'No fronting from this subsystem in the last 30 days.', 'Sin frente de este subsistema en los últimos 30 días.')),
         for (final e in ranked)
           Padding(
@@ -695,11 +661,11 @@ class _Fronting extends ConsumerWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: LinearProgressIndicator(value: total.inSeconds == 0 ? 0 : e.value.inSeconds / total.inSeconds, minHeight: 8, color: c.color, backgroundColor: Cosmos.panelHi),
+                    child: LinearProgressIndicator(value: total.inSeconds == 0 ? 0 : e.value.inSeconds / total.inSeconds, minHeight: 8, color: c.color, backgroundColor: context.sp.panelHi),
                   ),
                 ),
                 const SizedBox(width: 10),
-                Text(dur(e.value), style: const TextStyle(color: Cosmos.dim, fontSize: 12)),
+                Text(dur(e.value), style: TextStyle(color: context.sp.dim, fontSize: 12)),
               ],
             ),
           ),
@@ -709,7 +675,7 @@ class _Fronting extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: CosmicPanel(
-                accent: f.isActive ? Cosmos.pink : c.color,
+                accent: f.isActive ? context.sp.secondary : c.color,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 onTap: () => context.push(AppRoutePaths.member(f.memberId!)),
                 child: Row(
@@ -717,7 +683,7 @@ class _Fronting extends ConsumerWidget {
                     if (c.index[f.memberId] case final m?) memberAvatar(ref, m, size: 26),
                     const SizedBox(width: 10),
                     Expanded(child: Text(memberName(ref, c.index[f.memberId]), style: const TextStyle(fontWeight: FontWeight.w600))),
-                    Text(f.isActive ? tr(context, 'Now · ${dur(f.duration)}', 'Ahora · ${dur(f.duration)}') : '${df.format(f.startTime)} · ${dur(f.duration)}', style: const TextStyle(color: Cosmos.dim, fontSize: 12)),
+                    Text(f.isActive ? tr(context, 'Now · ${dur(f.duration)}', 'Ahora · ${dur(f.duration)}') : '${df.format(f.startTime)} · ${dur(f.duration)}', style: TextStyle(color: context.sp.dim, fontSize: 12)),
                   ],
                 ),
               ),
@@ -744,7 +710,7 @@ class _Entries extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(journal ? tr(context, 'The subsystem’s own journal.', 'El diario propio del subsistema.') : tr(context, 'Notes and internal info.', 'Notas e información interna.'), style: const TextStyle(color: Cosmos.dim, fontSize: 13))),
+            Expanded(child: Text(journal ? tr(context, 'The subsystem’s own journal.', 'El diario propio del subsistema.') : tr(context, 'Notes and internal info.', 'Notas e información interna.'), style: TextStyle(color: context.sp.dim, fontSize: 13))),
             GlowButton(label: tr(context, 'Write', 'Escribir'), icon: PhosphorIcons.pencilSimple(), onPressed: () => editSubEntry(context, ref, c, kind)),
           ],
         ),
@@ -761,14 +727,14 @@ class _Entries extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      if (r.flag('pinned')) Padding(padding: const EdgeInsets.only(right: 6), child: Icon(PhosphorIcons.pushPin(PhosphorIconsStyle.fill), size: 14, color: Cosmos.pink)),
+                      if (r.flag('pinned')) Padding(padding: const EdgeInsets.only(right: 6), child: Icon(PhosphorIcons.pushPin(PhosphorIconsStyle.fill), size: 14, color: context.sp.secondary)),
                       Expanded(child: Text(r.title.isEmpty ? tr(context, 'Untitled', 'Sin título') : r.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15))),
-                      Text(DateFormat.yMMMd(context.dateLocale).format(r.occurredAt ?? r.createdAt), style: const TextStyle(color: Cosmos.faint, fontSize: 12)),
+                      Text(DateFormat.yMMMd(context.dateLocale).format(r.occurredAt ?? r.createdAt), style: TextStyle(color: context.sp.faint, fontSize: 12)),
                     ],
                   ),
-                  if ((r.body ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(r.body!, maxLines: 4, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Cosmos.dim, height: 1.45))),
+                  if ((r.body ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(r.body!, maxLines: 4, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.sp.dim, height: 1.45))),
                   if (c.index[r.memberId] case final m?)
-                    Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [memberAvatar(ref, m, size: 18), const SizedBox(width: 6), Text(memberName(ref, m), style: const TextStyle(color: Cosmos.faint, fontSize: 12))])),
+                    Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [memberAvatar(ref, m, size: 18), const SizedBox(width: 6), Text(memberName(ref, m), style: TextStyle(color: context.sp.faint, fontSize: 12))])),
                 ],
               ),
             ),
@@ -880,7 +846,7 @@ class _Groups extends ConsumerWidget {
               ),
             ),
           ),
-        CosmicHeading(tr(context, 'Nested subsystems', 'Subsistemas anidados'), color: Cosmos.blue, trailing: _Link(tr(context, 'New nested', 'Nuevo anidado'), () => showSubsystemWizard(context, parentId: c.s.id))),
+        CosmicHeading(tr(context, 'Nested subsystems', 'Subsistemas anidados'), color: context.sp.tertiary, trailing: _Link(tr(context, 'New nested', 'Nuevo anidado'), () => showSubsystemWizard(context, parentId: c.s.id))),
         if (nested.isEmpty) _Empty(tr(context, 'Subsystems can contain their own subsystems.', 'Los subsistemas pueden contener sus propios subsistemas.')),
         for (final n in nested)
           Padding(
@@ -889,7 +855,7 @@ class _Groups extends ConsumerWidget {
               accent: subColor(n),
               padding: const EdgeInsets.all(12),
               onTap: () => context.push('${AppRoutePaths.subsystems}/${n.id}'),
-              child: Row(children: [SubOrb(emoji: subEmoji(n), color: subColor(n), size: 34), const SizedBox(width: 12), Expanded(child: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w700))), Icon(PhosphorIcons.caretRight(), size: 16, color: Cosmos.faint)]),
+              child: Row(children: [SubOrb(emoji: subEmoji(n), color: subColor(n), size: 34), const SizedBox(width: 12), Expanded(child: Text(n.title, style: const TextStyle(fontWeight: FontWeight.w700))), Icon(PhosphorIcons.caretRight(), size: 16, color: context.sp.faint)]),
             ),
           ),
       ],
@@ -976,14 +942,14 @@ class _Rules extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Rules, boundaries and communication preferences.', 'Normas, límites y preferencias de comunicación.'), style: const TextStyle(color: Cosmos.dim, fontSize: 13))),
+            Expanded(child: Text(tr(context, 'Rules, boundaries and communication preferences.', 'Normas, límites y preferencias de comunicación.'), style: TextStyle(color: context.sp.dim, fontSize: 13))),
             GlowButton(label: tr(context, 'Add', 'Añadir'), icon: AppIcons.add, onPressed: () => editSubEntry(context, ref, c, TrackerKind.subRule, categories: _ruleCats)),
           ],
         ),
         if (legacy.isNotEmpty) ...[const SizedBox(height: 12), CosmicPanel(accent: c.color, child: Text(legacy, style: const TextStyle(height: 1.5)))],
         for (final (k, en, es) in _ruleCats)
           if (rules.where((r) => (r.str('cat') ?? 'rule') == k).toList() case final list when list.isNotEmpty) ...[
-            CosmicHeading(tr(context, en, es), color: k == 'boundary' ? Cosmos.pink : (k == 'comm' ? Cosmos.blue : Cosmos.lavender)),
+            CosmicHeading(tr(context, en, es), color: k == 'boundary' ? context.sp.secondary : (k == 'comm' ? context.sp.tertiary : context.sp.primary)),
             for (final r in list)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -995,7 +961,7 @@ class _Rules extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(r.title, style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4)),
-                      if ((r.body ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Text(r.body!, style: const TextStyle(color: Cosmos.dim, fontSize: 13))),
+                      if ((r.body ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Text(r.body!, style: TextStyle(color: context.sp.dim, fontSize: 13))),
                     ],
                   ),
                 ),
@@ -1030,9 +996,9 @@ class _Connections extends ConsumerWidget {
         CosmicPanel(
           accent: c.color,
           onTap: () => _editConnectionNote(context, ref, c),
-          child: Text(note.isEmpty ? tr(context, 'Describe how this subsystem relates to the main system…', 'Describe cómo se relaciona este subsistema con el sistema principal…') : note, style: TextStyle(color: note.isEmpty ? Cosmos.faint : Colors.white, height: 1.5)),
+          child: Text(note.isEmpty ? tr(context, 'Describe how this subsystem relates to the main system…', 'Describe cómo se relaciona este subsistema con el sistema principal…') : note, style: TextStyle(color: note.isEmpty ? context.sp.faint : context.sp.text, height: 1.5)),
         ),
-        CosmicHeading(tr(context, 'Other subsystems', 'Otros subsistemas'), color: Cosmos.blue),
+        CosmicHeading(tr(context, 'Other subsystems', 'Otros subsistemas'), color: context.sp.tertiary),
         if (others.isEmpty) _Empty(tr(context, 'No other subsystems yet.', 'Aún no hay otros subsistemas.')),
         Wrap(
           spacing: 8,
@@ -1124,7 +1090,7 @@ class _ChatState extends ConsumerState<_Chat> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (ann.isNotEmpty) ...[CosmicHeading(tr(context, 'Announcements', 'Anuncios'), color: Cosmos.pink), for (final m in ann) Padding(padding: const EdgeInsets.only(bottom: 8), child: _MessageCard(c: c, m: m))],
+        if (ann.isNotEmpty) ...[CosmicHeading(tr(context, 'Announcements', 'Anuncios'), color: context.sp.secondary), for (final m in ann) Padding(padding: const EdgeInsets.only(bottom: 8), child: _MessageCard(c: c, m: m))],
         CosmicHeading(tr(context, 'Internal chat', 'Chat interno')),
         if (msgs.where((m) => !m.flag('announce')).isEmpty) _Empty(tr(context, 'Say hello to your subsystem.', 'Saluda a tu subsistema.')),
         for (final m in msgs.where((m) => !m.flag('announce')).toList().reversed.take(60).toList().reversed) _Bubble(c: c, m: m),
@@ -1168,16 +1134,16 @@ class _MessageCard extends ConsumerWidget {
   final TrackerRecord m;
   @override
   Widget build(BuildContext context, WidgetRef ref) => CosmicPanel(
-    accent: Cosmos.pink,
+    accent: context.sp.secondary,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(PhosphorIcons.megaphone(), size: 15, color: Cosmos.pink),
+            Icon(PhosphorIcons.megaphone(), size: 15, color: context.sp.secondary),
             const SizedBox(width: 8),
             Expanded(child: Text(memberName(ref, c.index[m.memberId]), style: const TextStyle(fontWeight: FontWeight.w700))),
-            Text(DateFormat.MMMd(context.dateLocale).add_jm().format(m.createdAt), style: const TextStyle(color: Cosmos.faint, fontSize: 11.5)),
+            Text(DateFormat.MMMd(context.dateLocale).add_jm().format(m.createdAt), style: TextStyle(color: context.sp.faint, fontSize: 11.5)),
           ],
         ),
         const SizedBox(height: 6),
@@ -1209,11 +1175,11 @@ class _Bubble extends ConsumerWidget {
               },
               child: Container(
                 padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                decoration: BoxDecoration(color: Color.alphaBlend(c.color.withValues(alpha: 0.10), Cosmos.panel), borderRadius: const BorderRadius.only(topRight: Radius.circular(16), bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16), topLeft: Radius.circular(4))),
+                decoration: BoxDecoration(color: Color.alphaBlend(c.color.withValues(alpha: 0.10), context.sp.panel), borderRadius: const BorderRadius.only(topRight: Radius.circular(16), bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16), topLeft: Radius.circular(4))),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [Expanded(child: Text(memberName(ref, who), style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: c.color))), Text(DateFormat.jm(context.dateLocale).format(m.createdAt), style: const TextStyle(color: Cosmos.faint, fontSize: 11))]),
+                    Row(children: [Expanded(child: Text(memberName(ref, who), style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: c.color))), Text(DateFormat.jm(context.dateLocale).format(m.createdAt), style: TextStyle(color: context.sp.faint, fontSize: 11))]),
                     const SizedBox(height: 2),
                     Text(m.body ?? ''),
                   ],
@@ -1252,17 +1218,17 @@ class _Settings extends ConsumerWidget {
             children: [
               SubOrb(emoji: subEmoji(s), color: c.color, color2: subColor2(s), size: 38),
               const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(s.title, style: const TextStyle(fontWeight: FontWeight.w700)), Text(tr(context, 'Name, icon, description, tags', 'Nombre, icono, descripción, etiquetas'), style: const TextStyle(color: Cosmos.faint, fontSize: 12))])),
-              Icon(PhosphorIcons.pencilSimple(), size: 16, color: Cosmos.faint),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(s.title, style: const TextStyle(fontWeight: FontWeight.w700)), Text(tr(context, 'Name, icon, description, tags', 'Nombre, icono, descripción, etiquetas'), style: TextStyle(color: context.sp.faint, fontSize: 12))])),
+              Icon(PhosphorIcons.pencilSimple(), size: 16, color: context.sp.faint),
             ],
           ),
         ),
-        CosmicHeading(tr(context, 'Members', 'Miembros'), color: Cosmos.pink),
+        CosmicHeading(tr(context, 'Members', 'Miembros'), color: context.sp.secondary),
         Wrap(spacing: 8, runSpacing: 8, children: [PrismButton(label: tr(context, 'Add members', 'Añadir miembros'), icon: AppIcons.add, onPressed: () => showAddSubMembers(context, c))]),
         const SizedBox(height: 4),
-        Text(tr(context, 'Tap a member in the Members tab to change their roles and permissions.', 'Toca un miembro en la pestaña Miembros para cambiar sus roles y permisos.'), style: const TextStyle(color: Cosmos.faint, fontSize: 12)),
-        CosmicHeading(tr(context, 'Structure', 'Estructura'), color: Cosmos.blue),
-        Text(tr(context, 'Nested inside', 'Anidado en'), style: const TextStyle(color: Cosmos.dim)),
+        Text(tr(context, 'Tap a member in the Members tab to change their roles and permissions.', 'Toca un miembro en la pestaña Miembros para cambiar sus roles y permisos.'), style: TextStyle(color: context.sp.faint, fontSize: 12)),
+        CosmicHeading(tr(context, 'Structure', 'Estructura'), color: context.sp.tertiary),
+        Text(tr(context, 'Nested inside', 'Anidado en'), style: TextStyle(color: context.sp.dim)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
@@ -1276,10 +1242,10 @@ class _Settings extends ConsumerWidget {
         CosmicHeading(tr(context, 'Fronting', 'Frente')),
         PrismSwitchRow(title: tr(context, 'Allow co-fronting', 'Permitir co-frente'), value: set.coFronting, onChanged: (v) => put({'coFronting': v})),
         PrismSwitchRow(title: tr(context, 'Notify when a member starts fronting', 'Avisar cuando un miembro empiece a estar al frente'), value: set.notifyFronting, onChanged: (v) => put({'notifyFronting': v})),
-        CosmicHeading(tr(context, 'Communication', 'Comunicación'), color: Cosmos.pink),
+        CosmicHeading(tr(context, 'Communication', 'Comunicación'), color: context.sp.secondary),
         PrismSwitchRow(title: tr(context, 'Internal chat', 'Chat interno'), value: set.chat, onChanged: (v) => put({'chat': v})),
         PrismSwitchRow(title: tr(context, 'Announcements only', 'Solo anuncios'), subtitle: tr(context, 'Every message is posted as an announcement.', 'Cada mensaje se publica como anuncio.'), value: s.flag('announceOnly'), onChanged: (v) => put({'announceOnly': v})),
-        CosmicHeading(tr(context, 'Privacy', 'Privacidad'), color: Cosmos.blue),
+        CosmicHeading(tr(context, 'Privacy', 'Privacidad'), color: context.sp.tertiary),
         PrismSwitchRow(
           title: tr(context, 'Member isolation', 'Aislamiento de miembros'),
           subtitle: tr(context, 'Members appear only inside this subsystem — not in Headmates, alter searches or system-wide lists.', 'Los miembros solo aparecen dentro de este subsistema, no en Headmates, búsquedas ni listas del sistema.'),
@@ -1297,7 +1263,7 @@ class _Settings extends ConsumerWidget {
         ColorChoiceRow(value: set.color, colors: subsystemColors, onChanged: (v) => put({SubField.color: v})),
         const SizedBox(height: 8),
         TrackerLabel(tr(context, 'Glow colour', 'Color de brillo')),
-        ColorChoiceRow(value: set.color2 ?? Cosmos.pink.toARGB32(), colors: subsystemColors, onChanged: (v) => put({'color2': v})),
+        ColorChoiceRow(value: set.color2 ?? context.sp.secondary.toARGB32(), colors: subsystemColors, onChanged: (v) => put({'color2': v})),
         const SizedBox(height: 8),
         TrackerLabel(tr(context, 'Banner', 'Banner')),
         PrismSegmentedControl<String>(
@@ -1305,7 +1271,7 @@ class _Settings extends ConsumerWidget {
           selected: s.str('bannerStyle') ?? 'nebula',
           onChanged: (v) => put({'bannerStyle': v}),
         ),
-        CosmicHeading(tr(context, 'Data', 'Datos'), color: Cosmos.pink),
+        CosmicHeading(tr(context, 'Data', 'Datos'), color: context.sp.secondary),
         PrismSwitchRow(title: tr(context, 'Separate journal & notes', 'Diario y notas propios'), value: set.separateJournal, onChanged: (v) => put({'separateJournal': v})),
         const SizedBox(height: 8),
         Align(

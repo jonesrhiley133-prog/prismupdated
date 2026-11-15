@@ -36,7 +36,7 @@ class SubSettings {
   String get visibility => r.str('visibility') ?? 'system';
   String? get founderId => r.str('founder');
   String? get banner => r.str('banner');
-  int get color => r.integer(SubField.color) ?? 0xFFB9A6FF;
+  int get color => r.integer(SubField.color) ?? 0xFFC98B8B;
   int? get color2 => r.integer('color2');
   String? get lookId => r.str('look');
   List<String> get tags => r.tags;

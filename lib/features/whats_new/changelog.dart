@@ -32,6 +32,38 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.27.1',
+    date: DateTime(2026, 11, 15),
+    improvements: const [
+      LocalizedText(
+        'Subsystems now match the rest of Prism: your theme’s background and colours, the same rounded cards, buttons and section headings, and quiet orbit lines instead of the space effects.',
+        'Los subsistemas ahora combinan con el resto de Prism: el fondo y los colores de tu tema, las mismas tarjetas redondeadas, botones y títulos de sección, y órbitas discretas en lugar de efectos espaciales.',
+      ),
+      LocalizedText(
+        'Profile Studio has Cancel, Reset and Save buttons, and edits the alter’s bio directly instead of showing a second copy.',
+        'Profile Studio tiene botones de Cancelar, Restablecer y Guardar, y edita la bio del alter directamente en lugar de mostrar una segunda copia.',
+      ),
+      LocalizedText(
+        'Calmer Habits pages: the large glows behind headers, icons, rings and buttons are gone.',
+        'Páginas de hábitos más tranquilas: se quitaron los grandes brillos detrás de cabeceras, iconos, anillos y botones.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Profile Studio always opens on the saved profile, so saving no longer risks replacing it with an empty one.',
+        'Profile Studio siempre se abre con el perfil guardado, así que guardar ya no puede reemplazarlo por uno vacío.',
+      ),
+      LocalizedText(
+        'Saving in Profile Studio keeps the avatar and banner unless you change or remove them there, and keeps changes made elsewhere since the editor opened.',
+        'Guardar en Profile Studio conserva el avatar y el banner salvo que los cambies o quites ahí, y respeta los cambios hechos en otro sitio mientras estaba abierto.',
+      ),
+      LocalizedText(
+        'Alter profiles no longer repeat the bio and pronouns in the Profile Studio section.',
+        'Los perfiles de los alters ya no repiten la bio y los pronombres en la sección de Profile Studio.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.27.0',
     date: DateTime(2026, 11, 14),
     features: const [

@@ -69,12 +69,15 @@ ShapeBorder avatarShape(String s) => switch (s) {
 /// Renders a member profile designed in Profile Studio. Used both for the
 /// live preview and on the member's profile page.
 class StudioProfileView extends ConsumerWidget {
-  const StudioProfileView({super.key, required this.member, required this.cfg, this.preview = false, this.showHeader = true, this.forceWide});
+  const StudioProfileView({super.key, required this.member, required this.cfg, this.preview = false, this.showHeader = true, this.forceWide, this.inline = false});
   final Member member;
   final ProfileConfig cfg;
   final bool preview;
   final bool showHeader;
   final bool? forceWide;
+
+  /// On the member page, which already shows the bio and main pronouns.
+  final bool inline;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,7 +100,7 @@ class StudioProfileView extends ConsumerWidget {
           final wide = forceWide ?? box.maxWidth >= 700;
           final layout = wide ? cfg.lookStr('layoutDesktop', cfg.lookStr('layout', 'cards')) : cfg.lookStr('layout', 'cards');
           final bgMedia = cfg.look('bgMedia') as String?;
-          final content = _Body(member: member, cfg: cfg, layout: layout, wide: wide, accent: accent, preview: preview, showHeader: showHeader);
+          final content = _Body(member: member, cfg: cfg, layout: layout, wide: wide, accent: accent, preview: preview, showHeader: showHeader, inline: inline);
           if (bgMode == 'none') return content;
           return ClipRRect(
             borderRadius: BorderRadius.circular(preview ? 20 : 24),
@@ -120,7 +123,7 @@ class StudioProfileView extends ConsumerWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({required this.member, required this.cfg, required this.layout, required this.wide, required this.accent, required this.preview, required this.showHeader});
+  const _Body({required this.member, required this.cfg, required this.layout, required this.wide, required this.accent, required this.preview, required this.showHeader, this.inline = false});
   final Member member;
   final ProfileConfig cfg;
   final String layout;
@@ -128,6 +131,7 @@ class _Body extends ConsumerWidget {
   final Color accent;
   final bool preview;
   final bool showHeader;
+  final bool inline;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -135,7 +139,8 @@ class _Body extends ConsumerWidget {
       for (final (id, visible) in cfg.modules)
         if (visible) ?_module(context, ref, id),
     ];
-    final identity = _Identity(member: member, cfg: cfg, accent: accent);
+    final identity = _Identity(member: member, cfg: cfg, accent: accent, inline: inline);
+    final showIdentity = !inline || _hasIdentity(member, cfg, inline);
     final header = showHeader ? StudioHeader(member: member, cfg: cfg, accent: accent) : const SizedBox.shrink();
     final pad = EdgeInsets.all(preview ? 12 : 0);
 
@@ -152,7 +157,7 @@ class _Body extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: 260, child: card(identity)),
+                SizedBox(width: 260, child: showIdentity ? card(identity) : const SizedBox.shrink()),
                 const SizedBox(width: 12),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [for (final m in modules) Padding(padding: const EdgeInsets.only(bottom: 12), child: card(m))])),
               ],
@@ -173,7 +178,7 @@ class _Body extends ConsumerWidget {
               builder: (context, box) {
                 final cols = box.maxWidth >= 520 ? 2 : 1;
                 final w = (box.maxWidth - (cols - 1) * 12) / cols;
-                return Wrap(spacing: 12, runSpacing: 12, children: [SizedBox(width: w, child: card(identity)), for (final m in modules) SizedBox(width: w, child: card(m))]);
+                return Wrap(spacing: 12, runSpacing: 12, children: [if (showIdentity) SizedBox(width: w, child: card(identity)), for (final m in modules) SizedBox(width: w, child: card(m))]);
               },
             ),
           ],
@@ -187,7 +192,7 @@ class _Body extends ConsumerWidget {
         children: [
           header,
           const SizedBox(height: 12),
-          card(identity),
+          if (showIdentity) card(identity),
           for (final m in modules) ...[if (layout == 'full') const Divider(height: 28) else const SizedBox(height: 12), card(m)],
         ],
       ),
@@ -228,7 +233,7 @@ class _Body extends ConsumerWidget {
     switch (id) {
       case 'about':
         final desc = cfg.str('description');
-        final bio = member.bio ?? '';
+        final bio = inline ? '' : (member.bio ?? '');
         if (desc.isEmpty && bio.isEmpty) return null;
         return titled(moduleLabel(context, id), [if (desc.isNotEmpty) Text(desc, style: theme.textTheme.bodyLarge?.copyWith(height: 1.5)), if (bio.isNotEmpty && bio != desc) Padding(padding: EdgeInsets.only(top: desc.isEmpty ? 0 : 8), child: Text(bio, style: theme.textTheme.bodyMedium?.copyWith(height: 1.5)))]);
       case 'interests':
@@ -536,7 +541,7 @@ class StudioHeader extends ConsumerWidget {
     final avatar = Container(
       width: avatarSize,
       height: avatarSize,
-      decoration: ShapeDecoration(shape: shape, color: theme.colorScheme.surface, shadows: [BoxShadow(color: accent.withValues(alpha: 0.4), blurRadius: 18)]),
+      decoration: ShapeDecoration(shape: shape, color: theme.colorScheme.surface, shadows: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 6)]),
       padding: const EdgeInsets.all(4),
       child: ClipPath(
         clipper: ShapeBorderClipper(shape: shape),
@@ -621,18 +626,38 @@ class StudioHeader extends ConsumerWidget {
   }
 }
 
+bool _hasIdentity(Member m, ProfileConfig cfg, bool inline) {
+  bool t(String? v) => v != null && v.trim().isNotEmpty;
+  return cfg.list('altNames').isNotEmpty ||
+      cfg.list('pronounSets').any((p) => p.trim().toLowerCase() != (m.pronouns ?? '').trim().toLowerCase()) ||
+      (!inline && t(m.pronouns)) ||
+      t(cfg.str('gender')) ||
+      t(m.age) ||
+      t(cfg.str('ageRange')) ||
+      t(m.birthday) ||
+      t(cfg.str('species')) ||
+      t(cfg.str('origin')) ||
+      cfg.list('tags').isNotEmpty ||
+      cfg.list('internalRoles').isNotEmpty;
+}
+
 class _Identity extends ConsumerWidget {
-  const _Identity({required this.member, required this.cfg, required this.accent});
+  const _Identity({required this.member, required this.cfg, required this.accent, this.inline = false});
   final Member member;
   final ProfileConfig cfg;
   final Color accent;
+  final bool inline;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final labels = cfg.labels;
     String? value(String f) => switch (f) {
       'altNames' => cfg.list('altNames').join(', '),
-      'pronounSets' => [?member.pronouns, ...cfg.list('pronounSets')].where((x) => x.trim().isNotEmpty).join(' · '),
+      'pronounSets' => {
+        if (!inline) ?member.pronouns?.trim(),
+        for (final p in cfg.list('pronounSets'))
+          if (p.trim().toLowerCase() != (member.pronouns ?? '').trim().toLowerCase()) p.trim(),
+      }.where((x) => x.isNotEmpty).join(' · '),
       'gender' => cfg.str('gender'),
       'age' => [?member.age, if (cfg.str('ageRange').isNotEmpty) cfg.str('ageRange')].where((x) => x.trim().isNotEmpty).join(' · '),
       'birthday' => member.birthday ?? '',
@@ -647,6 +672,7 @@ class _Identity extends ConsumerWidget {
     final tags = cfg.list('tags');
     final internal = cfg.list('internalRoles');
     if (rows.isEmpty && tags.isEmpty && internal.isEmpty) {
+      if (inline) return const SizedBox.shrink();
       return Text(tr(context, 'No identity details yet.', 'Aún no hay detalles de identidad.'), style: theme.textTheme.bodySmall);
     }
     return Column(
@@ -689,7 +715,7 @@ class StudioProfileSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cfg = ref.watch(memberProfileProvider(member.id));
     if (cfg == null) return const SizedBox.shrink();
-    return Padding(padding: const EdgeInsets.only(top: 16), child: StudioProfileView(member: member, cfg: cfg, showHeader: false));
+    return Padding(padding: const EdgeInsets.only(top: 16), child: StudioProfileView(member: member, cfg: cfg, showHeader: false, inline: true));
   }
 }
 

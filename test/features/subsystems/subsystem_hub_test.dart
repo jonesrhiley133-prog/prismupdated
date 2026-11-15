@@ -40,7 +40,7 @@ void main() {
     await tester.pumpWidget(_app(const SubsystemHubScreen(), const []));
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Create a subsystem'), findsOneWidget);
-    expect(find.text('LEARN MORE'), findsOneWidget);
+    expect(find.text('Learn more'), findsOneWidget);
   });
 
   testWidgets('hub places subsystems in orbit and lists them', (tester) async {
