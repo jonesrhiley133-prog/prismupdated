@@ -52,7 +52,7 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
     children: [
       Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...children, SizedBox(height: NavBarInset.of(context) + 90)]),
         ),
       ),
@@ -84,7 +84,7 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                      constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -342,7 +342,7 @@ class TagScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -380,7 +380,7 @@ class DraftsScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -444,7 +444,7 @@ class ReportsScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

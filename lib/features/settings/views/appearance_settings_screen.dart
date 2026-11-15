@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/core/web/render_mode.dart';
+import 'package:prism_plurality/core/app_icon/app_icon.dart';
+import 'package:prism_plurality/features/settings/views/app_icon_maker.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -261,6 +266,8 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              const _AppIconSection(),
+              if (kIsWeb) const _WebRenderingSection(),
               PrismSection(
                 title: context.l10n.appearancePreview,
                 child: _PreviewCard(settings: settings),
@@ -456,6 +463,181 @@ class _LanguageRow extends StatelessWidget {
             if (isSelected)
               Icon(AppIcons.check, color: theme.colorScheme.primary, size: 20),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Web only: GPU vs software drawing. Some graphics drivers make the web
+/// app look dithered or garbled; software rendering always draws cleanly.
+class _WebRenderingSection extends StatelessWidget {
+  const _WebRenderingSection();
+  @override
+  Widget build(BuildContext context) {
+    final mode = webRendererMode();
+    final cpu = webUsesCpuRendering();
+    final theme = Theme.of(context);
+    return PrismSection(
+      title: tr(context, 'Display rendering', 'Renderizado'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PrismSegmentedControl<String>(
+            segments: [
+              PrismSegment(value: 'auto', label: tr(context, 'Automatic', 'Automático')),
+              PrismSegment(value: 'cpu', label: tr(context, 'Compatibility', 'Compatibilidad')),
+              PrismSegment(value: 'gpu', label: tr(context, 'Graphics card', 'Tarjeta gráfica')),
+            ],
+            selected: mode,
+            onChanged: (v) {
+              if (v != mode) setWebRendererMode(v);
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            tr(
+              context,
+              'If Prism looks grainy, dithered or garbled, choose Compatibility. It draws without the graphics card, which always looks right but can be a little slower. The page reloads to apply it. Now using: ${cpu ? 'compatibility (software)' : 'graphics card'}.',
+              'Si Prism se ve granulado o corrupto, elige Compatibilidad. Dibuja sin la tarjeta gráfica: siempre se ve bien, aunque puede ir algo más lento. La página se recarga para aplicarlo. En uso: ${cpu ? 'compatibilidad (software)' : 'tarjeta gráfica'}.',
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Pick the app's icon (Android launcher, browser tab on the web).
+class _AppIconSection extends ConsumerWidget {
+  const _AppIconSection();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final current = ref.watch(appIconProvider).value ?? 'classic';
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    return PrismSection(
+      title: tr(context, 'App icon', 'Icono de la app'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              for (final p in appIconPresets)
+                _IconTile(
+                  preset: p,
+                  label: es ? p.es : p.en,
+                  selected: p.id == current,
+                  enabled: appIconSupported,
+                  onTap: () async {
+                    if (p.id == current) return;
+                    await ref.read(appIconProvider.notifier).select(p.id);
+                  },
+                ),
+              _CustomIconTile(selected: current == 'custom', enabled: appIconSupported),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            !appIconSupported
+                ? tr(context, 'Changing the icon isn’t available on this device yet.', 'Cambiar el icono aún no está disponible en este dispositivo.')
+                : kIsWeb
+                ? tr(context, 'Changes the icon on this browser tab.', 'Cambia el icono de esta pestaña del navegador.')
+                : tr(context, 'Changes Prism’s icon on your home screen. Some launchers take a few seconds to update, and a home-screen shortcut may need to be added again.', 'Cambia el icono de Prism en la pantalla de inicio. Algunos lanzadores tardan unos segundos y puede que tengas que volver a añadir el acceso directo.'),
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconTile extends StatelessWidget {
+  const _IconTile({required this.preset, required this.label, required this.selected, required this.enabled, required this.onTap});
+  final AppIconPreset preset;
+  final String label;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: tr(context, '$label app icon', 'Icono $label'),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: enabled ? onTap : null,
+        child: SizedBox(
+          width: 76,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5),
+                ),
+                child: Opacity(
+                  opacity: enabled ? 1 : 0.5,
+                  child: Image.asset(preset.asset, width: 60, height: 60, filterQuality: FilterQuality.medium),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(fontWeight: selected ? FontWeight.w700 : null)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Custom": opens the icon designer; shows the saved custom icon.
+class _CustomIconTile extends ConsumerWidget {
+  const _CustomIconTile({required this.selected, required this.enabled});
+  final bool selected;
+  final bool enabled;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final png = ref.watch(customAppIconProvider).value;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: tr(context, 'Custom app icon. Design your own', 'Icono personalizado. Diseña el tuyo'),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: enabled ? () => showAppIconMaker(context) : null,
+        child: SizedBox(
+          width: 76,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: png != null
+                        ? Image.memory(png, fit: BoxFit.cover)
+                        : DecoratedBox(
+                            decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: BorderRadius.circular(14), color: theme.colorScheme.surfaceContainerHigh),
+                            child: Icon(Icons.brush_outlined, color: theme.colorScheme.onSurfaceVariant),
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(tr(context, 'Custom', 'Personal'), maxLines: 1, style: theme.textTheme.labelSmall?.copyWith(fontWeight: selected ? FontWeight.w700 : null)),
+            ],
+          ),
         ),
       ),
     );

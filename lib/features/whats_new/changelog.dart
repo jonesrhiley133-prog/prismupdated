@@ -32,6 +32,30 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.33.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'The web version is now laid out for desktop: a docked sidebar with every section grouped by category, wider pages, a two-column home dashboard, left-aligned page titles and Ctrl/⌘+K to jump anywhere. Phones and the mobile apps are unchanged.',
+        'La versión web ahora está diseñada para escritorio: barra lateral con todas las secciones por categoría, páginas más anchas, panel de inicio a dos columnas, títulos a la izquierda y Ctrl/⌘+K para ir a cualquier sitio. Los teléfonos y las apps móviles no cambian.',
+      ),
+      LocalizedText(
+        'Change Prism’s icon in Settings › Appearance › App icon: 14 aura designs plus the classic icon — or design your own with colours, an aura and the Prism, an emoji or a photo.',
+        'Cambia el icono de Prism en Ajustes › Apariencia › Icono de la app: 14 diseños con aura además del clásico, o crea el tuyo con colores, un aura y el prisma, un emoji o una foto.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Fixed the web version looking grainy, dithered or garbled on some computers: Prism detects problem graphics drivers and switches to compatibility rendering (also selectable in Settings › Appearance).',
+        'Corregido que la versión web se viera granulada o corrupta en algunos ordenadores: Prism detecta drivers gráficos problemáticos y usa el renderizado de compatibilidad (también en Ajustes › Apariencia).',
+      ),
+      LocalizedText(
+        'Month calendars stay a comfortable size on large screens.',
+        'Los calendarios mensuales mantienen un tamaño cómodo en pantallas grandes.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.32.0',
     date: DateTime(2026, 11, 15),
     features: const [

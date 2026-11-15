@@ -53,10 +53,8 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+            <!-- The home-screen entry lives on the Launcher* aliases below so the
+                 app icon can be changed (Settings › Appearance › App icon). -->
             <!-- Health Connect shows Prism's explanation of health permissions -->
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
@@ -365,6 +363,187 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+        <!-- App icon presets (exactly one enabled at a time). -->
+        <activity-alias
+            android:name=".LauncherClassic"
+            android:exported="true"
+            android:enabled="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherNebula"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_nebula"
+            android:roundIcon="@mipmap/ic_launcher_nebula"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherAurora"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_aurora"
+            android:roundIcon="@mipmap/ic_launcher_aurora"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherHalo"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_halo"
+            android:roundIcon="@mipmap/ic_launcher_halo"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherLunar"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_lunar"
+            android:roundIcon="@mipmap/ic_launcher_lunar"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherEmber"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_ember"
+            android:roundIcon="@mipmap/ic_launcher_ember"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherAbyss"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_abyss"
+            android:roundIcon="@mipmap/ic_launcher_abyss"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherBloom"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_bloom"
+            android:roundIcon="@mipmap/ic_launcher_bloom"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherVoid"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_void"
+            android:roundIcon="@mipmap/ic_launcher_void"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherSpectrum"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_spectrum"
+            android:roundIcon="@mipmap/ic_launcher_spectrum"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherFrost"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_frost"
+            android:roundIcon="@mipmap/ic_launcher_frost"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherTwilight"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_twilight"
+            android:roundIcon="@mipmap/ic_launcher_twilight"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherVerdant"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_verdant"
+            android:roundIcon="@mipmap/ic_launcher_verdant"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherStarlight"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_starlight"
+            android:roundIcon="@mipmap/ic_launcher_starlight"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherSolstice"
+            android:exported="true"
+            android:enabled="false"
+            android:icon="@mipmap/ic_launcher_solstice"
+            android:roundIcon="@mipmap/ic_launcher_solstice"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
         <activity-alias
             android:name="ViewPermissionUsageActivity"
             android:exported="true"

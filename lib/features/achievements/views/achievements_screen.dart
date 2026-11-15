@@ -254,7 +254,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: PrismTokens.contentMaxWidth,
                   ),
                   child: Column(

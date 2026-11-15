@@ -17,22 +17,44 @@ class ClampedBody extends StatelessWidget {
   const ClampedBody({
     super.key,
     required this.child,
-    this.maxWidth = PrismTokens.contentMaxWidth,
+    this.maxWidth,
     this.alignment = Alignment.topCenter,
   });
 
   final Widget child;
-  final double maxWidth;
+  /// Defaults to [PrismTokens.contentMaxWidth] (wider on desktop web).
+  final double? maxWidth;
   final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) {
+    // Depend on the window size so the column follows browser resizes.
+    MediaQuery.sizeOf(context);
     return Align(
       alignment: alignment,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: BoxConstraints(maxWidth: maxWidth ?? PrismTokens.contentMaxWidth),
         child: child,
       ),
+    );
+  }
+}
+
+/// Keeps month calendars a comfortable size on wide web windows instead of
+/// stretching day cells across the whole screen. No effect on phones,
+/// tablets or the native apps.
+class CompactCalendar extends StatelessWidget {
+  const CompactCalendar({super.key, required this.child, this.maxWidth = 560});
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    MediaQuery.sizeOf(context);
+    if (PrismTokens.desktopWebContentWidth == null) return child;
+    return Center(
+      child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: child),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/shared/providers/visual_effects_provider.dart';
@@ -156,7 +157,9 @@ class TintedGlassSurface extends ConsumerWidget {
           );
 
     // --- Noise texture (suppressed in accessible mode) ---
-    final DecorationImage? noiseImage = isAccessible
+    // Off on the web: browsers scale the tiled texture unevenly, which can
+    // look like static on some screens.
+    final DecorationImage? noiseImage = isAccessible || kIsWeb
         ? null
         : DecorationImage(
             image: const AssetImage('assets/textures/noise_64x64.png'),

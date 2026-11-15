@@ -472,7 +472,7 @@ class _Today extends ConsumerWidget {
       children: [
         Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+            constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

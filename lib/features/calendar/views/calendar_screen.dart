@@ -274,7 +274,7 @@ class _MonthView extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.fromLTRB(12, 0, 12, 24 + NavBarInset.of(context)),
       children: [
-        GestureDetector(
+        CompactCalendar(maxWidth: 680, child: GestureDetector(
           onHorizontalDragEnd: (d) {
             final v = d.primaryVelocity ?? 0;
             if (v.abs() < 250) return;
@@ -471,7 +471,7 @@ class _MonthView extends StatelessWidget {
               ],
             ),
           ),
-        ),
+        )),
         const SizedBox(height: 16),
         _DayPanel(
           data: data,

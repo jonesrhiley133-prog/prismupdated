@@ -241,7 +241,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: PrismTokens.contentMaxWidth,
                   ),
                   child: Column(
@@ -264,7 +264,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
           child: PrismSegmentedControl<bool>(
             segments: [
               PrismSegment(value: false, label: context.l10n.navJournal),

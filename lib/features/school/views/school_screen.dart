@@ -89,7 +89,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 maxWidth: PrismTokens.contentMaxWidth,
               ),
               child: Column(

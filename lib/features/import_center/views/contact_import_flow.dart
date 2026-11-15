@@ -242,7 +242,7 @@ class _ContactImportFlowState extends ConsumerState<ContactImportFlow> {
       bodyPadding: EdgeInsets.zero,
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
+          constraints: BoxConstraints(
             maxWidth: PrismTokens.contentMaxWidth,
           ),
           child: Column(

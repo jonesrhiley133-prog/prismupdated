@@ -443,7 +443,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
               IconButton(tooltip: tr(context, 'Next month', 'Mes siguiente'), icon: Icon(PhosphorIcons.caretRight()), onPressed: () => setState(() => _calMonth = DateTime(m.year, m.month + 1))),
             ],
           ),
-          GridView.count(
+          CompactCalendar(child: GridView.count(
             crossAxisCount: 7,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -468,7 +468,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
                   );
                 }(),
             ],
-          ),
+          )),
         ],
       ),
       icon: PhosphorIcons.calendarBlank(),

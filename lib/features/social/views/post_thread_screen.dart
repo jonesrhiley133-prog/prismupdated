@@ -116,7 +116,7 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
               children: [
                 Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                    constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -148,7 +148,7 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
               decoration: BoxDecoration(color: theme.colorScheme.surfaceContainer, border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant))),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                  constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

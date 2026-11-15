@@ -105,7 +105,7 @@ class _DreamJournalViewState extends ConsumerState<DreamJournalView> {
           children: [
             Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -278,14 +278,14 @@ class _DreamCalendar extends StatelessWidget {
             IconButton(tooltip: tr(context, 'Next month', 'Mes siguiente'), icon: Icon(PhosphorIcons.caretRight()), onPressed: () => onMonth(DateTime(month.year, month.month + 1))),
           ],
         ),
-        Row(
+        CompactCalendar(child: Row(
           children: [
             for (var i = 0; i < 7; i++)
               Expanded(child: Center(child: Text(DateFormat.E(context.dateLocale).format(monday.add(Duration(days: i))), style: theme.textTheme.labelSmall))),
           ],
-        ),
+        )),
         const SizedBox(height: 4),
-        GridView.count(
+        CompactCalendar(child: GridView.count(
           crossAxisCount: 7,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -325,7 +325,7 @@ class _DreamCalendar extends StatelessWidget {
                 ),
               ),
           ],
-        ),
+        )),
       ],
     );
   }

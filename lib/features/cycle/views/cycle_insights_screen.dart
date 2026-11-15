@@ -79,7 +79,7 @@ class _CycleInsightsState extends ConsumerState<CycleInsightsScreen> {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 maxWidth: PrismTokens.contentMaxWidth,
               ),
               child: Column(

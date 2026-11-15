@@ -197,6 +197,33 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
         }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.prismplural.prism/app_icon")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "current" -> result.success(AppIcon.current(this))
+                    "pinShortcut" -> {
+                        val png = call.argument<ByteArray>("png")
+                        if (png == null) {
+                            result.error("bad_args", "png missing", null)
+                        } else {
+                            try {
+                                result.success(AppIcon.pinCustomShortcut(this, png, call.argument<String>("label") ?: "Prism"))
+                            } catch (e: Exception) {
+                                result.error("pin_failed", e.message, null)
+                            }
+                        }
+                    }
+                    "set" -> {
+                        val id = call.argument<String>("id")
+                        try {
+                            result.success(id != null && AppIcon.set(this, id))
+                        } catch (e: Exception) {
+                            result.error("set_failed", e.message, null)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, BACKGROUND_WORK_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {

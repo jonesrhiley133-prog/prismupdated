@@ -135,7 +135,7 @@ class CustomFieldIconDebugScreen extends StatelessWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 maxWidth: PrismTokens.contentMaxWidth,
               ),
               child: Column(
