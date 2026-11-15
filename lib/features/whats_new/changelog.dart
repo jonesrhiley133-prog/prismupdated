@@ -32,6 +32,34 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.29.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Settings › Features now lists every Prism feature by category, with descriptions, switches, dependencies, permissions and shortcuts — plus Minimal and Maximum presets (Minimal can be customised). Turning a feature off hides it and pauses its reminders and background work; its data is kept.',
+        'Ajustes › Funciones ahora muestra todas las funciones de Prism por categoría, con descripciones, interruptores, dependencias, permisos y accesos — y los preajustes Mínimo y Máximo (Mínimo se puede personalizar). Desactivar una función la oculta y pausa sus avisos y procesos; sus datos se conservan.',
+      ),
+      LocalizedText(
+        'Data management in every feature: reset today, this week, this month, this year or custom dates, or clear everything — with a clear confirmation, undo for 7 days where possible, and a reset history that keeps only counts.',
+        'Gestión de datos en cada función: restablece hoy, esta semana, este mes, este año o fechas propias, o bórralo todo, con confirmación clara, deshacer durante 7 días cuando es posible y un historial que solo guarda recuentos.',
+      ),
+      LocalizedText(
+        'Fitness connects to Health Connect (Android) or Apple Health (iPhone): an integration assistant walks you through setup, then workouts, steps, distance, calories, heart rate, active minutes and (optionally) sleep are imported with their source app, duplicates skipped, and each workout can belong to the system or an alter.',
+        'Ejercicio se conecta con Health Connect (Android) o Apple Health (iPhone): un asistente te guía y luego se importan entrenamientos, pasos, distancia, calorías, frecuencia cardiaca, minutos activos y (opcional) sueño con su app de origen, sin duplicados, y cada entrenamiento puede ser del sistema o de un alter.',
+      ),
+      LocalizedText(
+        'A universal Dictionary importer: paste any MediaWiki link (Wikipedia, Fandom, Miraheze, Pluralpedia, LGBTQ wikis, self-hosted), Wikidot, DokuWiki or public page; import single articles, categories or whole wikis with progress, cancel and retry; or import XML dumps, wikitext, HTML, JSON, CSV, Markdown and ZIP files. Preview and edit before saving, with import history and attribution.',
+        'Importador universal del diccionario: pega cualquier enlace MediaWiki (Wikipedia, Fandom, Miraheze, Pluralpedia, wikis LGBTQ, propias), Wikidot, DokuWiki o página pública; importa artículos, categorías o wikis enteras con progreso, cancelar y reintentar; o importa volcados XML, wikitext, HTML, JSON, CSV, Markdown y ZIP. Vista previa y edición antes de guardar, con historial y atribución.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Subsystems (and the new Relationships pages) now reach both edges of the screen, and orbit cards no longer get cut off on phones.',
+        'Subsistemas (y las nuevas páginas de Relaciones) ahora llegan a ambos bordes de la pantalla, y las tarjetas de la órbita ya no se cortan en teléfonos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.28.0',
     date: DateTime(2026, 11, 15),
     features: const [
