@@ -11,27 +11,27 @@ Without it, Social only works between the systems in one Prism account.
 
 ## 1. Create the services
 
-1. In Railway, open your project (or create one) and choose **New → Database
-   → PostgreSQL**.
-2. Choose **New → GitHub Repo** and pick this repository. This becomes the
-   server service. (The repository root also has a `railway.json` for the
-   *web app*. Keep that service separate.)
-3. Open the new service's **Settings**:
-   - **Root Directory**: leave empty (`/`). The build needs both `server/` and
-     `packages/prism_social_core/`.
-   - **Config-as-code → Railway config file**: `/server/railway.json`.
-     This selects `server/Dockerfile`, the `/healthz` health check, and watch
-     paths so only server changes trigger a redeploy.
-4. Under **Variables**, add a reference to the database:
-   `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
-   (use the private URL; the server turns TLS off automatically for
-   `*.railway.internal`).
-5. Under **Networking**, click **Generate Domain**. You'll get something like
-   `prism-social-production.up.railway.app`.
+The repository's root `Dockerfile` builds the web app by default. With the
+service variable `PRISM_SERVICE=server`, it builds the Social server instead.
+Both services can share the same repository and the root `railway.json`.
+
+1. In your Railway project: **New → Database → PostgreSQL**.
+2. **New → GitHub Repo** → this repository (branch `main`). This becomes the
+   server service. Leave **Root Directory** empty.
+3. Under the service's **Variables**, add:
+   - `PRISM_SERVICE` = `server`
+   - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (the private URL; TLS is
+     turned off automatically for `*.railway.internal`)
+   - `REGISTRATION_CODE` = an invite code of your choice (recommended)
+4. Under **Networking**, choose **Generate Domain** (port 8080).
 
 Deploy. The logs should end with
 `Prism Social server 0.1.0 listening on :8080 (postgres)`, and
-`https://<your-domain>/healthz` returns `{"ok":true}`.
+`https://<your-domain>/healthz` returns `{"ok":true}`. (Railway's health check
+uses `/`, which the server also answers.)
+
+`server/Dockerfile` builds the same image on its own, for other hosts:
+`docker build -f server/Dockerfile .`
 
 ## 2. Connect the app
 

@@ -37,6 +37,8 @@ The repository contains everything Railway needs:
 - `deploy/web/Caddyfile`: listens on Railway's `$PORT`, sends unknown paths
   to `index.html`, and stops browsers caching the entry files after a deploy.
 - `railway.json`: tells Railway to use the Dockerfile and health-check `/`.
+- The same `Dockerfile` builds the Prism Social server when a service sets
+  `PRISM_SERVICE=server`. See [railway-social-server.md](railway-social-server.md).
 
 Steps:
 

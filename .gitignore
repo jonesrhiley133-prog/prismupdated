@@ -67,3 +67,6 @@ fastlane/*.json
 fastlane/report.xml
 .worktrees/
 .skystack/
+
+# Local proxy certificate used only for sandbox Docker test builds
+.local-ca.crt
