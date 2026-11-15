@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/features/prism_social/social_remote.dart' show socialSyncProvider;
+import 'package:prism_plurality/features/dictionary/importer/import_job.dart' show importJobProvider;
 import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
@@ -317,6 +318,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
     ref.listen(socialNotificationListenerProvider, (_, _) {});
     ref.listen(socialSyncProvider, (_, _) {});
+    // Resumes a Dictionary wiki import that was running when Prism closed.
+    ref.listen(importJobProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
     // Keep the live fronting notification in step with the front.

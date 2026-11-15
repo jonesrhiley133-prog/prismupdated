@@ -32,6 +32,34 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.32.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Dictionary wiki imports keep going in the background: leave the import page, move around Prism or switch apps and the import continues (with a progress notification on Android). If Prism is closed, it picks up where it left off next time.',
+        'Las importaciones de wikis al diccionario siguen en segundo plano: sal de la página, muévete por Prism o cambia de app y la importación continúa (con una notificación de progreso en Android). Si Prism se cierra, continúa donde se quedó.',
+      ),
+      LocalizedText(
+        'New “All” option imports every article of a wiki or category, about 20× faster than before.',
+        'Nueva opción «Todos» para importar todos los artículos de una wiki o categoría, unas 20 veces más rápido.',
+      ),
+      LocalizedText(
+        'Flags are imported from wikis that have them, including alternate flags, and shown on each term. Download one flag, or all of them as a ZIP, to your device.',
+        'Se importan las banderas de las wikis que las tienen, también las alternativas, y se muestran en cada término. Descarga una o todas (en ZIP) a tu dispositivo.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'The import list scrolls smoothly even with thousands of terms, the Import button stays at the top, and new buttons jump to the top or bottom.',
+        'La lista de importación se desplaza con fluidez incluso con miles de términos, el botón Importar queda arriba y hay botones para ir al principio o al final.',
+      ),
+      LocalizedText(
+        'Large dictionaries scroll faster.',
+        'Los diccionarios grandes se desplazan más rápido.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.31.0',
     date: DateTime(2026, 11, 15),
     features: const [

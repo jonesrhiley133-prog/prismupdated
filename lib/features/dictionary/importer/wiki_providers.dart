@@ -7,6 +7,28 @@ import 'package:http/http.dart' as http;
 
 import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart';
 
+/// A flag image from a wiki page (the main flag or an alternate).
+@immutable
+class WikiFlag {
+  const WikiFlag(this.url, this.label);
+  final String url;
+  final String label;
+  Map<String, Object?> toJson() => {'url': url, 'label': label};
+  static WikiFlag? fromJson(Object? j) => j is Map && j['url'] is String ? WikiFlag(j['url'] as String, '${j['label'] ?? ''}') : null;
+}
+
+/// File names that are almost certainly flags (pride/identity wikis name
+/// them "… flag.png", "Alt flag 2.svg", "Flag of …").
+bool looksLikeFlagFile(String fileTitle) {
+  final n = fileTitle.toLowerCase().replaceFirst(RegExp(r'^[^:]+:'), '');
+  if (!RegExp(r'\.(png|svg|jpe?g|gif|webp)$').hasMatch(n)) return false;
+  if (RegExp(r'(icon|logo|button|wordmark|favicon|banner|avatar|sig(nature)?\b)').hasMatch(n)) return false;
+  return RegExp(r'flag|vexill|pride').hasMatch(n);
+}
+
+/// "Lesbian_alt_flag_2.png" → "Lesbian alt flag 2".
+String flagLabel(String fileTitle) => fileTitle.replaceFirst(RegExp(r'^[^:]+:'), '').replaceAll(RegExp(r'\.[a-z0-9]+$', caseSensitive: false), '').replaceAll('_', ' ').trim();
+
 /// One article read from a wiki or file, before it becomes a term.
 class WikiArticle {
   WikiArticle({
@@ -21,6 +43,7 @@ class WikiArticle {
     this.updated,
     this.license,
     this.error,
+    this.flags = const [],
   });
   String title;
   String content;
@@ -35,6 +58,42 @@ class WikiArticle {
 
   /// Why this article couldn't be read (shown, and retried in bulk imports).
   final String? error;
+
+  /// Flag images (main flag first, then alternates), when the wiki has them.
+  final List<WikiFlag> flags;
+
+  Map<String, Object?> toJson() => {
+    't': title,
+    'c': content,
+    'u': ?url,
+    's': ?source,
+    'd': ?description,
+    if (categories.isNotEmpty) 'cat': categories,
+    if (images.isNotEmpty) 'img': images,
+    if (references.isNotEmpty) 'ref': references,
+    'up': ?updated?.toIso8601String(),
+    'lic': ?license,
+    'err': ?error,
+    if (flags.isNotEmpty) 'fl': [for (final f in flags) f.toJson()],
+  };
+
+  static WikiArticle fromJson(Map<String, Object?> j) {
+    List<String> l(String k) => [for (final x in (j[k] as List?) ?? const []) '$x'];
+    return WikiArticle(
+      title: '${j['t'] ?? ''}',
+      content: '${j['c'] ?? ''}',
+      url: j['u'] as String?,
+      source: j['s'] as String?,
+      description: j['d'] as String?,
+      categories: l('cat'),
+      images: l('img'),
+      references: l('ref'),
+      updated: DateTime.tryParse('${j['up'] ?? ''}'),
+      license: j['lic'] as String?,
+      error: j['err'] as String?,
+      flags: [for (final f in (j['fl'] as List?) ?? const []) ?WikiFlag.fromJson(f)],
+    );
+  }
 
   bool get ok => error == null;
 
@@ -106,7 +165,28 @@ abstract class WikiProvider {
   WikiRequest parse(Uri uri);
   Future<WikiArticle> fetchArticle(WikiHttp http, WikiRequest r, String title);
   Future<List<String>> listTitles(WikiHttp http, WikiRequest r, {int limit = 500}) async => throw const WikiImportError('unsupported');
+
+  /// How many titles [fetchArticles] handles per call.
+  int get batchSize => 1;
+
+  /// Fetches several articles. Titles that fail come back as articles with
+  /// an [WikiArticle.error]. Platforms with a batch API override this.
+  Future<List<WikiArticle>> fetchArticles(WikiHttp http, WikiRequest r, List<String> titles, {bool fullText = false}) async {
+    final out = <WikiArticle>[];
+    for (final t in titles) {
+      try {
+        out.add(await fetchArticle(http, r, t));
+      } on WikiImportError catch (e) {
+        if (e.code == 'blocked_by_robots' || e.code == 'auth_required' || e.code == 'rate_limited') rethrow;
+        out.add(WikiArticle(title: t, content: '', error: e.code));
+      }
+    }
+    return out;
+  }
 }
+
+/// No limit ("All").
+const wikiNoLimit = 1 << 30;
 
 /// Polite HTTP: a generic client name, a gap between requests, timeouts,
 /// rate-limit handling and robots.txt checks for page scraping.
@@ -267,7 +347,8 @@ class MediaWikiProvider extends WikiProvider {
     final a = await api(http, r.origin);
     final res = await http.getJson(_q(a, {
       'action': 'query',
-      'prop': 'extracts|categories|info|pageimages|extlinks',
+      'prop': 'extracts|categories|info|pageimages|extlinks|images',
+      'imlimit': 'max',
       'explaintext': '1',
       'exsectionformat': 'plain',
       'titles': title,
@@ -291,6 +372,7 @@ class MediaWikiProvider extends WikiProvider {
     final cats = [for (final c in (p['categories'] as List?) ?? const []) if (c is Map) '${c['title']}'.replaceFirst(RegExp(r'^[^:]+:'), '')];
     final img = p['original'] is Map ? '${p['original']['source']}' : null;
     final refs = [for (final e in (p['extlinks'] as List?) ?? const []) if (e is Map) '${e['url'] ?? e['*'] ?? ''}'].where((x) => x.isNotEmpty).toList();
+    final flags = await _flagsFor(http, a, {'${p['title']}': p});
     return WikiArticle(
       title: '${p['title']}',
       content: text,
@@ -301,7 +383,131 @@ class MediaWikiProvider extends WikiProvider {
       references: refs,
       updated: DateTime.tryParse('${p['touched'] ?? ''}'),
       license: 'See ${r.uri.host} for the content licence',
+      flags: flags['${p['title']}'] ?? const [],
     );
+  }
+
+  @override
+  int get batchSize => 20;
+
+  /// Up to 20 articles per request (intro text, categories, main image and
+  /// every flag file on the page), ~20× faster than one by one. Pages
+  /// without an extract fall back to a single-page read.
+  @override
+  Future<List<WikiArticle>> fetchArticles(WikiHttp http, WikiRequest r, List<String> titles, {bool fullText = false}) async {
+    if (fullText || titles.length == 1) return super.fetchArticles(http, r, titles);
+    final a = await api(http, r.origin);
+    final res = await http.getJson(_q(a, {
+      'action': 'query',
+      'prop': 'extracts|categories|info|pageimages|images',
+      'exintro': '1',
+      'explaintext': '1',
+      'exsectionformat': 'plain',
+      'exlimit': 'max',
+      'titles': titles.join('|'),
+      'redirects': '1',
+      'inprop': 'url',
+      'clshow': '!hidden',
+      'cllimit': 'max',
+      'imlimit': 'max',
+      'piprop': 'original',
+    }));
+    final q = res['query'] is Map ? res['query'] as Map : const {};
+    // Map requested titles through normalisation and redirects.
+    final rename = <String, String>{};
+    for (final k in const ['normalized', 'redirects']) {
+      for (final m in (q[k] as List?) ?? const []) {
+        if (m is Map) rename['${m['from']}'] = '${m['to']}';
+      }
+    }
+    String resolve(String t) {
+      var x = t;
+      for (var i = 0; i < 3 && rename.containsKey(x); i++) {
+        x = rename[x]!;
+      }
+      return x;
+    }
+
+    final pages = {for (final p in (q['pages'] as List?) ?? const []) if (p is Map) '${p['title']}': p};
+    final flags = await _flagsFor(http, a, pages);
+    final out = <WikiArticle>[];
+    final seen = <String>{};
+    for (final t in titles) {
+      final key = resolve(t);
+      if (!seen.add(key)) continue;
+      final p = pages[key];
+      if (p == null || p['missing'] == true || p['invalid'] == true) {
+        out.add(WikiArticle(title: t, content: '', error: 'not_found'));
+        continue;
+      }
+      final text = '${p['extract'] ?? ''}'.trim();
+      if (text.isEmpty) {
+        // No TextExtracts here (Fandom etc.): read this page on its own.
+        try {
+          out.add(await fetchArticle(http, r, key));
+        } on WikiImportError catch (e) {
+          if (e.code == 'blocked_by_robots' || e.code == 'auth_required' || e.code == 'rate_limited') rethrow;
+          out.add(WikiArticle(title: t, content: '', error: e.code));
+        }
+        continue;
+      }
+      final cats = [for (final c in (p['categories'] as List?) ?? const []) if (c is Map) '${c['title']}'.replaceFirst(RegExp(r'^[^:]+:'), '')];
+      final img = p['original'] is Map ? '${p['original']['source']}' : null;
+      out.add(WikiArticle(
+        title: key,
+        content: text,
+        url: '${p['fullurl'] ?? '${r.origin}/wiki/${Uri.encodeComponent(key.replaceAll(' ', '_'))}'}',
+        source: r.uri.host,
+        categories: cats,
+        images: [?img],
+        updated: DateTime.tryParse('${p['touched'] ?? ''}'),
+        license: 'See ${r.uri.host} for the content licence',
+        flags: flags[key] ?? const [],
+      ));
+    }
+    return out;
+  }
+
+  /// Every flag on each page: the page's main image when it is a flag, then
+  /// all other flag files used on the page (alternate flags), resolved to
+  /// full-size URLs in batches of 50.
+  Future<Map<String, List<WikiFlag>>> _flagsFor(WikiHttp http, String a, Map<String, Map> pages) async {
+    final files = <String, List<String>>{};
+    for (final e in pages.entries) {
+      final p = e.value;
+      final main = p['pageimage'] is String ? 'File:${p['pageimage']}' : null;
+      final list = <String>[
+        if (main != null && looksLikeFlagFile(main)) main,
+        for (final i in (p['images'] as List?) ?? const [])
+          if (i is Map && looksLikeFlagFile('${i['title']}') && '${i['title']}' != main) '${i['title']}',
+      ];
+      if (list.isNotEmpty) files[e.key] = list.take(24).toList();
+    }
+    if (files.isEmpty) return const {};
+    final all = {for (final l in files.values) ...l}.toList();
+    final urls = <String, String>{};
+    for (var i = 0; i < all.length; i += 50) {
+      try {
+        final res = await http.getJson(_q(a, {'action': 'query', 'prop': 'imageinfo', 'iiprop': 'url', 'titles': all.skip(i).take(50).join('|')}));
+        final q = res['query'] is Map ? res['query'] as Map : const {};
+        final rename = {for (final m in (q['normalized'] as List?) ?? const []) if (m is Map) '${m['to']}': '${m['from']}'};
+        for (final p in (q['pages'] as List?) ?? const []) {
+          if (p is! Map) continue;
+          final info = (p['imageinfo'] as List?)?.firstOrNull;
+          if (info is Map && info['url'] is String) {
+            urls['${p['title']}'] = info['url'] as String;
+            final orig = rename['${p['title']}'];
+            if (orig != null) urls[orig] = info['url'] as String;
+          }
+        }
+      } on WikiImportError catch (e) {
+        if (e.code == 'rate_limited') rethrow;
+      }
+    }
+    return {
+      for (final e in files.entries)
+        e.key: [for (final f in e.value) if (urls[f] != null || urls[f.replaceAll('_', ' ')] != null) WikiFlag(urls[f] ?? urls[f.replaceAll('_', ' ')]!, flagLabel(f))],
+    };
   }
 
   @override
