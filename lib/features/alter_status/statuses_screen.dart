@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/alter_status/status_models.dart';
 import 'package:prism_plurality/features/alter_status/status_providers.dart';
@@ -29,7 +30,7 @@ class _StatusesScreenState extends ConsumerState<StatusesScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Alter statuses', 'Estados de alters'),
         showBackButton: true,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'statuses'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: tr(context, 'New custom status', 'Nuevo estado personalizado'),

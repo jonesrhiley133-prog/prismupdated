@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/utils/fitness.dart';
@@ -94,7 +95,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
       topBar: PrismTopBar(
         title: l10n.navFitness,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'fitness'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: _tab == FitnessTab.goals

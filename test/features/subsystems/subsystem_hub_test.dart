@@ -109,4 +109,23 @@ void main() {
     expect(find.text('Cancel'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  for (final width in const [360.0, 768.0, 1400.0]) {
+    testWidgets('orbit cards stay fully on screen at ${width.toInt()}px', (tester) async {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final subs = [
+        for (var i = 0; i < 13; i++) TrackerRecord(id: 's$i', kind: TrackerKind.subsystem, title: 'Sub $i', createdAt: _t, modifiedAt: _t).withFields({'isolate': false}),
+      ];
+      await tester.pumpWidget(_app(MediaQuery(data: MediaQueryData(size: Size(width, 900), disableAnimations: true), child: const SubsystemHubScreen()), subs));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(tester.takeException(), isNull);
+      for (var i = 0; i < 13; i++) {
+        final f = find.text('Sub $i');
+        if (f.evaluate().isEmpty) continue;
+        final r = tester.getRect(f.first);
+        expect(r.left >= 0 && r.right <= width, isTrue, reason: 'Sub $i at $r');
+      }
+    });
+  }
 }

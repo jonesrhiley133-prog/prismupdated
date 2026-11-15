@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -63,8 +64,9 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
           topBar: PrismTopBar(
             title: tr(context, 'Subsystems', 'Subsistemas'),
             showBackButton: Navigator.of(context).canPop(),
-            actions: [if (subs.isNotEmpty) PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New subsystem', 'Nuevo subsistema'), onPressed: () => showSubsystemWizard(context))],
+            actions: [FeatureDataAction(featureId: 'subsystems'), if (subs.isNotEmpty) PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New subsystem', 'Nuevo subsistema'), onPressed: () => showSubsystemWizard(context))],
           ),
+          bodyPadding: EdgeInsets.zero,
           body: Stack(
             children: [
               CustomScrollView(
@@ -124,12 +126,15 @@ class _OrbitStage extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, box) {
         final w = math.min(box.maxWidth, 620.0);
-        final h = math.min(w * 1.05, 560.0);
+        final cardW = w < 420 ? 82.0 : 100.0;
+        // Keep every card fully on screen: the outer ring plus half a card
+        // (and a small margin) must fit inside half the width.
+        final maxR = math.max(90.0, w / 2 - cardW / 2 - 8);
+        final rings = [maxR * 0.6, maxR * 0.8, maxR];
+        final h = maxR * 0.86 * 2 + cardW + 24;
         final c = Offset(box.maxWidth / 2, h / 2);
-        final rings = [w * 0.22, w * 0.335, w * 0.45];
         final shown = subs.take(_capacity.reduce((a, b) => a + b)).toList();
         final extra = subs.length - shown.length;
-        final cardW = w < 420 ? 82.0 : 100.0;
 
         final placed = <(TrackerRecord, int, double)>[];
         var i = 0;
@@ -147,7 +152,7 @@ class _OrbitStage extends StatelessWidget {
             builder: (context, _) {
               final t = spin.value;
               return Stack(
-                clipBehavior: Clip.none,
+                clipBehavior: Clip.hardEdge,
                 children: [
                   Positioned.fill(child: CustomPaint(painter: OrbitPainter(rings: rings, center: c, color: context.sp.line, phase: t))),
                   Positioned(left: c.dx - 46, top: c.dy - 46, child: _Core(extra: extra, empty: subs.isEmpty)),

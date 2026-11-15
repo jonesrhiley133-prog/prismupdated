@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/core/services/local_notification_service.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
@@ -34,6 +35,7 @@ class HabitReminderScheduler {
 
   Future<void> _reschedule(Map<String, HabitView> views) async {
     if (kIsWeb) return;
+    if (!isFeatureOn(ref, 'habits')) views = const {};
     final now = DateTime.now();
     final today = dayKey(now);
     final plan = <(DateTime, String, String)>[];
@@ -134,6 +136,7 @@ class HabitAutoLogger {
   }
 
   Future<void> _fire(String source, RecordRef origin, String? memberId, {int? minutes}) async {
+    if (!isFeatureOn(ref, 'habits')) return;
     final views = ref.read(habitViewsProvider).values.where((v) => v.habit.isActive && v.meta.autoLog == source && !v.meta.isPausedOn(DateTime.now()));
     final logs = ref.read(trackerKindProvider(TrackerKind.habitLog)).value ?? const <TrackerRecord>[];
     for (final v in views) {

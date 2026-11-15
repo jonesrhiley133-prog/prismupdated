@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/habits/center/habit_center_screen.dart' show CalendarHabitsForDay;
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,7 +106,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       topBar: PrismTopBar(
         title: l10n.calendarTitle,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'calendar'), 
           PrismTopBarAction(
             icon: AppIcons.calendarJumpToday,
             tooltip: l10n.calendarToday,

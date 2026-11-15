@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/achievements/providers/achievement_providers.dart';
 import 'package:prism_plurality/features/achievements/utils/achievements.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
@@ -95,6 +96,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
     final async = ref.watch(achievementProgressProvider);
     return PrismPageScaffold(
       topBar: PrismTopBar(
+        actions: [FeatureDataAction(featureId: 'achievements')],
         title: l10n.navAchievements,
         showBackButton: widget.showBackButton,
       ),

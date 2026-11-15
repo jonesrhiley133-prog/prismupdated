@@ -13,6 +13,15 @@ abstract final class TrackerKind {
   static const fitnessGoal = 'fitness.goal';
   static const fitnessExercise = 'fitness.exercise';
 
+  /// Daily totals imported from health apps (steps, distance, energy…).
+  static const fitnessDaily = 'fitness.daily';
+  static const fitnessSource = 'fitness.source';
+
+  /// Prism-wide: feature switches, reset log and wiki import history.
+  static const appFeatures = 'app.features';
+  static const appResetLog = 'app.resetLog';
+  static const dictImport = 'dict.import';
+
   static const financeTxn = 'finance.txn';
   static const financeAccount = 'finance.account';
   static const financeBudget = 'finance.budget';

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart';
 import 'package:prism_plurality/features/dictionary/views/dictionary_import_flow.dart';
@@ -77,7 +78,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
       topBar: PrismTopBar(
         title: l10n.navDictionary,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'dictionary'), 
           PrismTopBarAction(
             icon: AppIcons.navImport,
             tooltip: l10n.dictImportTitle,

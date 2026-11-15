@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/providers/link_providers.dart';
@@ -52,7 +53,7 @@ class ScrapbooksScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: tr(context, 'System Scrapbook', 'Álbum del sistema'),
         showBackButton: showBackButton || Navigator.of(context).canPop(),
-        actions: [PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New scrapbook', 'Nuevo álbum'), onPressed: () => showBookEditor(context))],
+        actions: [FeatureDataAction(featureId: 'scrapbook'), PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New scrapbook', 'Nuevo álbum'), onPressed: () => showBookEditor(context))],
       ),
       bodyPadding: EdgeInsets.zero,
       body: books.isEmpty

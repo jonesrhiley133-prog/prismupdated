@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/shared/markdown/markdown_preview.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -546,7 +547,7 @@ class _NotesTopBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          actions: [
+          actions: [FeatureDataAction(featureId: 'notes'), 
             PrismTopBarAction(
               icon: AppIcons.add,
               tooltip: l10n.memberAddNoteTooltip,

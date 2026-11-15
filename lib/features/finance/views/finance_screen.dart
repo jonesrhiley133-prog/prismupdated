@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
@@ -82,7 +83,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       topBar: PrismTopBar(
         title: l10n.navFinance,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'finance'), 
           PrismTopBarAction(
             icon: hide ? AppIcons.privateEyeSlash : AppIcons.visibility,
             tooltip: hide ? l10n.finShowAmounts : l10n.finHideAmounts,

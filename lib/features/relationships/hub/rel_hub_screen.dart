@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -76,8 +77,9 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Relationships', 'Relaciones'),
-        actions: [PrismTopBarAction(icon: AppIcons.navSettings, tooltip: tr(context, 'Relationship settings', 'Ajustes de relaciones'), onPressed: () => showRelSettings(context))],
+        actions: [FeatureDataAction(featureId: 'relationships'), PrismTopBarAction(icon: AppIcons.navSettings, tooltip: tr(context, 'Relationship settings', 'Ajustes de relaciones'), onPressed: () => showRelSettings(context))],
       ),
+      bodyPadding: EdgeInsets.zero,
       body: ListView(
         padding: EdgeInsets.fromLTRB(16, 4, 16, NavBarInset.of(context) + 32),
         children: [

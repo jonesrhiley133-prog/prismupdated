@@ -101,6 +101,7 @@ class _RelationshipProfileScreenState extends ConsumerState<RelationshipProfileS
           ),
         ],
       ),
+      bodyPadding: EdgeInsets.zero,
       body: ListView(
         padding: EdgeInsets.fromLTRB(16, 8, 16, NavBarInset.of(context) + 32),
         children: [

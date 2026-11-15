@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/services/local_notification_service.dart';
@@ -83,6 +84,7 @@ class _SubsystemProfileScreenState extends ConsumerState<SubsystemProfileScreen>
             showBackButton: true,
             actions: [PrismTopBarAction(icon: AppIcons.navSettings, tooltip: tr(context, 'Settings', 'Ajustes'), onPressed: () => setState(() => _tab = SubTab.settings))],
           ),
+          bodyPadding: EdgeInsets.zero,
           body: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(child: _Hero(c: ctx)),
@@ -1369,7 +1371,7 @@ final subsystemFrontNotifierProvider = Provider<void>((ref) {
     Set<String>? known;
     ref.listen<AsyncValue<List<FrontingSession>>>(activeSessionsProvider, (_, next) async {
       final sessions = next.value;
-      if (sessions == null) return;
+      if (sessions == null || !isFeatureOn(ref, 'subsystems')) return;
       final ids = {for (final f in sessions) f.id};
       final before = known;
       known = ids;

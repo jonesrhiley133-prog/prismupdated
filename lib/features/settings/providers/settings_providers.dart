@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:prism_plurality/core/features/feature_registry.dart';
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/models.dart' hide CornerStyle;
@@ -1190,11 +1192,18 @@ NavLayout _watchNavLayout(Ref ref) {
   final resolvedOverflowIds = usesDefaultLayout
       ? defaultNavBarOverflowTabIds
       : overflowIds;
-  return normalizeNavLayout(
+  final layout = normalizeNavLayout(
     primaryIds: primaryIds,
     overflowIds: resolvedOverflowIds,
     flags: flags,
   );
+  // Hide tabs of features turned off in Settings › Features.
+  final states = ref.watch(featureStatesProvider);
+  bool visible(AppShellTab t) => t.isRequired || (states[featureByTab[t.id]?.id] ?? true);
+  final primary = layout.primary.where(visible).toList();
+  final overflow = layout.overflow.where(visible).toList();
+  if (primary.isEmpty && overflow.isNotEmpty) primary.add(overflow.removeAt(0));
+  return (primary: primary, overflow: overflow);
 }
 
 /// Computes the primary nav bar tabs (shown directly in the bar).

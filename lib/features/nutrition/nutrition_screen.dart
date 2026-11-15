@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/nutrition/nutrition_data.dart';
 import 'package:prism_plurality/features/nutrition/nutrition_meals.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -29,7 +30,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Nourish', 'Nutrición'),
         showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
-        actions: [
+        actions: [FeatureDataAction(featureId: 'nutrition'), 
           PrismTopBarAction(
             icon: PhosphorIcons.gearSix(),
             tooltip: tr(context, 'Nutrition settings', 'Ajustes de nutrición'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/dreams/dream_journal.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/shared/widgets/prism_segmented_control.dart';
@@ -65,7 +66,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       topBar: PrismTopBar(
         title: l10n.navJournal,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'journal'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.journalNewEntry,

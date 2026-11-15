@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/router/app_router.dart' show appRootNavigatorKey;
 import 'package:prism_plurality/core/services/local_notification_service.dart';
@@ -90,6 +91,7 @@ class AutomationEngine {
   /// they arrive even when Prism is closed (the engine skips them).
   Future<void> _scheduleTimed(List<AutoRule> rules) async {
     if (kIsWeb) return;
+    if (!isFeatureOn(ref, 'automations')) rules = const [];
     final timed = [
       for (final r in rules)
         if (r.enabled && r.triggerType == AutoTrigger.time && r.conditions.isEmpty)
@@ -182,6 +184,7 @@ class AutomationEngine {
   String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
   Future<void> _onTick() async {
+    if (!isFeatureOn(ref, 'automations')) return;
     final now = DateTime.now();
     for (final r in _rules) {
       final t = r.trigger;
@@ -231,6 +234,7 @@ class AutomationEngine {
   }
 
   void _fire(String type, AutoContext ctx) {
+    if (!isFeatureOn(ref, 'automations')) return;
     for (final r in _rules) {
       if (r.triggerType != type) continue;
       final only = r.trigger['alters'];

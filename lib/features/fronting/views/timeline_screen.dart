@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/fronting/providers/timeline_providers.dart';
 import 'package:prism_plurality/features/fronting/widgets/timeline_view.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -33,7 +34,7 @@ class TimelineScreen extends ConsumerWidget {
             onPressed: () => _pickDate(context, anchorContext, ref),
           ),
         ),
-        actions: [
+        actions: [FeatureDataAction(featureId: 'fronting'), 
           PrismTopBarAction(
             icon: AppIcons.removeRounded,
             tooltip: context.l10n.frontingTimelineZoomOut,

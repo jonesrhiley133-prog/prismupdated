@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
@@ -89,7 +90,7 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
       topBar: PrismTopBar(
         title: l10n.cycleTitle,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'cycle'), 
           PrismTopBarAction(
             icon: AppIcons.navInsights,
             tooltip: l10n.cycInsightsTitle,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/views/fitness_screen.dart'
@@ -65,7 +66,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
       topBar: PrismTopBar(
         title: l10n.navSchool,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'school'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: _tab == SchoolTab.classes

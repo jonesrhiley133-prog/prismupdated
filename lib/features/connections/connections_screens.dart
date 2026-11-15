@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/providers/link_providers.dart';
 import 'package:prism_plurality/features/links/views/link_explorer_screen.dart' show GraphControls;
@@ -66,7 +67,7 @@ class ConnectionsScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: tr(context, 'Internal Connections', 'Conexiones internas'),
         showBackButton: showBackButton || Navigator.of(context).canPop(),
-        actions: [
+        actions: [FeatureDataAction(featureId: 'connections'), 
           PrismTopBarAction(icon: PhosphorIcons.graph(), tooltip: tr(context, 'Record connections explorer', 'Explorador de registros'), onPressed: () => context.push('/links')),
           PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New map', 'Nuevo mapa'), onPressed: () => _newMap(context, ref)),
         ],

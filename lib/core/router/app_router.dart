@@ -8,6 +8,8 @@ import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/services/error_reporting_service.dart';
 import 'package:prism_plurality/core/services/secure_storage.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
+import '../features/feature_state.dart';
+import '../../features/settings/views/feature_data_screen.dart';
 import '../../features/fronting/views/edit_front_session_screen.dart';
 import '../../features/fronting/views/fronting_screen.dart';
 import '../../features/fronting/views/period_detail_args.dart';
@@ -391,13 +393,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       FreezeWatchdog.crumb(
         'redirect ${state.fullPath ?? state.matchedLocation}',
       );
-      return resolveOnboardingRedirect(
+      final onboarding = await resolveOnboardingRedirect(
         hasCompleted: _onboardingRedirectNotifier.hasCompleted,
         isOnboarding: state.matchedLocation == AppRoutePaths.onboarding,
         completedLocally: ref.read(localOnboardingCompletionProvider),
         tryRecoverPaired: () => _recoverCompletedOnboardingFromPairedState(ref),
         getMemberCount: ref.read(memberRepositoryProvider).getCount,
       );
+      if (onboarding != null) return onboarding;
+      // Features turned off in Settings › Features can't be opened by link.
+      final off = disabledFeatureFor(state.matchedLocation, ref.read(featureStatesProvider));
+      if (off != null) return '${AppRoutePaths.settingsFeatures}?off=${off.id}';
+      return null;
     },
     routes: [
       // Onboarding (full-screen)
@@ -922,6 +929,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const DeviceManagementScreen(),
                   ),
                   GoRoute(
+                    path: 'reset-history',
+                    builder: (context, state) => const ResetHistoryScreen(),
+                  ),
+                  GoRoute(
                     path: 'data-browser',
                     builder: (context, state) => const DataBrowserScreen(),
                   ),
@@ -931,8 +942,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'features',
-                    builder: (context, state) => const FeaturesSettingsScreen(),
+                    builder: (context, state) => FeaturesSettingsScreen(highlight: state.uri.queryParameters['off']),
                     routes: [
+                      GoRoute(
+                        path: 'data/:id',
+                        builder: (context, state) => FeatureDataScreen(featureId: state.pathParameters['id']!),
+                      ),
                       GoRoute(
                         path: 'chat',
                         builder: (context, state) =>
