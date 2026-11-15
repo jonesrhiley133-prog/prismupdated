@@ -11,10 +11,13 @@ import 'package:prism_plurality/core/app_icon/favicon.dart';
 /// One choosable app icon.
 @immutable
 class AppIconPreset {
-  const AppIconPreset(this.id, this.en, this.es);
+  const AppIconPreset(this.id, this.en, this.es, {this.plural = false});
   final String id;
   final String en;
   final String es;
+
+  /// Plurality-themed designs (shown in their own group).
+  final bool plural;
 
   /// Preview image bundled with the app.
   String get asset => 'assets/app_icons/$id.png';
@@ -38,6 +41,23 @@ const appIconPresets = [
   AppIconPreset('verdant', 'Verdant', 'Verdor'),
   AppIconPreset('starlight', 'Starlight', 'Luz estelar'),
   AppIconPreset('solstice', 'Solstice', 'Solsticio'),
+  AppIconPreset('eclipse', 'Eclipse', 'Eclipse'),
+  AppIconPreset('opal', 'Opal', 'Ópalo'),
+  AppIconPreset('obsidian', 'Obsidian', 'Obsidiana'),
+  AppIconPreset('ultraviolet', 'Ultraviolet', 'Ultravioleta'),
+  AppIconPreset('tide', 'Tide', 'Marea'),
+  AppIconPreset('constellation', 'Constellation', 'Constelación', plural: true),
+  AppIconPreset('facets', 'Facets', 'Facetas', plural: true),
+  AppIconPreset('moons', 'Many Moons', 'Muchas lunas', plural: true),
+  AppIconPreset('chrysalis', 'Chrysalis', 'Crisálida', plural: true),
+  AppIconPreset('headspace', 'Headspace', 'Espacio interior', plural: true),
+  AppIconPreset('harmony', 'Harmony', 'Armonía', plural: true),
+  AppIconPreset('garden', 'Garden', 'Jardín', plural: true),
+  AppIconPreset('reflection', 'Reflection', 'Reflejo', plural: true),
+  AppIconPreset('murmuration', 'Murmuration', 'Bandada', plural: true),
+  AppIconPreset('threads', 'Threads', 'Hilos', plural: true),
+  AppIconPreset('lanterns', 'Lanterns', 'Faroles', plural: true),
+  AppIconPreset('chorus', 'Chorus', 'Coro', plural: true),
 ];
 
 /// Where changing the icon works: the Android launcher and the browser tab.

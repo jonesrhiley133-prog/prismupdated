@@ -522,24 +522,34 @@ class _AppIconSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              for (final p in appIconPresets)
-                _IconTile(
-                  preset: p,
-                  label: es ? p.es : p.en,
-                  selected: p.id == current,
-                  enabled: appIconSupported,
-                  onTap: () async {
-                    if (p.id == current) return;
-                    await ref.read(appIconProvider.notifier).select(p.id);
-                  },
-                ),
-              _CustomIconTile(selected: current == 'custom', enabled: appIconSupported),
-            ],
-          ),
+          for (final plural in [false, true]) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8, top: 4),
+              child: Text(
+                plural ? tr(context, 'Plurality', 'Pluralidad') : tr(context, 'Prism', 'Prism'),
+                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700),
+              ),
+            ),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (final p in appIconPresets.where((p) => p.plural == plural))
+                  _IconTile(
+                    preset: p,
+                    label: es ? p.es : p.en,
+                    selected: p.id == current,
+                    enabled: appIconSupported,
+                    onTap: () async {
+                      if (p.id == current) return;
+                      await ref.read(appIconProvider.notifier).select(p.id);
+                    },
+                  ),
+                if (plural) _CustomIconTile(selected: current == 'custom', enabled: appIconSupported),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
           const SizedBox(height: 8),
           Text(
             !appIconSupported

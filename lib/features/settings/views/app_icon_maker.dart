@@ -22,6 +22,88 @@ String _auraLabel(BuildContext c, IconAura a) => switch (a) {
 const _darks = [0xFF0B0716, 0xFF120A24, 0xFF0B1A3A, 0xFF04121E, 0xFF062818, 0xFF1A0703, 0xFF2A1A08, 0xFF3B1530, 0xFF050507, 0xFF2B1B5A, 0xFF4D355B, 0xFF16325C, 0xFFF08A5D, 0xFFF7F3EE];
 const _auras = [0xFFB98CFF, 0xFFFF6FB5, 0xFF6FA8FF, 0xFF2CFFB0, 0xFF3CF2E0, 0xFFFFC24A, 0xFFFF5A1F, 0xFFFFE7A8, 0xFFEAF0FF, 0xFF8A5BFF, 0xFFFF9A2E, 0xFF7BFFC0];
 
+const _symbolColors = [0xFFFFFFFF, 0xFFF3ECFF, 0xFFFFE7A8, 0xFFFFD0E4, 0xFFC8FFF8, 0xFFDDF8FF, 0xFFD9FFE8, 0xFFB98CFF, 0xFFFF6FB5, 0xFF6FA8FF, 0xFFFFC24A, 0xFF111111];
+
+/// Hue, saturation and brightness sliders for one colour.
+class _HsvSliders extends StatelessWidget {
+  const _HsvSliders({required this.value, required this.onChanged});
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final hsv = HSVColor.fromColor(Color(value));
+    void emit(HSVColor c) => onChanged(c.toColor().toARGB32());
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Column(
+        children: [
+          _GradientSlider(
+            label: tr(context, 'Hue', 'Tono'),
+            value: hsv.hue / 360,
+            colors: [for (var h = 0; h <= 360; h += 60) HSVColor.fromAHSV(1, h.toDouble(), 0.85, 0.95).toColor()],
+            onChanged: (v) => emit(hsv.withHue(v * 360)),
+          ),
+          _GradientSlider(
+            label: tr(context, 'Saturation', 'Saturación'),
+            value: hsv.saturation,
+            colors: [hsv.withSaturation(0).toColor(), hsv.withSaturation(1).toColor()],
+            onChanged: (v) => emit(hsv.withSaturation(v)),
+          ),
+          _GradientSlider(
+            label: tr(context, 'Brightness', 'Brillo'),
+            value: hsv.value,
+            colors: [hsv.withValue(0).toColor(), hsv.withValue(1).toColor()],
+            onChanged: (v) => emit(hsv.withValue(v)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GradientSlider extends StatelessWidget {
+  const _GradientSlider({required this.label, required this.value, required this.colors, required this.onChanged});
+  final String label;
+  final double value;
+  final List<Color> colors;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        SizedBox(width: 84, child: Text(label, style: theme.textTheme.bodySmall)),
+        Expanded(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Container(
+                  height: 10,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: colors)),
+                ),
+              ),
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 10,
+                  activeTrackColor: Colors.transparent,
+                  inactiveTrackColor: Colors.transparent,
+                  thumbColor: Colors.white,
+                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                ),
+                child: Slider(value: value.clamp(0.0, 1.0), onChanged: onChanged, semanticFormatterCallback: (v) => '$label ${(v * 100).round()}%'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _Maker extends ConsumerStatefulWidget {
   const _Maker({required this.scroll});
   final ScrollController scroll;
@@ -96,6 +178,7 @@ class _MakerState extends ConsumerState<_Maker> {
           runSpacing: 6,
           children: [
             PrismChip(label: tr(context, 'Prism', 'Prism'), selected: _spec.center == IconCenter.prism, onTap: () => _update(_spec.copyWith(center: IconCenter.prism))),
+            PrismChip(label: tr(context, 'Symbol', 'Símbolo'), selected: _spec.center == IconCenter.symbol, onTap: () => _update(_spec.copyWith(center: IconCenter.symbol))),
             PrismChip(label: tr(context, 'Emoji', 'Emoji'), selected: _spec.center == IconCenter.emoji, onTap: () => _update(_spec.copyWith(center: IconCenter.emoji))),
             PrismChip(
               label: tr(context, 'Photo', 'Foto'),
@@ -108,6 +191,38 @@ class _MakerState extends ConsumerState<_Maker> {
             ),
           ],
         ),
+        if (_spec.center == IconCenter.symbol) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final e in iconSymbols.entries)
+                Semantics(
+                  button: true,
+                  selected: _spec.symbol == e.key,
+                  label: e.key,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _update(_spec.copyWith(symbol: e.key)),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: _spec.symbol == e.key ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.surfaceContainerHigh,
+                        border: Border.all(color: _spec.symbol == e.key ? theme.colorScheme.primary : Colors.transparent, width: 2),
+                      ),
+                      child: Icon(e.value, size: 24),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          label(tr(context, 'Symbol color', 'Color del símbolo')),
+          ColorChoiceRow(value: _spec.symbolColor, colors: _symbolColors, onChanged: (v) => _update(_spec.copyWith(symbolColor: v))),
+          _HsvSliders(value: _spec.symbolColor, onChanged: (v) => _update(_spec.copyWith(symbolColor: v))),
+        ],
         if (_spec.center == IconCenter.emoji)
           Padding(
             padding: const EdgeInsets.only(top: 8),
@@ -118,11 +233,30 @@ class _MakerState extends ConsumerState<_Maker> {
         if (_spec.aura != IconAura.none) ...[
           const SizedBox(height: 10),
           ColorChoiceRow(value: _spec.auraColor, colors: _auras, onChanged: (v) => _update(_spec.copyWith(auraColor: v))),
+          _HsvSliders(value: _spec.auraColor, onChanged: (v) => _update(_spec.copyWith(auraColor: v))),
         ],
-        label(tr(context, 'Background — top', 'Fondo — arriba')),
+        label(tr(context, 'Background', 'Fondo')),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            PrismChip(label: tr(context, 'Gradient', 'Degradado'), selected: _spec.background == IconBackground.linear, onTap: () => _update(_spec.copyWith(background: IconBackground.linear))),
+            PrismChip(label: tr(context, 'Radial', 'Radial'), selected: _spec.background == IconBackground.radial, onTap: () => _update(_spec.copyWith(background: IconBackground.radial))),
+            PrismChip(label: tr(context, 'Solid', 'Sólido'), selected: _spec.background == IconBackground.solid, onTap: () => _update(_spec.copyWith(background: IconBackground.solid))),
+          ],
+        ),
+        label(_spec.background == IconBackground.solid
+            ? tr(context, 'Background color', 'Color de fondo')
+            : _spec.background == IconBackground.radial
+            ? tr(context, 'Background — center', 'Fondo — centro')
+            : tr(context, 'Background — top', 'Fondo — arriba')),
         ColorChoiceRow(value: _spec.top, colors: _darks, onChanged: (v) => _update(_spec.copyWith(top: v))),
-        label(tr(context, 'Background — bottom', 'Fondo — abajo')),
-        ColorChoiceRow(value: _spec.bottom, colors: _darks, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
+        _HsvSliders(value: _spec.top, onChanged: (v) => _update(_spec.copyWith(top: v))),
+        if (_spec.background != IconBackground.solid) ...[
+          label(_spec.background == IconBackground.radial ? tr(context, 'Background — edges', 'Fondo — bordes') : tr(context, 'Background — bottom', 'Fondo — abajo')),
+          ColorChoiceRow(value: _spec.bottom, colors: _darks, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
+          _HsvSliders(value: _spec.bottom, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
+        ],
         const SizedBox(height: 20),
         PrismButton(
           label: kIsWeb ? tr(context, 'Use this icon', 'Usar este icono') : tr(context, 'Add to home screen', 'Añadir a la pantalla de inicio'),

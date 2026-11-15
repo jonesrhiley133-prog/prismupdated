@@ -16,6 +16,7 @@ import androidx.core.graphics.drawable.IconCompat
 object AppIcon {
     val ids = listOf(
         "classic", "nebula", "aurora", "halo", "lunar", "ember", "abyss", "bloom", "void", "spectrum", "frost", "twilight", "verdant", "starlight", "solstice",
+        "eclipse", "opal", "obsidian", "ultraviolet", "tide", "constellation", "facets", "moons", "chrysalis", "headspace", "harmony", "garden", "reflection", "murmuration", "threads", "lanterns", "chorus",
     )
 
     private fun component(context: Context, id: String) =

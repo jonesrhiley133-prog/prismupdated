@@ -32,6 +32,30 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.34.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        '17 new app icons, all keeping the Prism pyramid: five new designs (Eclipse, Opal, Obsidian, Ultraviolet, Tide) and 12 gentle plurality designs — Constellation, Facets, Many Moons, Chrysalis, Headspace, Harmony, Garden, Reflection, Murmuration, Threads, Lanterns and Chorus.',
+        '17 iconos nuevos, todos con la pirámide de Prism: cinco diseños nuevos (Eclipse, Ópalo, Obsidiana, Ultravioleta, Marea) y 12 diseños suaves sobre la pluralidad: Constelación, Facetas, Muchas lunas, Crisálida, Espacio interior, Armonía, Jardín, Reflejo, Bandada, Hilos, Faroles y Coro.',
+      ),
+      LocalizedText(
+        'The icon designer can use any of 56 symbols instead of the Prism, with its own colour, and every colour — background, aura and symbol — can be fine-tuned with hue, saturation and brightness sliders. Backgrounds can be a gradient, radial or solid.',
+        'El diseñador de iconos puede usar cualquiera de 56 símbolos en lugar del prisma, con su propio color, y cada color (fondo, aura y símbolo) se ajusta con controles de tono, saturación y brillo. El fondo puede ser degradado, radial o sólido.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Rings and glows on the Prism icons are centred on the pyramid.',
+        'Los anillos y brillos de los iconos de Prism se centran en la pirámide.',
+      ),
+      LocalizedText(
+        'The web version shows its progress while it starts, and explains what to do if it gets stuck instead of staying blank.',
+        'La versión web muestra su progreso al iniciar y explica qué hacer si se queda atascada en lugar de quedarse en blanco.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.33.0',
     date: DateTime(2026, 11, 15),
     features: const [
