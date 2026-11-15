@@ -40,3 +40,23 @@ void setWebRendererMode(String mode) {
   } catch (_) {}
   _location.reload();
 }
+
+@JS('window.__prismStartup')
+external _Startup? get _startup;
+
+extension type _Startup._(JSObject _) implements JSObject {
+  external void stage(String name);
+  external void error(String message);
+}
+
+void markWebStage(String stage) {
+  try {
+    _startup?.stage(stage);
+  } catch (_) {}
+}
+
+void reportWebError(String message) {
+  try {
+    _startup?.error(message.length > 800 ? message.substring(0, 800) : message);
+  } catch (_) {}
+}

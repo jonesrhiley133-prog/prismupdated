@@ -9,3 +9,9 @@ String? webRendererReason() => null;
 
 /// Saves the choice and reloads the page so it takes effect.
 void setWebRendererMode(String mode) {}
+
+/// Tells the page's startup check how far Prism got (web only).
+void markWebStage(String stage) {}
+
+/// Records an error for the page's startup check (web only).
+void reportWebError(String message) {}

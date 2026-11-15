@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/features/prism_social/social_remote.dart' show socialSyncProvider;
 import 'package:prism_plurality/features/dictionary/importer/import_job.dart' show importJobProvider;
@@ -557,6 +559,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           },
           routerConfig: router,
           builder: (context, child) {
+            if (kIsWeb) markWebStage('app');
             Widget result = child ?? const SizedBox.shrink();
             if (fontScale != 1.0) {
               result = MediaQuery(
@@ -712,7 +715,7 @@ class _DatabaseStartupScreen extends ConsumerWidget {
                 size: 52,
               ),
               loading: () {
-                if (isKnownMigration || showDelayedStatus) {
+                if (isKnownMigration || showDelayedStatus || kIsWeb) {
                   return _DatabaseStartupStatus(
                     schemaVersionBeforeOpen: schemaVersion,
                   );

@@ -10,6 +10,7 @@ import 'package:prism_plurality/core/database/database_encryption.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/database/platform/web_database.dart';
 import 'package:prism_plurality/core/services/error_reporting_service.dart';
+import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/core/services/notification_providers.dart';
 import 'package:prism_plurality/core/services/reminder_scheduler_service.dart';
 import 'package:prism_plurality/core/services/screen_privacy_controller.dart';
@@ -28,12 +29,21 @@ import 'package:prism_plurality/features/habits/providers/habit_providers.dart';
 /// Everything else (members, fronting, chat, mood, calendar, notes, …) runs
 /// against the same Drift schema as the native apps.
 Future<void> runWebApp() async {
+  markWebStage('dart');
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
+    reportWebError(details.exceptionAsString());
     ErrorReportingService.instance.report(
       details.exceptionAsString(),
       stackTrace: details.stack,
     );
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('[Prism] Uncaught error: $error\n$stack');
+    reportWebError(error.toString());
+    ErrorReportingService.instance.report(error.toString(), stackTrace: stack);
+    return true;
   };
 
   try {
