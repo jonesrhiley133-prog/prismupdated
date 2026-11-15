@@ -13,6 +13,7 @@ export 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
 export 'package:prism_plurality/shared/icon_choices.dart';
 export 'package:prism_plurality/shared/l10n/tr.dart';
 export 'package:prism_plurality/shared/pickers/style_pickers.dart';
+export 'package:prism_plurality/shared/pickers/hsv_sliders.dart';
 export 'package:prism_plurality/shared/theme/app_icons.dart';
 export 'package:prism_plurality/shared/theme/prism_tokens.dart';
 export 'package:prism_plurality/shared/widgets/app_shell.dart' show NavBarInset;

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:go_router/go_router.dart';
 
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
@@ -8,7 +10,6 @@ import 'package:prism_plurality/features/intro_cards/intro_models.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
-import 'package:prism_plurality/shared/pickers/style_pickers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 final introTemplatesProvider = Provider<List<IntroTemplate>>((ref) {
@@ -23,7 +24,7 @@ final introCardsProvider = Provider<Map<String, TrackerRecord>>((ref) {
 });
 
 IntroTemplate templateFor(TrackerRecord card, List<IntroTemplate> all) =>
-    all.firstWhere((t) => t.id == card.str('template'), orElse: () => builtInTemplates.first);
+    all.firstWhere((t) => t.id == card.str('template'), orElse: () => builtInTemplates.first).withCardColors(card);
 
 class IntroCardsScreen extends ConsumerStatefulWidget {
   const IntroCardsScreen({super.key, this.showBackButton = false});
@@ -111,55 +112,10 @@ class _IntroCardsScreenState extends ConsumerState<IntroCardsScreen> {
                     actionLabel: tr(context, 'Create a card', 'Crear tarjeta'),
                     onAction: () => _newCard(context, members.values.toList(), cards),
                   )
-                : LayoutBuilder(
-                    builder: (context, c) {
-                      final cols = (c.maxWidth / 230).floor().clamp(1, 6);
-                      final w = (c.maxWidth - 32 - (cols - 1) * 16) / cols;
-                      return GridView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 12, 16, NavBarInset.of(context) + 16),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: cols,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: w / (w * 1.72 + 44),
-                        ),
-                        itemCount: shown.length,
-                        itemBuilder: (context, i) {
-                          final e = shown[i];
-                          final m = members[e.key]!;
-                          final name = m.effectiveName(preferDisplayName: preferDisplay);
-                          return Column(
-                            children: [
-                              Opacity(
-                                opacity: e.value.flag('enabled') ? 1 : 0.45,
-                                child: IntroCardView(
-                                  card: e.value,
-                                  member: m,
-                                  template: templateFor(e.value, templates),
-                                  displayName: name,
-                                  width: w,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    tooltip: tr(context, 'Open profile', 'Abrir perfil'),
-                                    icon: Icon(AppIcons.personOutline, size: 20),
-                                    onPressed: () => context.push(AppRoutePaths.member(m.id)),
-                                  ),
-                                  IconButton(
-                                    tooltip: tr(context, 'Edit card', 'Editar tarjeta'),
-                                    icon: Icon(AppIcons.edit, size: 20),
-                                    onPressed: () => showIntroCardEditor(context, memberId: m.id),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
+                : _CardTable(
+                    items: [for (final e in shown) (e.value, members[e.key]!)],
+                    templates: templates,
+                    preferDisplay: preferDisplay,
                   ),
           ),
         ],
@@ -191,6 +147,188 @@ class _IntroCardsScreenState extends ConsumerState<IntroCardsScreen> {
     );
     if (picked != null && context.mounted) await showIntroCardEditor(context, memberId: picked);
   }
+}
+
+/// The gallery: small cards laid out on a felt table like a dealt deck.
+class _CardTable extends StatelessWidget {
+  const _CardTable({required this.items, required this.templates, required this.preferDisplay});
+  final List<(TrackerRecord, Member)> items;
+  final List<IntroTemplate> templates;
+  final bool preferDisplay;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final felt = Color.lerp(theme.colorScheme.surfaceContainerHigh, theme.colorScheme.primary, 0.16)!;
+    final edge = Color.lerp(theme.colorScheme.surface, Colors.black, 0.3)!;
+    return LayoutBuilder(
+      builder: (context, c) {
+        const gap = 18.0;
+        // Three across even on phones; never bigger than a real card on desktop.
+        final w = ((c.maxWidth - 24 - 32 - 2 * gap) / 3).clamp(92.0, 150.0);
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(12, 8, 12, NavBarInset.of(context) + 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: math.max(0, c.maxHeight - 24 - NavBarInset.of(context))),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: RadialGradient(center: const Alignment(0, -0.35), radius: 1.25, colors: [felt, edge]),
+                border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 26, 16, 26),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: gap,
+                  runSpacing: 22,
+                  children: [
+                    for (final (card, m) in items)
+                      _TableCard(
+                        card: card,
+                        member: m,
+                        template: templateFor(card, templates),
+                        name: m.effectiveName(preferDisplayName: preferDisplay),
+                        width: w,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TableCard extends StatefulWidget {
+  const _TableCard({required this.card, required this.member, required this.template, required this.name, required this.width});
+  final TrackerRecord card;
+  final Member member;
+  final IntroTemplate template;
+  final String name;
+  final double width;
+
+  @override
+  State<_TableCard> createState() => _TableCardState();
+}
+
+class _TableCardState extends State<_TableCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final reduce = MediaQuery.of(context).disableAnimations;
+    // A slight, stable tilt per card, as if dealt by hand.
+    final tilt = ((widget.card.id.hashCode % 7) - 3) * 0.011;
+    final hidden = !widget.card.flag('enabled');
+    return SizedBox(
+      width: widget.width,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => _hover = true),
+            onExit: (_) => setState(() => _hover = false),
+            child: GestureDetector(
+              onTap: () => _showLarge(context),
+              child: AnimatedContainer(
+                duration: reduce ? Duration.zero : const Duration(milliseconds: 160),
+                curve: Curves.easeOut,
+                transformAlignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..translateByDouble(0.0, _hover ? -8.0 : 0.0, 0.0, 1.0)
+                  ..rotateZ(_hover ? 0 : tilt),
+                child: Opacity(
+                  opacity: hidden ? 0.45 : 1,
+                  child: IgnorePointer(
+                    child: IntroCardView(card: widget.card, member: widget.member, template: widget.template, displayName: widget.name, width: widget.width, flippable: false),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              SizedBox(
+                width: 28,
+                height: 28,
+                child: PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  iconSize: 18,
+                  tooltip: tr(context, 'Card options', 'Opciones'),
+                  icon: Icon(PhosphorIcons.dotsThreeVertical()),
+                  onSelected: (v) => v == 'edit' ? showIntroCardEditor(context, memberId: widget.member.id) : context.push(AppRoutePaths.member(widget.member.id)),
+                  itemBuilder: (ctx) => [
+                    PopupMenuItem(value: 'edit', child: Text(tr(ctx, 'Edit card', 'Editar tarjeta'))),
+                    PopupMenuItem(value: 'profile', child: Text(tr(ctx, 'Open profile', 'Abrir perfil'))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Lifts the card off the table: large and flippable.
+  Future<void> _showLarge(BuildContext context) => showDialog<void>(
+    context: context,
+    builder: (ctx) {
+      final size = MediaQuery.sizeOf(ctx);
+      final w = math.min(300.0, math.min(size.width - 64, (size.height - 180) / 1.72));
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IntroCardView(card: widget.card, member: widget.member, template: widget.template, displayName: widget.name, width: w),
+            const SizedBox(height: 10),
+            Text(tr(ctx, 'Tap the card to flip it', 'Toca la tarjeta para girarla'), style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                PrismButton(
+                  label: tr(ctx, 'Edit card', 'Editar tarjeta'),
+                  icon: AppIcons.edit,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    showIntroCardEditor(context, memberId: widget.member.id);
+                  },
+                ),
+                PrismButton(
+                  label: tr(ctx, 'Open profile', 'Abrir perfil'),
+                  icon: AppIcons.personOutline,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    context.push(AppRoutePaths.member(widget.member.id));
+                  },
+                ),
+                PrismButton(label: tr(ctx, 'Close', 'Cerrar'), onPressed: () => Navigator.of(ctx).pop()),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 /// Small entry point for alter profiles.
@@ -286,6 +424,9 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
   bool _init = false;
   bool _back = false;
 
+  /// The card's own colours (null = use the design's).
+  Map<String, int>? _colors;
+
   @override
   void dispose() {
     _arcana.dispose();
@@ -314,6 +455,9 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
     _enabled = card.flag('enabled');
     _template = card.str('template') ?? _template;
     _art = card.str('art');
+    if (card.fields['colors'] case final Map c) {
+      _colors = {for (final e in c.entries) if (e.value is num) e.key as String: (e.value as num).toInt()};
+    }
     _arcana.text = card.str('arcana') ?? '';
     _numeral.text = card.str('numeral') ?? '';
     final values = card.fields['values'] is Map ? (card.fields['values'] as Map) : const {};
@@ -347,6 +491,7 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
   Map<String, Object?> _fields() => {
     'enabled': _enabled,
     'template': _template,
+    'colors': _colors,
     'art': _art,
     'arcana': _arcana.text.trim().isEmpty ? null : _arcana.text.trim(),
     'numeral': _numeral.text.trim().isEmpty ? null : _numeral.text.trim(),
@@ -388,10 +533,10 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
       children: [
         Center(
           child: IntroCardView(
-            key: ValueKey('$_back-$_template'),
+            key: ValueKey('$_back-$_template-${_colors == null}'),
             card: preview,
             member: m,
-            template: templates.firstWhere((t) => t.id == _template, orElse: () => templates.first),
+            template: templates.firstWhere((t) => t.id == _template, orElse: () => templates.first).withCardColors(preview),
             displayName: name,
             width: 200,
             initiallyBack: _back,
@@ -437,6 +582,41 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
             ],
           ),
         ),
+        const SizedBox(height: 8),
+        PrismSwitchRow(
+          title: tr(context, 'Card colours', 'Colores de la tarjeta'),
+          subtitle: tr(context, 'Recolour this card without changing the design.', 'Cambia los colores de esta tarjeta sin cambiar el diseño.'),
+          value: _colors != null,
+          onChanged: (v) => setState(() {
+            if (!v) {
+              _colors = null;
+              return;
+            }
+            final t = templates.firstWhere((t) => t.id == _template, orElse: () => templates.first);
+            _colors = {'bg1': t.bg1, 'bg2': t.bg2, 'border': t.border, 'ink': t.ink};
+          }),
+        ),
+        if (_colors != null)
+          for (final (key, en, es) in const [
+            ('bg1', 'Top', 'Arriba'),
+            ('bg2', 'Bottom', 'Abajo'),
+            ('border', 'Border & ornaments', 'Borde y adornos'),
+            ('ink', 'Text', 'Texto'),
+          ]) ...[
+            Row(
+              children: [
+                Container(
+                  width: 16,
+                  height: 16,
+                  margin: const EdgeInsets.only(right: 8, top: 6),
+                  decoration: BoxDecoration(color: Color(_colors![key]!), shape: BoxShape.circle, border: Border.all(color: Theme.of(context).colorScheme.outline)),
+                ),
+                Expanded(child: TrackerLabel(tr(context, en, es))),
+              ],
+            ),
+            HsvSliders(value: _colors![key]!, onChanged: (v) => setState(() => _colors = {..._colors!, key: v})),
+            const SizedBox(height: 6),
+          ],
         const SizedBox(height: 8),
         TrackerLabel(tr(context, 'Artwork', 'Ilustración')),
         Wrap(
@@ -605,11 +785,23 @@ class _TemplateEditorState extends ConsumerState<_TemplateEditor> {
   Widget build(BuildContext context) {
     final sample = TrackerRecord(id: 's', kind: TrackerKind.introCard, createdAt: DateTime(2020), modifiedAt: DateTime(2020))
         .withFields({'arcana': tr(context, 'The Example', 'El Ejemplo'), 'numeral': 'XVII'});
-    const extraColors = [0xFF1E1B3A, 0xFF3D2C6B, 0xFFD4AF37, 0xFFF6EBD0, 0xFF0F2027, 0xFF2C5364, 0xFF1D3B2A, 0xFF3A0F0F, 0xFFFFFFFF, 0xFF000000, 0xFFF4E9D0, 0xFF6B4E2E];
-    final colors = [...extraColors, ...colorChoices];
     Widget pick(String label, int v, ValueChanged<int> on) => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [TrackerLabel(label), ColorChoiceRow(value: v, colors: colors, onChanged: (c) => setState(() => on(c))), const SizedBox(height: 10)],
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 16,
+              height: 16,
+              margin: const EdgeInsets.only(right: 8, top: 6),
+              decoration: BoxDecoration(color: Color(v), shape: BoxShape.circle, border: Border.all(color: Theme.of(context).colorScheme.outline)),
+            ),
+            Expanded(child: TrackerLabel(label)),
+          ],
+        ),
+        HsvSliders(value: v, onChanged: (c) => setState(() => on(c))),
+        const SizedBox(height: 10),
+      ],
     );
     final editing = widget.base?.record;
     return TrackerEditorScaffold(

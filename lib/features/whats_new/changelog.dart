@@ -46,6 +46,14 @@ final List<ChangelogRelease> prismChangelog = [
     ],
     improvements: const [
       LocalizedText(
+        'Introductions are laid out like a deck on a table: smaller cards with a slight hand-dealt tilt. Tap a card to lift it up, flip it, edit it or open the profile.',
+        'Las presentaciones se muestran como una baraja sobre la mesa: tarjetas más pequeñas con una ligera inclinación. Toca una tarjeta para levantarla, girarla, editarla o abrir el perfil.',
+      ),
+      LocalizedText(
+        'Recolour any introduction card with hue, saturation and brightness sliders for its background, border and text — card designs use the same sliders.',
+        'Cambia los colores de cualquier tarjeta con controles de tono, saturación y brillo para el fondo, el borde y el texto; los diseños de tarjeta usan los mismos controles.',
+      ),
+      LocalizedText(
         'Rings and glows on the Prism icons are centred on the pyramid.',
         'Los anillos y brillos de los iconos de Prism se centran en la pirámide.',
       ),

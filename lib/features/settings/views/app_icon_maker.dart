@@ -24,86 +24,6 @@ const _auras = [0xFFB98CFF, 0xFFFF6FB5, 0xFF6FA8FF, 0xFF2CFFB0, 0xFF3CF2E0, 0xFF
 
 const _symbolColors = [0xFFFFFFFF, 0xFFF3ECFF, 0xFFFFE7A8, 0xFFFFD0E4, 0xFFC8FFF8, 0xFFDDF8FF, 0xFFD9FFE8, 0xFFB98CFF, 0xFFFF6FB5, 0xFF6FA8FF, 0xFFFFC24A, 0xFF111111];
 
-/// Hue, saturation and brightness sliders for one colour.
-class _HsvSliders extends StatelessWidget {
-  const _HsvSliders({required this.value, required this.onChanged});
-  final int value;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final hsv = HSVColor.fromColor(Color(value));
-    void emit(HSVColor c) => onChanged(c.toColor().toARGB32());
-    return Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: Column(
-        children: [
-          _GradientSlider(
-            label: tr(context, 'Hue', 'Tono'),
-            value: hsv.hue / 360,
-            colors: [for (var h = 0; h <= 360; h += 60) HSVColor.fromAHSV(1, h.toDouble(), 0.85, 0.95).toColor()],
-            onChanged: (v) => emit(hsv.withHue(v * 360)),
-          ),
-          _GradientSlider(
-            label: tr(context, 'Saturation', 'Saturación'),
-            value: hsv.saturation,
-            colors: [hsv.withSaturation(0).toColor(), hsv.withSaturation(1).toColor()],
-            onChanged: (v) => emit(hsv.withSaturation(v)),
-          ),
-          _GradientSlider(
-            label: tr(context, 'Brightness', 'Brillo'),
-            value: hsv.value,
-            colors: [hsv.withValue(0).toColor(), hsv.withValue(1).toColor()],
-            onChanged: (v) => emit(hsv.withValue(v)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GradientSlider extends StatelessWidget {
-  const _GradientSlider({required this.label, required this.value, required this.colors, required this.onChanged});
-  final String label;
-  final double value;
-  final List<Color> colors;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        SizedBox(width: 84, child: Text(label, style: theme.textTheme.bodySmall)),
-        Expanded(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Container(
-                  height: 10,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: colors)),
-                ),
-              ),
-              SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  trackHeight: 10,
-                  activeTrackColor: Colors.transparent,
-                  inactiveTrackColor: Colors.transparent,
-                  thumbColor: Colors.white,
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-                ),
-                child: Slider(value: value.clamp(0.0, 1.0), onChanged: onChanged, semanticFormatterCallback: (v) => '$label ${(v * 100).round()}%'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _Maker extends ConsumerStatefulWidget {
   const _Maker({required this.scroll});
   final ScrollController scroll;
@@ -221,7 +141,7 @@ class _MakerState extends ConsumerState<_Maker> {
           ),
           label(tr(context, 'Symbol color', 'Color del símbolo')),
           ColorChoiceRow(value: _spec.symbolColor, colors: _symbolColors, onChanged: (v) => _update(_spec.copyWith(symbolColor: v))),
-          _HsvSliders(value: _spec.symbolColor, onChanged: (v) => _update(_spec.copyWith(symbolColor: v))),
+          HsvSliders(value: _spec.symbolColor, onChanged: (v) => _update(_spec.copyWith(symbolColor: v))),
         ],
         if (_spec.center == IconCenter.emoji)
           Padding(
@@ -233,7 +153,7 @@ class _MakerState extends ConsumerState<_Maker> {
         if (_spec.aura != IconAura.none) ...[
           const SizedBox(height: 10),
           ColorChoiceRow(value: _spec.auraColor, colors: _auras, onChanged: (v) => _update(_spec.copyWith(auraColor: v))),
-          _HsvSliders(value: _spec.auraColor, onChanged: (v) => _update(_spec.copyWith(auraColor: v))),
+          HsvSliders(value: _spec.auraColor, onChanged: (v) => _update(_spec.copyWith(auraColor: v))),
         ],
         label(tr(context, 'Background', 'Fondo')),
         Wrap(
@@ -251,11 +171,11 @@ class _MakerState extends ConsumerState<_Maker> {
             ? tr(context, 'Background — center', 'Fondo — centro')
             : tr(context, 'Background — top', 'Fondo — arriba')),
         ColorChoiceRow(value: _spec.top, colors: _darks, onChanged: (v) => _update(_spec.copyWith(top: v))),
-        _HsvSliders(value: _spec.top, onChanged: (v) => _update(_spec.copyWith(top: v))),
+        HsvSliders(value: _spec.top, onChanged: (v) => _update(_spec.copyWith(top: v))),
         if (_spec.background != IconBackground.solid) ...[
           label(_spec.background == IconBackground.radial ? tr(context, 'Background — edges', 'Fondo — bordes') : tr(context, 'Background — bottom', 'Fondo — abajo')),
           ColorChoiceRow(value: _spec.bottom, colors: _darks, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
-          _HsvSliders(value: _spec.bottom, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
+          HsvSliders(value: _spec.bottom, onChanged: (v) => _update(_spec.copyWith(bottom: v))),
         ],
         const SizedBox(height: 20),
         PrismButton(
