@@ -83,6 +83,8 @@ abstract final class AppIcons {
   static final navAvailabilityActive = PhosphorIcons.calendarCheck(PhosphorIconsStyle.fill);
   static final navIntroductions = PhosphorIcons.cards();
   static final navIntroductionsActive = PhosphorIcons.cards(PhosphorIconsStyle.fill);
+  static final navSocial = PhosphorIcons.usersFour();
+  static final navSocialActive = PhosphorIcons.usersFour(PhosphorIconsStyle.fill);
   static final navSubsystems = PhosphorIcons.treeStructure();
   static final navSubsystemsActive = PhosphorIcons.treeStructure(PhosphorIconsStyle.fill);
   static final whatsNew = PhosphorIcons.megaphone();

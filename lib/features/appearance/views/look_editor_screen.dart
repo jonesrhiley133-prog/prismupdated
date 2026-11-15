@@ -78,6 +78,7 @@ String pageLabel(AppLocalizations l10n, String page) => switch (page) {
   'analytics' => l10n.navAnalytics,
   'availability' => l10n.navAvailability,
   'introductions' => l10n.navIntroductions,
+  'social' => 'Social',
   'locations' => l10n.navLocations,
   'reminders' => l10n.navReminders,
   _ => l10n.apPageSettings,

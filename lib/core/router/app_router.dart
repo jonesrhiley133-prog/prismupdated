@@ -9,6 +9,11 @@ import 'package:prism_plurality/core/services/error_reporting_service.dart';
 import 'package:prism_plurality/core/services/secure_storage.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
 import '../features/feature_state.dart';
+import '../../features/prism_social/social_hub_screen.dart';
+import '../../features/prism_social/social_messages.dart';
+import '../../features/prism_social/social_profile.dart';
+import '../../features/prism_social/social_feed.dart';
+import '../../features/prism_social/social_settings.dart';
 import '../../features/fitness/health/health_integration_screen.dart';
 import '../../features/settings/views/feature_data_screen.dart';
 import '../../features/fronting/views/edit_front_session_screen.dart';
@@ -205,6 +210,7 @@ final _analyticsNavigatorKey = GlobalKey<NavigatorState>(
 final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'availability',
 );
+final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -1579,6 +1585,23 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.introductions,
                 builder: (context, state) => const IntroCardsScreen(),
+              ),
+            ],
+          ),
+          // Branch 38: Prism Social (system-to-system social network)
+          StatefulShellBranch(
+            navigatorKey: _socialNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.prismSocial,
+                builder: (context, state) => SocialHubScreen(section: state.uri.queryParameters['s']),
+                routes: [
+                  GoRoute(path: 'profile/:id', builder: (context, state) => SocialProfileScreen(profileId: state.pathParameters['id']!)),
+                  GoRoute(path: 'alter/:id', builder: (context, state) => SocialAlterScreen(alterId: state.pathParameters['id']!)),
+                  GoRoute(path: 'chat/:id', builder: (context, state) => SocialConversationScreen(conversationId: state.pathParameters['id']!)),
+                  GoRoute(path: 'post/:id', builder: (context, state) => SocialPostScreen(postId: state.pathParameters['id']!)),
+                  GoRoute(path: 'settings', builder: (context, state) => const SocialSettingsScreen()),
+                ],
               ),
             ],
           ),

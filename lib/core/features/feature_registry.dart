@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/features/prism_social/social_core.dart' show SocKind;
 import 'package:prism_plurality/features/social/models/social.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 
@@ -500,6 +501,22 @@ final List<PrismFeature> prismFeatures = [
     tabs: const [AppShellTabId.music],
     route: AppRoutePaths.music,
     data: const FeatureData(note: ('Music has no dated records to reset.', 'La música no tiene registros con fecha.')),
+  ),
+
+  PrismFeature(
+    id: 'prismSocial',
+    name: ('Prism Social', 'Prism Social'),
+    description: ('Friends, messages, a shared feed and profiles between systems and their alters.', 'Amistades, mensajes, un muro compartido y perfiles entre sistemas y sus alters.'),
+    category: FeatureCategory.social,
+    icon: PhosphorIcons.usersFour(),
+    tabs: const [AppShellTabId.social],
+    route: AppRoutePaths.prismSocial,
+    permissions: _notifications,
+    background: const [('Social notifications', 'Avisos sociales')],
+    data: const FeatureData(
+      activityKinds: [SocKind.post, SocKind.comment, SocKind.message, SocKind.react, SocKind.notif, SocKind.report],
+      permanentKinds: [SocKind.profile, SocKind.alter, SocKind.request, SocKind.friendship, SocKind.follow, SocKind.block, SocKind.circle, SocKind.conversation],
+    ),
   ),
 
   // ── Community & interaction ──
