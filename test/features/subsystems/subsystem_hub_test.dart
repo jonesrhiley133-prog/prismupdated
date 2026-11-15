@@ -92,4 +92,21 @@ void main() {
     expect(find.textContaining('Host · Protector'), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
   });
+
+  testWidgets('hub and Profile Studio render at desktop width', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final s = TrackerRecord(id: 's1', kind: TrackerKind.subsystem, title: 'Moonlight', createdAt: _t, modifiedAt: _t).withFields({'isolate': true});
+    await tester.pumpWidget(_app(const SubsystemHubScreen(), [s]));
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text('Moonlight'), findsWidgets);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(_app(const ProfileStudioScreen(), const []));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text('Save'), findsWidgets);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
