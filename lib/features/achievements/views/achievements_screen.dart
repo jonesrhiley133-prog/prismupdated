@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/achievements/providers/achievement_providers.dart';
 import 'package:prism_plurality/features/achievements/utils/achievements.dart';
+import 'package:prism_plurality/features/prism_social/social_share.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -226,6 +228,14 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
                               ),
                             ],
                           ),
+                        ),
+                        ShareToSocialButton(
+                          title: achievementTitle(l10n, p.def),
+                          source: tr(context, 'Achievement', 'Logro'),
+                          details: [
+                            (tr(context, 'Tier', 'Nivel'), '${p.def.tier.name[0].toUpperCase()}${p.def.tier.name.substring(1)}'),
+                            (tr(context, 'Unlocked', 'Desbloqueado'), DateFormat.yMMMd(context.dateLocale).format(p.unlockedAt!)),
+                          ],
                         ),
                       ],
                     ),

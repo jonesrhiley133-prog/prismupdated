@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
@@ -313,6 +314,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(habitNotificationListenerProvider, (_, _) {});
     // Keep calendar event alerts armed — reschedules on event changes.
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
+    ref.listen(socialNotificationListenerProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
     // Keep the live fronting notification in step with the front.

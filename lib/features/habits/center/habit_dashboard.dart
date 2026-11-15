@@ -18,6 +18,7 @@ import 'package:prism_plurality/features/links/views/record_opener.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
+import 'package:prism_plurality/features/prism_social/social_share.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
@@ -73,7 +74,17 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
       topBar: PrismTopBar(
         title: '',
         showBackButton: true,
-        actions: [PrismTopBarAction(icon: AppIcons.moreVert, tooltip: tr(context, 'Habit options', 'Opciones del hábito'), onPressed: () => _menu(view))],
+        actions: [
+          ShareToSocialButton(
+            title: view.habit.name,
+            source: tr(context, 'Habit', 'Hábito'),
+            details: [
+              (tr(context, 'Current streak', 'Racha actual'), tr(context, '${view.currentStreak} days', '${view.currentStreak} días')),
+              (tr(context, 'Longest streak', 'Racha más larga'), tr(context, '${view.longestStreak} days', '${view.longestStreak} días')),
+            ],
+          ),
+          PrismTopBarAction(icon: AppIcons.moreVert, tooltip: tr(context, 'Habit options', 'Opciones del hábito'), onPressed: () => _menu(view)),
+        ],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       bodyPadding: EdgeInsets.zero,

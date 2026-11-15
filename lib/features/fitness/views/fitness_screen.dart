@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/features/prism_social/social_share.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/features/fitness/health/health_banner.dart';
 import 'package:prism_plurality/core/features/feature_state.dart';
@@ -528,6 +529,17 @@ class _WorkoutTile extends ConsumerWidget {
               ),
             ),
             if (mood != null) MoodFace(level: mood, size: 28),
+            ShareToSocialButton(
+              title: w.title.isNotEmpty ? w.title : fitnessActivityLabel(l10n, w.str(FitField.activity) ?? 'other'),
+              source: tr(context, 'Workout', 'Entrenamiento'),
+              details: [
+                (tr(context, 'Date', 'Fecha'), DateFormat.yMMMd(context.dateLocale).format(d)),
+                if (workoutMinutes(w) > 0) (tr(context, 'Duration', 'Duración'), l10n.fitMinutesShort(workoutMinutes(w))),
+                if (workoutKm(w) > 0) (tr(context, 'Distance', 'Distancia'), '${workoutKm(w).toStringAsFixed(1)} km'),
+                if (workoutCalories(w) > 0) (tr(context, 'Energy', 'Energía'), '${workoutCalories(w)} kcal'),
+                if (sets.isNotEmpty) (tr(context, 'Exercises', 'Ejercicios'), '${sets.length}'),
+              ],
+            ),
           ],
         ),
       ),
