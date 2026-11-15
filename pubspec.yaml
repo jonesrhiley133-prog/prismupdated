@@ -85,6 +85,8 @@ dependencies:
   # Rust sync library
   prism_media_codec:
     path: packages/prism_media_codec
+  prism_social_core:
+    path: packages/prism_social_core
   prism_sync:
     git:
       url: https://github.com/prismplural/prism-sync.git

@@ -706,7 +706,7 @@ class _AlterEditorState extends ConsumerState<_AlterEditor> {
                   context,
                   () => b.saveAlter(
                     widget.profileId,
-                    editing: _editing?.r,
+                    editingId: _editing?.id,
                     memberId: _memberId,
                     name: _name.text.trim(),
                     description: _desc.text.trim(),
@@ -785,7 +785,8 @@ class _AlterEditorState extends ConsumerState<_AlterEditor> {
             onPressed: () async {
               final ok = await PrismDialog.confirm(context: context, title: tr(context, 'Delete this alter profile?', '¿Eliminar este perfil de alter?'), message: tr(context, 'Their posts stay on your system’s profile. The member itself isn’t touched.', 'Sus publicaciones se quedan. El miembro no se modifica.'), destructive: true, confirmLabel: tr(context, 'Delete', 'Eliminar'), cancelLabel: context.l10n.cancel);
               if (ok != true || !context.mounted) return;
-              await ref.read(trackerNotifierProvider.notifier).delete(_editing!.id, children: false);
+              final deleted = await runSocial(context, () => ref.read(socialBackendProvider).deleteAlter(widget.profileId, _editing!.id));
+              if (!deleted) return;
               if (!context.mounted) return;
               widget.editing != null ? Navigator.of(context).pop() : setState(() => _editingOpen = false);
             },

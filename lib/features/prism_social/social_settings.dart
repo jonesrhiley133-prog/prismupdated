@@ -213,7 +213,7 @@ class SocialSettingsScreen extends ConsumerWidget {
                         label: tr(ctx, 'Delete', 'Eliminar'),
                         tone: PrismButtonTone.destructive,
                         onPressed: () async {
-                          await ref.read(trackerNotifierProvider.notifier).delete(editing.id, children: false);
+                          await runSocial(ctx, () => ref.read(socialBackendProvider).deleteCircle(me, editing.id));
                           if (ctx.mounted) Navigator.of(ctx).pop();
                         },
                       ),
@@ -223,7 +223,7 @@ class SocialSettingsScreen extends ConsumerWidget {
                       tone: PrismButtonTone.filled,
                       onPressed: () async {
                         if (name.text.trim().isEmpty) return;
-                        final ok = await runSocial(ctx, () => ref.read(socialBackendProvider).saveCircle(me, editing: editing, name: name.text.trim(), members: members.toList()));
+                        final ok = await runSocial(ctx, () => ref.read(socialBackendProvider).saveCircle(me, editingId: editing?.id, name: name.text.trim(), members: members.toList()));
                         if (ok && ctx.mounted) Navigator.of(ctx).pop();
                       },
                     ),

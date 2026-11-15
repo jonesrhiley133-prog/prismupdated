@@ -1,0 +1,10 @@
+name: prism_social_core
+description: Shared Prism Social rules used by the app (on-device mode) and the Prism Social server.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.1
+
+dev_dependencies:
+  test: ^1.26.0
