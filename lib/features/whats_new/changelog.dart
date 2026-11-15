@@ -32,6 +32,26 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.35.0',
+    date: DateTime(2026, 11, 15),
+    fixes: const [
+      LocalizedText(
+        'Tapping an introduction card on the table flips it again; long-press or Enlarge in its menu shows it large.',
+        'Tocar una tarjeta de presentación en la mesa vuelve a girarla; mantén pulsado o usa Ampliar en su menú para verla en grande.',
+      ),
+      LocalizedText(
+        'The navigation bar opens smoothly: its extra rows stay ready instead of being built in the first frame of the animation.',
+        'La barra de navegación se abre con fluidez: sus filas extra quedan preparadas en lugar de crearse en el primer fotograma de la animación.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Smoother busy pages: dashboard cards, introduction cards and the navigation bar repaint on their own instead of together.',
+        'Páginas con mucho contenido más fluidas: las tarjetas del panel, las de presentación y la barra de navegación se redibujan por separado.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.34.0',
     date: DateTime(2026, 11, 15),
     features: const [
@@ -46,8 +66,8 @@ final List<ChangelogRelease> prismChangelog = [
     ],
     improvements: const [
       LocalizedText(
-        'Introductions are laid out like a deck on a table: smaller cards with a slight hand-dealt tilt. Tap a card to lift it up, flip it, edit it or open the profile.',
-        'Las presentaciones se muestran como una baraja sobre la mesa: tarjetas más pequeñas con una ligera inclinación. Toca una tarjeta para levantarla, girarla, editarla o abrir el perfil.',
+        'Introductions are laid out like a deck on a table: smaller cards with a slight hand-dealt tilt. Tap a card to flip it; long-press (or Enlarge in its menu) to lift it up large.',
+        'Las presentaciones se muestran como una baraja sobre la mesa: tarjetas más pequeñas con una ligera inclinación. Toca una tarjeta para girarla; mantén pulsado (o Ampliar en su menú) para verla en grande.',
       ),
       LocalizedText(
         'Recolour any introduction card with hue, saturation and brightness sliders for its background, border and text — card designs use the same sliders.',

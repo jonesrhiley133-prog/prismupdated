@@ -236,7 +236,8 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
       _ => const SizedBox.shrink(),
     };
-    return Padding(padding: const EdgeInsets.only(bottom: 8), child: child);
+    // Each card repaints on its own (stories, timers, charts animate).
+    return Padding(padding: const EdgeInsets.only(bottom: 8), child: RepaintBoundary(child: child));
   }
 }
 

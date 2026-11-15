@@ -234,7 +234,7 @@ class _TableCardState extends State<_TableCard> {
             onEnter: (_) => setState(() => _hover = true),
             onExit: (_) => setState(() => _hover = false),
             child: GestureDetector(
-              onTap: () => _showLarge(context),
+              onLongPress: () => _showLarge(context),
               child: AnimatedContainer(
                 duration: reduce ? Duration.zero : const Duration(milliseconds: 160),
                 curve: Curves.easeOut,
@@ -244,8 +244,8 @@ class _TableCardState extends State<_TableCard> {
                   ..rotateZ(_hover ? 0 : tilt),
                 child: Opacity(
                   opacity: hidden ? 0.45 : 1,
-                  child: IgnorePointer(
-                    child: IntroCardView(card: widget.card, member: widget.member, template: widget.template, displayName: widget.name, width: widget.width, flippable: false),
+                  child: RepaintBoundary(
+                    child: IntroCardView(card: widget.card, member: widget.member, template: widget.template, displayName: widget.name, width: widget.width),
                   ),
                 ),
               ),
@@ -270,8 +270,13 @@ class _TableCardState extends State<_TableCard> {
                   iconSize: 18,
                   tooltip: tr(context, 'Card options', 'Opciones'),
                   icon: Icon(PhosphorIcons.dotsThreeVertical()),
-                  onSelected: (v) => v == 'edit' ? showIntroCardEditor(context, memberId: widget.member.id) : context.push(AppRoutePaths.member(widget.member.id)),
+                  onSelected: (v) => switch (v) {
+                    'edit' => showIntroCardEditor(context, memberId: widget.member.id),
+                    'enlarge' => _showLarge(context),
+                    _ => context.push(AppRoutePaths.member(widget.member.id)),
+                  },
                   itemBuilder: (ctx) => [
+                    PopupMenuItem(value: 'enlarge', child: Text(tr(ctx, 'Enlarge', 'Ampliar'))),
                     PopupMenuItem(value: 'edit', child: Text(tr(ctx, 'Edit card', 'Editar tarjeta'))),
                     PopupMenuItem(value: 'profile', child: Text(tr(ctx, 'Open profile', 'Abrir perfil'))),
                   ],

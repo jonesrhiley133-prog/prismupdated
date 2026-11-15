@@ -1433,7 +1433,8 @@ class _AppShellState extends ConsumerState<AppShell>
                       left: kFloatingNavBarSideMargin,
                       right: kFloatingNavBarSideMargin,
                       bottom: navBarBottom,
-                      child: _FloatingNavBar(
+                      child: RepaintBoundary(
+                        child: _FloatingNavBar(
                         key: _navBarKey,
                         primaryTabs: mobileLayout.primaryTabs,
                         primaryLabels: mobilePrimaryLabels,
@@ -1454,6 +1455,7 @@ class _AppShellState extends ConsumerState<AppShell>
                         onExpandedChanged: (expanded) {
                           setState(() => _navExpanded = expanded);
                         },
+                      ),
                       ),
                     ),
                   ],
@@ -1618,7 +1620,18 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
   /// Overflow tabs arranged into visual rows with the partial row on top.
   /// Each slot carries the tab's original index for tap/selection mapping;
   /// `null` slots render as empty space.
+  List<List<({int index, AppShellTab tab})?>>? _slotsCache;
+  List<AppShellTab>? _slotsTabs;
+  int? _slotsColumns;
+
   List<List<({int index, AppShellTab tab})?>> get _overflowRowSlots {
+    if (_slotsCache != null && identical(_slotsTabs, widget.overflowTabs) && _slotsColumns == widget.overflowColumns) return _slotsCache!;
+    _slotsTabs = widget.overflowTabs;
+    _slotsColumns = widget.overflowColumns;
+    return _slotsCache = _computeOverflowRowSlots();
+  }
+
+  List<List<({int index, AppShellTab tab})?>> _computeOverflowRowSlots() {
     final indexed = [
       for (var i = 0; i < widget.overflowTabs.length; i++)
         (index: i, tab: widget.overflowTabs[i]),
@@ -1795,8 +1808,12 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                     // Overflow rows (top, revealed by expansion). The partial
                     // row sits on top so the full row is adjacent to the
                     // primary row — more ergonomic than a gap-on-bottom layout.
-                    if (t > 0)
-                      ClipRect(
+                    // Kept built (offstage) while collapsed so opening the
+                    // bar doesn't have to build every overflow tab in its
+                    // first frame, which made the expansion stutter.
+                    Offstage(
+                      offstage: t == 0,
+                      child: ClipRect(
                         child: Align(
                           alignment: Alignment.bottomCenter,
                           heightFactor: t,
@@ -1835,6 +1852,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                             ),
                           ),
                         ),
+                      ),
                       ),
                     // Subtle separator line between rows
                     if (t > 0)
