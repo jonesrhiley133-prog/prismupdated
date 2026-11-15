@@ -1,132 +1,130 @@
-# Prism Social server API (draft)
+# Prism Social server API
 
-Prism Social currently runs on `LocalSocialBackend`
-(`lib/features/prism_social/social_core.dart`). It stores everything as synced
-`soc.*` tracker records, so the systems managed in one Prism account can
-befriend, message and post to each other across that account's devices.
+The server (`server/`) and the app's on-device mode run the **same rules**,
+from `packages/prism_social_core`. The app picks its backend in
+`socialBackendProvider`:
 
-Reaching **other people's** systems needs a server. This document is the
-contract a `RemoteSocialBackend` would implement. Every rule below is already
-enforced by the local backend, so the screens will not need to change.
+- **`LocalSocialBackend`** (on-device): the rules run against your synced
+  records. Systems in one Prism account can befriend and message each other.
+- **`RemoteSocialBackend`** (server mode): every action goes to the server as
+  an RPC. The app then mirrors the server's per-account snapshot into its
+  local Social rows, so the screens are identical in both modes.
 
-## Principles
+Deploying the server: [docs/deploy/railway-social-server.md](../deploy/railway-social-server.md).
 
-- **Identity.** An actor is a system (`profileId`), optionally speaking as one
-  of its alters (`profileId` + `alterId`). Alters always travel with their
-  system and are never shown on their own.
-- **Server-side enforcement.** Privacy, blocks, audiences and circles are
-  checked on every read and write. The client checks are only for UI.
-- **Opt-in sharing.** Nothing from the rest of Prism is uploaded. Only data
-  the user explicitly posts, sends or puts on their profile reaches the
-  server. Milestones are shared only via "Share to Social", with the fields
-  the user selects.
-- **Errors.** Every refusal returns `403/404/409` with `{ "code": "<code>" }`.
-  The codes are: `self`, `blocked`, `privacy`, `duplicate`, `already_friends`,
-  `not_found`, `not_owner`, `not_friends`, `not_participant`, `alters_closed`,
-  `username_taken`, `not_managed`, `invalid`. They map 1:1 to `SocialDenied`.
+## Conventions
 
-## Auth
+- JSON in and out. Times are ISO-8601 UTC.
+- **Actor**: `{"p": "<profileId>", "a": "<alterId>"?}`. A system, or one of
+  its alters speaking. An alter never appears without its system.
+- **Audience**: `everyone` | `friendsOfFriends` | `friends` | `nobody`.
+- **Errors**: `{"error": {"code": "...", "message"?: "..."}}`.
 
-- `POST /v1/auth/device` — exchanges the prism-sync account identity for a
-  short-lived bearer token. One account can manage several system profiles.
-- Every request carries `Authorization: Bearer <token>`.
-- Acting as a profile or alter the account doesn't manage returns
-  `not_managed`.
+| HTTP | Codes |
+|---|---|
+| 401 | `unauthorized` |
+| 403 | `self`, `blocked`, `privacy`, `not_owner`, `not_friends`, `not_participant`, `alters_closed`, `not_managed`, `too_many_profiles`, `invite_required`, `registration_closed` |
+| 404 | `not_found`, `unknown_method` |
+| 409 | `duplicate`, `already_friends`, `username_taken` |
+| 400 | `invalid`, `bad_request` |
+| 413 / 415 | `too_large`, `quota_exceeded` / `unsupported_media_type` |
+| 429 | `rate_limited` |
 
-## Profiles
+## Endpoints
 
-| Method | Path | Notes |
-|---|---|---|
-| POST | `/v1/profiles` | `{username, systemName, description?}`. Username: `^[a-z0-9_.]{3,30}$`, unique (`username_taken`). |
-| GET | `/v1/profiles/{id}` | Returns a limited card if `privacy.profile` excludes the viewer. |
-| PATCH | `/v1/profiles/{id}` | Fields: `systemName, description, pronouns, systemType, showSystemType, avatar, banner, bannerY, status, links, theme, useTheme, privacy, notify, pinned`. |
-| GET | `/v1/profiles?q=` | Discover/search. Only profiles with `privacy.discover != false`. Blocked profiles are excluded both ways. |
-| POST | `/v1/profiles/{id}/alters` | `{name, memberId?, pronouns, description, avatar, banner, customStatus, visibility, canMessage, canPost}` |
-| PATCH/DELETE | `/v1/alters/{id}` | Owner only. |
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| GET | `/healthz` | — | `{"ok":true}` when the database answers. Used by Railway's health check. |
+| GET | `/v1/info` | — | `{name: "Prism Social", version, maxMediaBytes, registration: open/invite/closed}` |
+| POST | `/v1/auth/register` | — | Optional header `x-registration-code`. Returns `201 {account, token}`. Only a SHA-256 of the token is stored. |
+| POST | `/v1/rpc/{method}` | Bearer | Body: the method's arguments. Returns `{result, version}`. |
+| GET | `/v1/sync?v={version}` | Bearer | `{version, profiles: [mine], records: [...]}`, or `304` when nothing has changed since `version`. |
+| POST | `/v1/media` | Bearer | Raw image bytes with `content-type: image/jpeg/png/webp/gif/heic`. Returns `201 {id}`. The app refers to it as `srv:<id>`. |
+| GET | `/v1/media/{id}` | Bearer | The image bytes. |
+| DELETE | `/v1/account` | Bearer | Deletes the account, its systems and everything they authored (sent messages show as deleted). |
 
-**Privacy keys** use the audience values `everyone | friendsOfFriends | friends | nobody`:
+CORS allows any origin, because auth is a bearer token (no cookies). The web
+build can therefore connect too.
 
-- `requests`, `messages`, `profile`, `alters`, `posts` (the default audience for new posts)
-- Booleans: `altersMessages`, `friendsReachAlters`, `online`, `discover`, `readReceipts`, `typing`, `activity`
+## RPC methods
 
-**Theme** is `{accent, background, card: ARGB int, font: default|display|serif|mono|dyslexic, layout: classic|centered|compact, radius}`.
+Names and arguments mirror `SocialBackend` (`lib/features/prism_social/social_core.dart`)
+one-to-one. The server checks that every actor or `profileId` belongs to the
+calling account (`not_managed`).
 
-## Relationships
+| Area | Methods |
+|---|---|
+| Profiles | `createProfile {username, systemName, description?, primary?}` · `updateProfile {profileId, changes, systemName?, description?}` · `touch {profileId}` |
+| Alters | `saveAlter {profileId, editingId?, memberId?, name, fields, description?}` · `deleteAlter {profileId, alterId}` |
+| Requests | `sendRequest {from, to, note?}` · `acceptRequest` / `declineRequest` / `cancelRequest {actor, requestId}` |
+| Relationships | `removeFriend` / `toggleFavorite` / `toggleFollow` / `block` / `unblock {actor, other}` · `report {actor, targetType, targetId, reason}` |
+| Messaging | `openConversation {me, them}` · `sendMessage {actor, conversationId, body?, media?, replyTo?}` · `editMessage` · `deleteMessage {actor, messageId[, body]}` · `react {actor, messageId, emoji}` · `markRead` / `markUnread` / `toggleMute {actor, conversationId}` · `togglePin {actor, conversationId, messageId}` |
+| Posts | `createPost {actor, type, title?, body?, media?, link?, quoteSource?, milestone?, audience?, circleId?}` · `editPost` · `deletePost` · `toggleReact {actor, postId, type: like/bookmark}` · `comment {actor, postId, body, replyTo?}` · `deleteComment` · `reblog {actor, postId, note?, audience?}` · `togglePinPost` |
+| Circles | `saveCircle {actor, editingId?, name, members}` · `deleteCircle {actor, circleId}` |
+| Notifications | `markNotifications {profileId, id?, read?}` · `deleteNotification {profileId, id}` |
 
-| Method | Path | Rules |
-|---|---|---|
-| POST | `/v1/requests` | `{from, to, note?}`. Fails with `self`, `blocked`, `already_friends`, `duplicate`, or `privacy` (the target's `requests` audience). If a reverse request is pending, it is accepted instead. |
-| POST | `/v1/requests/{id}/accept` · `/decline` | Recipient only. |
-| POST | `/v1/requests/{id}/cancel` | Sender only. |
-| DELETE | `/v1/friends/{other}` | Ends the friendship. Conversations remain. |
-| POST | `/v1/friends/{other}/favorite` | Toggle; private to the caller. |
-| POST/DELETE | `/v1/follows/{other}` | |
-| POST | `/v1/blocks/{other}` | Ends the friendship, cancels pending requests, removes follows both ways. |
-| DELETE | `/v1/blocks/{other}` | Unblock. |
-| POST | `/v1/reports` | `{targetType, targetId, reason}` → moderation queue. |
-| PUT | `/v1/circles/{id}` | `{name, members[]}`. Members must be friends. Circle names and member lists are never shown to members. |
+## Rules
 
-## Messaging
+The rules are the same in both modes. See `packages/prism_social_core/lib/src/rules.dart`.
 
-- `POST /v1/conversations` with `{me: Actor, them: Actor}` reuses an existing
-  1:1 conversation between exactly these two identities. It checks:
-  - blocks
-  - the recipient's `messages` audience
-  - for an alter: `altersMessages`, the alter's `canMessage` and
-    `visibility`, and `friendsReachAlters` (→ `alters_closed`)
-- `GET /v1/conversations?profile=` — sorted by last message.
-- `POST /v1/conversations/{id}/messages` with `{sender: Actor, body, media[], replyTo?}`.
-  - The sender must be a participant identity exactly (`not_participant`).
-  - Fails with `blocked` if either side has blocked the other.
-- `PATCH /v1/messages/{id}` (edit) and `DELETE` (soft delete; shows as
-  "Message deleted"). Sender identity only.
-- `POST /v1/messages/{id}/reactions` with `{emoji}` — toggle.
-- `POST /v1/conversations/{id}/read`, `/unread`, `/mute`, `/pins/{messageId}`.
-- Read receipts are only returned when **both** sides have `readReceipts` on.
+**Usernames**
+- `^[a-z0-9_.]{3,30}$`, unique.
 
-## Posts
+**Friend requests**
+- Refused for yourself, between blocked systems, between existing friends, or
+  as a duplicate.
+- Respect the target's `privacy.requests`.
+- If a reverse request is already pending, it is accepted instead.
 
-| Method | Path | Notes |
-|---|---|---|
-| POST | `/v1/posts` | `{author: Actor, type: text|image|link|quote|milestone|update|question, title, body, media[], link, quoteSource, milestone?, audience, circleId?}`. An alter needs `canPost`. |
-| PATCH/DELETE | `/v1/posts/{id}` | Edit: the author identity. Delete: the author's system (also removes comments and reactions). |
-| GET | `/v1/feed?mode=following|friends|recommended|recent|popular&cursor=` | Only posts the viewer may see. |
-| POST | `/v1/posts/{id}/reactions` | `{type: like|bookmark}` toggle. Bookmarks are private. |
-| POST | `/v1/posts/{id}/comments` | `{author, body, replyTo?}`. Comment authors and post owners can delete. |
-| POST | `/v1/posts/{id}/reblog` | `{author, note?, audience?}`. Only `everyone` posts. `origin` always points at the original post and author, even when reblogging a reblog. |
-| POST | `/v1/posts/{id}/pin` | Up to 5 pins per profile. |
+**Messages**
+- Respect the target's `privacy.messages`.
+- An alter can be messaged only if all of these allow it: the system's
+  `altersMessages` and `friendsReachAlters`, and the alter's `canMessage` and
+  `visibility`.
+- Only the exact participant identities can send.
+- Edits and deletes are by the sender only.
 
-**Visibility** (`canSee`):
+**Posts**
+- Visible by audience or circle. Hidden across blocks.
+- An alter needs `canPost`.
+- Only `everyone` posts can be reblogged. A reblog always credits the
+  original post and author.
 
-1. The owner can always see their own posts.
-2. Blocked users never can.
-3. `nobody` means the owner only.
-4. A post with a circle is visible to circle members only.
-5. Otherwise the audience applies (`everyone`, `friends`, `friendsOfFriends`).
+**Blocks**
+- End the friendship, cancel pending requests and remove follows.
 
-## Notifications
+**Notifications**
+- Not sent across blocks, when the recipient has turned that type off, or
+  for muted conversations.
+- `@username` mentions notify the mentioned system.
 
-- Types: `request`, `accepted`, `message`, `alterMessage`, `like`,
-  `milestoneLike`, `comment`, `reply`, `reblog`, `mention` (`@username` in a
-  post or comment).
-- Nothing is created when the recipient has blocked the actor, or has turned
-  that type off in `notify`. Muted conversations don't notify.
-- Endpoints: `GET /v1/notifications?profile=`, `POST /v1/notifications/read`
-  (`{id?}`, all when omitted), and `DELETE /v1/notifications/{id}`.
-- Push goes through APNs/FCM only when the profile's `notify.push != false`.
-  The payload carries the type, the actor's display names and the target id —
-  never private Prism data.
+## What each account downloads (`visibleTo`)
 
-## Realtime
+`packages/prism_social_core/lib/src/visibility.dart`:
 
-`GET /v1/stream` (WebSocket or SSE) emits `{kind, id}` change events for
-conversations, messages, notifications, requests and the feed. The client then
-re-fetches the changed resource.
+- **Own data:** your profiles (marked `_mine` in the app), alters, circles,
+  blocks, reports and notifications.
+- **Relationships:** requests and follows involving you; friendships of you
+  and your friends (used for mutual friends and friends-of-friends
+  audiences).
+- **Posts:** the ones your systems may see, with their comments and likes.
+  Bookmarks are only yours.
+- **Circle posts:** you also get a stripped copy of the circle (no name, only
+  you as a member).
+- **Other people's profiles:** connected or discoverable ones.
+  - Without profile access: a minimal card.
+  - Always stripped: `owner` and `notify`.
+  - Included: a `followers` count.
+- **Other people's alters:** only when both `privacy.alters` and the alter's
+  `visibility` allow it, or when the alter is talking to or posting where you
+  can see. Member IDs are removed.
+- **Blocks:** anyone who blocked you, or whom you blocked, is left out
+  entirely. A block placed by someone else is never revealed.
 
-## Moderation and safety
+## Not included (yet)
 
-- Reports are kept with the reporter and target.
-- Rate limits on requests, messages and posts.
-- Usernames can be reserved.
-- A blocked user is not told they were blocked; actions simply return
-  `blocked`.
+- Phone push notifications while the app is closed (needs APNs/FCM).
+- Realtime streaming: the app polls `/v1/sync` every ~15 seconds, and a
+  `304` makes idle polls cheap.
+- End-to-end encrypted messages.
+- Running more than one server instance.

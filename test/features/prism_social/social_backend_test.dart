@@ -33,7 +33,7 @@ Matcher _denied(String code) => isA<SocialDenied>().having((e) => e.code, 'code'
 void main() {
   late _Repo repo;
   late ProviderContainer c;
-  late LocalSocialBackend b;
+  late SocialBackend b;
 
   Future<void> refresh() async {
     c.invalidate(trackerRecordsProvider);

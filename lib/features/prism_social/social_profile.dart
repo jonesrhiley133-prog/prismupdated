@@ -124,7 +124,7 @@ class _ProfileBody extends ConsumerWidget {
     final friends = ref.watch(friendIdsProvider(p.id));
     final mutual = mine ? 0 : friends.intersection(ref.watch(friendIdsProvider(me.profileId))).length;
     final following = ref.watch(followingProvider(me.profileId)).contains(p.id);
-    final followers = (ref.watch(trackerKindProvider(SocKind.follow)).value ?? const <TrackerRecord>[]).where((r) => r.str('who') == p.id).length;
+    final followers = (p.r.fields['followers'] as num?)?.toInt() ?? ref.watch(socRowsProvider(SocKind.follow)).where((r) => r.str('who') == p.id).length;
     final allPosts = [for (final x in ref.watch(postsProvider)) if (x.author.profileId == p.id && canSeePost(ref.read, x, me.profileId)) x];
     final pinned = [for (final id in p.pinnedPosts) ?allPosts.where((x) => x.id == id).firstOrNull];
     final recent = [for (final x in allPosts) if (!p.pinnedPosts.contains(x.id)) x];
@@ -706,7 +706,7 @@ class _AlterEditorState extends ConsumerState<_AlterEditor> {
                   context,
                   () => b.saveAlter(
                     widget.profileId,
-                    editing: _editing?.r,
+                    editingId: _editing?.id,
                     memberId: _memberId,
                     name: _name.text.trim(),
                     description: _desc.text.trim(),
@@ -785,7 +785,8 @@ class _AlterEditorState extends ConsumerState<_AlterEditor> {
             onPressed: () async {
               final ok = await PrismDialog.confirm(context: context, title: tr(context, 'Delete this alter profile?', '¿Eliminar este perfil de alter?'), message: tr(context, 'Their posts stay on your system’s profile. The member itself isn’t touched.', 'Sus publicaciones se quedan. El miembro no se modifica.'), destructive: true, confirmLabel: tr(context, 'Delete', 'Eliminar'), cancelLabel: context.l10n.cancel);
               if (ok != true || !context.mounted) return;
-              await ref.read(trackerNotifierProvider.notifier).delete(_editing!.id, children: false);
+              final deleted = await runSocial(context, () => ref.read(socialBackendProvider).deleteAlter(widget.profileId, _editing!.id));
+              if (!deleted) return;
               if (!context.mounted) return;
               widget.editing != null ? Navigator.of(context).pop() : setState(() => _editingOpen = false);
             },

@@ -74,7 +74,7 @@ class _FriendsSectionState extends ConsumerState<FriendsSection> {
     final me = widget.me.profileId;
     final ids = ref.watch(friendIdsProvider(me));
     final friendships = {
-      for (final r in ref.watch(trackerKindProvider(SocKind.friendship)).value ?? const <TrackerRecord>[])
+      for (final r in ref.watch(socRowsProvider(SocKind.friendship)))
         if (r.str('a') == me) r.str('b')!: r else if (r.str('b') == me) r.str('a')!: r,
     };
     final profiles = [for (final id in ids) ?ref.watch(socialProfileByIdProvider(id))];

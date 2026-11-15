@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.30.0+30000
+version: 0.31.0+31000
 
 environment:
   sdk: ^3.11.1
@@ -85,6 +85,8 @@ dependencies:
   # Rust sync library
   prism_media_codec:
     path: packages/prism_media_codec
+  prism_social_core:
+    path: packages/prism_social_core
   prism_sync:
     git:
       url: https://github.com/prismplural/prism-sync.git
@@ -134,6 +136,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # The real Social server, run in-process by the remote-mode tests.
+  prism_social_server:
+    path: server
   integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0

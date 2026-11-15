@@ -221,7 +221,7 @@ Future<void> showActingSwitcher(BuildContext context, WidgetRef ref) => PrismShe
   builder: (ctx) => Consumer(
     builder: (ctx, ref, _) {
       final acting = ref.watch(actingProvider);
-      final profiles = ref.watch(socialProfilesProvider);
+      final profiles = ref.watch(myProfilesProvider);
       final alters = ref.watch(socialAltersProvider);
       return SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
