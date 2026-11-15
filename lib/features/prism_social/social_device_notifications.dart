@@ -5,7 +5,6 @@ import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/core/services/local_notification_service.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/prism_social/social_core.dart';
-import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 
 /// Text for a device notification (no BuildContext in the background).
 String socialPushText(String type, String who) => switch (type) {
@@ -65,4 +64,4 @@ final socialNotificationListenerProvider = Provider<void>((ref) {
   });
 });
 
-final socialNotificationRowsProvider = Provider<List<TrackerRecord>>((ref) => ref.watch(trackerKindProvider(SocKind.notif)).value ?? const []);
+final socialNotificationRowsProvider = Provider<List<TrackerRecord>>((ref) => ref.watch(socRowsProvider(SocKind.notif)));

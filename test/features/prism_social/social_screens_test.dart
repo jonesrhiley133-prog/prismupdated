@@ -137,7 +137,8 @@ void main() {
     await t.pumpWidget(_app(const SocialHubScreen(), _Repo(const [])));
     await _settle(t);
     expect(find.text('Create profile'), findsOneWidget);
-    expect(find.textContaining('nothing here pretends otherwise'), findsOneWidget);
+    expect(find.textContaining('Connect to a Prism Social server to reach other people'), findsOneWidget);
+    expect(find.text('Connect to a server instead'), findsOneWidget);
   });
 
   testWidgets('a friend’s profile uses their custom theme', (t) async {

@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/features/prism_social/social_remote.dart' show remoteSocialImageProvider, serverMediaPrefix;
 import 'package:prism_plurality/features/social/models/social.dart';
 import 'package:prism_plurality/features/social/services/social_data.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
@@ -92,6 +93,8 @@ final _decodedCache = <String, Uint8List>{};
 
 /// Image bytes for a media id (null while missing, e.g. not synced yet).
 final socialImageProvider = Provider.family<Uint8List?, String>((ref, id) {
+  // Prism Social server images.
+  if (id.startsWith(serverMediaPrefix)) return ref.watch(remoteSocialImageProvider(id)).value;
   final r = ref.watch(socialDataProvider.select((d) => d.mediaRecords[id]));
   final data = r?.str('data');
   if (data == null) return null;

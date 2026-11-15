@@ -32,6 +32,26 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.31.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Prism Social can now connect to a Prism Social server (Social settings › Connection), so systems on different people’s phones can become friends, message each other — alter to alter too — post, comment and react. Photos are shared through the server.',
+        'Prism Social ahora puede conectarse a un servidor de Prism Social (Ajustes sociales › Conexión): sistemas en teléfonos de distintas personas pueden ser amigos, escribirse —también de alter a alter—, publicar, comentar y reaccionar. Las fotos se comparten a través del servidor.',
+      ),
+      LocalizedText(
+        'Bring your existing Social profiles and alter profiles to the server when you connect. All your devices share the connection automatically.',
+        'Lleva tus perfiles sociales y de alters al servidor al conectarte. Todos tus dispositivos comparten la conexión automáticamente.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'The server enforces the same privacy rules as the app: blocked people disappear both ways, friends-only and circle posts stay private, and nothing from the rest of Prism is ever sent. You can delete your server account at any time.',
+        'El servidor aplica las mismas reglas de privacidad que la app: las personas bloqueadas desaparecen en ambos sentidos, las publicaciones de amigos y círculos siguen privadas y nunca se envía nada más de Prism. Puedes eliminar tu cuenta del servidor cuando quieras.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.30.0',
     date: DateTime(2026, 11, 15),
     features: const [

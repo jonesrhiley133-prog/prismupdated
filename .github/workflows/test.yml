@@ -60,3 +60,33 @@ jobs:
           name: app-native-results
           path: test-results/
           if-no-files-found: warn
+
+  social-server:
+    name: Prism Social server and shared rules
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: prism_social
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.11.1'
+      - name: Shared rules
+        working-directory: packages/prism_social_core
+        run: dart pub get && dart analyze --fatal-infos && dart test
+      - name: Server (memory)
+        working-directory: server
+        run: dart pub get && dart analyze --fatal-infos && dart test
+      - name: Server (Postgres)
+        working-directory: server
+        env:
+          PRISM_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/prism_social
+        run: dart test --concurrency=1

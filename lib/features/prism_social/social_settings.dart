@@ -1,3 +1,4 @@
+import 'package:prism_plurality/features/prism_social/social_connect.dart';
 import 'package:prism_plurality/features/prism_social/social_core.dart';
 import 'package:prism_plurality/features/prism_social/social_notifications.dart';
 import 'package:prism_plurality/features/prism_social/social_profile.dart';
@@ -32,9 +33,9 @@ class SocialSettingsScreen extends ConsumerWidget {
         },
       ),
     );
-    final blocked = [for (final r in ref.watch(trackerKindProvider(SocKind.block)).value ?? const <TrackerRecord>[]) if (r.str('by') == p.id) r];
+    final blocked = [for (final r in ref.watch(socRowsProvider(SocKind.block))) if (r.str('by') == p.id) r];
     final circles = ref.watch(circlesProvider(p.id));
-    final profiles = ref.watch(socialProfilesProvider);
+    final profiles = ref.watch(myProfilesProvider);
 
     return PrismPageScaffold(
       topBar: PrismTopBar(title: tr(context, 'Social settings', 'Ajustes sociales'), subtitle: p.systemName, showBackButton: true, actions: const [FeatureDataAction(featureId: 'prismSocial')]),
@@ -125,14 +126,7 @@ class SocialSettingsScreen extends ConsumerWidget {
                   ),
                 PrismButton(label: tr(context, 'Add another system', 'Añadir otro sistema'), icon: PhosphorIcons.plus(), density: PrismControlDensity.compact, onPressed: () => _addSystem(context, ref)),
                 heading(tr(context, 'Connection', 'Conexión')),
-                PrismSurface(
-                  child: Text(
-                    b.reachesOtherDevices
-                        ? tr(context, 'Connected to ${b.name}.', 'Conectado a ${b.name}.')
-                        : tr(context, 'Connection: ${b.name}. Friends, messages and posts work between the systems on this Prism account and sync across your own devices. Reaching other people’s systems needs a Prism Social server, which isn’t available yet.', 'Conexión: este dispositivo (local). Funciona entre los sistemas de esta cuenta y se sincroniza entre tus dispositivos. Llegar a otros sistemas requiere un servidor de Prism Social, aún no disponible.'),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ),
+                const SocialConnectionCard(),
               ],
             ),
           ),

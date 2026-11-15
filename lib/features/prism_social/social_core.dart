@@ -6,6 +6,7 @@ import 'package:prism_social_core/prism_social_core.dart' hide SAlter, SComment,
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prism_plurality/core/database/database_providers.dart';
+import 'package:prism_plurality/features/prism_social/social_remote.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 export 'package:prism_social_core/prism_social_core.dart' show Audience, SocKind, SocialActor, SocialDenied;
@@ -224,7 +225,7 @@ class TrackerSocialStore implements SocialStore {
   /// Fresh rows straight from the database, so duplicate checks hold even
   /// for quick repeated taps.
   @override
-  Future<List<SocRecord>> all(String kind) async => [for (final r in await ref.read(trackerRecordRepositoryProvider).getAll()) if (r.kind == kind) toSoc(r)];
+  Future<List<SocRecord>> all(String kind) async => [for (final r in await ref.read(trackerRecordRepositoryProvider).getAll()) if (r.kind == kind && !r.flag('_gone')) toSoc(r)];
 
   @override
   Future<SocRecord> create({required String kind, String title = '', String? body, String? parentId, String? memberId, Map<String, Object?> fields = const {}, DateTime? occurredAt}) async =>
@@ -248,14 +249,31 @@ class LocalSocialBackend extends SocialRules implements SocialBackend {
   bool get reachesOtherDevices => false;
 }
 
-final socialBackendProvider = Provider<SocialBackend>(LocalSocialBackend.new);
+/// Server mode when connected (Social settings › Connection), otherwise
+/// on-device.
+final socialBackendProvider = Provider<SocialBackend>((ref) {
+  final conn = ref.watch(socialConnectionProvider);
+  return conn == null ? LocalSocialBackend(ref) : RemoteSocialBackend(ref, conn);
+});
 
 // ───────────────────────── Reading ─────────────────────────
 
-List<TrackerRecord> _kind(Ref ref, String k) => ref.watch(trackerKindProvider(k)).value ?? const [];
+/// Live Social rows of kind [k]. Rows the server no longer shows us are kept
+/// but marked `_gone` (so they can return), and are hidden here.
+final socRowsProvider = Provider.family<List<TrackerRecord>, String>((ref, k) => [for (final r in ref.watch(trackerKindProvider(k)).value ?? const <TrackerRecord>[]) if (!r.flag('_gone')) r]);
+
+List<TrackerRecord> _kind(Ref ref, String k) => ref.watch(socRowsProvider(k));
 
 final socialProfilesProvider = Provider<List<SocialProfile>>((ref) => [for (final r in _kind(ref, SocKind.profile)) SocialProfile(r)]);
 final socialProfileByIdProvider = Provider.family<SocialProfile?, String>((ref, id) => ref.watch(socialProfilesProvider).where((p) => p.id == id).firstOrNull);
+/// Systems this person can act as: every profile on-device, or the ones
+/// this account owns on a server.
+final myProfilesProvider = Provider<List<SocialProfile>>((ref) {
+  final all = ref.watch(socialProfilesProvider);
+  if (ref.watch(socialConnectionProvider) == null) return all;
+  return [for (final p in all) if (p.r.flag('_mine')) p];
+});
+
 final socialAltersProvider = Provider<List<SocialAlter>>((ref) => [for (final r in _kind(ref, SocKind.alter)) SocialAlter(r)]);
 
 /// The system (and optional alter) this device is acting as.
@@ -290,7 +308,7 @@ final actingStoredProvider = NotifierProvider<ActingNotifier, SocialActor?>(Acti
 
 /// The acting identity, falling back to the first (primary) profile.
 final actingProvider = Provider<SocialActor?>((ref) {
-  final profiles = ref.watch(socialProfilesProvider);
+  final profiles = ref.watch(myProfilesProvider);
   final stored = ref.watch(actingStoredProvider);
   if (stored != null && profiles.any((p) => p.id == stored.profileId)) {
     if (stored.alterId == null || ref.watch(socialAltersProvider).any((a) => a.id == stored.alterId && a.profileId == stored.profileId)) return stored;

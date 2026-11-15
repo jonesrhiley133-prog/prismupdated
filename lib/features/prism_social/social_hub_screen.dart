@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/features/prism_social/social_connect.dart';
 import 'package:prism_plurality/features/prism_social/social_core.dart';
 import 'package:prism_plurality/features/prism_social/social_feed.dart';
 import 'package:prism_plurality/features/prism_social/social_friends.dart';
@@ -151,16 +152,9 @@ class _CreateProfileScreenState extends ConsumerState<_CreateProfileScreen> {
                         },
                 ),
                 const SizedBox(height: 16),
-                PrismSurface(
-                  child: Text(
-                    tr(
-                      context,
-                      'Connection: ${backend.name}. Social works between the systems managed in this Prism account and syncs across your own devices. Reaching other people’s systems needs a Prism Social server, which isn’t available yet — nothing here pretends otherwise.',
-                      'Conexión: este dispositivo (local). Social funciona entre los sistemas gestionados en esta cuenta y se sincroniza entre tus dispositivos. Para llegar a otros sistemas hace falta un servidor de Prism Social, aún no disponible; nada aquí aparenta lo contrario.',
-                    ),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ),
+                const SocialConnectionNote(),
+                const SizedBox(height: 10),
+                connectButton(context),
               ],
             ),
           ),

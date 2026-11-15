@@ -124,7 +124,7 @@ class _ProfileBody extends ConsumerWidget {
     final friends = ref.watch(friendIdsProvider(p.id));
     final mutual = mine ? 0 : friends.intersection(ref.watch(friendIdsProvider(me.profileId))).length;
     final following = ref.watch(followingProvider(me.profileId)).contains(p.id);
-    final followers = (ref.watch(trackerKindProvider(SocKind.follow)).value ?? const <TrackerRecord>[]).where((r) => r.str('who') == p.id).length;
+    final followers = (p.r.fields['followers'] as num?)?.toInt() ?? ref.watch(socRowsProvider(SocKind.follow)).where((r) => r.str('who') == p.id).length;
     final allPosts = [for (final x in ref.watch(postsProvider)) if (x.author.profileId == p.id && canSeePost(ref.read, x, me.profileId)) x];
     final pinned = [for (final id in p.pinnedPosts) ?allPosts.where((x) => x.id == id).firstOrNull];
     final recent = [for (final x in allPosts) if (!p.pinnedPosts.contains(x.id)) x];
