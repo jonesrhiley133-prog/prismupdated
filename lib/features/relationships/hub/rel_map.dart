@@ -170,6 +170,7 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     final saved = settings.positions[_posKey] ?? const {};
     _manual = {for (final e in saved.entries) if (nodes.contains(e.key)) e.key: Offset(e.value.$1, e.value.$2)};
     final job = ++_job;
+    var sync = true;
     void done(RelLayoutResult r) {
       if (!mounted || job != _job) return;
       // Grow the canvas to fit any manually placed nodes.
@@ -178,8 +179,15 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
         w = math.max(w, p.dx + 90);
         h = math.max(h, p.dy + 90);
       }
-      setState(() => _layout = RelLayoutResult(r.positions, Size(w, h)));
-      WidgetsBinding.instance.addPostFrameCallback((_) => resetView());
+      final result = RelLayoutResult(r.positions, Size(w, h));
+      if (sync) {
+        _layout = result; // computed during this build
+      } else {
+        setState(() => _layout = result);
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) resetView();
+      });
     }
 
     switch (widget.view) {
@@ -203,6 +211,7 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
             'nodes': nodes,
             'edges': [for (final p in pairs) [p.$1, p.$2]],
           }).then((v) {
+            sync = false;
             done(RelLayoutResult({for (var i = 0; i < nodes.length; i++) nodes[i]: Offset(v[2 + i * 2], v[3 + i * 2])}, Size(v[0], v[1])));
           });
         }
