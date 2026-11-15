@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/calendar/widgets/month_grid.dart';
@@ -53,7 +54,7 @@ class _MoodScreenState extends ConsumerState<MoodScreen> {
       topBar: PrismTopBar(
         title: l10n.moodTitle,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'mood'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.moodLogTitle,

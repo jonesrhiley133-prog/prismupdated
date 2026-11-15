@@ -398,6 +398,7 @@ void main() {
         AppShellTabId.finance,
         AppShellTabId.school,
         AppShellTabId.relationships,
+        AppShellTabId.social,
         AppShellTabId.subsystems,
         AppShellTabId.headspace,
         AppShellTabId.music,

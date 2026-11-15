@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/polls/providers/poll_providers.dart';
 import 'package:prism_plurality/features/polls/models/poll_summary.dart';
@@ -79,7 +80,7 @@ class _PollsListScreenState extends ConsumerState<PollsListScreen> {
               SliverPinnedTopBar(
                 child: PrismTopBar(
                   title: context.l10n.pollsListTitle,
-                  actions: [
+                  actions: [FeatureDataAction(featureId: 'polls'), 
                     BlurPopupAnchor(
                       preferredDirection: BlurPopupDirection.down,
                       width: 180,

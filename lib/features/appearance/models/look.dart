@@ -486,7 +486,7 @@ const lookPages = [
   'home', 'members', 'chat', 'boards', 'stories', 'journal', 'notes', 'mood', 'calendar', 'sleep', 'cycle',
   'fitness', 'school', 'finance', 'relationships', 'subsystems', 'headspace', 'achievements', 'dictionary',
   'polls', 'habits', 'music', 'statistics', 'nutrition', 'scrapbook', 'connections', 'analytics',
-  'availability', 'introductions', 'locations', 'reminders', 'settings',
+  'availability', 'introductions', 'social', 'locations', 'reminders', 'settings',
 ];
 
 /// Everything the appearance system remembers.

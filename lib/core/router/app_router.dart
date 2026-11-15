@@ -8,6 +8,14 @@ import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/services/error_reporting_service.dart';
 import 'package:prism_plurality/core/services/secure_storage.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
+import '../features/feature_state.dart';
+import '../../features/prism_social/social_hub_screen.dart';
+import '../../features/prism_social/social_messages.dart';
+import '../../features/prism_social/social_profile.dart';
+import '../../features/prism_social/social_feed.dart';
+import '../../features/prism_social/social_settings.dart';
+import '../../features/fitness/health/health_integration_screen.dart';
+import '../../features/settings/views/feature_data_screen.dart';
 import '../../features/fronting/views/edit_front_session_screen.dart';
 import '../../features/fronting/views/fronting_screen.dart';
 import '../../features/fronting/views/period_detail_args.dart';
@@ -89,8 +97,10 @@ import '../../features/nutrition/nutrition_screen.dart';
 import '../../features/social/views/stories_screen.dart';
 import '../../features/music/views/music_screen.dart';
 import '../../features/headspace/views/headspace_screen.dart';
-import '../../features/subsystems/views/subsystems_screen.dart';
-import '../../features/relationships/views/relationships_screen.dart';
+import '../../features/subsystems/hub/subsystem_hub.dart';
+import '../../features/subsystems/hub/subsystem_profile.dart';
+import '../../features/relationships/hub/rel_hub_screen.dart';
+import '../../features/relationships/hub/rel_profile.dart';
 import '../../features/school/views/school_screen.dart';
 import '../../features/finance/views/finance_screen.dart';
 import '../../features/fitness/views/fitness_screen.dart';
@@ -200,6 +210,7 @@ final _analyticsNavigatorKey = GlobalKey<NavigatorState>(
 final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'availability',
 );
+final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -389,13 +400,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       FreezeWatchdog.crumb(
         'redirect ${state.fullPath ?? state.matchedLocation}',
       );
-      return resolveOnboardingRedirect(
+      final onboarding = await resolveOnboardingRedirect(
         hasCompleted: _onboardingRedirectNotifier.hasCompleted,
         isOnboarding: state.matchedLocation == AppRoutePaths.onboarding,
         completedLocally: ref.read(localOnboardingCompletionProvider),
         tryRecoverPaired: () => _recoverCompletedOnboardingFromPairedState(ref),
         getMemberCount: ref.read(memberRepositoryProvider).getCount,
       );
+      if (onboarding != null) return onboarding;
+      // Features turned off in Settings › Features can't be opened by link.
+      final off = disabledFeatureFor(state.matchedLocation, ref.read(featureStatesProvider));
+      if (off != null) return '${AppRoutePaths.settingsFeatures}?off=${off.id}';
+      return null;
     },
     routes: [
       // Onboarding (full-screen)
@@ -920,6 +936,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const DeviceManagementScreen(),
                   ),
                   GoRoute(
+                    path: 'reset-history',
+                    builder: (context, state) => const ResetHistoryScreen(),
+                  ),
+                  GoRoute(
                     path: 'data-browser',
                     builder: (context, state) => const DataBrowserScreen(),
                   ),
@@ -929,8 +949,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'features',
-                    builder: (context, state) => const FeaturesSettingsScreen(),
+                    builder: (context, state) => FeaturesSettingsScreen(highlight: state.uri.queryParameters['off']),
                     routes: [
+                      GoRoute(
+                        path: 'data/:id',
+                        builder: (context, state) => FeatureDataScreen(featureId: state.pathParameters['id']!),
+                      ),
                       GoRoute(
                         path: 'chat',
                         builder: (context, state) =>
@@ -1413,6 +1437,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.fitness,
                 builder: (context, state) => const FitnessScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'integrations',
+                    builder: (context, state) => const HealthIntegrationScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -1442,7 +1472,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.relationships,
-                builder: (context, state) => const RelationshipsScreen(),
+                builder: (context, state) => const RelationshipsHubScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'r/:id',
+                    builder: (context, state) => RelationshipProfileScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),
@@ -1452,7 +1488,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.subsystems,
-                builder: (context, state) => const SubsystemsScreen(),
+                builder: (context, state) => const SubsystemHubScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => SubsystemProfileScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),
@@ -1543,6 +1585,23 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.introductions,
                 builder: (context, state) => const IntroCardsScreen(),
+              ),
+            ],
+          ),
+          // Branch 38: Prism Social (system-to-system social network)
+          StatefulShellBranch(
+            navigatorKey: _socialNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.prismSocial,
+                builder: (context, state) => SocialHubScreen(section: state.uri.queryParameters['s']),
+                routes: [
+                  GoRoute(path: 'profile/:id', builder: (context, state) => SocialProfileScreen(profileId: state.pathParameters['id']!)),
+                  GoRoute(path: 'alter/:id', builder: (context, state) => SocialAlterScreen(alterId: state.pathParameters['id']!)),
+                  GoRoute(path: 'chat/:id', builder: (context, state) => SocialConversationScreen(conversationId: state.pathParameters['id']!)),
+                  GoRoute(path: 'post/:id', builder: (context, state) => SocialPostScreen(postId: state.pathParameters['id']!)),
+                  GoRoute(path: 'settings', builder: (context, state) => const SocialSettingsScreen()),
+                ],
               ),
             ],
           ),

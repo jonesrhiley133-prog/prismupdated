@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/work.dart';
 import 'package:prism_plurality/features/calendar/widgets/calendar_colors.dart';
 import 'package:prism_plurality/features/work/providers/work_providers.dart';
@@ -41,7 +42,7 @@ class WorkScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.workTitle,
         showBackButton: showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'work'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.workNewJob,

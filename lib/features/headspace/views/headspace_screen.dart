@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/headspace/utils/headspace.dart';
@@ -84,7 +85,7 @@ class HeadspaceScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.navHeadspace,
         showBackButton: showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'headspace'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.hsNewMap,

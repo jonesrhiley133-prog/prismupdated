@@ -744,6 +744,8 @@ void main() {
     await tester.pumpWidget(_buildApp(router: router, member: member));
     await tester.pumpAndSettle();
 
+    // The footer sits below the profile sections; scroll to it.
+    await tester.scrollUntilVisible(find.text('Added May 1, 2026'), 400, scrollable: find.byType(Scrollable).last);
     expect(find.text('Added May 1, 2026'), findsOneWidget);
     expect(find.text('Created May 1, 2026'), findsNothing);
 
@@ -914,6 +916,9 @@ void main() {
     await tester.tap(find.text('Back from conversation'));
     await tester.pumpAndSettle();
 
+    // Scroll back to the header (the profile is long).
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, 3000));
+    await tester.pumpAndSettle();
     expect(find.text('Alice'), findsOneWidget);
     expect(
       router.routerDelegate.currentConfiguration.uri.toString(),

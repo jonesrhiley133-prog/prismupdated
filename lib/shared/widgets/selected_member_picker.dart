@@ -46,7 +46,7 @@ class SelectedMemberPicker extends ConsumerWidget {
       );
     }
 
-    final membersAsync = ref.watch(activeMemberListProvider);
+    final membersAsync = ref.watch(pickableMemberListProvider);
     return membersAsync.when(
       loading: () => const SizedBox(height: 56, child: PrismLoadingState()),
       error: (e, _) => Text(context.l10n.errorWithDetail(e)),
@@ -140,7 +140,7 @@ class SelectedMultiMemberPicker extends ConsumerWidget {
       );
     }
 
-    final membersAsync = ref.watch(activeMemberListProvider);
+    final membersAsync = ref.watch(pickableMemberListProvider);
     return membersAsync.when(
       loading: () => const SizedBox(height: 56, child: PrismLoadingState()),
       error: (e, _) => Text(context.l10n.errorWithDetail(e)),

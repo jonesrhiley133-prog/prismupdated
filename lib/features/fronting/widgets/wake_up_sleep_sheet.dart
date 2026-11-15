@@ -217,7 +217,7 @@ class _WakeUpSleepSheetState extends ConsumerState<WakeUpSleepSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final membersAsync = ref.watch(activeMemberListProvider);
+    final membersAsync = ref.watch(pickableMemberListProvider);
     final morningCountsAsync = ref.watch(morningFrontingCountsProvider);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/models.dart';
 import 'package:prism_plurality/features/chat/providers/chat_providers.dart';
@@ -874,7 +875,7 @@ class _ChatTopBar extends ConsumerWidget implements PreferredSizeWidget {
         PrismTopBar(
           title: context.l10n.chatTitle,
           leading: const _ChatMemberSelectorButton(),
-          actions: [
+          actions: [FeatureDataAction(featureId: 'chat'), 
             PrismTopBarAction(
               icon: AppIcons.add,
               tooltip: context.l10n.chatNewConversation,

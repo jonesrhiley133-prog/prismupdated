@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/features/prism_social/social_share.dart';
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/fitness/views/fitness_screen.dart'
@@ -65,7 +68,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
       topBar: PrismTopBar(
         title: l10n.navSchool,
         showBackButton: widget.showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'school'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: _tab == SchoolTab.classes
@@ -736,10 +739,25 @@ class _AssignmentTile extends ConsumerWidget {
             ].join(' · '),
             style: TextStyle(color: overdue ? theme.colorScheme.error : null),
           ),
-          trailing: IconButton(
-            tooltip: l10n.edit,
-            icon: Icon(AppIcons.edit, size: 18, color: classColor(cls)),
-            onPressed: () => showAssignmentEditor(context, editing: a),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isDone(a))
+                ShareToSocialButton(
+                  title: a.title,
+                  source: tr(context, 'School', 'Escuela'),
+                  details: [
+                    if (cls != null) (tr(context, 'Class', 'Clase'), cls!.title),
+                    (tr(context, 'Type', 'Tipo'), assignmentTypeLabel(l10n, a.str(SchoolField.type) ?? 'homework')),
+                    if (score != null) (tr(context, 'Score', 'Nota'), '${(score * 100).toStringAsFixed(0)}%'),
+                  ],
+                ),
+              IconButton(
+                tooltip: l10n.edit,
+                icon: Icon(AppIcons.edit, size: 18, color: classColor(cls)),
+                onPressed: () => showAssignmentEditor(context, editing: a),
+              ),
+            ],
           ),
         ),
       ),

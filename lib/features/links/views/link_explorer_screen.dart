@@ -1,3 +1,4 @@
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/providers/link_providers.dart';
 import 'package:prism_plurality/features/links/views/record_opener.dart';
@@ -103,7 +104,7 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Connections explorer', 'Explorador de conexiones'),
         showBackButton: true,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'links'), 
           PrismTopBarAction(
             icon: _list ? PhosphorIcons.graph() : AppIcons.listView,
             tooltip: _list ? tr(context, 'Map view', 'Vista de mapa') : tr(context, 'List view', 'Vista de lista'),

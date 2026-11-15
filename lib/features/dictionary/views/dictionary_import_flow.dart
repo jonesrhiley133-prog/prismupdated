@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/dictionary/importer/universal_import_screen.dart';
 import 'package:prism_plurality/core/services/files/prism_file_dialog_service.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart';
@@ -30,10 +31,8 @@ enum DictImportSource { wiki, file, paste }
 
 enum TermDuplicateAction { skip, replace, keepBoth }
 
-Future<void> openDictionaryImport(BuildContext context) => Navigator.of(
-  context,
-  rootNavigator: true,
-).push(MaterialPageRoute<void>(builder: (_) => const DictionaryImportFlow()));
+/// Opens the universal wiki importer.
+Future<void> openDictionaryImport(BuildContext context) => openUniversalImport(context);
 
 class DictionaryImportResult {
   const DictionaryImportResult({
@@ -41,8 +40,11 @@ class DictionaryImportResult {
     this.replaced = 0,
     this.skipped = 0,
     this.collectionsCreated = 0,
+    this.ids = const [],
   });
 
+  /// Ids of created or replaced terms (for import history / removal).
+  final List<String> ids;
   final int created;
   final int replaced;
   final int skipped;
@@ -60,7 +62,9 @@ Future<DictionaryImportResult> importTerms({
   required TermDuplicateAction Function(TermCandidate) actionFor,
   String? collectionId,
   bool useSourceCategories = false,
+  Map<String, Map<String, Object?>> extraFields = const {},
 }) async {
+  final ids = <String>[];
   final index = indexTerms(existingTerms);
   final collections = {
     for (final c in existingCollections) normalizeTerm(c.title): c.id,
@@ -95,6 +99,7 @@ Future<DictionaryImportResult> importTerms({
       DictField.aliases: c.aliases.isEmpty ? null : c.aliases,
       DictField.source: c.source,
       DictField.sourceUrl: c.sourceUrl,
+      ...?extraFields[c.key],
     };
     final dup = findDuplicateTerm(c, index);
     if (dup != null) {
@@ -106,6 +111,7 @@ Future<DictionaryImportResult> importTerms({
           await notifier.save(
             dup.copyWith(body: c.definition).withFields(fields),
           );
+          ids.add(dup.id);
           replaced++;
           continue;
         case TermDuplicateAction.keepBoth:
@@ -119,6 +125,7 @@ Future<DictionaryImportResult> importTerms({
       fields: fields,
     );
     index.putIfAbsent(normalizeTerm(c.term), () => rec);
+    ids.add(rec.id);
     created++;
   }
   return DictionaryImportResult(
@@ -126,6 +133,7 @@ Future<DictionaryImportResult> importTerms({
     replaced: replaced,
     skipped: skipped,
     collectionsCreated: newCollections,
+    ids: ids,
   );
 }
 

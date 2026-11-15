@@ -253,57 +253,41 @@ class MemberCard extends StatelessWidget {
     );
   }
 
+  /// The banner keeps its own look: it sits in its own panel on the right
+  /// with only a subtle black dim — never a fade into the card's colour.
   Widget _withBanner(BuildContext context, Widget row) {
     final bytes = bannerImageData;
     if (bytes == null || bytes.isEmpty) return row;
-    final theme = Theme.of(context);
-    final cardColor = Color.alphaBlend(
-      selected
-          ? theme.colorScheme.primary.withValues(alpha: 0.14)
-          : theme.colorScheme.onSurface.withValues(alpha: 0.06),
-      theme.scaffoldBackgroundColor,
-    );
     return Stack(
       children: [
         Positioned.fill(
           child: Align(
             alignment: Alignment.centerRight,
             child: FractionallySizedBox(
-              widthFactor: 0.68,
+              widthFactor: 0.42,
               heightFactor: 1,
               child: ExcludeSemantics(
-                child: ClipRect(
-                  child: Transform.scale(
-                    scale: bannerZoom.clamp(1, 3),
-                    alignment: bannerAlignment,
-                    child: Image.memory(
-                      bytes,
-                      fit: BoxFit.cover,
-                      alignment: bannerAlignment,
-                      gaplessPlayback: true,
-                      // Decode at card size, not the banner's full size.
-                      cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 520)
-                          .round(),
-                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                    ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(14)),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Transform.scale(
+                        scale: bannerZoom.clamp(1, 3),
+                        alignment: bannerAlignment,
+                        child: Image.memory(
+                          bytes,
+                          fit: BoxFit.cover,
+                          alignment: bannerAlignment,
+                          gaplessPlayback: true,
+                          // Decode at card size, not the banner's full size.
+                          cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 360).round(),
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const ColoredBox(color: Color(0x47000000)),
+                    ],
                   ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: IgnorePointer(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    cardColor,
-                    cardColor,
-                    cardColor.withValues(alpha: 0.82),
-                    cardColor.withValues(alpha: 0.35),
-                  ],
-                  stops: const [0, 0.34, 0.6, 1],
                 ),
               ),
             ),

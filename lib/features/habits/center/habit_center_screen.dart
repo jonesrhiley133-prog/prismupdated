@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/habit.dart';
 import 'package:prism_plurality/features/habits/center/habit_center_data.dart';
@@ -69,7 +70,7 @@ class _HabitCenterScreenState extends ConsumerState<HabitCenterScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Habits & Routines', 'Hábitos y rutinas'),
         showBackButton: widget.inSettings || Navigator.of(context).canPop(),
-        actions: [
+        actions: [FeatureDataAction(featureId: 'habits'), 
           PrismTopBarAction(icon: PhosphorIcons.squaresFour(), tooltip: tr(context, 'Templates', 'Plantillas'), onPressed: () => showHabitTemplates(context)),
           PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New habit', 'Nuevo hábito'), onPressed: _newHabit),
         ],
@@ -87,13 +88,6 @@ class _HabitCenterScreenState extends ConsumerState<HabitCenterScreen> {
             )
           : Stack(
               children: [
-                Positioned(
-                  top: -140,
-                  left: -60,
-                  right: -60,
-                  height: 380,
-                  child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [primary.withValues(alpha: 0.14), primary.withValues(alpha: 0)])))),
-                ),
                 ListView(
                   padding: EdgeInsets.fromLTRB(16, 4, 16, NavBarInset.of(context) + 24),
                   children: [

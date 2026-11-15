@@ -13,6 +13,15 @@ abstract final class TrackerKind {
   static const fitnessGoal = 'fitness.goal';
   static const fitnessExercise = 'fitness.exercise';
 
+  /// Daily totals imported from health apps (steps, distance, energy…).
+  static const fitnessDaily = 'fitness.daily';
+  static const fitnessSource = 'fitness.source';
+
+  /// Prism-wide: feature switches, reset log and wiki import history.
+  static const appFeatures = 'app.features';
+  static const appResetLog = 'app.resetLog';
+  static const dictImport = 'dict.import';
+
   static const financeTxn = 'finance.txn';
   static const financeAccount = 'finance.account';
   static const financeBudget = 'finance.budget';
@@ -27,12 +36,29 @@ abstract final class TrackerKind {
 
   static const relationship = 'rel.person';
   static const relationshipEvent = 'rel.event';
+  static const relationshipNote = 'rel.note';
+  static const relationshipCheckin = 'rel.checkin';
+  static const relationshipSettings = 'rel.settings';
+  static const relationshipFamilyNote = 'rel.familyNote';
 
   static const headspaceMap = 'headspace.map';
   static const headspaceArea = 'headspace.area';
   static const headspaceLink = 'headspace.link';
 
   static const subsystem = 'subsystem';
+
+  /// Subsystem extensions: membership per alter (parent = subsystem),
+  /// internal groups, rules, notes, journal and messages.
+  static const subMember = 'subsystem.member';
+  static const subGroup = 'subsystem.group';
+  static const subRule = 'subsystem.rule';
+  static const subNote = 'subsystem.note';
+  static const subJournal = 'subsystem.journal';
+  static const subMessage = 'subsystem.message';
+
+  /// Extended alter profile (parent = member id) and saved templates.
+  static const memberProfile = 'member.profile';
+  static const profileTemplate = 'member.profileTemplate';
 
   static const sleepLog = 'sleep.log';
   static const cyclePhase = 'cycle.phase';

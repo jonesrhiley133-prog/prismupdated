@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/social/models/social.dart';
 import 'package:prism_plurality/features/social/services/social_data.dart';
 import 'package:prism_plurality/features/social/views/alter_blog_screen.dart';
@@ -34,7 +35,7 @@ class StoriesScreen extends ConsumerWidget {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: l10n.stoTitle,
-        actions: [PrismTopBarAction(icon: Icons.add_circle_outline_rounded, tooltip: l10n.stoAddStory, onPressed: () => openStoryComposer(context, viewer))],
+        actions: [FeatureDataAction(featureId: 'stories'), PrismTopBarAction(icon: Icons.add_circle_outline_rounded, tooltip: l10n.stoAddStory, onPressed: () => openStoryComposer(context, viewer))],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       bodyPadding: EdgeInsets.zero,

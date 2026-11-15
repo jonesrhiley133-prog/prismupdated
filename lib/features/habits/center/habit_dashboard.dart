@@ -18,6 +18,7 @@ import 'package:prism_plurality/features/links/views/record_opener.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
+import 'package:prism_plurality/features/prism_social/social_share.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
@@ -73,22 +74,22 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
       topBar: PrismTopBar(
         title: '',
         showBackButton: true,
-        actions: [PrismTopBarAction(icon: AppIcons.moreVert, tooltip: tr(context, 'Habit options', 'Opciones del hábito'), onPressed: () => _menu(view))],
+        actions: [
+          ShareToSocialButton(
+            title: view.habit.name,
+            source: tr(context, 'Habit', 'Hábito'),
+            details: [
+              (tr(context, 'Current streak', 'Racha actual'), tr(context, '${view.currentStreak} days', '${view.currentStreak} días')),
+              (tr(context, 'Longest streak', 'Racha más larga'), tr(context, '${view.longestStreak} days', '${view.longestStreak} días')),
+            ],
+          ),
+          PrismTopBarAction(icon: AppIcons.moreVert, tooltip: tr(context, 'Habit options', 'Opciones del hábito'), onPressed: () => _menu(view)),
+        ],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       bodyPadding: EdgeInsets.zero,
       body: Stack(
         children: [
-          // Soft atmospheric glow in the habit colour behind the header.
-          Positioned(
-            top: -120,
-            left: -80,
-            right: -80,
-            height: 420,
-            child: IgnorePointer(
-              child: DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [color.withValues(alpha: 0.18), color.withValues(alpha: 0)]))),
-            ),
-          ),
           ListView(
             padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 24),
             children: [
@@ -325,7 +326,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                   child: Column(
                     children: [
                       Expanded(child: Container(width: 2, color: i == 0 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
-                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle, boxShadow: [BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.5), blurRadius: 6)])),
+                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
                       Expanded(child: Container(width: 2, color: i == todays.length - 1 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
                     ],
                   ),

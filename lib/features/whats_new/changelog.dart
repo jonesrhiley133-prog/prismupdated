@@ -32,6 +32,184 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.30.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Prism Social: a feed, friends, friend requests, messages, Discover, profiles and notifications between systems. Alters can have their own profiles and message each other, always shown together with their system.',
+        'Prism Social: muro, amigos, solicitudes, mensajes, Descubrir, perfiles y avisos entre sistemas. Los alters pueden tener perfil propio y escribirse entre ellos, siempre junto a su sistema.',
+      ),
+      LocalizedText(
+        'Posts with likes, comments, bookmarks and reblogs that keep credit to the original author, plus private circles and per-post audiences.',
+        'Publicaciones con me gusta, comentarios, guardados y rebloqueos que mantienen el crédito del autor original, además de círculos privados y audiencias por publicación.',
+      ),
+      LocalizedText(
+        'Custom profile themes (accent, background, cards, font, layout) with a live preview and a “Use my custom profile theme” switch.',
+        'Temas de perfil personalizados (acento, fondo, tarjetas, fuente, diseño) con vista previa y el interruptor “Usar mi tema de perfil personalizado”.',
+      ),
+      LocalizedText(
+        'Share to Social from Achievements, Habits, Fitness and School — you choose exactly which details to include. Nothing is ever shared automatically.',
+        'Comparte en Social desde Logros, Hábitos, Fitness y Escuela — eliges qué detalles incluir. Nunca se comparte nada automáticamente.',
+      ),
+      LocalizedText(
+        'Social works between the systems managed in your Prism account and syncs across your devices. Reaching other people’s systems will need a Prism Social server, which isn’t available yet.',
+        'Social funciona entre los sistemas de tu cuenta y se sincroniza entre tus dispositivos. Llegar a sistemas de otras personas requerirá un servidor de Prism Social, aún no disponible.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Social privacy controls: who can request, message, see your profile and alters; read receipts, online status, Discover visibility and blocking.',
+        'Controles de privacidad social: quién puede enviarte solicitudes, escribirte, ver tu perfil y alters; confirmaciones de lectura, estado en línea, visibilidad en Descubrir y bloqueo.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Member card banners are no longer faded into the card colour — they show as they are with only a light dim.',
+        'Los banners de las tarjetas de miembros ya no se funden con el color de la tarjeta: se ven tal cual, solo con un leve oscurecido.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.29.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Settings › Features now lists every Prism feature by category, with descriptions, switches, dependencies, permissions and shortcuts — plus Minimal and Maximum presets (Minimal can be customised). Turning a feature off hides it and pauses its reminders and background work; its data is kept.',
+        'Ajustes › Funciones ahora muestra todas las funciones de Prism por categoría, con descripciones, interruptores, dependencias, permisos y accesos — y los preajustes Mínimo y Máximo (Mínimo se puede personalizar). Desactivar una función la oculta y pausa sus avisos y procesos; sus datos se conservan.',
+      ),
+      LocalizedText(
+        'Data management in every feature: reset today, this week, this month, this year or custom dates, or clear everything — with a clear confirmation, undo for 7 days where possible, and a reset history that keeps only counts.',
+        'Gestión de datos en cada función: restablece hoy, esta semana, este mes, este año o fechas propias, o bórralo todo, con confirmación clara, deshacer durante 7 días cuando es posible y un historial que solo guarda recuentos.',
+      ),
+      LocalizedText(
+        'Fitness connects to Health Connect (Android) or Apple Health (iPhone): an integration assistant walks you through setup, then workouts, steps, distance, calories, heart rate, active minutes and (optionally) sleep are imported with their source app, duplicates skipped, and each workout can belong to the system or an alter.',
+        'Ejercicio se conecta con Health Connect (Android) o Apple Health (iPhone): un asistente te guía y luego se importan entrenamientos, pasos, distancia, calorías, frecuencia cardiaca, minutos activos y (opcional) sueño con su app de origen, sin duplicados, y cada entrenamiento puede ser del sistema o de un alter.',
+      ),
+      LocalizedText(
+        'A universal Dictionary importer: paste any MediaWiki link (Wikipedia, Fandom, Miraheze, Pluralpedia, LGBTQ wikis, self-hosted), Wikidot, DokuWiki or public page; import single articles, categories or whole wikis with progress, cancel and retry; or import XML dumps, wikitext, HTML, JSON, CSV, Markdown and ZIP files. Preview and edit before saving, with import history and attribution.',
+        'Importador universal del diccionario: pega cualquier enlace MediaWiki (Wikipedia, Fandom, Miraheze, Pluralpedia, wikis LGBTQ, propias), Wikidot, DokuWiki o página pública; importa artículos, categorías o wikis enteras con progreso, cancelar y reintentar; o importa volcados XML, wikitext, HTML, JSON, CSV, Markdown y ZIP. Vista previa y edición antes de guardar, con historial y atribución.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Subsystems (and the new Relationships pages) now reach both edges of the screen, and orbit cards no longer get cut off on phones.',
+        'Subsistemas (y las nuevas páginas de Relaciones) ahora llegan a ambos bordes de la pantalla, y las tarjetas de la órbita ya no se cortan en teléfonos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.28.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'A new Relationships hub: live statistics, an interactive relationship map (network, family, romantic, social and individual views) with zoom, pan, search, category filters, highlighting and hand-arranged positions, plus a list view for anyone who prefers text.',
+        'Nuevo centro de Relaciones: estadísticas en vivo, un mapa interactivo de relaciones (vistas de red, familia, romántica, social e individual) con zoom, desplazamiento, búsqueda, filtros por categoría, resaltado y posiciones organizadas a mano, además de una vista de lista para quien prefiera texto.',
+      ),
+      LocalizedText(
+        'Relationship profiles with multiple labels at once (siblings and best friends, for example), romantic, platonic, familial and other labels plus your own, status, confidence (confirmed, suspected, developing, uncertain, outdated), privacy, a description and ten optional dynamics.',
+        'Perfiles de relación con varias etiquetas a la vez (por ejemplo hermanos y mejores amigos), etiquetas románticas, platónicas, familiares y otras más las tuyas, estado, certeza (confirmada, sospechada, en desarrollo, incierta, desactualizada), privacidad, descripción y diez dinámicas opcionales.',
+      ),
+      LocalizedText(
+        'Notes, a chronological timeline with categories and attachments, and dated check-ins with your own questions, a ratings chart and side-by-side comparison for every relationship.',
+        'Notas, una cronología con categorías y adjuntos, y registros fechados con tus propias preguntas, gráfico de puntuaciones y comparación lado a lado para cada relación.',
+      ),
+      LocalizedText(
+        'Family tree: family groups arranged by generation, with add, edit and remove, family notes, and alters in more than one family.',
+        'Árbol familiar: grupos familiares ordenados por generación, con añadir, editar y quitar, notas familiares y alters en varias familias.',
+      ),
+      LocalizedText(
+        'Randomize relationship: suggests a possible connection from what you documented — ages, roles, interests and existing relationships — explains why, lists what’s missing, and only saves after you confirm (as “suspected”).',
+        'Relación aleatoria: sugiere una conexión posible a partir de lo documentado (edades, roles, intereses y relaciones existentes), explica por qué, indica lo que falta y solo guarda tras tu confirmación (como «sospechada»).',
+      ),
+      LocalizedText(
+        'Insights and per-relationship summaries drawn only from your records, each showing the relationships it’s based on. They can be turned off.',
+        'Perspectivas y síntesis por relación basadas solo en tus registros, cada una indicando de qué relaciones procede. Se pueden desactivar.',
+      ),
+      LocalizedText(
+        'Each alter’s profile lists their relationships, read from their side (a parent’s child sees “Child”). It’s the same single record everywhere.',
+        'El perfil de cada alter muestra sus relaciones desde su lado (el hijo ve «Hija/hijo»). Es el mismo registro en todas partes.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Relationship settings for colours, custom categories and labels, map preferences, check-in questions, insights, privacy and randomizer rules.',
+        'Ajustes de relaciones para colores, categorías y etiquetas propias, preferencias del mapa, preguntas de registro, perspectivas, privacidad y reglas del aleatorizador.',
+      ),
+      LocalizedText(
+        'Existing relationships carry over unchanged, and adding a relationship for two alters who already have one adds its labels instead of creating a duplicate.',
+        'Las relaciones existentes se conservan sin cambios, y añadir una relación entre dos alters que ya tienen una suma sus etiquetas en lugar de duplicarla.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.27.1',
+    date: DateTime(2026, 11, 15),
+    improvements: const [
+      LocalizedText(
+        'Subsystems now match the rest of Prism: your theme’s background and colours, the same rounded cards, buttons and section headings, and quiet orbit lines instead of the space effects.',
+        'Los subsistemas ahora combinan con el resto de Prism: el fondo y los colores de tu tema, las mismas tarjetas redondeadas, botones y títulos de sección, y órbitas discretas en lugar de efectos espaciales.',
+      ),
+      LocalizedText(
+        'Profile Studio has Cancel, Reset and Save buttons, and edits the alter’s bio directly instead of showing a second copy.',
+        'Profile Studio tiene botones de Cancelar, Restablecer y Guardar, y edita la bio del alter directamente en lugar de mostrar una segunda copia.',
+      ),
+      LocalizedText(
+        'Calmer Habits pages: the large glows behind headers, icons, rings and buttons are gone.',
+        'Páginas de hábitos más tranquilas: se quitaron los grandes brillos detrás de cabeceras, iconos, anillos y botones.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Profile Studio always opens on the saved profile, so saving no longer risks replacing it with an empty one.',
+        'Profile Studio siempre se abre con el perfil guardado, así que guardar ya no puede reemplazarlo por uno vacío.',
+      ),
+      LocalizedText(
+        'Saving in Profile Studio keeps the avatar and banner unless you change or remove them there, and keeps changes made elsewhere since the editor opened.',
+        'Guardar en Profile Studio conserva el avatar y el banner salvo que los cambies o quites ahí, y respeta los cambios hechos en otro sitio mientras estaba abierto.',
+      ),
+      LocalizedText(
+        'Alter profiles no longer repeat the bio and pronouns in the Profile Studio section.',
+        'Los perfiles de los alters ya no repiten la bio y los pronombres en la sección de Profile Studio.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.27.0',
+    date: DateTime(2026, 11, 14),
+    features: const [
+      LocalizedText(
+        'A new cosmic Subsystems hub: your subsystems orbit your system on glowing rings in a dark, starry space, with a create button front and centre when you have none and a Learn more guide.',
+        'Nuevo centro cósmico de Subsistemas: tus subsistemas orbitan tu sistema en anillos brillantes dentro de un espacio oscuro y estrellado, con un botón de crear bien visible cuando no tienes ninguno y una guía «Más información».',
+      ),
+      LocalizedText(
+        'Create a subsystem step by step: pick a founding alter, give it a name, icon, description and colours, add members with their own subsystem roles and permissions, then choose its settings.',
+        'Crea un subsistema paso a paso: elige un alter fundador, dale nombre, icono, descripción y colores, añade miembros con sus propios roles y permisos, y elige sus ajustes.',
+      ),
+      LocalizedText(
+        'Every subsystem is a small system of its own: overview, members, internal relationships, fronting history, journal, notes, internal groups, nested subsystems, rules and boundaries, connections, chat and announcements, and settings for general, members, structure, fronting, communication, privacy, appearance and data.',
+        'Cada subsistema es un pequeño sistema propio: resumen, miembros, relaciones internas, historial de frente, diario, notas, grupos internos, subsistemas anidados, normas y límites, conexiones, chat y anuncios, y ajustes de general, miembros, estructura, frente, comunicación, privacidad, apariencia y datos.',
+      ),
+      LocalizedText(
+        'Profile Studio: design an alter’s profile in four sections — basic identity, appearance, personality & identity, and advanced settings — with a live preview, undo and redo, autosaved drafts, templates, presets and import/export.',
+        'Profile Studio: diseña el perfil de un alter en cuatro secciones —identidad básica, apariencia, personalidad e identidad, y ajustes avanzados— con vista previa en vivo, deshacer y rehacer, borradores guardados, plantillas, preajustes e importación/exportación.',
+      ),
+      LocalizedText(
+        'Roles typed with spaces become separate pills you can colour, style, hide and drag into order, and appear on the banner as “Host · Protector · …”.',
+        'Los roles escritos con espacios se convierten en píldoras que puedes colorear, estilizar, ocultar y reordenar, y aparecen en el banner como «Anfitrión · Protector · …».',
+      ),
+      LocalizedText(
+        'Profiles gain alternative names, pronoun sets, gender, age range, species, origin, subtitle and status, traits with intensity, interests and favourites, memories, music, links, a gallery, custom cards and a pinned note — with modules you can reorder or hide, four layouts, per-field labels and privacy, animated avatars and banners, avatar shapes, fonts, borders and stickers.',
+        'Los perfiles suman nombres alternativos, pronombres, género, rango de edad, especie, origen, subtítulo y estado, rasgos con intensidad, intereses y favoritos, recuerdos, música, enlaces, galería, tarjetas personalizadas y nota fijada —con módulos que puedes reordenar u ocultar, cuatro diseños, etiquetas y privacidad por campo, avatares y banners animados, formas de avatar, fuentes, bordes y pegatinas.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Members of an isolated subsystem only appear inside that subsystem — not in Headmates, alter searches or other system-wide member pickers. Adding an alter to a subsystem creates a membership record; the alter is never copied and their main profile stays the same.',
+        'Los miembros de un subsistema aislado solo aparecen dentro de él —no en Headmates, búsquedas ni otros selectores del sistema. Añadir un alter crea un registro de membresía: el alter nunca se copia y su perfil principal no cambia.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.26.0',
     date: DateTime(2026, 11, 14),
     features: const [

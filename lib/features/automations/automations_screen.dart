@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/alter_status/status_providers.dart';
 import 'package:prism_plurality/features/automations/automation_engine.dart';
@@ -77,7 +78,7 @@ class _AutomationsScreenState extends ConsumerState<AutomationsScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Automations', 'Automatizaciones'),
         showBackButton: true,
-        actions: [PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New automation', 'Nueva automatización'), onPressed: () => showAutomationBuilder(context))],
+        actions: [FeatureDataAction(featureId: 'automations'), PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New automation', 'Nueva automatización'), onPressed: () => showAutomationBuilder(context))],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       body: Column(

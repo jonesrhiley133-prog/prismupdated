@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/availability/availability_models.dart';
 import 'package:prism_plurality/features/availability/availability_providers.dart';
@@ -35,7 +36,7 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Availability', 'Disponibilidad'),
         showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
-        actions: [
+        actions: [FeatureDataAction(featureId: 'availability'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: tr(context, 'Add availability', 'Añadir disponibilidad'),

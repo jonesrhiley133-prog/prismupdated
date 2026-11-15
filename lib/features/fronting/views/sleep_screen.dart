@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/fronting_session.dart';
@@ -124,7 +125,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
               child: PrismTopBar(
                 title: l10n.sleepScreenTitle,
                 showBackButton: widget.showBackButton,
-                actions: [
+                actions: [FeatureDataAction(featureId: 'sleep'), 
                   PrismTopBarAction(
                     icon: AppIcons.navSettings,
                     tooltip: l10n.sleepScreenSettingsTooltip,

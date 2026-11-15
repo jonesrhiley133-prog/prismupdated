@@ -42,6 +42,7 @@ abstract final class AppRoutePaths {
   static const analytics = '/analytics';
   static const availability = '/availability';
   static const introductions = '/introductions';
+  static const prismSocial = '/prism-social';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -241,6 +242,7 @@ enum AppShellTabId {
   analytics,
   availability,
   introductions,
+  social,
 }
 
 class AppShellTab {
@@ -323,6 +325,7 @@ class AppShellTab {
       AppShellTabId.analytics => l10n.navAnalytics,
       AppShellTabId.availability => l10n.navAvailability,
       AppShellTabId.introductions => l10n.navIntroductions,
+      AppShellTabId.social => 'Social',
     };
   }
 
@@ -377,6 +380,7 @@ class AppShellTab {
       AppShellTabId.analytics => true,
       AppShellTabId.availability => true,
       AppShellTabId.introductions => true,
+      AppShellTabId.social => true,
     };
   }
 }
@@ -687,6 +691,14 @@ final appShellTabs = [
     branchIndex: 37,
     rootLocation: AppRoutePaths.introductions,
   ),
+  AppShellTab(
+    id: AppShellTabId.social,
+    label: 'Social',
+    icon: AppIcons.navSocial,
+    activeIcon: AppIcons.navSocialActive,
+    branchIndex: 38,
+    rootLocation: AppRoutePaths.prismSocial,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -713,6 +725,7 @@ const defaultNavBarOverflowTabIds = [
   'finance',
   'school',
   'relationships',
+  'social',
   'subsystems',
   'headspace',
   'music',

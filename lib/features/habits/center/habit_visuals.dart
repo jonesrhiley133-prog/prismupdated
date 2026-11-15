@@ -37,7 +37,7 @@ String scheduleText(BuildContext context, Habit h, HabitMeta m) {
   };
 }
 
-/// Round icon with a soft glow in the habit colour.
+/// Round icon tinted in the habit colour.
 class HabitIconBadge extends StatelessWidget {
   const HabitIconBadge({super.key, required this.habit, this.size = 56});
   final Habit habit;
@@ -53,9 +53,8 @@ class HabitIconBadge extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: RadialGradient(colors: [c.withValues(alpha: 0.32), c.withValues(alpha: 0.08)]),
-        border: Border.all(color: c.withValues(alpha: 0.45), width: 1.5),
-        boxShadow: [BoxShadow(color: c.withValues(alpha: 0.35), blurRadius: size * 0.35)],
+        color: c.withValues(alpha: 0.16),
+        border: Border.all(color: c.withValues(alpha: 0.35)),
       ),
       child: icon == null || icon.isEmpty
           ? Icon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill), color: c, size: size * 0.5)
@@ -64,7 +63,7 @@ class HabitIconBadge extends StatelessWidget {
   }
 }
 
-/// Progress ring with a glowing arc.
+/// Progress ring.
 class GlowRing extends StatelessWidget {
   const GlowRing({super.key, required this.fraction, required this.color, this.size = 170, this.stroke = 12, this.child});
   final double fraction;
@@ -105,18 +104,6 @@ class _RingPainter extends CustomPainter {
     if (v <= 0) return;
     final rect = Rect.fromCircle(center: c, radius: r);
     final sweep = 2 * math.pi * v;
-    canvas.drawArc(
-      rect,
-      -math.pi / 2,
-      sweep,
-      false,
-      Paint()
-        ..color = color.withValues(alpha: 0.35)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = stroke * 1.8
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
-    );
     canvas.drawArc(rect, -math.pi / 2, sweep, false, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = stroke..strokeCap = StrokeCap.round);
   }
 
@@ -149,7 +136,7 @@ class HabitCard extends StatelessWidget {
   }
 }
 
-/// Pill-shaped action with a glowing outline.
+/// Pill-shaped action with an outline.
 class GlowPill extends StatelessWidget {
   const GlowPill({super.key, required this.label, required this.onTap, this.icon, this.color, this.filled = false, this.height = 54});
   final String label;
@@ -166,12 +153,8 @@ class GlowPill extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: Container(
+      child: SizedBox(
         height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(height / 2),
-          boxShadow: onTap == null ? null : [BoxShadow(color: c.withValues(alpha: 0.28), blurRadius: 16)],
-        ),
         child: Material(
           color: filled ? c : c.withValues(alpha: 0.12),
           shape: StadiumBorder(side: BorderSide(color: c.withValues(alpha: onTap == null ? 0.2 : 0.7), width: 1.4)),

@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
+import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
+import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
@@ -15,6 +19,9 @@ import 'package:prism_plurality/features/connections/connections_screens.dart' s
 import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
 import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
 import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
+import 'package:prism_plurality/features/relationships/hub/rel_profile.dart' show relRoute;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart' show isolationSyncProvider;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_profile.dart' show subsystemFrontNotifierProvider;
 import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
 import 'package:prism_plurality/features/links/models/record_ref.dart' show RecordRef;
 import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners, recordTypeOpeners;
@@ -307,6 +314,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(habitNotificationListenerProvider, (_, _) {});
     // Keep calendar event alerts armed — reschedules on event changes.
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
+    ref.listen(socialNotificationListenerProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
     // Keep the live fronting notification in step with the front.
@@ -323,6 +331,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(socialOnboardingProvider, (_, _) {});
     ref.listen(automationBootProvider, (_, _) {});
     ref.listen(habitCenterBootProvider, (_, _) {});
+    ref.listen(subsystemFrontNotifierProvider, (_, _) {});
+    ref.listen(isolationSyncProvider, (_, _) {});
+    ref.listen(healthAutoSyncProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
@@ -831,6 +842,7 @@ void registerAdvancedRecordOpeners() {
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
   recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
+  recordKindOpeners[TrackerKind.relationship] = (context, id) => GoRouter.of(context).push(relRoute(id));
 }
 
 /// Notes theme switches (it sits below the app theme) so implicit

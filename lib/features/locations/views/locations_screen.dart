@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/location.dart';
 import 'package:prism_plurality/features/calendar/widgets/calendar_colors.dart';
 import 'package:prism_plurality/features/locations/providers/location_providers.dart';
@@ -38,7 +39,7 @@ class LocationsScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.locationsTitle,
         showBackButton: showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'locations'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.locationsNewTitle,

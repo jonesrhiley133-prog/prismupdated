@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/reminder.dart';
 import 'package:prism_plurality/domain/preferences/fronting_terms.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -36,7 +37,7 @@ class RemindersScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: context.l10n.remindersTitle,
         showBackButton: showBackButton,
-        actions: [
+        actions: [FeatureDataAction(featureId: 'reminders'), 
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: context.l10n.remindersEmptyAction,
