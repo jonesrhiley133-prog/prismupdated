@@ -222,7 +222,7 @@ abstract class SocialBackend {
 
 /// Stores everything as synced Prism records on this account's devices.
 /// Systems you manage here can befriend, message and follow each other;
-/// reaching other people needs a server backend (see docs/prism-social-api.md).
+/// reaching other people needs a server backend (see docs/features/prism-social-api.md).
 class LocalSocialBackend implements SocialBackend {
   LocalSocialBackend(this.ref);
   final Ref ref;

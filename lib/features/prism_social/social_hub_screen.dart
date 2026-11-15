@@ -54,6 +54,7 @@ class _SocialHubScreenState extends ConsumerState<SocialHubScreen> {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Social', 'Social'),
+        centerTitle: false,
         actions: [
           const FeatureDataAction(featureId: 'prismSocial'),
           PrismTopBarAction(icon: AppIcons.navSettings, tooltip: tr(context, 'Social settings', 'Ajustes sociales'), onPressed: () => context.push('${AppRoutePaths.prismSocial}/settings')),

@@ -32,6 +32,44 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.30.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Prism Social: a feed, friends, friend requests, messages, Discover, profiles and notifications between systems. Alters can have their own profiles and message each other, always shown together with their system.',
+        'Prism Social: muro, amigos, solicitudes, mensajes, Descubrir, perfiles y avisos entre sistemas. Los alters pueden tener perfil propio y escribirse entre ellos, siempre junto a su sistema.',
+      ),
+      LocalizedText(
+        'Posts with likes, comments, bookmarks and reblogs that keep credit to the original author, plus private circles and per-post audiences.',
+        'Publicaciones con me gusta, comentarios, guardados y rebloqueos que mantienen el crédito del autor original, además de círculos privados y audiencias por publicación.',
+      ),
+      LocalizedText(
+        'Custom profile themes (accent, background, cards, font, layout) with a live preview and a “Use my custom profile theme” switch.',
+        'Temas de perfil personalizados (acento, fondo, tarjetas, fuente, diseño) con vista previa y el interruptor “Usar mi tema de perfil personalizado”.',
+      ),
+      LocalizedText(
+        'Share to Social from Achievements, Habits, Fitness and School — you choose exactly which details to include. Nothing is ever shared automatically.',
+        'Comparte en Social desde Logros, Hábitos, Fitness y Escuela — eliges qué detalles incluir. Nunca se comparte nada automáticamente.',
+      ),
+      LocalizedText(
+        'Social works between the systems managed in your Prism account and syncs across your devices. Reaching other people’s systems will need a Prism Social server, which isn’t available yet.',
+        'Social funciona entre los sistemas de tu cuenta y se sincroniza entre tus dispositivos. Llegar a sistemas de otras personas requerirá un servidor de Prism Social, aún no disponible.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Social privacy controls: who can request, message, see your profile and alters; read receipts, online status, Discover visibility and blocking.',
+        'Controles de privacidad social: quién puede enviarte solicitudes, escribirte, ver tu perfil y alters; confirmaciones de lectura, estado en línea, visibilidad en Descubrir y bloqueo.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Member card banners are no longer faded into the card colour — they show as they are with only a light dim.',
+        'Los banners de las tarjetas de miembros ya no se funden con el color de la tarjeta: se ven tal cual, solo con un leve oscurecido.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.29.0',
     date: DateTime(2026, 11, 15),
     features: const [

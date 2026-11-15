@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -467,8 +469,6 @@ class _SocialConversationScreenState extends ConsumerState<SocialConversationScr
         if (ok == true && mounted) await runSocial(context, () => b.deleteMessage(me, m.id));
       case 'pin':
         await runSocial(context, () => b.togglePin(me, conv.id, m.id));
-      case 'copy':
-        PrismToast.show(context, message: tr(context, 'Long-press the text to select and copy it.', 'Mantén pulsado el texto para seleccionarlo y copiarlo.'));
     }
   }
 }
@@ -481,6 +481,52 @@ class _Bubble extends ConsumerWidget {
   final bool pinned;
   final String? readText;
   final ValueChanged<String> onAction;
+
+  Future<void> _showOptions(BuildContext context, List<PrismMenuItem<String>> items) async {
+    final picked = await PrismSheet.show<String>(
+      context: context,
+      title: tr(context, 'Message', 'Mensaje'),
+      builder: (ctx) => SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!m.deleted)
+              Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                children: [
+                  for (final e in _quickReactions)
+                    Semantics(
+                      button: true,
+                      label: tr(ctx, 'React $e', 'Reaccionar $e'),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: () => Navigator.of(ctx).pop('react:$e'),
+                        child: Padding(padding: const EdgeInsets.all(10), child: Text(e, style: const TextStyle(fontSize: 26))),
+                      ),
+                    ),
+                ],
+              ),
+            for (final i in items)
+              PrismListRow(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                leading: Icon(i.icon),
+                title: Text(i.label),
+                destructive: i.destructive,
+                onTap: () => Navigator.of(ctx).pop(i.value),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked == null) return;
+    if (picked == 'copy') {
+      await Clipboard.setData(ClipboardData(text: m.body));
+      if (context.mounted) PrismToast.show(context, message: tr(context, 'Copied', 'Copiado'), icon: PhosphorIcons.check());
+      return;
+    }
+    onAction(picked);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -510,7 +556,7 @@ class _Bubble extends ConsumerWidget {
             Text(tr(context, 'Message deleted', 'Mensaje eliminado'), style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic, color: fg.withValues(alpha: 0.7)))
           else ...[
             for (final id in m.media) Padding(padding: const EdgeInsets.only(bottom: 4), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 220), child: SocialImage(id: id)))),
-            if (m.body.isNotEmpty) SelectableText(m.body, style: theme.textTheme.bodyMedium?.copyWith(color: fg)),
+            if (m.body.isNotEmpty) Text(m.body, style: theme.textTheme.bodyMedium?.copyWith(color: fg)),
           ],
           const SizedBox(height: 2),
           Text(
@@ -522,7 +568,7 @@ class _Bubble extends ConsumerWidget {
     );
     final items = [
       if (!m.deleted) PrismMenuItem(value: 'reply', label: tr(context, 'Reply', 'Responder'), icon: PhosphorIcons.arrowBendUpLeft()),
-      if (!m.deleted) for (final e in _quickReactions) PrismMenuItem(value: 'react:$e', label: '$e  ${tr(context, 'React', 'Reaccionar')}', icon: PhosphorIcons.smiley()),
+      if (!m.deleted && m.body.isNotEmpty) PrismMenuItem(value: 'copy', label: tr(context, 'Copy text', 'Copiar texto'), icon: PhosphorIcons.copy()),
       if (!m.deleted) PrismMenuItem(value: 'pin', label: pinned ? tr(context, 'Unpin', 'Desfijar') : tr(context, 'Pin', 'Fijar'), icon: PhosphorIcons.pushPin()),
       if (ownIdentity && !m.deleted && m.body.isNotEmpty) PrismMenuItem(value: 'edit', label: tr(context, 'Edit', 'Editar'), icon: PhosphorIcons.pencilSimple()),
       if (ownIdentity && !m.deleted) PrismMenuItem(value: 'delete', label: tr(context, 'Delete', 'Eliminar'), icon: PhosphorIcons.trash(), destructive: true),
@@ -538,8 +584,15 @@ class _Bubble extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (!mine) ...[SocialAvatar(actor: m.sender, size: 28), const SizedBox(width: 6)],
-              Flexible(child: bubble),
-              if (items.isNotEmpty) PrismPopupMenu<String>(icon: PhosphorIcons.dotsThreeVertical(), tooltip: tr(context, 'Message options', 'Opciones del mensaje'), items: items, onSelected: onAction),
+              Flexible(
+                child: Semantics(
+                  onLongPressHint: tr(context, 'message options', 'opciones del mensaje'),
+                  customSemanticsActions: {
+                    if (items.isNotEmpty) CustomSemanticsAction(label: tr(context, 'Message options', 'Opciones del mensaje')): () => _showOptions(context, items),
+                  },
+                  child: GestureDetector(onLongPress: items.isEmpty ? null : () => _showOptions(context, items), child: bubble),
+                ),
+              ),
             ],
           ),
           if (m.reactions.isNotEmpty)
