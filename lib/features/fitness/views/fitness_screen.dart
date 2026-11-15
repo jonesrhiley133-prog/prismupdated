@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/features/fitness/health/health_banner.dart';
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/trackers/widgets/member_picker.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
@@ -95,7 +100,8 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
       topBar: PrismTopBar(
         title: l10n.navFitness,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'fitness'), 
+        actions: [FeatureDataAction(featureId: 'fitness'), if (ref.watch(featureEnabledProvider('healthIntegration'))) PrismTopBarAction(icon: PhosphorIcons.heartbeat(), tooltip: tr(context, 'Health integrations', 'Integraciones de salud'), onPressed: () => context.push('/fitness/integrations')),
+
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: _tab == FitnessTab.goals
@@ -120,6 +126,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const HealthFitnessBanner(),
                   for (final w in live) _LiveCard(workout: w),
                   if (live.isEmpty)
                     PrismButton(
@@ -500,10 +507,11 @@ class _WorkoutTile extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(w.title, style: theme.textTheme.titleSmall),
+                  Text(w.title.isNotEmpty ? w.title : fitnessActivityLabel(l10n, w.str(FitField.activity) ?? 'other'), style: theme.textTheme.titleSmall),
                   Text(
                     [
                       DateFormat.MMMEd(context.dateLocale).add_jm().format(d),
+                      if (w.flag('imported')) tr(context, 'from ${w.str('source') ?? 'a health app'}', 'de ${w.str('source') ?? 'una app de salud'}'),
                       if (workoutMinutes(w) > 0)
                         l10n.fitMinutesShort(workoutMinutes(w)),
                       if (workoutKm(w) > 0)

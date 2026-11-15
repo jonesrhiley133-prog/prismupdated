@@ -9,6 +9,7 @@ import 'package:prism_plurality/core/services/error_reporting_service.dart';
 import 'package:prism_plurality/core/services/secure_storage.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
 import '../features/feature_state.dart';
+import '../../features/fitness/health/health_integration_screen.dart';
 import '../../features/settings/views/feature_data_screen.dart';
 import '../../features/fronting/views/edit_front_session_screen.dart';
 import '../../features/fronting/views/fronting_screen.dart';
@@ -1430,6 +1431,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.fitness,
                 builder: (context, state) => const FitnessScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'integrations',
+                    builder: (context, state) => const HealthIntegrationScreen(),
+                  ),
+                ],
               ),
             ],
           ),

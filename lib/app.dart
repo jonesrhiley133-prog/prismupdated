@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
@@ -330,6 +331,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(habitCenterBootProvider, (_, _) {});
     ref.listen(subsystemFrontNotifierProvider, (_, _) {});
     ref.listen(isolationSyncProvider, (_, _) {});
+    ref.listen(healthAutoSyncProvider, (_, _) {});
     registerAdvancedRecordOpeners();
     // Keep frontingMigrationModeProvider always-warm. The sync apply path
     // reads `frontingMigrationWritesBlockedProvider` per row inside a
