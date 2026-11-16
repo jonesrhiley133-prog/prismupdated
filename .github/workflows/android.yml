@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - 'claude/**'
+      - 'feat/health-body-map-fitness-sync'
   workflow_dispatch:
 
 permissions:
@@ -182,7 +183,9 @@ jobs:
       # offers it when N is higher than its own build number. Only signed
       # builds are published: a debug-signed APK can't replace a signed one.
       - name: Publish release for in-app updates
-        if: steps.signing.outputs.signed == 'true'
+        # Feature builds are downloadable artifacts only; preserve the existing
+        # release behavior for main and claude/** without publishing this branch.
+        if: steps.signing.outputs.signed == 'true' && github.ref != 'refs/heads/feat/health-body-map-fitness-sync'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
