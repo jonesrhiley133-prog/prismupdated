@@ -9,7 +9,7 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/calendar/widgets/month_grid.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
-import 'package:prism_plurality/features/mood/data/body_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/features/mood/data/emotion_library.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
 import 'package:prism_plurality/features/mood/utils/mood_stats.dart';
@@ -54,7 +54,8 @@ class _MoodScreenState extends ConsumerState<MoodScreen> {
       topBar: PrismTopBar(
         title: l10n.moodTitle,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'mood'), 
+        actions: [
+          FeatureDataAction(featureId: 'mood'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.moodLogTitle,
@@ -244,16 +245,6 @@ class _OverviewState extends State<_Overview> {
               child: _TimeOfDayRow(summary: summary),
             ),
             _MemberBreakdown(summary: summary),
-            if (summary.topBodySensations.isNotEmpty)
-              _Card(
-                title: l10n.moodTopBody,
-                child: _RankedBars(
-                  items: [
-                    for (final e in summary.topBodySensations.take(6))
-                      (bodySensationLabel(e.key), e.value, null),
-                  ],
-                ),
-              ),
           ],
         ],
       ],
@@ -980,11 +971,16 @@ class MoodEntryTile extends ConsumerWidget {
                               label: emotionLabel(key),
                               color: emotionColor(key),
                             ),
-                          for (final b in entry.bodySensations)
-                            _TinyTag(label: bodySensationLabel(b), color: null),
                         ],
                       ),
                     ],
+                    if (entry.bodySensations.isNotEmpty)
+                      TextButton(
+                        onPressed: () => context.push(
+                          '/health/entry/${Uri.encodeComponent(entry.id)}',
+                        ),
+                        child: const Text('View preserved Body Map in Health'),
+                      ),
                     if (entry.note != null && entry.note!.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text(

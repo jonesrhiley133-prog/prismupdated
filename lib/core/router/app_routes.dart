@@ -19,6 +19,7 @@ abstract final class AppRoutePaths {
   static const media = '/media';
   static const mediaUsage = '/media/usage';
   static const mood = '/mood';
+  static const health = '/health';
   static const calendar = '/calendar';
   static const locations = '/locations';
   static const work = '/work';
@@ -65,7 +66,8 @@ abstract final class AppRoutePaths {
   static const headmateBanners = '/headmate-banners';
   static String socialPost(String id) => '/social/post/$id';
   static String socialAlter(String id) => '/social/alter/$id';
-  static String socialTag(String tag) => '/social/tag/${Uri.encodeComponent(tag)}';
+  static String socialTag(String tag) =>
+      '/social/tag/${Uri.encodeComponent(tag)}';
   static const appearanceStudio = '/appearance-studio';
   static const accessibilityQuick = '/accessibility-quick';
 
@@ -243,6 +245,7 @@ enum AppShellTabId {
   availability,
   introductions,
   social,
+  health,
 }
 
 class AppShellTab {
@@ -301,6 +304,7 @@ class AppShellTab {
       AppShellTabId.boards => l10n.navBoards,
       AppShellTabId.groups => l10n.navGroups,
       AppShellTabId.media => l10n.navMedia,
+      AppShellTabId.health => 'Health',
       AppShellTabId.mood => l10n.navMood,
       AppShellTabId.calendar => l10n.navCalendar,
       AppShellTabId.locations => l10n.navLocations,
@@ -356,6 +360,7 @@ class AppShellTab {
       AppShellTabId.boards => flags.boards,
       AppShellTabId.groups => true,
       AppShellTabId.media => true,
+      AppShellTabId.health => true,
       AppShellTabId.mood => true,
       AppShellTabId.calendar => true,
       AppShellTabId.locations => true,
@@ -699,6 +704,14 @@ final appShellTabs = [
     branchIndex: 38,
     rootLocation: AppRoutePaths.prismSocial,
   ),
+  AppShellTab(
+    id: AppShellTabId.health,
+    label: 'Health',
+    icon: AppIcons.navFitness,
+    activeIcon: AppIcons.navFitnessActive,
+    branchIndex: 39,
+    rootLocation: AppRoutePaths.health,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -713,6 +726,7 @@ const defaultNavBarOverflowTabIds = [
   'groups',
   'calendar',
   'mood',
+  'health',
   'insights',
   'locations',
   'work',

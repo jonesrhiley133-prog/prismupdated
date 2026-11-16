@@ -54,6 +54,10 @@ Future<void> openRecord(BuildContext context, WidgetRef ref, RecordInfo info) as
       recordTypeOpeners[RecordRef.habitLog]?.call(context, id);
     case RecordRef.rec:
       final kind = info.kind;
+      if (kind?.startsWith('health.') == true) {
+        await context.push('/health/entry/${Uri.encodeComponent(id)}');
+        return;
+      }
       if (kind == TrackerKind.journalEntry) {
         await showJournalEntry(context, id);
         return;
@@ -81,6 +85,9 @@ class _GenericRecordSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final r = (ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[]).where((x) => x.id == id).firstOrNull;
+    if (r?.kind.startsWith('health.') == true) {
+      return const Center(child: Text('Open private records from Health.'));
+    }
     final theme = Theme.of(context);
     return SafeArea(
       child: Column(

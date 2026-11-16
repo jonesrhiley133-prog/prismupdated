@@ -1,3 +1,4 @@
+import '../health/fitness_daily_section.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -101,7 +102,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
       topBar: PrismTopBar(
         title: l10n.navFitness,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'fitness'), if (ref.watch(featureEnabledProvider('healthIntegration'))) PrismTopBarAction(icon: PhosphorIcons.heartbeat(), tooltip: tr(context, 'Health integrations', 'Integraciones de salud'), onPressed: () => context.push('/fitness/integrations')),
+        actions: [FeatureDataAction(featureId: 'fitness'), if (ref.watch(featureEnabledProvider('healthIntegration'))) PrismTopBarAction(icon: PhosphorIcons.heartbeat(), tooltip: tr(context, 'Connected Apps', 'Apps conectadas'), onPressed: () => context.push('/fitness/integrations')),
 
           PrismTopBarAction(
             icon: AppIcons.add,
@@ -128,6 +129,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const HealthFitnessBanner(),
+                  const FitnessDailySection(),
                   for (final w in live) _LiveCard(workout: w),
                   if (live.isEmpty)
                     PrismButton(

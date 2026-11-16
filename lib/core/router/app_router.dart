@@ -1,3 +1,4 @@
+import '../../features/health/health_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -409,7 +410,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       );
       if (onboarding != null) return onboarding;
       // Features turned off in Settings › Features can't be opened by link.
-      final off = disabledFeatureFor(state.matchedLocation, ref.read(featureStatesProvider));
+      final off = disabledFeatureFor(
+        state.matchedLocation,
+        ref.read(featureStatesProvider),
+      );
       if (off != null) return '${AppRoutePaths.settingsFeatures}?off=${off.id}';
       return null;
     },
@@ -538,6 +542,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/analytics/cofronting',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const CoFrontingScreen(),
+      ),
+      GoRoute(
+        path: '/mood/body-sensations',
+        redirect: (context, state) => '/health?tab=body',
+      ),
+      GoRoute(
+        path: '/mood/body-sensations/:id',
+        redirect: (context, state) =>
+            '/health/entry/${Uri.encodeComponent(state.pathParameters['id']!)}',
       ),
       GoRoute(
         path: '/analytics/mood',
@@ -949,11 +962,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'features',
-                    builder: (context, state) => FeaturesSettingsScreen(highlight: state.uri.queryParameters['off']),
+                    builder: (context, state) => FeaturesSettingsScreen(
+                      highlight: state.uri.queryParameters['off'],
+                    ),
                     routes: [
                       GoRoute(
                         path: 'data/:id',
-                        builder: (context, state) => FeatureDataScreen(featureId: state.pathParameters['id']!),
+                        builder: (context, state) => FeatureDataScreen(
+                          featureId: state.pathParameters['id']!,
+                        ),
                       ),
                       GoRoute(
                         path: 'chat',
@@ -1440,7 +1457,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'integrations',
-                    builder: (context, state) => const HealthIntegrationScreen(),
+                    builder: (context, state) =>
+                        const HealthIntegrationScreen(),
                   ),
                 ],
               ),
@@ -1476,7 +1494,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'r/:id',
-                    builder: (context, state) => RelationshipProfileScreen(id: state.pathParameters['id']!),
+                    builder: (context, state) => RelationshipProfileScreen(
+                      id: state.pathParameters['id']!,
+                    ),
                   ),
                 ],
               ),
@@ -1492,7 +1512,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: ':id',
-                    builder: (context, state) => SubsystemProfileScreen(id: state.pathParameters['id']!),
+                    builder: (context, state) =>
+                        SubsystemProfileScreen(id: state.pathParameters['id']!),
                   ),
                 ],
               ),
@@ -1594,13 +1615,54 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.prismSocial,
-                builder: (context, state) => SocialHubScreen(section: state.uri.queryParameters['s']),
+                builder: (context, state) =>
+                    SocialHubScreen(section: state.uri.queryParameters['s']),
                 routes: [
-                  GoRoute(path: 'profile/:id', builder: (context, state) => SocialProfileScreen(profileId: state.pathParameters['id']!)),
-                  GoRoute(path: 'alter/:id', builder: (context, state) => SocialAlterScreen(alterId: state.pathParameters['id']!)),
-                  GoRoute(path: 'chat/:id', builder: (context, state) => SocialConversationScreen(conversationId: state.pathParameters['id']!)),
-                  GoRoute(path: 'post/:id', builder: (context, state) => SocialPostScreen(postId: state.pathParameters['id']!)),
-                  GoRoute(path: 'settings', builder: (context, state) => const SocialSettingsScreen()),
+                  GoRoute(
+                    path: 'profile/:id',
+                    builder: (context, state) => SocialProfileScreen(
+                      profileId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'alter/:id',
+                    builder: (context, state) =>
+                        SocialAlterScreen(alterId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'chat/:id',
+                    builder: (context, state) => SocialConversationScreen(
+                      conversationId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'post/:id',
+                    builder: (context, state) =>
+                        SocialPostScreen(postId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'settings',
+                    builder: (context, state) => const SocialSettingsScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.health,
+                builder: (context, state) => HealthScreen(
+                  initialTab: state.uri.queryParameters['tab'] == 'body'
+                      ? 1
+                      : 0,
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'entry/:id',
+                    builder: (context, state) =>
+                        HealthScreen(entryId: state.pathParameters['id']),
+                  ),
                 ],
               ),
             ],
