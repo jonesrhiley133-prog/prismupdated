@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -222,27 +223,30 @@ class _ImportTemplateSheetContentState
       children: [
         PrismSheetTopBar(title: l10n.fieldTemplateImportTitle),
         Expanded(
-          child: switch (_step) {
-            _ImportStep.importing => Center(
-              child: PrismSpinner(color: theme.colorScheme.primary),
-            ),
-            _ImportStep.scanning => _ScanView(
-              controller: _scanController!,
-              onDetect: _onScanDetect,
-              onBack: _leaveScan,
-            ),
-            _ImportStep.input => _InputView(
-              scrollController: widget.scrollController,
-              pasteController: _pasteController,
-              error: _error,
-              scanSupported: _scanSupported,
-              busy: _busy,
-              onImportPasted: () =>
-                  _guard(() => _processCandidate(_pasteController.text)),
-              onChooseImage: () => _guard(_pickImage),
-              onScan: _enterScan,
-            ),
-          },
+          child: SectionSwitcher(
+            id: _step,
+            child: switch (_step) {
+              _ImportStep.importing => Center(
+                child: PrismSpinner(color: theme.colorScheme.primary),
+              ),
+              _ImportStep.scanning => _ScanView(
+                controller: _scanController!,
+                onDetect: _onScanDetect,
+                onBack: _leaveScan,
+              ),
+              _ImportStep.input => _InputView(
+                scrollController: widget.scrollController,
+                pasteController: _pasteController,
+                error: _error,
+                scanSupported: _scanSupported,
+                busy: _busy,
+                onImportPasted: () =>
+                    _guard(() => _processCandidate(_pasteController.text)),
+                onChooseImage: () => _guard(_pickImage),
+                onScan: _enterScan,
+              ),
+            },
+          ),
         ),
       ],
     );

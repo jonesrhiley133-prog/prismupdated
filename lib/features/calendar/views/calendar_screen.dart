@@ -1,6 +1,8 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
-import 'package:prism_plurality/features/habits/center/habit_center_screen.dart' show CalendarHabitsForDay;
+import 'package:prism_plurality/features/habits/center/habit_center_screen.dart'
+    show CalendarHabitsForDay;
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -106,7 +108,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       topBar: PrismTopBar(
         title: l10n.calendarTitle,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'calendar'), 
+        actions: [
+          FeatureDataAction(featureId: 'calendar'),
           PrismTopBarAction(
             icon: AppIcons.calendarJumpToday,
             tooltip: l10n.calendarToday,
@@ -188,41 +191,45 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ),
                     ),
                   Expanded(
-                    child: switch (_view) {
-                      CalendarView.month => _MonthView(
-                        data: data,
-                        focused: _focused,
-                        onFocus: (d) => setState(() => _focused = d),
-                        onShift: _shift,
-                        onOpenDay: (d) => setState(() {
-                          _focused = d;
-                          _view = CalendarView.day;
-                        }),
-                        onNewEvent: (d) =>
-                            _newEvent(at: DateTime(d.year, d.month, d.day, 9)),
-                      ),
-                      CalendarView.week => _WeekView(
-                        data: data,
-                        focused: _focused,
-                        onShift: _shift,
-                        onOpenDay: (d) => setState(() {
-                          _focused = d;
-                          _view = CalendarView.day;
-                        }),
-                        onCreateAt: (t) => _newEvent(at: t),
-                      ),
-                      CalendarView.day => _DayView(
-                        data: data,
-                        day: _focused,
-                        onShift: _shift,
-                        onPickDate: (d) => setState(() => _focused = d),
-                        onCreateAt: (t) => _newEvent(at: t),
-                      ),
-                      CalendarView.agenda => _AgendaView(
-                        data: data,
-                        from: _focused,
-                      ),
-                    },
+                    child: SectionSwitcher(
+                      id: _view,
+                      child: switch (_view) {
+                        CalendarView.month => _MonthView(
+                          data: data,
+                          focused: _focused,
+                          onFocus: (d) => setState(() => _focused = d),
+                          onShift: _shift,
+                          onOpenDay: (d) => setState(() {
+                            _focused = d;
+                            _view = CalendarView.day;
+                          }),
+                          onNewEvent: (d) => _newEvent(
+                            at: DateTime(d.year, d.month, d.day, 9),
+                          ),
+                        ),
+                        CalendarView.week => _WeekView(
+                          data: data,
+                          focused: _focused,
+                          onShift: _shift,
+                          onOpenDay: (d) => setState(() {
+                            _focused = d;
+                            _view = CalendarView.day;
+                          }),
+                          onCreateAt: (t) => _newEvent(at: t),
+                        ),
+                        CalendarView.day => _DayView(
+                          data: data,
+                          day: _focused,
+                          onShift: _shift,
+                          onPickDate: (d) => setState(() => _focused = d),
+                          onCreateAt: (t) => _newEvent(at: t),
+                        ),
+                        CalendarView.agenda => _AgendaView(
+                          data: data,
+                          from: _focused,
+                        ),
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -274,201 +281,208 @@ class _MonthView extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.fromLTRB(12, 0, 12, 24 + NavBarInset.of(context)),
       children: [
-        GestureDetector(
-          onHorizontalDragEnd: (d) {
-            final v = d.primaryVelocity ?? 0;
-            if (v.abs() < 250) return;
-            onShift(v < 0 ? 1 : -1);
-          },
-          child: PrismSurface(
-            padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
-            child: Column(
-              children: [
-                MonthHeader(
-                  month: month,
-                  onPrevious: () => onShift(-1),
-                  onNext: () => onShift(1),
-                  onTitleTap: () async {
-                    final picked = await showPrismMonthYearPicker(
-                      context: context,
-                      initialDate: month,
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime(2200),
-                    );
-                    if (picked != null) {
-                      onFocus(DateTime(picked.year, picked.month, 1));
-                    }
-                  },
-                ),
-                MonthGrid(
-                  month: month,
-                  selectedDay: focused,
-                  cellAspectRatio: 0.72,
-                  onDaySelected: onFocus,
-                  onDayLongPressed: onNewEvent,
-                  dayBuilder:
-                      (
-                        context,
-                        day, {
-                        required inMonth,
-                        required isToday,
-                        required isSelected,
-                      }) {
-                        final dayOccurrences = occurrences
-                            .where((o) => o.coversDay(day))
-                            .toList();
-                        final mood = data.moodAverageOn(day);
-                        final hasBirthday = data.birthdaysOn(day).isNotEmpty;
-                        final hasReminder = data.remindersOn(day).isNotEmpty;
-                        final fg = inMonth
-                            ? theme.colorScheme.onSurface
-                            : theme.colorScheme.onSurface.withValues(
-                                alpha: 0.35,
-                              );
-                        return Container(
-                          margin: const EdgeInsets.all(1.5),
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: isSelected
-                                ? theme.colorScheme.primary.withValues(
-                                    alpha: 0.12,
-                                  )
-                                : null,
-                            border: isSelected
-                                ? Border.all(
-                                    color: theme.colorScheme.primary,
-                                    width: 1.5,
-                                  )
-                                : null,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    alignment: Alignment.center,
-                                    decoration: isToday
-                                        ? BoxDecoration(
-                                            color: theme.colorScheme.primary,
-                                            shape: BoxShape.circle,
-                                          )
-                                        : null,
-                                    child: Text(
-                                      '${day.day}',
-                                      style: theme.textTheme.labelSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: isToday
-                                                ? theme.colorScheme.onPrimary
-                                                : fg,
-                                          ),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  if (mood != null)
+        CompactCalendar(
+          maxWidth: 680,
+          child: GestureDetector(
+            onHorizontalDragEnd: (d) {
+              final v = d.primaryVelocity ?? 0;
+              if (v.abs() < 250) return;
+              onShift(v < 0 ? 1 : -1);
+            },
+            child: PrismSurface(
+              padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
+              child: Column(
+                children: [
+                  MonthHeader(
+                    month: month,
+                    onPrevious: () => onShift(-1),
+                    onNext: () => onShift(1),
+                    onTitleTap: () async {
+                      final picked = await showPrismMonthYearPicker(
+                        context: context,
+                        initialDate: month,
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2200),
+                      );
+                      if (picked != null) {
+                        onFocus(DateTime(picked.year, picked.month, 1));
+                      }
+                    },
+                  ),
+                  MonthGrid(
+                    month: month,
+                    selectedDay: focused,
+                    cellAspectRatio: 0.72,
+                    onDaySelected: onFocus,
+                    onDayLongPressed: onNewEvent,
+                    dayBuilder:
+                        (
+                          context,
+                          day, {
+                          required inMonth,
+                          required isToday,
+                          required isSelected,
+                        }) {
+                          final dayOccurrences = occurrences
+                              .where((o) => o.coversDay(day))
+                              .toList();
+                          final mood = data.moodAverageOn(day);
+                          final hasBirthday = data.birthdaysOn(day).isNotEmpty;
+                          final hasReminder = data.remindersOn(day).isNotEmpty;
+                          final fg = inMonth
+                              ? theme.colorScheme.onSurface
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.35,
+                                );
+                          return Container(
+                            margin: const EdgeInsets.all(1.5),
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: isSelected
+                                  ? theme.colorScheme.primary.withValues(
+                                      alpha: 0.12,
+                                    )
+                                  : null,
+                              border: isSelected
+                                  ? Border.all(
+                                      color: theme.colorScheme.primary,
+                                      width: 1.5,
+                                    )
+                                  : null,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  children: [
                                     Container(
-                                      width: 7,
-                                      height: 7,
-                                      decoration: BoxDecoration(
-                                        color: MoodLevel.color(mood),
-                                        shape: BoxShape.circle,
+                                      width: 20,
+                                      height: 20,
+                                      alignment: Alignment.center,
+                                      decoration: isToday
+                                          ? BoxDecoration(
+                                              color: theme.colorScheme.primary,
+                                              shape: BoxShape.circle,
+                                            )
+                                          : null,
+                                      child: Text(
+                                        '${day.day}',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: isToday
+                                                  ? theme.colorScheme.onPrimary
+                                                  : fg,
+                                            ),
                                       ),
                                     ),
-                                ],
-                              ),
-                              const SizedBox(height: 1),
-                              Expanded(
-                                child: LayoutBuilder(
-                                  builder: (context, c) {
-                                    final maxBars = ((c.maxHeight - 10) / 13)
-                                        .floor()
-                                        .clamp(0, 4);
-                                    final shown = dayOccurrences
-                                        .take(maxBars)
-                                        .toList();
-                                    final more =
-                                        dayOccurrences.length - shown.length;
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        for (final o in shown)
-                                          Container(
-                                            height: 12,
-                                            margin: const EdgeInsets.only(
-                                              bottom: 1,
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  eventColor(
-                                                    context,
-                                                    o.event,
-                                                  ).withValues(
-                                                    alpha: inMonth
-                                                        ? 0.85
-                                                        : 0.35,
-                                                  ),
-                                              borderRadius:
-                                                  BorderRadius.circular(3),
-                                            ),
-                                            child: Text(
-                                              o.event.title,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.clip,
-                                              style: TextStyle(
-                                                fontSize: 8.5,
-                                                height: 1.35,
-                                                color: onEventColor(
-                                                  eventColor(context, o.event),
-                                                ),
+                                    const Spacer(),
+                                    if (mood != null)
+                                      Container(
+                                        width: 7,
+                                        height: 7,
+                                        decoration: BoxDecoration(
+                                          color: MoodLevel.color(mood),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 1),
+                                Expanded(
+                                  child: LayoutBuilder(
+                                    builder: (context, c) {
+                                      final maxBars = ((c.maxHeight - 10) / 13)
+                                          .floor()
+                                          .clamp(0, 4);
+                                      final shown = dayOccurrences
+                                          .take(maxBars)
+                                          .toList();
+                                      final more =
+                                          dayOccurrences.length - shown.length;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          for (final o in shown)
+                                            Container(
+                                              height: 12,
+                                              margin: const EdgeInsets.only(
+                                                bottom: 1,
                                               ),
-                                            ),
-                                          ),
-                                        const Spacer(),
-                                        Row(
-                                          children: [
-                                            if (more > 0)
-                                              Text(
-                                                '+$more',
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    eventColor(
+                                                      context,
+                                                      o.event,
+                                                    ).withValues(
+                                                      alpha: inMonth
+                                                          ? 0.85
+                                                          : 0.35,
+                                                    ),
+                                                borderRadius:
+                                                    BorderRadius.circular(3),
+                                              ),
+                                              child: Text(
+                                                o.event.title,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.clip,
                                                 style: TextStyle(
                                                   fontSize: 8.5,
-                                                  color: fg,
+                                                  height: 1.35,
+                                                  color: onEventColor(
+                                                    eventColor(
+                                                      context,
+                                                      o.event,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            const Spacer(),
-                                            if (hasBirthday)
-                                              Icon(
-                                                AppIcons.cake,
-                                                size: 9,
-                                                color: fg,
-                                              ),
-                                            if (hasReminder)
-                                              Icon(
-                                                AppIcons
-                                                    .notificationsNoneRounded,
-                                                size: 9,
-                                                color: fg,
-                                              ),
-                                          ],
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                            ),
+                                          const Spacer(),
+                                          Row(
+                                            children: [
+                                              if (more > 0)
+                                                Text(
+                                                  '+$more',
+                                                  style: TextStyle(
+                                                    fontSize: 8.5,
+                                                    color: fg,
+                                                  ),
+                                                ),
+                                              const Spacer(),
+                                              if (hasBirthday)
+                                                Icon(
+                                                  AppIcons.cake,
+                                                  size: 9,
+                                                  color: fg,
+                                                ),
+                                              if (hasReminder)
+                                                Icon(
+                                                  AppIcons
+                                                      .notificationsNoneRounded,
+                                                  size: 9,
+                                                  color: fg,
+                                                ),
+                                            ],
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                ),
-              ],
+                              ],
+                            ),
+                          );
+                        },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

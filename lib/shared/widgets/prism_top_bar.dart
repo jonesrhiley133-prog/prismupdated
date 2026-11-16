@@ -85,6 +85,9 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     final effectiveTrailing = trailing ?? _buildActions();
 
+    // Website-style header on wide web windows: title on the left.
+    final desktopWeb = PrismTokens.desktopWebContentWidth != null;
+    final centerTitle = this.centerTitle && !desktopWeb;
     final titleBlock = _TitleBlock(
       title: title,
       subtitle: subtitle,
@@ -205,7 +208,7 @@ class _TitleBlock extends StatelessWidget {
             style:
                 titleStyle ??
                 theme.textTheme.headlineLarge?.copyWith(
-                  fontSize: isDesktop ? 18 : 22,
+                  fontSize: PrismTokens.desktopWebContentWidth != null ? 24 : (isDesktop ? 18 : 22),
                   height: 1,
                 ),
           ),

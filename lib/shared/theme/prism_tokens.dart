@@ -44,7 +44,15 @@ class PrismTokens {
   /// boards, stats) so the body doesn't stretch edge-to-edge on wide windows.
   /// These screens clamp their content and open per-item detail in a modal
   /// side sheet rather than squishing into a permanent list pane.
-  static const double contentMaxWidth = 720;
+  static double get contentMaxWidth => desktopWebContentWidth ?? mobileContentMaxWidth;
+
+  /// The phone/tablet reading width.
+  static const double mobileContentMaxWidth = 720;
+
+  /// Set by the app shell on wide web windows (null elsewhere): content
+  /// columns grow to use the screen like a website instead of a stretched
+  /// phone layout. Native apps never set this.
+  static double? desktopWebContentWidth;
 
   /// Window width at or above which content-primary screens open per-item
   /// detail in a modal side sheet; below this they push a full-screen route.

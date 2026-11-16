@@ -392,7 +392,7 @@ class _MealCalendar extends StatelessWidget {
     return Column(
       children: [
         Text(DateFormat.yMMMM(context.dateLocale).format(first), style: theme.textTheme.titleSmall),
-        GridView.count(
+        CompactCalendar(child: GridView.count(
           crossAxisCount: 7,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -417,7 +417,7 @@ class _MealCalendar extends StatelessWidget {
                 ),
               ),
           ],
-        ),
+        )),
       ],
     );
   }

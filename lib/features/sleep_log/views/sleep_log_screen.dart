@@ -346,7 +346,7 @@ class SleepLogScreen extends ConsumerWidget {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: PrismTokens.contentMaxWidth,
                   ),
                   child: Column(

@@ -32,6 +32,134 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.37.0',
+    date: DateTime(2026, 11, 16),
+    improvements: const [
+      LocalizedText(
+        'Tabs, views and step-by-step screens inside pages now animate too: Calendar, Availability, Mood, Fitness, Finance, School, Dream journal, Cycle insights, Scrapbook, Statuses, Bulletin, Social hub, Automations, the look editor, Profile Studio, the data browser, and the import, backup, PIN, device setup and upgrade wizards.',
+        'Las pestañas, vistas y pantallas paso a paso dentro de las páginas ahora también se animan: Calendario, Disponibilidad, Ánimo, Fitness, Finanzas, Escuela, Diario de sueños, Ciclo, Álbum, Estados, Tablón, Social, Automatizaciones, el editor de apariencia, Profile Studio, el explorador de datos y los asistentes de importación, copia de seguridad, PIN, configuración de dispositivo y actualización.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.36.0',
+    date: DateTime(2026, 11, 16),
+    improvements: const [
+      LocalizedText(
+        'Every way of moving between sections is animated: the navigation bar, the desktop sidebar, search (Ctrl/⌘+K) and links into another section fade the new section in. Pages opened on top keep their slide/fade transition on every platform, including the web on Windows and Linux. Turning on Reduce motion switches these off.',
+        'Todas las formas de cambiar de sección están animadas: la barra de navegación, la barra lateral de escritorio, la búsqueda (Ctrl/⌘+K) y los enlaces a otra sección muestran la nueva sección con un fundido. Las páginas que se abren encima mantienen su transición en todas las plataformas, incluida la web en Windows y Linux. Reducir movimiento las desactiva.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.35.0',
+    date: DateTime(2026, 11, 15),
+    fixes: const [
+      LocalizedText(
+        'Tapping an introduction card on the table flips it again; long-press or Enlarge in its menu shows it large.',
+        'Tocar una tarjeta de presentación en la mesa vuelve a girarla; mantén pulsado o usa Ampliar en su menú para verla en grande.',
+      ),
+      LocalizedText(
+        'Headmate banners fill the whole row in the Headmates list instead of a panel on the right, with an even dim (no fade) and light text so names stay readable.',
+        'Los banners de los headmates ocupan toda la fila en la lista en lugar de un panel a la derecha, con un oscurecido uniforme (sin degradado) y texto claro para que los nombres se lean bien.',
+      ),
+      LocalizedText(
+        'The navigation bar opens smoothly: its extra rows stay ready instead of being built in the first frame of the animation.',
+        'La barra de navegación se abre con fluidez: sus filas extra quedan preparadas en lugar de crearse en el primer fotograma de la animación.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Smoother busy pages: dashboard cards, introduction cards and the navigation bar repaint on their own instead of together.',
+        'Páginas con mucho contenido más fluidas: las tarjetas del panel, las de presentación y la barra de navegación se redibujan por separado.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.34.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        '17 new app icons, all keeping the Prism pyramid: five new designs (Eclipse, Opal, Obsidian, Ultraviolet, Tide) and 12 gentle plurality designs — Constellation, Facets, Many Moons, Chrysalis, Headspace, Harmony, Garden, Reflection, Murmuration, Threads, Lanterns and Chorus.',
+        '17 iconos nuevos, todos con la pirámide de Prism: cinco diseños nuevos (Eclipse, Ópalo, Obsidiana, Ultravioleta, Marea) y 12 diseños suaves sobre la pluralidad: Constelación, Facetas, Muchas lunas, Crisálida, Espacio interior, Armonía, Jardín, Reflejo, Bandada, Hilos, Faroles y Coro.',
+      ),
+      LocalizedText(
+        'The icon designer can use any of 56 symbols instead of the Prism, with its own colour, and every colour — background, aura and symbol — can be fine-tuned with hue, saturation and brightness sliders. Backgrounds can be a gradient, radial or solid.',
+        'El diseñador de iconos puede usar cualquiera de 56 símbolos en lugar del prisma, con su propio color, y cada color (fondo, aura y símbolo) se ajusta con controles de tono, saturación y brillo. El fondo puede ser degradado, radial o sólido.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Introductions are laid out like a deck on a table: smaller cards with a slight hand-dealt tilt. Tap a card to flip it; long-press (or Enlarge in its menu) to lift it up large.',
+        'Las presentaciones se muestran como una baraja sobre la mesa: tarjetas más pequeñas con una ligera inclinación. Toca una tarjeta para girarla; mantén pulsado (o Ampliar en su menú) para verla en grande.',
+      ),
+      LocalizedText(
+        'Recolour any introduction card with hue, saturation and brightness sliders for its background, border and text — card designs use the same sliders.',
+        'Cambia los colores de cualquier tarjeta con controles de tono, saturación y brillo para el fondo, el borde y el texto; los diseños de tarjeta usan los mismos controles.',
+      ),
+      LocalizedText(
+        'Rings and glows on the Prism icons are centred on the pyramid.',
+        'Los anillos y brillos de los iconos de Prism se centran en la pirámide.',
+      ),
+      LocalizedText(
+        'The web version shows its progress while it starts, and explains what to do if it gets stuck instead of staying blank.',
+        'La versión web muestra su progreso al iniciar y explica qué hacer si se queda atascada en lugar de quedarse en blanco.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.33.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'The web version is now laid out for desktop: a docked sidebar with every section grouped by category, wider pages, a two-column home dashboard, left-aligned page titles and Ctrl/⌘+K to jump anywhere. Phones and the mobile apps are unchanged.',
+        'La versión web ahora está diseñada para escritorio: barra lateral con todas las secciones por categoría, páginas más anchas, panel de inicio a dos columnas, títulos a la izquierda y Ctrl/⌘+K para ir a cualquier sitio. Los teléfonos y las apps móviles no cambian.',
+      ),
+      LocalizedText(
+        'Change Prism’s icon in Settings › Appearance › App icon: 14 aura designs plus the classic icon — or design your own with colours, an aura and the Prism, an emoji or a photo.',
+        'Cambia el icono de Prism en Ajustes › Apariencia › Icono de la app: 14 diseños con aura además del clásico, o crea el tuyo con colores, un aura y el prisma, un emoji o una foto.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Fixed the web version looking grainy, dithered or garbled on some computers: Prism detects problem graphics drivers and switches to compatibility rendering (also selectable in Settings › Appearance).',
+        'Corregido que la versión web se viera granulada o corrupta en algunos ordenadores: Prism detecta drivers gráficos problemáticos y usa el renderizado de compatibilidad (también en Ajustes › Apariencia).',
+      ),
+      LocalizedText(
+        'Month calendars stay a comfortable size on large screens.',
+        'Los calendarios mensuales mantienen un tamaño cómodo en pantallas grandes.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
+    version: '0.32.0',
+    date: DateTime(2026, 11, 15),
+    features: const [
+      LocalizedText(
+        'Dictionary wiki imports keep going in the background: leave the import page, move around Prism or switch apps and the import continues (with a progress notification on Android). If Prism is closed, it picks up where it left off next time.',
+        'Las importaciones de wikis al diccionario siguen en segundo plano: sal de la página, muévete por Prism o cambia de app y la importación continúa (con una notificación de progreso en Android). Si Prism se cierra, continúa donde se quedó.',
+      ),
+      LocalizedText(
+        'New “All” option imports every article of a wiki or category, about 20× faster than before.',
+        'Nueva opción «Todos» para importar todos los artículos de una wiki o categoría, unas 20 veces más rápido.',
+      ),
+      LocalizedText(
+        'Flags are imported from wikis that have them, including alternate flags, and shown on each term. Download one flag, or all of them as a ZIP, to your device.',
+        'Se importan las banderas de las wikis que las tienen, también las alternativas, y se muestran en cada término. Descarga una o todas (en ZIP) a tu dispositivo.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'The import list scrolls smoothly even with thousands of terms, the Import button stays at the top, and new buttons jump to the top or bottom.',
+        'La lista de importación se desplaza con fluidez incluso con miles de términos, el botón Importar queda arriba y hay botones para ir al principio o al final.',
+      ),
+      LocalizedText(
+        'Large dictionaries scroll faster.',
+        'Los diccionarios grandes se desplazan más rápido.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.31.0',
     date: DateTime(2026, 11, 15),
     features: const [

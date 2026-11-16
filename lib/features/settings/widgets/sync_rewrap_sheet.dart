@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -350,13 +351,16 @@ class _SyncRewrapSheetState extends ConsumerState<SyncRewrapSheet>
           top: 16,
           bottom: 16 + bottomInset,
         ),
-        child: switch (_step) {
-          _SyncRewrapStep.enterMnemonic => _buildMnemonicStep(theme),
-          _SyncRewrapStep.revealReplacement => _buildReplacementPhraseStep(
-            theme,
-          ),
-          _SyncRewrapStep.enterPin => _buildPinStep(theme),
-        },
+        child: SectionSwitcher(
+          id: _step,
+          child: switch (_step) {
+            _SyncRewrapStep.enterMnemonic => _buildMnemonicStep(theme),
+            _SyncRewrapStep.revealReplacement => _buildReplacementPhraseStep(
+              theme,
+            ),
+            _SyncRewrapStep.enterPin => _buildPinStep(theme),
+          },
+        ),
       ),
     );
   }

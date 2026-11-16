@@ -2,6 +2,20 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.38.0] - Unreleased
+
+### Added
+- Private Health workspace with Timeline, Body Map, symptom check-ins and episodes.
+- Fitness Connected Apps, per-type sync results and previewed CSV imports.
+
+### Changed
+- Body Sensations now lives in Health; historical Mood records retain stable links.
+- Includes the 0.37.0 navigation, section transitions, app icons and earlier updates.
+
+### Fixed
+- Fitness import persistence, repeat-import deduplication and disconnected display.
+- Release version and build number advance past 0.37.0+37000.
+
 ## [0.15.3] - 2026-09-30
 
 Patch release. Prism does less work on the main thread while unlocking,

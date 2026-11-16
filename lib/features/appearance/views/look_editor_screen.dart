@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,11 +37,42 @@ String elementLabel(AppLocalizations l10n, String e) => switch (e) {
 
 /// Which style properties make sense for each element.
 const _props = <String, List<String>>{
-  LookElement.button: ['color', 'color2', 'radius', 'borderWidth', 'borderColor', 'shadow', 'padding'],
-  LookElement.card: ['color', 'color2', 'opacity', 'radius', 'borderWidth', 'borderColor', 'shadow', 'padding'],
-  LookElement.nav: ['color', 'color2', 'opacity', 'radius', 'borderWidth', 'borderColor', 'shadow'],
+  LookElement.button: [
+    'color',
+    'color2',
+    'radius',
+    'borderWidth',
+    'borderColor',
+    'shadow',
+    'padding',
+  ],
+  LookElement.card: [
+    'color',
+    'color2',
+    'opacity',
+    'radius',
+    'borderWidth',
+    'borderColor',
+    'shadow',
+    'padding',
+  ],
+  LookElement.nav: [
+    'color',
+    'color2',
+    'opacity',
+    'radius',
+    'borderWidth',
+    'borderColor',
+    'shadow',
+  ],
   LookElement.header: ['color', 'opacity'],
-  LookElement.input: ['color', 'opacity', 'radius', 'borderWidth', 'borderColor'],
+  LookElement.input: [
+    'color',
+    'opacity',
+    'radius',
+    'borderWidth',
+    'borderColor',
+  ],
   LookElement.dialog: ['color', 'opacity', 'radius'],
   LookElement.divider: ['color', 'opacity', 'borderWidth'],
   LookElement.icon: ['color'],
@@ -85,25 +117,126 @@ String pageLabel(AppLocalizations l10n, String page) => switch (page) {
 };
 
 /// Labels and help for the colour roles.
-(String, String) colorRoleLabel(BuildContext context, String role) => switch (role) {
-  LookColor.accent => (tr(context, 'Accent', 'Acento'), tr(context, 'Buttons, selections, highlights', 'Botones, selecciones, resaltados')),
-  LookColor.secondary => (tr(context, 'Secondary', 'Secundario'), tr(context, 'Secondary buttons and tags', 'Botones y etiquetas secundarios')),
-  LookColor.highlight => (tr(context, 'Highlight', 'Resalte'), tr(context, 'Badges and special accents', 'Insignias y acentos especiales')),
-  LookColor.background => (tr(context, 'Page background', 'Fondo de página'), tr(context, 'Behind everything (when no picture is set)', 'Detrás de todo (si no hay imagen)')),
-  LookColor.surface => (tr(context, 'Surfaces', 'Superficies'), tr(context, 'Cards, sheets, lists and menus', 'Tarjetas, hojas, listas y menús')),
-  LookColor.raised => (tr(context, 'Raised surfaces', 'Superficies elevadas'), tr(context, 'Strong cards, fields and pressed areas', 'Tarjetas destacadas, campos y zonas pulsadas')),
-  LookColor.text => (tr(context, 'Text', 'Texto'), tr(context, 'Main text and icons (kept readable automatically)', 'Texto e iconos (siempre legibles)')),
-  LookColor.mutedText => (tr(context, 'Secondary text', 'Texto secundario'), tr(context, 'Subtitles, hints and captions', 'Subtítulos, pistas y leyendas')),
-  LookColor.outline => (tr(context, 'Lines & borders', 'Líneas y bordes'), tr(context, 'Dividers and outlines', 'Divisores y contornos')),
-  LookColor.error => (tr(context, 'Error', 'Error'), tr(context, 'Warnings that need attention, delete buttons', 'Avisos importantes, botones de borrar')),
-  LookColor.success => (tr(context, 'Success', 'Éxito'), tr(context, 'Confirmations and positive changes', 'Confirmaciones y cambios positivos')),
-  LookColor.warning => (tr(context, 'Caution', 'Precaución'), tr(context, 'Gentle warnings', 'Avisos suaves')),
-  LookColor.chip => (tr(context, 'Chips', 'Fichas'), tr(context, 'Selected filter and choice chips', 'Fichas de filtro seleccionadas')),
-  LookColor.toggle => (tr(context, 'Switches & checkboxes', 'Interruptores y casillas'), tr(context, 'When turned on', 'Cuando están activados')),
-  LookColor.progress => (tr(context, 'Progress & sliders', 'Progreso y deslizadores'), tr(context, 'Loading bars, sliders and gauges', 'Barras, deslizadores e indicadores')),
-  LookColor.link => (tr(context, 'Links & cursor', 'Enlaces y cursor'), tr(context, 'Links, text cursor and selection', 'Enlaces, cursor y selección de texto')),
-  _ => (role, ''),
-};
+(String, String) colorRoleLabel(BuildContext context, String role) =>
+    switch (role) {
+      LookColor.accent => (
+        tr(context, 'Accent', 'Acento'),
+        tr(
+          context,
+          'Buttons, selections, highlights',
+          'Botones, selecciones, resaltados',
+        ),
+      ),
+      LookColor.secondary => (
+        tr(context, 'Secondary', 'Secundario'),
+        tr(
+          context,
+          'Secondary buttons and tags',
+          'Botones y etiquetas secundarios',
+        ),
+      ),
+      LookColor.highlight => (
+        tr(context, 'Highlight', 'Resalte'),
+        tr(
+          context,
+          'Badges and special accents',
+          'Insignias y acentos especiales',
+        ),
+      ),
+      LookColor.background => (
+        tr(context, 'Page background', 'Fondo de página'),
+        tr(
+          context,
+          'Behind everything (when no picture is set)',
+          'Detrás de todo (si no hay imagen)',
+        ),
+      ),
+      LookColor.surface => (
+        tr(context, 'Surfaces', 'Superficies'),
+        tr(
+          context,
+          'Cards, sheets, lists and menus',
+          'Tarjetas, hojas, listas y menús',
+        ),
+      ),
+      LookColor.raised => (
+        tr(context, 'Raised surfaces', 'Superficies elevadas'),
+        tr(
+          context,
+          'Strong cards, fields and pressed areas',
+          'Tarjetas destacadas, campos y zonas pulsadas',
+        ),
+      ),
+      LookColor.text => (
+        tr(context, 'Text', 'Texto'),
+        tr(
+          context,
+          'Main text and icons (kept readable automatically)',
+          'Texto e iconos (siempre legibles)',
+        ),
+      ),
+      LookColor.mutedText => (
+        tr(context, 'Secondary text', 'Texto secundario'),
+        tr(
+          context,
+          'Subtitles, hints and captions',
+          'Subtítulos, pistas y leyendas',
+        ),
+      ),
+      LookColor.outline => (
+        tr(context, 'Lines & borders', 'Líneas y bordes'),
+        tr(context, 'Dividers and outlines', 'Divisores y contornos'),
+      ),
+      LookColor.error => (
+        tr(context, 'Error', 'Error'),
+        tr(
+          context,
+          'Warnings that need attention, delete buttons',
+          'Avisos importantes, botones de borrar',
+        ),
+      ),
+      LookColor.success => (
+        tr(context, 'Success', 'Éxito'),
+        tr(
+          context,
+          'Confirmations and positive changes',
+          'Confirmaciones y cambios positivos',
+        ),
+      ),
+      LookColor.warning => (
+        tr(context, 'Caution', 'Precaución'),
+        tr(context, 'Gentle warnings', 'Avisos suaves'),
+      ),
+      LookColor.chip => (
+        tr(context, 'Chips', 'Fichas'),
+        tr(
+          context,
+          'Selected filter and choice chips',
+          'Fichas de filtro seleccionadas',
+        ),
+      ),
+      LookColor.toggle => (
+        tr(context, 'Switches & checkboxes', 'Interruptores y casillas'),
+        tr(context, 'When turned on', 'Cuando están activados'),
+      ),
+      LookColor.progress => (
+        tr(context, 'Progress & sliders', 'Progreso y deslizadores'),
+        tr(
+          context,
+          'Loading bars, sliders and gauges',
+          'Barras, deslizadores e indicadores',
+        ),
+      ),
+      LookColor.link => (
+        tr(context, 'Links & cursor', 'Enlaces y cursor'),
+        tr(
+          context,
+          'Links, text cursor and selection',
+          'Enlaces, cursor y selección de texto',
+        ),
+      ),
+      _ => (role, ''),
+    };
 
 enum _Tab { colors, background, elements, pages }
 
@@ -177,14 +310,19 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
       PrismTextField(
         initialValue: _draft.name,
         labelText: l10n.apPresetName,
-        onChanged: (v) => _set(_draft.copyWith(name: v.trim().isEmpty ? _draft.name : v.trim())),
+        onChanged: (v) => _set(
+          _draft.copyWith(name: v.trim().isEmpty ? _draft.name : v.trim()),
+        ),
       ),
       const SizedBox(height: 12),
       const LookSample(),
       const SizedBox(height: 12),
       PrismSegmentedControl<_Tab>(
         segments: [
-          PrismSegment(value: _Tab.colors, label: tr(context, 'Colours', 'Colores')),
+          PrismSegment(
+            value: _Tab.colors,
+            label: tr(context, 'Colours', 'Colores'),
+          ),
           PrismSegment(value: _Tab.background, label: l10n.apBackground),
           PrismSegment(value: _Tab.elements, label: l10n.apElements),
           PrismSegment(value: _Tab.pages, label: l10n.apPages),
@@ -193,12 +331,25 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
         onChanged: (v) => setState(() => _tab = v),
       ),
       const SizedBox(height: 8),
-      ...switch (_tab) {
-        _Tab.colors => _colors(),
-        _Tab.background => [BackgroundEditor(spec: _draft.background, onChanged: (b) => _set(_draft.copyWith(background: b)))],
-        _Tab.elements => _elements(l10n),
-        _Tab.pages => _pages(l10n),
-      },
+      SectionSwitcher(
+        id: _tab,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ...switch (_tab) {
+              _Tab.colors => _colors(),
+              _Tab.background => [
+                BackgroundEditor(
+                  spec: _draft.background,
+                  onChanged: (b) => _set(_draft.copyWith(background: b)),
+                ),
+              ],
+              _Tab.elements => _elements(l10n),
+              _Tab.pages => _pages(l10n),
+            },
+          ],
+        ),
+      ),
       const SizedBox(height: 24),
     ];
     return PopScope(
@@ -214,7 +365,12 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
         topBar: PrismTopBar(
           title: l10n.apEditTitle,
           showBackButton: true,
-          trailing: PrismButton(label: l10n.save, tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: _save),
+          trailing: PrismButton(
+            label: l10n.save,
+            tone: PrismButtonTone.filled,
+            density: PrismControlDensity.compact,
+            onPressed: _save,
+          ),
         ),
         topBarMaxWidth: PrismTokens.contentMaxWidth,
         bodyPadding: EdgeInsets.zero,
@@ -223,8 +379,13 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
           children: [
             Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+                constraints: BoxConstraints(
+                  maxWidth: PrismTokens.contentMaxWidth,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                ),
               ),
             ),
           ],
@@ -237,25 +398,44 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
     final theme = Theme.of(context);
     return [
       Text(
-        tr(context, 'Pick colours for every part of the app. Anything left on “Default” keeps the standard colour. Text is adjusted automatically if it would be hard to read.',
-            'Elige colores para cada parte de la app. Lo que quede en «Predeterminado» mantiene el color estándar. El texto se ajusta solo si fuera difícil de leer.'),
-        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        tr(
+          context,
+          'Pick colours for every part of the app. Anything left on “Default” keeps the standard colour. Text is adjusted automatically if it would be hard to read.',
+          'Elige colores para cada parte de la app. Lo que quede en «Predeterminado» mantiene el color estándar. El texto se ajusta solo si fuera difícil de leer.',
+        ),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
       const SizedBox(height: 8),
       PrismSegmentedControl<String>(
         segments: [
-          PrismSegment(value: 'auto', label: tr(context, 'Fits light & dark', 'Claro y oscuro')),
-          PrismSegment(value: 'light', label: tr(context, 'Light design', 'Diseño claro')),
-          PrismSegment(value: 'dark', label: tr(context, 'Dark design', 'Diseño oscuro')),
+          PrismSegment(
+            value: 'auto',
+            label: tr(context, 'Fits light & dark', 'Claro y oscuro'),
+          ),
+          PrismSegment(
+            value: 'light',
+            label: tr(context, 'Light design', 'Diseño claro'),
+          ),
+          PrismSegment(
+            value: 'dark',
+            label: tr(context, 'Dark design', 'Diseño oscuro'),
+          ),
         ],
-        selected: _draft.dark == null ? 'auto' : (_draft.dark! ? 'dark' : 'light'),
-        onChanged: (v) => _set(_draft.copyWith(dark: v == 'auto' ? null : v == 'dark')),
+        selected: _draft.dark == null
+            ? 'auto'
+            : (_draft.dark! ? 'dark' : 'light'),
+        onChanged: (v) =>
+            _set(_draft.copyWith(dark: v == 'auto' ? null : v == 'dark')),
       ),
       const SizedBox(height: 4),
       PrismButton(
         label: tr(context, 'Clear all colours', 'Quitar todos los colores'),
         icon: Icons.format_color_reset_outlined,
-        onPressed: _draft.colors.isEmpty ? () {} : () => _set(_draft.copyWith(colors: const {})),
+        onPressed: _draft.colors.isEmpty
+            ? () {}
+            : () => _set(_draft.copyWith(colors: const {})),
       ),
       for (final role in LookColor.all)
         PrismSurface(
@@ -264,9 +444,18 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ColorChoiceRow(label: colorRoleLabel(context, role).$1, value: _draft.color(role), onChanged: (v) => _set(_draft.withColor(role, v))),
+              ColorChoiceRow(
+                label: colorRoleLabel(context, role).$1,
+                value: _draft.color(role),
+                onChanged: (v) => _set(_draft.withColor(role, v)),
+              ),
               const SizedBox(height: 4),
-              Text(colorRoleLabel(context, role).$2, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                colorRoleLabel(context, role).$2,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
@@ -276,7 +465,8 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
   List<Widget> _elements(AppLocalizations l10n) {
     final s = _draft.element(_element);
     final props = _props[_element]!;
-    void put(String key, Object? value) => _set(_draft.withElement(_element, s.set(key, value)));
+    void put(String key, Object? value) =>
+        _set(_draft.withElement(_element, s.set(key, value)));
     return [
       Wrap(
         spacing: 6,
@@ -284,7 +474,8 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
         children: [
           for (final e in LookElement.all)
             PrismChip(
-              label: '${elementLabel(l10n, e)}${_draft.element(e).isEmpty ? '' : ' •'}',
+              label:
+                  '${elementLabel(l10n, e)}${_draft.element(e).isEmpty ? '' : ' •'}',
               selected: _element == e,
               onTap: () => setState(() => _element = e),
             ),
@@ -295,9 +486,18 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (props.contains('color')) ColorChoiceRow(label: l10n.apColor, value: s.color, onChanged: (v) => put('color', v)),
+            if (props.contains('color'))
+              ColorChoiceRow(
+                label: l10n.apColor,
+                value: s.color,
+                onChanged: (v) => put('color', v),
+              ),
             if (props.contains('color2') && s.color != null)
-              ColorChoiceRow(label: l10n.apGradientWith, value: s.color2, onChanged: (v) => put('color2', v)),
+              ColorChoiceRow(
+                label: l10n.apGradientWith,
+                value: s.color2,
+                onChanged: (v) => put('color2', v),
+              ),
             if (props.contains('opacity'))
               LabeledSlider(
                 label: l10n.apTransparency,
@@ -315,13 +515,16 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
                 min: 0,
                 max: 40,
                 divisions: 20,
-                format: (v) => s.radius == null ? l10n.apDefault : v.round().toString(),
+                format: (v) =>
+                    s.radius == null ? l10n.apDefault : v.round().toString(),
                 onChanged: (v) => put('radius', v),
                 onReset: s.radius == null ? null : () => put('radius', null),
               ),
             if (props.contains('borderWidth'))
               LabeledSlider(
-                label: _element == LookElement.divider ? l10n.apThickness : l10n.apBorder,
+                label: _element == LookElement.divider
+                    ? l10n.apThickness
+                    : l10n.apBorder,
                 value: s.borderWidth ?? 0,
                 min: 0,
                 max: 6,
@@ -330,7 +533,11 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
                 onChanged: (v) => put('borderWidth', v),
               ),
             if (props.contains('borderColor') && (s.borderWidth ?? 0) > 0)
-              ColorChoiceRow(label: l10n.apBorderColor, value: s.borderColor, onChanged: (v) => put('borderColor', v)),
+              ColorChoiceRow(
+                label: l10n.apBorderColor,
+                value: s.borderColor,
+                onChanged: (v) => put('borderColor', v),
+              ),
             if (props.contains('shadow'))
               LabeledSlider(
                 label: l10n.apShadow,
@@ -357,7 +564,8 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
               child: PrismButton(
                 label: l10n.apResetElement(elementLabel(l10n, _element)),
                 tone: PrismButtonTone.outlined,
-                onPressed: () => _set(_draft.withElement(_element, const ElementStyle())),
+                onPressed: () =>
+                    _set(_draft.withElement(_element, const ElementStyle())),
               ),
             ),
           ],
@@ -369,7 +577,12 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
   List<Widget> _pages(AppLocalizations l10n) {
     final theme = Theme.of(context);
     return [
-      Text(l10n.apPagesHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+      Text(
+        l10n.apPagesHelp,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
       const SizedBox(height: 8),
       for (final page in lookPages)
         Padding(
@@ -384,14 +597,26 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
                   height: 34,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: LookBackground(spec: _draft.backgroundFor(page), dir: LookTheme.of(context)?.backgroundDir),
+                    child: LookBackground(
+                      spec: _draft.backgroundFor(page),
+                      dir: LookTheme.of(context)?.backgroundDir,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text(pageLabel(l10n, page), style: theme.textTheme.bodyLarge)),
+                Expanded(
+                  child: Text(
+                    pageLabel(l10n, page),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
                 Text(
-                  _draft.pageBackgrounds.containsKey(page) ? l10n.apOwnBackground : l10n.apSameAsApp,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  _draft.pageBackgrounds.containsKey(page)
+                      ? l10n.apOwnBackground
+                      : l10n.apSameAsApp,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -462,7 +687,11 @@ class LookSample extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (look != null && look.look.background.isCustom)
-                LookBackground(spec: look.look.background, dir: look.backgroundDir, reduceEffects: look.reduceEffects)
+                LookBackground(
+                  spec: look.look.background,
+                  dir: look.backgroundDir,
+                  reduceEffects: look.reduceEffects,
+                )
               else
                 ColoredBox(color: theme.scaffoldBackgroundColor),
               Padding(
@@ -476,35 +705,75 @@ class LookSample extends StatelessWidget {
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
-                          Icon(Icons.favorite_rounded, color: theme.iconTheme.color),
+                          Icon(
+                            Icons.favorite_rounded,
+                            color: theme.iconTheme.color,
+                          ),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(l10n.apSampleCard, style: theme.textTheme.bodyMedium)),
-                          Badge(label: const Text('3'), child: Icon(Icons.notifications_rounded, color: theme.iconTheme.color)),
+                          Expanded(
+                            child: Text(
+                              l10n.apSampleCard,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ),
+                          Badge(
+                            label: const Text('3'),
+                            child: Icon(
+                              Icons.notifications_rounded,
+                              color: theme.iconTheme.color,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 8),
-                    IgnorePointer(child: PrismTextField(hintText: l10n.apSampleInput, isDense: true)),
+                    IgnorePointer(
+                      child: PrismTextField(
+                        hintText: l10n.apSampleInput,
+                        isDense: true,
+                      ),
+                    ),
                     const Spacer(),
                     Row(
                       children: [
-                        PrismButton(label: l10n.apSampleButton, tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () {}),
+                        PrismButton(
+                          label: l10n.apSampleButton,
+                          tone: PrismButtonTone.filled,
+                          density: PrismControlDensity.compact,
+                          onPressed: () {},
+                        ),
                         const SizedBox(width: 8),
-                        PrismButton(label: l10n.cancel, density: PrismControlDensity.compact, onPressed: () {}),
+                        PrismButton(
+                          label: l10n.cancel,
+                          density: PrismControlDensity.compact,
+                          onPressed: () {},
+                        ),
                         const Spacer(),
                         Container(
                           width: 70,
                           height: 30,
                           decoration: BoxDecoration(
-                            color: look?.fill(LookElement.nav) ?? theme.colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(look?.style(LookElement.nav).radius ?? 15),
+                            color:
+                                look?.fill(LookElement.nav) ??
+                                theme.colorScheme.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(
+                              look?.style(LookElement.nav).radius ?? 15,
+                            ),
                             border: look?.border(LookElement.nav),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Icon(Icons.home_rounded, size: 16, color: theme.colorScheme.primary),
-                              Icon(Icons.person_rounded, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                              Icon(
+                                Icons.home_rounded,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                              Icon(
+                                Icons.person_rounded,
+                                size: 16,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ],
                           ),
                         ),
@@ -523,7 +792,11 @@ class LookSample extends StatelessWidget {
 
 /// Background controls shared by the app background and page backgrounds.
 class BackgroundEditor extends ConsumerWidget {
-  const BackgroundEditor({super.key, required this.spec, required this.onChanged});
+  const BackgroundEditor({
+    super.key,
+    required this.spec,
+    required this.onChanged,
+  });
 
   final BgSpec spec;
   final ValueChanged<BgSpec> onChanged;
@@ -563,13 +836,27 @@ class BackgroundEditor extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (s.kind == BgKind.color)
-                  ColorChoiceRow(label: l10n.apBgColor, value: s.color, allowDefault: false, onChanged: (v) => onChanged(s.copyWith(color: v))),
+                  ColorChoiceRow(
+                    label: l10n.apBgColor,
+                    value: s.color,
+                    allowDefault: false,
+                    onChanged: (v) => onChanged(s.copyWith(color: v)),
+                  ),
                 if (s.kind == BgKind.gradient) ...[
                   PrismSegmentedControl<GradientKind>(
                     segments: [
-                      PrismSegment(value: GradientKind.linear, label: l10n.apGradLinear),
-                      PrismSegment(value: GradientKind.diagonal, label: l10n.apGradDiagonal),
-                      PrismSegment(value: GradientKind.radial, label: l10n.apGradRadial),
+                      PrismSegment(
+                        value: GradientKind.linear,
+                        label: l10n.apGradLinear,
+                      ),
+                      PrismSegment(
+                        value: GradientKind.diagonal,
+                        label: l10n.apGradDiagonal,
+                      ),
+                      PrismSegment(
+                        value: GradientKind.radial,
+                        label: l10n.apGradRadial,
+                      ),
                     ],
                     selected: s.gradient,
                     onChanged: (v) => onChanged(s.copyWith(gradient: v)),
@@ -583,14 +870,18 @@ class BackgroundEditor extends ConsumerWidget {
                             label: l10n.apGradColorN(i + 1),
                             value: s.colors[i],
                             allowDefault: false,
-                            onChanged: (v) => onChanged(s.copyWith(colors: [...s.colors]..[i] = v!)),
+                            onChanged: (v) => onChanged(
+                              s.copyWith(colors: [...s.colors]..[i] = v!),
+                            ),
                           ),
                         ),
                         if (s.colors.length > 2)
                           IconButtonLike(
                             icon: Icons.remove_circle_outline_rounded,
                             label: l10n.apRemoveColor,
-                            onTap: () => onChanged(s.copyWith(colors: [...s.colors]..removeAt(i))),
+                            onTap: () => onChanged(
+                              s.copyWith(colors: [...s.colors]..removeAt(i)),
+                            ),
                           ),
                       ],
                     ),
@@ -600,7 +891,9 @@ class BackgroundEditor extends ConsumerWidget {
                       child: PrismButton(
                         label: l10n.apAddColor,
                         density: PrismControlDensity.compact,
-                        onPressed: () => onChanged(s.copyWith(colors: [...s.colors, s.colors.last])),
+                        onPressed: () => onChanged(
+                          s.copyWith(colors: [...s.colors, s.colors.last]),
+                        ),
                       ),
                     ),
                   if (s.gradient == GradientKind.linear)
@@ -643,15 +936,28 @@ class BackgroundEditor extends ConsumerWidget {
                                   height: 100,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(width: s.builtin == e.key ? 3 : 1, color: s.builtin == e.key ? theme.colorScheme.primary : theme.colorScheme.outlineVariant),
+                                    border: Border.all(
+                                      width: s.builtin == e.key ? 3 : 1,
+                                      color: s.builtin == e.key
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.outlineVariant,
+                                    ),
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: LookBackground(spec: BgSpec(kind: BgKind.builtin, builtin: e.key)),
+                                    child: LookBackground(
+                                      spec: BgSpec(
+                                        kind: BgKind.builtin,
+                                        builtin: e.key,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(e.value.name, style: theme.textTheme.labelSmall),
+                                Text(
+                                  e.value.name,
+                                  style: theme.textTheme.labelSmall,
+                                ),
                               ],
                             ),
                           ),
@@ -662,24 +968,42 @@ class BackgroundEditor extends ConsumerWidget {
                   if (s.image != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: SizedBox(height: 140, child: LookBackground(spec: s, dir: dir)),
+                      child: SizedBox(
+                        height: 140,
+                        child: LookBackground(spec: s, dir: dir),
+                      ),
                     ),
                   const SizedBox(height: 8),
                   PrismButton(
-                    label: s.image == null ? l10n.apUploadImage : l10n.apChangeImage,
+                    label: s.image == null
+                        ? l10n.apUploadImage
+                        : l10n.apChangeImage,
                     onPressed: () async {
-                      final f = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      final f = await ImagePicker().pickImage(
+                        source: ImageSource.gallery,
+                      );
                       if (f == null) return;
-                      final name = await ref.read(appearanceProvider.notifier).addBackgroundImage(await f.readAsBytes());
+                      final name = await ref
+                          .read(appearanceProvider.notifier)
+                          .addBackgroundImage(await f.readAsBytes());
                       if (name == null) {
-                        if (context.mounted) PrismToast.error(context, message: l10n.apImageFailed);
+                        if (context.mounted)
+                          PrismToast.error(
+                            context,
+                            message: l10n.apImageFailed,
+                          );
                         return;
                       }
                       onChanged(s.copyWith(image: name));
                     },
                   ),
                   const SizedBox(height: 4),
-                  Text(l10n.apImageHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    l10n.apImageHelp,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
                 if (hasImageControls || s.kind == BgKind.gradient) ...[
                   const Divider(height: 24),
@@ -752,7 +1076,12 @@ class BackgroundEditor extends ConsumerWidget {
                   ],
                 ),
                 if (s.overlay != BgOverlay.none) ...[
-                  ColorChoiceRow(label: l10n.apOverlayColor, value: s.overlayColor, allowDefault: false, onChanged: (v) => onChanged(s.copyWith(overlayColor: v))),
+                  ColorChoiceRow(
+                    label: l10n.apOverlayColor,
+                    value: s.overlayColor,
+                    allowDefault: false,
+                    onChanged: (v) => onChanged(s.copyWith(overlayColor: v)),
+                  ),
                   LabeledSlider(
                     label: l10n.apOverlayStrength,
                     value: s.overlayStrength,
@@ -773,7 +1102,12 @@ class BackgroundEditor extends ConsumerWidget {
 
 /// Small icon button with a screen-reader label (no tooltip overlay).
 class IconButtonLike extends StatelessWidget {
-  const IconButtonLike({super.key, required this.icon, required this.label, required this.onTap});
+  const IconButtonLike({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String label;
@@ -784,6 +1118,10 @@ class IconButtonLike extends StatelessWidget {
     button: true,
     label: label,
     excludeSemantics: true,
-    child: InkResponse(onTap: onTap, radius: 22, child: Padding(padding: const EdgeInsets.all(10), child: Icon(icon))),
+    child: InkResponse(
+      onTap: onTap,
+      radius: 22,
+      child: Padding(padding: const EdgeInsets.all(10), child: Icon(icon)),
+    ),
   );
 }

@@ -42,8 +42,7 @@ class MemberCard extends StatelessWidget {
     this.bannerZoom = 1,
   });
 
-  /// Optional profile banner shown behind the trailing side of the card,
-  /// fading out under the name so text stays readable.
+  /// Optional profile banner filling the card behind the row.
   final Uint8List? bannerImageData;
 
   /// Which part of the banner shows (set by the user's banner position).
@@ -83,7 +82,22 @@ class MemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final base = Theme.of(context);
+    // Text sits on the banner, so use light text on it in light and dark mode.
+    final hasBanner = bannerImageData?.isNotEmpty ?? false;
+    final theme = hasBanner
+        ? base.copyWith(
+            colorScheme: base.colorScheme.copyWith(
+              onSurface: Colors.white,
+              onSurfaceVariant: const Color(0xE6FFFFFF),
+            ),
+            textTheme: base.textTheme.apply(
+              bodyColor: Colors.white,
+              displayColor: Colors.white,
+            ),
+            iconTheme: base.iconTheme.copyWith(color: Colors.white),
+          )
+        : base;
     final primaryName = resolvedName ?? member.name;
     final secondary = subtitleName?.trim();
     final hasCustomColor =
@@ -120,131 +134,142 @@ class MemberCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: radius,
-            child: _withBanner(
-              context,
-              Row(
-                children: [
-                  // Custom color accent strip
-                  if (hasCustomColor)
-                    Container(width: 4, height: 64, color: accentColor),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: hasCustomColor ? 12 : 16,
-                        right: 16,
-                        top: 12,
-                        bottom: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          MemberAvatar(
-                            avatarImageData: member.avatarImageData,
-                            memberId: member.id,
-                            deferAvatarLookup: deferAvatarLookup,
-                            memberName: resolvedName ?? member.name,
-                            emoji: member.emoji,
-                            customColorEnabled: member.customColorEnabled,
-                            customColorHex: member.customColorHex,
-                            size: 44,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        primaryName,
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    if (!member.isActive) ...[
-                                      const SizedBox(width: 6),
-                                      Icon(
-                                        AppIcons.visibilityOffOutlined,
-                                        size: 16,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                        semanticLabel:
-                                            context.l10n.memberInactiveChip,
-                                      ),
-                                    ],
-                                    if (secondary != null &&
-                                        secondary.isNotEmpty) ...[
-                                      const SizedBox(width: 6),
+            child: Theme(
+              data: theme,
+              child: _withBanner(
+                context,
+                Row(
+                  children: [
+                    // Custom color accent strip
+                    if (hasCustomColor)
+                      Container(width: 4, height: 64, color: accentColor),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: hasCustomColor ? 12 : 16,
+                          right: 16,
+                          top: 12,
+                          bottom: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            MemberAvatar(
+                              avatarImageData: member.avatarImageData,
+                              memberId: member.id,
+                              deferAvatarLookup: deferAvatarLookup,
+                              memberName: resolvedName ?? member.name,
+                              emoji: member.emoji,
+                              customColorEnabled: member.customColorEnabled,
+                              customColorHex: member.customColorHex,
+                              size: 44,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    children: [
                                       Flexible(
                                         child: Text(
-                                          secondary,
-                                          style: theme.textTheme.bodySmall
+                                          primaryName,
+                                          style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                                color: theme
-                                                    .colorScheme
-                                                    .onSurfaceVariant,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
+                                      if (!member.isActive) ...[
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          AppIcons.visibilityOffOutlined,
+                                          size: 16,
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                          semanticLabel:
+                                              context.l10n.memberInactiveChip,
+                                        ),
+                                      ],
+                                      if (secondary != null &&
+                                          secondary.isNotEmpty) ...[
+                                        const SizedBox(width: 6),
+                                        Flexible(
+                                          child: Text(
+                                            secondary,
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
                                     ],
-                                  ],
-                                ),
-                                if (showPronouns &&
-                                    member.pronouns != null &&
-                                    member.pronouns!.isNotEmpty)
-                                  Text(
-                                    member.pronouns!,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                              ],
+                                  if (showPronouns &&
+                                      member.pronouns != null &&
+                                      member.pronouns!.isNotEmpty)
+                                    Text(
+                                      member.pronouns!,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                          if (trailing != null) ...[
-                            const SizedBox(width: 8),
-                            trailing!,
-                          ],
-                          if (reorderIndex != null) ...[
-                            const SizedBox(width: 4),
-                            Semantics(
-                              label: context.l10n.groupMemberDragHandleLabel,
-                              hint:
-                                  dragHandleHint ??
-                                  context.l10n.groupMemberDragHandleHintManual,
-                              button: true,
-                              child: Tooltip(
-                                message:
-                                    context.l10n.groupMemberDragHandleTooltip,
-                                child: ReorderableDragStartListener(
-                                  index: reorderIndex!,
-                                  child: SizedBox(
-                                    width: 44,
-                                    height: 44,
-                                    child: Icon(
-                                      AppIcons.dragHandle,
-                                      color: theme.colorScheme.onSurfaceVariant
-                                          .withValues(alpha: 0.5),
+                            if (trailing != null) ...[
+                              const SizedBox(width: 8),
+                              trailing!,
+                            ],
+                            if (reorderIndex != null) ...[
+                              const SizedBox(width: 4),
+                              Semantics(
+                                label: context.l10n.groupMemberDragHandleLabel,
+                                hint:
+                                    dragHandleHint ??
+                                    context
+                                        .l10n
+                                        .groupMemberDragHandleHintManual,
+                                button: true,
+                                child: Tooltip(
+                                  message:
+                                      context.l10n.groupMemberDragHandleTooltip,
+                                  child: ReorderableDragStartListener(
+                                    index: reorderIndex!,
+                                    child: SizedBox(
+                                      width: 44,
+                                      height: 44,
+                                      child: Icon(
+                                        AppIcons.dragHandle,
+                                        color: theme
+                                            .colorScheme
+                                            .onSurfaceVariant
+                                            .withValues(alpha: 0.5),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -253,42 +278,36 @@ class MemberCard extends StatelessWidget {
     );
   }
 
-  /// The banner keeps its own look: it sits in its own panel on the right
-  /// with only a subtle black dim — never a fade into the card's colour.
+  /// The banner fills the whole slip behind the row (the card clips it to
+  /// its rounded shape), with an even black dim for legible text — never a
+  /// fade into the card's colour.
   Widget _withBanner(BuildContext context, Widget row) {
     final bytes = bannerImageData;
     if (bytes == null || bytes.isEmpty) return row;
     return Stack(
       children: [
         Positioned.fill(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: FractionallySizedBox(
-              widthFactor: 0.42,
-              heightFactor: 1,
-              child: ExcludeSemantics(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(14)),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Transform.scale(
-                        scale: bannerZoom.clamp(1, 3),
-                        alignment: bannerAlignment,
-                        child: Image.memory(
-                          bytes,
-                          fit: BoxFit.cover,
-                          alignment: bannerAlignment,
-                          gaplessPlayback: true,
-                          // Decode at card size, not the banner's full size.
-                          cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 360).round(),
-                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                        ),
-                      ),
-                      const ColoredBox(color: Color(0x47000000)),
-                    ],
+          child: ExcludeSemantics(
+            child: ClipRect(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Transform.scale(
+                    scale: bannerZoom.clamp(1, 3),
+                    alignment: bannerAlignment,
+                    child: Image.memory(
+                      bytes,
+                      fit: BoxFit.cover,
+                      alignment: bannerAlignment,
+                      gaplessPlayback: true,
+                      // Decode at about card width, not the banner's full size.
+                      cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 720)
+                          .round(),
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
                   ),
-                ),
+                  const ColoredBox(color: Color(0x66000000)),
+                ],
               ),
             ),
           ),

@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/features/prism_social/social_remote.dart' show socialSyncProvider;
+import 'package:prism_plurality/features/dictionary/importer/import_job.dart' show importJobProvider;
 import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
@@ -317,6 +320,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
     ref.listen(socialNotificationListenerProvider, (_, _) {});
     ref.listen(socialSyncProvider, (_, _) {});
+    // Resumes a Dictionary wiki import that was running when Prism closed.
+    ref.listen(importJobProvider, (_, _) {});
     // Keep the fronting reminder listener alive — schedules/cancels based on settings.
     ref.listen(frontingReminderListenerProvider, (_, _) {});
     // Keep the live fronting notification in step with the front.
@@ -504,6 +509,11 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
             TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+            // Desktop and the web on Windows/Linux get the same animated
+            // transition instead of the heavier default zoom.
+            TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
           },
         );
         lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);
@@ -554,6 +564,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           },
           routerConfig: router,
           builder: (context, child) {
+            if (kIsWeb) markWebStage('app');
             Widget result = child ?? const SizedBox.shrink();
             if (fontScale != 1.0) {
               result = MediaQuery(
@@ -709,7 +720,7 @@ class _DatabaseStartupScreen extends ConsumerWidget {
                 size: 52,
               ),
               loading: () {
-                if (isKnownMigration || showDelayedStatus) {
+                if (isKnownMigration || showDelayedStatus || kIsWeb) {
                   return _DatabaseStartupStatus(
                     schemaVersionBeforeOpen: schemaVersion,
                   );

@@ -296,7 +296,7 @@ class _PollStatsScreenState extends ConsumerState<PollStatsScreen> {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: PrismTokens.contentMaxWidth,
                   ),
                   child: Column(

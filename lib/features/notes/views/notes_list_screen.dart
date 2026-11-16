@@ -547,7 +547,8 @@ class _NotesTopBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          actions: [FeatureDataAction(featureId: 'notes'), 
+          actions: [
+            FeatureDataAction(featureId: 'notes'),
             PrismTopBarAction(
               icon: AppIcons.add,
               tooltip: l10n.memberAddNoteTooltip,
@@ -630,7 +631,6 @@ class _NoteCard extends ConsumerWidget {
     return PrismSectionCard(
       semanticLabel: semanticLabel,
       accentColor: selected ? theme.colorScheme.primary : null,
-      transitionDuration: Duration.zero,
       onTap: onTap,
       child: Stack(
         children: [

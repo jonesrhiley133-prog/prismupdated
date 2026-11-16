@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -83,7 +84,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       topBar: PrismTopBar(
         title: l10n.navFinance,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'finance'), 
+        actions: [
+          FeatureDataAction(featureId: 'finance'),
           PrismTopBarAction(
             icon: hide ? AppIcons.privateEyeSlash : AppIcons.visibility,
             tooltip: hide ? l10n.finShowAmounts : l10n.finHideAmounts,
@@ -110,7 +112,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 maxWidth: PrismTokens.contentMaxWidth,
               ),
               child: Column(
@@ -153,13 +155,21 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                       month: _month,
                       onChanged: (m) => setState(() => _month = m),
                     ),
-                  ...switch (_tab) {
-                    FinanceTab.overview => _overview(context),
-                    FinanceTab.transactions => _transactions(context),
-                    FinanceTab.budgets => _budgets(context),
-                    FinanceTab.goals => _goals(context),
-                    FinanceTab.recurring => _recurring(context),
-                  },
+                  SectionSwitcher(
+                    id: _tab,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...switch (_tab) {
+                          FinanceTab.overview => _overview(context),
+                          FinanceTab.transactions => _transactions(context),
+                          FinanceTab.budgets => _budgets(context),
+                          FinanceTab.goals => _goals(context),
+                          FinanceTab.recurring => _recurring(context),
+                        },
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

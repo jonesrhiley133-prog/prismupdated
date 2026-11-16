@@ -206,7 +206,7 @@ class ChangelogScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: PrismTokens.contentMaxWidth,
                   ),
                   child: PrismSurface(child: ReleaseNotes(release: r)),

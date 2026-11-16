@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/features/alter_status/status_widgets.dart' show StatusesDashboardCard;
 import 'package:prism_plurality/features/automations/automations_screen.dart' show AutomationDashboardCard;
 import 'package:prism_plurality/features/availability/availability_screen.dart' show AvailabilityNowCard;
@@ -184,10 +185,35 @@ class HomeDashboard extends ConsumerWidget {
           ),
           const AppUpdateBanner(),
           const WhatsNewLauncher(),
-          for (final id in ids) _widgetFor(context, id),
+          ..._cards(context, ids),
         ],
       ),
     );
+  }
+
+  /// Phones: one column. Wide web windows: the "now" card across the top,
+  /// then the rest in two balanced columns, like a web dashboard.
+  List<Widget> _cards(BuildContext context, List<String> ids) {
+    final wide = PrismTokens.desktopWebContentWidth != null && MediaQuery.sizeOf(context).width >= 1180;
+    if (!wide || ids.length < 3) return [for (final id in ids) _widgetFor(context, id)];
+    final full = {DashboardWidgetId.now, DashboardWidgetId.quickActions, DashboardWidgetId.stories};
+    final top = [for (final id in ids) if (full.contains(id)) id];
+    final rest = [for (final id in ids) if (!full.contains(id)) id];
+    final left = <Widget>[], right = <Widget>[];
+    for (final (i, id) in rest.indexed) {
+      (i.isEven ? left : right).add(_widgetFor(context, id));
+    }
+    return [
+      for (final id in top) _widgetFor(context, id),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: left)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: right)),
+        ],
+      ),
+    ];
   }
 
   Widget _widgetFor(BuildContext context, String id) {
@@ -210,7 +236,8 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
       _ => const SizedBox.shrink(),
     };
-    return Padding(padding: const EdgeInsets.only(bottom: 8), child: child);
+    // Each card repaints on its own (stories, timers, charts animate).
+    return Padding(padding: const EdgeInsets.only(bottom: 8), child: RepaintBoundary(child: child));
   }
 }
 
