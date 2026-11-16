@@ -1,3 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
+import 'package:prism_plurality/domain/models/fronting_session.dart';
+import 'package:prism_plurality/features/fronting/providers/fronting_providers.dart';
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
@@ -142,6 +147,54 @@ void main() {
               )
               as Map;
       expect((spot['x'] as num) * 320 / 320, (spot['x'] as num) * 800 / 800);
+    },
+  );
+  test(
+    'Unknown and isolated fronters never become invalid author choices',
+    () async {
+      final at = DateTime.now();
+      final c = ProviderContainer(
+        overrides: [
+          activeSessionsProvider.overrideWith(
+            (ref) => Stream.value([
+              FrontingSession(
+                id: 'unknown',
+                startTime: at,
+                memberId: unknownSentinelMemberId,
+              ),
+              FrontingSession(
+                id: 'isolated',
+                startTime: at,
+                memberId: 'hidden',
+              ),
+            ]),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      c.read(isolatedMembersProvider.notifier).set(IsolatedMembers({'hidden'}));
+      c.listen(activeSessionsProvider, (_, _) {});
+      await c.read(activeSessionsProvider.future);
+      expect(c.read(healthViewersProvider), isEmpty);
+    },
+  );
+  test(
+    'restored Unknown-attributed body records remain accessible as Unsure',
+    () {
+      final at = DateTime.now();
+      final mood = MoodEntry(
+        id: 'unknown-mood',
+        memberId: unknownSentinelMemberId,
+        bodySensations: ['chest:tight'],
+        recordedAt: at,
+        createdAt: at,
+        modifiedAt: at,
+      );
+      final migrated = legacyHealthEntry(mood);
+      expect(migrated.memberId, unknownSentinelMemberId);
+      expect(migrated.str('subjectMode'), 'unsure');
+      expect(migrated.strings('subjects'), isEmpty);
+      expect(canViewHealth(migrated, {'a'}), true);
     },
   );
 }

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/core/constants/fronting_namespaces.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'dart:convert';
 import 'package:uuid/uuid.dart';
@@ -30,8 +31,15 @@ TrackerRecord legacyHealthEntry(MoodEntry mood) =>
     ).withFields({
       'legacyMoodId': mood.id,
       'author': null,
-      'subjectMode': mood.memberId == null ? 'system' : 'alters',
-      'subjects': [if (mood.memberId != null) mood.memberId!],
+      'subjectMode': mood.memberId == null
+          ? 'system'
+          : mood.memberId == unknownSentinelMemberId
+          ? 'unsure'
+          : 'alters',
+      'subjects': [
+        if (mood.memberId != null && mood.memberId != unknownSentinelMemberId)
+          mood.memberId!,
+      ],
       'status': 'unsure',
       'legacyIntensity': mood.intensity,
       'legacyRaw': mood.bodySensations,
@@ -87,11 +95,16 @@ bool canViewHealth(TrackerRecord r, Set<String> viewers) {
       r.strings('subjects').any(viewers.contains);
 }
 
-final healthViewersProvider = Provider<Set<String>>(
-  (ref) => {
-    for (final s in ref.watch(activeSessionsProvider).value ?? []) ?s.memberId,
-  },
-);
+final healthViewersProvider = Provider<Set<String>>((ref) {
+  final hidden = ref.watch(isolatedMembersProvider).ids;
+  return {
+    for (final s in ref.watch(activeSessionsProvider).value ?? [])
+      if (s.memberId != null &&
+          s.memberId != unknownSentinelMemberId &&
+          !hidden.contains(s.memberId))
+        s.memberId!,
+  };
+});
 
 final healthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((ref) {
   final all = ref.watch(trackerRecordsProvider);
