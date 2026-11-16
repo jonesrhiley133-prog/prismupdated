@@ -81,7 +81,9 @@ class _PatternExplorerScreenState extends ConsumerState<PatternExplorerScreen> {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      for (final c in PatternComparison.values)
+                      for (final c in PatternComparison.values.where(
+                        (c) => c != PatternComparison.bodyEmotion,
+                      ))
                         PrismChip(
                           label: _comparisonLabel(c),
                           selected: _comparison == c,

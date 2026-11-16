@@ -7,7 +7,7 @@ import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/fronting/providers/fronting_providers.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/utils/member_search_groups.dart';
-import 'package:prism_plurality/features/mood/data/body_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
 import 'package:prism_plurality/features/mood/widgets/emotion_picker.dart';
 import 'package:prism_plurality/features/mood/widgets/mood_level.dart';
@@ -209,24 +209,6 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
     }
   }
 
-  Future<void> _pickBodySensation(BodyRegion region) async {
-    final current = _body
-        .where((b) => parseBodySensation(b).$1 == region.key)
-        .toSet();
-    final result = await PrismSheet.show<Set<String>>(
-      context: context,
-      title: region.label,
-      builder: (context) =>
-          _BodySensationPicker(region: region, initial: current),
-    );
-    if (result == null || !mounted) return;
-    setState(() {
-      _body
-        ..removeWhere((b) => parseBodySensation(b).$1 == region.key)
-        ..addAll(result);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -315,30 +297,14 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
                       onChanged: (v) => setState(() => _sleepQuality = v),
                     ),
                     const SizedBox(height: 20),
-                    _SectionLabel(l10n.moodBodyLabel),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.moodBodyHelper,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    TextButton.icon(
+                      icon: const Icon(Icons.accessibility_new),
+                      label: const Text('Body Map is now in Health'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        context.push('/health?tab=body');
+                      },
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final region in bodyRegions)
-                          PrismChip(
-                            label: _regionChipLabel(region),
-                            selected: _body.any(
-                              (b) => parseBodySensation(b).$1 == region.key,
-                            ),
-                            onTap: () => _pickBodySensation(region),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
                     _SectionLabel(l10n.moodWhoLabel),
                     const SizedBox(height: 8),
                     _MemberRow(
@@ -375,16 +341,6 @@ class _LogMoodSheetState extends ConsumerState<LogMoodSheet> {
         ),
       ),
     );
-  }
-
-  String _regionChipLabel(BodyRegion region) {
-    final sensations = _body
-        .map(parseBodySensation)
-        .where((p) => p.$1 == region.key && p.$2 != null)
-        .map((p) => bodySensations[p.$2] ?? p.$2!)
-        .toList();
-    if (sensations.isEmpty) return region.label;
-    return '${region.label}: ${sensations.join(', ')}';
   }
 }
 
@@ -593,76 +549,6 @@ class _MemberRow extends ConsumerWidget {
       title: Text(name ?? context.l10n.moodWholeSystem),
       trailing: Icon(AppIcons.expandMore),
       onTap: () => onTap(members),
-    );
-  }
-}
-
-class _BodySensationPicker extends StatefulWidget {
-  const _BodySensationPicker({required this.region, required this.initial});
-
-  final BodyRegion region;
-  final Set<String> initial;
-
-  @override
-  State<_BodySensationPicker> createState() => _BodySensationPickerState();
-}
-
-class _BodySensationPickerState extends State<_BodySensationPicker> {
-  late final Set<String> _selected = {...widget.initial};
-
-  String _value(String? sensation) =>
-      sensation == null ? widget.region.key : '${widget.region.key}:$sensation';
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              PrismChip(
-                label: l10n.moodBodyNoticed,
-                selected: _selected.contains(_value(null)),
-                onTap: () => setState(() {
-                  final v = _value(null);
-                  if (!_selected.remove(v)) _selected.add(v);
-                }),
-              ),
-              for (final s in bodySensations.entries)
-                PrismChip(
-                  label: s.value,
-                  selected: _selected.contains(_value(s.key)),
-                  onTap: () => setState(() {
-                    final v = _value(s.key);
-                    if (!_selected.remove(v)) _selected.add(v);
-                  }),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              PrismButton(
-                label: l10n.moodBodyClear,
-                tone: PrismButtonTone.subtle,
-                onPressed: () => Navigator.of(context).pop(<String>{}),
-              ),
-              const Spacer(),
-              PrismButton(
-                label: l10n.done,
-                tone: PrismButtonTone.filled,
-                onPressed: () => Navigator.of(context).pop(_selected),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

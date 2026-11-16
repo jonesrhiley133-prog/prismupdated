@@ -27,29 +27,33 @@ final insightFrontingSessionsProvider = StreamProvider.autoDispose
     });
 
 /// The insight for [day], or null while data is loading.
-final dailyInsightProvider = Provider.autoDispose
-    .family<DailyInsight?, DateTime>((ref, day) {
-      final mood = ref.watch(moodEntriesProvider);
-      final fronting = ref.watch(insightFrontingSessionsProvider(day));
-      final locations = ref.watch(locationSessionsProvider);
-      final work = ref.watch(workSessionsProvider);
-      final cycle = ref.watch(cycleEntriesProvider);
-      if (!mood.hasValue ||
-          !fronting.hasValue ||
-          !locations.hasValue ||
-          !work.hasValue ||
-          !cycle.hasValue) {
-        return null;
-      }
-      return buildDailyInsight(
-        InsightInputs(
-          moodEntries: mood.value!,
-          frontingSessions: fronting.value!,
-          locationSessions: locations.value!,
-          workSessions: work.value!,
-        ),
-        day: day,
-        now: DateTime.now(),
-        lookBackDays: insightLookBackDays,
-      );
-    });
+final dailyInsightProvider = Provider.autoDispose.family<DailyInsight?, DateTime>(
+  (ref, day) {
+    final mood = ref.watch(moodEntriesProvider);
+    final fronting = ref.watch(insightFrontingSessionsProvider(day));
+    final locations = ref.watch(locationSessionsProvider);
+    final work = ref.watch(workSessionsProvider);
+    final cycle = ref.watch(cycleEntriesProvider);
+    if (!mood.hasValue ||
+        !fronting.hasValue ||
+        !locations.hasValue ||
+        !work.hasValue ||
+        !cycle.hasValue) {
+      return null;
+    }
+    return buildDailyInsight(
+      InsightInputs(
+        // Body sensations are private Health content, not system-wide insights.
+        moodEntries: [
+          for (final m in mood.value!) m.copyWith(bodySensations: const []),
+        ],
+        frontingSessions: fronting.value!,
+        locationSessions: locations.value!,
+        workSessions: work.value!,
+      ),
+      day: day,
+      now: DateTime.now(),
+      lookBackDays: insightLookBackDays,
+    );
+  },
+);

@@ -1,3 +1,5 @@
+import 'package:prism_plurality/core/features/feature_state.dart';
+import 'package:prism_plurality/features/health/health_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,6 +77,12 @@ class HomeNowSection extends ConsumerWidget {
                     label: l10n.homeQuickLogMood,
                     onTap: () => showLogMoodSheet(context),
                   ),
+                  if (ref.watch(featureEnabledProvider('health')))
+                    _QuickChip(
+                      icon: Icons.health_and_safety_outlined,
+                      label: 'Log health',
+                      onTap: () => showHealthLog(context),
+                    ),
                   _QuickChip(
                     icon: AppIcons.navLocations,
                     label: activeLocation == null

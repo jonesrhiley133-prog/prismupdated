@@ -196,13 +196,37 @@ void main() {
   });
 
   group('appShellTabs', () {
-    test('has 39 entries', () {
-      expect(appShellTabs, hasLength(39));
+    test(
+      'Health appends a branch without changing existing Mood and Fitness destinations',
+      () {
+        expect(
+          appShellTabs
+              .singleWhere((t) => t.id == AppShellTabId.health)
+              .branchIndex,
+          39,
+        );
+        expect(
+          appShellTabs
+              .singleWhere((t) => t.id == AppShellTabId.mood)
+              .branchIndex,
+          14,
+        );
+        expect(
+          appShellTabs
+              .singleWhere((t) => t.id == AppShellTabId.fitness)
+              .rootLocation,
+          AppRoutePaths.fitness,
+        );
+        expect(defaultNavBarOverflowTabIds, contains('health'));
+      },
+    );
+    test('has 40 entries', () {
+      expect(appShellTabs, hasLength(40));
     });
 
-    test('branch indices are 0 through 38', () {
+    test('branch indices are 0 through 39', () {
       final indices = appShellTabs.map((t) => t.branchIndex).toList();
-      expect(indices, List.generate(39, (i) => i));
+      expect(indices, List.generate(40, (i) => i));
     });
 
     test('no duplicate branch indices', () {

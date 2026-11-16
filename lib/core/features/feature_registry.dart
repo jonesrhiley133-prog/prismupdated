@@ -239,6 +239,13 @@ final List<PrismFeature> prismFeatures = [
     data: const FeatureData(activityKinds: [TrackerKind.habitLog, TrackerKind.habitSkip, TrackerKind.habitTimer], permanentKinds: [TrackerKind.habitMeta, TrackerKind.habitGroup], sources: ['habitCompletions']),
   ),
   PrismFeature(
+    id: 'health', name: ('Health', 'Salud'),
+    description: ('Private symptoms, Body Map and illness episodes.', 'Síntomas privados, mapa corporal y episodios.'),
+    icon: PhosphorIcons.heartbeat(), category: FeatureCategory.tracking,
+    tabs: const [AppShellTabId.health], route: AppRoutePaths.health,
+    data: const FeatureData(activityKinds: ['health.checkin', 'health.episode'], permanentKinds: ['health.vocabulary']),
+  ),
+  PrismFeature(
     id: 'fitness',
     name: ('Fitness', 'Ejercicio'),
     description: ('Workouts, exercises and goals.', 'Entrenamientos, ejercicios y metas.'),

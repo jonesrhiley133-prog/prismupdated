@@ -100,6 +100,7 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
     );
   }
   for (final t in ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[]) {
+    if (t.kind.startsWith('health.')) continue;
     final module = moduleForKind(t.kind);
     if (module == null) continue;
     final r = RecordRef(RecordRef.rec, t.id);
