@@ -509,6 +509,11 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
             TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+            // Desktop and the web on Windows/Linux get the same animated
+            // transition instead of the heavier default zoom.
+            TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
           },
         );
         lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);

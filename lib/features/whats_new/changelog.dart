@@ -32,6 +32,16 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.36.0',
+    date: DateTime(2026, 11, 16),
+    improvements: const [
+      LocalizedText(
+        'Every way of moving between sections is animated: the navigation bar, the desktop sidebar, search (Ctrl/⌘+K) and links into another section fade the new section in. Pages opened on top keep their slide/fade transition on every platform, including the web on Windows and Linux. Turning on Reduce motion switches these off.',
+        'Todas las formas de cambiar de sección están animadas: la barra de navegación, la barra lateral de escritorio, la búsqueda (Ctrl/⌘+K) y los enlaces a otra sección muestran la nueva sección con un fundido. Las páginas que se abren encima mantienen su transición en todas las plataformas, incluida la web en Windows y Linux. Reducir movimiento las desactiva.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.35.0',
     date: DateTime(2026, 11, 15),
     fixes: const [

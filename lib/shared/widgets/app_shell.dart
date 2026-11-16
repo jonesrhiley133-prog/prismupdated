@@ -1288,7 +1288,7 @@ class _AppShellState extends ConsumerState<AppShell>
                       collapsed: _webSidebarCollapsed,
                       onToggleCollapsed: () => setState(() => _webSidebarCollapsed = !_webSidebarCollapsed),
                       onTap: (index) => onTabSelected(webTabs[index], useHaptics: false),
-                      child: widget.navigationShell,
+                      child: BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell),
                     );
                   },
                 )
@@ -1303,7 +1303,7 @@ class _AppShellState extends ConsumerState<AppShell>
                   onTap: (index) =>
                       onTabSelected(configuredTabs[index], useHaptics: false),
                 ),
-                Expanded(child: widget.navigationShell),
+                Expanded(child: BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell)),
               ],
             ),
           ),
@@ -1394,7 +1394,7 @@ class _AppShellState extends ConsumerState<AppShell>
             body: BackdropGroup(
               child: Stack(
                 children: [
-                  widget.navigationShell,
+                  BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell),
 
                   if (!hideNavBar) ...[
                     // Gradient fade
@@ -3338,4 +3338,44 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
       ),
     );
   }
+}
+
+
+/// Animates switching between main sections (nav bar, sidebar, search or a
+/// link into another section): the new section fades in and rises slightly.
+/// The shell keeps every section alive in an IndexedStack, so this animates
+/// the visible one in rather than cross-fading two pages.
+class BranchTransition extends StatefulWidget {
+  const BranchTransition({super.key, required this.index, required this.child});
+  final int index;
+  final Widget child;
+
+  @override
+  State<BranchTransition> createState() => _BranchTransitionState();
+}
+
+class _BranchTransitionState extends State<BranchTransition> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 260), value: 1);
+  late final Animation<double> _curve = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
+  late final Animation<Offset> _slide = Tween(begin: const Offset(0, 0.018), end: Offset.zero).animate(_curve);
+
+  @override
+  void didUpdateWidget(BranchTransition old) {
+    super.didUpdateWidget(old);
+    if (old.index != widget.index && !MediaQuery.of(context).disableAnimations) {
+      _c.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(
+    opacity: _curve,
+    child: SlideTransition(position: _slide, child: widget.child),
+  );
 }
