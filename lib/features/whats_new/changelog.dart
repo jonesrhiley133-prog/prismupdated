@@ -32,6 +32,16 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.37.0',
+    date: DateTime(2026, 11, 16),
+    improvements: const [
+      LocalizedText(
+        'Tabs, views and step-by-step screens inside pages now animate too: Calendar, Availability, Mood, Fitness, Finance, School, Dream journal, Cycle insights, Scrapbook, Statuses, Bulletin, Social hub, Automations, the look editor, Profile Studio, the data browser, and the import, backup, PIN, device setup and upgrade wizards.',
+        'Las pestañas, vistas y pantallas paso a paso dentro de las páginas ahora también se animan: Calendario, Disponibilidad, Ánimo, Fitness, Finanzas, Escuela, Diario de sueños, Ciclo, Álbum, Estados, Tablón, Social, Automatizaciones, el editor de apariencia, Profile Studio, el explorador de datos y los asistentes de importación, copia de seguridad, PIN, configuración de dispositivo y actualización.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.36.0',
     date: DateTime(2026, 11, 16),
     improvements: const [

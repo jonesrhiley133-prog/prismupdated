@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -108,19 +109,22 @@ class _SpAvatarZipImportSheetState
           child: SingleChildScrollView(
             controller: widget.scrollController,
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-            child: switch (_state) {
-              _AvatarZipSheetState.idle => _buildIdle(theme),
-              _AvatarZipSheetState.importing => _buildImporting(theme),
-              _AvatarZipSheetState.complete => _buildComplete(
-                theme,
-                partial: false,
-              ),
-              _AvatarZipSheetState.partial => _buildComplete(
-                theme,
-                partial: true,
-              ),
-              _AvatarZipSheetState.error => _buildError(theme),
-            },
+            child: SectionSwitcher(
+              id: _state,
+              child: switch (_state) {
+                _AvatarZipSheetState.idle => _buildIdle(theme),
+                _AvatarZipSheetState.importing => _buildImporting(theme),
+                _AvatarZipSheetState.complete => _buildComplete(
+                  theme,
+                  partial: false,
+                ),
+                _AvatarZipSheetState.partial => _buildComplete(
+                  theme,
+                  partial: true,
+                ),
+                _AvatarZipSheetState.error => _buildError(theme),
+              },
+            ),
           ),
         ),
       ],

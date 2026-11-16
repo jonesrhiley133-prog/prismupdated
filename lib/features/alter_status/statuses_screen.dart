@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:intl/intl.dart';
 
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
@@ -30,10 +31,15 @@ class _StatusesScreenState extends ConsumerState<StatusesScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Alter statuses', 'Estados de alters'),
         showBackButton: true,
-        actions: [FeatureDataAction(featureId: 'statuses'), 
+        actions: [
+          FeatureDataAction(featureId: 'statuses'),
           PrismTopBarAction(
             icon: AppIcons.add,
-            tooltip: tr(context, 'New custom status', 'Nuevo estado personalizado'),
+            tooltip: tr(
+              context,
+              'New custom status',
+              'Nuevo estado personalizado',
+            ),
             onPressed: () => showCustomStatusEditor(context),
           ),
         ],
@@ -47,22 +53,41 @@ class _StatusesScreenState extends ConsumerState<StatusesScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: PrismSegmentedControl<_Tab>(
                 segments: [
-                  PrismSegment(value: _Tab.now, label: tr(context, 'Now', 'Ahora')),
-                  PrismSegment(value: _Tab.history, label: tr(context, 'History', 'Historial')),
-                  PrismSegment(value: _Tab.custom, label: tr(context, 'Custom', 'Propios')),
-                  PrismSegment(value: _Tab.visibility, label: tr(context, 'Shown', 'Visibles')),
+                  PrismSegment(
+                    value: _Tab.now,
+                    label: tr(context, 'Now', 'Ahora'),
+                  ),
+                  PrismSegment(
+                    value: _Tab.history,
+                    label: tr(context, 'History', 'Historial'),
+                  ),
+                  PrismSegment(
+                    value: _Tab.custom,
+                    label: tr(context, 'Custom', 'Propios'),
+                  ),
+                  PrismSegment(
+                    value: _Tab.visibility,
+                    label: tr(context, 'Shown', 'Visibles'),
+                  ),
                 ],
                 selected: _tab,
                 onChanged: (t) => setState(() => _tab = t),
               ),
             ),
             Expanded(
-              child: switch (_tab) {
-                _Tab.now => _NowList(lang: lang),
-                _Tab.history => _History(lang: lang, member: _member, onMember: (m) => setState(() => _member = m)),
-                _Tab.custom => _CustomList(lang: lang),
-                _Tab.visibility => _Visibility(lang: lang),
-              },
+              child: SectionSwitcher(
+                id: _tab,
+                child: switch (_tab) {
+                  _Tab.now => _NowList(lang: lang),
+                  _Tab.history => _History(
+                    lang: lang,
+                    member: _member,
+                    onMember: (m) => setState(() => _member = m),
+                  ),
+                  _Tab.custom => _CustomList(lang: lang),
+                  _Tab.visibility => _Visibility(lang: lang),
+                },
+              ),
             ),
           ],
         ),
@@ -88,13 +113,21 @@ class _NowList extends ConsumerWidget {
           return EmptyState(
             icon: Icon(PhosphorIcons.chatCircleDots()),
             title: tr(context, 'No alters yet', 'Aún no hay alters'),
-            subtitle: tr(context, 'Add headmates to give them statuses.', 'Añade headmates para darles estados.'),
+            subtitle: tr(
+              context,
+              'Add headmates to give them statuses.',
+              'Añade headmates para darles estados.',
+            ),
           );
         }
-        final sorted = [...list]..sort((a, b) {
-          final sa = statuses.containsKey(a.id) ? 0 : 1, sb = statuses.containsKey(b.id) ? 0 : 1;
-          return sa != sb ? sa - sb : a.displayOrder.compareTo(b.displayOrder);
-        });
+        final sorted = [...list]
+          ..sort((a, b) {
+            final sa = statuses.containsKey(a.id) ? 0 : 1,
+                sb = statuses.containsKey(b.id) ? 0 : 1;
+            return sa != sb
+                ? sa - sb
+                : a.displayOrder.compareTo(b.displayOrder);
+          });
         return ListView.builder(
           padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 16),
           itemCount: sorted.length,
@@ -113,15 +146,22 @@ class _NowList extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(m.effectiveName(preferDisplayName: preferDisplay), style: Theme.of(context).textTheme.titleSmall),
+                        Text(
+                          m.effectiveName(preferDisplayName: preferDisplay),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                         if (s != null)
                           StatusLine(status: s)
                         else
-                          Text(tr(context, 'No status', 'Sin estado'), style: Theme.of(context).textTheme.labelMedium),
+                          Text(
+                            tr(context, 'No status', 'Sin estado'),
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
                       ],
                     ),
                   ),
-                  if (s?.isPrivate ?? false) Icon(AppIcons.lockOutline, size: 16),
+                  if (s?.isPrivate ?? false)
+                    Icon(AppIcons.lockOutline, size: 16),
                 ],
               ),
             );
@@ -133,7 +173,11 @@ class _NowList extends ConsumerWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.member, required this.status, required this.preferDisplay});
+  const _Avatar({
+    required this.member,
+    required this.status,
+    required this.preferDisplay,
+  });
   final Member member;
   final AlterStatus? status;
   final bool preferDisplay;
@@ -150,32 +194,60 @@ class _Avatar extends StatelessWidget {
         customColorHex: member.customColorHex,
         size: 44,
       ),
-      if (status != null) Positioned(right: -2, bottom: -2, child: StatusDot(status: status!, size: 18)),
+      if (status != null)
+        Positioned(
+          right: -2,
+          bottom: -2,
+          child: StatusDot(status: status!, size: 18),
+        ),
     ],
   );
 }
 
 class _History extends ConsumerWidget {
-  const _History({required this.lang, required this.member, required this.onMember});
+  const _History({
+    required this.lang,
+    required this.member,
+    required this.onMember,
+  });
   final String lang;
   final String? member;
   final ValueChanged<String?> onMember;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final types = {for (final t in ref.watch(statusTypesProvider(lang))) t.key: t};
-    final logs = ref.watch(trackerKindProvider(TrackerKind.statusLog)).value ?? const <TrackerRecord>[];
-    final shown = [for (final r in logs) if (member == null || r.memberId == member) r];
+    final types = {
+      for (final t in ref.watch(statusTypesProvider(lang))) t.key: t,
+    };
+    final logs =
+        ref.watch(trackerKindProvider(TrackerKind.statusLog)).value ??
+        const <TrackerRecord>[];
+    final shown = [
+      for (final r in logs)
+        if (member == null || r.memberId == member) r,
+    ];
     final fmt = DateFormat.MMMd(context.dateLocale).add_jm();
     return ListView(
       padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 16),
       children: [
-        TrackerMemberFilter(value: member, onChanged: onMember, onlyIds: {for (final r in logs) ?r.memberId}),
+        TrackerMemberFilter(
+          value: member,
+          onChanged: onMember,
+          onlyIds: {for (final r in logs) ?r.memberId},
+        ),
         const SizedBox(height: 8),
         if (shown.isEmpty)
           Padding(
             padding: const EdgeInsets.all(24),
-            child: Center(child: Text(tr(context, 'Status changes will appear here.', 'Los cambios de estado aparecerán aquí.'))),
+            child: Center(
+              child: Text(
+                tr(
+                  context,
+                  'Status changes will appear here.',
+                  'Los cambios de estado aparecerán aquí.',
+                ),
+              ),
+            ),
           ),
         for (final r in shown.take(400))
           () {
@@ -185,12 +257,16 @@ class _History extends ConsumerWidget {
             return PrismListRow(
               dense: true,
               leading: StatusDot(status: s, size: 22),
-              title: Text('${memberNameFor(ref, r.memberId) ?? '?'} · ${s.title}'),
-              subtitle: Text([
-                fmt.format(r.occurredAt ?? r.createdAt),
-                if (dur != null) '${dur.inHours}h ${dur.inMinutes % 60}m',
-                if (s.message != null) s.message!,
-              ].join(' · ')),
+              title: Text(
+                '${memberNameFor(ref, r.memberId) ?? '?'} · ${s.title}',
+              ),
+              subtitle: Text(
+                [
+                  fmt.format(r.occurredAt ?? r.createdAt),
+                  if (dur != null) '${dur.inHours}h ${dur.inMinutes % 60}m',
+                  if (s.message != null) s.message!,
+                ].join(' · '),
+              ),
             );
           }(),
       ],
@@ -210,11 +286,20 @@ class _CustomList extends ConsumerWidget {
       children: [
         for (final t in types)
           PrismListRow(
-            leading: CircleAvatar(backgroundColor: Color(t.color), child: Icon(iconForKey(t.iconKey), color: Colors.white, size: 18)),
+            leading: CircleAvatar(
+              backgroundColor: Color(t.color),
+              child: Icon(iconForKey(t.iconKey), color: Colors.white, size: 18),
+            ),
             title: Text(t.title),
-            subtitle: Text(t.record == null ? tr(context, 'Built-in', 'Predeterminado') : (t.description ?? tr(context, 'Custom', 'Personalizado'))),
+            subtitle: Text(
+              t.record == null
+                  ? tr(context, 'Built-in', 'Predeterminado')
+                  : (t.description ?? tr(context, 'Custom', 'Personalizado')),
+            ),
             showChevron: t.record != null,
-            onTap: t.record == null ? null : () => showCustomStatusEditor(context, editing: t.record),
+            onTap: t.record == null
+                ? null
+                : () => showCustomStatusEditor(context, editing: t.record),
           ),
         const SizedBox(height: 12),
         PrismButton(
@@ -240,8 +325,11 @@ class _Visibility extends ConsumerWidget {
       padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 16),
       children: [
         Text(
-          tr(context, 'Choose which statuses appear on Home and in lists. Hidden ones still show on the alter’s own profile.',
-              'Elige qué estados aparecen en Inicio y en listas. Los ocultos se siguen viendo en el perfil del alter.'),
+          tr(
+            context,
+            'Choose which statuses appear on Home and in lists. Hidden ones still show on the alter’s own profile.',
+            'Elige qué estados aparecen en Inicio y en listas. Los ocultos se siguen viendo en el perfil del alter.',
+          ),
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 8),

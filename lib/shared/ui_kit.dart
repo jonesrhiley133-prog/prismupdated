@@ -17,6 +17,7 @@ export 'package:prism_plurality/shared/pickers/hsv_sliders.dart';
 export 'package:prism_plurality/shared/theme/app_icons.dart';
 export 'package:prism_plurality/shared/theme/prism_tokens.dart';
 export 'package:prism_plurality/shared/widgets/app_shell.dart' show NavBarInset;
+export 'package:prism_plurality/shared/widgets/section_switcher.dart';
 export 'package:prism_plurality/shared/widgets/clamped_body.dart';
 export 'package:prism_plurality/shared/widgets/empty_state.dart';
 export 'package:prism_plurality/shared/widgets/prism_button.dart';

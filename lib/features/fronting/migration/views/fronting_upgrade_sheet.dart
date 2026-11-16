@@ -24,6 +24,7 @@ library;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -633,20 +634,23 @@ class _FrontingUpgradeSheetState extends ConsumerState<FrontingUpgradeSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                switch (_step) {
-                  FrontingUpgradeStep.intro => _buildIntro(theme),
-                  FrontingUpgradeStep.role => _buildRole(theme),
-                  FrontingUpgradeStep.mode => _buildMode(theme),
-                  FrontingUpgradeStep.password => _buildPassword(theme),
-                  FrontingUpgradeStep.exporting => _buildExporting(theme),
-                  FrontingUpgradeStep.backupReady => _buildBackupReady(theme),
-                  FrontingUpgradeStep.running => _buildRunning(theme),
-                  FrontingUpgradeStep.success => _buildSuccess(theme),
-                  FrontingUpgradeStep.failure => _buildFailure(theme),
-                  FrontingUpgradeStep.resumeCleanup => _buildResumeCleanup(
-                    theme,
-                  ),
-                },
+                SectionSwitcher(
+                  id: _step,
+                  child: switch (_step) {
+                    FrontingUpgradeStep.intro => _buildIntro(theme),
+                    FrontingUpgradeStep.role => _buildRole(theme),
+                    FrontingUpgradeStep.mode => _buildMode(theme),
+                    FrontingUpgradeStep.password => _buildPassword(theme),
+                    FrontingUpgradeStep.exporting => _buildExporting(theme),
+                    FrontingUpgradeStep.backupReady => _buildBackupReady(theme),
+                    FrontingUpgradeStep.running => _buildRunning(theme),
+                    FrontingUpgradeStep.success => _buildSuccess(theme),
+                    FrontingUpgradeStep.failure => _buildFailure(theme),
+                    FrontingUpgradeStep.resumeCleanup => _buildResumeCleanup(
+                      theme,
+                    ),
+                  },
+                ),
               ],
             ),
           ),

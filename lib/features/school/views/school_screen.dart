@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -68,7 +69,8 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
       topBar: PrismTopBar(
         title: l10n.navSchool,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'school'), 
+        actions: [
+          FeatureDataAction(featureId: 'school'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: _tab == SchoolTab.classes
@@ -134,31 +136,39 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  ...switch (_tab) {
-                    SchoolTab.today => _today(
-                      context,
-                      classes,
-                      assignments,
-                      study,
+                  SectionSwitcher(
+                    id: _tab,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...switch (_tab) {
+                          SchoolTab.today => _today(
+                            context,
+                            classes,
+                            assignments,
+                            study,
+                          ),
+                          SchoolTab.classes => _classes(
+                            context,
+                            classes,
+                            assignments,
+                          ),
+                          SchoolTab.assignments => _assignments(
+                            context,
+                            classes,
+                            assignments,
+                          ),
+                          SchoolTab.study => _study(context, classes, study),
+                          SchoolTab.progress => _progress(
+                            context,
+                            classes,
+                            assignments,
+                            study,
+                          ),
+                        },
+                      ],
                     ),
-                    SchoolTab.classes => _classes(
-                      context,
-                      classes,
-                      assignments,
-                    ),
-                    SchoolTab.assignments => _assignments(
-                      context,
-                      classes,
-                      assignments,
-                    ),
-                    SchoolTab.study => _study(context, classes, study),
-                    SchoolTab.progress => _progress(
-                      context,
-                      classes,
-                      assignments,
-                      study,
-                    ),
-                  },
+                  ),
                 ],
               ),
             ),
@@ -747,9 +757,20 @@ class _AssignmentTile extends ConsumerWidget {
                   title: a.title,
                   source: tr(context, 'School', 'Escuela'),
                   details: [
-                    if (cls != null) (tr(context, 'Class', 'Clase'), cls!.title),
-                    (tr(context, 'Type', 'Tipo'), assignmentTypeLabel(l10n, a.str(SchoolField.type) ?? 'homework')),
-                    if (score != null) (tr(context, 'Score', 'Nota'), '${(score * 100).toStringAsFixed(0)}%'),
+                    if (cls != null)
+                      (tr(context, 'Class', 'Clase'), cls!.title),
+                    (
+                      tr(context, 'Type', 'Tipo'),
+                      assignmentTypeLabel(
+                        l10n,
+                        a.str(SchoolField.type) ?? 'homework',
+                      ),
+                    ),
+                    if (score != null)
+                      (
+                        tr(context, 'Score', 'Nota'),
+                        '${(score * 100).toStringAsFixed(0)}%',
+                      ),
                   ],
                 ),
               IconButton(

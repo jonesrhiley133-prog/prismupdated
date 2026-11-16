@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -101,7 +102,18 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
       topBar: PrismTopBar(
         title: l10n.navFitness,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'fitness'), if (ref.watch(featureEnabledProvider('healthIntegration'))) PrismTopBarAction(icon: PhosphorIcons.heartbeat(), tooltip: tr(context, 'Health integrations', 'Integraciones de salud'), onPressed: () => context.push('/fitness/integrations')),
+        actions: [
+          FeatureDataAction(featureId: 'fitness'),
+          if (ref.watch(featureEnabledProvider('healthIntegration')))
+            PrismTopBarAction(
+              icon: PhosphorIcons.heartbeat(),
+              tooltip: tr(
+                context,
+                'Health integrations',
+                'Integraciones de salud',
+              ),
+              onPressed: () => context.push('/fitness/integrations'),
+            ),
 
           PrismTopBarAction(
             icon: AppIcons.add,
@@ -159,12 +171,20 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
                     onlyIds: {for (final w in all) ?w.memberId},
                   ),
                   const SizedBox(height: 12),
-                  ...switch (_tab) {
-                    FitnessTab.overview => _overview(context, workouts),
-                    FitnessTab.history => _history(context, workouts),
-                    FitnessTab.exercises => _exercises(context, workouts),
-                    FitnessTab.goals => _goals(context, workouts),
-                  },
+                  SectionSwitcher(
+                    id: _tab,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...switch (_tab) {
+                          FitnessTab.overview => _overview(context, workouts),
+                          FitnessTab.history => _history(context, workouts),
+                          FitnessTab.exercises => _exercises(context, workouts),
+                          FitnessTab.goals => _goals(context, workouts),
+                        },
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -508,11 +528,24 @@ class _WorkoutTile extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(w.title.isNotEmpty ? w.title : fitnessActivityLabel(l10n, w.str(FitField.activity) ?? 'other'), style: theme.textTheme.titleSmall),
+                  Text(
+                    w.title.isNotEmpty
+                        ? w.title
+                        : fitnessActivityLabel(
+                            l10n,
+                            w.str(FitField.activity) ?? 'other',
+                          ),
+                    style: theme.textTheme.titleSmall,
+                  ),
                   Text(
                     [
                       DateFormat.MMMEd(context.dateLocale).add_jm().format(d),
-                      if (w.flag('imported')) tr(context, 'from ${w.str('source') ?? 'a health app'}', 'de ${w.str('source') ?? 'una app de salud'}'),
+                      if (w.flag('imported'))
+                        tr(
+                          context,
+                          'from ${w.str('source') ?? 'a health app'}',
+                          'de ${w.str('source') ?? 'una app de salud'}',
+                        ),
                       if (workoutMinutes(w) > 0)
                         l10n.fitMinutesShort(workoutMinutes(w)),
                       if (workoutKm(w) > 0)
@@ -530,14 +563,35 @@ class _WorkoutTile extends ConsumerWidget {
             ),
             if (mood != null) MoodFace(level: mood, size: 28),
             ShareToSocialButton(
-              title: w.title.isNotEmpty ? w.title : fitnessActivityLabel(l10n, w.str(FitField.activity) ?? 'other'),
+              title: w.title.isNotEmpty
+                  ? w.title
+                  : fitnessActivityLabel(
+                      l10n,
+                      w.str(FitField.activity) ?? 'other',
+                    ),
               source: tr(context, 'Workout', 'Entrenamiento'),
               details: [
-                (tr(context, 'Date', 'Fecha'), DateFormat.yMMMd(context.dateLocale).format(d)),
-                if (workoutMinutes(w) > 0) (tr(context, 'Duration', 'Duración'), l10n.fitMinutesShort(workoutMinutes(w))),
-                if (workoutKm(w) > 0) (tr(context, 'Distance', 'Distancia'), '${workoutKm(w).toStringAsFixed(1)} km'),
-                if (workoutCalories(w) > 0) (tr(context, 'Energy', 'Energía'), '${workoutCalories(w)} kcal'),
-                if (sets.isNotEmpty) (tr(context, 'Exercises', 'Ejercicios'), '${sets.length}'),
+                (
+                  tr(context, 'Date', 'Fecha'),
+                  DateFormat.yMMMd(context.dateLocale).format(d),
+                ),
+                if (workoutMinutes(w) > 0)
+                  (
+                    tr(context, 'Duration', 'Duración'),
+                    l10n.fitMinutesShort(workoutMinutes(w)),
+                  ),
+                if (workoutKm(w) > 0)
+                  (
+                    tr(context, 'Distance', 'Distancia'),
+                    '${workoutKm(w).toStringAsFixed(1)} km',
+                  ),
+                if (workoutCalories(w) > 0)
+                  (
+                    tr(context, 'Energy', 'Energía'),
+                    '${workoutCalories(w)} kcal',
+                  ),
+                if (sets.isNotEmpty)
+                  (tr(context, 'Exercises', 'Ejercicios'), '${sets.length}'),
               ],
             ),
           ],

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,7 +33,8 @@ enum DictImportSource { wiki, file, paste }
 enum TermDuplicateAction { skip, replace, keepBoth }
 
 /// Opens the universal wiki importer.
-Future<void> openDictionaryImport(BuildContext context) => openUniversalImport(context);
+Future<void> openDictionaryImport(BuildContext context) =>
+    openUniversalImport(context);
 
 class DictionaryImportResult {
   const DictionaryImportResult({
@@ -297,16 +299,16 @@ class _DictionaryImportFlowState extends ConsumerState<DictionaryImportFlow> {
       bodyPadding: EdgeInsets.zero,
       body: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: PrismTokens.contentMaxWidth,
-          ),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 child: ImportStepsHeader(current: _step),
               ),
-              Expanded(child: _body(context)),
+              Expanded(
+                child: SectionSwitcher(id: _step, child: _body(context)),
+              ),
             ],
           ),
         ),

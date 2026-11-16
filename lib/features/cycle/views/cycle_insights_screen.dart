@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -103,12 +104,20 @@ class _CycleInsightsState extends ConsumerState<CycleInsightsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  ...switch (_tab) {
-                    _Tab.overview => _overview(context),
-                    _Tab.history => _history(context),
-                    _Tab.patterns => _patterns(context),
-                    _Tab.phases => _phases(context),
-                  },
+                  SectionSwitcher(
+                    id: _tab,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...switch (_tab) {
+                          _Tab.overview => _overview(context),
+                          _Tab.history => _history(context),
+                          _Tab.patterns => _patterns(context),
+                          _Tab.phases => _phases(context),
+                        },
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
