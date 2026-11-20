@@ -171,7 +171,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                 ),
                 children: [
                   _Header(
-                    viewerName: viewer == null ? null : members[viewer]?.effectiveName(preferDisplayName: ref.watch(memberNamePreferDisplayProvider)),
+                    viewerName: viewer == null
+                        ? null
+                        : members[viewer]?.effectiveName(
+                            preferDisplayName: ref.watch(
+                              memberNamePreferDisplayProvider,
+                            ),
+                          ),
                     alter: _alter,
                     members: members,
                     subjects: {
@@ -380,7 +386,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
             ),
             if (f.count > 0) ...[
               const SizedBox(width: 8),
-              PrismButton(label: es ? 'Quitar filtros' : 'Clear', density: PrismControlDensity.compact, onPressed: () => setState(() => _filter = const _Filter())),
+              PrismButton(
+                label: es ? 'Quitar filtros' : 'Clear',
+                density: PrismControlDensity.compact,
+                onPressed: () => setState(() => _filter = const _Filter()),
+              ),
             ],
             const Spacer(),
             if (checkins.isNotEmpty) _ComparePeriods(checkins: checkins),
@@ -844,7 +854,15 @@ class _Header extends ConsumerWidget {
                           ),
                           for (final s in subjects)
                             if (members[s] != null)
-                              (s, memberLabel(members[s]!, preferDisplayName: ref.watch(memberNamePreferDisplayProvider))),
+                              (
+                                s,
+                                memberLabel(
+                                  members[s]!,
+                                  preferDisplayName: ref.watch(
+                                    memberNamePreferDisplayProvider,
+                                  ),
+                                ),
+                              ),
                           ('system', context.l10n.trackerWholeSystem),
                           ('unsure', es ? 'No se sabe quién' : 'Unsure who'),
                         ])
@@ -978,7 +996,11 @@ class _DraftBanner extends StatelessWidget {
               ],
             ),
           ),
-          PrismButton(label: es ? 'Descartar' : 'Discard', density: PrismControlDensity.compact, onPressed: onDiscard),
+          PrismButton(
+            label: es ? 'Descartar' : 'Discard',
+            density: PrismControlDensity.compact,
+            onPressed: onDiscard,
+          ),
           PrismButton(
             label: es ? 'Seguir' : 'Continue',
             tone: PrismButtonTone.filled,
@@ -1181,150 +1203,160 @@ class _TimelineRow extends ConsumerWidget {
           (a, b) => a == null || b.index > a.index ? b : a,
         );
 
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 22,
-            child: Column(
-              children: [
-                const SizedBox(height: 18),
-                _Node(followup: fu != null, spot: sp != null),
-                if (!last)
-                  Expanded(
-                    child: Center(
-                      child: Container(
-                        width: 1.5,
-                        color: theme.colorScheme.outlineVariant.withValues(
-                          alpha: 0.6,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+    // The rail is drawn behind the row so the card sizes itself; measuring
+    // intrinsics here clipped the expanded card's buttons.
+    return Stack(
+      children: [
+        if (!last)
+          Positioned(
+            left: 10.25,
+            top: sp != null ? 34 : 30,
+            bottom: 0,
+            child: Container(
+              width: 1.5,
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
             ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: PrismSurface(
-                onTap: onToggle,
-                semanticLabel: '$kind. $title',
-                padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          kind,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.1,
-                            color: fu != null
-                                ? theme.colorScheme.onSurfaceVariant
-                                : theme.colorScheme.primary,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 22,
+              child: Column(
+                children: [
+                  const SizedBox(height: 18),
+                  _Node(followup: fu != null, spot: sp != null),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: PrismSurface(
+                  onTap: onToggle,
+                  semanticLabel: '$kind. $title',
+                  padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            kind,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.1,
+                              color: fu != null
+                                  ? theme.colorScheme.onSurfaceVariant
+                                  : theme.colorScheme.primary,
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          clockTime(context, item.at),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          const Spacer(),
+                          Text(
+                            clockTime(context, item.at),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        AnimatedRotation(
-                          turns: expanded ? 0.5 : 0,
-                          duration: MediaQuery.of(context).disableAnimations
-                              ? Duration.zero
-                              : Anim.sm,
-                          child: Icon(
-                            PhosphorIcons.caretDown(),
-                            size: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 4),
+                          AnimatedRotation(
+                            turns: expanded ? 0.5 : 0,
+                            duration: MediaQuery.of(context).disableAnimations
+                                ? Duration.zero
+                                : Anim.sm,
+                            child: Icon(
+                              PhosphorIcons.caretDown(),
+                              size: 14,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      title,
-                      maxLines: expanded ? null : 2,
-                      overflow: expanded ? null : TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if (worst != null) SeverityTag(worst),
-                        if (status != null)
-                          StatusTag(
-                            text: followStatusLabel(status, es),
-                            active: status != FollowStatus.resolved,
-                          ),
-                        if (sp != null && sp.descriptors.isNotEmpty)
-                          Text(
-                            sp.descriptors.map((d) => d.label).join(' · '),
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        if (sp?.isLegacy == true)
-                          StatusTag(
-                            text: es ? 'De Ánimo' : 'From Mood',
-                            active: false,
-                            icon: PhosphorIcons.smiley(),
-                          ),
-                        if (who != null)
-                          Text(
-                            attributionText(who, members, es, preferDisplayName: ref.watch(memberNamePreferDisplayProvider)),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                      const SizedBox(height: 4),
+                      Text(
+                        title,
+                        maxLines: expanded ? null : 2,
+                        overflow: expanded ? null : TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          if (worst != null) SeverityTag(worst),
+                          if (status != null)
+                            StatusTag(
+                              text: followStatusLabel(status, es),
+                              active: status != FollowStatus.resolved,
                             ),
-                          ),
-                        if (c != null && c.backdated)
-                          Text(
-                            es
-                                ? 'registrado ${DateFormat.MMMd(context.dateLocale).add_jm().format(c.createdAt.toLocal())}'
-                                : 'recorded ${DateFormat.MMMd(context.dateLocale).add_jm().format(c.createdAt.toLocal())}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontStyle: FontStyle.italic,
+                          if (sp != null && sp.descriptors.isNotEmpty)
+                            Text(
+                              sp.descriptors.map((d) => d.label).join(' · '),
+                              style: theme.textTheme.bodySmall,
                             ),
-                          ),
-                        if (c != null &&
-                            c.timePrecision == TimePrecision.approx)
-                          Text(
-                            es ? 'hora aproximada' : 'approximate time',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                          if (sp?.isLegacy == true)
+                            StatusTag(
+                              text: es ? 'De Ánimo' : 'From Mood',
+                              active: false,
+                              icon: PhosphorIcons.smiley(),
                             ),
-                          ),
-                      ],
-                    ),
-                    AnimatedSize(
-                      duration: MediaQuery.of(context).disableAnimations
-                          ? Duration.zero
-                          : Anim.md,
-                      curve: Curves.easeOutCubic,
-                      alignment: Alignment.topCenter,
-                      child: expanded
-                          ? _details(context, ref, c, fu, sp)
-                          : const SizedBox(width: double.infinity),
-                    ),
-                  ],
+                          if (who != null)
+                            Text(
+                              attributionText(
+                                who,
+                                members,
+                                es,
+                                preferDisplayName: ref.watch(
+                                  memberNamePreferDisplayProvider,
+                                ),
+                              ),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          if (c != null && c.backdated)
+                            Text(
+                              es
+                                  ? 'registrado ${DateFormat.MMMd(context.dateLocale).add_jm().format(c.createdAt.toLocal())}'
+                                  : 'recorded ${DateFormat.MMMd(context.dateLocale).add_jm().format(c.createdAt.toLocal())}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          if (c != null &&
+                              c.timePrecision == TimePrecision.approx)
+                            Text(
+                              es ? 'hora aproximada' : 'approximate time',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
+                      AnimatedSize(
+                        duration: MediaQuery.of(context).disableAnimations
+                            ? Duration.zero
+                            : Anim.md,
+                        curve: Curves.easeOutCubic,
+                        alignment: Alignment.topCenter,
+                        child: expanded
+                            ? _details(context, ref, c, fu, sp)
+                            : const SizedBox(width: double.infinity),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1519,19 +1551,34 @@ class _TimelineRow extends ConsumerWidget {
         Wrap(
           spacing: 4,
           children: [
-            PrismButton(label: es ? 'Corregir' : 'Edit', icon: PhosphorIcons.pencilSimple(), density: PrismControlDensity.compact, onPressed: () => showHealthLog(context, existing: c)),
-            PrismButton(label: c.episodeId != null
-                    ? (es ? 'Quitar del episodio' : 'Remove from episode')
-                    : (es ? 'Añadir a episodio' : 'Add to episode'), icon: c.episodeId != null
-                    ? PhosphorIcons.folderMinus()
-                    : PhosphorIcons.folderSimplePlus(), density: PrismControlDensity.compact, onPressed: () async {
+            PrismButton(
+              label: es ? 'Corregir' : 'Edit',
+              icon: PhosphorIcons.pencilSimple(),
+              density: PrismControlDensity.compact,
+              onPressed: () => showHealthLog(context, existing: c),
+            ),
+            PrismButton(
+              label: c.episodeId != null
+                  ? (es ? 'Quitar del episodio' : 'Remove from episode')
+                  : (es ? 'Añadir a episodio' : 'Add to episode'),
+              icon: c.episodeId != null
+                  ? PhosphorIcons.folderMinus()
+                  : PhosphorIcons.folderSimplePlus(),
+              density: PrismControlDensity.compact,
+              onPressed: () async {
                 if (c.episodeId != null) {
                   await ref.read(healthStoreProvider).setEpisode(c, null);
                 } else {
                   if (context.mounted) await _pickEpisode(context, ref, c);
                 }
-              }),
-            PrismButton(label: es ? 'Borrar' : 'Delete', icon: PhosphorIcons.trash(), density: PrismControlDensity.compact, tone: PrismButtonTone.destructive, onPressed: () async {
+              },
+            ),
+            PrismButton(
+              label: es ? 'Borrar' : 'Delete',
+              icon: PhosphorIcons.trash(),
+              density: PrismControlDensity.compact,
+              tone: PrismButtonTone.destructive,
+              onPressed: () async {
                 final ok = await PrismDialog.confirm(
                   context: context,
                   title: es ? '¿Borrar esta entrada?' : 'Delete this entry?',
@@ -1542,7 +1589,8 @@ class _TimelineRow extends ConsumerWidget {
                   destructive: true,
                 );
                 if (ok) await ref.read(healthStoreProvider).delete(c);
-              }),
+              },
+            ),
           ],
         ),
       );
@@ -1606,7 +1654,12 @@ class _TimelineRow extends ConsumerWidget {
       children.add(
         Align(
           alignment: Alignment.centerLeft,
-          child: PrismButton(label: es ? 'Ver en el mapa' : 'Show on the map', icon: PhosphorIcons.personSimple(), density: PrismControlDensity.compact, onPressed: () => onOpenSpot(sp)),
+          child: PrismButton(
+            label: es ? 'Ver en el mapa' : 'Show on the map',
+            icon: PhosphorIcons.personSimple(),
+            density: PrismControlDensity.compact,
+            onPressed: () => onOpenSpot(sp),
+          ),
         ),
       );
     }
@@ -1978,11 +2031,16 @@ class _SpotDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              PrismButton(label: es ? 'Editar' : 'Edit', icon: PhosphorIcons.pencilSimple(), density: PrismControlDensity.compact, onPressed: () => showSensationEditor(
+              PrismButton(
+                label: es ? 'Editar' : 'Edit',
+                icon: PhosphorIcons.pencilSimple(),
+                density: PrismControlDensity.compact,
+                onPressed: () => showSensationEditor(
                   context,
                   who: spot.record != null ? Attribution.of(spot.record!) : who,
                   initial: [spot],
-                )),
+                ),
+              ),
             ],
           ),
           if (spot.descriptors.isNotEmpty)
@@ -2229,7 +2287,11 @@ class _FilterFormState extends State<_FilterForm> {
               ),
             ),
             if (_region != null)
-              PrismInlineIconButton(icon: PhosphorIcons.x(), onPressed: () => setState(() => _region = _side = null), tooltip: es ? 'Quitar' : 'Clear'),
+              PrismInlineIconButton(
+                icon: PhosphorIcons.x(),
+                onPressed: () => setState(() => _region = _side = null),
+                tooltip: es ? 'Quitar' : 'Clear',
+              ),
             PrismButton(
               label: es ? 'Elegir' : 'Choose',
               density: PrismControlDensity.compact,
