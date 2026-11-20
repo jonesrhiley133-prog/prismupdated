@@ -8,6 +8,8 @@ import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart';
 import 'package:prism_plurality/features/dictionary/views/dictionary_import_flow.dart';
 import 'package:prism_plurality/features/dictionary/views/term_editor_sheet.dart';
+import 'package:prism_plurality/features/dictionary/widgets/term_flags.dart';
+import 'package:prism_plurality/features/dictionary/importer/universal_import_screen.dart' show ImportJobBanner;
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
@@ -99,12 +101,17 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
         data: (terms) {
           if (terms.isEmpty) {
             return ClampedBody(
-              child: EmptyState(
+              child: Column(
+                children: [
+                  const Padding(padding: EdgeInsets.fromLTRB(16, 8, 16, 0), child: ImportJobBanner()),
+                  Expanded(child: EmptyState(
                 icon: Icon(AppIcons.navDictionary),
                 title: l10n.dictEmptyTitle,
                 subtitle: l10n.dictEmptySubtitle,
                 actionLabel: l10n.dictImportTitle,
                 onAction: () => openDictionaryImport(context),
+              )),
+                ],
               ),
             );
           }
@@ -202,41 +209,54 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 child: Center(child: Text(l10n.dictNoMatches)),
               ),
           ];
+          // Letter headers and terms, built lazily so big dictionaries
+          // (thousands of imported terms) scroll smoothly.
           String? letter;
           final colById = {for (final c in collections) c.id: c};
+          final rows = <Object>[];
           for (final t in shown) {
             final l = termInitial(t.title);
             if (l != letter) {
               letter = l;
-              children.add(TrackerLabel(l));
+              rows.add(l);
             }
-            children.add(
-              _TermTile(
-                term: t,
-                collection: colById[t.str(DictField.collection)],
-              ),
-            );
+            rows.add(t);
           }
-          return ListView(
+          Widget clamp(Widget w) => Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: PrismTokens.contentMaxWidth,
+              ),
+              child: w,
+            ),
+          );
+          return ListView.builder(
             padding: EdgeInsets.fromLTRB(
               16,
               8,
               16,
               NavBarInset.of(context) + 24,
             ),
-            children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: PrismTokens.contentMaxWidth,
-                  ),
-                  child: Column(
+            itemCount: rows.length + 1,
+            itemBuilder: (context, i) {
+              if (i == 0) {
+                return clamp(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: children,
+                    children: [const ImportJobBanner(), ...children],
                   ),
-                ),
-              ),
-            ],
+                );
+              }
+              final r = rows[i - 1];
+              return clamp(
+                r is String
+                    ? TrackerLabel(r)
+                    : _TermTile(
+                        term: r as TrackerRecord,
+                        collection: colById[r.str(DictField.collection)],
+                      ),
+              );
+            },
           );
         },
       ),
@@ -433,6 +453,7 @@ class TermDetailSheet extends ConsumerWidget {
                     style: theme.textTheme.bodyLarge,
                   ),
                 ),
+                TermFlags(term: t),
                 if (examples.isNotEmpty) ...[
                   TrackerLabel(l10n.dictExamples),
                   for (final e in examples)

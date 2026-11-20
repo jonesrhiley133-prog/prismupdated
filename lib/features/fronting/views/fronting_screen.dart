@@ -89,11 +89,12 @@ Widget frontingHistoryLoadMoreSliver({required bool hasMore}) {
 @visibleForTesting
 Widget clampSliver(
   Widget sliver, {
-  double maxWidth = PrismTokens.contentMaxWidth,
+  double? maxWidth,
 }) {
   return SliverLayoutBuilder(
     builder: (context, constraints) {
-      if (constraints.crossAxisExtent <= maxWidth) {
+      final maxWidth1 = maxWidth ?? PrismTokens.contentMaxWidth;
+      if (constraints.crossAxisExtent <= maxWidth1) {
         return sliver;
       }
       return SliverCrossAxisGroup(
@@ -102,7 +103,7 @@ Widget clampSliver(
             flex: 1,
             sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
           ),
-          SliverConstrainedCrossAxis(maxExtent: maxWidth, sliver: sliver),
+          SliverConstrainedCrossAxis(maxExtent: maxWidth1, sliver: sliver),
           const SliverCrossAxisExpanded(
             flex: 1,
             sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
@@ -115,11 +116,11 @@ Widget clampSliver(
 
 Widget _clampHomeBox(
   Widget child, {
-  double maxWidth = PrismTokens.contentMaxWidth,
+  double? maxWidth,
 }) {
   return Center(
     child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: maxWidth),
+      constraints: BoxConstraints(maxWidth: maxWidth ?? PrismTokens.contentMaxWidth),
       child: SizedBox(width: double.infinity, child: child),
     ),
   );

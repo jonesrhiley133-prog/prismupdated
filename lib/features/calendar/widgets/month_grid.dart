@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/theme/prism_tokens.dart';
+import 'package:prism_plurality/shared/widgets/clamped_body.dart';
 import 'package:intl/intl.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -54,7 +56,7 @@ class MonthGrid extends StatelessWidget {
     final today = DateTime.now();
     final weekdayFormat = DateFormat.E(context.dateLocale);
 
-    return Column(
+    return CompactCalendar(child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
@@ -83,7 +85,8 @@ class MonthGrid extends StatelessWidget {
               for (var d = 0; d < 7; d++)
                 Expanded(
                   child: AspectRatio(
-                    aspectRatio: cellAspectRatio,
+                    // Wide web windows: near-square cells keep the month compact.
+                    aspectRatio: PrismTokens.desktopWebContentWidth != null && cellAspectRatio < 1.2 ? 1.2 : cellAspectRatio,
                     child: Builder(
                       builder: (context) {
                         final day = DateTime(
@@ -116,7 +119,7 @@ class MonthGrid extends StatelessWidget {
             ],
           ),
       ],
-    );
+    ));
   }
 }
 

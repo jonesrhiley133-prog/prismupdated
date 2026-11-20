@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,8 +53,14 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
     children: [
       Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...children, SizedBox(height: NavBarInset.of(context) + 90)]),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ...children,
+              SizedBox(height: NavBarInset.of(context) + 90),
+            ],
+          ),
         ),
       ),
     ],
@@ -69,9 +76,21 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
       topBar: PrismTopBar(
         title: l10n.socBoardTitle,
         actions: [
-          PrismTopBarAction(icon: Icons.forum_outlined, tooltip: l10n.socMessages, onPressed: () => context.push(AppRoutePaths.boardMessages)),
-          PrismTopBarAction(icon: Icons.drafts_outlined, tooltip: l10n.socDraftsScheduled, onPressed: () => context.push(AppRoutePaths.socialDrafts)),
-          PrismTopBarAction(icon: Icons.edit_square, tooltip: l10n.socNewPost, onPressed: () => showComposePost(context)),
+          PrismTopBarAction(
+            icon: Icons.forum_outlined,
+            tooltip: l10n.socMessages,
+            onPressed: () => context.push(AppRoutePaths.boardMessages),
+          ),
+          PrismTopBarAction(
+            icon: Icons.drafts_outlined,
+            tooltip: l10n.socDraftsScheduled,
+            onPressed: () => context.push(AppRoutePaths.socialDrafts),
+          ),
+          PrismTopBarAction(
+            icon: Icons.edit_square,
+            tooltip: l10n.socNewPost,
+            onPressed: () => showComposePost(context),
+          ),
         ],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
@@ -84,17 +103,33 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                      constraints: BoxConstraints(
+                        maxWidth: PrismTokens.contentMaxWidth,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Align(alignment: Alignment.centerLeft, child: ActorChip()),
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: ActorChip(),
+                          ),
                           const SizedBox(height: 8),
                           PrismSegmentedControl<_Tab>(
                             segments: [
-                              PrismSegment(value: _Tab.feed, label: l10n.socFeed),
-                              PrismSegment(value: _Tab.explore, label: l10n.socExplore),
-                              PrismSegment(value: _Tab.activity, label: unread == 0 ? l10n.socActivity : l10n.socActivityN(unread)),
+                              PrismSegment(
+                                value: _Tab.feed,
+                                label: l10n.socFeed,
+                              ),
+                              PrismSegment(
+                                value: _Tab.explore,
+                                label: l10n.socExplore,
+                              ),
+                              PrismSegment(
+                                value: _Tab.activity,
+                                label: unread == 0
+                                    ? l10n.socActivity
+                                    : l10n.socActivityN(unread),
+                              ),
                             ],
                             selected: _tab,
                             onChanged: (v) {
@@ -103,7 +138,13 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
                                 final actor = ref.read(socialActorProvider);
                                 // Mark read when leaving the tab, so the list
                                 // still shows what was new on arrival.
-                                if (actor != null) Future<void>.delayed(const Duration(seconds: 2), () => ref.read(socialActionsProvider).markSeen(actor));
+                                if (actor != null)
+                                  Future<void>.delayed(
+                                    const Duration(seconds: 2),
+                                    () => ref
+                                        .read(socialActionsProvider)
+                                        .markSeen(actor),
+                                  );
                               }
                             },
                           ),
@@ -113,11 +154,14 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
                   ),
                 ),
                 Expanded(
-                  child: switch (_tab) {
-                    _Tab.feed => _feed(context, cb),
-                    _Tab.explore => _explore(context, cb),
-                    _Tab.activity => _wrap([const ActivityList()]),
-                  },
+                  child: SectionSwitcher(
+                    id: _tab,
+                    child: switch (_tab) {
+                      _Tab.feed => _feed(context, cb),
+                      _Tab.explore => _explore(context, cb),
+                      _Tab.activity => _wrap([const ActivityList()]),
+                    },
+                  ),
                 ),
               ],
             ),
@@ -127,25 +171,47 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
   Widget _feed(BuildContext context, PostCallbacks cb) {
     final l10n = context.l10n;
     final actor = ref.watch(socialActorProvider);
-    final posts = ref.watch(socialDataProvider.select((d) => d.feed(actor, mode: _mode)));
+    final posts = ref.watch(
+      socialDataProvider.select((d) => d.feed(actor, mode: _mode)),
+    );
     return _wrap([
       const StoriesRow(),
       const SizedBox(height: 8),
       Wrap(
         spacing: 6,
         children: [
-          PrismChip(label: l10n.socForYou, selected: _mode == 'forYou', onTap: () => setState(() => _mode = 'forYou')),
-          PrismChip(label: l10n.socFollowing, selected: _mode == 'following', onTap: () => setState(() => _mode = 'following')),
-          PrismChip(label: l10n.socLatest, selected: _mode == 'everything', onTap: () => setState(() => _mode = 'everything')),
+          PrismChip(
+            label: l10n.socForYou,
+            selected: _mode == 'forYou',
+            onTap: () => setState(() => _mode = 'forYou'),
+          ),
+          PrismChip(
+            label: l10n.socFollowing,
+            selected: _mode == 'following',
+            onTap: () => setState(() => _mode = 'following'),
+          ),
+          PrismChip(
+            label: l10n.socLatest,
+            selected: _mode == 'everything',
+            onTap: () => setState(() => _mode = 'everything'),
+          ),
         ],
       ),
       const SizedBox(height: 10),
       if (posts.isEmpty)
         _Empty(
           icon: Icons.dynamic_feed_outlined,
-          title: _mode == 'following' ? l10n.socEmptyFollowing : l10n.socEmptyFeed,
-          message: _mode == 'following' ? l10n.socEmptyFollowingHelp : l10n.socEmptyFeedHelp,
-          action: PrismButton(label: l10n.socNewPost, tone: PrismButtonTone.filled, onPressed: () => showComposePost(context)),
+          title: _mode == 'following'
+              ? l10n.socEmptyFollowing
+              : l10n.socEmptyFeed,
+          message: _mode == 'following'
+              ? l10n.socEmptyFollowingHelp
+              : l10n.socEmptyFeedHelp,
+          action: PrismButton(
+            label: l10n.socNewPost,
+            tone: PrismButtonTone.filled,
+            onPressed: () => showComposePost(context),
+          ),
         ),
       for (final p in posts) PostCard(post: p, callbacks: cb),
     ]);
@@ -156,16 +222,30 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
     final theme = Theme.of(context);
     final actor = ref.watch(socialActorProvider);
     final d = ref.watch(socialDataProvider);
-    final results = _query.trim().isEmpty ? const <Post>[] : d.feed(actor, query: _query);
+    final results = _query.trim().isEmpty
+        ? const <Post>[]
+        : d.feed(actor, query: _query);
     final tags = d.trendingTags(actor).take(20).toList();
-    final alters = d.members.values.where((m) => m.isActive && !m.isDeleted).toList()..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    final alters =
+        d.members.values.where((m) => m.isActive && !m.isDeleted).toList()
+          ..sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+          );
     return _wrap([
-      PrismTextField(hintText: l10n.socSearchHint, prefixIcon: const Icon(Icons.search_rounded), onChanged: (v) => setState(() => _query = v)),
+      PrismTextField(
+        hintText: l10n.socSearchHint,
+        prefixIcon: const Icon(Icons.search_rounded),
+        onChanged: (v) => setState(() => _query = v),
+      ),
       const SizedBox(height: 12),
       if (_query.trim().isNotEmpty) ...[
-        Text(l10n.socResults(results.length), style: theme.textTheme.titleSmall),
+        Text(
+          l10n.socResults(results.length),
+          style: theme.textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
-        for (final p in results) PostCard(post: p, callbacks: cb, compact: true),
+        for (final p in results)
+          PostCard(post: p, callbacks: cb, compact: true),
       ] else ...[
         Text(l10n.socAlters, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
@@ -181,9 +261,18 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
                     width: 64,
                     child: Column(
                       children: [
-                        AlterAvatar(memberId: m.id, size: 52, onTap: () => openAlterBlog(context, m.id)),
+                        AlterAvatar(
+                          memberId: m.id,
+                          size: 52,
+                          onTap: () => openAlterBlog(context, m.id),
+                        ),
                         const SizedBox(height: 4),
-                        Text(m.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall),
+                        Text(
+                          m.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall,
+                        ),
                       ],
                     ),
                   ),
@@ -194,11 +283,24 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
         const SizedBox(height: 12),
         Text(l10n.socTrendingTags, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        if (tags.isEmpty) Text(l10n.socNoTags, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        if (tags.isEmpty)
+          Text(
+            l10n.socNoTags,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         Wrap(
           spacing: 6,
           runSpacing: 6,
-          children: [for (final (t, n) in tags) PrismChip(label: '#$t · $n', selected: false, onTap: () => openTag(context, t))],
+          children: [
+            for (final (t, n) in tags)
+              PrismChip(
+                label: '#$t · $n',
+                selected: false,
+                onTap: () => openTag(context, t),
+              ),
+          ],
         ),
         if (d.reports.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -208,7 +310,9 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
               children: [
                 Icon(Icons.flag_outlined, color: theme.colorScheme.error),
                 const SizedBox(width: 10),
-                Expanded(child: Text(l10n.socReportsToReview(d.reports.length))),
+                Expanded(
+                  child: Text(l10n.socReportsToReview(d.reports.length)),
+                ),
                 const Icon(Icons.chevron_right_rounded),
               ],
             ),
@@ -220,7 +324,12 @@ class _BulletinScreenState extends ConsumerState<BulletinScreen> {
 }
 
 class _Empty extends StatelessWidget {
-  const _Empty({required this.icon, required this.title, this.message, this.action});
+  const _Empty({
+    required this.icon,
+    required this.title,
+    this.message,
+    this.action,
+  });
   final IconData icon;
   final String title;
   final String? message;
@@ -235,10 +344,20 @@ class _Empty extends StatelessWidget {
         children: [
           Icon(icon, size: 48, color: theme.colorScheme.primary),
           const SizedBox(height: 10),
-          Text(title, textAlign: TextAlign.center, style: theme.textTheme.titleMedium),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium,
+          ),
           if (message != null) ...[
             const SizedBox(height: 6),
-            Text(message!, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              message!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
           if (action != null) ...[const SizedBox(height: 12), action!],
         ],
@@ -257,10 +376,16 @@ class ActivityList extends ConsumerWidget {
     final theme = Theme.of(context);
     final actor = ref.watch(socialActorProvider);
     final d = ref.watch(socialDataProvider);
-    if (actor == null) return _Empty(icon: Icons.person_outline, title: l10n.socPickAlter);
+    if (actor == null)
+      return _Empty(icon: Icons.person_outline, title: l10n.socPickAlter);
     final items = d.notifications(actor).take(150).toList();
     final since = d.lastSeen(actor);
-    if (items.isEmpty) return _Empty(icon: Icons.notifications_none_rounded, title: l10n.socNoActivity, message: l10n.socNoActivityHelp);
+    if (items.isEmpty)
+      return _Empty(
+        icon: Icons.notifications_none_rounded,
+        title: l10n.socNoActivity,
+        message: l10n.socNoActivityHelp,
+      );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -268,7 +393,9 @@ class ActivityList extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
             child: PrismSurface(
-              tone: n.at.isAfter(since) ? PrismSurfaceTone.accent : PrismSurfaceTone.subtle,
+              tone: n.at.isAfter(since)
+                  ? PrismSurfaceTone.accent
+                  : PrismSurfaceTone.subtle,
               padding: const EdgeInsets.all(12),
               onTap: () {
                 final t = n.targetId;
@@ -288,10 +415,27 @@ class ActivityList extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_describe(context, n, alterName(d, n.actor, context)), style: theme.textTheme.bodyMedium),
-                        if (n.detail != null && n.detail!.isNotEmpty && !n.kind.startsWith('react'))
-                          Text(n.detail!, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                        Text(relativeTime(context, n.at, now: d.now), style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                        Text(
+                          _describe(context, n, alterName(d, n.actor, context)),
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        if (n.detail != null &&
+                            n.detail!.isNotEmpty &&
+                            !n.kind.startsWith('react'))
+                          Text(
+                            n.detail!,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        Text(
+                          relativeTime(context, n.at, now: d.now),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -331,7 +475,9 @@ class TagScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final actor = ref.watch(socialActorProvider);
-    final posts = ref.watch(socialDataProvider.select((d) => d.feed(actor, tag: tag)));
+    final posts = ref.watch(
+      socialDataProvider.select((d) => d.feed(actor, tag: tag)),
+    );
     final cb = socialCallbacks(context);
     return PrismPageScaffold(
       topBar: PrismTopBar(title: '#${normalizeTag(tag)}', showBackButton: true),
@@ -342,11 +488,14 @@ class TagScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(
+                maxWidth: PrismTokens.contentMaxWidth,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (posts.isEmpty) _Empty(icon: Icons.tag_rounded, title: l10n.socNoTagPosts),
+                  if (posts.isEmpty)
+                    _Empty(icon: Icons.tag_rounded, title: l10n.socNoTagPosts),
                   for (final p in posts) PostCard(post: p, callbacks: cb),
                 ],
               ),
@@ -380,20 +529,39 @@ class DraftsScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(
+                maxWidth: PrismTokens.contentMaxWidth,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Align(alignment: Alignment.centerLeft, child: ActorChip()),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: ActorChip(),
+                  ),
                   const SizedBox(height: 12),
-                  Text(l10n.socScheduledTitle, style: theme.textTheme.titleSmall),
+                  Text(
+                    l10n.socScheduledTitle,
+                    style: theme.textTheme.titleSmall,
+                  ),
                   const SizedBox(height: 6),
-                  if (scheduled.isEmpty) Text(l10n.socNoScheduled, style: theme.textTheme.bodyMedium),
-                  for (final p in scheduled) PostCard(post: p, callbacks: cb, compact: true, inDetail: true),
+                  if (scheduled.isEmpty)
+                    Text(
+                      l10n.socNoScheduled,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  for (final p in scheduled)
+                    PostCard(
+                      post: p,
+                      callbacks: cb,
+                      compact: true,
+                      inDetail: true,
+                    ),
                   const SizedBox(height: 16),
                   Text(l10n.socDraftsTitle, style: theme.textTheme.titleSmall),
                   const SizedBox(height: 6),
-                  if (drafts.isEmpty) Text(l10n.socNoDrafts, style: theme.textTheme.bodyMedium),
+                  if (drafts.isEmpty)
+                    Text(l10n.socNoDrafts, style: theme.textTheme.bodyMedium),
                   for (final p in drafts)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
@@ -405,12 +573,19 @@ class DraftsScreen extends ConsumerWidget {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                p.title.isNotEmpty ? p.title : (p.body.isEmpty ? l10n.socUntitledDraft : p.body),
+                                p.title.isNotEmpty
+                                    ? p.title
+                                    : (p.body.isEmpty
+                                          ? l10n.socUntitledDraft
+                                          : p.body),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Text(relativeTime(context, p.r.modifiedAt, now: d.now), style: theme.textTheme.labelSmall),
+                            Text(
+                              relativeTime(context, p.r.modifiedAt, now: d.now),
+                              style: theme.textTheme.labelSmall,
+                            ),
                           ],
                         ),
                       ),
@@ -444,34 +619,65 @@ class ReportsScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(
+                maxWidth: PrismTokens.contentMaxWidth,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.socReportsHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    l10n.socReportsHelp,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  if (d.reports.isEmpty) _Empty(icon: Icons.flag_outlined, title: l10n.socNoReports),
+                  if (d.reports.isEmpty)
+                    _Empty(icon: Icons.flag_outlined, title: l10n.socNoReports),
                   for (final r in d.reports)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(l10n.socReportedBy(alterName(d, r.memberId, context), r.body ?? ''), style: theme.textTheme.labelLarge),
+                          Text(
+                            l10n.socReportedBy(
+                              alterName(d, r.memberId, context),
+                              r.body ?? '',
+                            ),
+                            style: theme.textTheme.labelLarge,
+                          ),
                           const SizedBox(height: 6),
-                          if (d.posts[r.parentId] != null) PostCard(post: d.posts[r.parentId]!, callbacks: cb, compact: true) else Text(l10n.socPostGone),
+                          if (d.posts[r.parentId] != null)
+                            PostCard(
+                              post: d.posts[r.parentId]!,
+                              callbacks: cb,
+                              compact: true,
+                            )
+                          else
+                            Text(l10n.socPostGone),
                           Wrap(
                             spacing: 8,
                             children: [
-                              PrismButton(label: l10n.socDismissReport, density: PrismControlDensity.compact, onPressed: () => ref.read(socialActionsProvider).resolveReport(r)),
+                              PrismButton(
+                                label: l10n.socDismissReport,
+                                density: PrismControlDensity.compact,
+                                onPressed: () => ref
+                                    .read(socialActionsProvider)
+                                    .resolveReport(r),
+                              ),
                               if (d.posts[r.parentId] != null)
                                 PrismButton(
                                   label: l10n.socDeletePost,
                                   tone: PrismButtonTone.destructive,
                                   density: PrismControlDensity.compact,
                                   onPressed: () async {
-                                    await ref.read(socialActionsProvider).deletePost(r.parentId!);
-                                    await ref.read(socialActionsProvider).resolveReport(r);
+                                    await ref
+                                        .read(socialActionsProvider)
+                                        .deletePost(r.parentId!);
+                                    await ref
+                                        .read(socialActionsProvider)
+                                        .resolveReport(r);
                                   },
                                 ),
                             ],

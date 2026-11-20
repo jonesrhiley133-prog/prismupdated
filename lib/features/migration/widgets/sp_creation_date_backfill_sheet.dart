@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -131,14 +132,17 @@ class _SpCreationDateBackfillSheetState
           child: SingleChildScrollView(
             controller: widget.scrollController,
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-            child: switch (_state) {
-              _BackfillState.idle => _buildIdle(theme),
-              _BackfillState.parsing => _buildParsing(theme),
-              _BackfillState.preview => _buildPreview(theme),
-              _BackfillState.applying => _buildApplying(theme),
-              _BackfillState.complete => _buildComplete(theme),
-              _BackfillState.error => _buildError(theme),
-            },
+            child: SectionSwitcher(
+              id: _state,
+              child: switch (_state) {
+                _BackfillState.idle => _buildIdle(theme),
+                _BackfillState.parsing => _buildParsing(theme),
+                _BackfillState.preview => _buildPreview(theme),
+                _BackfillState.applying => _buildApplying(theme),
+                _BackfillState.complete => _buildComplete(theme),
+                _BackfillState.error => _buildError(theme),
+              },
+            ),
           ),
         ),
       ],

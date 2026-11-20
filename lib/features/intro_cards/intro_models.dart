@@ -36,6 +36,14 @@ class IntroTemplate {
     _ => base,
   };
 
+  /// This design with the card's own colours (Card colours in the editor).
+  IntroTemplate withCardColors(TrackerRecord card) {
+    final c = card.fields['colors'];
+    if (c is! Map) return this;
+    int pick(String k, int fallback) => (c[k] as num?)?.toInt() ?? fallback;
+    return IntroTemplate(id: id, name: name, bg1: pick('bg1', bg1), bg2: pick('bg2', bg2), border: pick('border', border), ink: pick('ink', ink), font: font, pattern: pattern, record: record);
+  }
+
   Map<String, Object?> toFields() => {'bg1': bg1, 'bg2': bg2, 'border': border, 'ink': ink, 'font': font, 'pattern': pattern};
 
   static IntroTemplate fromRecord(TrackerRecord r) => IntroTemplate(

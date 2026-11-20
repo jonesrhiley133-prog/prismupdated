@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:prism_plurality/features/pluralport/views/pluralport_sheet.dart';
 import 'package:prism_plurality/features/pluralport/widgets/pluralport_brand.dart';
@@ -1487,14 +1488,17 @@ class _PrismExportImportFlowState
               child: _BackLink(onTap: widget.onBack),
             ),
           const SizedBox(height: 16),
-          switch (_step) {
-            _PrismExportStep.idle => _buildIdle(),
-            _PrismExportStep.password => _buildPassword(),
-            _PrismExportStep.decrypting => _buildImporting(),
-            _PrismExportStep.preview => _buildPreview(),
-            _PrismExportStep.importing => _buildImporting(),
-            _PrismExportStep.error => _buildError(),
-          },
+          SectionSwitcher(
+            id: _step,
+            child: switch (_step) {
+              _PrismExportStep.idle => _buildIdle(),
+              _PrismExportStep.password => _buildPassword(),
+              _PrismExportStep.decrypting => _buildImporting(),
+              _PrismExportStep.preview => _buildPreview(),
+              _PrismExportStep.importing => _buildImporting(),
+              _PrismExportStep.error => _buildError(),
+            },
+          ),
         ],
       ),
     );

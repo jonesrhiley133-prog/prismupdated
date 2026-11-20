@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -731,167 +732,170 @@ class SetupDeviceSheetContentState
   }
 
   Widget _buildContent() {
-    return switch (_step) {
-      _InitiatorStep.enterMnemonic => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const _PreflightStepIndicator(currentStep: _PreflightStep.phrase),
-          const SizedBox(height: 16),
-          _MnemonicEntryView(
-            initialError: _error,
-            onSubmit: _onMnemonicSubmitted,
+    return SectionSwitcher(
+      id: _step,
+      child: switch (_step) {
+        _InitiatorStep.enterMnemonic => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const _PreflightStepIndicator(currentStep: _PreflightStep.phrase),
+            const SizedBox(height: 16),
+            _MnemonicEntryView(
+              initialError: _error,
+              onSubmit: _onMnemonicSubmitted,
+            ),
+          ],
+        ),
+        _InitiatorStep.pinPreflight => _PreflightPinView(
+          mnemonic: _mnemonic!,
+          onValidated: _onPreflightValid,
+          onBack: () => setState(() => _step = _InitiatorStep.enterMnemonic),
+          onNeedsRewrap: _onPreflightNeedsRewrap,
+          onHandleUnavailable: _onPreflightHandleUnavailable,
+        ),
+        _InitiatorStep.prompt => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const _PreflightStepIndicator(currentStep: _PreflightStep.scan),
+            const SizedBox(height: 16),
+            _ScanJoinerPrompt(
+              scannerSupported: _scannerSupportedForPairing,
+              onStartScan: () => setState(
+                () => _step = _scannerSupportedForPairing
+                    ? _InitiatorStep.scanning
+                    : _InitiatorStep.pasteCode,
+              ),
+            ),
+          ],
+        ),
+        _InitiatorStep.scanning =>
+          _useDesktopPairingScanner
+              ? DesktopQrScanner(
+                  scanned: _joinerScanned,
+                  error: _error,
+                  onBack: _reset,
+                  isValidScan: (raw) => _decodePairingQrBytes(raw) != null,
+                  onInvalidScan: _showInvalidPairingQrToast,
+                  onScanned: (raw) {
+                    final bytes = _decodePairingQrBytes(raw);
+                    if (bytes == null) {
+                      _showInvalidPairingQrToast();
+                      return;
+                    }
+                    setState(() => _joinerScanned = true);
+                    _startInitiatorCeremony(bytes);
+                  },
+                  onPasteFallback: () =>
+                      setState(() => _step = _InitiatorStep.pasteCode),
+                )
+              : _JoinerQrScannerView(
+                  ensureScanner: _ensureJoinerScanner,
+                  scanned: _joinerScanned,
+                  error: _error,
+                  onBack: _reset,
+                  onScanned: (bytes) {
+                    setState(() => _joinerScanned = true);
+                    _startInitiatorCeremony(bytes);
+                  },
+                  onPasteFallback: () =>
+                      setState(() => _step = _InitiatorStep.pasteCode),
+                ),
+        _InitiatorStep.pasteCode => _PasteCodeView(
+          onSubmit: _startInitiatorCeremony,
+          onBackToCamera: () => setState(
+            () => _step = _scannerSupportedForPairing
+                ? _InitiatorStep.scanning
+                : _InitiatorStep.prompt,
           ),
-        ],
-      ),
-      _InitiatorStep.pinPreflight => _PreflightPinView(
-        mnemonic: _mnemonic!,
-        onValidated: _onPreflightValid,
-        onBack: () => setState(() => _step = _InitiatorStep.enterMnemonic),
-        onNeedsRewrap: _onPreflightNeedsRewrap,
-        onHandleUnavailable: _onPreflightHandleUnavailable,
-      ),
-      _InitiatorStep.prompt => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const _PreflightStepIndicator(currentStep: _PreflightStep.scan),
-          const SizedBox(height: 16),
-          _ScanJoinerPrompt(
-            scannerSupported: _scannerSupportedForPairing,
-            onStartScan: () => setState(
-              () => _step = _scannerSupportedForPairing
-                  ? _InitiatorStep.scanning
-                  : _InitiatorStep.pasteCode,
+        ),
+        _InitiatorStep.connecting => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PrismSpinner(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 52,
+                  dotCount: 8,
+                  duration: const Duration(milliseconds: 3000),
+                ),
+                const SizedBox(height: 16),
+                Text(context.l10n.syncSetupConnectingToJoiner),
+              ],
             ),
           ),
-        ],
-      ),
-      _InitiatorStep.scanning =>
-        _useDesktopPairingScanner
-            ? DesktopQrScanner(
-                scanned: _joinerScanned,
-                error: _error,
-                onBack: _reset,
-                isValidScan: (raw) => _decodePairingQrBytes(raw) != null,
-                onInvalidScan: _showInvalidPairingQrToast,
-                onScanned: (raw) {
-                  final bytes = _decodePairingQrBytes(raw);
-                  if (bytes == null) {
-                    _showInvalidPairingQrToast();
-                    return;
-                  }
-                  setState(() => _joinerScanned = true);
-                  _startInitiatorCeremony(bytes);
-                },
-                onPasteFallback: () =>
-                    setState(() => _step = _InitiatorStep.pasteCode),
-              )
-            : _JoinerQrScannerView(
-                ensureScanner: _ensureJoinerScanner,
-                scanned: _joinerScanned,
-                error: _error,
-                onBack: _reset,
-                onScanned: (bytes) {
-                  setState(() => _joinerScanned = true);
-                  _startInitiatorCeremony(bytes);
-                },
-                onPasteFallback: () =>
-                    setState(() => _step = _InitiatorStep.pasteCode),
-              ),
-      _InitiatorStep.pasteCode => _PasteCodeView(
-        onSubmit: _startInitiatorCeremony,
-        onBackToCamera: () => setState(
-          () => _step = _scannerSupportedForPairing
-              ? _InitiatorStep.scanning
-              : _InitiatorStep.prompt,
         ),
-      ),
-      _InitiatorStep.connecting => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(48),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrismSpinner(
-                color: Theme.of(context).colorScheme.primary,
-                size: 52,
-                dotCount: 8,
-                duration: const Duration(milliseconds: 3000),
-              ),
-              const SizedBox(height: 16),
-              Text(context.l10n.syncSetupConnectingToJoiner),
-            ],
+        _InitiatorStep.sasVerification => _SasVerificationView(
+          sasWords: _sasWords!,
+          onConfirm: () {
+            if (_validatedPin != null) {
+              _completeInitiator(_validatedPin!);
+            } else {
+              setState(() => _step = _InitiatorStep.passwordEntry);
+            }
+          },
+          onReject: _reset,
+        ),
+        _InitiatorStep.passwordEntry => _InitiatorPinView(
+          onPinEntered: _completeInitiator,
+          onBack: () => setState(() => _step = _InitiatorStep.sasVerification),
+        ),
+        _InitiatorStep.confirming => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PrismSpinner(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 52,
+                  dotCount: 8,
+                  duration: const Duration(milliseconds: 3000),
+                ),
+                const SizedBox(height: 16),
+                Text(context.l10n.syncSetupConfirmingJoiner),
+              ],
+            ),
           ),
         ),
-      ),
-      _InitiatorStep.sasVerification => _SasVerificationView(
-        sasWords: _sasWords!,
-        onConfirm: () {
-          if (_validatedPin != null) {
-            _completeInitiator(_validatedPin!);
-          } else {
-            setState(() => _step = _InitiatorStep.passwordEntry);
-          }
-        },
-        onReject: _reset,
-      ),
-      _InitiatorStep.passwordEntry => _InitiatorPinView(
-        onPinEntered: _completeInitiator,
-        onBack: () => setState(() => _step = _InitiatorStep.sasVerification),
-      ),
-      _InitiatorStep.confirming => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(48),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrismSpinner(
-                color: Theme.of(context).colorScheme.primary,
-                size: 52,
-                dotCount: 8,
-                duration: const Duration(milliseconds: 3000),
-              ),
-              const SizedBox(height: 16),
-              Text(context.l10n.syncSetupConfirmingJoiner),
-            ],
+        _InitiatorStep.uploading => _InitiatorUploadingView(
+          bytesSent: _uploadBytesSent,
+          bytesTotal: _uploadBytesTotal,
+          failureReason: _uploadFailureReason,
+          showByteProgress: _showByteProgress,
+          resumableTransfer: _resumableTransfer,
+          // Re-run the ceremony. PIN was consumed on the first attempt, so bounce
+          // back to the start of the flow so the user re-enters the mnemonic and
+          // PIN, and so the retry starts from clean ceremony state.
+          onRetry: _reset,
+        ),
+        _InitiatorStep.uploadComplete => const _InitiatorUploadCompleteView(),
+        _InitiatorStep.completing => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PrismSpinner(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 52,
+                  dotCount: 8,
+                  duration: const Duration(milliseconds: 3000),
+                ),
+                const SizedBox(height: 16),
+                Text(context.l10n.syncSetupCompletingPairing),
+              ],
+            ),
           ),
         ),
-      ),
-      _InitiatorStep.uploading => _InitiatorUploadingView(
-        bytesSent: _uploadBytesSent,
-        bytesTotal: _uploadBytesTotal,
-        failureReason: _uploadFailureReason,
-        showByteProgress: _showByteProgress,
-        resumableTransfer: _resumableTransfer,
-        // Re-run the ceremony. PIN was consumed on the first attempt, so bounce
-        // back to the start of the flow so the user re-enters the mnemonic and
-        // PIN, and so the retry starts from clean ceremony state.
-        onRetry: _reset,
-      ),
-      _InitiatorStep.uploadComplete => const _InitiatorUploadCompleteView(),
-      _InitiatorStep.completing => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(48),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrismSpinner(
-                color: Theme.of(context).colorScheme.primary,
-                size: 52,
-                dotCount: 8,
-                duration: const Duration(milliseconds: 3000),
-              ),
-              const SizedBox(height: 16),
-              Text(context.l10n.syncSetupCompletingPairing),
-            ],
-          ),
+        _InitiatorStep.done => _InitiatorDoneView(onDone: _reset),
+        _InitiatorStep.error => _InitiatorErrorView(
+          message: _error ?? context.l10n.onboardingSyncUnknownError,
+          onTryAgain: _reset,
         ),
-      ),
-      _InitiatorStep.done => _InitiatorDoneView(onDone: _reset),
-      _InitiatorStep.error => _InitiatorErrorView(
-        message: _error ?? context.l10n.onboardingSyncUnknownError,
-        onTryAgain: _reset,
-      ),
-    };
+      },
+    );
   }
 
   Uint8List? _decodePairingQrBytes(String raw) {

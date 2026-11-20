@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:intl/intl.dart';
 
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
@@ -36,11 +37,17 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Availability', 'Disponibilidad'),
         showBackButton: widget.showBackButton || Navigator.of(context).canPop(),
-        actions: [FeatureDataAction(featureId: 'availability'), 
+        actions: [
+          FeatureDataAction(featureId: 'availability'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: tr(context, 'Add availability', 'Añadir disponibilidad'),
-            onPressed: members.isEmpty ? null : () => showRuleEditor(context, memberId: _member ?? members.first.id),
+            onPressed: members.isEmpty
+                ? null
+                : () => showRuleEditor(
+                    context,
+                    memberId: _member ?? members.first.id,
+                  ),
           ),
         ],
       ),
@@ -50,7 +57,11 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
           ? EmptyState(
               icon: Icon(PhosphorIcons.calendarCheck()),
               title: tr(context, 'No alters yet', 'Aún no hay alters'),
-              subtitle: tr(context, 'Add headmates to plan their availability.', 'Añade headmates para planear su disponibilidad.'),
+              subtitle: tr(
+                context,
+                'Add headmates to plan their availability.',
+                'Añade headmates para planear su disponibilidad.',
+              ),
             )
           : ClampedBody(
               child: Column(
@@ -59,28 +70,47 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                     child: PrismSegmentedControl<_View>(
                       segments: [
-                        PrismSegment(value: _View.overview, label: tr(context, 'Everyone', 'Todos')),
-                        PrismSegment(value: _View.schedule, label: tr(context, 'Schedule', 'Horario')),
-                        PrismSegment(value: _View.upcoming, label: tr(context, 'Upcoming', 'Próximo')),
-                        PrismSegment(value: _View.categories, label: tr(context, 'Types', 'Tipos')),
+                        PrismSegment(
+                          value: _View.overview,
+                          label: tr(context, 'Everyone', 'Todos'),
+                        ),
+                        PrismSegment(
+                          value: _View.schedule,
+                          label: tr(context, 'Schedule', 'Horario'),
+                        ),
+                        PrismSegment(
+                          value: _View.upcoming,
+                          label: tr(context, 'Upcoming', 'Próximo'),
+                        ),
+                        PrismSegment(
+                          value: _View.categories,
+                          label: tr(context, 'Types', 'Tipos'),
+                        ),
                       ],
                       selected: _view,
                       onChanged: (v) => setState(() => _view = v),
                     ),
                   ),
                   Expanded(
-                    child: switch (_view) {
-                      _View.overview => _Overview(
-                        members: members,
-                        day: _day,
-                        week: _week,
-                        onDay: (d) => setState(() => _day = d),
-                        onWeek: (w) => setState(() => _week = w),
-                      ),
-                      _View.schedule => _Schedule(members: members, memberId: _member!, onMember: (m) => setState(() => _member = m)),
-                      _View.upcoming => _Upcoming(members: members),
-                      _View.categories => const _Categories(),
-                    },
+                    child: SectionSwitcher(
+                      id: _view,
+                      child: switch (_view) {
+                        _View.overview => _Overview(
+                          members: members,
+                          day: _day,
+                          week: _week,
+                          onDay: (d) => setState(() => _day = d),
+                          onWeek: (w) => setState(() => _week = w),
+                        ),
+                        _View.schedule => _Schedule(
+                          members: members,
+                          memberId: _member!,
+                          onMember: (m) => setState(() => _member = m),
+                        ),
+                        _View.upcoming => _Upcoming(members: members),
+                        _View.categories => const _Categories(),
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -113,7 +143,13 @@ class _Legend extends ConsumerWidget {
 }
 
 class _Overview extends ConsumerWidget {
-  const _Overview({required this.members, required this.day, required this.week, required this.onDay, required this.onWeek});
+  const _Overview({
+    required this.members,
+    required this.day,
+    required this.week,
+    required this.onDay,
+    required this.onWeek,
+  });
   final List<Member> members;
   final DateTime day;
   final bool week;
@@ -124,14 +160,19 @@ class _Overview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final rules = ref.watch(availRulesProvider);
     final ovs = ref.watch(availOverridesProvider);
-    final cats = {for (final c in ref.watch(availCategoriesProvider(_lang(context)))) c.id: c};
+    final cats = {
+      for (final c in ref.watch(availCategoriesProvider(_lang(context))))
+        c.id: c,
+    };
     final preferDisplay = ref.watch(memberNamePreferDisplayProvider);
     final start = week
         ? DateTime(day.year, day.month, day.day - (day.weekday - 1))
         : DateTime(day.year, day.month, day.day);
     final end = start.add(Duration(days: week ? 7 : 1));
     final now = DateTime.now();
-    final fmt = week ? DateFormat.MMMd(context.dateLocale) : DateFormat.yMMMEd(context.dateLocale);
+    final fmt = week
+        ? DateFormat.MMMd(context.dateLocale)
+        : DateFormat.yMMMEd(context.dateLocale);
     return ListView(
       padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 16),
       children: [
@@ -140,11 +181,14 @@ class _Overview extends ConsumerWidget {
             IconButton(
               tooltip: tr(context, 'Previous', 'Anterior'),
               icon: Icon(PhosphorIcons.caretLeft()),
-              onPressed: () => onDay(day.subtract(Duration(days: week ? 7 : 1))),
+              onPressed: () =>
+                  onDay(day.subtract(Duration(days: week ? 7 : 1))),
             ),
             Expanded(
               child: Text(
-                week ? '${fmt.format(start)} – ${fmt.format(end.subtract(const Duration(days: 1)))}' : fmt.format(start),
+                week
+                    ? '${fmt.format(start)} – ${fmt.format(end.subtract(const Duration(days: 1)))}'
+                    : fmt.format(start),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
@@ -158,11 +202,22 @@ class _Overview extends ConsumerWidget {
         ),
         Row(
           children: [
-            PrismChip(label: tr(context, 'Day', 'Día'), selected: !week, onTap: () => onWeek(false)),
+            PrismChip(
+              label: tr(context, 'Day', 'Día'),
+              selected: !week,
+              onTap: () => onWeek(false),
+            ),
             const SizedBox(width: 6),
-            PrismChip(label: tr(context, 'Week', 'Semana'), selected: week, onTap: () => onWeek(true)),
+            PrismChip(
+              label: tr(context, 'Week', 'Semana'),
+              selected: week,
+              onTap: () => onWeek(true),
+            ),
             const Spacer(),
-            PrismButton(label: tr(context, 'Today', 'Hoy'), onPressed: () => onDay(DateTime.now())),
+            PrismButton(
+              label: tr(context, 'Today', 'Hoy'),
+              onPressed: () => onDay(DateTime.now()),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -170,7 +225,13 @@ class _Overview extends ConsumerWidget {
         const SizedBox(height: 10),
         for (final m in members)
           () {
-            final blocks = availabilityBlocks(memberId: m.id, from: start, to: end, rules: rules, overrides: ovs);
+            final blocks = availabilityBlocks(
+              memberId: m.id,
+              from: start,
+              to: end,
+              rules: rules,
+              overrides: ovs,
+            );
             final cur = availabilityAt(m.id, now, rules, ovs);
             return PrismSurface(
               margin: const EdgeInsets.only(bottom: 6),
@@ -190,15 +251,30 @@ class _Overview extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(cats[cur]!.iconData, size: 14, color: Color(cats[cur]!.color)),
+                            Icon(
+                              cats[cur]!.iconData,
+                              size: 14,
+                              color: Color(cats[cur]!.color),
+                            ),
                             const SizedBox(width: 4),
-                            Text(tr(context, 'Now: ', 'Ahora: ') + cats[cur]!.title, style: Theme.of(context).textTheme.labelSmall),
+                            Text(
+                              tr(context, 'Now: ', 'Ahora: ') +
+                                  cats[cur]!.title,
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
                           ],
                         ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  _TimelineBar(start: start, end: end, blocks: blocks, cats: cats, now: now, days: week ? 7 : 1),
+                  _TimelineBar(
+                    start: start,
+                    end: end,
+                    blocks: blocks,
+                    cats: cats,
+                    now: now,
+                    days: week ? 7 : 1,
+                  ),
                 ],
               ),
             );
@@ -209,7 +285,14 @@ class _Overview extends ConsumerWidget {
 }
 
 class _TimelineBar extends StatelessWidget {
-  const _TimelineBar({required this.start, required this.end, required this.blocks, required this.cats, required this.now, required this.days});
+  const _TimelineBar({
+    required this.start,
+    required this.end,
+    required this.blocks,
+    required this.cats,
+    required this.now,
+    required this.days,
+  });
   final DateTime start;
   final DateTime end;
   final List<AvailBlock> blocks;
@@ -224,7 +307,8 @@ class _TimelineBar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, c) {
         final w = c.maxWidth;
-        double x(DateTime t) => (t.difference(start).inMinutes.clamp(0, total) / total) * w;
+        double x(DateTime t) =>
+            (t.difference(start).inMinutes.clamp(0, total) / total) * w;
         return SizedBox(
           height: 34,
           child: Stack(
@@ -234,7 +318,9 @@ class _TimelineBar extends StatelessWidget {
                 bottom: 12,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.6,
+                    ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
@@ -246,18 +332,32 @@ class _TimelineBar extends StatelessWidget {
                   top: 0,
                   bottom: 12,
                   child: Tooltip(
-                    message: '${cats[b.category]?.title ?? b.category} · ${DateFormat.jm().format(b.start)}–${DateFormat.jm().format(b.end)}${b.note == null ? '' : ' · ${b.note}'}',
+                    message:
+                        '${cats[b.category]?.title ?? b.category} · ${DateFormat.jm().format(b.start)}–${DateFormat.jm().format(b.end)}${b.note == null ? '' : ' · ${b.note}'}',
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color(cats[b.category]?.color ?? 0xFF8C8C8C).withValues(alpha: b.isOverride ? 1 : 0.75),
+                        color: Color(
+                          cats[b.category]?.color ?? 0xFF8C8C8C,
+                        ).withValues(alpha: b.isOverride ? 1 : 0.75),
                         borderRadius: BorderRadius.circular(4),
-                        border: b.isOverride ? Border.all(color: theme.colorScheme.onSurface, width: 1) : null,
+                        border: b.isOverride
+                            ? Border.all(
+                                color: theme.colorScheme.onSurface,
+                                width: 1,
+                              )
+                            : null,
                       ),
                     ),
                   ),
                 ),
               if (now.isAfter(start) && now.isBefore(end))
-                Positioned(left: x(now) - 1, width: 2, top: 0, bottom: 10, child: ColoredBox(color: theme.colorScheme.primary)),
+                Positioned(
+                  left: x(now) - 1,
+                  width: 2,
+                  top: 0,
+                  bottom: 10,
+                  child: ColoredBox(color: theme.colorScheme.primary),
+                ),
               Positioned(
                 left: 0,
                 right: 0,
@@ -270,8 +370,12 @@ class _TimelineBar extends StatelessWidget {
                         child: Text(
                           days == 1
                               ? fmtMinutes(i * 6 * 60)
-                              : DateFormat.E(Localizations.localeOf(context).toString()).format(start.add(Duration(days: i))),
-                          style: theme.textTheme.labelSmall?.copyWith(fontSize: 9),
+                              : DateFormat.E(
+                                  Localizations.localeOf(context).toString(),
+                                ).format(start.add(Duration(days: i))),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontSize: 9,
+                          ),
                         ),
                       ),
                   ],
@@ -286,29 +390,54 @@ class _TimelineBar extends StatelessWidget {
 }
 
 class _Schedule extends ConsumerWidget {
-  const _Schedule({required this.members, required this.memberId, required this.onMember});
+  const _Schedule({
+    required this.members,
+    required this.memberId,
+    required this.onMember,
+  });
   final List<Member> members;
   final String memberId;
   final ValueChanged<String> onMember;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rules = [for (final r in ref.watch(availRulesProvider)) if (r.memberId == memberId) r];
+    final rules = [
+      for (final r in ref.watch(availRulesProvider))
+        if (r.memberId == memberId) r,
+    ];
     final now = DateTime.now();
-    final ovs = [for (final o in ref.watch(availOverridesProvider)) if (o.memberId == memberId && o.end.isAfter(now)) o]
-      ..sort((a, b) => a.start.compareTo(b.start));
-    final cats = {for (final c in ref.watch(availCategoriesProvider(_lang(context)))) c.id: c};
+    final ovs = [
+      for (final o in ref.watch(availOverridesProvider))
+        if (o.memberId == memberId && o.end.isAfter(now)) o,
+    ]..sort((a, b) => a.start.compareTo(b.start));
+    final cats = {
+      for (final c in ref.watch(availCategoriesProvider(_lang(context))))
+        c.id: c,
+    };
     final locale = Localizations.localeOf(context).toString();
     final monday = DateTime(2024, 1, 1); // a Monday, for weekday names
     return ListView(
       padding: EdgeInsets.fromLTRB(16, 0, 16, NavBarInset.of(context) + 16),
       children: [
-        TrackerMemberPicker(label: tr(context, 'Alter', 'Alter'), value: memberId, onChanged: (m) => m == null ? null : onMember(m)),
+        TrackerMemberPicker(
+          label: tr(context, 'Alter', 'Alter'),
+          value: memberId,
+          onChanged: (m) => m == null ? null : onMember(m),
+        ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Weekly schedule', 'Horario semanal'), style: Theme.of(context).textTheme.titleSmall)),
-            PrismButton(label: tr(context, 'Add block', 'Añadir bloque'), icon: AppIcons.add, onPressed: () => showRuleEditor(context, memberId: memberId)),
+            Expanded(
+              child: Text(
+                tr(context, 'Weekly schedule', 'Horario semanal'),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+            PrismButton(
+              label: tr(context, 'Add block', 'Añadir bloque'),
+              icon: AppIcons.add,
+              onPressed: () => showRuleEditor(context, memberId: memberId),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -318,24 +447,52 @@ class _Schedule extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: 44, child: Padding(padding: const EdgeInsets.only(top: 8), child: Text(DateFormat.E(locale).format(monday.add(Duration(days: d - 1)))))),
+                SizedBox(
+                  width: 44,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      DateFormat.E(
+                        locale,
+                      ).format(monday.add(Duration(days: d - 1))),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: Wrap(
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      for (final r in (rules.where((r) => r.weekdays.contains(d)).toList()..sort((a, b) => a.startMin - b.startMin)))
+                      for (final r
+                          in (rules
+                              .where((r) => r.weekdays.contains(d))
+                              .toList()
+                            ..sort((a, b) => a.startMin - b.startMin)))
                         PrismChip(
-                          avatar: Icon(cats[r.category]?.iconData, size: 14, color: Color(cats[r.category]?.color ?? 0xFF8C8C8C)),
-                          label: '${fmtMinutes(r.startMin)}–${fmtMinutes(r.endMin)} ${cats[r.category]?.title ?? ''}${r.notify ? ' 🔔' : ''}',
+                          avatar: Icon(
+                            cats[r.category]?.iconData,
+                            size: 14,
+                            color: Color(cats[r.category]?.color ?? 0xFF8C8C8C),
+                          ),
+                          label:
+                              '${fmtMinutes(r.startMin)}–${fmtMinutes(r.endMin)} ${cats[r.category]?.title ?? ''}${r.notify ? ' 🔔' : ''}',
                           selected: true,
-                          selectedColor: Color(cats[r.category]?.color ?? 0xFF8C8C8C),
-                          onTap: () => showRuleEditor(context, memberId: memberId, editing: r),
+                          selectedColor: Color(
+                            cats[r.category]?.color ?? 0xFF8C8C8C,
+                          ),
+                          onTap: () => showRuleEditor(
+                            context,
+                            memberId: memberId,
+                            editing: r,
+                          ),
                         ),
                       if (!rules.any((r) => r.weekdays.contains(d)))
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text('—', style: Theme.of(context).textTheme.labelSmall),
+                          child: Text(
+                            '—',
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
                         ),
                     ],
                   ),
@@ -346,28 +503,45 @@ class _Schedule extends ConsumerWidget {
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Temporary changes', 'Cambios temporales'), style: Theme.of(context).textTheme.titleSmall)),
-            PrismButton(label: tr(context, 'Add change', 'Añadir cambio'), icon: AppIcons.add, onPressed: () => showOverrideEditor(context, memberId: memberId)),
+            Expanded(
+              child: Text(
+                tr(context, 'Temporary changes', 'Cambios temporales'),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+            PrismButton(
+              label: tr(context, 'Add change', 'Añadir cambio'),
+              icon: AppIcons.add,
+              onPressed: () => showOverrideEditor(context, memberId: memberId),
+            ),
           ],
         ),
         if (ovs.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              tr(context, 'Use temporary changes for one-off days off, trips or rest periods.', 'Usa cambios temporales para días libres, viajes o descansos.'),
+              tr(
+                context,
+                'Use temporary changes for one-off days off, trips or rest periods.',
+                'Usa cambios temporales para días libres, viajes o descansos.',
+              ),
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
         for (final o in ovs)
           PrismListRow(
             dense: true,
-            leading: Icon(cats[o.category]?.iconData, color: Color(cats[o.category]?.color ?? 0xFF8C8C8C)),
+            leading: Icon(
+              cats[o.category]?.iconData,
+              color: Color(cats[o.category]?.color ?? 0xFF8C8C8C),
+            ),
             title: Text(cats[o.category]?.title ?? o.category),
             subtitle: Text(
               '${DateFormat.MMMd(context.dateLocale).add_jm().format(o.start)} – ${DateFormat.MMMd(context.dateLocale).add_jm().format(o.end)}${o.note == null ? '' : ' · ${o.note}'}',
             ),
             showChevron: true,
-            onTap: () => showOverrideEditor(context, memberId: memberId, editing: o),
+            onTap: () =>
+                showOverrideEditor(context, memberId: memberId, editing: o),
           ),
       ],
     );
@@ -382,17 +556,35 @@ class _Upcoming extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final rules = ref.watch(availRulesProvider);
     final ovs = ref.watch(availOverridesProvider);
-    final cats = {for (final c in ref.watch(availCategoriesProvider(_lang(context)))) c.id: c};
+    final cats = {
+      for (final c in ref.watch(availCategoriesProvider(_lang(context))))
+        c.id: c,
+    };
     final now = DateTime.now();
     final blocks = [
-      for (final m in members) ...availabilityBlocks(memberId: m.id, from: now, to: now.add(const Duration(days: 7)), rules: rules, overrides: ovs),
+      for (final m in members)
+        ...availabilityBlocks(
+          memberId: m.id,
+          from: now,
+          to: now.add(const Duration(days: 7)),
+          rules: rules,
+          overrides: ovs,
+        ),
     ]..sort((a, b) => a.start.compareTo(b.start));
     final fmt = DateFormat.MMMEd(context.dateLocale).add_jm();
     if (blocks.isEmpty) {
       return EmptyState(
         icon: Icon(PhosphorIcons.calendarCheck()),
-        title: tr(context, 'Nothing planned this week', 'Nada planeado esta semana'),
-        subtitle: tr(context, 'Add weekly blocks in Schedule.', 'Añade bloques semanales en Horario.'),
+        title: tr(
+          context,
+          'Nothing planned this week',
+          'Nada planeado esta semana',
+        ),
+        subtitle: tr(
+          context,
+          'Add weekly blocks in Schedule.',
+          'Añade bloques semanales en Horario.',
+        ),
       );
     }
     return ListView(
@@ -401,9 +593,16 @@ class _Upcoming extends ConsumerWidget {
         for (final b in blocks.take(200))
           PrismListRow(
             dense: true,
-            leading: Icon(cats[b.category]?.iconData, color: Color(cats[b.category]?.color ?? 0xFF8C8C8C)),
-            title: Text('${memberNameFor(ref, b.memberId) ?? '?'} · ${cats[b.category]?.title ?? b.category}'),
-            subtitle: Text('${fmt.format(b.start)} – ${DateFormat.jm().format(b.end)}${b.isOverride ? tr(context, ' · temporary', ' · temporal') : ''}'),
+            leading: Icon(
+              cats[b.category]?.iconData,
+              color: Color(cats[b.category]?.color ?? 0xFF8C8C8C),
+            ),
+            title: Text(
+              '${memberNameFor(ref, b.memberId) ?? '?'} · ${cats[b.category]?.title ?? b.category}',
+            ),
+            subtitle: Text(
+              '${fmt.format(b.start)} – ${DateFormat.jm().format(b.end)}${b.isOverride ? tr(context, ' · temporary', ' · temporal') : ''}',
+            ),
           ),
       ],
     );
@@ -420,14 +619,21 @@ class _Categories extends ConsumerWidget {
       children: [
         for (final c in cats)
           PrismListRow(
-            leading: CircleAvatar(backgroundColor: Color(c.color), child: Icon(c.iconData, color: Colors.white, size: 18)),
+            leading: CircleAvatar(
+              backgroundColor: Color(c.color),
+              child: Icon(c.iconData, color: Colors.white, size: 18),
+            ),
             title: Text(c.title),
             showChevron: true,
             onTap: () => _editCategory(context, ref, c),
           ),
         const SizedBox(height: 12),
         PrismButton(
-          label: tr(context, 'New availability type', 'Nuevo tipo de disponibilidad'),
+          label: tr(
+            context,
+            'New availability type',
+            'Nuevo tipo de disponibilidad',
+          ),
           icon: AppIcons.add,
           tone: PrismButtonTone.filled,
           onPressed: () => _editCategory(context, ref, null),
@@ -436,8 +642,14 @@ class _Categories extends ConsumerWidget {
     );
   }
 
-  Future<void> _editCategory(BuildContext context, WidgetRef ref, AvailCategory? c) async {
-    final builtin = c != null && builtInAvailability.any((b) => b.$1 == c.id) ? c.id : null;
+  Future<void> _editCategory(
+    BuildContext context,
+    WidgetRef ref,
+    AvailCategory? c,
+  ) async {
+    final builtin = c != null && builtInAvailability.any((b) => b.$1 == c.id)
+        ? c.id
+        : null;
     final name = TextEditingController(text: c?.title);
     var color = c?.color ?? colorChoices.first;
     var icon = c?.icon ?? 'circle';
@@ -451,24 +663,37 @@ class _Categories extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (builtin == null) PrismTextField(controller: name, labelText: tr(ctx, 'Name', 'Nombre')),
+                if (builtin == null)
+                  PrismTextField(
+                    controller: name,
+                    labelText: tr(ctx, 'Name', 'Nombre'),
+                  ),
                 const SizedBox(height: 12),
-                ColorChoiceRow(value: color, onChanged: (v) => set(() => color = v)),
+                ColorChoiceRow(
+                  value: color,
+                  onChanged: (v) => set(() => color = v),
+                ),
                 const SizedBox(height: 12),
-                IconChoiceGrid(value: icon, color: Color(color), onChanged: (v) => set(() => icon = v)),
+                IconChoiceGrid(
+                  value: icon,
+                  color: Color(color),
+                  onChanged: (v) => set(() => icon = v),
+                ),
                 const SizedBox(height: 16),
                 PrismButton(
                   label: ctx.l10n.save,
                   tone: PrismButtonTone.filled,
                   onPressed: () async {
                     if (builtin == null && name.text.trim().isEmpty) return;
-                    await ref.read(availabilityActionsProvider).saveCategory(
-                      editing: c?.record,
-                      builtin: builtin,
-                      title: builtin == null ? name.text.trim() : c!.title,
-                      color: color,
-                      icon: icon,
-                    );
+                    await ref
+                        .read(availabilityActionsProvider)
+                        .saveCategory(
+                          editing: c?.record,
+                          builtin: builtin,
+                          title: builtin == null ? name.text.trim() : c!.title,
+                          color: color,
+                          icon: icon,
+                        );
                     if (ctx.mounted) Navigator.of(ctx).pop();
                   },
                 ),
@@ -482,13 +707,22 @@ class _Categories extends ConsumerWidget {
   }
 }
 
-Future<void> showRuleEditor(BuildContext context, {required String memberId, AvailRule? editing}) => PrismSheet.showFullScreen(
+Future<void> showRuleEditor(
+  BuildContext context, {
+  required String memberId,
+  AvailRule? editing,
+}) => PrismSheet.showFullScreen(
   context: context,
-  builder: (ctx, scroll) => _RuleEditor(memberId: memberId, editing: editing, scroll: scroll),
+  builder: (ctx, scroll) =>
+      _RuleEditor(memberId: memberId, editing: editing, scroll: scroll),
 );
 
 class _RuleEditor extends ConsumerStatefulWidget {
-  const _RuleEditor({required this.memberId, this.editing, required this.scroll});
+  const _RuleEditor({
+    required this.memberId,
+    this.editing,
+    required this.scroll,
+  });
   final String memberId;
   final AvailRule? editing;
   final ScrollController scroll;
@@ -514,7 +748,10 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
   }
 
   Future<int?> _time(int m) async {
-    final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60));
+    final t = await showPrismTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: m ~/ 60, minute: m % 60),
+    );
     return t == null ? null : t.hour * 60 + t.minute;
   }
 
@@ -525,26 +762,34 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
     final monday = DateTime(2024, 1, 1);
     final dfmt = DateFormat.yMMMd(context.dateLocale);
     return TrackerEditorScaffold(
-      title: widget.editing == null ? tr(context, 'Weekly availability', 'Disponibilidad semanal') : tr(context, 'Edit block', 'Editar bloque'),
+      title: widget.editing == null
+          ? tr(context, 'Weekly availability', 'Disponibilidad semanal')
+          : tr(context, 'Edit block', 'Editar bloque'),
       canSave: _days.isNotEmpty,
       scrollController: widget.scroll,
       onSave: () async {
-        await ref.read(availabilityActionsProvider).saveRule(
-          editing: widget.editing?.record,
-          memberId: _member,
-          days: _days.toList()..sort(),
-          start: _start,
-          end: _end,
-          category: _cat,
-          note: _note.text.trim().isEmpty ? null : _note.text.trim(),
-          notify: _notify,
-          validFrom: _from,
-          validUntil: _until,
-        );
+        await ref
+            .read(availabilityActionsProvider)
+            .saveRule(
+              editing: widget.editing?.record,
+              memberId: _member,
+              days: _days.toList()..sort(),
+              start: _start,
+              end: _end,
+              category: _cat,
+              note: _note.text.trim().isEmpty ? null : _note.text.trim(),
+              notify: _notify,
+              validFrom: _from,
+              validUntil: _until,
+            );
         if (context.mounted) Navigator.of(context).pop();
       },
       children: [
-        TrackerMemberPicker(label: tr(context, 'Alter', 'Alter'), value: _member, onChanged: (m) => setState(() => _member = m ?? _member)),
+        TrackerMemberPicker(
+          label: tr(context, 'Alter', 'Alter'),
+          value: _member,
+          onChanged: (m) => setState(() => _member = m ?? _member),
+        ),
         const SizedBox(height: 12),
         TrackerLabel(tr(context, 'Days', 'Días')),
         Wrap(
@@ -552,9 +797,13 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
           children: [
             for (var d = 1; d <= 7; d++)
               PrismChip(
-                label: DateFormat.E(locale).format(monday.add(Duration(days: d - 1))),
+                label: DateFormat.E(
+                  locale,
+                ).format(monday.add(Duration(days: d - 1))),
                 selected: _days.contains(d),
-                onTap: () => setState(() => _days.contains(d) ? _days.remove(d) : _days.add(d)),
+                onTap: () => setState(
+                  () => _days.contains(d) ? _days.remove(d) : _days.add(d),
+                ),
               ),
           ],
         ),
@@ -587,7 +836,10 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
         if (_end <= _start)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text(tr(context, 'Ends the next day.', 'Termina al día siguiente.'), style: Theme.of(context).textTheme.labelSmall),
+            child: Text(
+              tr(context, 'Ends the next day.', 'Termina al día siguiente.'),
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
           ),
         const SizedBox(height: 12),
         TrackerLabel(tr(context, 'Type', 'Tipo')),
@@ -606,9 +858,18 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
           ],
         ),
         const SizedBox(height: 12),
-        PrismTextField(controller: _note, labelText: tr(context, 'Note', 'Nota'), maxLines: 3, minLines: 1),
+        PrismTextField(
+          controller: _note,
+          labelText: tr(context, 'Note', 'Nota'),
+          maxLines: 3,
+          minLines: 1,
+        ),
         PrismSwitchRow(
-          title: tr(context, 'Notify me before it starts', 'Avisarme antes de que empiece'),
+          title: tr(
+            context,
+            'Notify me before it starts',
+            'Avisarme antes de que empiece',
+          ),
           value: _notify,
           onChanged: (v) => setState(() => _notify = v),
         ),
@@ -616,9 +877,16 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
           children: [
             Expanded(
               child: PrismButton(
-                label: _from == null ? tr(context, 'Starts: any time', 'Inicio: siempre') : dfmt.format(_from!),
+                label: _from == null
+                    ? tr(context, 'Starts: any time', 'Inicio: siempre')
+                    : dfmt.format(_from!),
                 onPressed: () async {
-                  final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _from ?? DateTime.now());
+                  final d = await showPrismDatePicker(
+                    context: context,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                    initialDate: _from ?? DateTime.now(),
+                  );
                   setState(() => _from = d);
                 },
               ),
@@ -626,9 +894,16 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
             const SizedBox(width: 8),
             Expanded(
               child: PrismButton(
-                label: _until == null ? tr(context, 'Ends: never', 'Fin: nunca') : dfmt.format(_until!),
+                label: _until == null
+                    ? tr(context, 'Ends: never', 'Fin: nunca')
+                    : dfmt.format(_until!),
                 onPressed: () async {
-                  final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: _until ?? DateTime.now());
+                  final d = await showPrismDatePicker(
+                    context: context,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                    initialDate: _until ?? DateTime.now(),
+                  );
                   setState(() => _until = d);
                 },
               ),
@@ -642,7 +917,9 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
             tone: PrismButtonTone.destructive,
             icon: AppIcons.delete,
             onPressed: () async {
-              await ref.read(availabilityActionsProvider).delete(widget.editing!.record.id);
+              await ref
+                  .read(availabilityActionsProvider)
+                  .delete(widget.editing!.record.id);
               if (context.mounted) Navigator.of(context).pop();
             },
           ),
@@ -652,13 +929,22 @@ class _RuleEditorState extends ConsumerState<_RuleEditor> {
   }
 }
 
-Future<void> showOverrideEditor(BuildContext context, {required String memberId, AvailOverride? editing}) => PrismSheet.showFullScreen(
+Future<void> showOverrideEditor(
+  BuildContext context, {
+  required String memberId,
+  AvailOverride? editing,
+}) => PrismSheet.showFullScreen(
   context: context,
-  builder: (ctx, scroll) => _OverrideEditor(memberId: memberId, editing: editing, scroll: scroll),
+  builder: (ctx, scroll) =>
+      _OverrideEditor(memberId: memberId, editing: editing, scroll: scroll),
 );
 
 class _OverrideEditor extends ConsumerStatefulWidget {
-  const _OverrideEditor({required this.memberId, this.editing, required this.scroll});
+  const _OverrideEditor({
+    required this.memberId,
+    this.editing,
+    required this.scroll,
+  });
   final String memberId;
   final AvailOverride? editing;
   final ScrollController scroll;
@@ -669,7 +955,8 @@ class _OverrideEditor extends ConsumerStatefulWidget {
 class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
   late String _member = widget.memberId;
   late DateTime _start = widget.editing?.start ?? DateTime.now();
-  late DateTime _end = widget.editing?.end ?? DateTime.now().add(const Duration(hours: 4));
+  late DateTime _end =
+      widget.editing?.end ?? DateTime.now().add(const Duration(hours: 4));
   late String _cat = widget.editing?.category ?? 'unavailable';
   late bool _notify = widget.editing?.record.flag('notify') ?? false;
   late final _note = TextEditingController(text: widget.editing?.note);
@@ -681,9 +968,17 @@ class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
   }
 
   Future<DateTime?> _pick(DateTime initial) async {
-    final d = await showPrismDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: initial);
+    final d = await showPrismDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      initialDate: initial,
+    );
     if (d == null || !mounted) return null;
-    final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
+    final t = await showPrismTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
     if (t == null) return null;
     return DateTime(d.year, d.month, d.day, t.hour, t.minute);
   }
@@ -697,19 +992,25 @@ class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
       canSave: _end.isAfter(_start),
       scrollController: widget.scroll,
       onSave: () async {
-        await ref.read(availabilityActionsProvider).saveOverride(
-          editing: widget.editing?.record,
-          memberId: _member,
-          start: _start,
-          end: _end,
-          category: _cat,
-          note: _note.text.trim().isEmpty ? null : _note.text.trim(),
-          notify: _notify,
-        );
+        await ref
+            .read(availabilityActionsProvider)
+            .saveOverride(
+              editing: widget.editing?.record,
+              memberId: _member,
+              start: _start,
+              end: _end,
+              category: _cat,
+              note: _note.text.trim().isEmpty ? null : _note.text.trim(),
+              notify: _notify,
+            );
         if (context.mounted) Navigator.of(context).pop();
       },
       children: [
-        TrackerMemberPicker(label: tr(context, 'Alter', 'Alter'), value: _member, onChanged: (m) => setState(() => _member = m ?? _member)),
+        TrackerMemberPicker(
+          label: tr(context, 'Alter', 'Alter'),
+          value: _member,
+          onChanged: (m) => setState(() => _member = m ?? _member),
+        ),
         const SizedBox(height: 12),
         PrismButton(
           label: '${tr(context, 'Starts', 'Empieza')}: ${fmt.format(_start)}',
@@ -742,9 +1043,18 @@ class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
           ],
         ),
         const SizedBox(height: 12),
-        PrismTextField(controller: _note, labelText: tr(context, 'Note', 'Nota'), maxLines: 3, minLines: 1),
+        PrismTextField(
+          controller: _note,
+          labelText: tr(context, 'Note', 'Nota'),
+          maxLines: 3,
+          minLines: 1,
+        ),
         PrismSwitchRow(
-          title: tr(context, 'Notify me before it starts', 'Avisarme antes de que empiece'),
+          title: tr(
+            context,
+            'Notify me before it starts',
+            'Avisarme antes de que empiece',
+          ),
           value: _notify,
           onChanged: (v) => setState(() => _notify = v),
         ),
@@ -754,7 +1064,9 @@ class _OverrideEditorState extends ConsumerState<_OverrideEditor> {
             tone: PrismButtonTone.destructive,
             icon: AppIcons.delete,
             onPressed: () async {
-              await ref.read(availabilityActionsProvider).delete(widget.editing!.record.id);
+              await ref
+                  .read(availabilityActionsProvider)
+                  .delete(widget.editing!.record.id);
               if (context.mounted) Navigator.of(context).pop();
             },
           ),
@@ -773,7 +1085,10 @@ class AvailabilityNowCard extends ConsumerWidget {
     final members = ref.watch(activeMembersProvider).value ?? const <Member>[];
     final rules = ref.watch(availRulesProvider);
     final ovs = ref.watch(availOverridesProvider);
-    final cats = {for (final c in ref.watch(availCategoriesProvider(_lang(context)))) c.id: c};
+    final cats = {
+      for (final c in ref.watch(availCategoriesProvider(_lang(context))))
+        c.id: c,
+    };
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final now = DateTime.now();
     final rows = [
@@ -788,22 +1103,43 @@ class AvailabilityNowCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(PhosphorIcons.calendarCheck(), color: theme.colorScheme.primary),
+              Icon(
+                PhosphorIcons.calendarCheck(),
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 8),
-              Expanded(child: Text(tr(context, 'Availability now', 'Disponibilidad ahora'), style: theme.textTheme.titleSmall)),
+              Expanded(
+                child: Text(
+                  tr(context, 'Availability now', 'Disponibilidad ahora'),
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
               Icon(AppIcons.chevronRight, size: 18),
             ],
           ),
           const SizedBox(height: 6),
-          if (rows.isEmpty) Text(tr(context, 'No availability planned for now.', 'No hay disponibilidad planeada ahora.'), style: theme.textTheme.bodySmall),
+          if (rows.isEmpty)
+            Text(
+              tr(
+                context,
+                'No availability planned for now.',
+                'No hay disponibilidad planeada ahora.',
+              ),
+              style: theme.textTheme.bodySmall,
+            ),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: [
               for (final (m, c) in rows)
                 PrismChip(
-                  avatar: Icon(c?.iconData, size: 14, color: Color(c?.color ?? 0xFF8C8C8C)),
-                  label: '${m.effectiveName(preferDisplayName: prefer)} · ${c?.title ?? ''}',
+                  avatar: Icon(
+                    c?.iconData,
+                    size: 14,
+                    color: Color(c?.color ?? 0xFF8C8C8C),
+                  ),
+                  label:
+                      '${m.effectiveName(preferDisplayName: prefer)} · ${c?.title ?? ''}',
                   selected: false,
                   variant: PrismChipVariant.inline,
                   onTap: onOpen ?? () {},

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -96,11 +97,19 @@ class _MoodScreenState extends ConsumerState<MoodScreen> {
                 onChanged: (t) => setState(() => _tab = t),
               ),
               const SizedBox(height: 16),
-              ...switch (_tab) {
-                _MoodTab.overview => [_Overview(entries: entries)],
-                _MoodTab.calendar => [_MoodCalendar(entries: entries)],
-                _MoodTab.history => [_History(entries: entries)],
-              },
+              SectionSwitcher(
+                id: _tab,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...switch (_tab) {
+                      _MoodTab.overview => [_Overview(entries: entries)],
+                      _MoodTab.calendar => [_MoodCalendar(entries: entries)],
+                      _MoodTab.history => [_History(entries: entries)],
+                    },
+                  ],
+                ),
+              ),
             ],
           ),
         ),

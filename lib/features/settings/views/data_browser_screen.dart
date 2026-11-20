@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,15 +88,22 @@ class _DataBrowserScreenState extends ConsumerState<DataBrowserScreen> {
 
           // Data list — keyed by _refreshKey to force reload on refresh tap
           Expanded(
-            child: switch (_selectedTable) {
-              _DataTable.members => _MembersTable(key: ValueKey(_refreshKey)),
-              _DataTable.sessions => _SessionsTable(key: ValueKey(_refreshKey)),
-              _DataTable.conversations => _ConversationsTable(
-                key: ValueKey(_refreshKey),
-              ),
-              _DataTable.messages => _MessagesTable(key: ValueKey(_refreshKey)),
-              _DataTable.polls => _PollsTable(key: ValueKey(_refreshKey)),
-            },
+            child: SectionSwitcher(
+              id: _selectedTable,
+              child: switch (_selectedTable) {
+                _DataTable.members => _MembersTable(key: ValueKey(_refreshKey)),
+                _DataTable.sessions => _SessionsTable(
+                  key: ValueKey(_refreshKey),
+                ),
+                _DataTable.conversations => _ConversationsTable(
+                  key: ValueKey(_refreshKey),
+                ),
+                _DataTable.messages => _MessagesTable(
+                  key: ValueKey(_refreshKey),
+                ),
+                _DataTable.polls => _PollsTable(key: ValueKey(_refreshKey)),
+              },
+            ),
           ),
         ],
       ),

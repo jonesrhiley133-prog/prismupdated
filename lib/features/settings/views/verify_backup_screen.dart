@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -260,49 +261,56 @@ class VerifyBackupScreenState extends ConsumerState<VerifyBackupScreen>
 
   Widget _buildStepContent(BuildContext context) {
     final l10n = context.l10n;
-    return switch (_step) {
-      _VerifyStep.enterPhrase => _buildPhraseStep(context),
-      _VerifyStep.enterPin => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildStepIndicator(context, 2, l10n.verifyBackupStepPin),
-          _VerifyPinView(
-            mnemonic: _mnemonic!,
-            pin: _pin,
-            lockout: _lockout,
-            onMatch: (mnemonic) {
-              setState(() {
-                _result = VerifyBackupMatchResult(
-                  mnemonic: mnemonic,
-                  verifiedAt: DateTime.now(),
-                );
-                _step = _VerifyStep.result;
-              });
-            },
-            onNoMatch: () {
-              setState(() {
-                _result = const VerifyBackupNoMatchResult();
-                _step = _VerifyStep.result;
-              });
-            },
-            onBack: _resetToPhrase,
-          ),
-        ],
-      ),
-      _VerifyStep.result => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildStepIndicator(context, 3, context.l10n.verifyBackupStepResult),
-          const SizedBox(height: 16),
-          VerifyBackupResultView(
-            result: _result!,
-            onDone: () => Navigator.of(context).pop(),
-            onTryDifferent: _resetToPhrase,
-            onReenterPin: _resetToPin,
-          ),
-        ],
-      ),
-    };
+    return SectionSwitcher(
+      id: _step,
+      child: switch (_step) {
+        _VerifyStep.enterPhrase => _buildPhraseStep(context),
+        _VerifyStep.enterPin => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildStepIndicator(context, 2, l10n.verifyBackupStepPin),
+            _VerifyPinView(
+              mnemonic: _mnemonic!,
+              pin: _pin,
+              lockout: _lockout,
+              onMatch: (mnemonic) {
+                setState(() {
+                  _result = VerifyBackupMatchResult(
+                    mnemonic: mnemonic,
+                    verifiedAt: DateTime.now(),
+                  );
+                  _step = _VerifyStep.result;
+                });
+              },
+              onNoMatch: () {
+                setState(() {
+                  _result = const VerifyBackupNoMatchResult();
+                  _step = _VerifyStep.result;
+                });
+              },
+              onBack: _resetToPhrase,
+            ),
+          ],
+        ),
+        _VerifyStep.result => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildStepIndicator(
+              context,
+              3,
+              context.l10n.verifyBackupStepResult,
+            ),
+            const SizedBox(height: 16),
+            VerifyBackupResultView(
+              result: _result!,
+              onDone: () => Navigator.of(context).pop(),
+              onTryDifferent: _resetToPhrase,
+              onReenterPin: _resetToPin,
+            ),
+          ],
+        ),
+      },
+    );
   }
 
   Widget _buildPhraseStep(BuildContext context) {

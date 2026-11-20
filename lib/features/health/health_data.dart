@@ -286,9 +286,9 @@ class HealthAccessGuard extends ConsumerWidget {
         (!canViewHealth(r, viewers) ||
             r.strings('subjects').any(hidden.contains) ||
             hidden.contains(r.str('author')))) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Health')),
-        body: const Center(
+      return const PrismPageScaffold(
+        topBar: PrismTopBar(title: 'Health', showBackButton: true),
+        body: Center(
           child: Text(
             'This private record is unavailable in the current view.',
           ),

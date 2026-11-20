@@ -153,7 +153,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 ),
               ),
             ),
-            Positioned.fill(
+            if (!kIsWeb) Positioned.fill(
               child: IgnorePointer(
                 child: Container(
                   decoration: BoxDecoration(
@@ -169,7 +169,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               ),
             ),
             SafeArea(
-              child: Column(
+              child: Center(
+                child: ConstrainedBox(
+                  // Wide web windows: a readable centered column, not edge-to-edge.
+                  constraints: BoxConstraints(maxWidth: kIsWeb && MediaQuery.sizeOf(context).width >= 1024 ? 720 : double.infinity),
+                  child: Column(
                 children: [
                   if (!isFullScreenStep && !isCompleteStep)
                     Padding(
@@ -328,6 +332,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       ),
                     ),
                 ],
+              ),
+                ),
               ),
             ),
           ],

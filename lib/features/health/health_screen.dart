@@ -7,8 +7,10 @@ import 'package:uuid/uuid.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'health_data.dart';
+import 'health_surface.dart';
 import 'body_regions.dart';
 import 'body_map_editor.dart';
+import 'body_sheet.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
   const HealthScreen({super.key, this.entryId, this.initialTab = 0});
@@ -33,8 +35,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
     final members = ref.watch(userVisibleMembersProvider).value ?? [];
     return PrismPageScaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      bodyPadding: EdgeInsets.zero,
+      topBarMaxWidth: PrismTokens.contentMaxWidth,
       topBar: PrismTopBar(
         title: 'Health',
+        showBackButton: true,
         actions: [
           PrismTopBarAction(
             icon: Icons.ios_share,
@@ -44,7 +49,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
         ],
       ),
       body: records.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const PrismLoadingState(),
         error: (_, _) => const Center(
           child: Text('Health records could not be loaded. Try again.'),
         ),
@@ -77,6 +82,17 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                 )
                 .toList();
           }
+          final entries = visible
+              .where(
+                (r) => _tab == 2
+                    ? r.kind == healthEpisode
+                    : r.kind == healthCheckIn &&
+                          (_tab != 1 ||
+                              healthMaps(
+                                r.fields['symptoms'],
+                              ).any((s) => healthMaps(s['spots']).isNotEmpty)),
+              )
+              .toList();
           return ListView(
             padding: EdgeInsets.fromLTRB(
               16,
@@ -86,7 +102,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
             ),
             children: [
               ClampedBody(
-                maxWidth: 600,
+                maxWidth: PrismTokens.contentMaxWidth,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -102,74 +118,91 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                           showHealthLog(context, mapFirst: _tab == 1),
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      initialValue: _alter ?? '',
-                      decoration: const InputDecoration(
-                        labelText: 'Whose records are in view',
-                      ),
+                    PrismSelect<String>(
+                      value: _alter ?? '',
+                      labelText: 'Whose records are in view',
                       items: [
-                        const DropdownMenuItem(
+                        const PrismSelectItem(
                           value: '',
-                          child: Text('All accessible records'),
+                          label: 'All accessible records',
                         ),
                         for (final m in members)
-                          DropdownMenuItem(value: m.id, child: Text(m.name)),
+                          PrismSelectItem(value: m.id, label: m.name),
                       ],
                       onChanged: (v) =>
                           setState(() => _alter = v!.isEmpty ? null : v),
                     ),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText:
-                            'Search symptoms, categories, descriptors or regions',
-                        prefixIcon: Icon(Icons.search),
+                    const SizedBox(height: 12),
+                    HealthSurface(
+                      padding: EdgeInsets.zero,
+                      child: ExpansionTile(
+                        title: const Text('Search & filters'),
+                        leading: const Icon(Icons.tune),
+                        childrenPadding: const EdgeInsets.fromLTRB(
+                          16,
+                          0,
+                          16,
+                          12,
+                        ),
+                        expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          PrismTextField(
+                            labelText:
+                                'Search symptoms, categories, descriptors or regions',
+                            prefixIcon: const Icon(Icons.search),
+                            onChanged: (v) =>
+                                setState(() => _query = v.toLowerCase()),
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              PrismSelect<String>.compact(
+                                value: _state,
+                                items: [
+                                  for (final s in [
+                                    'all',
+                                    'open',
+                                    'improving',
+                                    'resolved',
+                                    'reopened',
+                                    'unsure',
+                                  ])
+                                    PrismSelectItem(
+                                      value: s,
+                                      label: healthStateLabel(s),
+                                    ),
+                                ],
+                                onChanged: (v) => setState(() => _state = v!),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  final r = await showDateRangePicker(
+                                    context: context,
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime.now(),
+                                    initialDateRange: _dates,
+                                  );
+                                  if (r != null && mounted) {
+                                    setState(() => _dates = r);
+                                  }
+                                },
+                                child: Text(
+                                  _dates == null
+                                      ? 'Filter dates'
+                                      : '${DateFormat.yMd().format(_dates!.start)} – ${DateFormat.yMd().format(_dates!.end)}',
+                                ),
+                              ),
+                              if (_dates != null)
+                                TextButton(
+                                  onPressed: () =>
+                                      setState(() => _dates = null),
+                                  child: const Text('Clear dates'),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
-                      onChanged: (v) =>
-                          setState(() => _query = v.toLowerCase()),
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        DropdownButton<String>(
-                          value: _state,
-                          items: [
-                            for (final s in [
-                              'all',
-                              'open',
-                              'improving',
-                              'resolved',
-                              'reopened',
-                              'unsure',
-                            ])
-                              DropdownMenuItem(value: s, child: Text(s)),
-                          ],
-                          onChanged: (v) => setState(() => _state = v!),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            final r = await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime.now(),
-                              initialDateRange: _dates,
-                            );
-                            if (r != null && mounted) {
-                              setState(() => _dates = r);
-                            }
-                          },
-                          child: Text(
-                            _dates == null
-                                ? 'Filter dates'
-                                : '${DateFormat.yMd().format(_dates!.start)} – ${DateFormat.yMd().format(_dates!.end)}',
-                          ),
-                        ),
-                        if (_dates != null)
-                          TextButton(
-                            onPressed: () => setState(() => _dates = null),
-                            child: const Text('Clear dates'),
-                          ),
-                      ],
                     ),
                     if (widget.entryId == null) ...[
                       for (final r
@@ -182,25 +215,22 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                               .take(3))
                         ListTile(
                           leading: const Icon(Icons.history),
+                          onTap: () =>
+                              showHealthLog(context, editing: r, episode: true),
                           title: Text(r.title),
                           subtitle: Text(
-                            'Episode · ${r.str('status') ?? 'open'}',
+                            'Episode · ${healthStateLabel(r.str('status') ?? 'open')}',
                           ),
                         ),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          for (final (i, label) in [
-                            'Timeline',
-                            'Body Map',
-                            'Episodes',
-                          ].indexed)
-                            ChoiceChip(
-                              label: Text(label),
-                              selected: _tab == i,
-                              onSelected: (_) => setState(() => _tab = i),
-                            ),
+                      const SizedBox(height: 16),
+                      PrismSegmentedControl<int>(
+                        segments: const [
+                          PrismSegment(value: 0, label: 'Timeline'),
+                          PrismSegment(value: 1, label: 'Body Map'),
+                          PrismSegment(value: 2, label: 'Episodes'),
                         ],
+                        selected: _tab,
+                        onChanged: (v) => setState(() => _tab = v),
                       ),
                     ],
                     if (_tab == 2)
@@ -210,28 +240,53 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                         label: const Text('Create episode'),
                       ),
                     const SizedBox(height: 12),
-                    if (visible
-                        .where(
-                          (r) => _tab == 2
-                              ? r.kind == healthEpisode
-                              : r.kind == healthCheckIn,
-                        )
-                        .isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Text(
-                          'No records in this view. Log a symptom, a body sensation, or how you feel in your own words.',
+                    if (_tab == 1 && widget.entryId == null) ...[
+                      _BodySheetOverview(records: entries),
+                      const SizedBox(height: 16),
+                      const _VocabularyManager(),
+                    ],
+                    if (entries.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: HealthSurface(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                _tab == 2
+                                    ? Icons.history
+                                    : _tab == 1
+                                    ? Icons.accessibility_new
+                                    : Icons.favorite_outline,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _tab == 2
+                                    ? 'Keep the whole story together'
+                                    : _tab == 1
+                                    ? 'Your body, in your own words'
+                                    : 'Begin with how you feel',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _tab == 2
+                                    ? 'Group check-ins into an episode and follow its changes over time. Existing check-ins can be attached later.'
+                                    : 'A short description is enough. Add timing, sensations or body locations whenever you want. Details can stay Unsure.',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    if (_tab == 1) const _VocabularyManager(),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        'Compare days with logged observations',
+                    if (entries.isNotEmpty)
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Compare days with logged observations',
+                        ),
+                        value: _compare,
+                        onChanged: (v) => setState(() => _compare = v),
                       ),
-                      value: _compare,
-                      onChanged: (v) => setState(() => _compare = v),
-                    ),
                     if (_compare)
                       Builder(
                         builder: (context) {
@@ -272,13 +327,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                           );
                         },
                       ),
-                    for (final group in _byDay(
-                      visible.where(
-                        (r) => _tab == 2
-                            ? r.kind == healthEpisode
-                            : r.kind == healthCheckIn,
-                      ),
-                    ).entries) ...[
+                    for (final group in _byDay(entries).entries) ...[
                       Padding(
                         padding: const EdgeInsets.only(top: 16, bottom: 8),
                         child: Text(
@@ -286,14 +335,16 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
-                      for (final r in group.value) _HealthRow(record: r),
+                      for (final r in group.value)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _HealthRow(record: r),
+                        ),
                     ],
                     if (visible.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          '${visible.where((r) => r.kind == healthCheckIn).map((r) => DateFormat.yMd().format(r.occurredAt ?? r.createdAt)).toSet().length} days with a logged observation in this view. Days without a log are unknown.',
-                        ),
+                        child: Text(_loggedDaysLabel(visible)),
                       ),
                   ],
                 ),
@@ -346,12 +397,13 @@ class _HealthRow extends ConsumerWidget {
         ? 'Unsure'
         : r.strings('subjects').map(name).join(', ');
     final observations = healthMaps(r.fields['observations']);
-    return Card(
+    return HealthSurface(
+      padding: EdgeInsets.zero,
       child: ExpansionTile(
         key: ValueKey('${r.id}:${ref.watch(healthViewersProvider)}'),
         title: Text(r.title),
         subtitle: Text(
-          '$subject · ${r.str('status') ?? 'open'} · ${observations.isEmpty ? 'First report' : '${observations.length} follow-ups'}',
+          '$subject · ${healthStateLabel(r.str('status') ?? 'open')} · ${observations.isEmpty ? 'First report' : '${observations.length} follow-ups'}',
         ),
         childrenPadding: const EdgeInsets.all(16),
         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
@@ -385,27 +437,17 @@ class _HealthRow extends ConsumerWidget {
             const Text(
               'Preserved from a Mood check-in. Original ID, text and association retained.',
             ),
-          for (final s in healthMaps(r.fields['symptoms'])) ...[
-            Text(
-              '${s['term']} · ${s['severity'] ?? 'Unsure'}',
-              style: Theme.of(context).textTheme.titleSmall,
+          for (final symptom in healthMaps(r.fields['symptoms']))
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: HealthSurface(child: _SymptomReadout(symptom: symptom)),
             ),
-            for (final e in s.entries.where(
-              (e) =>
-                  !['id', 'term', 'spots', 'severity'].contains(e.key) &&
-                  e.value != null &&
-                  '${e.value}'.isNotEmpty,
-            ))
-              Text('${e.key}: ${e.value}'),
-            for (final spot in healthMaps(s['spots']))
-              Text(
-                '${spot['label'] ?? 'Location unspecified'} (${spot['side'] ?? 'unspecified'}, ${spot['view'] ?? 'unspecified'}) · ${(spot['descriptors'] as List? ?? []).join(', ')}${spot['legacyText'] == null ? '' : ' · Original: ${spot['legacyText']}'}',
-              ),
-          ],
           for (final o in observations)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text('${o['status']} · ${o['at']}'),
+              title: Text(
+                '${healthStateLabel('${o['status']}')} · ${_observationTime(o['at'])}',
+              ),
               subtitle: o['note'] == null ? null : Text('${o['note']}'),
             ),
           Wrap(
@@ -497,7 +539,7 @@ Future<String?> _ask(BuildContext context, String title) async {
     context: context,
     builder: (ctx) => AlertDialog(
       title: Text(title),
-      content: TextField(controller: controller, maxLines: 3),
+      content: PrismTextField(controller: controller, maxLines: 3),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
@@ -678,9 +720,13 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
           (_title.text.isNotEmpty ||
               _notes.text.isNotEmpty ||
               _symptoms.isNotEmpty),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.episode ? 'Episode' : 'Log how I feel'),
+      child: HealthEditorScaffold(
+        bodyPadding: EdgeInsets.zero,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        topBar: PrismTopBar(
+          title: widget.episode ? 'Episode' : 'Log how I feel',
+          centerTitle: false,
+          showBackButton: true,
           actions: [
             TextButton(
               onPressed: _saving ? null : _save,
@@ -709,70 +755,72 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
                         color: Theme.of(context).colorScheme.error,
                       ),
                     ),
-                  TextField(
+                  PrismTextField(
                     controller: _title,
                     onChanged: (_) => setState(() {}),
-                    autofocus: !widget.mapFirst,
-                    decoration: InputDecoration(
-                      labelText: widget.episode
-                          ? 'Episode label'
-                          : 'Symptom or short description',
-                      hintText: 'Use your own words. Details are optional.',
-                    ),
+                    autofocus: widget.editing == null && !widget.mapFirst,
+                    labelText: widget.episode
+                        ? 'Episode label'
+                        : 'Symptom or short description',
+                    hintText: 'Use your own words. Details are optional.',
                   ),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
+                  const SizedBox(height: 16),
+                  PrismSelect<String>(
                     key: ValueKey('author:$_author'),
-                    initialValue: _author ?? '',
-                    decoration: const InputDecoration(
-                      labelText: 'Author — who is creating this entry',
-                    ),
+                    value: _author ?? '',
+                    labelText: 'Author — who is creating this entry',
                     items: [
-                      const DropdownMenuItem(value: '', child: Text('Unsure')),
+                      const PrismSelectItem(value: '', label: 'Unsure'),
                       for (final m in members.where(
                         (m) => ref.watch(healthViewersProvider).contains(m.id),
                       ))
-                        DropdownMenuItem(value: m.id, child: Text(m.name)),
+                        PrismSelectItem(value: m.id, label: m.name),
                     ],
                     onChanged: (v) =>
                         setState(() => _author = v!.isEmpty ? null : v),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
                   const Text('Subject — who this describes'),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       for (final mode in ['alters', 'system', 'unsure'])
-                        ChoiceChip(
-                          label: Text(switch (mode) {
+                        PrismChip(
+                          label: switch (mode) {
                             'alters' => 'One or several alters',
                             'system' => 'Whole system',
                             _ => 'Unsure',
-                          }),
+                          },
                           selected: _mode == mode,
-                          onSelected: (_) => setState(() => _mode = mode),
+                          onTap: () => setState(() => _mode = mode),
                         ),
                     ],
                   ),
+                  const SizedBox(height: 12),
                   if (_mode == 'alters')
                     Wrap(
                       spacing: 6,
+                      runSpacing: 8,
                       children: [
                         for (final m in members)
-                          FilterChip(
-                            label: Text(m.name),
+                          PrismChip(
+                            label: m.name,
                             selected: _subjects.contains(m.id),
-                            onSelected: (v) => setState(
-                              () => v
+                            onTap: () => setState(
+                              () => !_subjects.contains(m.id)
                                   ? _subjects.add(m.id)
                                   : _subjects.remove(m.id),
                             ),
                           ),
                       ],
                     ),
+                  const SizedBox(height: 16),
                   const Text(
                     'Private in Health. Whole-system records and Unsure records without an author are visible to the unlocked system. Nothing is posted to social profiles, Bulletin Board, or lock-screen notifications.',
                   ),
+                  const SizedBox(height: 16),
                   TextButton.icon(
                     icon: const Icon(Icons.schedule),
                     label: Text(
@@ -803,10 +851,10 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
                       }
                     },
                   ),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: _status,
-                    decoration: const InputDecoration(labelText: 'State'),
+                  const SizedBox(height: 16),
+                  PrismSelect<String>(
+                    value: _status,
+                    labelText: 'State',
                     items: [
                       for (final s in [
                         'open',
@@ -815,28 +863,27 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
                         'reopened',
                         'unsure',
                       ])
-                        DropdownMenuItem(value: s, child: Text(s)),
+                        PrismSelectItem(value: s, label: healthStateLabel(s)),
                     ],
                     onChanged: (v) => setState(() => _status = v!),
                   ),
                   if (widget.episode) ...[
-                    TextFormField(
+                    const SizedBox(height: 16),
+                    PrismTextField(
                       initialValue: _approximateStart,
-                      decoration: const InputDecoration(
-                        labelText: 'Approximate start (optional)',
-                        hintText: 'For example, earlier this week',
-                      ),
+                      labelText: 'Approximate start (optional)',
+                      hintText: 'For example, earlier this week',
                       onChanged: (v) => _approximateStart = v,
                     ),
-                    TextFormField(
+                    const SizedBox(height: 16),
+                    PrismTextField(
                       initialValue: _episodeEnd,
-                      decoration: const InputDecoration(
-                        labelText: 'End date (optional)',
-                        hintText: 'YYYY-MM-DD, or Unsure',
-                      ),
+                      labelText: 'End date (optional)',
+                      hintText: 'YYYY-MM-DD, or Unsure',
                       onChanged: (v) => _episodeEnd = v,
                     ),
                   ],
+                  const SizedBox(height: 16),
                   for (final s in _symptoms)
                     ListTile(
                       title: Text('${s['term']}'),
@@ -851,14 +898,16 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
                           );
                         }
                       },
-                      trailing: IconButton(
+                      trailing: PrismTopBarAction(
                         tooltip: 'Remove symptom',
-                        icon: const Icon(Icons.close),
+                        icon: Icons.close,
                         onPressed: () => setState(() => _symptoms.remove(s)),
                       ),
                     ),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       TextButton.icon(
                         onPressed: () async {
@@ -877,15 +926,14 @@ class _HealthLogState extends ConsumerState<_HealthLog> {
                       ),
                     ],
                   ),
-                  TextField(
+                  const SizedBox(height: 16),
+                  PrismTextField(
                     controller: _notes,
                     onChanged: (_) => setState(() {}),
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Private notes (optional)',
-                    ),
+                    labelText: 'Private notes (optional)',
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   PrismButton(
                     label: 'Save',
                     tone: PrismButtonTone.filled,
@@ -931,27 +979,34 @@ class _SymptomDetailsState extends ConsumerState<_SymptomDetails> {
     super.dispose();
   }
 
-  Widget _text(String key, String label, {String? hint}) => TextFormField(
-    initialValue: _s[key] as String?,
-    decoration: InputDecoration(labelText: label, helperText: hint),
-    onChanged: (v) => _s[key] = v,
+  Widget _text(String key, String label, {String? hint}) => Padding(
+    padding: const EdgeInsets.only(top: 16),
+    child: PrismTextField(
+      initialValue: _s[key] as String?,
+      minLines: ['notes', 'impact', 'tried', 'afterward'].contains(key) ? 2 : 1,
+      maxLines: ['notes', 'impact', 'tried', 'afterward'].contains(key) ? 4 : 1,
+      labelText: label,
+      helperText: hint,
+      onChanged: (v) => _s[key] = v,
+    ),
   );
-  Widget _choice(String key, String label, List<String> options) =>
-      DropdownButtonFormField<String>(
-        isExpanded: true,
-        initialValue: options.contains(_s[key])
-            ? _s[key] as String
-            : options.first,
-        decoration: InputDecoration(labelText: label),
-        items: [
-          for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
-        ],
-        onChanged: (v) => setState(() => _s[key] = v),
-      );
+  Widget _choice(String key, String label, List<String> options) => Padding(
+    padding: const EdgeInsets.only(top: 16),
+    child: PrismSelect<String>(
+      value: options.contains(_s[key]) ? _s[key] as String : options.first,
+      labelText: label,
+      items: [for (final o in options) PrismSelectItem(value: o, label: o)],
+      onChanged: (v) => setState(() => _s[key] = v),
+    ),
+  );
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Symptom details'),
+  Widget build(BuildContext context) => HealthEditorScaffold(
+    bodyPadding: EdgeInsets.zero,
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    topBar: PrismTopBar(
+      title: 'Symptom details',
+      centerTitle: false,
+      showBackButton: true,
       actions: [
         TextButton(
           onPressed: () {
@@ -982,15 +1037,14 @@ class _SymptomDetailsState extends ConsumerState<_SymptomDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
+              PrismTextField(
                 controller: _term,
-                decoration: const InputDecoration(
-                  labelText: 'Symptom / custom term',
-                ),
+                labelText: 'Symptom / custom term',
                 onChanged: (v) => setState(() => _search = v.toLowerCase()),
               ),
               Wrap(
                 spacing: 6,
+                runSpacing: 8,
                 children: [
                   for (final term in {
                     for (final r
@@ -998,36 +1052,57 @@ class _SymptomDetailsState extends ConsumerState<_SymptomDetails> {
                       for (final s in healthMaps(r.fields['symptoms']))
                         if (s['term'] is String) s['term'] as String,
                   }.where((s) => healthSearchText(s).contains(_search)))
-                    ActionChip(
-                      label: Text(term),
-                      onPressed: () => setState(() => _term.text = term),
+                    PrismChip(
+                      label: term,
+                      selected: _term.text == term,
+                      onTap: () => setState(() => _term.text = term),
                     ),
                 ],
               ),
-              for (final category in symptomCategories.entries)
-                if (category.value.any(
-                  (t) => healthSearchText(t).contains(_search),
-                ))
-                  ExpansionTile(
-                    title: Text(category.key),
-                    children: [
-                      Wrap(
-                        spacing: 6,
-                        children: [
-                          for (final term in category.value.where(
-                            (t) => healthSearchText(t).contains(_search),
-                          ))
-                            ActionChip(
-                              label: Text(term),
-                              onPressed: () => setState(() {
-                                _term.text = term;
-                                _s['category'] = category.key;
-                              }),
-                            ),
-                        ],
-                      ),
-                    ],
+              const SizedBox(height: 12),
+              HealthSurface(
+                padding: EdgeInsets.zero,
+                child: ExpansionTile(
+                  title: const Text('Browse symptom categories'),
+                  subtitle: const Text(
+                    'General, breathing, digestion, skin and more',
                   ),
+                  children: [
+                    for (final category in symptomCategories.entries)
+                      if (category.value.any(
+                        (t) => healthSearchText(t).contains(_search),
+                      ))
+                        ExpansionTile(
+                          title: Text(category.key),
+                          children: [
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 8,
+                              children: [
+                                for (final term in category.value.where(
+                                  (t) => healthSearchText(t).contains(_search),
+                                ))
+                                  PrismChip(
+                                    label: term,
+                                    selected: _term.text == term,
+                                    onTap: () => setState(() {
+                                      _term.text = term;
+                                      _s['category'] = category.key;
+                                    }),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              const _HealthFormHeading(
+                title: 'Timing & intensity',
+                description:
+                    'Every detail is optional. Use Unsure whenever you need to.',
+              ),
               _choice('severity', 'Severity', [
                 'Unsure',
                 'Mild',
@@ -1069,6 +1144,12 @@ class _SymptomDetailsState extends ConsumerState<_SymptomDetails> {
                 'Worsening',
                 'Resolved',
               ]),
+              const SizedBox(height: 24),
+              const _HealthFormHeading(
+                title: 'Context & daily life',
+                description:
+                    'Record your observations without having to explain or interpret them.',
+              ),
               _text('triggers', 'Triggers (your observations)'),
               _text('relief', 'Relieving factors'),
               _text('tried', 'What you tried'),
@@ -1078,6 +1159,12 @@ class _SymptomDetailsState extends ConsumerState<_SymptomDetails> {
                 'Impact on daily life',
                 hint:
                     'Sleep, eating, hydration, movement, school, work or concentration',
+              ),
+              const SizedBox(height: 24),
+              const _HealthFormHeading(
+                title: 'Measurements & locations',
+                description:
+                    'Measurements are self-entered. Body Sheet locations keep their own descriptors.',
               ),
               _text(
                 'measurement',
@@ -1146,8 +1233,12 @@ class _ExportHealthState extends ConsumerState<_ExportHealthReview> {
                       ))),
         )
         .toList();
-    return Scaffold(
-      appBar: AppBar(title: const Text('Review Health export')),
+    return HealthEditorScaffold(
+      bodyPadding: EdgeInsets.zero,
+      topBar: const PrismTopBar(
+        title: 'Review Health export',
+        showBackButton: true,
+      ),
       body: ListView(
         controller: widget.scroll,
         padding: const EdgeInsets.all(16),
@@ -1253,4 +1344,187 @@ class _VocabularyManager extends ConsumerWidget {
       ],
     );
   }
+}
+
+class _HealthFormHeading extends StatelessWidget {
+  const _HealthFormHeading({required this.title, required this.description});
+  final String title, description;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: 6),
+      Text(description, style: Theme.of(context).textTheme.bodySmall),
+      const SizedBox(height: 8),
+    ],
+  );
+}
+
+class _BodySheetOverview extends StatelessWidget {
+  const _BodySheetOverview({required this.records});
+  final List<TrackerRecord> records;
+  @override
+  Widget build(BuildContext context) => HealthSurface(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Body Sheet', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 6),
+        const Text(
+          'Explore front and back, then zoom into your face, hands or feet. Record a point, an area, or several separate spots.',
+        ),
+        const SizedBox(height: 16),
+        ExcludeSemantics(
+          child: SizedBox(
+            height: 250,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (final view in ['front', 'back'])
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: AspectRatio(
+                            aspectRatio: .6,
+                            child: HealthBodySheet(view: view),
+                          ),
+                        ),
+                        Text(
+                          view == 'front' ? 'Front' : 'Back',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        PrismButton(
+          label: 'Log with Body Sheet',
+          icon: Icons.add_location_alt_outlined,
+          tone: PrismButtonTone.filled,
+          onPressed: () => showHealthLog(context, mapFirst: true),
+        ),
+        if (records.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(
+            '${records.length} check-ins with mapped locations in this view. Open a record below to review or edit its locations.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+String healthStateLabel(String state) => switch (state) {
+  'all' => 'All states',
+  'open' => 'Ongoing',
+  'improving' => 'Improving',
+  'resolved' => 'Resolved',
+  'reopened' => 'Reopened',
+  'changed' => 'Changed',
+  'unsure' => 'Unsure',
+  _ => state,
+};
+
+String _observationTime(dynamic value) {
+  final date = DateTime.tryParse('$value');
+  return date == null
+      ? '$value'
+      : DateFormat.yMMMd().add_jm().format(date.toLocal());
+}
+
+class _SymptomReadout extends StatelessWidget {
+  const _SymptomReadout({required this.symptom});
+  final Map<String, dynamic> symptom;
+  static const labels = {
+    'onset': 'Started',
+    'end': 'Ended',
+    'frequency': 'Frequency',
+    'course': 'Course',
+    'triggers': 'Triggers',
+    'relief': 'Relieving factors',
+    'tried': 'What I tried',
+    'afterward': 'What happened afterward',
+    'impact': 'Impact on daily life',
+    'measurement': 'Self-entered measurement',
+    'notes': 'Private notes',
+  };
+  @override
+  Widget build(BuildContext context) {
+    final spots = healthMaps(symptom['spots']);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '${symptom['term'] ?? 'Body sensations'}',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${symptom['category'] ?? 'Custom'} · Severity: ${symptom['severity'] ?? 'Unsure'}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        for (final label in labels.entries)
+          if (symptom[label.key] != null &&
+              '${symptom[label.key]}'.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text('${label.value}: ${symptom[label.key]}'),
+            ),
+        for (final (index, spot) in spots.indexed) ...[
+          const Divider(height: 24),
+          Text(
+            '${index + 1}. ${spot['label'] ?? 'Location unspecified'}',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            [
+              if (spot['side'] != null) '${spot['side']}',
+              if (spot['view'] != null) '${spot['view']}',
+              spot['areaMode'] == 'point' || spot['x'] != null
+                  ? 'Precise point'
+                  : 'Region',
+            ].join(' · '),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if ((spot['descriptors'] as List? ?? []).isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text((spot['descriptors'] as List).join(', ')),
+            ),
+          if (spot['intensity'] != null)
+            Text('Intensity: ${spot['intensity']}'),
+          if (spot['time'] != null) Text('Started: ${spot['time']}'),
+          if (spot['endTime'] != null && '${spot['endTime']}'.isNotEmpty)
+            Text('Ended: ${spot['endTime']}'),
+          if (spot['spreadsTo'] != null && '${spot['spreadsTo']}'.isNotEmpty)
+            Text(
+              'Spreads to: ${spots.where((s) => s['id'] == spot['spreadsTo']).firstOrNull?['label'] ?? 'Previously marked location'}',
+            ),
+          if (spot['notes'] != null && '${spot['notes']}'.isNotEmpty)
+            Text('Location notes: ${spot['notes']}'),
+          if (spot['legacyText'] != null)
+            Text('Original: ${spot['legacyText']}'),
+        ],
+      ],
+    );
+  }
+}
+
+String _loggedDaysLabel(List<TrackerRecord> records) {
+  final days = records
+      .where((r) => r.kind == healthCheckIn)
+      .map(
+        (r) => DateFormat.yMd().format((r.occurredAt ?? r.createdAt).toLocal()),
+      )
+      .toSet()
+      .length;
+  return '$days ${days == 1 ? 'day' : 'days'} with a logged observation in this view. Days without a log are unknown.';
 }

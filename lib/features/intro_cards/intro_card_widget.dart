@@ -5,18 +5,12 @@ import 'package:prism_plurality/features/intro_cards/intro_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
+/// Width cards are laid out at before scaling to their display size.
+const double kIntroCardReferenceWidth = 240;
+
 /// Tarot-proportioned card that flips between its front and back.
 class IntroCardView extends StatefulWidget {
-  const IntroCardView({
-    super.key,
-    required this.card,
-    required this.member,
-    required this.template,
-    required this.displayName,
-    this.width = 240,
-    this.flippable = true,
-    this.initiallyBack = false,
-  });
+  const IntroCardView({super.key, required this.card, required this.member, required this.template, required this.displayName, this.width = 240, this.flippable = true, this.initiallyBack = false});
 
   final TrackerRecord card;
   final Member? member;
@@ -69,16 +63,27 @@ class _IntroCardViewState extends State<IntroCardView> with SingleTickerProvider
               child: SizedBox(
                 width: widget.width,
                 height: h,
-                child: showBack
-                    ? Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()..rotateY(math.pi),
-                        child: _CardFace(template: widget.template, child: _Back(card: widget.card, template: widget.template, name: widget.displayName)),
-                      )
-                    : _CardFace(
-                        template: widget.template,
-                        child: _Front(card: widget.card, member: widget.member, template: widget.template, name: widget.displayName),
-                      ),
+                // Laid out at the reference size and scaled, so small table
+                // cards keep the same proportions, ornaments and text layout.
+                child: FittedBox(
+                  child: SizedBox(
+                    width: kIntroCardReferenceWidth,
+                    height: kIntroCardReferenceWidth * 1.72,
+                    child: showBack
+                        ? Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.identity()..rotateY(math.pi),
+                            child: _CardFace(
+                              template: widget.template,
+                              child: _Back(card: widget.card, template: widget.template, name: widget.displayName),
+                            ),
+                          )
+                        : _CardFace(
+                            template: widget.template,
+                            child: _Front(card: widget.card, member: widget.member, template: widget.template, name: widget.displayName),
+                          ),
+                  ),
+                ),
               ),
             );
           },
@@ -98,11 +103,7 @@ class _CardFace extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(template.bg1), Color(template.bg2)],
-        ),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(template.bg1), Color(template.bg2)]),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 6))],
       ),
       child: CustomPaint(
@@ -134,7 +135,10 @@ class _Front extends StatelessWidget {
         return Column(
           children: [
             if (numeral != null)
-              Text(numeral, style: template.style(base.titleMedium!.copyWith(color: ink, letterSpacing: 3, fontSize: 14 * scale))),
+              Text(
+                numeral,
+                style: template.style(base.titleMedium!.copyWith(color: ink, letterSpacing: 3, fontSize: 14 * scale)),
+              ),
             SizedBox(height: 6 * scale),
             Expanded(
               child: Container(
@@ -206,16 +210,18 @@ class _Back extends StatelessWidget {
     final lang = Localizations.localeOf(context).languageCode;
     final rows = <(String, String)>[
       for (final f in introFields)
-        if ((shown.isEmpty || shown.contains(f.key)) && (values[f.key] as String?)?.trim().isNotEmpty == true)
-          (lang == 'es' ? f.es : f.en, (values[f.key] as String).trim()),
+        if ((shown.isEmpty || shown.contains(f.key)) && (values[f.key] as String?)?.trim().isNotEmpty == true) (lang == 'es' ? f.es : f.en, (values[f.key] as String).trim()),
       for (final c in custom)
-        if ((c['label'] as String?)?.isNotEmpty == true && (c['value'] as String?)?.isNotEmpty == true)
-          (c['label'] as String, c['value'] as String),
+        if ((c['label'] as String?)?.isNotEmpty == true && (c['value'] as String?)?.isNotEmpty == true) (c['label'] as String, c['value'] as String),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(name, textAlign: TextAlign.center, style: template.style(base.titleMedium!.copyWith(color: ink, fontWeight: FontWeight.w700))),
+        Text(
+          name,
+          textAlign: TextAlign.center,
+          style: template.style(base.titleMedium!.copyWith(color: ink, fontWeight: FontWeight.w700)),
+        ),
         Divider(color: Color(template.border), height: 14),
         Expanded(
           child: rows.isEmpty
@@ -263,12 +269,7 @@ class _BorderPainter extends CustomPainter {
     canvas.drawRRect(outer.deflate(4), p..strokeWidth = 0.8);
     // Corner ornaments.
     final fill = Paint()..color = color;
-    for (final c in [
-      Offset(14, 14),
-      Offset(size.width - 14, 14),
-      Offset(14, size.height - 14),
-      Offset(size.width - 14, size.height - 14),
-    ]) {
+    for (final c in [Offset(14, 14), Offset(size.width - 14, 14), Offset(14, size.height - 14), Offset(size.width - 14, size.height - 14)]) {
       final path = Path()
         ..moveTo(c.dx, c.dy - 6)
         ..lineTo(c.dx + 3, c.dy)
@@ -317,11 +318,7 @@ class _PatternPainter extends CustomPainter {
           canvas.drawPath(path..close(), p);
         case 'moons':
           canvas.drawPath(
-            Path.combine(
-              PathOperation.difference,
-              Path()..addOval(Rect.fromCircle(center: o, radius: r)),
-              Path()..addOval(Rect.fromCircle(center: o + Offset(r * 0.5, -r * 0.2), radius: r)),
-            ),
+            Path.combine(PathOperation.difference, Path()..addOval(Rect.fromCircle(center: o, radius: r)), Path()..addOval(Rect.fromCircle(center: o + Offset(r * 0.5, -r * 0.2), radius: r))),
             p,
           );
         case 'suns':
@@ -340,7 +337,13 @@ class _PatternPainter extends CustomPainter {
           final path = Path()..moveTo(o.dx - r * 2, o.dy);
           path.quadraticBezierTo(o.dx - r, o.dy - r, o.dx, o.dy);
           path.quadraticBezierTo(o.dx + r, o.dy + r, o.dx + r * 2, o.dy);
-          canvas.drawPath(path, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = 1.4);
+          canvas.drawPath(
+            path,
+            Paint()
+              ..color = color
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1.4,
+          );
       }
     }
   }

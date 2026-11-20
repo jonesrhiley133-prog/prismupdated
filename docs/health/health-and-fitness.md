@@ -138,3 +138,31 @@ data), or a signed iPhone HealthKit build with actual records. Linux headless
 and widget tests cannot validate OS permission dialogs, Health Connect source
 configuration, HealthKit provisioning, or background execution. No real-device
 sync result is claimed by these fixtures.
+
+## Body Sheet and visual review
+
+The Body Map tab contains a front/back Body Sheet overview and a dedicated
+logging action. The shared editor uses Prism's page scaffold, pinned header,
+segmented controls, surfaces, selectors, chips and text fields. It has named
+face, left-hand, right-hand and feet detail views, numbered markers, region
+shading, and a searchable front/back directory. Detail views change only the
+viewport transform; saved body-relative sides and normalized points stay intact.
+Region-only selections remain distinguishable from precise points. Each location
+supports searchable descriptors, reusable custom terms, intensity, start/end
+observations, notes and a spread endpoint.
+
+Symptom detail forms group timing, context, daily impact, measurements and
+locations. Timeline readouts use human-readable labels and show location notes,
+intensity, timing and spreading observations. Advanced search/date/state filters
+collapse to keep the primary logging action and timeline within easy reach.
+
+To capture review images from the actual Flutter widgets with synthetic records:
+
+```bash
+flutter test tool/health_screenshots_test.dart
+```
+
+The capture tool uses Prism's light/dark themes and renders mobile and desktop
+layouts. Images are written to `test-results/health-screenshots/`; override with
+`--dart-define=PRISM_HEALTH_SCREENSHOT_DIR=/path/to/review` when needed. These are
+UI previews with fixture records, not evidence of live provider synchronization.

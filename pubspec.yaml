@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.31.0+31000
+version: 0.38.0+38000
 
 environment:
   sdk: ^3.11.1
@@ -184,6 +184,7 @@ flutter:
     - assets/audio/
     - assets/textures/
     - assets/icon_layers/
+    - assets/app_icons/
     - assets/branding/pluralport/
     # Color emoji font — only bundled on Linux. iOS/macOS use Apple Color
     # Emoji, Android uses system Noto Color Emoji, Windows uses Segoe UI

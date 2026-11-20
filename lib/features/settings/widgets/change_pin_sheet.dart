@@ -1,5 +1,6 @@
 import 'dart:typed_data' as typed_data;
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/core/crypto/bip39_validate.dart';
@@ -524,7 +525,7 @@ class _ChangePinSheetState extends ConsumerState<ChangePinSheet> {
                       20,
                       16 + MediaQuery.of(context).viewInsets.bottom,
                     ),
-                    child: body,
+                    child: SectionSwitcher(id: _step, child: body),
                   ),
                 ),
               ],

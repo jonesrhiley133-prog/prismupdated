@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -242,9 +243,7 @@ class _ContactImportFlowState extends ConsumerState<ContactImportFlow> {
       bodyPadding: EdgeInsets.zero,
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: PrismTokens.contentMaxWidth,
-          ),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
           child: Column(
             children: [
               Padding(
@@ -261,7 +260,9 @@ class _ContactImportFlowState extends ConsumerState<ContactImportFlow> {
                     message: _error!,
                   ),
                 ),
-              Expanded(child: _body(context)),
+              Expanded(
+                child: SectionSwitcher(id: _step, child: _body(context)),
+              ),
             ],
           ),
         ),

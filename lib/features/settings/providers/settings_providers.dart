@@ -1216,6 +1216,23 @@ final navBarOverflowTabsProvider = Provider<List<AppShellTab>>((ref) {
   return _watchNavLayout(ref).overflow;
 });
 
+/// The web desktop sidebar: the person's nav order first, then every other
+/// enabled section (a website sidebar has room for all of them).
+final webSidebarTabsProvider = Provider<List<AppShellTab>>((ref) {
+  final layout = _watchNavLayout(ref);
+  final flags = ref.watch(featureFlagsProvider);
+  final states = ref.watch(featureStatesProvider);
+  final ordered = [...layout.primary, ...layout.overflow];
+  final seen = {for (final t in ordered) t.id};
+  for (final t in appShellTabs) {
+    if (seen.contains(t.id) || !t.isEnabled(flags)) continue;
+    if (!t.isRequired && !(states[featureByTab[t.id]?.id] ?? true)) continue;
+    ordered.add(t);
+    seen.add(t.id);
+  }
+  return ordered;
+});
+
 /// Narrow provider for accent color — only rebuilds dependents when accent color changes.
 /// When ignoreSyncedAppearance is ON, reads the cached (local) value.
 final accentColorHexProvider = Provider<String?>((ref) {

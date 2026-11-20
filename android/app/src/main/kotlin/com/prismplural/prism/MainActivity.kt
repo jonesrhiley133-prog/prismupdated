@@ -84,6 +84,7 @@ class MainActivity : FlutterFragmentActivity() {
     companion object {
         private const val WIDGETS_CHANNEL = "com.prismplural.prism/widgets"
         private const val FRONTING_STATUS_CHANNEL = "com.prismplural.prism/fronting_status"
+        private const val BACKGROUND_WORK_CHANNEL = "com.prismplural.prism/background_work"
         private const val APP_UPDATE_CHANNEL = "com.prismplural.prism/app_update"
         private const val TAG = "PrismMainActivity"
         private const val SECURE_DISPLAY_CHANNEL = "com.prism.prism_plurality/secure_display"
@@ -196,6 +197,54 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
         }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.prismplural.prism/app_icon")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "current" -> result.success(AppIcon.current(this))
+                    "pinShortcut" -> {
+                        val png = call.argument<ByteArray>("png")
+                        if (png == null) {
+                            result.error("bad_args", "png missing", null)
+                        } else {
+                            try {
+                                result.success(AppIcon.pinCustomShortcut(this, png, call.argument<String>("label") ?: "Prism"))
+                            } catch (e: Exception) {
+                                result.error("pin_failed", e.message, null)
+                            }
+                        }
+                    }
+                    "set" -> {
+                        val id = call.argument<String>("id")
+                        try {
+                            result.success(id != null && AppIcon.set(this, id))
+                        } catch (e: Exception) {
+                            result.error("set_failed", e.message, null)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, BACKGROUND_WORK_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "update" -> {
+                        BackgroundWork.ensureChannel(this, call.argument<String>("channelName") ?: "Background tasks")
+                        BackgroundWork.update(
+                            this,
+                            call.argument<String>("title") ?: "Prism",
+                            call.argument<String>("text") ?: "",
+                            call.argument<Int>("progress") ?: 0,
+                            call.argument<Int>("max") ?: 0,
+                        )
+                        result.success(true)
+                    }
+                    "finish" -> {
+                        BackgroundWork.finish(this, call.argument<String>("title"), call.argument<String>("text"))
+                        result.success(true)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         frontingStatusChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             FRONTING_STATUS_CHANNEL,

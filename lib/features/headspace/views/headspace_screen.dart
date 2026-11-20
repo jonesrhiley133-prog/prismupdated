@@ -100,7 +100,7 @@ class HeadspaceScreen extends ConsumerWidget {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 maxWidth: PrismTokens.contentMaxWidth,
               ),
               child: Column(
