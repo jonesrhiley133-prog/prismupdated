@@ -144,19 +144,32 @@ class PlayerProgressLine extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pos = ref.watch(musicPositionProvider).value ?? Duration.zero;
     final total = ref.watch(musicControllerProvider.select((s) => s.durationMs));
+    // The bar is at most a few hundred pixels wide, so redraw only when the
+    // position moves about a pixel's worth of the track (never more than
+    // 4x a second): on a long track most 200 ms ticks move it less than that.
+    final stepMs = total <= 0 ? 1000 : (total ~/ 400).clamp(250, 5000);
+    final bucket = ref.watch(
+      musicPositionProvider.select(
+        (p) => (p.value ?? Duration.zero).inMilliseconds ~/ stepMs,
+      ),
+    );
+    final pos = Duration(milliseconds: bucket * stepMs);
     final f = total <= 0 ? 0.0 : (pos.inMilliseconds / total).clamp(0.0, 1.0);
-    return Semantics(
-      label: context.l10n.musProgress,
-      value: '${formatTrackTime(pos)} / ${formatTrackTime(Duration(milliseconds: total))}',
-      child: SizedBox(
-        height: 3,
-        child: Stack(
-          children: [
-            ColoredBox(color: color.withValues(alpha: 0.2), child: const SizedBox.expand()),
-            FractionallySizedBox(widthFactor: f, child: ColoredBox(color: color, child: const SizedBox.expand())),
-          ],
+    // Own layer: a tick (every 200 ms) repaints this 3 px strip, not the
+    // player card with its shadow, clip and artwork around it.
+    return RepaintBoundary(
+      child: Semantics(
+        label: context.l10n.musProgress,
+        value: '${formatTrackTime(pos)} / ${formatTrackTime(Duration(milliseconds: total))}',
+        child: SizedBox(
+          height: 3,
+          child: Stack(
+            children: [
+              ColoredBox(color: color.withValues(alpha: 0.2), child: const SizedBox.expand()),
+              FractionallySizedBox(widthFactor: f, child: ColoredBox(color: color, child: const SizedBox.expand())),
+            ],
+          ),
         ),
       ),
     );

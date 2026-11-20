@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/media/content_keyed_image.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_colors.dart';
@@ -295,14 +296,17 @@ class MemberCard extends StatelessWidget {
                   Transform.scale(
                     scale: bannerZoom.clamp(1, 3),
                     alignment: bannerAlignment,
-                    child: Image.memory(
-                      bytes,
+                    child: Image(
+                      // Cached by content and decoded at about card width:
+                      // rows scrolling back into view reuse the decode.
+                      image: ResizeImage.resizeIfNeeded(
+                        (MediaQuery.devicePixelRatioOf(context) * 720).round(),
+                        null,
+                        ContentKeyedMemoryImage(bytes),
+                      ),
                       fit: BoxFit.cover,
                       alignment: bannerAlignment,
                       gaplessPlayback: true,
-                      // Decode at about card width, not the banner's full size.
-                      cacheWidth: (MediaQuery.devicePixelRatioOf(context) * 720)
-                          .round(),
                       errorBuilder: (_, _, _) => const SizedBox.shrink(),
                     ),
                   ),

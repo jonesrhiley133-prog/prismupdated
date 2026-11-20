@@ -37,6 +37,7 @@ import 'package:prism_plurality/domain/models/models.dart' hide CornerStyle;
 import 'package:prism_plurality/features/pluralkit/services/pk_sync_event_bus.dart';
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/features/settings/services/stress_data_generator.dart';
+import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
 // import 'package:prism_plurality/features/pluralkit/services/pluralkit_background_service.dart';
@@ -307,6 +308,7 @@ void main() async {
   final cachedCornerStyle = CornerStyle.values[cornerIndex];
 
   BootTimings.mark('runApp');
+  PerfProbe.install();
   runApp(
     AppRestartScope(
       child: ProviderScope(
@@ -398,7 +400,9 @@ Future<void> _clearObsoleteBiometricDek() async {
 }
 
 Future<void> _maybeSeedDebugStressFixture(String? verifiedStartupKey) async {
-  if (!kDebugMode || _debugSeedStressPresetName.isEmpty) return;
+  if (!(kDebugMode || kPerfMode) || _debugSeedStressPresetName.isEmpty) {
+    return;
+  }
 
   if (verifiedStartupKey == null) {
     debugPrint('[BOOT] Stress fixture seed skipped: no verified DB key');
@@ -410,6 +414,7 @@ Future<void> _maybeSeedDebugStressFixture(String? verifiedStartupKey) async {
     'heavy5k' => StressPreset.heavyFiveThousand,
     'huge' => StressPreset.huge,
     'massive' => StressPreset.massive,
+    'perf' => StressPreset.perf,
     final unknown => throw ArgumentError(
       'Unknown PRISM_SEED_STRESS_PRESET: $unknown',
     ),
@@ -425,6 +430,9 @@ Future<void> _maybeSeedDebugStressFixture(String? verifiedStartupKey) async {
   try {
     final db = container.read(databaseProvider);
     final generator = StressDataGenerator(db);
+    // Profiling builds keep one fixed data set across runs so before/after
+    // measurements see identical data.
+    if (kPerfMode && await generator.hasStressData()) return;
     await generator.clearStressData();
 
     final started = DateTime.now();

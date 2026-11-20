@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
+import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,10 +78,65 @@ class JustAudioEngine implements AudioEngine {
 }
 
 final audioEngineProvider = Provider<AudioEngine>((ref) {
-  final engine = JustAudioEngine();
+  final AudioEngine engine = kPerfMode ? PerfAudioEngine() : JustAudioEngine();
   ref.onDispose(engine.dispose);
   return engine;
 });
+
+/// Profiling builds only: plays nothing but reports position on the same
+/// cadence as just_audio (every 200 ms while playing), so the UI does the
+/// same work as during real playback, including in web builds.
+class PerfAudioEngine implements AudioEngine {
+  final _position = StreamController<Duration>.broadcast();
+  final _playing = StreamController<bool>.broadcast();
+  final _completed = StreamController<void>.broadcast();
+  Timer? _tick;
+  Duration _at = Duration.zero;
+
+  @override
+  Future<Duration?> load(String path, {Duration position = Duration.zero}) async {
+    _at = position;
+    return const Duration(minutes: 30);
+  }
+
+  @override
+  Future<void> play() async {
+    _playing.add(true);
+    _tick ??= Timer.periodic(const Duration(milliseconds: 200), (_) {
+      _at += const Duration(milliseconds: 200);
+      _position.add(_at);
+    });
+  }
+
+  @override
+  Future<void> pause() async {
+    _tick?.cancel();
+    _tick = null;
+    _playing.add(false);
+  }
+
+  @override
+  Future<void> stop() => pause();
+  @override
+  Future<void> seek(Duration position) async => _position.add(_at = position);
+  @override
+  Future<void> setVolume(double volume) async {}
+  @override
+  Duration get position => _at;
+  @override
+  Stream<Duration> get positionStream => _position.stream;
+  @override
+  Stream<bool> get playingStream => _playing.stream;
+  @override
+  Stream<void> get completedStream => _completed.stream;
+  @override
+  Future<void> dispose() async {
+    _tick?.cancel();
+    await _position.close();
+    await _playing.close();
+    await _completed.close();
+  }
+}
 
 /// Operating-system media controls (Android notification and lock screen).
 class MediaControlsPlatform {

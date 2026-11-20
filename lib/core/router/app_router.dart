@@ -91,22 +91,28 @@ import '../../features/connected/views/system_timeline_screen.dart';
 import '../../features/contacts/views/contacts_screen.dart';
 import '../../features/intro_cards/intro_cards_screen.dart';
 import '../../features/availability/availability_screen.dart';
-import '../../features/analytics/analytics_hub_screen.dart';
+import '../../features/analytics/analytics_hub_screen.dart'
+    deferred as analytics_hub_page;
 import '../../features/connections/connections_screens.dart';
 import '../../features/scrapbook/scrapbook_screens.dart';
 import '../../features/nutrition/nutrition_screen.dart';
 import '../../features/social/views/stories_screen.dart';
 import '../../features/music/views/music_screen.dart';
-import '../../features/headspace/views/headspace_screen.dart';
-import '../../features/subsystems/hub/subsystem_hub.dart';
+import '../../shared/widgets/deferred_page.dart';
+import '../../features/headspace/views/headspace_screen.dart'
+    deferred as headspace_page;
+import '../../features/subsystems/hub/subsystem_hub.dart'
+    deferred as subsystems_page;
 import '../../features/subsystems/hub/subsystem_profile.dart';
-import '../../features/relationships/hub/rel_hub_screen.dart';
+import '../../features/relationships/hub/rel_hub_screen.dart'
+    deferred as relationships_page;
 import '../../features/relationships/hub/rel_profile.dart';
 import '../../features/school/views/school_screen.dart';
 import '../../features/finance/views/finance_screen.dart';
 import '../../features/fitness/views/fitness_screen.dart';
 import '../../features/achievements/views/achievements_screen.dart';
-import '../../features/dictionary/views/dictionary_screen.dart';
+import '../../features/dictionary/views/dictionary_screen.dart'
+    deferred as dictionary_page;
 import '../../features/journal/views/journal_screen.dart';
 import '../../features/cycle/views/cycle_screen.dart';
 import '../../features/import_center/views/import_center_screen.dart';
@@ -123,7 +129,8 @@ import '../../features/settings/views/about_screen.dart';
 import '../../features/settings/views/reset_data_screen.dart';
 import '../../features/settings/views/custom_field_detail_screen.dart';
 import '../../features/settings/views/custom_fields_screen.dart';
-import '../../features/settings/views/analytics_screen.dart';
+import '../../features/settings/views/analytics_screen.dart'
+    deferred as analytics_page;
 import '../../features/members/views/note_detail_screen.dart';
 import '../../features/settings/views/pin_lock_settings_screen.dart';
 import '../../features/reminders/views/reminders_screen.dart';
@@ -139,8 +146,9 @@ import '../diagnostics/freeze_watchdog.dart';
 import '../../features/habits/center/habit_center_screen.dart';
 import '../../features/habits/center/habit_dashboard.dart';
 import '../../features/alter_status/statuses_screen.dart';
-import '../../features/analytics/cofront_screen.dart';
-import '../../features/analytics/mood_correlation_screen.dart';
+import '../../features/analytics/cofront_screen.dart' deferred as cofront_page;
+import '../../features/analytics/mood_correlation_screen.dart'
+    deferred as mood_correlation_page;
 import '../../features/automations/automations_screen.dart';
 import '../../features/demo/demo_mode_screen.dart';
 import '../../features/links/views/link_explorer_screen.dart';
@@ -411,7 +419,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       );
       if (onboarding != null) return onboarding;
       // Features turned off in Settings › Features can't be opened by link.
-      final off = disabledFeatureFor(state.matchedLocation, ref.read(featureStatesProvider));
+      final off = disabledFeatureFor(
+        state.matchedLocation,
+        ref.read(featureStatesProvider),
+      );
       if (off != null) return '${AppRoutePaths.settingsFeatures}?off=${off.id}';
       return null;
     },
@@ -539,12 +550,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/analytics/cofronting',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const CoFrontingScreen(),
+        builder: (context, state) => DeferredPage(
+          load: cofront_page.loadLibrary,
+          build: () => cofront_page.CoFrontingScreen(),
+        ),
       ),
       GoRoute(
         path: '/analytics/mood',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const MoodCorrelationScreen(),
+        builder: (context, state) => DeferredPage(
+          load: mood_correlation_page.loadLibrary,
+          build: () => mood_correlation_page.MoodCorrelationScreen(),
+        ),
       ),
       GoRoute(
         path: '/scrapbook/book/:id',
@@ -951,11 +968,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'features',
-                    builder: (context, state) => FeaturesSettingsScreen(highlight: state.uri.queryParameters['off']),
+                    builder: (context, state) => FeaturesSettingsScreen(
+                      highlight: state.uri.queryParameters['off'],
+                    ),
                     routes: [
                       GoRoute(
                         path: 'data/:id',
-                        builder: (context, state) => FeatureDataScreen(featureId: state.pathParameters['id']!),
+                        builder: (context, state) => FeatureDataScreen(
+                          featureId: state.pathParameters['id']!,
+                        ),
                       ),
                       GoRoute(
                         path: 'chat',
@@ -1020,7 +1041,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'analytics',
-                    builder: (context, state) => const AnalyticsScreen(),
+                    builder: (context, state) => DeferredPage(
+                      load: analytics_page.loadLibrary,
+                      build: () => analytics_page.AnalyticsScreen(),
+                    ),
                   ),
                   GoRoute(
                     path: 'pin-lock',
@@ -1178,8 +1202,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 name: AppRouteNames.statistics,
                 path: AppRoutePaths.statistics,
-                builder: (context, state) =>
-                    const AnalyticsScreen(showBackButton: false),
+                builder: (context, state) => DeferredPage(
+                  load: analytics_page.loadLibrary,
+                  build: () =>
+                      analytics_page.AnalyticsScreen(showBackButton: false),
+                ),
               ),
             ],
           ),
@@ -1418,7 +1445,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.dictionary,
-                builder: (context, state) => const DictionaryScreen(),
+                builder: (context, state) => DeferredPage(
+                  load: dictionary_page.loadLibrary,
+                  build: () => dictionary_page.DictionaryScreen(),
+                ),
               ),
             ],
           ),
@@ -1442,7 +1472,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'integrations',
-                    builder: (context, state) => const HealthIntegrationScreen(),
+                    builder: (context, state) =>
+                        const HealthIntegrationScreen(),
                   ),
                 ],
               ),
@@ -1474,11 +1505,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.relationships,
-                builder: (context, state) => const RelationshipsHubScreen(),
+                builder: (context, state) => DeferredPage(
+                  load: relationships_page.loadLibrary,
+                  build: () => relationships_page.RelationshipsHubScreen(),
+                ),
                 routes: [
                   GoRoute(
                     path: 'r/:id',
-                    builder: (context, state) => RelationshipProfileScreen(id: state.pathParameters['id']!),
+                    builder: (context, state) => RelationshipProfileScreen(
+                      id: state.pathParameters['id']!,
+                    ),
                   ),
                 ],
               ),
@@ -1490,11 +1526,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.subsystems,
-                builder: (context, state) => const SubsystemHubScreen(),
+                builder: (context, state) => DeferredPage(
+                  load: subsystems_page.loadLibrary,
+                  build: () => subsystems_page.SubsystemHubScreen(),
+                ),
                 routes: [
                   GoRoute(
                     path: ':id',
-                    builder: (context, state) => SubsystemProfileScreen(id: state.pathParameters['id']!),
+                    builder: (context, state) =>
+                        SubsystemProfileScreen(id: state.pathParameters['id']!),
                   ),
                 ],
               ),
@@ -1506,7 +1546,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.headspace,
-                builder: (context, state) => const HeadspaceScreen(),
+                builder: (context, state) => DeferredPage(
+                  load: headspace_page.loadLibrary,
+                  build: () => headspace_page.HeadspaceScreen(),
+                ),
               ),
             ],
           ),
@@ -1566,7 +1609,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.analytics,
-                builder: (context, state) => const AnalyticsHubScreen(),
+                builder: (context, state) => DeferredPage(
+                  load: analytics_hub_page.loadLibrary,
+                  build: () => analytics_hub_page.AnalyticsHubScreen(),
+                ),
               ),
             ],
           ),
@@ -1596,13 +1642,35 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.prismSocial,
-                builder: (context, state) => SocialHubScreen(section: state.uri.queryParameters['s']),
+                builder: (context, state) =>
+                    SocialHubScreen(section: state.uri.queryParameters['s']),
                 routes: [
-                  GoRoute(path: 'profile/:id', builder: (context, state) => SocialProfileScreen(profileId: state.pathParameters['id']!)),
-                  GoRoute(path: 'alter/:id', builder: (context, state) => SocialAlterScreen(alterId: state.pathParameters['id']!)),
-                  GoRoute(path: 'chat/:id', builder: (context, state) => SocialConversationScreen(conversationId: state.pathParameters['id']!)),
-                  GoRoute(path: 'post/:id', builder: (context, state) => SocialPostScreen(postId: state.pathParameters['id']!)),
-                  GoRoute(path: 'settings', builder: (context, state) => const SocialSettingsScreen()),
+                  GoRoute(
+                    path: 'profile/:id',
+                    builder: (context, state) => SocialProfileScreen(
+                      profileId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'alter/:id',
+                    builder: (context, state) =>
+                        SocialAlterScreen(alterId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'chat/:id',
+                    builder: (context, state) => SocialConversationScreen(
+                      conversationId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'post/:id',
+                    builder: (context, state) =>
+                        SocialPostScreen(postId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'settings',
+                    builder: (context, state) => const SocialSettingsScreen(),
+                  ),
                 ],
               ),
             ],

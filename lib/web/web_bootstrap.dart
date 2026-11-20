@@ -5,6 +5,8 @@ import 'package:timezone/data/latest_all.dart' as tz;
 
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/app.dart';
+import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
+import 'package:prism_plurality/core/diagnostics/perf_fixture.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
 import 'package:prism_plurality/core/database/database_encryption.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
@@ -52,6 +54,15 @@ Future<void> runWebApp() async {
     debugPrint('[WEB_BOOT] Timezone init failed (non-fatal): $e');
   }
 
+  // Profiling builds (PRISM_PERF) seed one fixed data set before the app
+  // starts, so every measured run sees identical data.
+  AppDatabase? perfDb;
+  if (kPerfMode) {
+    perfDb = AppDatabase(openWebDatabase());
+    await seedPerfFixture(perfDb);
+  }
+  PerfProbe.install();
+
   runApp(
     ProviderScope(
       overrides: [
@@ -62,7 +73,7 @@ Future<void> runWebApp() async {
           (ref) async => null,
         ),
         databaseProvider.overrideWith((ref) {
-          final db = AppDatabase(openWebDatabase());
+          final db = perfDb ?? AppDatabase(openWebDatabase());
           ref.onDispose(db.close);
           return db;
         }),

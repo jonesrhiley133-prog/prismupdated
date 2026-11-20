@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:flutter/foundation.dart';
+import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -15,6 +16,8 @@ const _uuid = Uuid();
 /// Where Prism keeps imported music (its own copies, so tracks keep
 /// working after the original file is moved or deleted).
 final musicDirProvider = FutureProvider<Directory>((ref) async {
+  // Profiling builds play a stand-in track; no folder (and none on web).
+  if (kPerfMode) return Directory('perf-music');
   final base = await getApplicationSupportDirectory();
   final dir = Directory(p.join(base.path, 'music'));
   await Directory(p.join(dir.path, 'files')).create(recursive: true);
@@ -76,6 +79,20 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
 
   @override
   Future<MusicLibrary> build() async {
+    if (kPerfMode) {
+      return MusicLibrary(
+        tracks: [
+          Track(
+            id: 'perf-track',
+            file: 'perf.mp3',
+            title: 'Profiling track',
+            artist: 'Prism',
+            durationMs: 30 * 60 * 1000,
+            addedAt: DateTime.utc(2026),
+          ),
+        ],
+      );
+    }
     if (kIsWeb) return const MusicLibrary();
     _dir = await ref.watch(musicDirProvider.future);
     try {

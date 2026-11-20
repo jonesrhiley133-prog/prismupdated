@@ -5,6 +5,9 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/music/services/music_library.dart';
+import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
+import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/features/prism_social/social_remote.dart' show socialSyncProvider;
@@ -31,7 +34,6 @@ import 'package:prism_plurality/features/links/models/record_ref.dart' show Reco
 import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners, recordTypeOpeners;
 import 'package:prism_plurality/features/nutrition/nutrition_meals.dart' show registerNutritionOpeners;
 import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart' show registerScrapOpeners;
-import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/home_widgets/services/home_widget_controller.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_controller.dart';
@@ -103,6 +105,39 @@ class _PrismAppState extends ConsumerState<PrismApp> {
   void initState() {
     super.initState();
     _appLifecycleListener = AppLifecycleListener(onResume: _onResume);
+    if (kPerfMode) {
+      PerfProbe.register('go', (path) {
+        ref.read(routerProvider).go(path);
+        return 'ok';
+      });
+      PerfProbe.register('push', (path) {
+        unawaited(ref.read(routerProvider).push(path));
+        return 'ok';
+      });
+      PerfProbe.register('playMusic', (_) {
+        unawaited(() async {
+          // The library loads lazily (normally when Music opens).
+          await ref.read(musicLibraryProvider.future);
+          await ref
+              .read(musicControllerProvider.notifier)
+              .playTracks(['perf-track']);
+        }());
+        return 'ok';
+      });
+      PerfProbe.register('musicState', (_) {
+        final st = ref.read(musicControllerProvider);
+        return 'playing=${st.playing} loaded=${st.loaded} id=${st.currentId}';
+      });
+      PerfProbe.register('banners', (on) {
+        unawaited(
+          ref.read(appearanceProvider.notifier).setShowMemberBanners(on == 'on'),
+        );
+        return 'ok';
+      });
+      PerfProbe.register('route', (_) {
+        return ref.read(routerProvider).state.uri.toString();
+      });
+    }
   }
 
   /// Run the on-disk media cache sweep exactly once per app launch, after

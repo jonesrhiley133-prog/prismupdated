@@ -21,6 +21,7 @@ import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
 import 'package:prism_plurality/features/prism_social/social_share.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/shared/widgets/live_ticker.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 
 enum _Range { week, month, year, all }
@@ -34,22 +35,6 @@ class HabitDashboardScreen extends ConsumerStatefulWidget {
 
 class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
   _Range _range = _Range.month;
-  Timer? _tick;
-
-  @override
-  void dispose() {
-    _tick?.cancel();
-    super.dispose();
-  }
-
-  void _ensureTicker(bool running) {
-    if (running && _tick == null) {
-      _tick = Timer.periodic(const Duration(seconds: 1), (_) => mounted ? setState(() {}) : null);
-    } else if (!running && _tick != null) {
-      _tick!.cancel();
-      _tick = null;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +47,6 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
     }
     final h = view.habit, m = view.meta;
     final timer = ref.watch(habitTimersProvider)[h.id];
-    _ensureTicker(timer != null && timer.str('pausedAt') == null);
     final color = habitColor(context, h);
     final today = dayKey(DateTime.now());
     final todays = view.byDay[today] ?? const <HabitCompletion>[];
@@ -227,12 +211,24 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
             Expanded(child: HabitActionTile(icon: PhosphorIcons.drop(), label: tr(context, 'Log amount', 'Registrar cantidad'), onTap: () => showHabitLogSheet(context, habit: h))),
             const SizedBox(width: 8),
             Expanded(
-              child: HabitActionTile(
-                icon: timer == null ? PhosphorIcons.timer() : (timer.str('pausedAt') == null ? PhosphorIcons.pause() : PhosphorIcons.play()),
-                label: timer == null ? tr(context, 'Start timer', 'Iniciar') : '${two(elapsed!.inMinutes)}:${two(elapsed.inSeconds % 60)}',
-                active: timer != null,
-                onTap: () => timer == null ? actions.startTimer(h.id) : actions.pauseTimer(timer),
-              ),
+              // Only this tile follows a running timer (once a second);
+              // the rest of the dashboard does not rebuild with it.
+              child: timer != null && timer.str('pausedAt') == null
+                  ? LiveTicker(builder: (context, _) {
+                      final e = HabitCenterActions.elapsed(timer);
+                      return HabitActionTile(
+                        icon: PhosphorIcons.pause(),
+                        label: '${two(e.inMinutes)}:${two(e.inSeconds % 60)}',
+                        active: true,
+                        onTap: () => actions.pauseTimer(timer),
+                      );
+                    })
+                  : HabitActionTile(
+                      icon: timer == null ? PhosphorIcons.timer() : PhosphorIcons.play(),
+                      label: timer == null ? tr(context, 'Start timer', 'Iniciar') : '${two(elapsed!.inMinutes)}:${two(elapsed.inSeconds % 60)}',
+                      active: timer != null,
+                      onTap: () => timer == null ? actions.startTimer(h.id) : actions.pauseTimer(timer),
+                    ),
             ),
             const SizedBox(width: 8),
             Expanded(

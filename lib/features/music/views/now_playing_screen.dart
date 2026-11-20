@@ -25,7 +25,6 @@ class NowPlayingScreen extends ConsumerStatefulWidget {
 }
 
 class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
-  double? _scrub;
   late final NowPlayingFlag _flag;
 
   @override
@@ -56,10 +55,7 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
     final fg = artBg
         ? Colors.white
         : (ThemeData.estimateBrightnessForColor(base) == Brightness.dark ? Colors.white : Colors.black87);
-    final pos = ref.watch(musicPositionProvider).value ?? Duration.zero;
     final total = state.durationMs;
-    final value = _scrub ?? (total <= 0 ? 0.0 : (pos.inMilliseconds / total).clamp(0.0, 1.0));
-    final shown = Duration(milliseconds: (value * total).round());
 
     return Shortcuts(
       shortcuts: const {
@@ -168,37 +164,9 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
                                 ),
                               ),
-                            SliderTheme(
-                              data: SliderTheme.of(context).copyWith(
-                                activeTrackColor: fg,
-                                inactiveTrackColor: fg.withValues(alpha: 0.25),
-                                thumbColor: fg,
-                                trackHeight: 3,
-                              ),
-                              child: Slider(
-                                value: value,
-                                semanticFormatterCallback: (v) =>
-                                    '${formatTrackTime(Duration(milliseconds: (v * total).round()))} / ${formatTrackTime(Duration(milliseconds: total))}',
-                                onChanged: total <= 0 ? null : (v) => setState(() => _scrub = v),
-                                onChangeEnd: (v) async {
-                                  await c.seek(Duration(milliseconds: (v * total).round()));
-                                  if (mounted) setState(() => _scrub = null);
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(formatTrackTime(shown), style: theme.textTheme.labelSmall?.copyWith(color: fg.withValues(alpha: 0.8))),
-                                  Text(
-                                    formatTrackTime(Duration(milliseconds: total)),
-                                    style: theme.textTheme.labelSmall?.copyWith(color: fg.withValues(alpha: 0.8)),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Only the scrubber follows playback ticks; the
+                            // rest of the player (artwork, blur) stays put.
+                            _PlaybackScrubber(color: fg, totalMs: total),
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -473,6 +441,68 @@ class _LookSheet extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+/// Seek bar and elapsed / total time. Watches the playback position on its
+/// own so a position tick (every 200 ms) rebuilds only this strip.
+class _PlaybackScrubber extends ConsumerStatefulWidget {
+  const _PlaybackScrubber({required this.color, required this.totalMs});
+
+  final Color color;
+  final int totalMs;
+
+  @override
+  ConsumerState<_PlaybackScrubber> createState() => _PlaybackScrubberState();
+}
+
+class _PlaybackScrubberState extends ConsumerState<_PlaybackScrubber> {
+  double? _scrub;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final fg = widget.color;
+    final total = widget.totalMs;
+    final pos = ref.watch(musicPositionProvider).value ?? Duration.zero;
+    final value = _scrub ?? (total <= 0 ? 0.0 : (pos.inMilliseconds / total).clamp(0.0, 1.0));
+    final shown = Duration(milliseconds: (value * total).round());
+    final c = ref.read(musicControllerProvider.notifier);
+    final label = theme.textTheme.labelSmall?.copyWith(color: fg.withValues(alpha: 0.8));
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: fg,
+            inactiveTrackColor: fg.withValues(alpha: 0.25),
+            thumbColor: fg,
+            trackHeight: 3,
+          ),
+          child: Slider(
+            value: value,
+            semanticFormatterCallback: (v) =>
+                '${formatTrackTime(Duration(milliseconds: (v * total).round()))} / ${formatTrackTime(Duration(milliseconds: total))}',
+            onChanged: total <= 0 ? null : (v) => setState(() => _scrub = v),
+            onChangeEnd: (v) async {
+              await c.seek(Duration(milliseconds: (v * total).round()));
+              if (mounted) setState(() => _scrub = null);
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(formatTrackTime(shown), style: label),
+              Text(formatTrackTime(Duration(milliseconds: total)), style: label),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

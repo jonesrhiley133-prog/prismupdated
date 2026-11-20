@@ -156,6 +156,36 @@ void main() {
       expect(find.textContaining('Posting as Bob'), findsOneWidget);
     });
 
+    testWidgets('keystrokes rebuild the composer only when what it shows '
+        'changes', (tester) async {
+      await tester.pumpWidget(buildSubject(proxyTagsEnabled: true));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'hello');
+      await tester.pumpAndSettle();
+
+      var rebuilds = 0;
+      debugOnRebuildDirtyWidget = (element, builtOnce) {
+        if (element.widget is MessageInput) rebuilds++;
+      };
+
+      addTearDown(() => debugOnRebuildDirtyWidget = null);
+
+      // Still non-empty, no mention, no proxy tag: nothing in the composer
+      // changes, so only the text field repaints.
+      for (final text in ['hello ', 'hello w', 'hello wo', 'hello world']) {
+        await tester.enterText(find.byType(TextField), text);
+        await tester.pump();
+      }
+      expect(rebuilds, 0);
+      expect(find.text('hello world'), findsOneWidget);
+
+      // A proxy tag match changes what the composer shows.
+      await tester.enterText(find.byType(TextField), 'A: hello');
+      await tester.pumpAndSettle();
+      expect(rebuilds, greaterThan(0));
+      expect(find.textContaining('Posting as Alice'), findsOneWidget);
+    });
+
     testWidgets('non-participant DM access keeps send disabled', (
       tester,
     ) async {

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prism_plurality/shared/media/content_keyed_image.dart';
 import 'package:prism_plurality/features/settings/providers/terminology_provider.dart';
 import 'package:prism_plurality/shared/providers/member_avatar_image_provider.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -127,12 +128,16 @@ class MemberAvatar extends ConsumerWidget {
       final imageSize = size - imageInset * 2;
       final pixelSize = (imageSize * MediaQuery.devicePixelRatioOf(context))
           .ceil();
-      final image = Image.memory(
-        resolvedAvatarImageData,
+      final image = Image(
+        // Cached by content: a re-read of the same avatar (list rows coming
+        // back into view, a sync re-saving it) reuses the earlier decode.
+        image: ResizeImage.resizeIfNeeded(
+          pixelSize,
+          pixelSize,
+          ContentKeyedMemoryImage(resolvedAvatarImageData),
+        ),
         width: imageSize,
         height: imageSize,
-        cacheWidth: pixelSize,
-        cacheHeight: pixelSize,
         fit: BoxFit.cover,
         // MemoryImage uses Uint8List identity for ==. Drift re-emits a
         // Member row whenever it's written (e.g. PluralKit sync re-saves

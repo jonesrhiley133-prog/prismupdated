@@ -62,7 +62,7 @@ ProxyTagMatch? matchProxyTag(String rawText, List<Member> members) {
     if (member.isDeleted || !member.isActive) continue;
     if (member.proxyTagsJson == null) continue;
 
-    final tags = parseProxyTags(member.proxyTagsJson);
+    final tags = parseProxyTagsCached(member.proxyTagsJson);
     for (var i = 0; i < tags.length; i++) {
       final tag = tags[i];
       final prefix = tag.prefix ?? '';

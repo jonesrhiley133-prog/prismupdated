@@ -61,7 +61,6 @@ import 'package:prism_plurality/shared/widgets/prism_markdown_text.dart';
 import 'package:prism_plurality/shared/widgets/prism_list_row.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/extensions/duration_extensions.dart';
-import 'package:prism_plurality/shared/utils/animations.dart';
 
 /// Detail screen for a single system member, pushed via go_router.
 class MemberDetailScreen extends ConsumerWidget {
@@ -465,39 +464,63 @@ class _MemberProfileTheme extends StatelessWidget {
   final PaletteContrast paletteContrast;
   final Widget child;
 
+  // Derived profile themes, newest last. Building one runs the palette
+  // (ColorScheme.fromSeed) and the full appearance pipeline, so it is
+  // computed once per base theme + colour, not on every rebuild.
+  static final Map<(int, bool, PaletteMood, PaletteContrast), ThemeData> _cache =
+      {};
+  static ThemeData? _cacheBase;
+
+  static ThemeData _themeFor(
+    ThemeData base,
+    Color accent,
+    bool usePalette,
+    PaletteMood mood,
+    PaletteContrast contrast,
+  ) {
+    // Keyed by identity: the app theme object only changes when appearance
+    // settings change, and ThemeData's own hashCode is a deep walk.
+    if (!identical(base, _cacheBase)) {
+      _cache.clear();
+      _cacheBase = base;
+    }
+    final key = (accent.toARGB32(), usePalette, mood, contrast);
+    final hit = _cache.remove(key);
+    if (hit != null) return _cache[key] = hit;
+    final theme = withAccent(
+      base,
+      accent,
+      palette: usePalette
+          ? AppTheme.localPaletteTheme(
+              base,
+              seedColor: accent,
+              paletteMood: mood,
+              paletteContrast: contrast,
+            )
+          : null,
+    );
+    if (_cache.length >= 12) _cache.remove(_cache.keys.first);
+    return _cache[key] = theme;
+  }
+
   @override
   Widget build(BuildContext context) {
     final accent = accentColor;
     if (accent == null) return child;
 
     // The alter's colour becomes the accent; the active appearance preset
-    // (backgrounds, surfaces, text, element styles) keeps applying.
-    final profileTheme = withAccent(
-      baseTheme,
-      accent,
-      palette: usePaletteTheme
-          ? AppTheme.localPaletteTheme(
-              baseTheme,
-              seedColor: accent,
-              paletteMood: paletteMood,
-              paletteContrast: paletteContrast,
-            )
-          : null,
-    );
-
-    if (!usePaletteTheme || MediaQuery.of(context).disableAnimations) {
-      return Theme(data: profileTheme, child: child);
-    }
-
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: 1),
-      duration: Anim.md,
-      curve: Anim.enter,
-      child: child,
-      builder: (context, value, child) => Theme(
-        data: ThemeData.lerp(baseTheme, profileTheme, value),
-        child: child!,
+    // (backgrounds, surfaces, text, element styles) keeps applying. Applied
+    // in one step: lerping ThemeData per frame rebuilt the whole profile on
+    // every frame of the page transition.
+    return Theme(
+      data: _themeFor(
+        baseTheme,
+        accent,
+        usePaletteTheme,
+        paletteMood,
+        paletteContrast,
       ),
+      child: child,
     );
   }
 }

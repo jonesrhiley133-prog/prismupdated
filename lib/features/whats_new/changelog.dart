@@ -32,6 +32,28 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.38.1',
+    date: DateTime(2026, 11, 20),
+    improvements: const [
+      LocalizedText(
+        'Smoother typing in chat: a keystroke no longer redraws the whole message bar, and proxy tags are no longer re-read for every headmate on each letter.',
+        'Escribir en el chat es más fluido: una tecla ya no vuelve a dibujar toda la barra de mensajes y las etiquetas de proxy ya no se releen para cada alter con cada letra.',
+      ),
+      LocalizedText(
+        'Music no longer keeps the screen redrawing several times a second: the progress bar moves when it would actually move, and the full player only updates its seek bar.',
+        'La música ya no hace que la pantalla se vuelva a dibujar varias veces por segundo: la barra de progreso se mueve cuando de verdad cambia y el reproductor completo solo actualiza su barra de avance.',
+      ),
+      LocalizedText(
+        'Long Headmates lists with banners scroll more smoothly: banners and avatars that scroll back into view reuse the image already loaded instead of loading it again.',
+        'Las listas largas de alters con banners se desplazan con más fluidez: los banners y avatares que vuelven a verse reutilizan la imagen ya cargada en lugar de cargarla de nuevo.',
+      ),
+      LocalizedText(
+        'Live timers (fronting, habits) pause while their page is hidden and catch up the moment it shows again; opening a profile reuses its colour theme; the Headspace Mapper, analytics, Relationships, Subsystems and Dictionary load when you open them.',
+        'Los temporizadores en vivo (frente, hábitos) se pausan mientras su página está oculta y se ponen al día al volver; abrir un perfil reutiliza su tema de color; el mapa del espacio interno, las estadísticas, Relaciones, Subsistemas y el Diccionario se cargan al abrirlos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.38.0',
     date: DateTime(2026, 11, 20),
     features: const [

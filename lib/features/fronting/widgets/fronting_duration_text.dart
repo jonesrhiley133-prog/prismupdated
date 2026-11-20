@@ -25,14 +25,31 @@ class FrontingDurationText extends StatefulWidget {
 }
 
 class _FrontingDurationTextState extends State<FrontingDurationText> {
-  late Timer _timer;
+  Timer? _timer;
   late Duration _elapsed;
+  bool _visible = true;
 
   @override
   void initState() {
     super.initState();
     _elapsed = DateTime.now().difference(widget.startTime);
-    _startTimer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Pause while the page is hidden (the shell keeps other sections mounted
+    // with tickers off). Elapsed time is always recomputed from startTime,
+    // so it is exact again the moment the page shows.
+    final visible = TickerMode.valuesOf(context).enabled;
+    if (visible == _visible && (_timer != null || !visible)) return;
+    _visible = visible;
+    _timer?.cancel();
+    _timer = null;
+    if (visible) {
+      _elapsed = DateTime.now().difference(widget.startTime);
+      _startTimer();
+    }
   }
 
   void _startTimer() {
@@ -47,7 +64,7 @@ class _FrontingDurationTextState extends State<FrontingDurationText> {
       if (widget.rounded &&
           _elapsed.inMinutes < 1 &&
           newElapsed.inMinutes >= 1) {
-        _timer.cancel();
+        _timer?.cancel();
         _startTimer();
       }
       setState(() => _elapsed = newElapsed);
@@ -60,14 +77,15 @@ class _FrontingDurationTextState extends State<FrontingDurationText> {
     if (oldWidget.startTime != widget.startTime ||
         oldWidget.rounded != widget.rounded) {
       _elapsed = DateTime.now().difference(widget.startTime);
-      _timer.cancel();
-      _startTimer();
+      _timer?.cancel();
+      _timer = null;
+      if (_visible) _startTimer();
     }
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 

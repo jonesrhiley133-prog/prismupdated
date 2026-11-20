@@ -53,6 +53,30 @@ class StressPreset {
   final int frontingMinMembersPerSession, frontingMaxMembersPerSession;
   final int activeFrontingMembers;
 
+  // Profiling fixture (PRISM_PERF builds): a long Headmates list where every
+  // member has an avatar and a banner, a few busy chats and two people
+  // fronting, small enough to seed quickly in a browser.
+  static const perf = StressPreset(
+    label: 'Perf',
+    members: 300,
+    sessions: 3000,
+    conversations: 3,
+    messages: 3000,
+    habits: 10,
+    completions: 200,
+    notes: 20,
+    polls: 2,
+    groups: 6,
+    customFields: 5,
+    years: 1,
+    estimatedSizeMb: 40,
+    estimatedSeconds: 60,
+    realisticProfiles: true,
+    memberAvatarEvery: 1,
+    memberHeaderEvery: 1,
+    activeFrontingMembers: 2,
+  );
+
   static const medium = StressPreset(
     label: 'Medium',
     members: 50,

@@ -48,6 +48,19 @@ List<ProxyTag> parseProxyTags(String? json) {
   }
 }
 
+final Map<String, List<ProxyTag>> _parsedCache = {};
+
+/// [parseProxyTags] for hot paths (the chat composer matches every
+/// member's tags as the draft changes). Same result, but each distinct JSON
+/// string is decoded once; the returned list is shared and read-only.
+List<ProxyTag> parseProxyTagsCached(String? json) {
+  if (json == null || json.isEmpty) return const [];
+  final hit = _parsedCache[json];
+  if (hit != null) return hit;
+  if (_parsedCache.length >= 4096) _parsedCache.clear();
+  return _parsedCache[json] = List.unmodifiable(parseProxyTags(json));
+}
+
 /// Encode proxy tags back to PK-compatible JSON.
 ///
 /// Empty tags are filtered. Empty prefix/suffix fields are encoded as null so

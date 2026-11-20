@@ -106,6 +106,21 @@ class _MessageInputState extends ConsumerState<MessageInput> {
   /// watched providers.
   String _lastText = '';
 
+  /// What the last build saw, so a keystroke only rebuilds the composer when
+  /// something it shows changes: send vs. voice button (text empty or not),
+  /// the mention menu, or the proxy-tag chip. The text itself is drawn by
+  /// the text field, which repaints on its own.
+  bool _builtHasText = false;
+  (String, String, String)? _builtProxyKey;
+  List<Member> _proxyMembers = const [];
+  bool _proxyTagsOn = false;
+
+  (String, String, String)? _proxyKeyFor(String text) {
+    if (!_proxyTagsOn) return null;
+    final m = matchProxyTag(text, _proxyMembers);
+    return m == null ? null : (m.matchedPrefix, m.matchedSuffix, m.memberId);
+  }
+
   /// Proxy-tag match dismissed by the user for the current draft. Keyed by
   /// `(prefix, suffix, memberId)` so retyping a different tag re-opens the
   /// chip. Cleared when the draft is sent or cleared.
@@ -243,6 +258,14 @@ class _MessageInputState extends ConsumerState<MessageInput> {
     if (_lastText == nextText &&
         _mentionMenuVisible == nextMentionVisible &&
         _mentionFilter == nextMentionFilter) {
+      return;
+    }
+    if (_mentionMenuVisible == nextMentionVisible &&
+        _mentionFilter == nextMentionFilter &&
+        nextText.trim().isNotEmpty == _builtHasText &&
+        _proxyKeyFor(nextText) == _builtProxyKey) {
+      // Nothing the composer shows depends on this keystroke.
+      _lastText = nextText;
       return;
     }
 
@@ -854,7 +877,13 @@ class _MessageInputState extends ConsumerState<MessageInput> {
       frontingTerms.activeSectionLabel,
     );
 
+    _proxyMembers = members;
+    _proxyTagsOn = useProxyTags;
+    _builtHasText = _lastText.trim().isNotEmpty;
     final rawMatch = useProxyTags ? matchProxyTag(_lastText, members) : null;
+    _builtProxyKey = rawMatch == null
+        ? null
+        : (rawMatch.matchedPrefix, rawMatch.matchedSuffix, rawMatch.memberId);
     final suppressed = _suppressedTag;
     final effectiveMatch =
         (rawMatch != null &&
@@ -1035,7 +1064,10 @@ class _MessageInputState extends ConsumerState<MessageInput> {
                                 controller: _controller,
                                 focusNode: _focusNode,
                                 minHeight: inputHeight,
-                                onChanged: (_) => setState(() {}),
+                                // The controller listener rebuilds the
+                                // composer when send/mention/proxy state
+                                // changes; a plain keystroke must not.
+                                onChanged: (_) {},
                                 onSend: _sendMessage,
                                 onContentInserted: _handleInsertedContent,
                                 onPasteImage: _pasteImageFromClipboard,
