@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:prism_plurality/core/features/feature_state.dart';
-import 'package:prism_plurality/features/fitness/health/health_integration_screen.dart';
 import 'package:prism_plurality/features/fitness/health/health_sync.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -31,7 +30,10 @@ class HealthFitnessBanner extends ConsumerWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  PrismButton(label: tr(context, 'Show me how', 'Enséñame'), tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () => showHealthAssistant(context)),
+                  PrismButton(label: tr(context, 'Show me how', 'Enséñame'), tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () {
+                    ref.read(healthSyncProvider).saveSettings({'assistantSeen': true});
+                    context.push('/fitness/integrations');
+                  }),
                   PrismButton(label: tr(context, 'Not now', 'Ahora no'), density: PrismControlDensity.compact, onPressed: () => ref.read(healthSyncProvider).saveSettings({'assistantSeen': true})),
                 ],
               ),
@@ -42,13 +44,16 @@ class HealthFitnessBanner extends ConsumerWidget {
     }
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final daily = (ref.watch(trackerKindProvider(TrackerKind.fitnessDaily)).value ?? const <TrackerRecord>[]).where((r) => r.occurredAt != null && DateTime(r.occurredAt!.year, r.occurredAt!.month, r.occurredAt!.day) == today).firstOrNull;
+    final rows = (ref.watch(trackerKindProvider(TrackerKind.fitnessDaily)).value ?? const <TrackerRecord>[]).where((r) => (r.str('dayKey') ?? (r.occurredAt == null ? null : dayKey(r.occurredAt!))) == dayKey(today)).toList();
+    // Live sync and a file import may both cover today: one value per
+    // metric (the larger), never added together.
+    final d = mergeDailyRows(rows);
     final parts = <String>[
-      if (daily?.integer('steps') != null) tr(context, '${daily!.integer('steps')} steps', '${daily.integer('steps')} pasos'),
-      if (daily?.fields['distanceKm'] is num) '${(daily!.fields['distanceKm'] as num).toStringAsFixed(1)} km',
-      if (daily?.integer('calories') != null) '${daily!.integer('calories')} kcal',
-      if (daily?.integer('activeMinutes') != null) tr(context, '${daily!.integer('activeMinutes')} active min', '${daily.integer('activeMinutes')} min activos'),
-      if (daily?.integer('heartRateAvg') != null) '♥ ${daily!.integer('heartRateAvg')} bpm',
+      if (d['steps'] != null) tr(context, '${d['steps']} steps', '${d['steps']} pasos'),
+      if (d['distanceKm'] != null) '${d['distanceKm']!.toStringAsFixed(1)} km',
+      if (d['calories'] != null) '${d['calories']!.round()} kcal',
+      if (d['activeMinutes'] != null) tr(context, '${d['activeMinutes']!.round()} active min', '${d['activeMinutes']!.round()} min activos'),
+      if (d['heartRateAvg'] != null) '♥ ${d['heartRateAvg']!.round()} bpm',
     ];
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),

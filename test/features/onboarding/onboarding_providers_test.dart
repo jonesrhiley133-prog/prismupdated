@@ -386,6 +386,7 @@ void main() {
         AppShellTabId.groups,
         AppShellTabId.calendar,
         AppShellTabId.mood,
+        AppShellTabId.health,
         AppShellTabId.insights,
         AppShellTabId.locations,
         AppShellTabId.work,

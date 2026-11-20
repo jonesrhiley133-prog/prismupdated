@@ -202,6 +202,16 @@ final List<PrismFeature> prismFeatures = [
     data: const FeatureData(sources: ['mood']),
   ),
   PrismFeature(
+    id: 'health',
+    name: ('Health', 'Salud'),
+    description: ('Private symptom and illness log with an interactive Body Map and episodes.', 'Registro privado de síntomas y enfermedades con mapa corporal interactivo y episodios.'),
+    category: FeatureCategory.tracking,
+    icon: PhosphorIcons.firstAid(),
+    tabs: const [AppShellTabId.health],
+    route: AppRoutePaths.health,
+    data: const FeatureData(activityKinds: [TrackerKind.healthCheckin, TrackerKind.healthSpot, TrackerKind.healthFollowup, TrackerKind.healthEpisode], permanentKinds: [TrackerKind.healthVocab]),
+  ),
+  PrismFeature(
     id: 'journal',
     name: ('Journal & dreams', 'Diario y sueños'),
     description: ('Journal entries and the dream journal.', 'Entradas de diario y diario de sueños.'),

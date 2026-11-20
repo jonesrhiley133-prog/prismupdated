@@ -1,0 +1,5 @@
+com.samsung.shealth.step_daily_trend,6315005,3
+source_pkg_name,deviceuuid,count,speed,distance,calorie,binning_data,create_time,day_time,source_type
+com.sec.android.app.shealth,dev1,6400,1.2,4800.5,210.3,,2026-03-09 23:59:00.000,1773014400000,0
+com.sec.android.app.shealth,dev2,6100,1.1,4600,200,,2026-03-09 23:59:00.000,1773014400000,0
+,,,,,,,,bad,0

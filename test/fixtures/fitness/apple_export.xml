@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HealthData [
+<!ELEMENT HealthData (ExportDate,Me,(Record|Correlation|Workout|ActivitySummary)*)>
+]>
+<HealthData locale="en_US">
+ <ExportDate value="2026-03-10 21:00:00 +0000"/>
+ <Me HKCharacteristicTypeIdentifierDateOfBirth=""/>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Sam’s iPhone" sourceVersion="17.2" unit="count" creationDate="2026-03-09 09:10:00 +0000" startDate="2026-03-09 09:00:00 +0000" endDate="2026-03-09 09:10:00 +0000" value="1200"/>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Sam’s iPhone" sourceVersion="17.2" unit="count" creationDate="2026-03-09 12:10:00 +0000" startDate="2026-03-09 12:00:00 +0000" endDate="2026-03-09 12:10:00 +0000" value="800"/>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Sam’s Apple Watch" sourceVersion="10.2" unit="count" creationDate="2026-03-09 09:10:00 +0000" startDate="2026-03-09 09:00:00 +0000" endDate="2026-03-09 09:10:00 +0000" value="2300"/>
+ <Record type="HKQuantityTypeIdentifierDistanceWalkingRunning" sourceName="Sam’s iPhone" unit="km" startDate="2026-03-09 09:00:00 +0000" endDate="2026-03-09 09:10:00 +0000" value="1.25"/>
+ <Record type="HKQuantityTypeIdentifierActiveEnergyBurned" sourceName="Sam’s Apple Watch" unit="kJ" startDate="2026-03-09 09:00:00 +0000" endDate="2026-03-09 09:10:00 +0000" value="418.4"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Sam’s Apple Watch" unit="count/min" startDate="2026-03-09 09:05:00 +0000" endDate="2026-03-09 09:05:00 +0000" value="80"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Sam’s Apple Watch" unit="count/min" startDate="2026-03-09 10:05:00 +0000" endDate="2026-03-09 10:05:00 +0000" value="60"/>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Broken" unit="count" startDate="not a date" endDate="2026-03-09 10:05:00 +0000" value="5"/>
+ <Workout workoutActivityType="HKWorkoutActivityTypeRunning" duration="30.5" durationUnit="min" totalDistance="5.1" totalDistanceUnit="km" totalEnergyBurned="320" totalEnergyBurnedUnit="kcal" sourceName="Sam’s Apple Watch" sourceVersion="10.2" creationDate="2026-03-09 18:31:00 +0000" startDate="2026-03-09 18:00:00 +0000" endDate="2026-03-09 18:30:30 +0000">
+  <MetadataEntry key="HKIndoorWorkout" value="0"/>
+ </Workout>
+</HealthData>

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/health/health_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
@@ -211,6 +212,7 @@ final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'availability',
 );
 final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
+final _healthNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'health');
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -1602,6 +1604,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(path: 'post/:id', builder: (context, state) => SocialPostScreen(postId: state.pathParameters['id']!)),
                   GoRoute(path: 'settings', builder: (context, state) => const SocialSettingsScreen()),
                 ],
+              ),
+            ],
+          ),
+          // Branch 39: Health (symptoms, Body Map, episodes)
+          StatefulShellBranch(
+            navigatorKey: _healthNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.health,
+                builder: (context, state) => HealthScreen(
+                  key: ValueKey(state.uri.query),
+                  entryId: state.uri.queryParameters['entry'],
+                  moodId: state.uri.queryParameters['mood'],
+                  tab: state.uri.queryParameters['tab'],
+                ),
               ),
             ],
           ),

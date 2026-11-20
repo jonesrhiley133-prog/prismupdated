@@ -109,8 +109,8 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
               icon: PhosphorIcons.heartbeat(),
               tooltip: tr(
                 context,
-                'Health integrations',
-                'Integraciones de salud',
+                'Connected apps',
+                'Apps conectadas',
               ),
               onPressed: () => context.push('/fitness/integrations'),
             ),

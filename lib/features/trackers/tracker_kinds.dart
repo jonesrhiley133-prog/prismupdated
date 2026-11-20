@@ -109,6 +109,14 @@ abstract final class TrackerKind {
   static const habitGroup = 'habit.group';
   static const habitTimer = 'habit.timer';
 
+  // Health: check-ins (with their symptoms), Body Map spots, follow-ups,
+  // illness episodes and custom vocabulary. Private by default.
+  static const healthCheckin = 'health.checkin';
+  static const healthSpot = 'health.spot';
+  static const healthFollowup = 'health.followup';
+  static const healthEpisode = 'health.episode';
+  static const healthVocab = 'health.vocab';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

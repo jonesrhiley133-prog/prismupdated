@@ -43,6 +43,13 @@ abstract final class AppRoutePaths {
   static const availability = '/availability';
   static const introductions = '/introductions';
   static const prismSocial = '/prism-social';
+  static const health = '/health';
+
+  /// A Health entry (opens it if the current alter may see it).
+  static String healthEntry(String id) => '/health?entry=${Uri.encodeQueryComponent(id)}';
+
+  /// Body sensations recorded on a Mood check-in, now in Health › Body Map.
+  static String healthMoodSensations(String moodId) => '/health?tab=map&mood=${Uri.encodeQueryComponent(moodId)}';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -243,6 +250,7 @@ enum AppShellTabId {
   availability,
   introductions,
   social,
+  health,
 }
 
 class AppShellTab {
@@ -326,6 +334,7 @@ class AppShellTab {
       AppShellTabId.availability => l10n.navAvailability,
       AppShellTabId.introductions => l10n.navIntroductions,
       AppShellTabId.social => 'Social',
+      AppShellTabId.health => l10n.localeName.startsWith('es') ? 'Salud' : 'Health',
     };
   }
 
@@ -381,6 +390,7 @@ class AppShellTab {
       AppShellTabId.availability => true,
       AppShellTabId.introductions => true,
       AppShellTabId.social => true,
+      AppShellTabId.health => true,
     };
   }
 }
@@ -699,6 +709,14 @@ final appShellTabs = [
     branchIndex: 38,
     rootLocation: AppRoutePaths.prismSocial,
   ),
+  AppShellTab(
+    id: AppShellTabId.health,
+    label: 'Health',
+    icon: AppIcons.navHealth,
+    activeIcon: AppIcons.navHealthActive,
+    branchIndex: 39,
+    rootLocation: AppRoutePaths.health,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -713,6 +731,7 @@ const defaultNavBarOverflowTabIds = [
   'groups',
   'calendar',
   'mood',
+  'health',
   'insights',
   'locations',
   'work',

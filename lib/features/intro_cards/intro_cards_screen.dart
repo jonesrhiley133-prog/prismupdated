@@ -265,20 +265,18 @@ class _TableCardState extends State<_TableCard> {
               SizedBox(
                 width: 28,
                 height: 28,
-                child: PopupMenuButton<String>(
-                  padding: EdgeInsets.zero,
-                  iconSize: 18,
+                child: PrismPopupMenu<String>(
+                  icon: PhosphorIcons.dotsThreeVertical(),
                   tooltip: tr(context, 'Card options', 'Opciones'),
-                  icon: Icon(PhosphorIcons.dotsThreeVertical()),
                   onSelected: (v) => switch (v) {
                     'edit' => showIntroCardEditor(context, memberId: widget.member.id),
                     'enlarge' => _showLarge(context),
                     _ => context.push(AppRoutePaths.member(widget.member.id)),
                   },
-                  itemBuilder: (ctx) => [
-                    PopupMenuItem(value: 'enlarge', child: Text(tr(ctx, 'Enlarge', 'Ampliar'))),
-                    PopupMenuItem(value: 'edit', child: Text(tr(ctx, 'Edit card', 'Editar tarjeta'))),
-                    PopupMenuItem(value: 'profile', child: Text(tr(ctx, 'Open profile', 'Abrir perfil'))),
+                  items: [
+                    PrismMenuItem(value: 'enlarge', label: tr(context, 'Enlarge', 'Ampliar'), icon: PhosphorIcons.arrowsOut()),
+                    PrismMenuItem(value: 'edit', label: tr(context, 'Edit card', 'Editar tarjeta'), icon: AppIcons.edit),
+                    PrismMenuItem(value: 'profile', label: tr(context, 'Open profile', 'Abrir perfil'), icon: AppIcons.personOutline),
                   ],
                 ),
               ),
@@ -290,9 +288,17 @@ class _TableCardState extends State<_TableCard> {
   }
 
   /// Lifts the card off the table: large and flippable.
-  Future<void> _showLarge(BuildContext context) => showDialog<void>(
+  Future<void> _showLarge(BuildContext context) => showGeneralDialog<void>(
     context: context,
-    builder: (ctx) {
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 220),
+    transitionBuilder: (ctx, anim, _, child) => FadeTransition(
+      opacity: anim,
+      child: ScaleTransition(scale: Tween(begin: 0.92, end: 1.0).animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic)), child: child),
+    ),
+    pageBuilder: (ctx, _, _) {
       final size = MediaQuery.sizeOf(ctx);
       final w = math.min(300.0, math.min(size.width - 64, (size.height - 180) / 1.72));
       return Dialog(

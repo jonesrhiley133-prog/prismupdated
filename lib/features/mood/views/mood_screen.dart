@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -10,7 +12,6 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/mood_entry.dart';
 import 'package:prism_plurality/features/calendar/widgets/month_grid.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
-import 'package:prism_plurality/features/mood/data/body_map.dart';
 import 'package:prism_plurality/features/mood/data/emotion_library.dart';
 import 'package:prism_plurality/features/mood/providers/mood_providers.dart';
 import 'package:prism_plurality/features/mood/utils/mood_stats.dart';
@@ -254,16 +255,6 @@ class _OverviewState extends State<_Overview> {
               child: _TimeOfDayRow(summary: summary),
             ),
             _MemberBreakdown(summary: summary),
-            if (summary.topBodySensations.isNotEmpty)
-              _Card(
-                title: l10n.moodTopBody,
-                child: _RankedBars(
-                  items: [
-                    for (final e in summary.topBodySensations.take(6))
-                      (bodySensationLabel(e.key), e.value, null),
-                  ],
-                ),
-              ),
           ],
         ],
       ],
@@ -990,8 +981,21 @@ class MoodEntryTile extends ConsumerWidget {
                               label: emotionLabel(key),
                               color: emotionColor(key),
                             ),
-                          for (final b in entry.bodySensations)
-                            _TinyTag(label: bodySensationLabel(b), color: null),
+                          // Body sensations moved to Health › Body Map; the
+                          // tag opens them there.
+                          if (entry.bodySensations.isNotEmpty)
+                            GestureDetector(
+                              onTap: () => context.go(AppRoutePaths.healthMoodSensations(entry.id)),
+                              child: Semantics(
+                                link: true,
+                                child: _TinyTag(
+                                  label: Localizations.localeOf(context).languageCode == 'es'
+                                      ? 'Mapa corporal · ${entry.bodySensations.length}'
+                                      : 'Body Map · ${entry.bodySensations.length}',
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ],

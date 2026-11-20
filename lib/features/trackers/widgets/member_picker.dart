@@ -20,9 +20,10 @@ Color? _memberColor(Member m) {
   return Color(hex.replaceFirst('#', '').length <= 6 ? 0xFF000000 | v : v);
 }
 
-String memberLabel(Member m) {
+String memberLabel(Member m, {bool preferDisplayName = false}) {
   final e = m.emoji.trim();
-  return e.isEmpty || e == '❔' ? m.name : '$e ${m.name}';
+  final n = m.effectiveName(preferDisplayName: preferDisplayName);
+  return e.isEmpty || e == '❔' ? n : '$e $n';
 }
 
 /// Chips to choose which alter something belongs to, or the whole system.

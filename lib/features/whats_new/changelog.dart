@@ -32,6 +32,30 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.38.0',
+    date: DateTime(2026, 11, 20),
+    features: const [
+      LocalizedText(
+        'Health: a private place to record how you feel. Log a symptom in a word or add full details — onset, severity, pattern, triggers, what helped, effects on sleep or school, temperature and notes — with follow-ups (still happening, changed, resolved), illness episodes and a filtered summary export.',
+        'Salud: un lugar privado para anotar cómo te sientes. Registra un síntoma con una palabra o con todos los detalles (inicio, gravedad, evolución, desencadenantes, qué ayudó, efectos en el sueño o la escuela, temperatura y notas), con seguimientos (sigue, cambió, resuelto), episodios y un resumen exportable con filtros.',
+      ),
+      LocalizedText(
+        'The Body Map moved from Mood into Health and was rebuilt: front and back figures plus face, hand and foot views, the body’s own left and right, exact points or whole areas, several spots per entry, region-specific sensation words, custom words and “spreads to”. Body sensations already saved on Mood check-ins appear there unchanged.',
+        'El mapa corporal pasó de Ánimo a Salud y se rehízo: figuras de frente y espalda, vistas de cara, manos y pies, izquierda y derecha del propio cuerpo, puntos exactos o zonas completas, varios puntos por entrada, palabras según la zona, palabras propias y “se extiende a”. Las sensaciones guardadas en Ánimo aparecen allí sin cambios.',
+      ),
+      LocalizedText(
+        'Fitness › Connected apps: connect Health Connect or Apple Health type by type, see each type’s result after a sync, choose how much history to import, and import Apple Health, Google Fit or Samsung Health export files on any device.',
+        'Ejercicio › Apps conectadas: conecta Health Connect o Apple Health tipo por tipo, mira el resultado de cada tipo tras sincronizar, elige cuánto historial importar e importa archivos de Apple Health, Google Fit o Samsung Health en cualquier dispositivo.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Fixed workouts never importing from Health Connect: Prism didn’t ask for the calorie, distance and step access that reading a workout needs, and the failure was silent. Partly allowed access no longer blocks the whole sync, Samsung Health calories are read, and syncing again never duplicates days or workouts.',
+        'Corregido que los entrenamientos nunca se importaran desde Health Connect: Prism no pedía el acceso a calorías, distancia y pasos que necesita leer un entrenamiento, y el fallo era silencioso. Un permiso parcial ya no bloquea toda la sincronización, se leen las calorías de Samsung Health y sincronizar otra vez nunca duplica días ni entrenamientos.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.37.0',
     date: DateTime(2026, 11, 16),
     improvements: const [
