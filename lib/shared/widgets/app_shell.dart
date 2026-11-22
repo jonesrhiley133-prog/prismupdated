@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:prism_plurality/features/appearance/models/look.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -1134,6 +1135,13 @@ class _AppShellState extends ConsumerState<AppShell>
       ...configuredPrimaryTabs,
       ...configuredOverflowTabs,
     ];
+    // Tabs in the bar (or the desktop sidebar, which lists them all) need
+    // no back button; every other page gets one.
+    PrismNavRoots.update(
+      (isDesktop ? configuredTabs : configuredPrimaryTabs).map(
+        (t) => t.rootLocation,
+      ),
+    );
 
     // Watch the raw mode too, not only the collapsed gate: loading and
     // notStarted both collapse to `needsModal`, so without this watch the

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,7 +96,7 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                                   icon: Icons.keyboard_arrow_down_rounded,
                                   label: l10n.musClosePlayer,
                                   color: fg,
-                                  onPressed: () => Navigator.of(context).maybePop(),
+                                  onPressed: () => prismGoBack(context),
                                 ),
                                 Expanded(
                                   child: Text(

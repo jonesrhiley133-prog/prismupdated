@@ -875,6 +875,7 @@ class _ChatTopBar extends ConsumerWidget implements PreferredSizeWidget {
         PrismTopBar(
           title: context.l10n.chatTitle,
           leading: const _ChatMemberSelectorButton(),
+          backBeforeLeading: true,
           actions: [FeatureDataAction(featureId: 'chat'), 
             PrismTopBarAction(
               icon: AppIcons.add,

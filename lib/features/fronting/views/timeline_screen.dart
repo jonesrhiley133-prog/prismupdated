@@ -27,6 +27,7 @@ class TimelineScreen extends ConsumerWidget {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: context.l10n.navTimeline,
+        backBeforeLeading: true,
         leading: Builder(
           builder: (anchorContext) => PrismTopBarAction(
             icon: AppIcons.calendarTodayRounded,

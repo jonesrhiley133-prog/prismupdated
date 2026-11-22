@@ -116,6 +116,7 @@ class HabitsListScreen extends ConsumerWidget {
                   child: PrismTopBar(
                     title: context.l10n.habitsListTitle,
                     leading: const _HabitsVisibilityMenu(),
+                    backBeforeLeading: true,
                     trailing: PrismTopBarAction(
                       icon: AppIcons.add,
                       tooltip: context.l10n.habitsCreateHabitTooltip,

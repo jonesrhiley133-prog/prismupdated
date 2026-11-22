@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
+import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/widgets/embedded_pane_marker.dart';
@@ -24,7 +25,8 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.height = PrismTokens.topBarHeight,
     this.horizontalPadding = PrismTokens.topBarPadding,
     this.centerTitle = true,
-    this.showBackButton = false,
+    this.showBackButton,
+    this.backBeforeLeading = false,
   }) : assert(
          trailing == null || actions == null,
          'Use either trailing or actions, not both',
@@ -47,10 +49,17 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
   final EdgeInsets horizontalPadding;
   final bool centerTitle;
 
-  /// When true and [leading] is null, auto-inserts a route-pop action. It
-  /// renders as a back button on pushed pages and a close button inside modal
-  /// side sheets.
-  final bool showBackButton;
+  /// When [leading] is null, inserts a back action: a back button on pages,
+  /// a close button inside modal side sheets. True always shows it. Otherwise
+  /// it appears on every page except the tabs in the nav bar (see
+  /// [prismPageHasBack]), so no page is a dead end — screens built as tabs
+  /// pass false, but still need a way back when opened from elsewhere.
+  final bool? showBackButton;
+
+  /// For a [leading] that isn't a back control (a filter, a picker, an
+  /// avatar): also show the back button, before it, whenever the page needs
+  /// one.
+  final bool backBeforeLeading;
 
   @override
   Size get preferredSize => Size.fromHeight(height);
@@ -62,10 +71,23 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
     final paneControls = ListDetailPaneControls.maybeOf(context);
     final clearPaneSelection = paneControls?.clearSelection;
     final showPaneClose = isEmbeddedPane && clearPaneSelection != null;
-    final showAutoBack = showBackButton && !isEmbeddedPane;
+    final showAutoBack =
+        !isEmbeddedPane &&
+        (showBackButton == true || prismPageHasBack(context));
     final inModalSideSheet = ModalSideSheetMarker.of(context);
+    Widget backAction() => PrismTopBarAction(
+      icon: inModalSideSheet ? AppIcons.close : AppIcons.arrowBack,
+      tooltip: inModalSideSheet ? context.l10n.close : context.l10n.back,
+      onPressed: () => prismGoBack(context),
+    );
+    final leadingWithBack = leading != null && backBeforeLeading && showAutoBack
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [backAction(), const SizedBox(width: 8), leading!],
+          )
+        : leading;
     final effectiveLeading =
-        leading ??
+        leadingWithBack ??
         (showPaneClose
             ? PrismTopBarAction(
                 icon: AppIcons.close,
@@ -74,20 +96,17 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
                     closeDetailSurface(context, routeBacked: false),
               )
             : showAutoBack
-            ? PrismTopBarAction(
-                icon: inModalSideSheet ? AppIcons.close : AppIcons.arrowBack,
-                tooltip: inModalSideSheet
-                    ? context.l10n.close
-                    : context.l10n.back,
-                onPressed: () => closeDetailSurface(context),
-              )
+            ? backAction()
             : null);
 
     final effectiveTrailing = trailing ?? _buildActions();
 
     // Website-style header on wide web windows: title on the left.
     final desktopWeb = PrismTokens.desktopWebContentWidth != null;
-    final centerTitle = this.centerTitle && !desktopWeb;
+    // With a back button added beside another control, a centered title
+    // would run into the buttons; it sits between them instead.
+    final centerTitle =
+        this.centerTitle && !desktopWeb && identical(leadingWithBack, leading);
     final titleBlock = _TitleBlock(
       title: title,
       subtitle: subtitle,
@@ -129,7 +148,7 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
                 : Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _slot(effectiveLeading),
+                      effectiveLeading ?? _slot(null),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Align(
@@ -208,7 +227,9 @@ class _TitleBlock extends StatelessWidget {
             style:
                 titleStyle ??
                 theme.textTheme.headlineLarge?.copyWith(
-                  fontSize: PrismTokens.desktopWebContentWidth != null ? 24 : (isDesktop ? 18 : 22),
+                  fontSize: PrismTokens.desktopWebContentWidth != null
+                      ? 24
+                      : (isDesktop ? 18 : 22),
                   height: 1,
                 ),
           ),

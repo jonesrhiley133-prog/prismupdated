@@ -338,6 +338,7 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
           child: PrismTopBar(
             title: systemName,
             leading: _buildViewToggle(),
+            backBeforeLeading: true,
             trailing: _AddButton(
               isSleeping: isSleeping,
               sleepSession: sleepSession,
@@ -414,6 +415,7 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
           PrismTopBar(
             title: systemName,
             leading: _buildViewToggle(),
+            backBeforeLeading: true,
             trailing: _AddButton(
               isSleeping: isSleeping,
               sleepSession: sleepSession,

@@ -32,6 +32,16 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.39.3',
+    date: DateTime(2026, 11, 22),
+    improvements: const [
+      LocalizedText(
+        'Back buttons everywhere: every page now has a way back, except the tabs in your nav bar. That includes feature pages you open from Home or Settings (Mood, Calendar, Health, Boards…), pages opened from a link, and the quick accessibility panel, which now has a Close button. Back returns you to the page you came from. This matters most in the iPhone web app, which has no swipe-back gesture.',
+        'Botones de volver en todas partes: cada página tiene ahora una forma de volver, salvo las pestañas de tu barra de navegación. Incluye las páginas que abres desde Inicio o Ajustes (Ánimo, Calendario, Salud, Tablones…), las abiertas desde un enlace y el panel rápido de accesibilidad, que ahora tiene un botón Cerrar. Volver te lleva a la página de la que venías. Es especialmente útil en la app web del iPhone, que no tiene gesto para volver.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.39.2',
     date: DateTime(2026, 11, 22),
     improvements: const [

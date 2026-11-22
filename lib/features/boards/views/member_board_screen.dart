@@ -104,7 +104,7 @@ class _MemberBoardTopBar extends StatelessWidget
       title: l10n.memberBoardScreenTitle,
       subtitle: memberName,
       leading: leadingAvatar,
-      showBackButton: leadingAvatar == null,
+      backBeforeLeading: true,
       actions: [
         const BoardActorSelector(),
         PrismTopBarAction(

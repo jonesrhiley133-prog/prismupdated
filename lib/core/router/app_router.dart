@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/shared/navigation/prism_back.dart';
+import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
+import 'package:prism_plurality/shared/theme/app_icons.dart';
+import 'package:prism_plurality/shared/widgets/prism_top_bar_action.dart';
 import 'package:prism_plurality/features/health/health_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
@@ -1697,6 +1701,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   void logRoute() {
     final c = router.routerDelegate.currentConfiguration;
     FreezeWatchdog.crumb('page ${c.isEmpty ? '-' : c.fullPath}');
+    if (c.isNotEmpty) PrismBackHistory.record(c.uri.toString());
   }
 
   router.routerDelegate.addListener(logRoute);
@@ -1716,9 +1721,22 @@ class _QuickA11yPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        child: const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: A11yQuickPanel(),
+        child: Stack(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 52),
+              child: A11yQuickPanel(),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: PrismTopBarAction(
+                icon: AppIcons.close,
+                tooltip: context.l10n.close,
+                onPressed: () => prismGoBack(context),
+              ),
+            ),
+          ],
         ),
       ),
     ),

@@ -178,6 +178,56 @@ class _PrismAppState extends ConsumerState<PrismApp> {
       PerfProbe.register('route', (_) {
         return ref.read(routerProvider).state.uri.toString();
       });
+      String? sampleIds;
+      PerfProbe.register('ids', (_) {
+        // First call starts the lookup; call again for "table=id" lines.
+        if (sampleIds != null) return sampleIds!;
+        unawaited(() async {
+          final db = ref.read(databaseProvider);
+          final out = <String>[];
+          for (final t in [
+            'members',
+            'conversations',
+            'habits',
+            'polls',
+            'notes',
+            'fronting_sessions',
+            'member_groups',
+            'custom_fields',
+            'sleep_sessions',
+            'member_board_posts',
+          ]) {
+            try {
+              final rows = await db
+                  .customSelect('SELECT id FROM $t LIMIT 1')
+                  .get();
+              if (rows.isNotEmpty) out.add('$t=${rows.first.data['id']}');
+            } catch (_) {}
+          }
+          sampleIds = out.join('\n');
+        }());
+        return 'pending';
+      });
+      PerfProbe.register('routes', (_) {
+        // Every page path, for the harness's page-by-page checks.
+        final out = <String>[];
+        void walk(List<RouteBase> routes, String parent) {
+          for (final r in routes) {
+            if (r is GoRoute) {
+              final full = r.path.startsWith('/')
+                  ? r.path
+                  : '${parent == '/' ? '' : parent}/${r.path}';
+              out.add(full);
+              walk(r.routes, full);
+            } else if (r is ShellRouteBase) {
+              walk(r.routes, parent);
+            }
+          }
+        }
+
+        walk(ref.read(routerProvider).configuration.routes, '');
+        return out.join('\n');
+      });
     }
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/shared/markdown/markdown_preview.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -522,11 +523,11 @@ class _NotesTopBar extends StatelessWidget implements PreferredSizeWidget {
           leading: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (showBackButton) ...[
+              if (showBackButton || prismPageHasBack(context)) ...[
                 PrismTopBarAction(
                   icon: inModalSideSheet ? AppIcons.close : AppIcons.arrowBack,
                   tooltip: inModalSideSheet ? l10n.close : l10n.back,
-                  onPressed: () => closeDetailSurface(context),
+                  onPressed: () => prismGoBack(context),
                 ),
                 const SizedBox(width: 8),
               ],
