@@ -66,6 +66,10 @@ const Set<String> _kNoBackPaths = {AppRoutePaths.onboarding};
 /// The location of the page [context] sits in (not the app's current one),
 /// or null outside a router page.
 String? _pageLocation(BuildContext context) {
+  // GoRouterState.of walks up through every navigator when the page isn't a
+  // router page, registering dependencies along the way; only ask when it is.
+  if (GoRouter.maybeOf(context) == null) return null;
+  if (ModalRoute.of(context)?.settings is! Page<Object?>) return null;
   try {
     return GoRouterState.of(context).matchedLocation;
   } catch (_) {
@@ -75,13 +79,14 @@ String? _pageLocation(BuildContext context) {
 
 /// Whether the page holding [context] should offer a way back.
 bool prismPageHasBack(BuildContext context) {
-  final navigator = Navigator.maybeOf(context);
   final route = ModalRoute.of(context);
   // Sheets and dialogs have their own close controls.
   if (route != null && route is! PageRoute) return false;
   if (route != null && !route.isFirst) return true;
+  // Not "can the navigator pop": a menu or sheet opened over this page
+  // would flip that and rebuild the bar under the menu.
   final location = _pageLocation(context);
-  if (location == null) return navigator?.canPop() ?? false;
+  if (location == null) return false;
   if (_kNoBackPaths.contains(location)) return false;
   return !PrismNavRoots.visible.contains(location);
 }
