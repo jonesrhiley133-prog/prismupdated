@@ -212,6 +212,100 @@ void main() {
     n.dismiss();
     expect(c.read(appUpdateNotifierProvider).dismissedBuild, 42);
   });
+
+  group('GitLab package registry', () {
+    AppUpdateService gitlab(MockClient client, {int current = 10, MethodChannel? channel}) =>
+        AppUpdateService(
+          client: client,
+          repo: '',
+          gitlabHost: 'gitlab.com',
+          gitlabProject: '123',
+          currentBuild: () async => current,
+          cacheDir: () async => tmp,
+          channel: channel,
+        );
+    final sum = sha256.convert(_apkBytes).toString();
+    Map<String, Object?> manifest(int build) => {
+      'build': build,
+      'version': '0.39.0',
+      'apk': 'https://gitlab.com/api/v4/projects/123/packages/generic/prism-android/$build/Prism.apk',
+      'size': _apkBytes.length,
+      'sha256': sum,
+      'published': '2026-11-22T10:00:00Z',
+    };
+
+    test('reads latest.json and reports newer builds only', () async {
+      Uri? asked;
+      final client = MockClient((req) async {
+        asked = req.url;
+        return http.Response(jsonEncode(manifest(1530000)), 200);
+      });
+      final info = await gitlab(client).checkForUpdate();
+      expect(asked.toString(), 'https://gitlab.com/api/v4/projects/123/packages/generic/prism-android/latest/latest.json');
+      expect(info!.buildNumber, 1530000);
+      expect(info.version, '0.39.0');
+      expect(info.sha256, sum);
+      expect(await gitlab(client, current: 1530000).checkForUpdate(), isNull);
+    });
+
+    test('a private registry is reported as not public', () async {
+      for (final code in [401, 403, 404]) {
+        final client = MockClient((_) async => http.Response('', code));
+        await expectLater(
+          gitlab(client).checkForUpdate(),
+          throwsA(isA<AppUpdateException>().having((e) => e.code, 'code', 'not_public')),
+        );
+      }
+    });
+
+    test('rejects manifests without an https APK', () {
+      expect(parseGitlabManifest({'build': 5, 'apk': 'http://x/a.apk'}), isNull);
+      expect(parseGitlabManifest({'build': '5', 'apk': 'https://x/a.apk'}), isNull);
+      expect(parseGitlabManifest({'build': 5, 'apk': 'https://x/a.apk', 'sha256': 'nope'})!.sha256, isNull);
+    });
+  });
+
+  group('pre-install check', () {
+    Future<void> installWith(Map<String, Object?>? check, {void Function()? onInstall}) async {
+      const channel = MethodChannel('test/app_update_check');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            if (call.method == 'checkApk') return check;
+            if (call.method == 'installApk') onInstall?.call();
+            return true;
+          });
+      addTearDown(() => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null));
+      final s = service(MockClient((_) async => http.Response('', 404)), channel: channel);
+      await s.install('/tmp/x.apk');
+    }
+
+    test('a different signing key is explained instead of installing', () async {
+      var installed = false;
+      await expectLater(
+        installWith({'sameSigner': false, 'apkVersionCode': 9, 'installedVersionCode': 1}, onInstall: () => installed = true),
+        throwsA(isA<AppUpdateException>().having((e) => e.code, 'code', 'signature_mismatch')),
+      );
+      expect(installed, isFalse);
+    });
+
+    test('an older or equal build is not offered to the installer', () async {
+      await expectLater(
+        installWith({'sameSigner': true, 'apkVersionCode': 5, 'installedVersionCode': 5}),
+        throwsA(isA<AppUpdateException>().having((e) => e.code, 'code', 'older_build')),
+      );
+    });
+
+    test('a matching newer build opens the installer', () async {
+      var installed = false;
+      await installWith({'sameSigner': true, 'apkVersionCode': 6, 'installedVersionCode': 5}, onInstall: () => installed = true);
+      expect(installed, isTrue);
+      // Unknown signer (null) does not block either.
+      installed = false;
+      await installWith({'sameSigner': null, 'apkVersionCode': 6, 'installedVersionCode': 5}, onInstall: () => installed = true);
+      expect(installed, isTrue);
+    });
+  });
 }
 
 extension<T> on Stream<T> {

@@ -346,6 +346,21 @@ class MainActivity : FlutterFragmentActivity() {
                             result.error("settings_unavailable", e.message, null)
                         }
                     }
+                    "checkApk" -> {
+                        // Can this APK replace the installed app? Android only
+                        // updates when the signing key matches and the version
+                        // code is higher; otherwise it says "App not installed".
+                        val path = call.argument<String>("path")
+                        if (path == null || !File(path).isFile) {
+                            result.error("missing_file", "Update file not found", null)
+                            return@setMethodCallHandler
+                        }
+                        try {
+                            result.success(checkApkCanUpdate(path))
+                        } catch (e: Exception) {
+                            result.error("check_failed", e.message, null)
+                        }
+                    }
                     "installApk" -> {
                         val path = call.argument<String>("path")
                         val file = path?.let { File(it) }
@@ -1514,4 +1529,50 @@ class MainActivity : FlutterFragmentActivity() {
             hex.substring(offset, offset + 2).toInt(16).toByte()
         }
     }
+
+    /** Signing-certificate digests (SHA-256, hex) of a package. */
+    @Suppress("DEPRECATION")
+    private fun signerDigests(info: android.content.pm.PackageInfo): Set<String> {
+        val sigs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val si = info.signingInfo ?: return emptySet()
+            if (si.hasMultipleSigners()) si.apkContentsSigners else si.signingCertificateHistory
+        } else {
+            info.signatures
+        } ?: return emptySet()
+        return sigs.map { sig ->
+            MessageDigest.getInstance("SHA-256").digest(sig.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+        }.toSet()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun checkApkCanUpdate(path: String): Map<String, Any?> {
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageManager.GET_SIGNING_CERTIFICATES
+        } else {
+            PackageManager.GET_SIGNATURES
+        }
+        val archive = packageManager.getPackageArchiveInfo(path, flags)
+            ?: return mapOf("readable" to false)
+        archive.applicationInfo?.let {
+            it.sourceDir = path
+            it.publicSourceDir = path
+        }
+        val installed = packageManager.getPackageInfo(packageName, flags)
+        fun code(p: android.content.pm.PackageInfo): Long =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) p.longVersionCode
+            else p.versionCode.toLong()
+        val apkSigners = signerDigests(archive)
+        val installedSigners = signerDigests(installed)
+        return mapOf(
+            "readable" to true,
+            "samePackage" to (archive.packageName == packageName),
+            // Unknown (empty) sets are not treated as a mismatch.
+            "sameSigner" to if (apkSigners.isEmpty() || installedSigners.isEmpty()) null
+                else apkSigners.any { it in installedSigners },
+            "apkVersionCode" to code(archive),
+            "installedVersionCode" to code(installed),
+        )
+    }
+
 }

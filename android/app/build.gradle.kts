@@ -109,3 +109,25 @@ dependencies {
 flutter {
     source = "../.."
 }
+
+// On CI a release build without the signing key must fail: CI machines make
+// a new debug key every run, so a debug-signed APK can never install over
+// the previous one and people would have to uninstall to update. Checked
+// only when a release task runs, so CI debug builds and tests are unaffected.
+gradle.taskGraph.whenReady {
+    val buildsRelease = allTasks.any {
+        it.project == project && it.name.contains("Release") &&
+            (it.name.startsWith("assemble") || it.name.startsWith("bundle") ||
+                it.name.startsWith("package"))
+    }
+    if (buildsRelease && System.getenv("CI") != null &&
+        System.getenv("PRISM_ALLOW_DEBUG_SIGNING") == null &&
+        !rootProject.file("app/key.properties").exists()
+    ) {
+        throw GradleException(
+            "Release signing is not configured (android/app/key.properties is missing). " +
+                "Set the ANDROID_KEYSTORE_* CI variables, or PRISM_ALLOW_DEBUG_SIGNING=1 " +
+                "for a throwaway build that cannot update an installed app."
+        )
+    }
+}
