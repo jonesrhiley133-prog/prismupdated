@@ -88,7 +88,7 @@ class AppearanceSettingsScreen extends ConsumerWidget {
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(
-                  segments: ThemeBrightness.values
+                  segments: ThemeBrightness.displayOrder
                       .map((b) => PrismSegment(value: b, label: b.displayName))
                       .toList(),
                   selected: selectedBrightness,

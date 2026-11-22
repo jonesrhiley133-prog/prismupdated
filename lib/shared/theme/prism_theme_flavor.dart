@@ -10,9 +10,12 @@ import 'package:flutter/material.dart';
 /// this via [PrismThemeFlavor.of] and branch on [isPalette].
 @immutable
 class PrismThemeFlavor extends ThemeExtension<PrismThemeFlavor> {
-  const PrismThemeFlavor({required this.isPalette});
+  const PrismThemeFlavor({required this.isPalette, this.isMedium = false});
 
   final bool isPalette;
+
+  /// Built for the medium tone (mid-tone surfaces, light text).
+  final bool isMedium;
 
   static const PrismThemeFlavor standard = PrismThemeFlavor(isPalette: false);
   static const PrismThemeFlavor palette = PrismThemeFlavor(isPalette: true);
@@ -23,8 +26,11 @@ class PrismThemeFlavor extends ThemeExtension<PrismThemeFlavor> {
       Theme.of(context).extension<PrismThemeFlavor>() ?? standard;
 
   @override
-  PrismThemeFlavor copyWith({bool? isPalette}) =>
-      PrismThemeFlavor(isPalette: isPalette ?? this.isPalette);
+  PrismThemeFlavor copyWith({bool? isPalette, bool? isMedium}) =>
+      PrismThemeFlavor(
+        isPalette: isPalette ?? this.isPalette,
+        isMedium: isMedium ?? this.isMedium,
+      );
 
   /// Flavor is discrete — snap at the halfway point rather than blending.
   @override

@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/shared/theme/palette_moods.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/system_settings.dart';
 import 'package:prism_plurality/domain/preferences/preference_registry.dart';
@@ -141,6 +142,10 @@ class AppearanceNotifier extends AsyncNotifier<AppearanceState> {
 
   Future<void> setShowMemberBanners(bool v) async => _save((await _cur()).copyWith(showMemberBanners: v));
 
+  /// Accents for the Palette "Custom" mood; null clears one.
+  Future<void> setCustomPaletteAccents({int? secondary, int? tertiary}) async =>
+      _save((await _cur()).copyWith(customSecondary: secondary, customTertiary: tertiary));
+
   Future<void> setBannerPosition(String memberId, double x, double y, double zoom) async {
     final s = await _cur();
     final next = Map<String, ({double x, double y, double zoom})>.of(s.bannerPositions);
@@ -261,6 +266,12 @@ final appearanceSyncProvider = Provider<void>((ref) {
 });
 
 /// Headmates display setting: banners on member cards.
+/// Accents the user picked for the Palette "Custom" mood.
+final customPaletteAccentsProvider = Provider<CustomPaletteAccents>((ref) {
+  final s = ref.watch(appearanceProvider.select((s) => (s.value?.customSecondary, s.value?.customTertiary)));
+  return CustomPaletteAccents(secondary: s.$1, tertiary: s.$2);
+});
+
 final showMemberBannersProvider = Provider<bool>(
   (ref) => ref.watch(appearanceProvider.select((s) => s.value?.showMemberBanners ?? false)),
 );

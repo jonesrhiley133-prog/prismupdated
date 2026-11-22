@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/features/members/studio/profile_config.dart';
+import 'package:prism_plurality/shared/theme/palette_moods.dart';
+import 'package:prism_plurality/shared/theme/theme_variants.dart';
 import 'package:prism_plurality/features/members/studio/profile_studio.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/features/members/studio/profile_view.dart';
@@ -212,6 +216,15 @@ class _MemberDetailBody extends ConsumerWidget {
       usePaletteTheme: themeStyle == ThemeStyle.materialYou,
       paletteMood: paletteMood,
       paletteContrast: paletteContrast,
+      paletteCustom: ref.watch(customPaletteAccentsProvider),
+      // Light / medium / dark chosen for this alter's page in the studio.
+      tone: PageTone.parse(
+        ref.watch(
+          memberProfileProvider(
+            member.id,
+          ).select((p) => p?.lookStr('pageMode', 'app')),
+        ),
+      ),
       child: screen,
     );
   }
@@ -454,9 +467,15 @@ class _MemberProfileTheme extends StatelessWidget {
     required this.usePaletteTheme,
     required this.paletteMood,
     required this.paletteContrast,
+    required this.paletteCustom,
+    required this.tone,
     required this.child,
   });
 
+  final CustomPaletteAccents paletteCustom;
+
+  /// The page's own brightness, or null to follow the app.
+  final PageTone? tone;
   final ThemeData baseTheme;
   final Color? accentColor;
   final bool usePaletteTheme;
@@ -466,10 +485,13 @@ class _MemberProfileTheme extends StatelessWidget {
 
   // Derived profile themes, newest last. Building one runs the palette
   // (ColorScheme.fromSeed) and the full appearance pipeline, so it is
-  // computed once per base theme + colour, not on every rebuild.
-  static final Map<(int, bool, PaletteMood, PaletteContrast), ThemeData> _cache =
-      {};
-  static ThemeData? _cacheBase;
+  // computed once per base theme + colour, not on every rebuild. Base themes
+  // are matched by identity (ThemeData's own hashCode is a deep walk).
+  static final Map<
+    (int, int, bool, PaletteMood, PaletteContrast, CustomPaletteAccents),
+    (ThemeData, ThemeData)
+  >
+  _cache = {};
 
   static ThemeData _themeFor(
     ThemeData base,
@@ -477,16 +499,21 @@ class _MemberProfileTheme extends StatelessWidget {
     bool usePalette,
     PaletteMood mood,
     PaletteContrast contrast,
+    CustomPaletteAccents custom,
   ) {
-    // Keyed by identity: the app theme object only changes when appearance
-    // settings change, and ThemeData's own hashCode is a deep walk.
-    if (!identical(base, _cacheBase)) {
-      _cache.clear();
-      _cacheBase = base;
-    }
-    final key = (accent.toARGB32(), usePalette, mood, contrast);
+    final key = (
+      identityHashCode(base),
+      accent.toARGB32(),
+      usePalette,
+      mood,
+      contrast,
+      custom,
+    );
     final hit = _cache.remove(key);
-    if (hit != null) return _cache[key] = hit;
+    if (hit != null && identical(hit.$1, base)) {
+      _cache[key] = hit;
+      return hit.$2;
+    }
     final theme = withAccent(
       base,
       accent,
@@ -496,17 +523,31 @@ class _MemberProfileTheme extends StatelessWidget {
               seedColor: accent,
               paletteMood: mood,
               paletteContrast: contrast,
+              paletteCustom: custom,
             )
           : null,
     );
     if (_cache.length >= 12) _cache.remove(_cache.keys.first);
-    return _cache[key] = theme;
+    _cache[key] = (base, theme);
+    return theme;
   }
 
   @override
   Widget build(BuildContext context) {
+    // A page tone different from the app's swaps in the app's theme for
+    // that tone (same style, fonts, look), then the alter's accent applies.
+    var base = baseTheme;
+    final variants = PrismThemeVariantsScope.maybeOf(context);
+    final wanted = tone;
+    if (wanted != null &&
+        variants != null &&
+        wanted != variants.currentTone(context)) {
+      base = variants.of(wanted);
+    }
     final accent = accentColor;
-    if (accent == null) return child;
+    if (accent == null) {
+      return identical(base, baseTheme) ? child : Theme(data: base, child: child);
+    }
 
     // The alter's colour becomes the accent; the active appearance preset
     // (backgrounds, surfaces, text, element styles) keeps applying. Applied
@@ -514,11 +555,12 @@ class _MemberProfileTheme extends StatelessWidget {
     // every frame of the page transition.
     return Theme(
       data: _themeFor(
-        baseTheme,
+        base,
         accent,
         usePaletteTheme,
         paletteMood,
         paletteContrast,
+        paletteCustom,
       ),
       child: child,
     );

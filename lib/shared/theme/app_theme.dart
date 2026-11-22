@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/palette_moods.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/domain/models/system_settings.dart'
@@ -332,14 +333,60 @@ class AppTheme {
     if (seedColor != null && _isMonochromePaletteSeed(seedColor)) {
       return DynamicSchemeVariant.monochrome;
     }
+    return PaletteMoods.variantFor(mood);
+  }
 
-    return switch (mood) {
-      PaletteMood.tonal => DynamicSchemeVariant.tonalSpot,
-      PaletteMood.vibrant => DynamicSchemeVariant.vibrant,
-      PaletteMood.expressive => DynamicSchemeVariant.expressive,
-      PaletteMood.fidelity => DynamicSchemeVariant.fidelity,
-      PaletteMood.monochrome => DynamicSchemeVariant.monochrome,
-    };
+  /// Seeded palette scheme for any mood (Material variants and Prism moods).
+  static ColorScheme paletteScheme({
+    required Color seed,
+    required PaletteMood mood,
+    required Brightness brightness,
+    required PaletteContrast contrast,
+    CustomPaletteAccents custom = CustomPaletteAccents.none,
+  }) {
+    // White, grey or black keeps every mood monochrome; only accents the
+    // user picked themselves (Custom) add colour.
+    final pickedAccents =
+        mood == PaletteMood.custom &&
+        (custom.secondary != null || custom.tertiary != null);
+    if (_isMonochromePaletteSeed(seed) && !pickedAccents) {
+      return ColorScheme.fromSeed(
+        seedColor: seed,
+        brightness: brightness,
+        dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+        contrastLevel: _contrastLevelFor(contrast),
+      );
+    }
+    return PaletteMoods.scheme(
+      seed: seed,
+      mood: mood,
+      brightness: brightness,
+      contrast: contrast,
+      custom: custom,
+    );
+  }
+
+  /// The medium tone: a dark scheme whose surfaces are lifted part of the
+  /// way toward the light scheme's, keeping light text and dark-mode accents.
+  static ColorScheme mediumScheme(ColorScheme dark, ColorScheme light) {
+    const lift = 0.24;
+    final target = light.surface;
+    Color up(Color c, [double f = lift]) => Color.lerp(c, target, f)!;
+    return dark.copyWith(
+      surface: up(dark.surface),
+      surfaceDim: up(dark.surfaceDim),
+      surfaceBright: up(dark.surfaceBright),
+      surfaceContainerLowest: up(dark.surfaceContainerLowest),
+      surfaceContainerLow: up(dark.surfaceContainerLow),
+      surfaceContainer: up(dark.surfaceContainer),
+      surfaceContainerHigh: up(dark.surfaceContainerHigh),
+      surfaceContainerHighest: up(dark.surfaceContainerHighest),
+      primaryContainer: up(dark.primaryContainer, 0.14),
+      secondaryContainer: up(dark.secondaryContainer, 0.14),
+      tertiaryContainer: up(dark.tertiaryContainer, 0.14),
+      outline: up(dark.outline, 0.12),
+      outlineVariant: up(dark.outlineVariant, 0.18),
+    );
   }
 
   static double _contrastLevelFor(PaletteContrast contrast) {
@@ -357,30 +404,26 @@ class AppTheme {
     required String seedColorHex,
     required PaletteMood mood,
     required PaletteContrast contrast,
+    CustomPaletteAccents custom = CustomPaletteAccents.none,
   }) {
     if (source == PaletteSource.device && dynamicScheme != null) {
       if (mood == PaletteMood.tonal && contrast == PaletteContrast.standard) {
         return dynamicScheme;
       }
-      return ColorScheme.fromSeed(
-        seedColor: dynamicScheme.primary,
+      return paletteScheme(
+        seed: dynamicScheme.primary,
+        mood: mood,
         brightness: brightness,
-        dynamicSchemeVariant: dynamicSchemeVariantForPalette(
-          mood,
-          seedColor: dynamicScheme.primary,
-        ),
-        contrastLevel: _contrastLevelFor(contrast),
+        contrast: contrast,
+        custom: custom,
       );
     }
-    final seedColor = AppColors.fromHex(seedColorHex);
-    return ColorScheme.fromSeed(
-      seedColor: seedColor,
+    return paletteScheme(
+      seed: AppColors.fromHex(seedColorHex),
+      mood: mood,
       brightness: brightness,
-      dynamicSchemeVariant: dynamicSchemeVariantForPalette(
-        mood,
-        seedColor: seedColor,
-      ),
-      contrastLevel: _contrastLevelFor(contrast),
+      contrast: contrast,
+      custom: custom,
     );
   }
 
@@ -437,12 +480,7 @@ class AppTheme {
     required PaletteMood mood,
     required bool isDark,
   }) {
-    final expressive = switch (mood) {
-      PaletteMood.vibrant ||
-      PaletteMood.expressive ||
-      PaletteMood.fidelity => true,
-      PaletteMood.tonal || PaletteMood.monochrome => false,
-    };
+    final expressive = PaletteMoods.isColourful(mood);
 
     if (isDark) {
       return expressive
@@ -533,6 +571,7 @@ class AppTheme {
     required PaletteMood paletteMood,
     required bool isDark,
     required PrismShapes shapes,
+    bool isMedium = false,
   }) {
     final accent = contrastAdjustedAccent(
       baseColorScheme.primary,
@@ -556,7 +595,9 @@ class AppTheme {
       accent,
       _paletteThemeColors(colorScheme, accent, isDark: isDark),
       shapes,
-      PrismThemeFlavor.palette,
+      isMedium
+          ? const PrismThemeFlavor(isPalette: true, isMedium: true)
+          : PrismThemeFlavor.palette,
     );
   }
 
@@ -567,25 +608,31 @@ class AppTheme {
     required Color seedColor,
     PaletteMood paletteMood = PaletteMood.tonal,
     PaletteContrast paletteContrast = PaletteContrast.standard,
+    CustomPaletteAccents paletteCustom = CustomPaletteAccents.none,
   }) {
     final isDark = baseTheme.brightness == Brightness.dark;
+    final isMedium =
+        isDark && (baseTheme.extension<PrismThemeFlavor>()?.isMedium ?? false);
     final shapes =
         baseTheme.extension<PrismShapes>() ??
         const PrismShapes(cornerStyle: CornerStyle.rounded);
+    ColorScheme schemeFor(Brightness b) => paletteScheme(
+      seed: seedColor,
+      mood: paletteMood,
+      brightness: b,
+      contrast: paletteContrast,
+      custom: paletteCustom,
+    );
+    final scheme = isMedium
+        ? mediumScheme(schemeFor(Brightness.dark), schemeFor(Brightness.light))
+        : schemeFor(isDark ? Brightness.dark : Brightness.light);
     final localTheme = _paletteThemeFromScheme(
-      baseColorScheme: ColorScheme.fromSeed(
-        seedColor: seedColor,
-        brightness: isDark ? Brightness.dark : Brightness.light,
-        dynamicSchemeVariant: dynamicSchemeVariantForPalette(
-          paletteMood,
-          seedColor: seedColor,
-        ),
-        contrastLevel: _contrastLevelFor(paletteContrast),
-      ),
+      baseColorScheme: scheme,
       surfaceTintColor: seedColor,
       paletteMood: paletteMood,
       isDark: isDark,
       shapes: shapes,
+      isMedium: isMedium,
     );
 
     return localTheme.copyWith(
@@ -980,6 +1027,7 @@ class AppTheme {
     String paletteSeedColorHex = '#9070A0',
     PaletteMood paletteMood = PaletteMood.tonal,
     PaletteContrast paletteContrast = PaletteContrast.standard,
+    CustomPaletteAccents paletteCustom = CustomPaletteAccents.none,
   }) {
     final seedColor = AppColors.fromHex(paletteSeedColorHex);
     final baseColorScheme = _paletteColorScheme(
@@ -989,6 +1037,7 @@ class AppTheme {
       seedColorHex: paletteSeedColorHex,
       mood: paletteMood,
       contrast: paletteContrast,
+      custom: paletteCustom,
     );
 
     return _paletteThemeFromScheme(
@@ -1010,6 +1059,7 @@ class AppTheme {
     String paletteSeedColorHex = '#9070A0',
     PaletteMood paletteMood = PaletteMood.tonal,
     PaletteContrast paletteContrast = PaletteContrast.standard,
+    CustomPaletteAccents paletteCustom = CustomPaletteAccents.none,
   }) {
     final seedColor = AppColors.fromHex(paletteSeedColorHex);
     final baseColorScheme = _paletteColorScheme(
@@ -1019,6 +1069,7 @@ class AppTheme {
       seedColorHex: paletteSeedColorHex,
       mood: paletteMood,
       contrast: paletteContrast,
+      custom: paletteCustom,
     );
 
     return _paletteThemeFromScheme(
@@ -1030,6 +1081,87 @@ class AppTheme {
       paletteMood: paletteMood,
       isDark: true,
       shapes: PrismShapes(cornerStyle: cornerStyle),
+    );
+  }
+
+  /// Palette theme in the medium tone.
+  static ThemeData materialYouMedium(
+    ColorScheme? darkDynamic,
+    ColorScheme? lightDynamic, {
+    CornerStyle cornerStyle = CornerStyle.rounded,
+    PaletteSource paletteSource = PaletteSource.device,
+    String paletteSeedColorHex = '#9070A0',
+    PaletteMood paletteMood = PaletteMood.tonal,
+    PaletteContrast paletteContrast = PaletteContrast.standard,
+    CustomPaletteAccents paletteCustom = CustomPaletteAccents.none,
+  }) {
+    final seedColor = AppColors.fromHex(paletteSeedColorHex);
+    ColorScheme schemeFor(ColorScheme? dynamic, Brightness b) =>
+        _paletteColorScheme(
+          dynamicScheme: dynamic,
+          brightness: b,
+          source: paletteSource,
+          seedColorHex: paletteSeedColorHex,
+          mood: paletteMood,
+          contrast: paletteContrast,
+          custom: paletteCustom,
+        );
+    return _paletteThemeFromScheme(
+      baseColorScheme: mediumScheme(
+        schemeFor(darkDynamic, Brightness.dark),
+        schemeFor(lightDynamic, Brightness.light),
+      ),
+      surfaceTintColor:
+          paletteSource == PaletteSource.custom || darkDynamic == null
+          ? seedColor
+          : null,
+      paletteMood: paletteMood,
+      isDark: true,
+      shapes: PrismShapes(cornerStyle: cornerStyle),
+      isMedium: true,
+    );
+  }
+
+  /// Default (Prism) style in the medium tone: the dark theme's warm
+  /// charcoal lifted toward the light theme's cream.
+  static ThemeData medium({
+    Color? accentColor,
+    CornerStyle cornerStyle = CornerStyle.rounded,
+  }) {
+    final requestedAccent = accentColor ?? AppColors.prismPurple;
+    final darkScheme = dark(accentColor: requestedAccent).colorScheme;
+    final lightScheme = light(accentColor: requestedAccent).colorScheme;
+    var scheme = mediumScheme(darkScheme, lightScheme);
+    final accent = contrastAdjustedAccent(requestedAccent, scheme.surface);
+    scheme = scheme.copyWith(
+      primary: accent,
+      onPrimary: highContrastForeground(accent),
+    );
+    final colors = _ThemeColors(
+      scaffold: scheme.surface,
+      cardColor: AppColors.warmWhite.withValues(alpha: 0.08),
+      fillColor: AppColors.warmWhite.withValues(alpha: 0.08),
+      borderColor: AppColors.warmWhite.withValues(alpha: 0.14),
+      focusBorderColor: accent.withValues(alpha: 0.75),
+      dividerColor: AppColors.warmWhite.withValues(alpha: 0.09),
+      sheetBg: scheme.surfaceContainer,
+      dialogBg: scheme.surfaceContainer,
+      popupBg: scheme.surfaceContainer,
+      snackBarBg: scheme.surfaceContainerHighest,
+      dragHandleColor: AppColors.warmWhite.withValues(alpha: 0.35),
+      filledButtonBg: AppColors.warmWhite.withValues(alpha: 0.13),
+      filledButtonFg: AppColors.warmWhite,
+      iconButtonBg: AppColors.warmWhite.withValues(alpha: 0.13),
+      iconButtonFg: AppColors.warmWhite,
+      textButtonFg: AppColors.warmWhite.withValues(alpha: 0.85),
+      isDark: true,
+    );
+    return _buildTheme(
+      scheme,
+      accent,
+      colors,
+      PrismShapes(cornerStyle: cornerStyle),
+      const PrismThemeFlavor(isPalette: false, isMedium: true),
     );
   }
 }

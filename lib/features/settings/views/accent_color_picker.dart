@@ -31,12 +31,22 @@ class AccentColorPicker extends StatelessWidget {
     required this.currentHex,
     required this.onChanged,
     this.materialYouActive = false,
+    this.showLegibilityWarning = true,
+    this.showSelection = true,
     super.key,
   });
 
   final String currentHex;
   final ValueChanged<String> onChanged;
   final bool materialYouActive;
+
+  /// The warning is about the app's main accent on its background; pickers
+  /// for secondary accents turn it off.
+  final bool showLegibilityWarning;
+
+  /// False while the value is automatic: nothing is ticked and the custom
+  /// swatch stays empty.
+  final bool showSelection;
 
   void _openColorPicker(BuildContext context) {
     var pickerColor = _parseHex(currentHex);
@@ -101,16 +111,18 @@ class AccentColorPicker extends StatelessWidget {
                     : _parseHex(preset.hex),
                 isSelected:
                     !isMaterialYou &&
+                    showSelection &&
                     preset.hex.toUpperCase() == currentHex.toUpperCase(),
                 onTap: isMaterialYou ? () {} : () => onChanged(preset.hex),
                 tooltip: accentColorPresetLabel(context, preset.label),
               ),
             if (!isMaterialYou)
               _ColorCircle(
-                color: !isAccentColorPresetHex(currentHex)
+                color: showSelection && !isAccentColorPresetHex(currentHex)
                     ? _parseHex(currentHex)
                     : null,
-                isSelected: !isAccentColorPresetHex(currentHex),
+                isSelected:
+                    showSelection && !isAccentColorPresetHex(currentHex),
                 isCustom: true,
                 onTap: () => _openColorPicker(context),
                 tooltip: context.l10n.settingsAccentColorCustom,
@@ -129,7 +141,7 @@ class AccentColorPicker extends StatelessWidget {
               ),
             ),
           )
-        else if (legibility != AccentLegibility.ok)
+        else if (showLegibilityWarning && legibility != AccentLegibility.ok)
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: _LegibilityWarning(kind: legibility),

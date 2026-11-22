@@ -19,6 +19,7 @@ class AppearanceStep extends ConsumerWidget {
       ThemeBrightness.system => 'System',
       ThemeBrightness.light => 'Light',
       ThemeBrightness.dark => 'Dark',
+      ThemeBrightness.medium => 'Medium',
     };
   }
 
@@ -64,7 +65,7 @@ class AppearanceStep extends ConsumerWidget {
           _SectionLabel(label: context.l10n.onboardingAppearanceTheme),
           const SizedBox(height: 10),
           PrismSegmentedControl<ThemeBrightness>(
-            segments: ThemeBrightness.values
+            segments: ThemeBrightness.displayOrder
                 .map(
                   (value) => PrismSegment(
                     value: value,

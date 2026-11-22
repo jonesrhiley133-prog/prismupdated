@@ -32,6 +32,24 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.39.0',
+    date: DateTime(2026, 11, 22),
+    features: const [
+      LocalizedText(
+        'Medium brightness: a new setting between Light and Dark — soft mid-tone surfaces with light text. Pick it in Settings › Appearance › Brightness; it works with the Prism and Palette styles and with your looks.',
+        'Brillo medio: un ajuste nuevo entre Claro y Oscuro, con superficies de tono medio y texto claro. Elígelo en Ajustes › Apariencia › Brillo; funciona con los estilos Prism y Paleta y con tus apariencias.',
+      ),
+      LocalizedText(
+        'Each alter’s profile page can have its own brightness: Light, Medium, Dark or follow the app. Set it in the profile studio under Colours & background.',
+        'La página de perfil de cada alter puede tener su propio brillo: Claro, Medio, Oscuro o como la app. Configúralo en el estudio de perfil, en Colores y fondo.',
+      ),
+      LocalizedText(
+        'Seventeen new Palette moods: Neutral, Content, Rainbow and Fruit salad; Prism moods Pastel, Neon, Earthy, Jewel, Sunset, Ocean, Forest and Candy; colour harmonies Complementary, Analogous, Triadic and Split complementary; and Custom, where you pick the second and highlight accents that go with your colour.',
+        'Diecisiete estilos nuevos de Paleta: Neutro, Contenido, Arcoíris y Macedonia; estilos de Prism Pastel, Neón, Terroso, Joya, Atardecer, Océano, Bosque y Caramelo; armonías Complementario, Análogo, Triádico y Complementario dividido; y Personalizado, donde eliges el segundo acento y el de realce que combinan con tu color.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.38.1',
     date: DateTime(2026, 11, 20),
     improvements: const [

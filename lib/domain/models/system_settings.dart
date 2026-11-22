@@ -29,16 +29,25 @@ enum FrontingTimingMode {
 }
 
 /// Brightness preference (orthogonal to theme style).
+///
+/// Stored and synced by index: only ever append new values at the end.
 enum ThemeBrightness {
   system,
   light,
-  dark;
+  dark,
+
+  /// Between the two: mid-tone surfaces with light text.
+  medium;
+
+  /// Order for pickers (storage order differs: medium was added last).
+  static const displayOrder = [system, light, medium, dark];
 
   String get displayName {
     return switch (this) {
       ThemeBrightness.system => 'System',
       ThemeBrightness.light => 'Light',
       ThemeBrightness.dark => 'Dark',
+      ThemeBrightness.medium => 'Medium',
     };
   }
 }
@@ -87,12 +96,33 @@ enum PaletteSource {
   }
 }
 
+/// Stored and synced by index: only ever append new moods at the end.
 enum PaletteMood {
   tonal,
   vibrant,
   expressive,
   fidelity,
-  monochrome;
+  monochrome,
+  // Material variants added in 0.39.
+  neutral,
+  content,
+  rainbow,
+  fruitSalad,
+  // Prism moods: accents placed around the seed colour.
+  pastel,
+  neon,
+  earthy,
+  jewel,
+  sunset,
+  ocean,
+  forest,
+  candy,
+  complementary,
+  analogous,
+  triadic,
+  splitComplementary,
+  // Accents the user picks.
+  custom;
 
   String get displayName {
     return switch (this) {
@@ -101,6 +131,23 @@ enum PaletteMood {
       PaletteMood.expressive => 'Expressive',
       PaletteMood.fidelity => 'Fidelity',
       PaletteMood.monochrome => 'Monochrome',
+      PaletteMood.neutral => 'Neutral',
+      PaletteMood.content => 'Content',
+      PaletteMood.rainbow => 'Rainbow',
+      PaletteMood.fruitSalad => 'Fruit salad',
+      PaletteMood.pastel => 'Pastel',
+      PaletteMood.neon => 'Neon',
+      PaletteMood.earthy => 'Earthy',
+      PaletteMood.jewel => 'Jewel',
+      PaletteMood.sunset => 'Sunset',
+      PaletteMood.ocean => 'Ocean',
+      PaletteMood.forest => 'Forest',
+      PaletteMood.candy => 'Candy',
+      PaletteMood.complementary => 'Complementary',
+      PaletteMood.analogous => 'Analogous',
+      PaletteMood.triadic => 'Triadic',
+      PaletteMood.splitComplementary => 'Split complementary',
+      PaletteMood.custom => 'Custom',
     };
   }
 }

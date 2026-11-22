@@ -502,7 +502,13 @@ class AppearanceState {
     this.modifiedAt = 0,
     this.showMemberBanners = false,
     this.bannerPositions = const {},
+    this.customSecondary,
+    this.customTertiary,
   });
+
+  /// Accents for the Palette "Custom" mood (ARGB), picked by the user.
+  final int? customSecondary;
+  final int? customTertiary;
 
   /// Banner crop per member id: focal point (−1…1) and zoom (1…3).
   final Map<String, ({double x, double y, double zoom})> bannerPositions;
@@ -544,7 +550,11 @@ class AppearanceState {
     int? modifiedAt,
     bool? showMemberBanners,
     Map<String, ({double x, double y, double zoom})>? bannerPositions,
+    Object? customSecondary = _keep,
+    Object? customTertiary = _keep,
   }) => AppearanceState(
+    customSecondary: customSecondary == _keep ? this.customSecondary : customSecondary as int?,
+    customTertiary: customTertiary == _keep ? this.customTertiary : customTertiary as int?,
     showMemberBanners: showMemberBanners ?? this.showMemberBanners,
     bannerPositions: bannerPositions ?? this.bannerPositions,
     looks: looks ?? this.looks,
@@ -566,6 +576,8 @@ class AppearanceState {
     'modifiedAt': modifiedAt,
     'showMemberBanners': showMemberBanners,
     'bannerPositions': {for (final e in bannerPositions.entries) e.key: [e.value.x, e.value.y, e.value.zoom]},
+    'customSecondary': ?customSecondary,
+    'customTertiary': ?customTertiary,
   };
 
   static AppearanceState fromJson(Object? j) {
@@ -587,6 +599,8 @@ class AppearanceState {
       },
       modifiedAt: j['modifiedAt'] is int ? j['modifiedAt'] as int : 0,
       showMemberBanners: j['showMemberBanners'] == true,
+      customSecondary: j['customSecondary'] is int ? j['customSecondary'] as int : null,
+      customTertiary: j['customTertiary'] is int ? j['customTertiary'] as int : null,
       bannerPositions: {
         if (j['bannerPositions'] is Map)
           for (final e in (j['bannerPositions'] as Map).entries)

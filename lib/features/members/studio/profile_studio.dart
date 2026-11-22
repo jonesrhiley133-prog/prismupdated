@@ -1201,6 +1201,30 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
         (v) => _setCfg((c) => c.withLook('bannerAlign', v)),
       ),
       _heading(tr(context, 'Colours & background', 'Colores y fondo')),
+      TrackerLabel(tr(context, 'Page brightness', 'Brillo de la página')),
+      _choice<String>(
+        [
+          ('app', tr(context, 'Follow app', 'Como la app')),
+          ('light', tr(context, 'Light', 'Claro')),
+          ('medium', tr(context, 'Medium', 'Medio')),
+          ('dark', tr(context, 'Dark', 'Oscuro')),
+        ],
+        look.lookStr('pageMode', 'app'),
+        (v) => _setCfg((c) => c.withLook('pageMode', v == 'app' ? null : v)),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 10),
+        child: Text(
+          tr(
+            context,
+            'How this profile page looks, whatever the app is set to. Medium sits between light and dark.',
+            'Cómo se ve esta página de perfil, sin importar el ajuste de la app. Medio está entre claro y oscuro.',
+          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
       TrackerLabel(tr(context, 'Accent colour', 'Color de acento')),
       ColorChoiceRow(
         value: look.lookColor('accent') ?? _b.color,

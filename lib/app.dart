@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/members/studio/profile_config.dart';
+import 'package:prism_plurality/shared/theme/theme_variants.dart';
 import 'package:prism_plurality/features/music/services/music_library.dart';
 import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:prism_plurality/features/music/services/music_player.dart';
@@ -131,6 +133,45 @@ class _PrismAppState extends ConsumerState<PrismApp> {
       PerfProbe.register('banners', (on) {
         unawaited(
           ref.read(appearanceProvider.notifier).setShowMemberBanners(on == 'on'),
+        );
+        return 'ok';
+      });
+      PerfProbe.register('brightness', (v) {
+        unawaited(
+          ref
+              .read(settingsNotifierProvider.notifier)
+              .updateThemeBrightness(ThemeBrightness.values.byName(v)),
+        );
+        return 'ok';
+      });
+      PerfProbe.register('style', (v) {
+        unawaited(
+          ref
+              .read(settingsNotifierProvider.notifier)
+              .updateThemeStyle(ThemeStyle.values.byName(v)),
+        );
+        return 'ok';
+      });
+      PerfProbe.register('mood', (v) {
+        final n = ref.read(settingsNotifierProvider.notifier);
+        unawaited(() async {
+          await n.updatePaletteSource(PaletteSource.custom);
+          await n.updatePaletteMood(PaletteMood.values.byName(v));
+        }());
+        return 'ok';
+      });
+      PerfProbe.register('pageMode', (arg) {
+        // arg: "<memberId> <app|light|medium|dark>"
+        final parts = arg.split(' ');
+        final cfg =
+            ref.read(memberProfileProvider(parts[0])) ?? ProfileConfig.empty();
+        unawaited(
+          ref
+              .read(profileStudioActionsProvider)
+              .saveProfile(
+                parts[0],
+                cfg.withLook('pageMode', parts[1] == 'app' ? null : parts[1]),
+              ),
         );
         return 'ok';
       });
@@ -419,6 +460,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     final paletteSeedColorHex = ref.watch(paletteSeedColorHexProvider);
     final paletteMood = ref.watch(paletteMoodProvider);
     final paletteContrast = ref.watch(paletteContrastProvider);
+    final paletteCustom = ref.watch(customPaletteAccentsProvider);
     final onboardingAppearance = ref.watch(
       onboardingProvider.select(
         (state) => (
@@ -472,6 +514,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        // The whole pipeline (style, fonts, accessibility, looks) for one
+        // light/dark pair. [medium] swaps the dark side for the medium tone.
+        (ThemeData, ThemeData) buildPair({required bool medium}) {
         ThemeData lightTheme;
         ThemeData darkTheme;
 
@@ -484,33 +529,57 @@ class _PrismAppState extends ConsumerState<PrismApp> {
               paletteSeedColorHex: paletteSeedColorHex,
               paletteMood: paletteMood,
               paletteContrast: paletteContrast,
+              paletteCustom: paletteCustom,
             );
-            darkTheme = AppTheme.materialYouDark(
-              darkDynamic,
-              cornerStyle: cornerStyle,
-              paletteSource: paletteSource,
-              paletteSeedColorHex: paletteSeedColorHex,
-              paletteMood: paletteMood,
-              paletteContrast: paletteContrast,
-            );
+            darkTheme = medium
+                ? AppTheme.materialYouMedium(
+                    darkDynamic,
+                    lightDynamic,
+                    cornerStyle: cornerStyle,
+                    paletteSource: paletteSource,
+                    paletteSeedColorHex: paletteSeedColorHex,
+                    paletteMood: paletteMood,
+                    paletteContrast: paletteContrast,
+                    paletteCustom: paletteCustom,
+                  )
+                : AppTheme.materialYouDark(
+                    darkDynamic,
+                    cornerStyle: cornerStyle,
+                    paletteSource: paletteSource,
+                    paletteSeedColorHex: paletteSeedColorHex,
+                    paletteMood: paletteMood,
+                    paletteContrast: paletteContrast,
+                    paletteCustom: paletteCustom,
+                  );
           case ThemeStyle.oled:
             lightTheme = AppTheme.light(
               accentColor: accentColor,
               cornerStyle: cornerStyle,
             );
-            darkTheme = AppTheme.oled(
-              accentColor: accentColor,
-              cornerStyle: cornerStyle,
-            );
+            // OLED is about true black; the medium tone replaces it.
+            darkTheme = medium
+                ? AppTheme.medium(
+                    accentColor: accentColor,
+                    cornerStyle: cornerStyle,
+                  )
+                : AppTheme.oled(
+                    accentColor: accentColor,
+                    cornerStyle: cornerStyle,
+                  );
           case ThemeStyle.standard:
             lightTheme = AppTheme.light(
               accentColor: accentColor,
               cornerStyle: cornerStyle,
             );
-            darkTheme = AppTheme.dark(
-              accentColor: accentColor,
-              cornerStyle: cornerStyle,
-            );
+            darkTheme = medium
+                ? AppTheme.medium(
+                    accentColor: accentColor,
+                    cornerStyle: cornerStyle,
+                  )
+                : AppTheme.dark(
+                    accentColor: accentColor,
+                    cornerStyle: cornerStyle,
+                  );
         }
 
         // Strip Unbounded from display/headline roles when the user opts out.
@@ -576,6 +645,24 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           reduceEffects: a11y.reduceEffects,
           backgroundDir: backgroundDir,
         );
+        return (lightTheme, darkTheme);
+        }
+
+        final appMedium = brightness == ThemeBrightness.medium;
+        final (lightTheme, darkTheme) = buildPair(medium: appMedium);
+        // Other tones for pages that pick their own (alter profiles); built
+        // only when such a page asks.
+        final variants = PrismThemeVariants(
+          light: lightTheme,
+          dark: appMedium ? () => buildPair(medium: false).$2 : () => darkTheme,
+          medium: appMedium ? () => darkTheme : () => buildPair(medium: true).$2,
+          appTone: switch (brightness) {
+            ThemeBrightness.light => PageTone.light,
+            ThemeBrightness.dark => PageTone.dark,
+            ThemeBrightness.medium => PageTone.medium,
+            ThemeBrightness.system => null,
+          },
+        );
 
         return MaterialApp.router(
           title: 'Prism',
@@ -595,7 +682,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
-            ThemeBrightness.dark => ThemeMode.dark,
+            // Medium is the dark side of the pair, built with mid tones.
+            ThemeBrightness.dark || ThemeBrightness.medium => ThemeMode.dark,
           },
           routerConfig: router,
           builder: (context, child) {
@@ -620,7 +708,14 @@ class _PrismAppState extends ConsumerState<PrismApp> {
               child: PrismKeyboardDismissScope(
                 child: PrismToastHost(
                   child: MusicPlayerHost(
-                    child: DemoBanner(child: _ThemeSwitchObserver(child: result)),
+                    child: DemoBanner(
+                      child: _ThemeSwitchObserver(
+                        child: PrismThemeVariantsScope(
+                          variants: variants,
+                          child: result,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -707,7 +802,8 @@ class _DatabaseStartupApp extends ConsumerWidget {
           themeMode: switch (brightness) {
             ThemeBrightness.system => ThemeMode.system,
             ThemeBrightness.light => ThemeMode.light,
-            ThemeBrightness.dark => ThemeMode.dark,
+            // Medium is the dark side of the pair, built with mid tones.
+            ThemeBrightness.dark || ThemeBrightness.medium => ThemeMode.dark,
           },
           home: _DatabaseStartupScreen(
             databaseReady: databaseReady,

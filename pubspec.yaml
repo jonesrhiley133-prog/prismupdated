@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.38.1+38100
+version: 0.39.0+39000
 
 environment:
   sdk: ^3.11.1
@@ -14,6 +14,8 @@ dependencies:
 
   # State management
   flutter_riverpod: ^3.3.0
+  # Pinned by the Flutter SDK; used for HCT colour maths in palette moods.
+  material_color_utilities: any
 
   # Navigation
   go_router: ^17.1.0

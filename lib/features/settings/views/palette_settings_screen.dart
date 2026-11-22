@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/shared/theme/palette_moods.dart';
 import 'package:prism_plurality/domain/models/system_settings.dart'
     hide CornerStyle;
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
@@ -54,6 +57,7 @@ PalettePreview palettePreviewForSettings(
   BuildContext context,
   SystemSettings settings, {
   PaletteSource? source,
+  CustomPaletteAccents custom = CustomPaletteAccents.none,
 }) {
   if ((source ?? settings.paletteSource) == PaletteSource.device) {
     return PalettePreview.fromScheme(Theme.of(context).colorScheme);
@@ -63,6 +67,7 @@ PalettePreview palettePreviewForSettings(
     mood: settings.paletteMood,
     contrast: settings.paletteContrast,
     brightness: Theme.of(context).brightness,
+    custom: custom,
   );
 }
 
@@ -85,6 +90,27 @@ String paletteMoodLabel(BuildContext context, PaletteMood mood) {
     PaletteMood.expressive => context.l10n.paletteMoodExpressive,
     PaletteMood.fidelity => context.l10n.paletteMoodFidelity,
     PaletteMood.monochrome => context.l10n.paletteMoodMonochrome,
+    PaletteMood.neutral => tr(context, 'Neutral', 'Neutro'),
+    PaletteMood.content => tr(context, 'Content', 'Contenido'),
+    PaletteMood.rainbow => tr(context, 'Rainbow', 'Arcoíris'),
+    PaletteMood.fruitSalad => tr(context, 'Fruit salad', 'Macedonia'),
+    PaletteMood.pastel => tr(context, 'Pastel', 'Pastel'),
+    PaletteMood.neon => tr(context, 'Neon', 'Neón'),
+    PaletteMood.earthy => tr(context, 'Earthy', 'Terroso'),
+    PaletteMood.jewel => tr(context, 'Jewel', 'Joya'),
+    PaletteMood.sunset => tr(context, 'Sunset', 'Atardecer'),
+    PaletteMood.ocean => tr(context, 'Ocean', 'Océano'),
+    PaletteMood.forest => tr(context, 'Forest', 'Bosque'),
+    PaletteMood.candy => tr(context, 'Candy', 'Caramelo'),
+    PaletteMood.complementary => tr(context, 'Complementary', 'Complementario'),
+    PaletteMood.analogous => tr(context, 'Analogous', 'Análogo'),
+    PaletteMood.triadic => tr(context, 'Triadic', 'Triádico'),
+    PaletteMood.splitComplementary => tr(
+      context,
+      'Split complementary',
+      'Complementario dividido',
+    ),
+    PaletteMood.custom => tr(context, 'Custom', 'Personalizado'),
   };
 }
 
@@ -143,6 +169,7 @@ class PaletteSettingsScreen extends ConsumerWidget {
             viewSettings,
             source: paletteSource,
           );
+          final custom = ref.watch(customPaletteAccentsProvider);
           final moodPreviews = {
             for (final mood in PaletteMood.values)
               mood: PalettePreview.from(
@@ -150,13 +177,30 @@ class PaletteSettingsScreen extends ConsumerWidget {
                 mood: mood,
                 contrast: viewSettings.paletteContrast,
                 brightness: Theme.of(context).brightness,
+                custom: custom,
               ),
           };
           final selectedPreview = palettePreviewForSettings(
             context,
             viewSettings,
             source: paletteSource,
+            custom: custom,
           );
+          Widget moodGroup(String title, List<PaletteMood> moods) =>
+              PrismSection(
+                title: title,
+                child: _MoodGrid(
+                  children: [
+                    for (final mood in moods)
+                      _MoodCard(
+                        mood: mood,
+                        preview: moodPreviews[mood]!,
+                        selected: viewSettings.paletteMood == mood,
+                        onTap: () => notifier.updatePaletteMood(mood),
+                      ),
+                  ],
+                ),
+              );
           final terms = watchTerminology(context, ref);
           final frontingTerms = watchFrontingTerms(context, ref);
 
@@ -200,23 +244,44 @@ class PaletteSettingsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-              PrismSection(
-                title: context.l10n.paletteMoodTitle,
-                child: Column(
-                  children: [
-                    for (final mood in PaletteMood.values) ...[
-                      _MoodCard(
-                        mood: mood,
-                        preview: moodPreviews[mood]!,
-                        selected: viewSettings.paletteMood == mood,
-                        onTap: () => notifier.updatePaletteMood(mood),
-                      ),
-                      if (mood != PaletteMood.values.last)
-                        const SizedBox(height: 10),
-                    ],
-                  ],
-                ),
+              moodGroup(context.l10n.paletteMoodTitle, const [
+                PaletteMood.tonal,
+                PaletteMood.vibrant,
+                PaletteMood.expressive,
+                PaletteMood.fidelity,
+                PaletteMood.monochrome,
+                PaletteMood.neutral,
+                PaletteMood.content,
+                PaletteMood.rainbow,
+                PaletteMood.fruitSalad,
+              ]),
+              moodGroup(tr(context, 'Prism moods', 'Estilos de Prism'), const [
+                PaletteMood.pastel,
+                PaletteMood.neon,
+                PaletteMood.earthy,
+                PaletteMood.jewel,
+                PaletteMood.sunset,
+                PaletteMood.ocean,
+                PaletteMood.forest,
+                PaletteMood.candy,
+              ]),
+              moodGroup(
+                tr(context, 'Colour harmonies', 'Armonías de color'),
+                const [
+                  PaletteMood.complementary,
+                  PaletteMood.analogous,
+                  PaletteMood.triadic,
+                  PaletteMood.splitComplementary,
+                ],
               ),
+              moodGroup(tr(context, 'Your own', 'Tuyo'), const [
+                PaletteMood.custom,
+              ]),
+              if (viewSettings.paletteMood == PaletteMood.custom)
+                _CustomAccentsSection(
+                  custom: custom,
+                  fallback: moodPreviews[PaletteMood.custom]!.scheme,
+                ),
               PrismSection(
                 title: context.l10n.paletteContrastTitle,
                 child: PrismSegmentedControl<PaletteContrast>(
@@ -280,8 +345,16 @@ class PalettePreview {
     required PaletteMood mood,
     required PaletteContrast contrast,
     required Brightness brightness,
+    CustomPaletteAccents custom = CustomPaletteAccents.none,
   }) {
-    final seedHex = _previewSeedHex(seedColor);
+    // The mood list shows over twenty previews: remember each one so the
+    // themes are built once per colour, not on every rebuild.
+    final key = (seedColor.toARGB32(), mood, contrast, brightness, custom);
+    final hit = _cache[key];
+    if (hit != null) return hit;
+    // The same theme the app applies, so a preview matches what you get.
+    final seedHex =
+        '#${(seedColor.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
     final scheme = switch (brightness) {
       Brightness.light => AppTheme.materialYouLight(
         null,
@@ -289,6 +362,7 @@ class PalettePreview {
         paletteSeedColorHex: seedHex,
         paletteMood: mood,
         paletteContrast: contrast,
+        paletteCustom: custom,
       ).colorScheme,
       Brightness.dark => AppTheme.materialYouDark(
         null,
@@ -296,10 +370,11 @@ class PalettePreview {
         paletteSeedColorHex: seedHex,
         paletteMood: mood,
         paletteContrast: contrast,
+        paletteCustom: custom,
       ).colorScheme,
     };
-
-    return PalettePreview(
+    if (_cache.length > 200) _cache.clear();
+    return _cache[key] = PalettePreview(
       scheme: scheme,
       primary: scheme.primary,
       dots: [
@@ -310,6 +385,12 @@ class PalettePreview {
       ],
     );
   }
+
+  static final Map<
+    (int, PaletteMood, PaletteContrast, Brightness, CustomPaletteAccents),
+    PalettePreview
+  >
+  _cache = {};
 
   factory PalettePreview.fromScheme(ColorScheme scheme) {
     return PalettePreview(
@@ -327,11 +408,6 @@ class PalettePreview {
   final ColorScheme scheme;
   final Color primary;
   final List<Color> dots;
-}
-
-String _previewSeedHex(Color color) {
-  final rgb = color.toARGB32() & 0x00FFFFFF;
-  return '#${rgb.toRadixString(16).padLeft(6, '0').toUpperCase()}';
 }
 
 Future<void> _resetPaletteSettings(SettingsNotifier notifier) async {
@@ -476,6 +552,91 @@ String _moodDescription(BuildContext context, PaletteMood mood) {
     PaletteMood.expressive => context.l10n.paletteMoodExpressiveDescription,
     PaletteMood.fidelity => context.l10n.paletteMoodFidelityDescription,
     PaletteMood.monochrome => context.l10n.paletteMoodMonochromeDescription,
+    PaletteMood.neutral => tr(
+      context,
+      'Near-grey surfaces with just a hint of your colour',
+      'Superficies casi grises con un toque de tu color',
+    ),
+    PaletteMood.content => tr(
+      context,
+      'Matches your colour closely, like artwork',
+      'Se ajusta mucho a tu color, como una ilustración',
+    ),
+    PaletteMood.rainbow => tr(
+      context,
+      'Accents from around the colour wheel',
+      'Acentos de toda la rueda de color',
+    ),
+    PaletteMood.fruitSalad => tr(
+      context,
+      'Bold, juicy jumps between hues',
+      'Saltos de tono vivos y jugosos',
+    ),
+    PaletteMood.pastel => tr(
+      context,
+      'Soft, airy accents with gentle colour',
+      'Acentos suaves y ligeros',
+    ),
+    PaletteMood.neon => tr(
+      context,
+      'The brightest, most saturated accents',
+      'Los acentos más brillantes y saturados',
+    ),
+    PaletteMood.earthy => tr(
+      context,
+      'Warm clay, moss and sand tones',
+      'Tonos cálidos de arcilla, musgo y arena',
+    ),
+    PaletteMood.jewel => tr(
+      context,
+      'Deep, rich gemstone colours',
+      'Colores intensos de piedras preciosas',
+    ),
+    PaletteMood.sunset => tr(
+      context,
+      'Coral, peach and rose accents',
+      'Acentos coral, melocotón y rosa',
+    ),
+    PaletteMood.ocean => tr(
+      context,
+      'Cool blues and sea-glass teals',
+      'Azules fríos y turquesas',
+    ),
+    PaletteMood.forest => tr(
+      context,
+      'Leafy greens and golden light',
+      'Verdes de hoja y luz dorada',
+    ),
+    PaletteMood.candy => tr(
+      context,
+      'Sweet pinks and mint',
+      'Rosas dulces y menta',
+    ),
+    PaletteMood.complementary => tr(
+      context,
+      'Accents from the opposite side of the wheel',
+      'Acentos del lado opuesto de la rueda',
+    ),
+    PaletteMood.analogous => tr(
+      context,
+      'Neighbouring hues that blend smoothly',
+      'Tonos vecinos que combinan con suavidad',
+    ),
+    PaletteMood.triadic => tr(
+      context,
+      'Three hues spaced evenly around the wheel',
+      'Tres tonos repartidos por la rueda',
+    ),
+    PaletteMood.splitComplementary => tr(
+      context,
+      'The two hues beside your colour’s opposite',
+      'Los dos tonos junto al opuesto de tu color',
+    ),
+    PaletteMood.custom => tr(
+      context,
+      'Pick the accents that go with your colour',
+      'Elige los acentos que combinan con tu color',
+    ),
   };
 }
 
@@ -722,6 +883,174 @@ class _PreviewMemberRow extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+
+/// Mood cards: one column on phones, two side by side on wider screens.
+class _MoodGrid extends StatelessWidget {
+  const _MoodGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, c) {
+        final columns = c.maxWidth >= 640 ? 2 : 1;
+        const gap = 10.0;
+        final w = (c.maxWidth - gap * (columns - 1)) / columns;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [for (final child in children) SizedBox(width: w, child: child)],
+        );
+      },
+    );
+  }
+}
+
+/// Accent pickers for the Custom mood: the main colour stays the palette
+/// colour above; these set the secondary and highlight accents.
+class _CustomAccentsSection extends ConsumerWidget {
+  const _CustomAccentsSection({required this.custom, required this.fallback});
+
+  final CustomPaletteAccents custom;
+
+  /// The scheme shown while an accent is still automatic.
+  final ColorScheme fallback;
+
+  static String _hex(int argb) =>
+      '#${(argb & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final store = ref.read(appearanceProvider.notifier);
+    Widget picker({
+      required String title,
+      required String help,
+      required int? value,
+      required Color automatic,
+      required void Function(int? v) set,
+    }) {
+      return PrismSectionCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        help,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (value == null)
+                  _AutoSwatch(color: automatic)
+                else
+                  PrismButton(
+                    label: tr(context, 'Automatic', 'Automático'),
+                    density: PrismControlDensity.compact,
+                    onPressed: () => set(null),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            AccentColorPicker(
+              currentHex: _hex(value ?? automatic.toARGB32()),
+              showSelection: value != null,
+              showLegibilityWarning: false,
+              onChanged: (hex) => set(parsePaletteHex(hex).toARGB32()),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return PrismSection(
+      title: tr(context, 'Custom accents', 'Acentos personalizados'),
+      child: Column(
+        children: [
+          picker(
+            title: tr(context, 'Second accent', 'Segundo acento'),
+            help: tr(
+              context,
+              'Chips, toggles and secondary highlights',
+              'Etiquetas, interruptores y realces secundarios',
+            ),
+            value: custom.secondary,
+            automatic: fallback.secondary,
+            set: (v) => store.setCustomPaletteAccents(
+              secondary: v,
+              tertiary: custom.tertiary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          picker(
+            title: tr(context, 'Highlight accent', 'Acento de realce'),
+            help: tr(
+              context,
+              'Badges, tags and small pops of colour',
+              'Insignias, etiquetas y toques de color',
+            ),
+            value: custom.tertiary,
+            automatic: fallback.tertiary,
+            set: (v) => store.setCustomPaletteAccents(
+              secondary: custom.secondary,
+              tertiary: v,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/// Shows the automatic accent a picker is using until one is chosen.
+class _AutoSwatch extends StatelessWidget {
+  const _AutoSwatch({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          tr(context, 'Automatic', 'Automático'),
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          width: 22,
+          height: 22,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+        ),
+      ],
     );
   }
 }
