@@ -16,16 +16,6 @@ import 'package:path_provider/path_provider.dart';
 /// (local, store, web, desktop) never check for updates.
 const String kPrismUpdateRepo = String.fromEnvironment('PRISM_UPDATE_REPO');
 
-/// GitLab host and numeric project id whose package registry carries
-/// Android builds (`prism-android/latest/latest.json`), set by GitLab CI.
-/// Preferred over [kPrismUpdateRepo] when present.
-const String kPrismUpdateGitlabHost = String.fromEnvironment(
-  'PRISM_UPDATE_GITLAB_HOST',
-);
-const String kPrismUpdateGitlabProject = String.fromEnvironment(
-  'PRISM_UPDATE_GITLAB_PROJECT',
-);
-
 /// A newer build published as a GitHub release.
 @immutable
 class AppUpdateInfo {
@@ -56,10 +46,7 @@ class AppUpdateException implements Exception {
   const AppUpdateException(this.code, [this.detail]);
 
   /// One of: `network`, `bad_response`, `no_apk`, `download_failed`,
-  /// `checksum_mismatch`, `install_failed`, `unsupported`, `not_public`
-  /// (the GitLab package registry needs signing in), `signature_mismatch`
-  /// (signed with another key: Android would refuse to update), and
-  /// `older_build` (not newer than the installed app).
+  /// `checksum_mismatch`, `install_failed`, `unsupported`.
   final String code;
   final String? detail;
 
@@ -109,30 +96,7 @@ AppUpdateInfo? parseReleaseJson(Map<String, dynamic> json) {
   );
 }
 
-/// Reads the `latest.json` GitLab CI publishes next to each APK.
-@visibleForTesting
-AppUpdateInfo? parseGitlabManifest(Map<String, dynamic> json, {String? pageUrl}) {
-  final build = json['build'];
-  final apk = json['apk'];
-  if (build is! int || apk is! String || !apk.startsWith('https://')) return null;
-  final sum = json['sha256'];
-  return AppUpdateInfo(
-    buildNumber: build,
-    version: json['version'] is String ? json['version'] as String : '',
-    apkUrl: apk,
-    apkName: 'Prism-$build.apk',
-    sizeBytes: json['size'] is int ? json['size'] as int : 0,
-    sha256: sum is String && RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(sum)
-        ? sum.toLowerCase()
-        : null,
-    publishedAt: json['published'] is String
-        ? DateTime.tryParse(json['published'] as String)
-        : null,
-    pageUrl: pageUrl,
-  );
-}
-
-/// Checks GitLab (or GitHub) for newer APKs, downloads them and hands them to the
+/// Checks GitHub for newer APKs, downloads them and hands them to the
 /// Android installer. Android always asks the user to confirm the install;
 /// because every build is signed with the same key, it installs over the
 /// current app and keeps all data.
@@ -140,8 +104,6 @@ class AppUpdateService {
   AppUpdateService({
     http.Client? client,
     this.repo = kPrismUpdateRepo,
-    this.gitlabHost = kPrismUpdateGitlabHost,
-    this.gitlabProject = kPrismUpdateGitlabProject,
     MethodChannel? channel,
     Future<int> Function()? currentBuild,
     Future<Directory> Function()? cacheDir,
@@ -153,11 +115,7 @@ class AppUpdateService {
 
   final http.Client _client;
   final String repo;
-  final String gitlabHost;
-  final String gitlabProject;
   final MethodChannel _channel;
-
-  bool get _usesGitlab => gitlabHost.isNotEmpty && gitlabProject.isNotEmpty;
   final Future<int> Function() _currentBuild;
   final Future<Directory> Function() _cacheDir;
 
@@ -168,7 +126,7 @@ class AppUpdateService {
   bool get isSupported =>
       !kIsWeb &&
       defaultTargetPlatform == TargetPlatform.android &&
-      (_usesGitlab || repo.contains('/'));
+      repo.contains('/');
 
   Future<int> currentBuildNumber() => _currentBuild();
 
@@ -179,7 +137,6 @@ class AppUpdateService {
   /// can finish out of order, and the one marked latest is not always the
   /// newest.
   Future<AppUpdateInfo?> checkForUpdate() async {
-    if (_usesGitlab) return _checkGitlab();
     if (!repo.contains('/')) throw const AppUpdateException('unsupported');
     final http.Response res;
     try {
@@ -216,45 +173,6 @@ class AppUpdateService {
     final newest = candidates.first;
     final current = await _currentBuild();
     return newest.buildNumber > current ? newest : null;
-  }
-
-  Future<AppUpdateInfo?> _checkGitlab() async {
-    final url = Uri.https(
-      gitlabHost,
-      '/api/v4/projects/$gitlabProject/packages/generic/prism-android/latest/latest.json',
-    );
-    final http.Response res;
-    try {
-      res = await _client
-          .get(url, headers: const {'Cache-Control': 'no-cache'})
-          .timeout(const Duration(seconds: 20));
-    } on Exception catch (e) {
-      throw AppUpdateException('network', '$e');
-    }
-    // A private project's registry answers 401/403/404 to visitors.
-    if (res.statusCode == 401 || res.statusCode == 403 || res.statusCode == 404) {
-      throw AppUpdateException('not_public', 'HTTP ${res.statusCode}');
-    }
-    if (res.statusCode == 429) {
-      throw const AppUpdateException('rate_limited', 'HTTP 429');
-    }
-    if (res.statusCode != 200) {
-      throw AppUpdateException('bad_response', 'HTTP ${res.statusCode}');
-    }
-    final Object? decoded;
-    try {
-      decoded = jsonDecode(res.body);
-    } on FormatException catch (e) {
-      throw AppUpdateException('bad_response', e.message);
-    }
-    final info = decoded is Map<String, dynamic>
-        ? parseGitlabManifest(
-            decoded,
-            pageUrl: 'https://$gitlabHost/projects/$gitlabProject',
-          )
-        : null;
-    if (info == null) throw const AppUpdateException('no_apk');
-    return info.buildNumber > await _currentBuild() ? info : null;
   }
 
   /// Downloads the APK into the cache, reporting progress from 0 to 1, and
@@ -375,32 +293,7 @@ class AppUpdateService {
   Future<void> openInstallPermissionSettings() =>
       _channel.invokeMethod<bool>('openInstallPermissionSettings');
 
-  /// Opens the Android installer for [path].
-  ///
-  /// Checks first that the APK can actually replace this app — same signing
-  /// key and a higher version — so a mismatch is explained here instead of
-  /// Android's vague "App not installed".
   Future<void> install(String path) async {
-    try {
-      final check = await _channel.invokeMapMethod<String, Object?>(
-        'checkApk',
-        {'path': path},
-      );
-      if (check != null) {
-        if (check['sameSigner'] == false) {
-          throw const AppUpdateException('signature_mismatch');
-        }
-        final apkCode = check['apkVersionCode'];
-        final installed = check['installedVersionCode'];
-        if (apkCode is int && installed is int && apkCode <= installed) {
-          throw const AppUpdateException('older_build');
-        }
-      }
-    } on MissingPluginException {
-      // Older native side without the check: let the installer decide.
-    } on PlatformException catch (e) {
-      debugPrint('APK pre-install check skipped: ${e.message}');
-    }
     try {
       await _channel.invokeMethod<bool>('installApk', {'path': path});
     } on PlatformException catch (e) {

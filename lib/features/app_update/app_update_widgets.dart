@@ -17,15 +17,6 @@ String appUpdateErrorText(AppLocalizations l10n, String? code) =>
       'install_failed' => l10n.appUpdateErrorInstall,
       'no_apk' => l10n.appUpdateErrorNoApk,
       'rate_limited' => l10n.appUpdateErrorRateLimited,
-      'not_public' => l10n.localeName.startsWith('es')
-          ? 'No se pueden buscar actualizaciones: el registro de paquetes del proyecto de GitLab es privado. Hazlo público (o permite que cualquiera descargue del registro de paquetes) para recibir actualizaciones en la app.'
-          : 'Can’t check for updates: the GitLab project’s package registry is private. Make it public (or allow anyone to pull from the package registry) to get in-app updates.',
-      'signature_mismatch' => l10n.localeName.startsWith('es')
-          ? 'Esta versión está firmada con otra clave, así que Android no puede instalarla encima de la app. Tendrías que desinstalar la app una vez (haz antes una copia de seguridad); las siguientes actualizaciones se instalarán encima.'
-          : 'This build is signed with a different key, so Android can’t install it over the app. You’d need to uninstall once (back up first); updates after that install over it.',
-      'older_build' => l10n.localeName.startsWith('es')
-          ? 'Esta versión no es más nueva que la instalada.'
-          : 'This build isn’t newer than the one installed.',
       _ => l10n.appUpdateErrorGeneric,
     };
 

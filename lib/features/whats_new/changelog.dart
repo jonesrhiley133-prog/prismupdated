@@ -32,20 +32,6 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
-    version: '0.39.1',
-    date: DateTime(2026, 11, 22),
-    fixes: const [
-      LocalizedText(
-        'Updates install over the app again instead of needing an uninstall: every build is now signed with the same key (a build without it stops instead of using a throwaway key) and gets a version number higher than any before it.',
-        'Las actualizaciones vuelven a instalarse encima de la app sin desinstalarla: cada versión se firma con la misma clave (sin ella, la compilación se detiene en lugar de usar una clave temporal) y recibe un número de versión mayor que cualquier anterior.',
-      ),
-      LocalizedText(
-        'In-app updates now come from GitLab builds, and before opening the installer Prism checks that the download can replace the app, explaining a different key or an older build instead of Android’s “App not installed”.',
-        'Las actualizaciones dentro de la app llegan ahora de las compilaciones de GitLab y, antes de abrir el instalador, Prism comprueba que la descarga puede reemplazar la app; si la clave es otra o la versión es más antigua, lo explica en lugar del «App no instalada» de Android.',
-      ),
-    ],
-  ),
-  ChangelogRelease(
     version: '0.39.0',
     date: DateTime(2026, 11, 22),
     features: const [

@@ -4,15 +4,10 @@
 # Download the APK from the pipeline: Build > Pipelines > the run >
 # build-apk > "Job artifacts" > Download.
 #
-# In-app updates read dist/latest.json from the project's package registry,
-# so the registry must be readable without signing in: make the project
-# public, or Settings > General > Visibility > Package registry > "Allow
-# anyone to pull from Package Registry".
-#
 # Signing uses four CI/CD variables (Settings > CI/CD > Variables), the same
 # values as the GitHub secrets: ANDROID_KEYSTORE_BASE64,
 # ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD.
-# Without them the pipeline fails: a debug-signed APK can't update the app.
+# Without them the APK is debug-signed and can't install over a signed build.
 
 workflow:
   rules:
@@ -78,64 +73,31 @@ build-apk:
         echo "org.gradle.workers.max=3"
       } > "$GRADLE_USER_HOME/gradle.properties"
     - flutter pub get
-    # Every build must be signed with the same key, or Android refuses to
-    # install it over the app (and people have to uninstall to update).
     - |
-      if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ] || [ -z "${ANDROID_KEYSTORE_PASSWORD:-}" ] || [ -z "${ANDROID_KEY_ALIAS:-}" ]; then
-        echo "ERROR: signing variables are missing for this pipeline."
-        echo "Add ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and"
-        echo "ANDROID_KEY_PASSWORD under Settings > CI/CD > Variables with 'Protect variable'"
-        echo "unticked (protected variables only reach protected branches)."
-        exit 1
+      if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
+        printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+        {
+          echo "storeFile=../upload-keystore.jks"
+          echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+          echo "keyAlias=$ANDROID_KEY_ALIAS"
+          echo "keyPassword=${ANDROID_KEY_PASSWORD:-$ANDROID_KEYSTORE_PASSWORD}"
+        } > android/app/key.properties
+        echo "Release signing configured."
+      else
+        echo "WARNING: no ANDROID_KEYSTORE_BASE64 variable; the APK will be debug-signed."
       fi
-      printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
-      {
-        echo "storeFile=../upload-keystore.jks"
-        echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
-        echo "keyAlias=$ANDROID_KEY_ALIAS"
-        echo "keyPassword=${ANDROID_KEY_PASSWORD:-$ANDROID_KEYSTORE_PASSWORD}"
-      } > android/app/key.properties
-      echo "Release signing configured."
-    # Version code = minutes since 2024-01-01: always higher than any earlier
-    # build (GitHub ~50, earlier GitLab 1000+, local 39000) and still rising,
-    # so every new APK installs over the last one.
-    - BUILD_NUMBER=$(( ($(date -u +%s) - 1704067200) / 60 ))
-    - echo "Build number $BUILD_NUMBER"
+    # Build numbers start at 1000 so these install over the earlier GitHub
+    # builds (which used the GitHub run number).
+    - BUILD_NUMBER=$((1000 + CI_PIPELINE_IID))
     - |
       flutter build apk --release \
         --target-platform android-arm64,android-arm \
         --no-tree-shake-icons \
-        --build-number "$BUILD_NUMBER" \
-        --dart-define=PRISM_UPDATE_GITLAB_HOST=$CI_SERVER_HOST \
-        --dart-define=PRISM_UPDATE_GITLAB_PROJECT=$CI_PROJECT_ID
-    - APK=build/app/outputs/flutter-apk/app-release.apk
-    # Refuse to publish an APK signed with any other key.
-    - |
-      APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
-      CERT=$("$APKSIGNER" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -1)
-      WANT=$(tr -d '[:space:]' < android/release-cert-sha256.txt)
-      echo "APK certificate SHA-256: $CERT"
-      if [ "$CERT" != "$WANT" ]; then
-        echo "ERROR: the APK is not signed with the Prism release key (expected $WANT)."
-        exit 1
-      fi
+        --build-number "$BUILD_NUMBER"
     - version=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
     - mkdir -p dist
-    - cp "$APK" "dist/Prism-${version}-build${BUILD_NUMBER}-${CI_COMMIT_SHORT_SHA}.apk"
+    - cp build/app/outputs/flutter-apk/app-release.apk "dist/Prism-${version}-build${BUILD_NUMBER}-${CI_COMMIT_SHORT_SHA}.apk"
     - (cd dist && sha256sum *.apk > SHA256SUMS && cat SHA256SUMS)
-    # Publish for the in-app updater: the APK plus a small latest.json in the
-    # project's package registry (needs no extra secret: CI_JOB_TOKEN).
-    - |
-      SUM=$(sha256sum "$APK" | awk '{print $1}')
-      SIZE=$(stat -c %s "$APK")
-      PKG="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/prism-android"
-      curl --fail-with-body -sS -H "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$APK" "$PKG/$BUILD_NUMBER/Prism.apk"
-      printf '{"build":%s,"version":"%s","apk":"%s","size":%s,"sha256":"%s","commit":"%s","branch":"%s","published":"%s"}\n' \
-        "$BUILD_NUMBER" "$version" "$PKG/$BUILD_NUMBER/Prism.apk" "$SIZE" "$SUM" \
-        "$CI_COMMIT_SHORT_SHA" "$CI_COMMIT_REF_NAME" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > dist/latest.json
-      cat dist/latest.json
-      curl --fail-with-body -sS -H "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file dist/latest.json "$PKG/latest/latest.json"
-      echo "Published build $BUILD_NUMBER for in-app updates."
   after_script:
     - rm -f android/upload-keystore.jks android/app/key.properties
   artifacts:

@@ -129,8 +129,6 @@ jobs:
           if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; the APK will be debug-signed and NOT published for in-app updates (it can't install over a signed build). See docs/deploy/android-apk.md."
             echo "signed=false" >> "$GITHUB_OUTPUT"
-            # Throwaway build, never published: let Gradle use a debug key.
-            echo "PRISM_ALLOW_DEBUG_SIGNING=1" >> "$GITHUB_ENV"
             exit 0
           fi
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
@@ -143,11 +141,6 @@ jobs:
           echo "signed=true" >> "$GITHUB_OUTPUT"
           echo "Release signing configured."
 
-      # Version code = minutes since 2024-01-01, the same scheme as GitLab CI:
-      # always rising, so every build installs over the previous one.
-      - name: Pick build number
-        run: echo "BUILD_NUMBER=$(( ($(date -u +%s) - 1704067200) / 60 ))" >> "$GITHUB_ENV"
-
       - name: Build APKs
         run: |
           # One APK for both 64-bit and 32-bit ARM phones. (Per-ABI splits
@@ -155,18 +148,8 @@ jobs:
           flutter build apk --release \
             --target-platform android-arm64,android-arm \
             --no-tree-shake-icons \
-            --build-number "$BUILD_NUMBER" \
+            --build-number "${{ github.run_number }}" \
             --dart-define=PRISM_UPDATE_REPO=${{ github.repository }}
-
-      - name: Check signing key
-        if: steps.signing.outputs.signed == 'true'
-        run: |
-          set -euo pipefail
-          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
-          CERT=$("$APKSIGNER" verify --print-certs build/app/outputs/flutter-apk/app-release.apk | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -1)
-          WANT=$(tr -d '[:space:]' < android/release-cert-sha256.txt)
-          echo "APK certificate SHA-256: $CERT"
-          [ "$CERT" = "$WANT" ] || { echo "::error::APK is not signed with the Prism release key"; exit 1; }
 
       - name: Collect APKs
         run: |
@@ -205,7 +188,7 @@ jobs:
         run: |
           set -euo pipefail
           version=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
-          tag="android-build-${BUILD_NUMBER}"
+          tag="android-build-${{ github.run_number }}"
           apk=$(ls dist/*.apk | head -1)
           sum=$(sha256sum "$apk" | awk '{print $1}')
           {
@@ -218,7 +201,7 @@ jobs:
           gh release create "$tag" dist/*.apk dist/SHA256SUMS \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Prism ${version} (build ${BUILD_NUMBER})" \
+            --title "Prism ${version} (build ${{ github.run_number }})" \
             --notes-file notes.md \
             --latest
           # Keep the 10 newest automated builds.
