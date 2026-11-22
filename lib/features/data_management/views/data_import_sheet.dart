@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -77,16 +78,39 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
         return;
       }
 
-      // Plain JSON file
-      final content = String.fromCharCodes(bytes);
+      // Plain JSON file. Exports are UTF-8; names with accents or emoji
+      // would be mangled read byte by byte.
+      final content = utf8.decode(bytes, allowMalformed: true);
       final service = ref.read(dataImportServiceProvider);
-      final preview = service.parsePreview(content);
+      final ImportPreview preview;
+      try {
+        preview = service.parsePreview(content);
+      } on FormatException catch (e) {
+        // Every file can be picked on iOS, so say plainly when it isn't one.
+        throw FormatException(
+          e.message.startsWith('Unsupported export format')
+              ? e.message
+              : 'This isn\'t a Prism export. Choose the .prism (or .json) '
+                    'file you exported from Prism.',
+        );
+      } on TypeError {
+        throw const FormatException(
+          'This isn\'t a Prism export. Choose the .prism (or .json) file '
+          'you exported from Prism.',
+        );
+      }
 
       if (!mounted) return;
       setState(() {
         _state = _ImportState.preview;
         _jsonContent = content;
         _preview = preview;
+      });
+    } on FormatException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _state = _ImportState.error;
+        _errorMessage = e.message;
       });
     } catch (e) {
       if (!mounted) return;

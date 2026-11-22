@@ -591,8 +591,10 @@ class DataImportService {
 
     // Write media blobs to temp files BEFORE the DB transaction so a failed
     // transaction doesn't leave metadata rows pointing at missing .enc files.
+    // The web app has no file storage for encrypted chat media, so a backup
+    // from a phone brings its data across and leaves attachments behind.
     Directory? mediaDir;
-    if (mediaBlobs.isNotEmpty) {
+    if (mediaBlobs.isNotEmpty && !kIsWeb) {
       mediaDir = await _mediaDirectory();
       await _writeMediaToTemp(mediaBlobs, mediaDir);
     }

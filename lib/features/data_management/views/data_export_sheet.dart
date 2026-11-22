@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,6 +51,11 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
   String? _errorMessage;
   EncryptedExportFile? _exportedFile;
   String? _savedDisplayName;
+
+  /// The web app's export, held in memory (browsers have no temp files).
+  ({Uint8List bytes, String fileName})? _webExport;
+
+  String? get _readyFileName => _exportedFile?.fileName ?? _webExport?.fileName;
 
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
@@ -112,6 +120,7 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
 
   Future<void> _startExport({required String password}) async {
     setState(() => _state = _ExportState.exporting);
+    if (kIsWeb) return _startWebExport(password: password);
     final EncryptedExportFile file;
     try {
       final service = ref.read(dataExportServiceProvider);
@@ -138,7 +147,110 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
     await _saveExportedFile();
   }
 
+  Future<void> _startWebExport({required String password}) async {
+    try {
+      final export = await ref
+          .read(dataExportServiceProvider)
+          .buildEncryptedExportBytes(password: password);
+      if (!mounted) return;
+      _passwordController.clear();
+      _confirmController.clear();
+      // Browsers (Safari especially) only allow saving or sharing straight
+      // after a tap, and encryption takes a few seconds, so wait for the
+      // user to choose Save or Share.
+      setState(() {
+        _state = _ExportState.readyToSave;
+        _webExport = export;
+        _savedDisplayName = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _state = _ExportState.error;
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  /// Downloads the export (web). On iPhone and iPad Safari shows it in
+  /// Downloads, from where it can go to Files or another device.
+  Future<void> _saveWebExport() async {
+    final export = _webExport;
+    if (export == null || _isSaving) return;
+    setState(() => _isSaving = true);
+    final outcome = await ref
+        .read(prismFileDialogServiceProvider)
+        .saveBytes(
+          bytes: export.bytes,
+          suggestedName: export.fileName,
+          allowedExtensions: const ['prism'],
+          dialogTitle: 'Save Prism export',
+          mimeType: 'application/octet-stream',
+        );
+    if (!mounted) return;
+    setState(() => _isSaving = false);
+    switch (outcome.status) {
+      case SaveFileStatus.saved:
+        setState(() {
+          _state = _ExportState.complete;
+          _savedDisplayName = outcome.savedDisplayName ?? export.fileName;
+        });
+      case SaveFileStatus.cancelled:
+      case SaveFileStatus.alreadyActive:
+        break;
+      case SaveFileStatus.failed:
+      case SaveFileStatus.unsupported:
+      case SaveFileStatus.sourceNotReady:
+        setState(() {
+          _state = _ExportState.error;
+          _errorMessage = outcome.error?.toString() ?? outcome.status.name;
+        });
+    }
+  }
+
+  /// Opens the browser's share sheet with the file (web). On iOS this
+  /// offers Save to Files, AirDrop and Messages; where sharing files isn't
+  /// supported it falls back to a download.
+  Future<void> _shareWebExport() async {
+    final export = _webExport;
+    if (export == null || _isSharing) return;
+    setState(() => _isSharing = true);
+    try {
+      final result = await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile.fromData(
+              export.bytes,
+              name: export.fileName,
+              mimeType: 'application/octet-stream',
+            ),
+          ],
+          fileNameOverrides: [export.fileName],
+          sharePositionOrigin: _sharePositionOrigin(),
+        ),
+      );
+      if (!mounted) return;
+      // Browsers don't say whether a target took the file (success reads as
+      // "unavailable", and so does share_plus's download fallback); only a
+      // dismissed sheet means nothing happened.
+      if (result.status != ShareResultStatus.dismissed) {
+        setState(() {
+          _state = _ExportState.complete;
+          _savedDisplayName = export.fileName;
+        });
+      }
+    } catch (_) {
+      // Share sheet unavailable: a download still gets the file out.
+      if (mounted) {
+        setState(() => _isSharing = false);
+        await _saveWebExport();
+      }
+    }
+    if (mounted) setState(() => _isSharing = false);
+  }
+
   Future<void> _saveExportedFile() async {
+    if (kIsWeb) return _saveWebExport();
     final export = _exportedFile;
     if (export == null || _isSaving) return;
     setState(() => _isSaving = true);
@@ -182,6 +294,7 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
   }
 
   Future<void> _shareExportedFile() async {
+    if (kIsWeb) return _shareWebExport();
     final export = _exportedFile;
     if (export == null || _isSharing) return;
     setState(() => _isSharing = true);
@@ -491,10 +604,10 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        if (_exportedFile != null) ...[
+        if (_readyFileName != null) ...[
           const SizedBox(height: 8),
           Text(
-            _exportedFile!.fileName,
+            _readyFileName!,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

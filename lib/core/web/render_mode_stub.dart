@@ -15,3 +15,10 @@ void markWebStage(String stage) {}
 
 /// Records an error for the page's startup check (web only).
 void reportWebError(String message) {}
+
+/// Matches the browser's own top bar and page background to Prism's
+/// (web only).
+void setWebChromeColor(int argb) {}
+
+/// Downloads [bytes] as a file named [name] (web only; false elsewhere).
+bool downloadWebFile(List<int> bytes, String name, String mimeType) => false;

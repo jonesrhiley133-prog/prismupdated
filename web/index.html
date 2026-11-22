@@ -22,7 +22,10 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- Safari tints its top bar (and the area behind the clock) from these.
+       Prism keeps them matched to the current theme via prismSetChrome. -->
+  <meta name="theme-color" content="#F4F1EA">
   <meta name="apple-mobile-web-app-title" content="Prism">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
@@ -31,6 +34,52 @@
 
   <title>Prism</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; background: #F4F1EA; }
+    @media (prefers-color-scheme: dark) { html, body { background: #15121a; } }
+  </style>
+  <script>
+    // Called by Prism whenever its theme changes, so Safari's top bar and
+    // overscroll areas use the app's colour instead of white.
+    window.prismSetChrome = function (hex) {
+      try {
+        document.documentElement.style.background = hex;
+        document.body && (document.body.style.background = hex);
+        var metas = document.querySelectorAll('meta[name="theme-color"]');
+        if (!metas.length) {
+          var m = document.createElement('meta');
+          m.name = 'theme-color';
+          document.head.appendChild(m);
+          metas = [m];
+        }
+        for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', hex);
+      } catch (e) {}
+    };
+
+    // Saves a file from Prism (exports, images). The link stays alive for a
+    // minute: Safari on iPhone/iPad reads it after the click returns, and
+    // revoking it straight away makes the download fail.
+    window.prismDownload = function (bytes, name, mime) {
+      try {
+        var blob = new Blob([bytes], { type: mime || 'application/octet-stream' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+          a.remove();
+        }, 60000);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+  </script>
 </head>
 <body>
   <!--

@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:typed_data';
 
 @JS('window.__prismRenderer')
 external _RendererInfo? get _info;
@@ -59,4 +60,29 @@ void reportWebError(String message) {
   try {
     _startup?.error(message.length > 800 ? message.substring(0, 800) : message);
   } catch (_) {}
+}
+
+@JS('window.prismSetChrome')
+external JSFunction? get _setChrome;
+
+int? _lastChrome;
+
+void setWebChromeColor(int argb) {
+  if (_lastChrome == argb) return;
+  final fn = _setChrome;
+  if (fn == null) return;
+  _lastChrome = argb;
+  final hex = (argb & 0xFFFFFF).toRadixString(16).padLeft(6, '0');
+  fn.callAsFunction(null, '#$hex'.toJS);
+}
+
+@JS('window.prismDownload')
+external JSFunction? get _download;
+
+bool downloadWebFile(List<int> bytes, String name, String mimeType) {
+  final fn = _download;
+  if (fn == null) return false;
+  final data = bytes is Uint8List ? bytes : Uint8List.fromList(bytes);
+  final ok = fn.callAsFunction(null, data.toJS, name.toJS, mimeType.toJS);
+  return ok.dartify() == true;
 }

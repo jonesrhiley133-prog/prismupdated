@@ -438,5 +438,41 @@ void main() {
       },
       timeout: const Timeout(Duration(minutes: 2)),
     );
+
+    test(
+      'in-memory (web) export imports on another device',
+      () async {
+        const password = 'dummy-test-password';
+        final settings = DriftSystemSettingsRepository(
+          sourceDb.systemSettingsDao,
+          null,
+        );
+        await settings.getSettings();
+        await settings.updateSettings(
+          const SystemSettings(systemName: 'Système ✨ Web'),
+        );
+
+        final export = await exportService.buildEncryptedExportBytes(
+          password: password,
+        );
+        expect(export.fileName, endsWith('.prism'));
+        expect(ExportCrypto.isEncrypted(export.bytes), isTrue);
+
+        final resolved = DataImportService.resolveForCompute((
+          bytes: export.bytes,
+          password: password,
+        ));
+        expect(resolved.mediaBlobs, isEmpty);
+        importService.parsePreview(resolved.json);
+        await importService.importData(resolved.json);
+
+        final imported = await DriftSystemSettingsRepository(
+          targetDb.systemSettingsDao,
+          null,
+        ).getSettings();
+        expect(imported.systemName, 'Système ✨ Web');
+      },
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
   });
 }

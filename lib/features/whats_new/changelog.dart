@@ -32,6 +32,34 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.39.2',
+    date: DateTime(2026, 11, 22),
+    improvements: const [
+      LocalizedText(
+        'Moving between devices: the web app (including on iPhone and iPad) can now export a password-protected backup — Share offers Save to Files and AirDrop, Save downloads it — and that same .prism file imports on Android, iOS and the web.',
+        'Cambiar de dispositivo: la app web (también en iPhone y iPad) ahora puede exportar una copia protegida con contraseña: Compartir ofrece Guardar en Archivos y AirDrop, y Guardar la descarga. Ese mismo archivo .prism se importa en Android, iOS y la web.',
+      ),
+      LocalizedText(
+        'On iPhone and iPad, Prism backups (.prism) are no longer greyed out when choosing a file to import.',
+        'En iPhone y iPad, las copias de Prism (.prism) ya no aparecen en gris al elegir un archivo para importar.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Importing in the web app failed with "Unsupported operation: Platform._operatingSystem". Fixed.',
+        'Importar en la app web fallaba con «Unsupported operation: Platform._operatingSystem». Corregido.',
+      ),
+      LocalizedText(
+        'Web app on iPhone: the white band that faded in at the top of the screen now matches your theme.',
+        'App web en iPhone: la franja blanca que aparecía arriba de la pantalla ahora coincide con tu tema.',
+      ),
+      LocalizedText(
+        'Names with accents or emoji in plain .json backups import correctly.',
+        'Los nombres con acentos o emoji en copias .json sin cifrar se importan correctamente.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.39.0',
     date: DateTime(2026, 11, 22),
     features: const [
@@ -439,7 +467,10 @@ final List<ChangelogRelease> prismChangelog = [
       ),
     ],
     improvements: const [
-      LocalizedText('Nourish now uses your theme’s colours throughout.', 'Nutrición usa ahora los colores de tu tema en todo.'),
+      LocalizedText(
+        'Nourish now uses your theme’s colours throughout.',
+        'Nutrición usa ahora los colores de tu tema en todo.',
+      ),
     ],
   ),
   ChangelogRelease(

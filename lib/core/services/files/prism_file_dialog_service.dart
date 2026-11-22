@@ -3,10 +3,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:prism_plurality/core/web/render_mode.dart';
 
 enum SaveFileStatus {
   saved,
@@ -102,6 +104,17 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
   final MethodChannel _channel;
   var _operationActive = false;
 
+  // dart:io's Platform throws in a browser, so web checks go through
+  // defaultTargetPlatform instead.
+  static bool get _isWindows => !kIsWeb && Platform.isWindows;
+
+  /// Prism's own file types, which iOS and browsers have no type for.
+  static const _appleUnknownExtensions = {'prism', 'pluralport', 'openplural'};
+
+  static bool get _isApple =>
+      defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
+
   @override
   Future<SaveFileOutcome> saveExistingFile(
     ExistingFileSaveRequest request,
@@ -119,7 +132,7 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
         request.suggestedName,
         request.allowedExtensions,
       );
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
         return await _saveExistingFileNative(
           request,
           fileName: fileName,
@@ -153,13 +166,26 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
     _operationActive = true;
     try {
       final fileName = _safeSuggestedName(suggestedName, allowedExtensions);
+      if (kIsWeb) {
+        // Browsers save straight to Downloads; there is no path to report.
+        final ok = downloadWebFile(
+          bytes,
+          fileName,
+          mimeType ?? 'application/octet-stream',
+        );
+        return SaveFileOutcome(
+          status: ok ? SaveFileStatus.saved : SaveFileStatus.unsupported,
+          savedDisplayName: fileName,
+          bytesCopied: ok ? bytes.length : null,
+        );
+      }
       final destination = await FilePicker.saveFile(
         dialogTitle: dialogTitle,
         fileName: fileName,
         type: allowedExtensions.isEmpty ? FileType.any : FileType.custom,
         allowedExtensions: _normalizedExtensions(allowedExtensions),
         bytes: bytes,
-        lockParentWindow: Platform.isWindows,
+        lockParentWindow: _isWindows,
       );
       if (destination == null) {
         return const SaveFileOutcome(status: SaveFileStatus.cancelled);
@@ -187,10 +213,22 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
     if (_operationActive) return null;
     _operationActive = true;
     try {
+      // iOS (app and Safari) and mobile browsers grey out files whose
+      // extension they don't know, such as .prism, so the filter would hide
+      // Prism's own exports. There, every file is offered and callers check
+      // the contents.
+      final filter =
+          allowedExtensions.isNotEmpty &&
+          !((_isApple || kIsWeb) &&
+              _normalizedExtensions(
+                allowedExtensions,
+              ).any(_appleUnknownExtensions.contains));
       final result = await FilePicker.pickFiles(
         dialogTitle: dialogTitle,
-        type: allowedExtensions.isEmpty ? FileType.any : FileType.custom,
-        allowedExtensions: _normalizedExtensions(allowedExtensions),
+        type: filter ? FileType.custom : FileType.any,
+        allowedExtensions: filter
+            ? _normalizedExtensions(allowedExtensions)
+            : null,
         // withData:true on mobile crashes large picks. file_picker
         // serializes the whole file through StandardMethodCodec into a
         // Direct ByteBuffer before any Dart runs, OOMing the JVM (confirmed
@@ -199,7 +237,7 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
         // filesystem path to fall back on, so it keeps bytes-mode.
         withData: kIsWeb,
         withReadStream: false,
-        lockParentWindow: Platform.isWindows,
+        lockParentWindow: _isWindows,
       );
       if (result == null || result.files.isEmpty) return null;
       return _handleForPlatformFile(result.files.single);
@@ -261,7 +299,7 @@ class PlatformPrismFileDialogService implements PrismFileDialogService {
             ? FileType.any
             : FileType.custom,
         allowedExtensions: _normalizedExtensions(request.allowedExtensions),
-        lockParentWindow: Platform.isWindows,
+        lockParentWindow: _isWindows,
       );
       if (destination == null) {
         return const SaveFileOutcome(status: SaveFileStatus.cancelled);

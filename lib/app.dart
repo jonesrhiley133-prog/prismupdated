@@ -687,7 +687,13 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           },
           routerConfig: router,
           builder: (context, child) {
-            if (kIsWeb) markWebStage('app');
+            if (kIsWeb) {
+              markWebStage('app');
+              // Safari tints its top bar from the page; keep it on-theme.
+              setWebChromeColor(
+                Theme.of(context).scaffoldBackgroundColor.toARGB32(),
+              );
+            }
             Widget result = child ?? const SizedBox.shrink();
             if (fontScale != 1.0) {
               result = MediaQuery(

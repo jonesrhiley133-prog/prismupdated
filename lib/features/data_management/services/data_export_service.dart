@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:drift/drift.dart' show BooleanExpressionOperators;
@@ -535,6 +536,25 @@ class DataExportService {
       } catch (_) {}
       rethrow;
     }
+  }
+
+  /// Builds an encrypted PRISM1 export in memory, for the web app, which has
+  /// no file storage. Same format as [buildEncryptedExportFile], so it
+  /// imports on Android, iOS and desktop. Chat media lives in files on those
+  /// platforms, so none is included here.
+  Future<({Uint8List bytes, String fileName})> buildEncryptedExportBytes({
+    required String password,
+  }) async {
+    final export = await buildExport();
+    final json = jsonEncode(export.toJson());
+    // Let the progress state paint before the (synchronous) key derivation.
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final bytes = ExportCrypto.encrypt(json, const [], password);
+    return (
+      bytes: bytes,
+      fileName:
+          'Prism-Export-${DateFormat('yyyy-MM-dd').format(DateTime.now())}.prism',
+    );
   }
 
   /// Compatibility wrapper for call sites that only need the file.

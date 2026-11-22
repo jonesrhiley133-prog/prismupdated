@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F4F1EA",
-    "theme_color": "#7C5F8E",
+    "theme_color": "#F4F1EA",
     "description": "Prism: plural system management (web preview).",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
