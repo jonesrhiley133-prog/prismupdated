@@ -185,6 +185,7 @@ flutter:
   assets:
     - assets/audio/
     - assets/astro/
+    - assets/games/
     - assets/textures/
     - assets/icon_layers/
     - assets/app_icons/

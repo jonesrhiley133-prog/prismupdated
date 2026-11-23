@@ -124,6 +124,31 @@ abstract final class TrackerKind {
   static const astroTarot = 'astro.tarot';
   static const astroSettings = 'astro.settings';
 
+  // Games: results, saved progress, per-alter game profiles (favourites,
+  // privacy), challenges left for other alters, game nights, custom games
+  // and shared creative projects (stories, poems, worlds, drawings).
+  static const gameResult = 'games.result';
+  static const gameSave = 'games.save';
+  static const gameProfile = 'games.profile';
+  static const gameChallenge = 'games.challenge';
+  static const gameNight = 'games.night';
+  static const gameCustom = 'games.custom';
+  static const gameProject = 'games.project';
+
+  // Cozy: lounge posts and settings, rooms and their items, letters,
+  // garden plants, shared lists (wishlists, jars, capsules, shelves…),
+  // gifts, doodle-wall strokes and comfort kits.
+  static const cozyPost = 'cozy.post';
+  static const cozySettings = 'cozy.settings';
+  static const cozyRoom = 'cozy.room';
+  static const cozyRoomItem = 'cozy.roomItem';
+  static const cozyLetter = 'cozy.letter';
+  static const cozyPlant = 'cozy.plant';
+  static const cozyListItem = 'cozy.listItem';
+  static const cozyGift = 'cozy.gift';
+  static const cozyDoodle = 'cozy.doodle';
+  static const cozyComfort = 'cozy.comfort';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

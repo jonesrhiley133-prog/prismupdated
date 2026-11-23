@@ -1,0 +1,201 @@
+import 'package:prism_plurality/features/games/engines/quiz_engine.dart';
+
+/// Familiar answer words with a category hint (scramble, hangman, missing
+/// letters, spelling).
+const hintedWords = <(String, String)>[
+  ('apple', 'Fruit'), ('banana', 'Fruit'), ('cherry', 'Fruit'), ('grape', 'Fruit'), ('lemon', 'Fruit'), ('mango', 'Fruit'), ('peach', 'Fruit'), ('melon', 'Fruit'),
+  ('carrot', 'Vegetable'), ('potato', 'Vegetable'), ('onion', 'Vegetable'), ('pepper', 'Vegetable'), ('celery', 'Vegetable'), ('garlic', 'Vegetable'),
+  ('tiger', 'Animal'), ('zebra', 'Animal'), ('rabbit', 'Animal'), ('turtle', 'Animal'), ('monkey', 'Animal'), ('dolphin', 'Animal'), ('penguin', 'Animal'), ('giraffe', 'Animal'), ('otter', 'Animal'), ('koala', 'Animal'),
+  ('guitar', 'Instrument'), ('piano', 'Instrument'), ('violin', 'Instrument'), ('drums', 'Instrument'), ('flute', 'Instrument'), ('trumpet', 'Instrument'),
+  ('planet', 'Space'), ('comet', 'Space'), ('galaxy', 'Space'), ('rocket', 'Space'), ('meteor', 'Space'), ('orbit', 'Space'),
+  ('castle', 'Place'), ('garden', 'Place'), ('library', 'Place'), ('bakery', 'Place'), ('island', 'Place'), ('forest', 'Place'), ('meadow', 'Place'),
+  ('pillow', 'Cozy thing'), ('blanket', 'Cozy thing'), ('candle', 'Cozy thing'), ('teapot', 'Cozy thing'), ('slipper', 'Cozy thing'), ('cocoa', 'Cozy thing'),
+  ('sunset', 'Nature'), ('rainbow', 'Nature'), ('thunder', 'Nature'), ('breeze', 'Nature'), ('blossom', 'Nature'), ('pebble', 'Nature'), ('river', 'Nature'),
+  ('pencil', 'School'), ('eraser', 'School'), ('notebook', 'School'), ('crayon', 'School'), ('ruler', 'School'),
+  ('jacket', 'Clothing'), ('sweater', 'Clothing'), ('scarf', 'Clothing'), ('mitten', 'Clothing'), ('boots', 'Clothing'),
+  ('dragon', 'Fantasy'), ('wizard', 'Fantasy'), ('unicorn', 'Fantasy'), ('potion', 'Fantasy'), ('fairy', 'Fantasy'),
+  ('kettle', 'Kitchen'), ('spoon', 'Kitchen'), ('ladle', 'Kitchen'), ('oven', 'Kitchen'), ('whisk', 'Kitchen'),
+  ('soccer', 'Sport'), ('tennis', 'Sport'), ('hockey', 'Sport'), ('skiing', 'Sport'), ('rowing', 'Sport'),
+];
+
+/// Daily five-letter answers (common words).
+const fiveLetterAnswers = [
+  'about', 'above', 'adore', 'after', 'agree', 'alarm', 'album', 'alert', 'alien', 'alive', 'amber', 'angel', 'apple', 'apron', 'arrow', 'aside', 'audio', 'awake',
+  'bacon', 'badge', 'bagel', 'baker', 'basil', 'beach', 'beard', 'berry', 'bingo', 'blaze', 'bless', 'bloom', 'board', 'brave', 'bread', 'brick', 'bring', 'brush', 'buddy', 'cabin',
+  'candy', 'cargo', 'charm', 'chess', 'chirp', 'cider', 'clock', 'cloud', 'coast', 'cocoa', 'comet', 'coral', 'couch', 'crane', 'cream', 'crown', 'daisy', 'dance', 'dream', 'drift',
+  'eagle', 'earth', 'elbow', 'ember', 'enjoy', 'equal', 'fable', 'fairy', 'feast', 'field', 'flame', 'float', 'flour', 'fresh', 'frost', 'fruit', 'giant', 'glide',
+  'globe', 'glove', 'grace', 'grape', 'grass', 'green', 'guide', 'happy', 'heart', 'honey', 'hover', 'ivory', 'jelly', 'jolly', 'juice', 'kayak', 'kitty', 'koala', 'lemon', 'light',
+  'lilac', 'llama', 'lunar', 'magic', 'mango', 'maple', 'melon', 'mercy', 'merry', 'misty', 'molar', 'moose', 'mossy', 'music', 'night', 'noble', 'novel', 'ocean', 'olive', 'onion',
+  'orbit', 'otter', 'paint', 'panda', 'paper', 'party', 'peace', 'peach', 'pearl', 'pecan', 'penny', 'petal', 'piano', 'pilot', 'pixel', 'plant', 'plush', 'polar', 'poppy', 'quiet',
+  'quilt', 'radio', 'raven', 'relax', 'rhyme', 'river', 'robin', 'rocky', 'round', 'royal', 'salad', 'sandy', 'scarf', 'scone', 'shell', 'shine', 'sleep', 'smile', 'snack', 'solar',
+  'spark', 'spice', 'spoon', 'sprig', 'stamp', 'stone', 'storm', 'story', 'sugar', 'sunny', 'sweet', 'swing', 'table', 'teach', 'thank', 'tiger', 'toast', 'tulip', 'umbra',
+  'unity', 'vapor', 'vivid', 'waltz', 'water', 'whale', 'wheat', 'windy', 'witty', 'woven', 'yacht', 'yummy', 'zebra',
+];
+
+/// Word ladders: start → goal, with one known solution.
+const ladders = <(String, String, List<String>)>[
+  ('cold', 'warm', ['cold', 'cord', 'card', 'ward', 'warm']),
+  ('cat', 'dog', ['cat', 'cot', 'cog', 'dog']),
+  ('head', 'tail', ['head', 'heal', 'teal', 'tell', 'tall', 'tail']),
+  ('lead', 'gold', ['lead', 'load', 'goad', 'gold']),
+  ('fish', 'bird', ['fish', 'fist', 'gist', 'girt', 'gird', 'bird']),
+  ('ship', 'dock', ['ship', 'chip', 'chop', 'coop', 'cook', 'cock', 'dock']),
+  ('wolf', 'gown', ['wolf', 'golf', 'goof', 'goon', 'gown']),
+  ('love', 'hate', ['love', 'lave', 'have', 'hate']),
+  ('seed', 'tree', ['seed', 'feed', 'fled', 'flee', 'free', 'tree']),
+  ('hand', 'foot', ['hand', 'band', 'bond', 'fond', 'food', 'foot']),
+  ('rose', 'bush', ['rose', 'ruse', 'rush', 'bush']),
+  ('more', 'less', ['more', 'lore', 'lose', 'loss', 'less']),
+  ('pig', 'sty', ['pig', 'big', 'bag', 'sag', 'say', 'sty']),
+  ('dark', 'lamp', ['dark', 'dare', 'dame', 'lame', 'lamp']),
+  ('sun', 'fog', ['sun', 'fun', 'fan', 'fag', 'fog']),
+  ('book', 'read', ['book', 'boor', 'boar', 'bear', 'beat', 'bead', 'read']),
+  ('tea', 'pot', ['tea', 'pea', 'pet', 'pot']),
+];
+
+const synonyms = <(String, String)>[
+  ('happy', 'joyful'), ('big', 'large'), ('quick', 'fast'), ('begin', 'start'), ('tiny', 'small'), ('smart', 'clever'), ('angry', 'cross'), ('brave', 'bold'),
+  ('calm', 'peaceful'), ('gift', 'present'), ('shut', 'close'), ('choose', 'pick'), ('end', 'finish'), ('glad', 'pleased'), ('silent', 'quiet'), ('cozy', 'snug'),
+  ('easy', 'simple'), ('rich', 'wealthy'), ('scared', 'afraid'), ('shiny', 'gleaming'), ('tired', 'sleepy'), ('odd', 'strange'), ('kind', 'gentle'), ('giggle', 'chuckle'),
+];
+
+const antonyms = <(String, String)>[
+  ('hot', 'cold'), ('up', 'down'), ('early', 'late'), ('full', 'empty'), ('happy', 'sad'), ('light', 'dark'), ('open', 'closed'), ('loud', 'quiet'),
+  ('rough', 'smooth'), ('ancient', 'modern'), ('brave', 'cowardly'), ('generous', 'stingy'), ('arrive', 'depart'), ('shallow', 'deep'), ('noisy', 'silent'), ('victory', 'defeat'),
+  ('increase', 'decrease'), ('friend', 'enemy'), ('accept', 'refuse'), ('float', 'sink'), ('push', 'pull'), ('wide', 'narrow'), ('wild', 'tame'), ('sharp', 'blunt'),
+];
+
+/// word → definition (Definition Detective, Vocabulary Quest).
+const definitions = <(String, String)>[
+  ('library', 'A place where books are kept for people to read or borrow'), ('volcano', 'A mountain that can erupt with lava'), ('compass', 'A tool that shows which way is north'),
+  ('orchard', 'A piece of land where fruit trees are grown'), ('harbor', 'A sheltered place where ships can stay safely'), ('glacier', 'A slow-moving river of ice'),
+  ('nocturnal', 'Active at night'), ('migrate', 'To move from one region to another with the seasons'), ('fragile', 'Easily broken'), ('vacant', 'Empty; not occupied'),
+  ('frugal', 'Careful not to waste money'), ('ponder', 'To think about something carefully'), ('cozy', 'Warm, comfortable and snug'), ('meadow', 'A field of grass and wildflowers'),
+  ('lantern', 'A portable lamp with a protective case'), ('hibernate', 'To spend the winter in a deep sleep'), ('echo', 'A sound that bounces back'), ('puddle', 'A small pool of water on the ground'),
+  ('jubilant', 'Feeling great happiness and triumph'), ('serene', 'Calm and peaceful'), ('mellow', 'Soft, smooth and relaxed'), ('whimsical', 'Playfully odd or fanciful'),
+];
+
+/// Less common words for Vocabulary Quest.
+const vocabulary = <(String, String)>[
+  ('petrichor', 'The pleasant smell after rain falls on dry earth'), ('hygge', 'A Danish idea of cosy contentment'), ('sonder', 'Realising everyone has a life as complex as your own'),
+  ('ephemeral', 'Lasting for a very short time'), ('serendipity', 'Finding something good by happy accident'), ('halcyon', 'Calm, peaceful and happy (of a past time)'),
+  ('luminous', 'Giving off light; glowing'), ('mellifluous', 'Sweet and smooth to hear'), ('quixotic', 'Idealistic in an unrealistic way'), ('sanguine', 'Optimistic, especially in a hard situation'),
+  ('ebullient', 'Full of cheerful energy'), ('nefarious', 'Wicked or criminal'), ('lethargic', 'Sluggish and low on energy'), ('cacophony', 'A harsh mix of sounds'),
+  ('effervescent', 'Bubbly and lively'), ('gregarious', 'Fond of company; sociable'), ('ineffable', 'Too great to be put into words'), ('verdant', 'Green with plants'),
+  ('wanderlust', 'A strong desire to travel'), ('zenith', 'The highest point'), ('labyrinth', 'A complicated maze'), ('aurora', 'Natural light display in polar skies'),
+];
+
+/// word → rhyme, plus non-rhyming decoys.
+const rhymes = <(String, String, List<String>)>[
+  ('cat', 'hat', ['dog', 'cup', 'sun']), ('moon', 'spoon', ['star', 'mile', 'fork']), ('light', 'kite', ['lamp', 'lift', 'late']), ('tree', 'bee', ['tray', 'tie', 'toe']),
+  ('rain', 'train', ['ring', 'run', 'roam']), ('cake', 'lake', ['cook', 'kite', 'cave']), ('bear', 'chair', ['bore', 'beer', 'burr']), ('snow', 'glow', ['snap', 'sneer', 'sun']),
+  ('night', 'bright', ['knot', 'nest', 'net']), ('flower', 'tower', ['floor', 'flour', 'fling']), ('heart', 'start', ['hurt', 'heat', 'hat']), ('song', 'long', ['sing', 'sang', 'soon']),
+  ('blue', 'shoe', ['blow', 'boy', 'bay']), ('dream', 'stream', ['drum', 'dram', 'drew']), ('star', 'car', ['stir', 'store', 'stay']), ('book', 'cook', ['back', 'bike', 'bark']),
+  ('ocean', 'motion', ['open', 'onion', 'oven']), ('honey', 'money', ['hunny', 'hiney', 'harmony']), ('candle', 'handle', ['cradle', 'cattle', 'kernel']), ('purple', 'circle', ['pebble', 'puddle', 'pickle']),
+];
+
+/// Familiar phrases with the last word missing.
+const phrases = <(String, String, List<String>)>[
+  ('A piece of…', 'cake', ['pie', 'bread', 'paper']), ('Break the…', 'ice', ['glass', 'rules', 'bank']), ('Once in a blue…', 'moon', ['sky', 'sea', 'day']),
+  ('Under the…', 'weather', ['table', 'sea', 'radar']), ('Hit the…', 'hay', ['road', 'wall', 'floor']), ('Every cloud has a silver…', 'lining', ['spoon', 'coin', 'edge']),
+  ('The early bird catches the…', 'worm', ['bus', 'fish', 'sun']), ('Better late than…', 'never', ['early', 'sorry', 'later']), ('Actions speak louder than…', 'words', ['music', 'drums', 'people']),
+  ('Don\'t judge a book by its…', 'cover', ['title', 'pages', 'author']), ('Curiosity killed the…', 'cat', ['dog', 'crow', 'mouse']), ('Two heads are better than…', 'one', ['none', 'three', 'tails']),
+  ('When pigs…', 'fly', ['dance', 'sing', 'swim']), ('Let sleeping dogs…', 'lie', ['dream', 'snore', 'run']), ('A blessing in…', 'disguise', ['time', 'secret', 'motion']),
+  ('Speak of the…', 'devil', ['angel', 'king', 'wolf']), ('Bite off more than you can…', 'chew', ['eat', 'hold', 'swallow']), ('Costs an arm and a…', 'leg', ['hand', 'heart', 'head']),
+  ('Like two peas in a…', 'pod', ['pot', 'pan', 'row']), ('Rome wasn\'t built in a…', 'day', ['week', 'year', 'hurry']),
+];
+
+/// Sentences to rebuild from shuffled words.
+const sentences = [
+  'The cat curled up on the warm blanket',
+  'We planted sunflowers in the garden today',
+  'A gentle rain tapped on the window',
+  'She poured two cups of hot cocoa',
+  'The library was quiet and full of books',
+  'Stars twinkled above the sleepy village',
+  'He found a shiny pebble by the river',
+  'Our playlist made the long drive fun',
+  'The puppy chased bubbles across the yard',
+  'Fresh bread filled the kitchen with a lovely smell',
+  'They built a blanket fort in the living room',
+  'Autumn leaves crunched under our boots',
+  'The moon rose slowly over the calm lake',
+  'Everyone laughed at the silly joke',
+  'A little robin sang from the apple tree',
+];
+
+/// Categories with example answers (Category Sprint, Alphabet Challenge).
+const categories = <String, List<String>>{
+  'Animals': ['ant', 'bear', 'cat', 'deer', 'eagle', 'fox', 'goat', 'horse', 'ibis', 'jaguar', 'koala', 'lion', 'mouse', 'newt', 'owl', 'panda', 'quail', 'rabbit', 'seal', 'tiger', 'urchin', 'vole', 'whale', 'yak', 'zebra', 'dog', 'cow', 'pig', 'duck', 'frog', 'otter', 'camel', 'moose', 'llama', 'sheep', 'hamster', 'parrot', 'snake', 'shark', 'wolf'],
+  'Foods': ['apple', 'bread', 'cheese', 'donut', 'egg', 'fig', 'grape', 'honey', 'icecream', 'jam', 'kiwi', 'lemon', 'mango', 'noodle', 'olive', 'pasta', 'quiche', 'rice', 'soup', 'toast', 'udon', 'vanilla', 'waffle', 'yogurt', 'zucchini', 'pizza', 'taco', 'salad', 'cookie', 'pancake', 'carrot', 'banana', 'peach', 'pear', 'cake', 'pie'],
+  'Colours': ['amber', 'blue', 'crimson', 'denim', 'emerald', 'fuchsia', 'gold', 'hazel', 'indigo', 'jade', 'khaki', 'lilac', 'magenta', 'navy', 'orange', 'pink', 'red', 'scarlet', 'teal', 'umber', 'violet', 'white', 'yellow', 'black', 'green', 'grey', 'gray', 'brown', 'purple', 'beige', 'coral', 'cyan', 'mint', 'peach', 'silver', 'tan'],
+  'Countries': ['austria', 'brazil', 'canada', 'denmark', 'egypt', 'france', 'ghana', 'hungary', 'india', 'japan', 'kenya', 'laos', 'mexico', 'nepal', 'oman', 'peru', 'qatar', 'russia', 'spain', 'turkey', 'uganda', 'vietnam', 'wales', 'yemen', 'zambia', 'chile', 'china', 'cuba', 'fiji', 'iran', 'iraq', 'italy', 'mali', 'chad', 'togo', 'germany', 'greece', 'norway', 'sweden', 'poland'],
+  'Things at home': ['armchair', 'bed', 'couch', 'door', 'fridge', 'fork', 'glass', 'heater', 'iron', 'jar', 'kettle', 'lamp', 'mirror', 'napkin', 'oven', 'pillow', 'quilt', 'rug', 'sofa', 'table', 'umbrella', 'vase', 'window', 'blanket', 'chair', 'clock', 'cup', 'desk', 'mug', 'plate', 'shelf', 'sink', 'spoon', 'stove', 'towel', 'toaster'],
+  'Nature': ['acorn', 'breeze', 'cloud', 'dew', 'earth', 'fern', 'grass', 'hill', 'ice', 'jungle', 'kelp', 'leaf', 'moss', 'nest', 'ocean', 'pebble', 'quartz', 'rain', 'stone', 'tree', 'valley', 'wave', 'sun', 'moon', 'river', 'lake', 'flower', 'snow', 'wind', 'sand', 'rock', 'storm', 'forest', 'meadow', 'island', 'cliff'],
+};
+
+/// Word search themes (6–9 words each, max 8 letters).
+const searchThemes = <String, List<String>>{
+  'Cozy night': ['blanket', 'candle', 'cocoa', 'pillow', 'slippers', 'book', 'tea', 'quilt'],
+  'Garden': ['tulip', 'daisy', 'rose', 'seed', 'soil', 'water', 'bloom', 'bee'],
+  'Ocean': ['whale', 'coral', 'shell', 'wave', 'tide', 'crab', 'reef', 'shark'],
+  'Space': ['star', 'moon', 'comet', 'orbit', 'planet', 'galaxy', 'rocket', 'nova'],
+  'Weather': ['rain', 'snow', 'cloud', 'storm', 'wind', 'sunny', 'frost', 'hail'],
+  'Bakery': ['bread', 'scone', 'cake', 'flour', 'sugar', 'butter', 'oven', 'muffin'],
+  'Music': ['piano', 'drum', 'flute', 'song', 'tempo', 'chord', 'harp', 'choir'],
+  'Forest': ['pine', 'moss', 'fern', 'deer', 'owl', 'acorn', 'trail', 'bark'],
+  'Autumn': ['leaf', 'apple', 'cider', 'pumpkin', 'scarf', 'harvest', 'acorn', 'maple'],
+  'Kitchen': ['spoon', 'kettle', 'whisk', 'ladle', 'plate', 'bowl', 'pan', 'fork'],
+};
+
+/// Crossword word bank: word → clue.
+const crosswordClues = <String, String>{
+  'cat': 'Purring pet', 'tea': 'Brewed drink', 'sun': 'Our nearest star', 'owl': 'Night bird', 'map': 'It shows the way', 'egg': 'Breakfast food in a shell',
+  'moon': 'It has phases', 'rain': 'Falls from clouds', 'book': 'You read it', 'nest': 'Bird\'s home', 'cake': 'Birthday treat', 'star': 'Twinkles at night',
+  'tree': 'Has leaves and roots', 'song': 'You sing it', 'bear': 'Large furry animal', 'kite': 'Flies on a string', 'lamp': 'Gives light', 'rose': 'Thorny flower',
+  'snow': 'Winter flakes', 'boat': 'Floats on water', 'milk': 'White drink', 'frog': 'It croaks', 'leaf': 'Falls in autumn', 'ring': 'Worn on a finger',
+  'apple': 'Red or green fruit', 'piano': 'Instrument with keys', 'ocean': 'Very large sea', 'cloud': 'White and fluffy in the sky', 'river': 'Flowing water', 'bread': 'Baked loaf',
+  'smile': 'Happy face', 'dream': 'Happens while you sleep', 'heart': 'It beats', 'plant': 'Grows in soil', 'honey': 'Made by bees', 'chair': 'You sit on it',
+  'tiger': 'Striped big cat', 'house': 'Place to live', 'clock': 'Tells the time', 'light': 'Opposite of dark', 'paint': 'Artist\'s colour', 'water': 'H2O',
+  'garden': 'Place for flowers', 'pillow': 'Soft thing for your head', 'candle': 'Wax light', 'cookie': 'Small sweet biscuit', 'kitten': 'Young cat', 'castle': 'Home for a king',
+};
+
+/// "Hidden word" puzzles: answer and clues from vague to clear.
+const hiddenWords = <(String, List<String>)>[
+  ('umbrella', ['You might forget it', 'It opens and closes', 'Useful on grey days', 'Keeps rain off you']),
+  ('volcano', ['It can sleep for centuries', 'It has a crater', 'Hot rock comes out', 'It erupts']),
+  ('penguin', ['It wears a tuxedo', 'It can\'t fly', 'It loves the cold', 'An Antarctic bird']),
+  ('rainbow', ['It needs sun and water', 'It has seven parts', 'Appears after a shower', 'An arc of colours']),
+  ('library', ['Shhh!', 'You need a card', 'Rows and rows of shelves', 'Borrow books here']),
+  ('compass', ['It has a needle', 'Explorers used it', 'It points one way', 'Shows north']),
+  ('snowman', ['Has a carrot nose', 'Melts in spring', 'Made in winter', 'Built from snowballs']),
+  ('lighthouse', ['Stands by the sea', 'Tall and striped', 'Has a lamp at the top', 'Guides ships at night']),
+  ('dinosaur', ['Very, very old', 'Found as fossils', 'Some had feathers', 'T. rex was one']),
+  ('telescope', ['Has lenses', 'Brings far things near', 'Used at night', 'For looking at stars']),
+  ('sandcastle', ['Needs a bucket', 'The tide wins', 'Built at the beach', 'A fort made of sand']),
+  ('butterfly', ['Started life very differently', 'Has a proboscis', 'Wings with patterns', 'Was a caterpillar']),
+];
+
+/// Correct spelling first, then common misspellings.
+const spelling = <Q>[
+  Q('Choose the correct spelling', ['necessary', 'neccessary', 'necesary', 'nessecary'], 'One collar, two sleeves: one c, two s.', 2),
+  Q('Choose the correct spelling', ['definitely', 'definately', 'definitly', 'defanitely'], 'It contains "finite".', 2),
+  Q('Choose the correct spelling', ['separate', 'seperate', 'separete', 'saparate'], 'There\'s "a rat" in separate.', 2),
+  Q('Choose the correct spelling', ['receive', 'recieve', 'receeve', 'riceive'], '"I before E except after C".', 1),
+  Q('Choose the correct spelling', ['calendar', 'calender', 'calandar', 'kalendar'], '', 2),
+  Q('Choose the correct spelling', ['rhythm', 'rythm', 'rhythem', 'rhytm'], '', 3),
+  Q('Choose the correct spelling', ['beautiful', 'beatiful', 'beautifull', 'beutiful'], '', 1),
+  Q('Choose the correct spelling', ['friend', 'freind', 'frend', 'friennd'], '', 1),
+  Q('Choose the correct spelling', ['occasion', 'ocassion', 'occassion', 'ocasion'], 'Two c, one s.', 3),
+  Q('Choose the correct spelling', ['tomorrow', 'tommorow', 'tomorow', 'tommorrow'], 'One m, two r.', 2),
+  Q('Choose the correct spelling', ['library', 'libary', 'liberry', 'librery'], '', 1),
+  Q('Choose the correct spelling', ['embarrass', 'embarass', 'embarras', 'emberrass'], 'Two r, two s.', 3),
+  Q('Choose the correct spelling', ['weird', 'wierd', 'weerd', 'wird'], 'An exception to "i before e".', 2),
+  Q('Choose the correct spelling', ['February', 'Febuary', 'Februray', 'Febrary'], '', 2),
+  Q('Choose the correct spelling', ['accommodate', 'accomodate', 'acommodate', 'acomodate'], 'Two c, two m.', 3),
+  Q('Choose the correct spelling', ['believe', 'beleive', 'belive', 'beleave'], '', 1),
+  Q('Choose the correct spelling', ['knowledge', 'knowlege', 'nowledge', 'knowladge'], '', 2),
+  Q('Choose the correct spelling', ['restaurant', 'restaraunt', 'resturant', 'restaurent'], '', 2),
+  Q('Choose the correct spelling', ['conscience', 'concience', 'conscence', 'consience'], '', 3),
+  Q('Choose the correct spelling', ['vacuum', 'vaccum', 'vacum', 'vaccuum'], 'One c, two u.', 3),
+];
