@@ -126,8 +126,17 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
                 ? Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Title centered on the full bar width.
-                      titleBlock,
+                      // Title centered on the full bar width, kept clear
+                      // of the buttons on both sides so long titles shrink
+                      // instead of running underneath them.
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal:
+                              (actions == null || actions!.length <= 1 || trailing != null ? 1 : actions!.length) *
+                                  (PrismTokens.topBarActionSize + 8),
+                        ),
+                        child: titleBlock,
+                      ),
                       // Leading and trailing positioned at edges.
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
