@@ -82,16 +82,15 @@ Future<String?> createGameNight(BuildContext context, WidgetRef ref) async {
   final players = await pickAlters(context, ref, title: tr(context, 'Who\'s coming?', '¿Quién viene?'));
   if (players == null || !context.mounted) return null;
   final now = DateTime.now();
-  final date = await showDatePicker(
+  final date = await showPrismDatePicker(
     context: context,
     initialDate: now,
     firstDate: now.subtract(const Duration(days: 1)),
     lastDate: now.add(const Duration(days: 365)),
-    helpText: tr(context, 'When? (cancel for "now")', '¿Cuándo? (cancela para "ahora")'),
   );
   DateTime when = now;
   if (date != null && context.mounted) {
-    final t = await showTimePicker(context: context, initialTime: const TimeOfDay(hour: 19, minute: 0));
+    final t = await showPrismTimePicker(context: context, initialTime: const TimeOfDay(hour: 19, minute: 0));
     when = DateTime(date.year, date.month, date.day, t?.hour ?? 19, t?.minute ?? 0);
   }
   String? calId;

@@ -430,7 +430,7 @@ class _ItemEditorState extends ConsumerState<_ItemEditor> {
               ),
               onTap: () async {
                 final now = DateTime.now();
-                final d = await showDatePicker(
+                final d = await showPrismDatePicker(
                   context: context,
                   initialDate: _date ?? (l.unlock ? now.add(const Duration(days: 365)) : now),
                   firstDate: l.unlock ? now : DateTime(1900),

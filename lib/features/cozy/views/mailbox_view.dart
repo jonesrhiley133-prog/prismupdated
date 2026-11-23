@@ -358,9 +358,9 @@ class _LetterComposerState extends ConsumerState<_LetterComposer> {
             trailing: _deliverAt == null ? null : PrismIconButton(icon: PhosphorIcons.x(), tooltip: tr(context, 'Deliver now', 'Entregar ahora'), onPressed: () => setState(() => _deliverAt = null)),
             onTap: () async {
               final now = DateTime.now();
-              final d = await showDatePicker(context: context, initialDate: now.add(const Duration(days: 1)), firstDate: now, lastDate: now.add(const Duration(days: 3650)));
+              final d = await showPrismDatePicker(context: context, initialDate: now.add(const Duration(days: 1)), firstDate: now, lastDate: now.add(const Duration(days: 3650)));
               if (d == null || !context.mounted) return;
-              final t = await showTimePicker(context: context, initialTime: const TimeOfDay(hour: 9, minute: 0));
+              final t = await showPrismTimePicker(context: context, initialTime: const TimeOfDay(hour: 9, minute: 0));
               setState(() => _deliverAt = DateTime(d.year, d.month, d.day, t?.hour ?? 9, t?.minute ?? 0));
             },
           ),
