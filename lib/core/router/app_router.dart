@@ -9,6 +9,9 @@ import 'package:prism_plurality/shared/widgets/prism_top_bar_action.dart';
 import 'package:prism_plurality/features/health/health_screen.dart';
 import 'package:prism_plurality/features/astro/views/astro_alter_screen.dart';
 import 'package:prism_plurality/features/astro/views/astro_hub_screen.dart';
+import 'package:prism_plurality/features/cozy/views/cozy_hub_screen.dart';
+import 'package:prism_plurality/features/games/views/game_night_view.dart';
+import 'package:prism_plurality/features/games/views/games_hub_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
@@ -228,6 +231,8 @@ final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
 final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
 final _healthNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'health');
 final _astroNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'astro');
+final _gamesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'games');
+final _cozyNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cozy');
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -1715,6 +1720,48 @@ final routerProvider = Provider<GoRouter>((ref) {
                       memberId: state.pathParameters['id']!,
                       section: state.uri.queryParameters['section'],
                     ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // Branch 41: Games (the recreation hub)
+          StatefulShellBranch(
+            navigatorKey: _gamesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.games,
+                builder: (context, state) => GamesHubScreen(key: ValueKey(state.uri.query), tab: state.uri.queryParameters['tab']),
+                routes: [
+                  GoRoute(
+                    path: 'play/:id',
+                    builder: (context, state) => GamePlayRoute(
+                      key: ValueKey(state.uri.toString()),
+                      gameId: state.pathParameters['id']!,
+                      challengeId: state.uri.queryParameters['challenge'],
+                      customId: state.uri.queryParameters['custom'],
+                      nightId: state.uri.queryParameters['night'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'night/:id',
+                    builder: (context, state) => GameNightScreen(nightId: state.pathParameters['id']!),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // Branch 42: Cozy (shared spaces, letters, garden, comfort)
+          StatefulShellBranch(
+            navigatorKey: _cozyNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.cozy,
+                builder: (context, state) => CozyHubScreen(key: ValueKey(state.uri.query), tab: state.uri.queryParameters['tab']),
+                routes: [
+                  GoRoute(
+                    path: 'room/:id',
+                    builder: (context, state) => CozyRoomScreen(roomId: state.pathParameters['id']!),
                   ),
                 ],
               ),

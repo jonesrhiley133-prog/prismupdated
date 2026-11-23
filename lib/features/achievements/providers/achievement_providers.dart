@@ -28,7 +28,11 @@ SELECT
   (SELECT COUNT(*) FROM poll_votes WHERE is_deleted = 0) AS votes,
   (SELECT COUNT(*) FROM contacts WHERE is_deleted = 0) AS contacts,
   (SELECT COUNT(*) FROM cycle_entries WHERE is_deleted = 0) AS cycle,
-  (SELECT COUNT(*) FROM location_sessions WHERE is_deleted = 0) AS places
+  (SELECT COUNT(*) FROM location_sessions WHERE is_deleted = 0) AS places,
+  (SELECT COUNT(*) FROM tracker_records
+     WHERE is_deleted = 0 AND kind = 'games.result') AS games,
+  (SELECT COUNT(*) FROM tracker_records
+     WHERE is_deleted = 0 AND kind IN ('cozy.post', 'cozy.letter', 'cozy.listItem', 'cozy.gift', 'cozy.doodle', 'cozy.plant')) AS cozy
 ''';
 
 const _daysSql = '''
@@ -92,6 +96,8 @@ Stream<Map<AchievementMetric, int>> watchAchievementMetrics(AppDatabase db) {
       AchievementMetric.contacts: n('contacts'),
       AchievementMetric.cycleDays: n('cycle'),
       AchievementMetric.placesVisited: n('places'),
+      AchievementMetric.gamesPlayed: n('games'),
+      AchievementMetric.cozyMoments: n('cozy'),
       AchievementMetric.activeDays: all.length,
     };
   });

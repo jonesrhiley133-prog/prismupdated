@@ -388,6 +388,8 @@ void main() {
         AppShellTabId.mood,
         AppShellTabId.health,
         AppShellTabId.astro,
+        AppShellTabId.games,
+        AppShellTabId.cozy,
         AppShellTabId.insights,
         AppShellTabId.locations,
         AppShellTabId.work,

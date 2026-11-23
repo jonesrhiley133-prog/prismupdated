@@ -18,7 +18,9 @@ class Stroke {
   final String brush;
 
   Map<String, Object?> toJson() => {
-    'p': [for (final o in points) ...[(o.dx * 1000).round(), (o.dy * 1000).round()]],
+    'p': [
+      for (final o in points) ...[(o.dx * 1000).round(), (o.dy * 1000).round()],
+    ],
     'c': color,
     'w': width,
     if (eraser) 'e': 1,
@@ -111,7 +113,10 @@ class DrawingController extends ChangeNotifier {
   }
 
   List<Object?> toJson() => [for (final s in strokes) s.toJson()];
-  static List<Stroke> parse(Object? raw) => [for (final m in (raw as List?) ?? const []) if (m is Map) Stroke.fromJson(m)];
+  static List<Stroke> parse(Object? raw) => [
+    for (final m in (raw as List?) ?? const [])
+      if (m is Map) Stroke.fromJson(m),
+  ];
 }
 
 class _StrokePainter extends CustomPainter {
@@ -196,29 +201,35 @@ class DrawingBoard extends StatelessWidget {
       aspectRatio: aspectRatio,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
-        child: LayoutBuilder(builder: (context, box) {
-          Offset norm(Offset p) => Offset((p.dx / box.maxWidth).clamp(0, 1), (p.dy / box.maxHeight).clamp(0, 1));
-          return Semantics(
-            label: tr(context, 'Drawing canvas', 'Lienzo de dibujo'),
-            child: GestureDetector(
-              onPanStart: (d) => controller.start(norm(d.localPosition)),
-              onPanUpdate: (d) => controller.extend(norm(d.localPosition)),
-              onPanEnd: (_) {
-                controller.end();
-                onChanged?.call();
-              },
-              onTapDown: (d) {
-                controller.start(norm(d.localPosition));
-                controller.end();
-                onChanged?.call();
-              },
-              child: Stack(children: [
-                Positioned.fill(child: RepaintBoundary(child: CustomPaint(painter: _StrokePainter(controller, bg)))),
-                if (child != null) Positioned.fill(child: child!),
-              ]),
-            ),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, box) {
+            Offset norm(Offset p) => Offset((p.dx / box.maxWidth).clamp(0, 1), (p.dy / box.maxHeight).clamp(0, 1));
+            return Semantics(
+              label: tr(context, 'Drawing canvas', 'Lienzo de dibujo'),
+              child: GestureDetector(
+                onPanStart: (d) => controller.start(norm(d.localPosition)),
+                onPanUpdate: (d) => controller.extend(norm(d.localPosition)),
+                onPanEnd: (_) {
+                  controller.end();
+                  onChanged?.call();
+                },
+                onTapDown: (d) {
+                  controller.start(norm(d.localPosition));
+                  controller.end();
+                  onChanged?.call();
+                },
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: RepaintBoundary(child: CustomPaint(painter: _StrokePainter(controller, bg))),
+                    ),
+                    if (child != null) Positioned.fill(child: child!),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -226,8 +237,18 @@ class DrawingBoard extends StatelessWidget {
 
 /// Soft palette that works on white canvases.
 const drawingPalette = <Color>[
-  Color(0xFF3B3B58), Color(0xFFE76F51), Color(0xFFF4A261), Color(0xFFE9C46A), Color(0xFF8AB17D), Color(0xFF2A9D8F),
-  Color(0xFF5B8DEF), Color(0xFF9B72CF), Color(0xFFE5989B), Color(0xFF8D6E63), Color(0xFFFFFFFF), Color(0xFF111111),
+  Color(0xFF3B3B58),
+  Color(0xFFE76F51),
+  Color(0xFFF4A261),
+  Color(0xFFE9C46A),
+  Color(0xFF8AB17D),
+  Color(0xFF2A9D8F),
+  Color(0xFF5B8DEF),
+  Color(0xFF9B72CF),
+  Color(0xFFE5989B),
+  Color(0xFF8D6E63),
+  Color(0xFFFFFFFF),
+  Color(0xFF111111),
 ];
 
 /// Colour swatches, brush size, eraser, undo/redo, clear.
@@ -249,51 +270,97 @@ class DrawingToolbar extends StatelessWidget {
       builder: (context, _) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Wrap(spacing: 6, runSpacing: 6, alignment: WrapAlignment.center, children: [
-            for (final c in palette)
-              Semantics(
-                button: true,
-                selected: !controller.eraser && controller.color == c,
-                label: '#${c.toARGB32().toRadixString(16).substring(2)}',
-                child: GestureDetector(
-                  onTap: () => controller.set(color: c),
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(color: c, shape: BoxShape.circle, border: Border.all(color: !controller.eraser && controller.color == c ? scheme.primary : scheme.outlineVariant, width: !controller.eraser && controller.color == c ? 3 : 1)),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: [
+              for (final c in palette)
+                Semantics(
+                  button: true,
+                  selected: !controller.eraser && controller.color == c,
+                  label: '#${c.toARGB32().toRadixString(16).substring(2)}',
+                  child: GestureDetector(
+                    onTap: () => controller.set(color: c),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: c,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: !controller.eraser && controller.color == c ? scheme.primary : scheme.outlineVariant, width: !controller.eraser && controller.color == c ? 3 : 1),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-          ]),
+            ],
+          ),
           const SizedBox(height: 6),
-          Row(children: [
-            Icon(PhosphorIcons.pencilSimple(), size: 18),
-            Expanded(child: Slider(value: controller.width, min: 1, max: 30, onChanged: (v) => controller.set(width: v), label: controller.width.round().toString())),
-            if (showEraser) PrismIconButton(icon: PhosphorIcons.eraser(PhosphorIconsStyle.fill), tooltip: tr(context, 'Eraser', 'Borrador'), color: controller.eraser ? scheme.primary : null, onPressed: () => controller.set(eraser: !controller.eraser)),
-            PrismIconButton(icon: PhosphorIcons.arrowCounterClockwise(), tooltip: tr(context, 'Undo', 'Deshacer'), onPressed: controller.canUndo ? () {
-              controller.undo();
-              onChanged?.call();
-            } : () {}),
-            PrismIconButton(icon: PhosphorIcons.arrowClockwise(), tooltip: tr(context, 'Redo', 'Rehacer'), onPressed: controller.canRedo ? () {
-              controller.redo();
-              onChanged?.call();
-            } : () {}),
-            PrismIconButton(icon: PhosphorIcons.trash(), tooltip: tr(context, 'Clear', 'Borrar todo'), onPressed: () {
-              controller.clear();
-              onChanged?.call();
-            }),
-          ]),
-          if (layers > 1)
-            Wrap(spacing: 6, alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(tr(context, 'Layer', 'Capa'), style: Theme.of(context).textTheme.labelMedium),
-              for (var l = 0; l < layers; l++)
-                PrismChip(
-                  label: '${l + 1}${controller.hiddenLayers.contains(l) ? ' (hidden)' : ''}',
-                  selected: controller.layer == l,
-                  onTap: () => controller.layer == l ? controller.toggleLayer(l) : controller.set(layer: l),
+          Row(
+            children: [
+              Icon(PhosphorIcons.pencilSimple(), size: 18),
+              Expanded(
+                child: Slider(
+                  value: controller.width,
+                  min: 1,
+                  max: 30,
+                  onChanged: (v) => controller.set(width: v),
+                  label: controller.width.round().toString(),
                 ),
-              Text(tr(context, 'Tap the active layer to hide it', 'Toca la capa activa para ocultarla'), style: Theme.of(context).textTheme.bodySmall),
-            ]),
+              ),
+              if (showEraser)
+                PrismIconButton(
+                  icon: PhosphorIcons.eraser(PhosphorIconsStyle.fill),
+                  tooltip: tr(context, 'Eraser', 'Borrador'),
+                  color: controller.eraser ? scheme.primary : null,
+                  onPressed: () => controller.set(eraser: !controller.eraser),
+                ),
+              PrismIconButton(
+                icon: PhosphorIcons.arrowCounterClockwise(),
+                tooltip: tr(context, 'Undo', 'Deshacer'),
+                onPressed: controller.canUndo
+                    ? () {
+                        controller.undo();
+                        onChanged?.call();
+                      }
+                    : () {},
+              ),
+              PrismIconButton(
+                icon: PhosphorIcons.arrowClockwise(),
+                tooltip: tr(context, 'Redo', 'Rehacer'),
+                onPressed: controller.canRedo
+                    ? () {
+                        controller.redo();
+                        onChanged?.call();
+                      }
+                    : () {},
+              ),
+              PrismIconButton(
+                icon: PhosphorIcons.trash(),
+                tooltip: tr(context, 'Clear', 'Borrar todo'),
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call();
+                },
+              ),
+            ],
+          ),
+          if (layers > 1)
+            Wrap(
+              spacing: 6,
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(tr(context, 'Layer', 'Capa'), style: Theme.of(context).textTheme.labelMedium),
+                for (var l = 0; l < layers; l++)
+                  PrismChip(
+                    label: '${l + 1}${controller.hiddenLayers.contains(l) ? ' (hidden)' : ''}',
+                    selected: controller.layer == l,
+                    onTap: () => controller.layer == l ? controller.toggleLayer(l) : controller.set(layer: l),
+                  ),
+                Text(tr(context, 'Tap the active layer to hide it', 'Toca la capa activa para ocultarla'), style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
         ],
       ),
     );
@@ -312,7 +379,10 @@ class Sticker {
 
   Map<String, Object?> toJson() => {'e': emoji, 'x': (x * 1000).round(), 'y': (y * 1000).round(), 's': (size * 1000).round(), if (author != null) 'a': author};
   static Sticker fromJson(Map m) => Sticker('${m['e']}', ((m['x'] as num?) ?? 500) / 1000, ((m['y'] as num?) ?? 500) / 1000, size: ((m['s'] as num?) ?? 120) / 1000, author: m['a'] as String?);
-  static List<Sticker> parse(Object? raw) => [for (final m in (raw as List?) ?? const []) if (m is Map) Sticker.fromJson(m)];
+  static List<Sticker> parse(Object? raw) => [
+    for (final m in (raw as List?) ?? const [])
+      if (m is Map) Sticker.fromJson(m),
+  ];
 }
 
 /// Lays out stickers; tap to select, drag to move, pinch or buttons to resize.
@@ -326,41 +396,50 @@ class StickerLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return LayoutBuilder(builder: (context, box) {
-      return Stack(children: [
-        for (var i = 0; i < stickers.length; i++)
-          Builder(builder: (context) {
-            final s = stickers[i];
-            final px = s.size * box.maxWidth;
-            return Positioned(
-              left: s.x * box.maxWidth - px / 2,
-              top: s.y * box.maxHeight - px / 2,
-              width: px,
-              height: px,
-              child: Semantics(
-                label: s.emoji,
-                selected: selected == i,
-                child: GestureDetector(
-                  onTap: () => onSelect(selected == i ? null : i),
-                  onScaleStart: (_) => onSelect(i),
-                  onScaleUpdate: (d) {
-                    s.x = (s.x + d.focalPointDelta.dx / box.maxWidth).clamp(0.0, 1.0);
-                    s.y = (s.y + d.focalPointDelta.dy / box.maxHeight).clamp(0.0, 1.0);
-                    if (d.scale != 1) s.size = (s.size * (1 + (d.scale - 1) * 0.06)).clamp(0.05, 0.5);
-                    (context as Element).markNeedsBuild();
-                    onSelect(i);
-                  },
-                  onScaleEnd: (_) => onChanged(),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(border: selected == i ? Border.all(color: scheme.primary, width: 2) : null, borderRadius: BorderRadius.circular(8)),
-                    child: FittedBox(child: Text(s.emoji)),
-                  ),
-                ),
+    return LayoutBuilder(
+      builder: (context, box) {
+        return Stack(
+          children: [
+            for (var i = 0; i < stickers.length; i++)
+              Builder(
+                builder: (context) {
+                  final s = stickers[i];
+                  final px = s.size * box.maxWidth;
+                  return Positioned(
+                    left: s.x * box.maxWidth - px / 2,
+                    top: s.y * box.maxHeight - px / 2,
+                    width: px,
+                    height: px,
+                    child: Semantics(
+                      label: s.emoji,
+                      selected: selected == i,
+                      child: GestureDetector(
+                        onTap: () => onSelect(selected == i ? null : i),
+                        onScaleStart: (_) => onSelect(i),
+                        onScaleUpdate: (d) {
+                          s.x = (s.x + d.focalPointDelta.dx / box.maxWidth).clamp(0.0, 1.0);
+                          s.y = (s.y + d.focalPointDelta.dy / box.maxHeight).clamp(0.0, 1.0);
+                          if (d.scale != 1) s.size = (s.size * (1 + (d.scale - 1) * 0.06)).clamp(0.05, 0.5);
+                          (context as Element).markNeedsBuild();
+                          onSelect(i);
+                        },
+                        onScaleEnd: (_) => onChanged(),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            border: selected == i ? Border.all(color: scheme.primary, width: 2) : null,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: FittedBox(child: Text(s.emoji)),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          }),
-      ]);
-    });
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -375,26 +454,45 @@ class StickerControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final i = selected;
     if (i == null || i >= stickers.length) return const SizedBox.shrink();
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      PrismIconButton(icon: PhosphorIcons.minus(), tooltip: tr(context, 'Smaller', 'Más pequeño'), onPressed: () {
-        stickers[i].size = math.max(0.05, stickers[i].size * 0.85);
-        onChanged();
-      }),
-      PrismIconButton(icon: PhosphorIcons.plus(), tooltip: tr(context, 'Bigger', 'Más grande'), onPressed: () {
-        stickers[i].size = math.min(0.5, stickers[i].size * 1.18);
-        onChanged();
-      }),
-      PrismIconButton(icon: PhosphorIcons.stack(), tooltip: tr(context, 'Bring to front', 'Traer al frente'), onPressed: () {
-        stickers.add(stickers.removeAt(i));
-        onDeselect();
-        onChanged();
-      }),
-      PrismIconButton(icon: PhosphorIcons.trash(), tooltip: tr(context, 'Remove', 'Quitar'), onPressed: () {
-        stickers.removeAt(i);
-        onDeselect();
-        onChanged();
-      }),
-    ]);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        PrismIconButton(
+          icon: PhosphorIcons.minus(),
+          tooltip: tr(context, 'Smaller', 'Más pequeño'),
+          onPressed: () {
+            stickers[i].size = math.max(0.05, stickers[i].size * 0.85);
+            onChanged();
+          },
+        ),
+        PrismIconButton(
+          icon: PhosphorIcons.plus(),
+          tooltip: tr(context, 'Bigger', 'Más grande'),
+          onPressed: () {
+            stickers[i].size = math.min(0.5, stickers[i].size * 1.18);
+            onChanged();
+          },
+        ),
+        PrismIconButton(
+          icon: PhosphorIcons.stack(),
+          tooltip: tr(context, 'Bring to front', 'Traer al frente'),
+          onPressed: () {
+            stickers.add(stickers.removeAt(i));
+            onDeselect();
+            onChanged();
+          },
+        ),
+        PrismIconButton(
+          icon: PhosphorIcons.trash(),
+          tooltip: tr(context, 'Remove', 'Quitar'),
+          onPressed: () {
+            stickers.removeAt(i);
+            onDeselect();
+            onChanged();
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -413,7 +511,14 @@ class StickerTray extends StatelessWidget {
         Semantics(
           button: true,
           label: tr(context, 'Add $e', 'Añadir $e'),
-          child: InkWell(borderRadius: BorderRadius.circular(10), onTap: () => onPick(e), child: Padding(padding: const EdgeInsets.all(6), child: Text(e, style: const TextStyle(fontSize: 26)))),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () => onPick(e),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Text(e, style: const TextStyle(fontSize: 26)),
+            ),
+          ),
         ),
     ],
   );

@@ -55,15 +55,11 @@ class GameProfile {
   );
 }
 
-final gameResultsProvider = Provider<List<GameResult>>((ref) => [
-  for (final r in ref.watch(trackerKindProvider(TrackerKind.gameResult)).value ?? const <TrackerRecord>[]) GameResult(r),
-]);
+final gameResultsProvider = Provider<List<GameResult>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameResult)).value ?? const <TrackerRecord>[]) GameResult(r)]);
 
 final gameSavesProvider = Provider<List<TrackerRecord>>((ref) => ref.watch(trackerKindProvider(TrackerKind.gameSave)).value ?? const []);
 
-final gameChallengesProvider = Provider<List<GameChallenge>>((ref) => [
-  for (final r in ref.watch(trackerKindProvider(TrackerKind.gameChallenge)).value ?? const <TrackerRecord>[]) GameChallenge(r),
-]);
+final gameChallengesProvider = Provider<List<GameChallenge>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameChallenge)).value ?? const <TrackerRecord>[]) GameChallenge(r)]);
 
 /// Profiles by member id ('' = the shared, no-alter profile).
 final gameProfilesProvider = Provider<Map<String, GameProfile>>((ref) {
@@ -105,10 +101,7 @@ class GamesActions {
     fields: {'max': max, 'summary': summary, 'memorable': memorable, 'challenge': challengeId, 'night': nightId, 'details': details},
   );
 
-  TrackerRecord? saveFor(String gameId, String? memberId) => ref
-      .read(gameSavesProvider)
-      .where((r) => r.title == gameId && r.memberId == memberId)
-      .firstOrNull;
+  TrackerRecord? saveFor(String gameId, String? memberId) => ref.read(gameSavesProvider).where((r) => r.title == gameId && r.memberId == memberId).firstOrNull;
 
   Future<void> writeSave(String gameId, String? memberId, Map<String, Object?> state, {int? seed}) async {
     final existing = saveFor(gameId, memberId);
@@ -172,16 +165,12 @@ class AlterDot extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = ref.watch(gameMembersProvider).where((x) => x.id == memberId).firstOrNull;
     if (m == null) {
-      return CircleAvatar(radius: size / 2, child: Icon(PhosphorIcons.users(), size: size * 0.55));
+      return CircleAvatar(
+        radius: size / 2,
+        child: Icon(PhosphorIcons.users(), size: size * 0.55),
+      );
     }
-    return MemberAvatar(
-      avatarImageData: m.avatarImageData,
-      memberName: m.name,
-      emoji: m.emoji,
-      customColorEnabled: m.customColorEnabled,
-      customColorHex: m.customColorHex,
-      size: size,
-    );
+    return MemberAvatar(avatarImageData: m.avatarImageData, memberName: m.name, emoji: m.emoji, customColorEnabled: m.customColorEnabled, customColorHex: m.customColorHex, size: size);
   }
 }
 
@@ -191,7 +180,14 @@ Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<Stri
   final members = ref.read(gameMembersProvider);
   final names = ref.read(gameNamesProvider);
   final fronter = ref.read(gamePlayerDefaultProvider);
-  final ordered = [...members]..sort((a, b) => a.id == fronter ? -1 : b.id == fronter ? 1 : 0);
+  final ordered = [...members]
+    ..sort(
+      (a, b) => a.id == fronter
+          ? -1
+          : b.id == fronter
+          ? 1
+          : 0,
+    );
   return PrismSheet.show<List<String>>(
     context: context,
     title: title ?? tr(context, 'Choose alters', 'Elegir alters'),
@@ -270,7 +266,14 @@ class AlterChips extends ConsumerWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   for (final id in ids)
-                    Row(mainAxisSize: MainAxisSize.min, children: [AlterDot(id, size: 24), const SizedBox(width: 5), Text(names[id] ?? '', style: const TextStyle(fontWeight: FontWeight.w600))]),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AlterDot(id, size: 24),
+                        const SizedBox(width: 5),
+                        Text(names[id] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -280,3 +283,44 @@ class AlterChips extends ConsumerWidget {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Custom games and game nights
+// ---------------------------------------------------------------------------
+
+/// A game an alter made: `fields.base` is the template game id and
+/// `fields.content` the custom content (see buildCustom).
+class CustomGame {
+  CustomGame(this.r);
+  final TrackerRecord r;
+  String get title => r.title;
+  String get base => '${r.fields['base'] ?? 'trivia_general'}';
+  String get type => '${content['type'] ?? ''}';
+  Map<String, Object?> get content => (r.fields['content'] as Map?)?.cast<String, Object?>() ?? const {};
+  String? get creator => r.memberId;
+}
+
+final customGamesProvider = Provider<List<CustomGame>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameCustom)).value ?? const <TrackerRecord>[]) CustomGame(r)]);
+
+/// A planned or finished game night.
+class GameNight {
+  GameNight(this.r);
+  final TrackerRecord r;
+  String get title => r.title;
+  DateTime? get when => r.occurredAt;
+  List<String> get players => [for (final v in (r.fields['players'] as List?) ?? const []) '$v'];
+  List<String> get games => [for (final v in (r.fields['games'] as List?) ?? const []) '$v'];
+
+  /// Index of the next game to play.
+  int get progress => (r.fields['progress'] as num?)?.toInt() ?? 0;
+  bool get coop => r.fields['coop'] == true;
+  String get status => '${r.fields['status'] ?? 'planned'}'; // planned | live | paused | done
+  String? get calendarEventId => r.fields['calendar'] as String?;
+  String get notes => r.body ?? '';
+}
+
+final gameNightsProvider = Provider<List<GameNight>>((ref) {
+  final list = [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameNight)).value ?? const <TrackerRecord>[]) GameNight(r)];
+  list.sort((a, b) => (b.when ?? b.r.createdAt).compareTo(a.when ?? a.r.createdAt));
+  return list;
+});

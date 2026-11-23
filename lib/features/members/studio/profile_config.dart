@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Profile modules that can be shown, hidden and reordered.
-const profileModuleIds = ['about', 'interests', 'personality', 'gallery', 'relationships', 'fronting', 'memories', 'custom', 'music', 'links', 'pinned', 'journal', 'astro'];
+const profileModuleIds = ['about', 'interests', 'personality', 'gallery', 'relationships', 'fronting', 'memories', 'custom', 'music', 'links', 'pinned', 'journal', 'astro', 'games'];
 
 String moduleLabel(BuildContext c, String id) => switch (id) {
   'about' => tr(c, 'About me', 'Sobre mí'),
@@ -19,6 +19,7 @@ String moduleLabel(BuildContext c, String id) => switch (id) {
   'pinned' => tr(c, 'Pinned note', 'Nota fijada'),
   'journal' => tr(c, 'Journal', 'Diario'),
   'astro' => tr(c, 'Astrology', 'Astrología'),
+  'games' => tr(c, 'Games', 'Juegos'),
   _ => id,
 };
 

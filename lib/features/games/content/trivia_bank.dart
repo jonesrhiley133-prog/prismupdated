@@ -51,7 +51,12 @@ const triviaBanks = <String, List<Q>>{
     Q('The Magna Carta was signed in which year?', ['1215', '1066', '1492', '1314'], 'Sealed by King John of England.', 3),
     Q('Which city was the capital of the Byzantine Empire?', ['Constantinople', 'Rome', 'Athens', 'Alexandria'], 'Today\'s Istanbul.', 3),
     Q('Who was the Egyptian pharaoh whose nearly intact tomb was found in 1922?', ['Tutankhamun', 'Ramesses II', 'Khufu', 'Akhenaten'], 'Discovered by Howard Carter.', 3),
-    Q('The Hundred Years\' War was fought mainly between which two countries?', ['England and France', 'Spain and Portugal', 'France and Spain', 'England and Scotland'], 'It actually lasted 116 years (1337–1453).', 3),
+    Q(
+      'The Hundred Years\' War was fought mainly between which two countries?',
+      ['England and France', 'Spain and Portugal', 'France and Spain', 'England and Scotland'],
+      'It actually lasted 116 years (1337–1453).',
+      3,
+    ),
     Q('Which civilisation built Machu Picchu?', ['Inca', 'Maya', 'Aztec', 'Olmec'], '15th century, in the Andes of Peru.', 3),
   ],
   'science': [
@@ -337,7 +342,12 @@ const mysteryFacts = <Q>[
   Q('I am the only letter that doesn\'t appear in any US state name.', ['Q', 'Z', 'X', 'J'], '', 3),
   Q('I am a fruit that floats because a quarter of me is air.', ['Apple', 'Banana', 'Mango', 'Grape'], '', 2),
   Q('I am the national animal of Scotland — and I don\'t exist.', ['Unicorn', 'Dragon', 'Griffin', 'Phoenix'], '', 2),
-  Q('I lived in Egypt in my time, and so did Cleopatra — but she lived closer in time to the Moon landing than to my building.', ['The Great Pyramid', 'The Colosseum', 'Stonehenge', 'The Parthenon'], '', 3),
+  Q(
+    'I lived in Egypt in my time, and so did Cleopatra — but she lived closer in time to the Moon landing than to my building.',
+    ['The Great Pyramid', 'The Colosseum', 'Stonehenge', 'The Parthenon'],
+    '',
+    3,
+  ),
   Q('I am a mammal whose milk is pink... according to a myth. My sweat is actually reddish.', ['Hippopotamus', 'Flamingo', 'Rhino', 'Walrus'], 'Hippo "blood sweat" acts as sunscreen.', 3),
   Q('I am an instrument with 47 strings and 7 pedals.', ['Concert harp', 'Piano', 'Sitar', 'Zither'], '', 3),
   Q('I am a planet where a day is longer than a year.', ['Venus', 'Mercury', 'Neptune', 'Mars'], 'Venus takes 243 Earth days to spin once.', 3),

@@ -63,7 +63,10 @@ class LetterTiles extends StatelessWidget {
                     borderRadius: BorderRadius.circular(size * 0.22),
                     border: Border.all(color: scheme.outlineVariant),
                   ),
-                  child: Text(letters[i].toUpperCase(), style: TextStyle(fontSize: size * 0.48, fontWeight: FontWeight.w800, color: colors?[i] == null ? scheme.onSurface : Colors.white)),
+                  child: Text(
+                    letters[i].toUpperCase(),
+                    style: TextStyle(fontSize: size * 0.48, fontWeight: FontWeight.w800, color: colors?[i] == null ? scheme.onSurface : Colors.white),
+                  ),
                 ),
               ),
             ),
@@ -229,7 +232,10 @@ class _TypeWordGameState extends State<TypeWordGame> {
             children: [
               LetterTiles(shown.split(''), size: shown.length > 7 ? 34 : 42),
               const SizedBox(height: 10),
-              Text(_hint ? '${tr(context, 'Hint', 'Pista')}: $hint · ${word[0].toUpperCase()}…' : tr(context, '${word.length} letters', '${word.length} letras'), style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                _hint ? '${tr(context, 'Hint', 'Pista')}: $hint · ${word[0].toUpperCase()}…' : tr(context, '${word.length} letters', '${word.length} letras'),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               const SizedBox(height: 14),
               PrismTextField(controller: _ctl, hintText: tr(context, 'Type the word', 'Escribe la palabra'), autofocus: true, onSubmitted: (_) => _right == null ? _check() : _next()),
               if (_right != null)
@@ -278,7 +284,14 @@ class _HangmanGameState extends State<HangmanGame> {
     setState(() => _guessed.add(c));
     if (_won || _wrong >= _lives) {
       Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) widget.session.finish(GameOutcome(score: _won ? _lives - _wrong : 0, max: _lives, summary: _won ? tr(context, 'Solved "${_w.$1}"', 'Resuelta: "${_w.$1}"') : tr(context, 'The word was "${_w.$1}"', 'La palabra era "${_w.$1}"')));
+        if (mounted)
+          widget.session.finish(
+            GameOutcome(
+              score: _won ? _lives - _wrong : 0,
+              max: _lives,
+              summary: _won ? tr(context, 'Solved "${_w.$1}"', 'Resuelta: "${_w.$1}"') : tr(context, 'The word was "${_w.$1}"', 'La palabra era "${_w.$1}"'),
+            ),
+          );
       });
     }
   }
@@ -297,11 +310,7 @@ class _HangmanGameState extends State<HangmanGame> {
           const SizedBox(height: 14),
           LetterTiles([for (final c in _w.$1.split('')) _guessed.contains(c) || _wrong >= _lives ? c : ' '], size: 38),
           const SizedBox(height: 16),
-          GameKeyboard(
-            onKey: _won || _wrong >= _lives ? (_) {} : _guess,
-            disabled: _guessed,
-            states: {for (final c in _guessed) c: _w.$1.contains(c) ? true : false},
-          ),
+          GameKeyboard(onKey: _won || _wrong >= _lives ? (_) {} : _guess, disabled: _guessed, states: {for (final c in _guessed) c: _w.$1.contains(c) ? true : false}),
         ],
       ),
     );
@@ -359,7 +368,14 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
     if (_guesses.last == _answer || _guesses.length >= 6) {
       final won = _guesses.last == _answer;
       Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) widget.session.finish(GameOutcome(score: won ? 7 - _guesses.length : 0, max: 6, summary: won ? tr(context, 'Solved in ${_guesses.length}', 'Resuelto en ${_guesses.length}') : tr(context, 'The word was "$_answer"', 'La palabra era "$_answer"')));
+        if (mounted)
+          widget.session.finish(
+            GameOutcome(
+              score: won ? 7 - _guesses.length : 0,
+              max: 6,
+              summary: won ? tr(context, 'Solved in ${_guesses.length}', 'Resuelto en ${_guesses.length}') : tr(context, 'The word was "$_answer"', 'La palabra era "$_answer"'),
+            ),
+          );
       });
     }
   }
@@ -381,7 +397,11 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
         }
       }
     }
-    Color? colorOf(bool? v) => v == true ? scheme.primary : v == null ? scheme.tertiary : scheme.outline;
+    Color? colorOf(bool? v) => v == true
+        ? scheme.primary
+        : v == null
+        ? scheme.tertiary
+        : scheme.outline;
     final done = _guesses.isNotEmpty && (_guesses.last == _answer || _guesses.length >= 6);
     return GamePanel(
       child: Column(
@@ -390,15 +410,25 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: r < _guesses.length
-                  ? Builder(builder: (context) {
-                      final s = _score(_guesses[r]);
-                      return LetterTiles([for (var i = 0; i < 5; i++) _guesses[r][i]], size: 46, colors: [for (final v in s) colorOf(v)]);
-                    })
+                  ? Builder(
+                      builder: (context) {
+                        final s = _score(_guesses[r]);
+                        return LetterTiles([for (var i = 0; i < 5; i++) _guesses[r][i]], size: 46, colors: [for (final v in s) colorOf(v)]);
+                      },
+                    )
                   : LetterTiles(List.generate(5, (i) => r == _guesses.length && i < _cur.length ? _cur[i] : ' '), size: 46),
             ),
           const SizedBox(height: 6),
-          Text(tr(context, 'Filled = right spot · tinted = in the word · grey = not in it', 'Relleno = sitio correcto · tono = está en la palabra · gris = no está'), style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!, style: TextStyle(color: scheme.error))),
+          Text(
+            tr(context, 'Filled = right spot · tinted = in the word · grey = not in it', 'Relleno = sitio correcto · tono = está en la palabra · gris = no está'),
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+          if (_msg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(_msg!, style: TextStyle(color: scheme.error)),
+            ),
           const SizedBox(height: 10),
           if (!done)
             GameKeyboard(
@@ -460,7 +490,14 @@ class _WordLadderGameState extends State<WordLadderGame> {
     if (w == _l.$2) {
       final best = _l.$3.length - 1;
       final used = _steps.length - 1;
-      widget.session.finish(GameOutcome(score: math.max(1, 10 - (used - best) * 2 - _hints * 2), max: 10, summary: tr(context, '${_l.$1} → ${_l.$2} in $used steps (shortest known: $best)', '${_l.$1} → ${_l.$2} en $used pasos (mínimo conocido: $best)'), memorable: _steps.join(' → ')));
+      widget.session.finish(
+        GameOutcome(
+          score: math.max(1, 10 - (used - best) * 2 - _hints * 2),
+          max: 10,
+          summary: tr(context, '${_l.$1} → ${_l.$2} in $used steps (shortest known: $best)', '${_l.$1} → ${_l.$2} en $used pasos (mínimo conocido: $best)'),
+          memorable: _steps.join(' → '),
+        ),
+      );
     }
   }
 
@@ -484,17 +521,27 @@ class _WordLadderGameState extends State<WordLadderGame> {
         children: [
           GamePrompt('${_l.$1.toUpperCase()}  →  ${_l.$2.toUpperCase()}'),
           const SizedBox(height: 4),
-          Text(tr(context, 'Change one letter at a time; every step must be a real word.', 'Cambia una letra cada vez; cada paso debe ser una palabra real.'), style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
+          Text(
+            tr(context, 'Change one letter at a time; every step must be a real word.', 'Cambia una letra cada vez; cada paso debe ser una palabra real.'),
+            style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 12),
           for (final s in _steps) Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: LetterTiles(s.split(''), size: 36)),
           const SizedBox(height: 10),
           PrismTextField(controller: _ctl, hintText: tr(context, 'Next word', 'Siguiente palabra'), onSubmitted: (_) => _add()),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error))),
-          GameActions(children: [
-            if (_steps.length > 1) PrismButton(label: tr(context, 'Undo', 'Deshacer'), icon: PhosphorIcons.arrowUUpLeft(), onPressed: () => setState(() => _steps.removeLast())),
-            PrismButton(label: tr(context, 'Hint', 'Pista'), icon: PhosphorIcons.lightbulb(), onPressed: _hint),
-            PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
-          ]),
+          if (_msg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error)),
+            ),
+          GameActions(
+            children: [
+              if (_steps.length > 1) PrismButton(label: tr(context, 'Undo', 'Deshacer'), icon: PhosphorIcons.arrowUUpLeft(), onPressed: () => setState(() => _steps.removeLast())),
+              PrismButton(label: tr(context, 'Hint', 'Pista'), icon: PhosphorIcons.lightbulb(), onPressed: _hint),
+              PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
+            ],
+          ),
         ],
       ),
     );
@@ -541,7 +588,10 @@ class _AnagramGameState extends State<AnagramGame> {
     for (final c in _letters) {
       pool[c] = (pool[c] ?? 0) + 1;
     }
-    _possible = {for (final w in widget.words) if (w.length >= 3 && _canMake(w, pool)) w};
+    _possible = {
+      for (final w in widget.words)
+        if (w.length >= 3 && _canMake(w, pool)) w,
+    };
   }
 
   @override
@@ -563,7 +613,13 @@ class _AnagramGameState extends State<AnagramGame> {
 
   void _finish() {
     final pts = _found.fold(0, (t, w) => t + w.length - 2);
-    widget.session.finish(GameOutcome(score: pts, summary: tr(context, '${_found.length} of ${_possible.length} words', '${_found.length} de ${_possible.length} palabras'), memorable: tr(context, 'The seven-letter word was "$_base"', 'La palabra de siete letras era "$_base"')));
+    widget.session.finish(
+      GameOutcome(
+        score: pts,
+        summary: tr(context, '${_found.length} of ${_possible.length} words', '${_found.length} de ${_possible.length} palabras'),
+        memorable: tr(context, 'The seven-letter word was "$_base"', 'La palabra de siete letras era "$_base"'),
+      ),
+    );
   }
 
   @override
@@ -572,7 +628,11 @@ class _AnagramGameState extends State<AnagramGame> {
     return GamePanel(
       child: Column(
         children: [
-          if (widget.session.timer) Align(alignment: Alignment.centerRight, child: GameTimer(seconds: 180, onDone: _finish)),
+          if (widget.session.timer)
+            Align(
+              alignment: Alignment.centerRight,
+              child: GameTimer(seconds: 180, onDone: _finish),
+            ),
           LetterTiles(_letters, size: 42),
           const SizedBox(height: 8),
           TextButtonLike(label: tr(context, 'Shuffle', 'Mezclar'), onTap: () => setState(() => _letters.shuffle())),
@@ -583,7 +643,9 @@ class _AnagramGameState extends State<AnagramGame> {
           Text(tr(context, 'Found ${_found.length} of ${_possible.length}', 'Encontradas ${_found.length} de ${_possible.length}'), style: theme.textTheme.labelLarge),
           const SizedBox(height: 6),
           Wrap(spacing: 6, runSpacing: 6, children: [for (final w in _found.toList()..sort()) Chip2(w)]),
-          GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)]),
+          GameActions(
+            children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)],
+          ),
         ],
       ),
     );
@@ -675,17 +737,33 @@ class _WordChainGameState extends State<WordChainGame> {
           Wrap(spacing: 6, runSpacing: 6, alignment: WrapAlignment.center, children: [for (final w in _chain) Chip2(w)]),
           const SizedBox(height: 12),
           PrismTextField(controller: _ctl, hintText: tr(context, 'Your word', 'Tu palabra'), onSubmitted: (_) => _add()),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error))),
-          GameActions(children: [
-            PrismButton(label: tr(context, 'End chain', 'Terminar cadena'), onPressed: () {
-              final counts = <String, int>{};
-              for (final b in _by.skip(1)) {
-                if (b != null) counts[b] = (counts[b] ?? 0) + 1;
-              }
-              widget.session.finish(GameOutcome(score: _chain.length - 1, summary: tr(context, 'A chain of ${_chain.length} words', 'Una cadena de ${_chain.length} palabras'), memorable: _chain.join(' → '), details: counts));
-            }),
-            PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
-          ]),
+          if (_msg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error)),
+            ),
+          GameActions(
+            children: [
+              PrismButton(
+                label: tr(context, 'End chain', 'Terminar cadena'),
+                onPressed: () {
+                  final counts = <String, int>{};
+                  for (final b in _by.skip(1)) {
+                    if (b != null) counts[b] = (counts[b] ?? 0) + 1;
+                  }
+                  widget.session.finish(
+                    GameOutcome(
+                      score: _chain.length - 1,
+                      summary: tr(context, 'A chain of ${_chain.length} words', 'Una cadena de ${_chain.length} palabras'),
+                      memorable: _chain.join(' → '),
+                      details: counts,
+                    ),
+                  );
+                },
+              ),
+              PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
+            ],
+          ),
         ],
       ),
     );
@@ -744,12 +822,24 @@ class _CategoryGameState extends State<CategoryGame> {
     return GamePanel(
       child: Column(
         children: [
-          if (widget.session.timer) Align(alignment: Alignment.centerRight, child: GameTimer(seconds: widget.alphabet ? 240 : 60, onDone: _finish)),
+          if (widget.session.timer)
+            Align(
+              alignment: Alignment.centerRight,
+              child: GameTimer(seconds: widget.alphabet ? 240 : 60, onDone: _finish),
+            ),
           Text(tr(context, 'Category', 'Categoría'), style: theme.textTheme.labelMedium),
           GamePrompt(_cat),
           const SizedBox(height: 12),
-          PrismTextField(controller: _ctl, hintText: widget.alphabet ? tr(context, 'One answer per letter', 'Una respuesta por letra') : tr(context, 'Type answers', 'Escribe respuestas'), onSubmitted: (_) => _add()),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!, style: theme.textTheme.bodySmall)),
+          PrismTextField(
+            controller: _ctl,
+            hintText: widget.alphabet ? tr(context, 'One answer per letter', 'Una respuesta por letra') : tr(context, 'Type answers', 'Escribe respuestas'),
+            onSubmitted: (_) => _add(),
+          ),
+          if (_msg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(_msg!, style: theme.textTheme.bodySmall),
+            ),
           const SizedBox(height: 12),
           if (widget.alphabet)
             Wrap(
@@ -761,16 +851,25 @@ class _CategoryGameState extends State<CategoryGame> {
                     width: 64,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
-                      color: _byLetter[c] == null ? theme.colorScheme.surfaceContainerHighest : (_known(_byLetter[c]!) ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.tertiary.withValues(alpha: 0.14)),
+                      color: _byLetter[c] == null
+                          ? theme.colorScheme.surfaceContainerHighest
+                          : (_known(_byLetter[c]!) ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.tertiary.withValues(alpha: 0.14)),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Column(children: [Text(c.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w800)), Text(_byLetter[c] ?? '', style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis)]),
+                    child: Column(
+                      children: [
+                        Text(c.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w800)),
+                        Text(_byLetter[c] ?? '', style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
                   ),
               ],
             )
           else
             Wrap(spacing: 6, runSpacing: 6, children: [for (final w in _list) Chip2(w, color: _known(w) ? null : theme.colorScheme.tertiary)]),
-          GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)]),
+          GameActions(
+            children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)],
+          ),
         ],
       ),
     );
@@ -834,25 +933,37 @@ class _HiddenWordGameState extends State<HiddenWordGame> {
               const SizedBox(height: 8),
               if (_right == null) ...[
                 PrismTextField(controller: _ctl, hintText: tr(context, 'Your guess', 'Tu respuesta'), onSubmitted: (_) => _guess()),
-                GameActions(children: [
-                  if (_clues < clues.length) PrismButton(label: tr(context, 'Another clue', 'Otra pista'), onPressed: () => setState(() => _clues++)),
-                  PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Guess', 'Adivinar'), onPressed: _guess),
-                ]),
+                GameActions(
+                  children: [
+                    if (_clues < clues.length) PrismButton(label: tr(context, 'Another clue', 'Otra pista'), onPressed: () => setState(() => _clues++)),
+                    PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Guess', 'Adivinar'), onPressed: _guess),
+                  ],
+                ),
               ] else ...[
-                Text(_right! ? tr(context, '✓ Yes — "$word"!', '✓ ¡Sí: "$word"!') : tr(context, 'It was "$word"', 'Era "$word"'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
-                GameActions(children: [
-                  PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Next', 'Siguiente'), onPressed: () {
-                    if (_i + 1 >= _round.length) {
-                      widget.session.finish(GameOutcome(score: _score, max: _round.length * 4, summary: tr(context, '$_score points', '$_score puntos')));
-                    } else {
-                      setState(() {
-                        _i++;
-                        _clues = 1;
-                        _right = null;
-                      });
-                    }
-                  }),
-                ]),
+                Text(
+                  _right! ? tr(context, '✓ Yes — "$word"!', '✓ ¡Sí: "$word"!') : tr(context, 'It was "$word"', 'Era "$word"'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                GameActions(
+                  children: [
+                    PrismButton(
+                      tone: PrismButtonTone.filled,
+                      label: tr(context, 'Next', 'Siguiente'),
+                      onPressed: () {
+                        if (_i + 1 >= _round.length) {
+                          widget.session.finish(GameOutcome(score: _score, max: _round.length * 4, summary: tr(context, '$_score points', '$_score puntos')));
+                        } else {
+                          setState(() {
+                            _i++;
+                            _clues = 1;
+                            _right = null;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ],
             ],
           ),
@@ -973,7 +1084,11 @@ class _WordSearchGameState extends State<WordSearchGame> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
-                            color: _start == (r, c) ? scheme.tertiary.withValues(alpha: 0.35) : foundCells.contains((r, c)) ? scheme.primary.withValues(alpha: 0.25) : scheme.surfaceContainerHighest,
+                            color: _start == (r, c)
+                                ? scheme.tertiary.withValues(alpha: 0.35)
+                                : foundCells.contains((r, c))
+                                ? scheme.primary.withValues(alpha: 0.25)
+                                : scheme.surfaceContainerHighest,
                           ),
                           child: Text(_grid[r][c], style: const TextStyle(fontWeight: FontWeight.w700)),
                         ),
@@ -987,10 +1102,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
             spacing: 6,
             runSpacing: 6,
             alignment: WrapAlignment.center,
-            children: [
-              for (final w in _placed.keys)
-                Chip2(_found.contains(w) ? '✓ ${w.toLowerCase()}' : w.toLowerCase(), color: _found.contains(w) ? null : scheme.outline),
-            ],
+            children: [for (final w in _placed.keys) Chip2(_found.contains(w) ? '✓ ${w.toLowerCase()}' : w.toLowerCase(), color: _found.contains(w) ? null : scheme.outline)],
           ),
         ],
       ),
@@ -1023,8 +1135,7 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
   late final List<_Slot> _slots;
   late final Map<(int, int), String> _answer;
   late final Map<(int, int), String> _typed = {
-    for (final e in ((widget.session.saved?['typed'] as Map?) ?? const {}).entries)
-      (int.parse('${e.key}'.split(',')[0]), int.parse('${e.key}'.split(',')[1])): '${e.value}',
+    for (final e in ((widget.session.saved?['typed'] as Map?) ?? const {}).entries) (int.parse('${e.key}'.split(',')[0]), int.parse('${e.key}'.split(',')[1])): '${e.value}',
   };
   (int, int)? _sel;
   bool _checked = false;
@@ -1108,7 +1219,9 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
       final k = List.generate(slot.word.length, slot.cell).indexOf(s);
       if (k + 1 < slot.word.length) _sel = slot.cell(k + 1);
     });
-    widget.session.save({'typed': {for (final e in _typed.entries) '${e.key.$1},${e.key.$2}': e.value}});
+    widget.session.save({
+      'typed': {for (final e in _typed.entries) '${e.key.$1},${e.key.$2}': e.value},
+    });
     if (_answer.entries.every((e) => _typed[e.key] == e.value)) {
       widget.session.finish(GameOutcome(score: _slots.length, max: _slots.length, summary: tr(context, 'Crossword complete', 'Crucigrama completo')));
     }
@@ -1126,56 +1239,81 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
         children: [
           AspectRatio(
             aspectRatio: (c1 - c0 + 1) / (r1 - r0 + 1),
-            child: LayoutBuilder(builder: (context, box) {
-              final cell = box.maxWidth / (c1 - c0 + 1);
-              return Stack(
-                children: [
-                  for (final p in _answer.keys)
-                    Positioned(
-                      left: (p.$2 - c0) * cell,
-                      top: (p.$1 - r0) * cell,
-                      width: cell,
-                      height: cell,
-                      child: GestureDetector(
-                        onTap: () => setState(() => _sel = p),
-                        child: Container(
-                          margin: const EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            color: _sel == p ? scheme.primary.withValues(alpha: 0.25) : (_checked && _typed[p] != null && _typed[p] != _answer[p] ? scheme.error.withValues(alpha: 0.2) : scheme.surfaceContainerHighest),
-                            border: Border.all(color: scheme.outline),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Stack(
-                            children: [
-                              if (numbers[p] != null) Positioned(left: 2, top: 1, child: Text('${numbers[p]}', style: TextStyle(fontSize: cell * 0.22))),
-                              Center(child: Text((_typed[p] ?? '').toUpperCase(), style: TextStyle(fontSize: cell * 0.5, fontWeight: FontWeight.w800))),
-                            ],
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final cell = box.maxWidth / (c1 - c0 + 1);
+                return Stack(
+                  children: [
+                    for (final p in _answer.keys)
+                      Positioned(
+                        left: (p.$2 - c0) * cell,
+                        top: (p.$1 - r0) * cell,
+                        width: cell,
+                        height: cell,
+                        child: GestureDetector(
+                          onTap: () => setState(() => _sel = p),
+                          child: Container(
+                            margin: const EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: _sel == p
+                                  ? scheme.primary.withValues(alpha: 0.25)
+                                  : (_checked && _typed[p] != null && _typed[p] != _answer[p] ? scheme.error.withValues(alpha: 0.2) : scheme.surfaceContainerHighest),
+                              border: Border.all(color: scheme.outline),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Stack(
+                              children: [
+                                if (numbers[p] != null)
+                                  Positioned(
+                                    left: 2,
+                                    top: 1,
+                                    child: Text('${numbers[p]}', style: TextStyle(fontSize: cell * 0.22)),
+                                  ),
+                                Center(
+                                  child: Text(
+                                    (_typed[p] ?? '').toUpperCase(),
+                                    style: TextStyle(fontSize: cell * 0.5, fontWeight: FontWeight.w800),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              );
-            }),
+                  ],
+                );
+              },
+            ),
           ),
           const SizedBox(height: 10),
           for (final across in [true, false]) ...[
-            Align(alignment: Alignment.centerLeft, child: Text(across ? tr(context, 'Across', 'Horizontales') : tr(context, 'Down', 'Verticales'), style: const TextStyle(fontWeight: FontWeight.w800))),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(across ? tr(context, 'Across', 'Horizontales') : tr(context, 'Down', 'Verticales'), style: const TextStyle(fontWeight: FontWeight.w800)),
+            ),
             for (final s in _slots.where((s) => s.across == across))
-              Align(alignment: Alignment.centerLeft, child: Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: Text('${_number(s)}. ${widget.clues[s.word]} (${s.word.length})'))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: Text('${_number(s)}. ${widget.clues[s.word]} (${s.word.length})')),
+              ),
             const SizedBox(height: 6),
           ],
           GameKeyboard(onKey: _type, onBack: () => _sel == null ? null : setState(() => _typed.remove(_sel))),
-          GameActions(children: [
-            PrismButton(label: tr(context, 'Check', 'Comprobar'), onPressed: () => setState(() => _checked = true)),
-            PrismButton(label: tr(context, 'Reveal a letter', 'Revelar una letra'), onPressed: () {
-              final missing = _answer.entries.where((e) => _typed[e.key] != e.value).toList();
-              if (missing.isNotEmpty) {
-                _sel = missing.first.key;
-                _type(missing.first.value);
-              }
-            }),
-          ]),
+          GameActions(
+            children: [
+              PrismButton(label: tr(context, 'Check', 'Comprobar'), onPressed: () => setState(() => _checked = true)),
+              PrismButton(
+                label: tr(context, 'Reveal a letter', 'Revelar una letra'),
+                onPressed: () {
+                  final missing = _answer.entries.where((e) => _typed[e.key] != e.value).toList();
+                  if (missing.isNotEmpty) {
+                    _sel = missing.first.key;
+                    _type(missing.first.value);
+                  }
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );

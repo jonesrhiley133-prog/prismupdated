@@ -37,6 +37,8 @@ String achievementMetricLabel(AppLocalizations l10n, AchievementMetric m) =>
       AchievementMetric.cycleDays => l10n.achMetricCycle,
       AchievementMetric.placesVisited => l10n.achMetricPlaces,
       AchievementMetric.activeDays => l10n.achMetricActiveDays,
+      AchievementMetric.gamesPlayed => l10n.localeName.startsWith('es') ? 'Partidas jugadas' : 'Games played',
+      AchievementMetric.cozyMoments => l10n.localeName.startsWith('es') ? 'Momentos acogedores' : 'Cozy moments',
     };
 
 String achievementCategoryLabel(AppLocalizations l10n, AchievementCategory c) =>

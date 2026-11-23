@@ -173,6 +173,7 @@ void main() {
     expect(releaseFor('0.39.2'), isNotNull);
     expect(releaseFor('0.39.3'), isNotNull);
     expect(releaseFor('0.40.0'), isNotNull);
+    expect(releaseFor('0.41.0'), isNotNull);
     expect(releaseFor('9.9.9'), isNull);
   });
 }

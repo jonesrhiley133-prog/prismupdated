@@ -18,31 +18,99 @@ import 'package:prism_plurality/features/games/engines/word_engines.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 const _knowMeQuestions = [
-  'What\'s my comfort food?', 'Where would I go on a dream trip?', 'What\'s my favourite season?', 'What do I do to relax?', 'What animal am I most like?',
-  'What\'s a song I can\'t stop playing?', 'What would my superpower be?', 'Morning or night?', 'What\'s my go-to drink?', 'What hobby would I pick up with unlimited time?',
-  'Which colour do I wear most?', 'What scares me a little?', 'What makes me laugh every time?', 'What\'s my ideal rainy-day plan?', 'Books, films or games?',
+  'What\'s my comfort food?',
+  'Where would I go on a dream trip?',
+  'What\'s my favourite season?',
+  'What do I do to relax?',
+  'What animal am I most like?',
+  'What\'s a song I can\'t stop playing?',
+  'What would my superpower be?',
+  'Morning or night?',
+  'What\'s my go-to drink?',
+  'What hobby would I pick up with unlimited time?',
+  'Which colour do I wear most?',
+  'What scares me a little?',
+  'What makes me laugh every time?',
+  'What\'s my ideal rainy-day plan?',
+  'Books, films or games?',
 ];
 
 const _favoriteQuestions = [
-  'Favourite colour?', 'Favourite food?', 'Favourite animal?', 'Favourite season?', 'Favourite film or show?', 'Favourite song or band?', 'Favourite smell?', 'Favourite place?',
-  'Favourite snack?', 'Favourite holiday?', 'Favourite word?', 'Favourite time of day?', 'Favourite drink?', 'Favourite game?', 'Favourite flower?',
+  'Favourite colour?',
+  'Favourite food?',
+  'Favourite animal?',
+  'Favourite season?',
+  'Favourite film or show?',
+  'Favourite song or band?',
+  'Favourite smell?',
+  'Favourite place?',
+  'Favourite snack?',
+  'Favourite holiday?',
+  'Favourite word?',
+  'Favourite time of day?',
+  'Favourite drink?',
+  'Favourite game?',
+  'Favourite flower?',
 ];
 
-const _poemStarts = ['The kettle sings a quiet tune…', 'Under a sky of folded paper…', 'We kept the lights on for each other…', 'Rain on the window, soft as a secret…', 'In the garden of many hands…', 'The moon forgot its way home…'];
+const _poemStarts = [
+  'The kettle sings a quiet tune…',
+  'Under a sky of folded paper…',
+  'We kept the lights on for each other…',
+  'Rain on the window, soft as a secret…',
+  'In the garden of many hands…',
+  'The moon forgot its way home…',
+];
 const _associationStarts = ['Ocean', 'Blanket', 'Thunder', 'Garden', 'Lantern', 'Honey', 'Train', 'Winter', 'Library', 'Star'];
-const _worldStarts = ['A world where it is always autumn', 'An archipelago of floating islands', 'A city built inside a giant tree', 'A kingdom under a frozen sea', 'A desert of glass and music', 'A village on the back of a sleeping turtle'];
+const _worldStarts = [
+  'A world where it is always autumn',
+  'An archipelago of floating islands',
+  'A city built inside a giant tree',
+  'A kingdom under a frozen sea',
+  'A desert of glass and music',
+  'A village on the back of a sleeping turtle',
+];
 const _worldSections = ['Name & feel', 'Places', 'Peoples & creatures', 'Customs', 'Magic or tech', 'Stories'];
 
 SceneConfig _scene(String id) => switch (id) {
-  'flower_arranging' => const SceneConfig(base: '🏺', backgrounds: [(Color(0xFFFFF4E6), Color(0xFFFFE0CC)), (Color(0xFFEFF7F1), Color(0xFFD6EFE0)), (Color(0xFFF3EEFF), Color(0xFFE2D8FF))], stickers: ['🌹', '🌷', '🌻', '🌼', '🌸', '💐', '🪻', '🌺', '🪷', '🌿', '🍃', '🌾', '🎀']),
-  'tea_time' => const SceneConfig(backgrounds: [(Color(0xFFFFF8EE), Color(0xFFE9D8C4)), (Color(0xFFEAF4F4), Color(0xFFCCE3DE)), (Color(0xFFFDEFF4), Color(0xFFF7D6E0))], stickers: ['🫖', '☕', '🍵', '🧁', '🍰', '🍪', '🥐', '🍓', '🍋', '🍯', '🥄', '🌸', '🕯️', '🧈', '🥛']),
-  'room_decorator' => const SceneConfig(backgrounds: [(Color(0xFFF6EFE7), Color(0xFFCDB49B)), (Color(0xFFE8EEF7), Color(0xFFB8C4D6)), (Color(0xFFEFE8F7), Color(0xFFC5B6D9))], stickers: ['🛋️', '🛏️', '🪑', '🪴', '🖼️', '🕯️', '📚', '🧸', '🪞', '🛁', '💡', '🪟', '🧺', '🎸', '🐈', '🧶', '📻', '🕰️']),
-  'terrarium' => const SceneConfig(base: '🫙', backgrounds: [(Color(0xFFEFF7EE), Color(0xFFC9DFC4)), (Color(0xFFF2F0E6), Color(0xFFDCD3B8))], stickers: ['🌱', '🌿', '🍄', '🪨', '🌵', '🪴', '🐌', '🐞', '🦋', '🌸', '🍀', '🪵', '🐸', '✨']),
-  'aquarium' => const SceneConfig(backgrounds: [(Color(0xFFBDE8F5), Color(0xFF3A86C8)), (Color(0xFFCFF3EE), Color(0xFF2A9D8F)), (Color(0xFF6C7FD8), Color(0xFF1B2A6B))], stickers: ['🐠', '🐟', '🐡', '🐙', '🦀', '🐚', '🪸', '🌿', '🪨', '🦑', '🐢', '🫧', '🐳', '🦐', '⭐']),
-  'tiny_bakery' => const SceneConfig(backgrounds: [(Color(0xFFFFF1E6), Color(0xFFFAD2C2)), (Color(0xFFFFFBEA), Color(0xFFF5E6B8))], stickers: ['🎂', '🍰', '🧁', '🍩', '🍪', '🥧', '🍮', '🍓', '🍒', '🫐', '🍫', '🍬', '🌸', '🕯️', '✨', '🍋', '🥝']),
-  'dream_landscape' => const SceneConfig(backgrounds: [(Color(0xFFFFD6A5), Color(0xFFB8E0D2)), (Color(0xFF20264A), Color(0xFF6D5BA8)), (Color(0xFFCDE7FF), Color(0xFFFFF5D6)), (Color(0xFFFFC8DD), Color(0xFFBDE0FE))], stickers: ['🏔️', '🌋', '🏝️', '🌳', '🌲', '🌴', '🏡', '🏰', '🌈', '☁️', '🌙', '⭐', '☀️', '🦋', '🐉', '🎈', '🌊', '🌸']),
-  'flower_press' => const SceneConfig(backgrounds: [(Color(0xFFFBF7EF), Color(0xFFEDE3D1)), (Color(0xFFF5F0E8), Color(0xFFE4D9C8))], stickers: ['🌸', '🌼', '🌺', '🪻', '🌷', '🍀', '🍁', '🍂', '🌿', '🌾', '🪷', '🌹', '🍃']),
-  _ => const SceneConfig(backgrounds: [(Color(0xFFDDEBFF), Color(0xFFF9F3E6)), (Color(0xFFFFE7D6), Color(0xFFFFF7EE)), (Color(0xFF1E2747), Color(0xFF52478A)), (Color(0xFFE6F4EA), Color(0xFFFFFFFF))], stickers: ['🏠', '🌳', '🌷', '🐈', '🐕', '🦊', '🐇', '☀️', '🌙', '⭐', '☁️', '🌈', '🎈', '🧺', '🚲', '⛺', '🔥', '🦋', '🍄', '🎪']),
+  'flower_arranging' => const SceneConfig(
+    base: '🏺',
+    backgrounds: [(Color(0xFFFFF4E6), Color(0xFFFFE0CC)), (Color(0xFFEFF7F1), Color(0xFFD6EFE0)), (Color(0xFFF3EEFF), Color(0xFFE2D8FF))],
+    stickers: ['🌹', '🌷', '🌻', '🌼', '🌸', '💐', '🪻', '🌺', '🪷', '🌿', '🍃', '🌾', '🎀'],
+  ),
+  'tea_time' => const SceneConfig(
+    backgrounds: [(Color(0xFFFFF8EE), Color(0xFFE9D8C4)), (Color(0xFFEAF4F4), Color(0xFFCCE3DE)), (Color(0xFFFDEFF4), Color(0xFFF7D6E0))],
+    stickers: ['🫖', '☕', '🍵', '🧁', '🍰', '🍪', '🥐', '🍓', '🍋', '🍯', '🥄', '🌸', '🕯️', '🧈', '🥛'],
+  ),
+  'room_decorator' => const SceneConfig(
+    backgrounds: [(Color(0xFFF6EFE7), Color(0xFFCDB49B)), (Color(0xFFE8EEF7), Color(0xFFB8C4D6)), (Color(0xFFEFE8F7), Color(0xFFC5B6D9))],
+    stickers: ['🛋️', '🛏️', '🪑', '🪴', '🖼️', '🕯️', '📚', '🧸', '🪞', '🛁', '💡', '🪟', '🧺', '🎸', '🐈', '🧶', '📻', '🕰️'],
+  ),
+  'terrarium' => const SceneConfig(
+    base: '🫙',
+    backgrounds: [(Color(0xFFEFF7EE), Color(0xFFC9DFC4)), (Color(0xFFF2F0E6), Color(0xFFDCD3B8))],
+    stickers: ['🌱', '🌿', '🍄', '🪨', '🌵', '🪴', '🐌', '🐞', '🦋', '🌸', '🍀', '🪵', '🐸', '✨'],
+  ),
+  'aquarium' => const SceneConfig(
+    backgrounds: [(Color(0xFFBDE8F5), Color(0xFF3A86C8)), (Color(0xFFCFF3EE), Color(0xFF2A9D8F)), (Color(0xFF6C7FD8), Color(0xFF1B2A6B))],
+    stickers: ['🐠', '🐟', '🐡', '🐙', '🦀', '🐚', '🪸', '🌿', '🪨', '🦑', '🐢', '🫧', '🐳', '🦐', '⭐'],
+  ),
+  'tiny_bakery' => const SceneConfig(
+    backgrounds: [(Color(0xFFFFF1E6), Color(0xFFFAD2C2)), (Color(0xFFFFFBEA), Color(0xFFF5E6B8))],
+    stickers: ['🎂', '🍰', '🧁', '🍩', '🍪', '🥧', '🍮', '🍓', '🍒', '🫐', '🍫', '🍬', '🌸', '🕯️', '✨', '🍋', '🥝'],
+  ),
+  'dream_landscape' => const SceneConfig(
+    backgrounds: [(Color(0xFFFFD6A5), Color(0xFFB8E0D2)), (Color(0xFF20264A), Color(0xFF6D5BA8)), (Color(0xFFCDE7FF), Color(0xFFFFF5D6)), (Color(0xFFFFC8DD), Color(0xFFBDE0FE))],
+    stickers: ['🏔️', '🌋', '🏝️', '🌳', '🌲', '🌴', '🏡', '🏰', '🌈', '☁️', '🌙', '⭐', '☀️', '🦋', '🐉', '🎈', '🌊', '🌸'],
+  ),
+  'flower_press' => const SceneConfig(
+    backgrounds: [(Color(0xFFFBF7EF), Color(0xFFEDE3D1)), (Color(0xFFF5F0E8), Color(0xFFE4D9C8))],
+    stickers: ['🌸', '🌼', '🌺', '🪻', '🌷', '🍀', '🍁', '🍂', '🌿', '🌾', '🪷', '🌹', '🍃'],
+  ),
+  _ => const SceneConfig(
+    backgrounds: [(Color(0xFFDDEBFF), Color(0xFFF9F3E6)), (Color(0xFFFFE7D6), Color(0xFFFFF7EE)), (Color(0xFF1E2747), Color(0xFF52478A)), (Color(0xFFE6F4EA), Color(0xFFFFFFFF))],
+    stickers: ['🏠', '🌳', '🌷', '🐈', '🐕', '🦊', '🐇', '☀️', '🌙', '⭐', '☁️', '🌈', '🎈', '🧺', '🚲', '⛺', '🔥', '🦋', '🍄', '🎪'],
+  ),
 };
 
 /// The widget for game [id]. Custom games (with [GameSession.custom]) are
@@ -76,8 +144,12 @@ Widget buildGame(String id, GameSession s) {
     'hangman' => HangmanGame(session: s, words: hintedWords),
     'word_search' => WordSearchGame(session: s, themes: searchThemes),
     'mini_crossword' => MiniCrosswordGame(session: s, clues: crosswordClues),
-    'word_ladder' => WithDictionary(builder: (w) => WordLadderGame(session: s, ladders: ladders, words: w)),
-    'anagram' => WithDictionary(builder: (w) => AnagramGame(session: s, words: w)),
+    'word_ladder' => WithDictionary(
+      builder: (w) => WordLadderGame(session: s, ladders: ladders, words: w),
+    ),
+    'anagram' => WithDictionary(
+      builder: (w) => AnagramGame(session: s, words: w),
+    ),
     'missing_letters' => TypeWordGame(session: s, words: hintedWords, mode: TypeMode.missing),
     'word_association' => SharedTextGame(session: s, starters: _associationStarts, oneWord: true),
     'category_sprint' => CategoryGame(session: s, categories: categories, alphabet: false),
@@ -85,13 +157,29 @@ Widget buildGame(String id, GameSession s) {
     'synonym_match' => MatchPairsGame(session: s, pairs: synonyms),
     'antonym_match' => MatchPairsGame(session: s, pairs: antonyms),
     'definition_detective' => QuizGame(session: s, askDifficulty: false, bank: _fromPairs(definitions, (w, d) => d, (w, d) => w)),
-    'rhyme_time' => QuizGame(session: s, askDifficulty: false, bank: [for (final (w, r, decoys) in rhymes) Q('Which word rhymes with "$w"?', [r, ...decoys])]),
+    'rhyme_time' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: [
+        for (final (w, r, decoys) in rhymes) Q('Which word rhymes with "$w"?', [r, ...decoys]),
+      ],
+    ),
     'hidden_word' => HiddenWordGame(session: s, puzzles: hiddenWords),
-    'five_letter' => WithDictionary(builder: (w) => FiveLetterGame(session: s, answers: fiveLetterAnswers, words: w)),
+    'five_letter' => WithDictionary(
+      builder: (w) => FiveLetterGame(session: s, answers: fiveLetterAnswers, words: w),
+    ),
     'sentence_builder' => OrderingGame(session: s, rounds: 5, prompt: 'Tap the words in order to build the sentence.', sets: [for (final x in sentences) ('', x.split(' '))]),
-    'word_chain' => WithDictionary(builder: (w) => WordChainGame(session: s, words: w)),
+    'word_chain' => WithDictionary(
+      builder: (w) => WordChainGame(session: s, words: w),
+    ),
     'vocabulary_quest' => QuizGame(session: s, askDifficulty: false, bank: _fromPairs(vocabulary, (w, m) => 'What does "$w" mean?', (w, m) => m)),
-    'finish_phrase' => QuizGame(session: s, askDifficulty: false, bank: [for (final (start, end, decoys) in phrases) Q('$start …', [end, ...decoys])]),
+    'finish_phrase' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: [
+        for (final (start, end, decoys) in phrases) Q('$start …', [end, ...decoys]),
+      ],
+    ),
     // C — Logic
     'sudoku' => SudokuGame(session: s),
     'mini_sudoku' => SudokuGame(session: s, size: 6),
@@ -148,26 +236,59 @@ Widget buildGame(String id, GameSession s) {
     'truth_or_dare' => PromptDeckGame(session: s, mode: DeckMode.truthDare, prompts: cozyTruths, dares: cozyDares),
     'guess_drawing' => GuessDrawingGame(session: s, prompts: drawingPrompts),
     'story_chain' => SharedTextGame(session: s, starters: storyStarts, hideEarlier: true),
-    'emoji_charades' => QuizGame(session: s, askDifficulty: false, promptSize: 34, bank: [for (final (e, a, decoys) in emojiCharades) Q(e, [a, ...decoys])]),
+    'emoji_charades' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      promptSize: 34,
+      bank: [
+        for (final (e, a, decoys) in emojiCharades) Q(e, [a, ...decoys]),
+      ],
+    ),
     'collab_poetry' => SharedTextGame(session: s, starters: _poemStarts, hint: 'Add a line to the poem'),
     'guess_favorite' => KnowMeGame(session: s, questions: _favoriteQuestions),
     'friendship_bingo' => BingoGame(session: s, squares: friendshipBingo),
     'conversation_roulette' => PromptDeckGame(session: s, mode: DeckMode.prompt, prompts: conversationStarters, writeAnswers: true),
-    'mystery_personality' => QuizGame(session: s, askDifficulty: false, bank: [for (final (clues, a, decoys) in mysteryPersonalities) Q(clues.join(' · '), [a, ...decoys])]),
+    'mystery_personality' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: [
+        for (final (clues, a, decoys) in mysteryPersonalities) Q(clues.join(' · '), [a, ...decoys]),
+      ],
+    ),
     // G — Creative & learning
-    'build_story' => GeneratorGame(session: s, title: 'Your story seed', parts: const {'Who': storyCharacters, 'Where': storyPlaces, 'Twist': storyTwists}, compose: (p) => 'Once upon a time, ${p['Who']} lived in ${p['Where']}… ${p['Twist']}.', notesHint: 'Write your story here'),
+    'build_story' => GeneratorGame(
+      session: s,
+      title: 'Your story seed',
+      parts: const {'Who': storyCharacters, 'Where': storyPlaces, 'Twist': storyTwists},
+      compose: (p) => 'Once upon a time, ${p['Who']} lived in ${p['Where']}… ${p['Twist']}.',
+      notesHint: 'Write your story here',
+    ),
     'character_creator' => GeneratorGame(session: s, title: 'A new character', parts: characterParts, notesHint: 'Name, backstory, quirks…'),
     'comic_maker' => ComicGame(session: s),
     'drawing_prompt_jar' => PromptJarGame(session: s, prompts: drawingPrompts, emoji: '🫙'),
     'poetry_generator' => PoetryGame(session: s, words: poetryWords),
-    'name_instrument' => QuizGame(session: s, askDifficulty: false, bank: [for (final (clue, a, decoys) in instruments) Q(clue, [a, ...decoys])]),
+    'name_instrument' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: [
+        for (final (clue, a, decoys) in instruments) Q(clue, [a, ...decoys]),
+      ],
+    ),
     'rhythm_repeat' => RhythmGame(session: s),
     'music_notes' => MatchPairsGame(session: s, pairs: musicNotes, perRound: 4, rounds: 2, leftLabel: 'Symbol', rightLabel: 'Meaning'),
     'math_sprint' => GeneratedQuiz(session: s, make: _math, seconds: 15),
     'spelling' => QuizGame(session: s, bank: spelling, askDifficulty: false),
     'language_match' => LanguageMatch(session: s),
     'map_explorer' => MapExplorerGame(session: s, places: mapPlaces),
-    'timeline_sort' => OrderingGame(session: s, rounds: 3, prompt: 'Oldest at the top, newest at the bottom.', sets: [for (final e in timelines.entries) (e.key, [for (final x in e.value) x.$1])], reveal: _yearOf),
+    'timeline_sort' => OrderingGame(
+      session: s,
+      rounds: 3,
+      prompt: 'Oldest at the top, newest at the bottom.',
+      sets: [
+        for (final e in timelines.entries) (e.key, [for (final x in e.value) x.$1]),
+      ],
+      reveal: _yearOf,
+    ),
     'invent_creature' => GeneratorGame(session: s, title: 'A brand-new creature', parts: creatureParts, notesHint: 'Name it, describe its habitat and habits…'),
     'worldbuilder' => SharedTextGame(session: s, starters: _worldStarts, sections: _worldSections),
     _ => Center(child: Text('Unknown game: $id')),
@@ -189,7 +310,10 @@ List<Q> _fromPairs(List<(String, String)> pairs, String Function(String, String)
   final answers = [for (final (a, b) in pairs) answer(a, b)];
   return [
     for (var i = 0; i < pairs.length; i++)
-      Q(prompt(pairs[i].$1, pairs[i].$2), [answers[i], ...[for (var k = 1; k <= 3; k++) answers[(i + k * 3) % answers.length]].where((x) => x != answers[i]).toSet().take(3)]),
+      Q(prompt(pairs[i].$1, pairs[i].$2), [
+        answers[i],
+        ...[for (var k = 1; k <= 3; k++) answers[(i + k * 3) % answers.length]].where((x) => x != answers[i]).toSet().take(3),
+      ]),
   ];
 }
 
@@ -255,9 +379,21 @@ Q _pattern(math.Random r, int d) {
   const pool = ['🔴', '🔵', '🟢', '🟡', '🟣', '⭐', '🌙', '🔺', '⬛', '💧'];
   final syms = shuffled(pool, r).take(4).toList();
   final shapes = switch (d) {
-    1 => [[0, 1], [0, 0, 1]][r.nextInt(2)],
-    2 => [[0, 1, 2], [0, 0, 1, 1], [0, 1, 1]][r.nextInt(3)],
-    _ => [[0, 1, 2, 1], [0, 1, 2, 3], [0, 0, 1, 2], [0, 1, 0, 2]][r.nextInt(4)],
+    1 => [
+      [0, 1],
+      [0, 0, 1],
+    ][r.nextInt(2)],
+    2 => [
+      [0, 1, 2],
+      [0, 0, 1, 1],
+      [0, 1, 1],
+    ][r.nextInt(3)],
+    _ => [
+      [0, 1, 2, 1],
+      [0, 1, 2, 3],
+      [0, 0, 1, 2],
+      [0, 1, 0, 2],
+    ][r.nextInt(4)],
   };
   final seq = [for (var i = 0; i < shapes.length * 2 + 1; i++) syms[shapes[i % shapes.length]]];
   final answer = seq.removeLast();
@@ -283,7 +419,12 @@ Q _balance(math.Random r, int d) {
     return Q('${pick[0]} + ${pick[0]} = ${a * 2}\n${pick[0]} + ${pick[1]} = ${a + b}\n${pick[1]} = ?', numberOptions(b, r), '${pick[0]} is $a, so ${pick[1]} is ${a + b} − $a = $b.', 2);
   }
   final c = r.nextInt(4) + 1;
-  return Q('${pick[0]} + ${pick[0]} + ${pick[0]} = ${a * 3}\n${pick[0]} + ${pick[1]} = ${a + b}\n${pick[1]} + ${pick[2]} = ${b + c}\n${pick[2]} = ?', numberOptions(c, r), '${pick[0]}=$a, ${pick[1]}=$b, ${pick[2]}=$c.', 3);
+  return Q(
+    '${pick[0]} + ${pick[0]} + ${pick[0]} = ${a * 3}\n${pick[0]} + ${pick[1]} = ${a + b}\n${pick[1]} + ${pick[2]} = ${b + c}\n${pick[2]} = ?',
+    numberOptions(c, r),
+    '${pick[0]}=$a, ${pick[1]}=$b, ${pick[2]}=$c.',
+    3,
+  );
 }
 
 /// Language Match: choose a language, then match words.
@@ -300,11 +441,13 @@ class _LanguageMatchState extends State<LanguageMatch> {
   Widget build(BuildContext context) {
     if (_lang == null) {
       return GamePanel(
-        child: Column(children: [
-          GamePrompt(tr(context, 'Pick a language', 'Elige un idioma')),
-          const SizedBox(height: 10),
-          for (final l in languagePairs.keys) OptionTile(label: l, onTap: () => setState(() => _lang = l)),
-        ]),
+        child: Column(
+          children: [
+            GamePrompt(tr(context, 'Pick a language', 'Elige un idioma')),
+            const SizedBox(height: 10),
+            for (final l in languagePairs.keys) OptionTile(label: l, onTap: () => setState(() => _lang = l)),
+          ],
+        ),
       );
     }
     return MatchPairsGame(session: widget.session, pairs: languagePairs[_lang]!, leftLabel: _lang, rightLabel: 'English');
@@ -368,37 +511,61 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
   @override
   Widget build(BuildContext context) {
     final done = List.generate(_target.length, (i) => _target[i] == _mine[i]).every((x) => x);
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      GameProgress(current: _round + 1, total: 5, trailing: tr(context, '$_moves taps', '$_moves toques')),
-      GamePanel(
-        child: Column(children: [
-          Text(tr(context, 'Copy the pattern on the left. Tap a cell to change its colour.', 'Copia el patrón de la izquierda. Toca una casilla para cambiar su color.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: _grid(_target)),
-            const SizedBox(width: 12),
-            Expanded(child: _grid(_mine, onTap: done ? null : (i) => setState(() {
-              _mine[i] = (_mine[i] + 1) % _colors;
-              _moves++;
-            }))),
-          ]),
-          if (done)
-            GameActions(children: [
-              Text(tr(context, '✓ Matched!', '✓ ¡Igual!'), style: const TextStyle(fontWeight: FontWeight.w700)),
-              PrismButton(tone: PrismButtonTone.filled, label: _round + 1 >= 5 ? tr(context, 'Finish', 'Terminar') : tr(context, 'Next pattern', 'Siguiente patrón'), onPressed: () {
-                if (_round + 1 >= 5) {
-                  widget.session.finish(GameOutcome(score: 5, max: 5, summary: tr(context, '5 patterns in $_moves taps', '5 patrones en $_moves toques')));
-                } else {
-                  setState(() {
-                    _round++;
-                    _deal();
-                  });
-                }
-              }),
-            ]),
-        ]),
-      ),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GameProgress(current: _round + 1, total: 5, trailing: tr(context, '$_moves taps', '$_moves toques')),
+        GamePanel(
+          child: Column(
+            children: [
+              Text(
+                tr(context, 'Copy the pattern on the left. Tap a cell to change its colour.', 'Copia el patrón de la izquierda. Toca una casilla para cambiar su color.'),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(child: _grid(_target)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _grid(
+                      _mine,
+                      onTap: done
+                          ? null
+                          : (i) => setState(() {
+                              _mine[i] = (_mine[i] + 1) % _colors;
+                              _moves++;
+                            }),
+                    ),
+                  ),
+                ],
+              ),
+              if (done)
+                GameActions(
+                  children: [
+                    Text(tr(context, '✓ Matched!', '✓ ¡Igual!'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                    PrismButton(
+                      tone: PrismButtonTone.filled,
+                      label: _round + 1 >= 5 ? tr(context, 'Finish', 'Terminar') : tr(context, 'Next pattern', 'Siguiente patrón'),
+                      onPressed: () {
+                        if (_round + 1 >= 5) {
+                          widget.session.finish(GameOutcome(score: 5, max: 5, summary: tr(context, '5 patterns in $_moves taps', '5 patrones en $_moves toques')));
+                        } else {
+                          setState(() {
+                            _round++;
+                            _deal();
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -462,7 +629,12 @@ Widget buildCustom(GameSession s) {
 class _EmptyCustom extends StatelessWidget {
   const _EmptyCustom();
   @override
-  Widget build(BuildContext context) => GamePanel(child: Text(tr(context, 'This custom game needs a bit more content. Edit it in Create to add more.', 'Este juego personalizado necesita más contenido. Edítalo en Crear.'), textAlign: TextAlign.center));
+  Widget build(BuildContext context) => GamePanel(
+    child: Text(
+      tr(context, 'This custom game needs a bit more content. Edit it in Create to add more.', 'Este juego personalizado necesita más contenido. Edítalo en Crear.'),
+      textAlign: TextAlign.center,
+    ),
+  );
 }
 
 /// "Which … are you?" — each option points to a result; the most-picked
@@ -478,7 +650,14 @@ class _PersonalityQuizGameState extends State<PersonalityQuizGame> {
   late final List<String> _results = [for (final v in (widget.session.custom?['results'] as List?) ?? const []) '$v'];
   late final List<(String, List<(String, int)>)> _qs = [
     for (final v in (widget.session.custom?['questions'] as List?) ?? const [])
-      if (v is Map) ('${v['q']}', [for (final o in (v['options'] as List?) ?? const []) if (o is Map) ('${o['t']}', (o['r'] as num?)?.toInt() ?? 0)]),
+      if (v is Map)
+        (
+          '${v['q']}',
+          [
+            for (final o in (v['options'] as List?) ?? const [])
+              if (o is Map) ('${o['t']}', (o['r'] as num?)?.toInt() ?? 0),
+          ],
+        ),
   ];
   int _i = 0;
   final Map<int, int> _tally = {};
@@ -487,24 +666,33 @@ class _PersonalityQuizGameState extends State<PersonalityQuizGame> {
   Widget build(BuildContext context) {
     if (_qs.isEmpty || _results.isEmpty) return const _EmptyCustom();
     final (q, opts) = _qs[_i];
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      GameProgress(current: _i + 1, total: _qs.length),
-      GamePanel(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          GamePrompt(q),
-          const SizedBox(height: 10),
-          for (final (t, r) in opts)
-            OptionTile(label: t, onTap: () {
-              _tally[r] = (_tally[r] ?? 0) + 1;
-              if (_i + 1 >= _qs.length) {
-                final best = _tally.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
-                widget.session.finish(GameOutcome(summary: _results[best.clamp(0, _results.length - 1)], memorable: _results[best.clamp(0, _results.length - 1)]));
-              } else {
-                setState(() => _i++);
-              }
-            }),
-        ]),
-      ),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GameProgress(current: _i + 1, total: _qs.length),
+        GamePanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GamePrompt(q),
+              const SizedBox(height: 10),
+              for (final (t, r) in opts)
+                OptionTile(
+                  label: t,
+                  onTap: () {
+                    _tally[r] = (_tally[r] ?? 0) + 1;
+                    if (_i + 1 >= _qs.length) {
+                      final best = _tally.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
+                      widget.session.finish(GameOutcome(summary: _results[best.clamp(0, _results.length - 1)], memorable: _results[best.clamp(0, _results.length - 1)]));
+                    } else {
+                      setState(() => _i++);
+                    }
+                  },
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -200,13 +200,24 @@ class OptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final good = scheme.primary, bad = scheme.error;
-    final border = state == true ? good : state == false ? bad : selected ? scheme.primary : scheme.outlineVariant;
+    final border = state == true
+        ? good
+        : state == false
+        ? bad
+        : selected
+        ? scheme.primary
+        : scheme.outlineVariant;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Semantics(
         button: true,
         selected: selected,
-        label: '$label${state == true ? ', correct' : state == false ? ', wrong' : ''}',
+        label:
+            '$label${state == true
+                ? ', correct'
+                : state == false
+                ? ', wrong'
+                : ''}',
         child: Material(
           color: state == true
               ? good.withValues(alpha: 0.14)
@@ -215,7 +226,10 @@ class OptionTile extends StatelessWidget {
               : selected
               ? scheme.primary.withValues(alpha: 0.12)
               : scheme.surfaceContainerHigh,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(PrismTokens.radiusMedium), side: BorderSide(color: border, width: state == null && !selected ? 1 : 1.6)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            side: BorderSide(color: border, width: state == null && !selected ? 1 : 1.6),
+          ),
           child: InkWell(
             borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
             onTap: onTap,
@@ -224,7 +238,9 @@ class OptionTile extends StatelessWidget {
               child: Row(
                 children: [
                   if (leading != null) ...[leading!, const SizedBox(width: 10)],
-                  Expanded(child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
+                  Expanded(
+                    child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
                   if (state == true) Icon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill), color: good, size: 20),
                   if (state == false) Icon(PhosphorIcons.xCircle(PhosphorIconsStyle.fill), color: bad, size: 20),
                 ],
@@ -259,7 +275,9 @@ class GameProgress extends StatelessWidget {
               decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(3)),
               child: FractionallySizedBox(
                 widthFactor: total == 0 ? 0 : (current / total).clamp(0.0, 1.0),
-                child: Container(decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(3))),
+                child: Container(
+                  decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(3)),
+                ),
               ),
             ),
           ),
@@ -281,10 +299,13 @@ class GameTimer extends StatefulWidget {
 }
 
 class _GameTimerState extends State<GameTimer> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: Duration(seconds: widget.seconds))
-    ..addStatusListener((s) {
-      if (s == AnimationStatus.completed) widget.onDone();
-    });
+  late final AnimationController _c =
+      AnimationController(
+        vsync: this,
+        duration: Duration(seconds: widget.seconds),
+      )..addStatusListener((s) {
+        if (s == AnimationStatus.completed) widget.onDone();
+      });
 
   @override
   void initState() {

@@ -21,9 +21,8 @@ class _LazyGameState extends State<LazyGame> {
   @override
   Widget build(BuildContext context) => FutureBuilder<void>(
     future: _f,
-    builder: (context, s) => s.connectionState == ConnectionState.done
-        ? (s.hasError ? Center(child: Text('${s.error}')) : widget.builder(context))
-        : const Padding(padding: EdgeInsets.all(40), child: PrismLoadingState()),
+    builder: (context, s) =>
+        s.connectionState == ConnectionState.done ? (s.hasError ? Center(child: Text('${s.error}')) : widget.builder(context)) : const Padding(padding: EdgeInsets.all(40), child: PrismLoadingState()),
   );
 }
 
@@ -109,16 +108,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     _pending = null;
     final who = _current;
     if (d.saves) await ref.read(gamesActionsProvider).clearSave(widget.gameId, who);
-    await ref.read(gamesActionsProvider).recordResult(
-      gameId: widget.gameId,
-      memberId: who,
-      score: o.score,
-      max: o.max,
-      summary: o.summary,
-      memorable: o.memorable,
-      challengeId: widget.challengeId,
-      nightId: widget.nightId,
-    );
+    await ref
+        .read(gamesActionsProvider)
+        .recordResult(gameId: widget.gameId, memberId: who, score: o.score, max: o.max, summary: o.summary, memorable: o.memorable, challengeId: widget.challengeId, nightId: widget.nightId);
     if (!mounted) return;
     setState(() {
       if (who != null) {
@@ -162,7 +154,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   Widget build(BuildContext context) {
     final d = def;
     if (d == null) {
-      return PrismPageScaffold(topBar: const PrismTopBar(title: 'Games'), body: EmptyState(icon: Icon(PhosphorIcons.question()), title: tr(context, 'Game not found', 'Juego no encontrado'), subtitle: widget.gameId));
+      return PrismPageScaffold(
+        topBar: const PrismTopBar(title: 'Games'),
+        body: EmptyState(icon: Icon(PhosphorIcons.question()), title: tr(context, 'Game not found', 'Juego no encontrado'), subtitle: widget.gameId),
+      );
     }
     final names = ref.watch(gameNamesProvider);
     final favs = ref.watch(gameProfilesProvider)[_current ?? '']?.favorites ?? const [];
@@ -209,18 +204,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 _Stage.play => KeyedSubtree(
                   key: ValueKey('$_round/$_turn'),
                   child: d.build(
-                    GameSession(
-                      def: d,
-                      player: _current,
-                      players: _players,
-                      names: names,
-                      seed: _seed,
-                      saved: _restored,
-                      timer: _timer,
-                      custom: widget.custom,
-                      save: _queueSave,
-                      finish: _finish,
-                    ),
+                    GameSession(def: d, player: _current, players: _players, names: names, seed: _seed, saved: _restored, timer: _timer, custom: widget.custom, save: _queueSave, finish: _finish),
                   ),
                 ),
                 _Stage.handoff => _handoff(context, names),
@@ -236,7 +220,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   void _showHowTo(BuildContext context, GameDef d) => PrismSheet.show(
     context: context,
     title: tr(context, 'How to play', 'Cómo se juega'),
-    builder: (ctx) => Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), child: Text(trp(ctx, d.howTo), style: const TextStyle(height: 1.5))),
+    builder: (ctx) => Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Text(trp(ctx, d.howTo), style: const TextStyle(height: 1.5)),
+    ),
   );
 
   Widget _setup(BuildContext context, GameDef d) {
@@ -301,7 +288,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              tr(context, 'Pass & play: each alter gets the same puzzle in turn, then you compare. You can stop between turns.', 'Por turnos: cada alter juega el mismo reto y luego comparáis. Podéis parar entre turnos.'),
+              tr(
+                context,
+                'Pass & play: each alter gets the same puzzle in turn, then you compare. You can stop between turns.',
+                'Por turnos: cada alter juega el mismo reto y luego comparáis. Podéis parar entre turnos.',
+              ),
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
@@ -315,11 +306,23 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           ),
         const SizedBox(height: 16),
         if (save != null) ...[
-          PrismButton(tone: PrismButtonTone.filled, expanded: true, icon: PhosphorIcons.play(), label: tr(context, 'Continue where you left off', 'Continuar donde lo dejaste'), onPressed: () => _start(resume: true)),
+          PrismButton(
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            icon: PhosphorIcons.play(),
+            label: tr(context, 'Continue where you left off', 'Continuar donde lo dejaste'),
+            onPressed: () => _start(resume: true),
+          ),
           const SizedBox(height: 8),
           PrismButton(expanded: true, icon: PhosphorIcons.arrowCounterClockwise(), label: tr(context, 'Start over', 'Empezar de nuevo'), onPressed: () => _start()),
         ] else
-          PrismButton(tone: PrismButtonTone.filled, expanded: true, icon: PhosphorIcons.play(), label: c != null ? tr(context, 'Accept challenge', 'Aceptar reto') : tr(context, 'Play', 'Jugar'), onPressed: () => _start()),
+          PrismButton(
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            icon: PhosphorIcons.play(),
+            label: c != null ? tr(context, 'Accept challenge', 'Aceptar reto') : tr(context, 'Play', 'Jugar'),
+            onPressed: () => _start(),
+          ),
       ],
     );
   }
@@ -334,14 +337,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           const SizedBox(height: 16),
           Text(tr(context, 'Pass to ${names[next]}', 'Pasa a ${names[next]}'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          Text(tr(context, 'Same puzzle, their turn. Results are saved — they can play now or later.', 'Mismo reto, su turno. Los resultados se guardan: puede jugar ahora o más tarde.'), textAlign: TextAlign.center),
+          Text(
+            tr(context, 'Same puzzle, their turn. Results are saved — they can play now or later.', 'Mismo reto, su turno. Los resultados se guardan: puede jugar ahora o más tarde.'),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 20),
           PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Start ${names[next]}\'s turn', 'Empezar turno de ${names[next]}'), onPressed: () => setState(() => _stage = _Stage.play)),
           const SizedBox(height: 8),
-          PrismButton(label: tr(context, 'Later — leave it as a challenge', 'Más tarde: dejarlo como reto'), onPressed: () async {
-            await ref.read(gamesActionsProvider).createChallenge(gameId: widget.gameId, from: _players.first, to: _players.sublist(_turn), seed: _seed);
-            if (mounted) setState(() => _stage = _Stage.results);
-          }),
+          PrismButton(
+            label: tr(context, 'Later — leave it as a challenge', 'Más tarde: dejarlo como reto'),
+            onPressed: () async {
+              await ref.read(gamesActionsProvider).createChallenge(gameId: widget.gameId, from: _players.first, to: _players.sublist(_turn), seed: _seed);
+              if (mounted) setState(() => _stage = _Stage.results);
+            },
+          ),
         ],
       ),
     );
@@ -354,7 +363,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     // Earlier results for the same challenge (async play).
     final chResults = widget.challengeId == null
         ? const <GameResult>[]
-        : [for (final r in ref.watch(gameResultsProvider)) if (r.challengeId == widget.challengeId || (r.r.id == challenge?.r.id)) r];
+        : [
+            for (final r in ref.watch(gameResultsProvider))
+              if (r.challengeId == widget.challengeId || (r.r.id == challenge?.r.id)) r,
+          ];
     final c = challenge;
     final fromResult = c == null
         ? null
@@ -382,19 +394,25 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 ),
               if (scored.length > 1) ...[
                 const SizedBox(height: 6),
-                Text(
-                  () {
-                    final best = scored.reduce((a, b) => (a.$2.score ?? 0) >= (b.$2.score ?? 0) ? a : b);
-                    final tie = scored.where((e) => e.$2.score == best.$2.score).length > 1;
-                    return tie ? tr(context, 'A tie — well played, everyone!', '¡Empate! Bien jugado, todos.') : tr(context, '${names[best.$1]} scored highest this time.', '${names[best.$1]} sacó la puntuación más alta esta vez.');
-                  }(),
-                  style: theme.textTheme.bodySmall,
-                ),
+                Text(() {
+                  final best = scored.reduce((a, b) => (a.$2.score ?? 0) >= (b.$2.score ?? 0) ? a : b);
+                  final tie = scored.where((e) => e.$2.score == best.$2.score).length > 1;
+                  return tie
+                      ? tr(context, 'A tie — well played, everyone!', '¡Empate! Bien jugado, todos.')
+                      : tr(context, '${names[best.$1]} scored highest this time.', '${names[best.$1]} sacó la puntuación más alta esta vez.');
+                }(), style: theme.textTheme.bodySmall),
               ],
               if (fromResult != null && fromResult.score != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(tr(context, '${names[fromResult.memberId] ?? 'The challenger'} scored ${fromResult.score}${fromResult.max == null ? '' : ' / ${fromResult.max}'} on this one.', '${names[fromResult.memberId] ?? 'Quien retó'} sacó ${fromResult.score}${fromResult.max == null ? '' : ' / ${fromResult.max}'} en este reto.'), style: theme.textTheme.bodySmall),
+                  child: Text(
+                    tr(
+                      context,
+                      '${names[fromResult.memberId] ?? 'The challenger'} scored ${fromResult.score}${fromResult.max == null ? '' : ' / ${fromResult.max}'} on this one.',
+                      '${names[fromResult.memberId] ?? 'Quien retó'} sacó ${fromResult.score}${fromResult.max == null ? '' : ' / ${fromResult.max}'} en este reto.',
+                    ),
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ),
               if (chResults.length > 1)
                 Padding(
@@ -403,33 +421,61 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 ),
               for (final (_, o) in entries)
                 if (o.memorable != null && o.memorable!.isNotEmpty)
-                  Padding(padding: const EdgeInsets.only(top: 10), child: Text('"${o.memorable}"', textAlign: TextAlign.center, style: const TextStyle(fontStyle: FontStyle.italic, height: 1.4))),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      '"${o.memorable}"',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontStyle: FontStyle.italic, height: 1.4),
+                    ),
+                  ),
             ],
           ),
         ),
         if (widget.onComplete == null) ...[
           const SizedBox(height: 14),
-          PrismButton(tone: PrismButtonTone.filled, expanded: true, icon: PhosphorIcons.arrowCounterClockwise(), label: tr(context, 'Play again', 'Jugar otra vez'), onPressed: () {
-            _seed = math.Random().nextInt(1 << 30);
-            _start();
-          }),
+          PrismButton(
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            icon: PhosphorIcons.arrowCounterClockwise(),
+            label: tr(context, 'Play again', 'Jugar otra vez'),
+            onPressed: () {
+              _seed = math.Random().nextInt(1 << 30);
+              _start();
+            },
+          ),
           if (d.seeded && d.style == PlayStyle.turns) ...[
             const SizedBox(height: 8),
-            PrismButton(expanded: true, icon: PhosphorIcons.paperPlaneTilt(), label: tr(context, 'Challenge another alter with this one', 'Retar a otro alter con este'), onPressed: () => _challenge(context)),
+            PrismButton(
+              expanded: true,
+              icon: PhosphorIcons.paperPlaneTilt(),
+              label: tr(context, 'Challenge another alter with this one', 'Retar a otro alter con este'),
+              onPressed: () => _challenge(context),
+            ),
           ],
           const SizedBox(height: 8),
-          PrismButton(expanded: true, icon: PhosphorIcons.notebook(), label: tr(context, 'Save to Journal', 'Guardar en el diario'), onPressed: () async {
-            final lines = [for (final (id, o) in entries) '${id.isEmpty ? '' : '${names[id]}: '}${o.summary}${o.scored ? ' (${o.score}${o.max == null ? '' : '/${o.max}'})' : ''}${o.memorable == null ? '' : '\n"${o.memorable}"'}'];
-            await ref.read(trackerNotifierProvider.notifier).create(
-              kind: TrackerKind.journalEntry,
-              title: '${d.emoji} ${trp(context, d.name)}',
-              body: lines.join('\n'),
-              memberId: _players.isEmpty ? null : _players.first,
-              occurredAt: DateTime.now(),
-              tags: const ['games'],
-            );
-            if (context.mounted) PrismToast.show(context, message: tr(context, 'Saved to Journal', 'Guardado en el diario'));
-          }),
+          PrismButton(
+            expanded: true,
+            icon: PhosphorIcons.notebook(),
+            label: tr(context, 'Save to Journal', 'Guardar en el diario'),
+            onPressed: () async {
+              final lines = [
+                for (final (id, o) in entries)
+                  '${id.isEmpty ? '' : '${names[id]}: '}${o.summary}${o.scored ? ' (${o.score}${o.max == null ? '' : '/${o.max}'})' : ''}${o.memorable == null ? '' : '\n"${o.memorable}"'}',
+              ];
+              await ref
+                  .read(trackerNotifierProvider.notifier)
+                  .create(
+                    kind: TrackerKind.journalEntry,
+                    title: '${d.emoji} ${trp(context, d.name)}',
+                    body: lines.join('\n'),
+                    memberId: _players.isEmpty ? null : _players.first,
+                    occurredAt: DateTime.now(),
+                    tags: const ['games'],
+                  );
+              if (context.mounted) PrismToast.show(context, message: tr(context, 'Saved to Journal', 'Guardado en el diario'));
+            },
+          ),
         ],
       ],
     );
@@ -453,7 +499,14 @@ class _Meta extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(20)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 14), const SizedBox(width: 5), Text(label, style: theme.textTheme.labelMedium)]),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14),
+          const SizedBox(width: 5),
+          Text(label, style: theme.textTheme.labelMedium),
+        ],
+      ),
     );
   }
 }

@@ -104,14 +104,16 @@ class TonePlayer {
       brown = (brown + white * 0.02).clamp(-1.0, 1.0) * 0.998;
       final t = i / _rate;
       final loopFade = math.sin(math.pi * i / n); // smooth loop seam
-      out[i] = switch (kind) {
-        'rain' => pink * (0.8 + 0.2 * rng.nextDouble()),
-        'wind' => brown * 2.4 * (0.6 + 0.4 * math.sin(2 * math.pi * t / secs)),
-        'waves' => pink * (0.25 + 0.75 * math.pow(math.sin(math.pi * t / secs), 2)),
-        'fire' => brown * 1.6 + (rng.nextDouble() < 0.002 ? white * 0.8 : 0),
-        'stream' => (pink * 0.7 + white * 0.08) * (0.85 + 0.15 * math.sin(2 * math.pi * 3 * t)),
-        _ => white * 0.15, // white noise
-      } * (0.9 + 0.1 * loopFade);
+      out[i] =
+          switch (kind) {
+            'rain' => pink * (0.8 + 0.2 * rng.nextDouble()),
+            'wind' => brown * 2.4 * (0.6 + 0.4 * math.sin(2 * math.pi * t / secs)),
+            'waves' => pink * (0.25 + 0.75 * math.pow(math.sin(math.pi * t / secs), 2)),
+            'fire' => brown * 1.6 + (rng.nextDouble() < 0.002 ? white * 0.8 : 0),
+            'stream' => (pink * 0.7 + white * 0.08) * (0.85 + 0.15 * math.sin(2 * math.pi * 3 * t)),
+            _ => white * 0.15, // white noise
+          } *
+          (0.9 + 0.1 * loopFade);
     }
     return out;
   }

@@ -9,6 +9,9 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroProfileModule;
+import 'package:prism_plurality/core/features/feature_state.dart' show featureEnabledProvider;
+import 'package:prism_plurality/features/games/core/games_data.dart' show gameProfilesProvider, gameResultsProvider;
+import 'package:prism_plurality/features/games/views/games_profile_view.dart' show AlterGamesProfile;
 import 'package:prism_plurality/features/relationships/utils/relationships.dart';
 import 'package:prism_plurality/features/relationships/views/relationship_labels.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
@@ -397,6 +400,13 @@ class _Body extends ConsumerWidget {
         // Shows only when this alter's astrology is visible to the viewer.
         if (!AstroProfileModule.visible(ref, member.id)) return null;
         return AstroProfileModule(member: member, accent: accent);
+      case 'games':
+        // Optional: off by default, hidden when the alter hides their stats
+        // or hasn't played anything yet.
+        if (!ref.watch(featureEnabledProvider('games'))) return null;
+        if (ref.watch(gameProfilesProvider)[member.id]?.hideStats ?? false) return null;
+        if (!ref.watch(gameResultsProvider).any((r) => r.memberId == member.id)) return null;
+        return titled(moduleLabel(context, id), [AlterGamesProfile(memberId: member.id)]);
       case 'journal':
         final entries = (ref.watch(trackerKindProvider(TrackerKind.journalEntry)).value ?? const <TrackerRecord>[]).where((e) => e.memberId == member.id && !e.isPrivate).toList()
           ..sort((a, b) => (b.occurredAt ?? b.createdAt).compareTo(a.occurredAt ?? a.createdAt));

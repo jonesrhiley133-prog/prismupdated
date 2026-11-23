@@ -19,6 +19,8 @@ enum AchievementMetric {
   cycleDays,
   placesVisited,
   activeDays,
+  gamesPlayed,
+  cozyMoments,
 }
 
 enum AchievementCategory {
@@ -161,6 +163,19 @@ final List<AchievementDef> allAchievements = [
     1,
     25,
     100,
+  ]),
+  ..._ladder(AchievementMetric.gamesPlayed, AchievementCategory.social, [
+    1,
+    10,
+    50,
+    200,
+    1000,
+  ]),
+  ..._ladder(AchievementMetric.cozyMoments, AchievementCategory.social, [
+    1,
+    10,
+    50,
+    200,
   ]),
   ..._ladder(AchievementMetric.activeDays, AchievementCategory.consistency, [
     1,

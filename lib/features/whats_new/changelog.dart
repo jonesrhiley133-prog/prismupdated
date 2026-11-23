@@ -32,6 +32,42 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.41.0',
+    date: DateTime(2026, 11, 23),
+    features: const [
+      LocalizedText(
+        'Games: a new tab with 120 mini-games across trivia, word games, logic puzzles, cozy activities, memory, party games and creative/learning play. Search, filter, sort, favourites, Continue Playing, daily picks and a Random button.',
+        'Juegos: una pestaña nueva con 120 minijuegos de trivia, palabras, lógica, actividades relajantes, memoria, fiesta y juegos creativos o educativos. Búsqueda, filtros, orden, favoritos, Continuar, juegos del día y un botón al azar.',
+      ),
+      LocalizedText(
+        'Play solo, pass & play on one device, leave challenges for other alters to play later, or plan a Game Night with a line-up, co-op or friendly scores, pause/resume, a Calendar event and a recap. Fronting never limits who can play.',
+        'Juega en solitario, por turnos en un dispositivo, deja retos para que otros alters los jueguen después o planea una noche de juegos con programa, puntos cooperativos o amistosos, pausa, evento en el calendario y resumen. Estar al frente nunca limita quién juega.',
+      ),
+      LocalizedText(
+        'Make your own games: trivia, friendship and personality quizzes, Would You Rather, word searches, crosswords, bingo boards, memory sets, prompt decks and flashcards.',
+        'Crea tus propios juegos: trivia, quizzes de amistad y personalidad, ¿Qué prefieres?, sopas de letras, crucigramas, bingos, juegos de memoria, barajas de preguntas y tarjetas.',
+      ),
+      LocalizedText(
+        'Games profiles for every alter with 20 friendly achievements (no streaks), personal bests and memorable moments — stats can be hidden. An optional Games module is available on member profiles.',
+        'Perfiles de juegos para cada alter con 20 logros amistosos (sin rachas), mejores marcas y momentos memorables; las estadísticas se pueden ocultar. Hay un módulo opcional de Juegos en los perfiles.',
+      ),
+      LocalizedText(
+        'Cozy: a new tab for being together — a customizable lounge with posts, question of the day, starters, affirmations and quotes; rooms with public, private, shared or subsystem access; a mailbox with drafts, scheduled and anonymous letters; a system garden where plants never die.',
+        'Acogedor: una pestaña nueva para estar juntos: sala personalizable con publicaciones, pregunta del día, temas, afirmaciones y citas; habitaciones públicas, privadas, compartidas o de subsistema; buzón con borradores y cartas programadas o anónimas; un jardín donde las plantas nunca mueren.',
+      ),
+      LocalizedText(
+        'Cozy also has 25 bonding activities, an activity roulette, a comfort center (breathing, ambient sound mixer, grounding, timer, message jar, bubble pop), 20 shared collections (gratitude and appreciation jars, time capsules, reading shelf, music exchange, bucket list, celebration calendar, recipes, moodboards and more), a doodle wall with layers and gifts.',
+        'Acogedor también incluye 25 actividades para conectar, una ruleta, un centro de calma (respiración, mezclador de sonidos, anclaje, temporizador, tarro de mensajes, burbujas), 20 colecciones compartidas (tarros de gratitud y aprecio, cápsulas del tiempo, estantería, música, deseos, celebraciones, recetas, tableros y más), un muro de dibujos con capas y regalos.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Games and Cozy link into Journal, Calendar, Polls, Scrapbook and Achievements. Game content loads only when a game opens.',
+        'Juegos y Acogedor se conectan con el diario, calendario, encuestas, álbum y logros. El contenido de los juegos solo se carga al abrir un juego.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.40.0',
     date: DateTime(2026, 11, 23),
     features: const [

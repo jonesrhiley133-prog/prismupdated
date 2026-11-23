@@ -85,6 +85,10 @@ abstract final class AppIcons {
   static final navIntroductionsActive = PhosphorIcons.cards(PhosphorIconsStyle.fill);
   static final navAstro = PhosphorIcons.planet();
   static final navAstroActive = PhosphorIcons.planet(PhosphorIconsStyle.fill);
+  static final navGames = PhosphorIcons.gameController();
+  static final navGamesActive = PhosphorIcons.gameController(PhosphorIconsStyle.fill);
+  static final navCozy = PhosphorIcons.coffee();
+  static final navCozyActive = PhosphorIcons.coffee(PhosphorIconsStyle.fill);
   static final navHealth = PhosphorIcons.firstAid();
   static final navHealthActive = PhosphorIcons.firstAid(PhosphorIconsStyle.fill);
   static final navSocial = PhosphorIcons.usersFour();

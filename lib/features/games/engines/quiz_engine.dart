@@ -118,15 +118,13 @@ class _QuizGameState extends State<QuizGame> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (widget.session.timer && !answered)
-                Align(alignment: Alignment.centerRight, child: GameTimer(key: ValueKey(_i), seconds: widget.seconds, onDone: () => _answer(null))),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GameTimer(key: ValueKey(_i), seconds: widget.seconds, onDone: () => _answer(null)),
+                ),
               GamePrompt(q.q, size: widget.promptSize),
               const SizedBox(height: 14),
-              for (final o in _opts[_i])
-                OptionTile(
-                  label: o,
-                  state: !answered ? null : (o == q.answer ? true : (o == _picked ? false : null)),
-                  onTap: answered ? null : () => _answer(o),
-                ),
+              for (final o in _opts[_i]) OptionTile(label: o, state: !answered ? null : (o == q.answer ? true : (o == _picked ? false : null)), onTap: answered ? null : () => _answer(o)),
               if (answered) ...[
                 const SizedBox(height: 10),
                 Text(
@@ -138,7 +136,11 @@ class _QuizGameState extends State<QuizGame> {
                   style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 if (q.explain.isNotEmpty) ...[const SizedBox(height: 4), Text(q.explain, style: theme.textTheme.bodyMedium?.copyWith(height: 1.4))],
-                GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: _i + 1 >= _qs.length ? tr(context, 'See results', 'Ver resultados') : tr(context, 'Next', 'Siguiente'), onPressed: _next)]),
+                GameActions(
+                  children: [
+                    PrismButton(tone: PrismButtonTone.filled, label: _i + 1 >= _qs.length ? tr(context, 'See results', 'Ver resultados') : tr(context, 'Next', 'Siguiente'), onPressed: _next),
+                  ],
+                ),
               ],
             ],
           ),
@@ -160,7 +162,10 @@ class GeneratedQuiz extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rng = session.rng(7);
-    final bank = [for (var d = 1; d <= 3; d++) for (var i = 0; i < count; i++) make(rng, d)];
+    final bank = [
+      for (var d = 1; d <= 3; d++)
+        for (var i = 0; i < count; i++) make(rng, d),
+    ];
     return QuizGame(session: session, bank: bank, count: count, seconds: seconds);
   }
 }

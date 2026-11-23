@@ -51,10 +51,14 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
     final List<(int, String)> cards;
     if (custom != null && custom.isNotEmpty) {
       final picked = shuffled(List.generate(custom.length, (i) => i), rng).take(_pairsCount).toList();
-      cards = [for (final i in picked) ...[(i, custom[i].$1), (i, custom[i].$2)]];
+      cards = [
+        for (final i in picked) ...[(i, custom[i].$1), (i, custom[i].$2)],
+      ];
     } else {
       final faces = shuffled(memoryEmojis, rng).take(_pairsCount).toList();
-      cards = [for (var i = 0; i < faces.length; i++) ...[(i, faces[i]), (i, faces[i])]];
+      cards = [
+        for (var i = 0; i < faces.length; i++) ...[(i, faces[i]), (i, faces[i])],
+      ];
     }
     _cards = shuffled(cards, rng);
     _open.clear();
@@ -99,14 +103,23 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
         children: [
           if (widget.pairs == null && !widget.sounds)
             PrismSegmentedControl<int>(
-              segments: [PrismSegment(value: 6, label: tr(context, '6 pairs', '6 parejas')), PrismSegment(value: 8, label: tr(context, '8 pairs', '8 parejas')), PrismSegment(value: 10, label: tr(context, '10 pairs', '10 parejas'))],
+              segments: [
+                PrismSegment(value: 6, label: tr(context, '6 pairs', '6 parejas')),
+                PrismSegment(value: 8, label: tr(context, '8 pairs', '8 parejas')),
+                PrismSegment(value: 10, label: tr(context, '10 pairs', '10 parejas')),
+              ],
               selected: _pairsCount,
               onChanged: (v) => setState(() {
                 _pairsCount = v;
                 _deal();
               }),
             ),
-          if (widget.sounds) Text(tr(context, 'Each card plays a note. Find the pairs that sound the same.', 'Cada carta suena con una nota. Encuentra las parejas que suenan igual.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          if (widget.sounds)
+            Text(
+              tr(context, 'Each card plays a note. Find the pairs that sound the same.', 'Cada carta suena con una nota. Encuentra las parejas que suenan igual.'),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           const SizedBox(height: 10),
           CellGrid(
             rows: (_cards.length / cols).ceil(),
@@ -126,12 +139,22 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                     duration: MediaQuery.of(context).disableAnimations ? Duration.zero : const Duration(milliseconds: 200),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: _done.contains(i) ? scheme.primary.withValues(alpha: 0.18) : up ? scheme.surfaceContainerHighest : scheme.primary.withValues(alpha: 0.55),
+                      color: _done.contains(i)
+                          ? scheme.primary.withValues(alpha: 0.18)
+                          : up
+                          ? scheme.surfaceContainerHighest
+                          : scheme.primary.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: scheme.outlineVariant),
                     ),
                     child: up
-                        ? (widget.sounds ? Icon(PhosphorIcons.musicNote(PhosphorIconsStyle.fill), color: gameplayColors[_cards[i].$1 % 6].$1) : Text(face, textAlign: TextAlign.center, style: TextStyle(fontSize: face.characters.length > 2 ? 14 : 30, fontWeight: FontWeight.w600)))
+                        ? (widget.sounds
+                              ? Icon(PhosphorIcons.musicNote(PhosphorIconsStyle.fill), color: gameplayColors[_cards[i].$1 % 6].$1)
+                              : Text(
+                                  face,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: face.characters.length > 2 ? 14 : 30, fontWeight: FontWeight.w600),
+                                ))
                         : Icon(PhosphorIcons.sparkle(), color: scheme.onPrimary),
                   ),
                 ),
@@ -221,7 +244,12 @@ class _RecallGameState extends State<RecallGame> {
     final theme = Theme.of(context);
     final study = widget.kind == RecallKind.shopping
         ? Column(children: [for (final s in _items) Text('• $s', style: theme.textTheme.titleMedium)])
-        : Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [for (final e in _items) Text(e, style: const TextStyle(fontSize: 36))]);
+        : Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
+            children: [for (final e in _items) Text(e, style: const TextStyle(fontSize: 36))],
+          );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -231,14 +259,29 @@ class _RecallGameState extends State<RecallGame> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (_studying) ...[
-                Text(tr(context, 'Take your time and remember these. Tap "Ready" when you are.', 'Tómate tu tiempo y recuérdalos. Pulsa "Listo" cuando quieras.'), textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+                Text(
+                  tr(context, 'Take your time and remember these. Tap "Ready" when you are.', 'Tómate tu tiempo y recuérdalos. Pulsa "Listo" cuando quieras.'),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall,
+                ),
                 const SizedBox(height: 14),
                 study,
-                if (widget.session.timer) Align(alignment: Alignment.centerRight, child: GameTimer(key: ValueKey(_round), seconds: 6, onDone: () => setState(() => _studying = false))),
-                GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Ready', 'Listo'), onPressed: () => setState(() => _studying = false))]),
+                if (widget.session.timer)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GameTimer(key: ValueKey(_round), seconds: 6, onDone: () => setState(() => _studying = false)),
+                  ),
+                GameActions(
+                  children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Ready', 'Listo'), onPressed: () => setState(() => _studying = false))],
+                ),
               ] else ...[
                 if (widget.kind == RecallKind.missing) ...[
-                  Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [for (final e in _missingShown) Text(e, style: const TextStyle(fontSize: 36))]),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [for (final e in _missingShown) Text(e, style: const TextStyle(fontSize: 36))],
+                  ),
                   const SizedBox(height: 12),
                 ],
                 GamePrompt(switch (_question.$1) {
@@ -260,18 +303,24 @@ class _RecallGameState extends State<RecallGame> {
                           }),
                   ),
                 if (_picked != null)
-                  GameActions(children: [
-                    PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Next', 'Siguiente'), onPressed: () {
-                      if (_round + 1 >= widget.rounds) {
-                        widget.session.finish(GameOutcome(score: _score, max: widget.rounds, summary: '$_score / ${widget.rounds}'));
-                      } else {
-                        setState(() {
-                          _round++;
-                          _newRound();
-                        });
-                      }
-                    }),
-                  ]),
+                  GameActions(
+                    children: [
+                      PrismButton(
+                        tone: PrismButtonTone.filled,
+                        label: tr(context, 'Next', 'Siguiente'),
+                        onPressed: () {
+                          if (_round + 1 >= widget.rounds) {
+                            widget.session.finish(GameOutcome(score: _score, max: widget.rounds, summary: '$_score / ${widget.rounds}'));
+                          } else {
+                            setState(() {
+                              _round++;
+                              _newRound();
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
               ],
             ],
           ),
@@ -313,10 +362,14 @@ class _NumberMemoryGameState extends State<NumberMemoryGame> {
           if (_studying) ...[
             Text(_num.split('').join(' '), style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 2)),
             if (widget.session.timer) GameTimer(key: ValueKey(_len), seconds: 2 + _len ~/ 2, onDone: () => setState(() => _studying = false)),
-            GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Hide & answer', 'Ocultar y responder'), onPressed: () => setState(() => _studying = false))]),
+            GameActions(
+              children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Hide & answer', 'Ocultar y responder'), onPressed: () => setState(() => _studying = false))],
+            ),
           ] else ...[
             PrismTextField(controller: _ctl, keyboardType: TextInputType.number, hintText: tr(context, 'Type the number', 'Escribe el número'), autofocus: true, onSubmitted: (_) => _check()),
-            GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Check', 'Comprobar'), onPressed: _check)]),
+            GameActions(
+              children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Check', 'Comprobar'), onPressed: _check)],
+            ),
           ],
         ],
       ),
@@ -366,37 +419,52 @@ class _PatternMemoryGameState extends State<PatternMemoryGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(_studying ? tr(context, 'Remember the lit squares', 'Recuerda las casillas iluminadas') : tr(context, 'Tap the squares that were lit (${_picked.length}/$_level)', 'Toca las casillas iluminadas (${_picked.length}/$_level)'), style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(
+            _studying
+                ? tr(context, 'Remember the lit squares', 'Recuerda las casillas iluminadas')
+                : tr(context, 'Tap the squares that were lit (${_picked.length}/$_level)', 'Toca las casillas iluminadas (${_picked.length}/$_level)'),
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 10),
-          CellGrid(rows: _n, cols: _n, gap: 6, cell: (r, c) {
-            final i = r * _n + c;
-            final lit = _studying ? _target.contains(i) : _picked.contains(i);
-            return Semantics(
-              button: !_studying,
-              label: lit ? 'lit' : 'dark',
-              child: GestureDetector(
-                onTap: _studying
-                    ? null
-                    : () {
-                        if (!_target.contains(i)) {
-                          widget.session.finish(GameOutcome(score: _level - 1, summary: tr(context, 'Reached level ${_level - 2}', 'Llegaste al nivel ${_level - 2}')));
-                          return;
-                        }
-                        setState(() => _picked.add(i));
-                        if (_picked.length == _target.length) {
-                          setState(() {
-                            _level++;
-                            _target = _make();
-                            _picked.clear();
-                            _studying = true;
-                          });
-                        }
-                      },
-                child: Container(decoration: BoxDecoration(color: lit ? scheme.primary : scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10))),
-              ),
-            );
-          }),
-          if (_studying) GameActions(children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Ready', 'Listo'), onPressed: () => setState(() => _studying = false))]),
+          CellGrid(
+            rows: _n,
+            cols: _n,
+            gap: 6,
+            cell: (r, c) {
+              final i = r * _n + c;
+              final lit = _studying ? _target.contains(i) : _picked.contains(i);
+              return Semantics(
+                button: !_studying,
+                label: lit ? 'lit' : 'dark',
+                child: GestureDetector(
+                  onTap: _studying
+                      ? null
+                      : () {
+                          if (!_target.contains(i)) {
+                            widget.session.finish(GameOutcome(score: _level - 1, summary: tr(context, 'Reached level ${_level - 2}', 'Llegaste al nivel ${_level - 2}')));
+                            return;
+                          }
+                          setState(() => _picked.add(i));
+                          if (_picked.length == _target.length) {
+                            setState(() {
+                              _level++;
+                              _target = _make();
+                              _picked.clear();
+                              _studying = true;
+                            });
+                          }
+                        },
+                  child: Container(
+                    decoration: BoxDecoration(color: lit ? scheme.primary : scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              );
+            },
+          ),
+          if (_studying)
+            GameActions(
+              children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Ready', 'Listo'), onPressed: () => setState(() => _studying = false))],
+            ),
         ],
       ),
     );

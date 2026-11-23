@@ -132,6 +132,19 @@ abstract final class AppRoutePaths {
   static String astroAlter(String memberId, {String? section}) =>
       '/astro/alter/${Uri.encodeComponent(memberId)}${section == null ? '' : '?section=$section'}';
 
+  /// Games: the recreation hub, one game, a custom game, a game night.
+  static const games = '/games';
+  static String gamePlay(String id, {String? challenge, String? custom, String? night}) {
+    final q = {if (challenge != null) 'challenge': challenge, if (custom != null) 'custom': custom, if (night != null) 'night': night};
+    return '/games/play/${Uri.encodeComponent(id)}${q.isEmpty ? '' : '?${Uri(queryParameters: q).query}'}';
+  }
+
+  static String gameNight(String id) => '/games/night/${Uri.encodeComponent(id)}';
+
+  /// Cozy: shared spaces, letters, garden, comfort and collections.
+  static const cozy = '/cozy';
+  static String cozyRoom(String id) => '/cozy/room/${Uri.encodeComponent(id)}';
+
   // Parameterized helpers — groups
   static String memberGroup(String id) => '/members/groups/$id';
   static String settingsGroup(String id) => '/settings/members/groups/$id';
@@ -257,6 +270,8 @@ enum AppShellTabId {
   social,
   health,
   astro,
+  games,
+  cozy,
 }
 
 class AppShellTab {
@@ -342,6 +357,8 @@ class AppShellTab {
       AppShellTabId.social => 'Social',
       AppShellTabId.health => l10n.localeName.startsWith('es') ? 'Salud' : 'Health',
       AppShellTabId.astro => 'Astro',
+      AppShellTabId.games => l10n.localeName.startsWith('es') ? 'Juegos' : 'Games',
+      AppShellTabId.cozy => l10n.localeName.startsWith('es') ? 'Acogedor' : 'Cozy',
     };
   }
 
@@ -399,6 +416,8 @@ class AppShellTab {
       AppShellTabId.social => true,
       AppShellTabId.health => true,
       AppShellTabId.astro => true,
+      AppShellTabId.games => true,
+      AppShellTabId.cozy => true,
     };
   }
 }
@@ -733,6 +752,22 @@ final appShellTabs = [
     branchIndex: 40,
     rootLocation: AppRoutePaths.astro,
   ),
+  AppShellTab(
+    id: AppShellTabId.games,
+    label: 'Games',
+    icon: AppIcons.navGames,
+    activeIcon: AppIcons.navGamesActive,
+    branchIndex: 41,
+    rootLocation: AppRoutePaths.games,
+  ),
+  AppShellTab(
+    id: AppShellTabId.cozy,
+    label: 'Cozy',
+    icon: AppIcons.navCozy,
+    activeIcon: AppIcons.navCozyActive,
+    branchIndex: 42,
+    rootLocation: AppRoutePaths.cozy,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -749,6 +784,8 @@ const defaultNavBarOverflowTabIds = [
   'mood',
   'health',
   'astro',
+  'games',
+  'cozy',
   'insights',
   'locations',
   'work',

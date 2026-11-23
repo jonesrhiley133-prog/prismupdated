@@ -22,6 +22,8 @@ const Set<String> kPrismTabRootPaths = {
   AppRoutePaths.timeline,
   AppRoutePaths.sleep,
   AppRoutePaths.astro,
+  AppRoutePaths.games,
+  AppRoutePaths.cozy,
 };
 
 /// Where pages can be left from without a back button: the tabs shown in

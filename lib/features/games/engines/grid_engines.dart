@@ -19,7 +19,14 @@ class CellGrid extends StatelessWidget {
       children: [
         for (var r = 0; r < rows; r++)
           Expanded(
-            child: Row(children: [for (var c = 0; c < cols; c++) Expanded(child: Padding(padding: EdgeInsets.all(gap / 2), child: cell(r, c)))]),
+            child: Row(
+              children: [
+                for (var c = 0; c < cols; c++)
+                  Expanded(
+                    child: Padding(padding: EdgeInsets.all(gap / 2), child: cell(r, c)),
+                  ),
+              ],
+            ),
           ),
       ],
     ),
@@ -34,8 +41,15 @@ Widget _box(BuildContext context, {required Widget child, Color? color, VoidCall
     selected: selected,
     child: Material(
       color: color ?? scheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius), side: BorderSide(color: selected ? scheme.primary : scheme.outlineVariant, width: selected ? 2 : 0.6)),
-      child: InkWell(borderRadius: BorderRadius.circular(radius), onTap: onTap, child: Center(child: child)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+        side: BorderSide(color: selected ? scheme.primary : scheme.outlineVariant, width: selected ? 2 : 0.6),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(radius),
+        onTap: onTap,
+        child: Center(child: child),
+      ),
     ),
   );
 }
@@ -54,7 +68,10 @@ class ArrowPad extends StatelessWidget {
     return Column(
       children: [
         b(PhosphorIcons.arrowUp(), -1, 0, tr(context, 'Up', 'Arriba')),
-        Row(mainAxisSize: MainAxisSize.min, children: [b(PhosphorIcons.arrowLeft(), 0, -1, tr(context, 'Left', 'Izquierda')), const SizedBox(width: 44), b(PhosphorIcons.arrowRight(), 0, 1, tr(context, 'Right', 'Derecha'))]),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [b(PhosphorIcons.arrowLeft(), 0, -1, tr(context, 'Left', 'Izquierda')), const SizedBox(width: 44), b(PhosphorIcons.arrowRight(), 0, 1, tr(context, 'Right', 'Derecha'))],
+        ),
         b(PhosphorIcons.arrowDown(), 1, 0, tr(context, 'Down', 'Abajo')),
       ],
     );
@@ -179,7 +196,11 @@ class _SudokuGameState extends State<SudokuGame> {
     final g = List.filled(n * n, 0);
     _fill(g, rng);
     _solution = [...g];
-    final target = switch (n) { 4 => 9, 6 => 18, _ => 46 };
+    final target = switch (n) {
+      4 => 9,
+      6 => 18,
+      _ => 46,
+    };
     var removed = 0;
     for (final i in shuffled(List.generate(n * n, (k) => k), rng)) {
       if (removed >= target) break;
@@ -254,7 +275,15 @@ class _SudokuGameState extends State<SudokuGame> {
                     ),
                     alignment: Alignment.center,
                     child: v != 0
-                        ? Text('$v', style: TextStyle(fontSize: n == 9 ? 18 : 22, fontWeight: _given[i] != 0 ? FontWeight.w800 : FontWeight.w500, color: wrong ? scheme.error : (_given[i] != 0 ? scheme.onSurface : scheme.primary), decoration: wrong ? TextDecoration.underline : null))
+                        ? Text(
+                            '$v',
+                            style: TextStyle(
+                              fontSize: n == 9 ? 18 : 22,
+                              fontWeight: _given[i] != 0 ? FontWeight.w800 : FontWeight.w500,
+                              color: wrong ? scheme.error : (_given[i] != 0 ? scheme.onSurface : scheme.primary),
+                              decoration: wrong ? TextDecoration.underline : null,
+                            ),
+                          )
                         : _notes[i].isEmpty
                         ? null
                         : Text((_notes[i].toList()..sort()).join(), style: TextStyle(fontSize: 8, color: scheme.onSurfaceVariant)),
@@ -269,24 +298,53 @@ class _SudokuGameState extends State<SudokuGame> {
             runSpacing: 6,
             alignment: WrapAlignment.center,
             children: [
-              for (var v = 1; v <= n; v++) SizedBox(width: 40, height: 44, child: _box(context, child: Text('$v', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)), onTap: () => _input(v), label: '$v')),
+              for (var v = 1; v <= n; v++)
+                SizedBox(
+                  width: 40,
+                  height: 44,
+                  child: _box(
+                    context,
+                    child: Text('$v', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                    onTap: () => _input(v),
+                    label: '$v',
+                  ),
+                ),
             ],
           ),
-          GameActions(children: [
-            PrismButton(label: tr(context, 'Erase', 'Borrar'), icon: PhosphorIcons.eraser(), onPressed: () => _input(0)),
-            PrismButton(label: _notesMode ? tr(context, 'Notes: on', 'Notas: sí') : tr(context, 'Notes: off', 'Notas: no'), icon: PhosphorIcons.pencilSimple(), onPressed: () => setState(() => _notesMode = !_notesMode)),
-            PrismButton(label: tr(context, 'Undo', 'Deshacer'), icon: PhosphorIcons.arrowUUpLeft(), onPressed: _undo.isEmpty ? () {} : () => setState(() {
-              final (i, v) = _undo.removeLast();
-              _board[i] = v;
-            })),
-            PrismButton(label: tr(context, 'Hint', 'Pista'), icon: PhosphorIcons.lightbulb(), onPressed: () {
-              final empty = [for (var i = 0; i < n * n; i++) if (_board[i] != _solution[i]) i];
-              if (empty.isEmpty) return;
-              _sel = empty.first;
-              _mistakes++;
-              _input(_solution[empty.first]);
-            }),
-          ]),
+          GameActions(
+            children: [
+              PrismButton(label: tr(context, 'Erase', 'Borrar'), icon: PhosphorIcons.eraser(), onPressed: () => _input(0)),
+              PrismButton(
+                label: _notesMode ? tr(context, 'Notes: on', 'Notas: sí') : tr(context, 'Notes: off', 'Notas: no'),
+                icon: PhosphorIcons.pencilSimple(),
+                onPressed: () => setState(() => _notesMode = !_notesMode),
+              ),
+              PrismButton(
+                label: tr(context, 'Undo', 'Deshacer'),
+                icon: PhosphorIcons.arrowUUpLeft(),
+                onPressed: _undo.isEmpty
+                    ? () {}
+                    : () => setState(() {
+                        final (i, v) = _undo.removeLast();
+                        _board[i] = v;
+                      }),
+              ),
+              PrismButton(
+                label: tr(context, 'Hint', 'Pista'),
+                icon: PhosphorIcons.lightbulb(),
+                onPressed: () {
+                  final empty = [
+                    for (var i = 0; i < n * n; i++)
+                      if (_board[i] != _solution[i]) i,
+                  ];
+                  if (empty.isEmpty) return;
+                  _sel = empty.first;
+                  _mistakes++;
+                  _input(_solution[empty.first]);
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -365,49 +423,79 @@ class _NonogramGameState extends State<NonogramGame> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final rowClues = [for (final r in _pic) _clue(r).join(' ')];
-    final colClues = [for (var c = 0; c < cols; c++) _clue([for (final r in _pic) r[c]].join())];
+    final colClues = [
+      for (var c = 0; c < cols; c++) _clue([for (final r in _pic) r[c]].join()),
+    ];
     return GamePanel(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: [
-          Text(tr(context, 'Numbers show runs of filled squares in each row and column.', 'Los números indican los bloques de casillas rellenas de cada fila y columna.'), style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+          Text(
+            tr(context, 'Numbers show runs of filled squares in each row and column.', 'Los números indican los bloques de casillas rellenas de cada fila y columna.'),
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
-          LayoutBuilder(builder: (context, box) {
-            final clueW = 56.0;
-            final cell = math.min(38.0, (box.maxWidth - clueW) / cols);
-            return Column(
-              children: [
-                Row(children: [
-                  SizedBox(width: clueW),
-                  for (final cc in colClues) SizedBox(width: cell, child: Text(cc.join('\n'), textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, height: 1.1, fontWeight: FontWeight.w700))),
-                ]),
-                for (var r = 0; r < rows; r++)
-                  Row(children: [
-                    SizedBox(width: clueW, child: Text(rowClues[r], textAlign: TextAlign.right, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
-                    const SizedBox(width: 4),
-                    for (var c = 0; c < cols; c++)
-                      SizedBox(
-                        width: cell - 4 / cols,
-                        height: cell,
-                        child: Padding(
-                          padding: const EdgeInsets.all(1),
-                          child: _box(
-                            context,
-                            radius: 3,
-                            color: _cells[r * cols + c] == 1 ? scheme.primary : null,
-                            label: 'Row ${r + 1}, column ${c + 1}',
-                            onTap: () => _tap(r, c),
-                            child: _cells[r * cols + c] == 2 ? Icon(PhosphorIcons.x(), size: cell * 0.5, color: scheme.onSurfaceVariant) : const SizedBox.shrink(),
+          LayoutBuilder(
+            builder: (context, box) {
+              final clueW = 56.0;
+              final cell = math.min(38.0, (box.maxWidth - clueW) / cols);
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: clueW),
+                      for (final cc in colClues)
+                        SizedBox(
+                          width: cell,
+                          child: Text(
+                            cc.join('\n'),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 11, height: 1.1, fontWeight: FontWeight.w700),
                           ),
                         ),
-                      ),
-                  ]),
-              ],
-            );
-          }),
+                    ],
+                  ),
+                  for (var r = 0; r < rows; r++)
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: clueW,
+                          child: Text(
+                            rowClues[r],
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        for (var c = 0; c < cols; c++)
+                          SizedBox(
+                            width: cell - 4 / cols,
+                            height: cell,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: _box(
+                                context,
+                                radius: 3,
+                                color: _cells[r * cols + c] == 1 ? scheme.primary : null,
+                                label: 'Row ${r + 1}, column ${c + 1}',
+                                onTap: () => _tap(r, c),
+                                child: _cells[r * cols + c] == 2 ? Icon(PhosphorIcons.x(), size: cell * 0.5, color: scheme.onSurfaceVariant) : const SizedBox.shrink(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
           const SizedBox(height: 8),
           PrismSegmentedControl<bool>(
-            segments: [PrismSegment(value: false, label: tr(context, 'Fill', 'Rellenar')), PrismSegment(value: true, label: tr(context, 'Mark ✗', 'Marcar ✗'))],
+            segments: [
+              PrismSegment(value: false, label: tr(context, 'Fill', 'Rellenar')),
+              PrismSegment(value: true, label: tr(context, 'Mark ✗', 'Marcar ✗')),
+            ],
             selected: _cross,
             onChanged: (v) => setState(() => _cross = v),
           ),
@@ -445,7 +533,9 @@ class _SlidingPuzzleGameState extends State<SlidingPuzzleGame> {
     _tiles = List.generate(n * n, (i) => (i + 1) % (n * n));
     var blank = n * n - 1;
     for (var k = 0; k < 200 * n; k++) {
-      final opts = [for (final d in [-1, 1, -n, n]) blank + d].where((j) => j >= 0 && j < n * n && ((j - blank).abs() == n || j ~/ n == blank ~/ n)).toList();
+      final opts = [
+        for (final d in [-1, 1, -n, n]) blank + d,
+      ].where((j) => j >= 0 && j < n * n && ((j - blank).abs() == n || j ~/ n == blank ~/ n)).toList();
       final j = opts[rng.nextInt(opts.length)];
       _tiles[blank] = _tiles[j];
       _tiles[j] = 0;
@@ -474,7 +564,10 @@ class _SlidingPuzzleGameState extends State<SlidingPuzzleGame> {
       child: Column(
         children: [
           PrismSegmentedControl<int>(
-            segments: const [PrismSegment(value: 3, label: '3×3'), PrismSegment(value: 4, label: '4×4')],
+            segments: const [
+              PrismSegment(value: 3, label: '3×3'),
+              PrismSegment(value: 4, label: '4×4'),
+            ],
             selected: n,
             onChanged: (v) => setState(() {
               n = v;
@@ -490,7 +583,14 @@ class _SlidingPuzzleGameState extends State<SlidingPuzzleGame> {
               final i = r * n + c;
               final t = _tiles[i];
               if (t == 0) return const SizedBox.shrink();
-              return _box(context, color: scheme.primary.withValues(alpha: 0.18 + 0.5 * t / (n * n)), radius: 10, onTap: () => _tap(i), label: 'Tile $t', child: Text('$t', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)));
+              return _box(
+                context,
+                color: scheme.primary.withValues(alpha: 0.18 + 0.5 * t / (n * n)),
+                radius: 10,
+                onTap: () => _tap(i),
+                label: 'Tile $t',
+                child: Text('$t', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+              );
             },
           ),
           const SizedBox(height: 8),
@@ -557,7 +657,13 @@ class _MazeGameState extends State<MazeGame> {
   }
 
   void _move(int dr, int dc) {
-    final d = dr == -1 ? 0 : dc == 1 ? 1 : dr == 1 ? 2 : 3;
+    final d = dr == -1
+        ? 0
+        : dc == 1
+        ? 1
+        : dr == 1
+        ? 2
+        : 3;
     if (!_open[_pos].contains(d)) return;
     setState(() {
       _pos += dr * n + dc;
@@ -576,7 +682,11 @@ class _MazeGameState extends State<MazeGame> {
       child: Column(
         children: [
           PrismSegmentedControl<int>(
-            segments: [PrismSegment(value: 6, label: tr(context, 'Small', 'Pequeño')), PrismSegment(value: 8, label: tr(context, 'Medium', 'Mediano')), PrismSegment(value: 12, label: tr(context, 'Large', 'Grande'))],
+            segments: [
+              PrismSegment(value: 6, label: tr(context, 'Small', 'Pequeño')),
+              PrismSegment(value: 8, label: tr(context, 'Medium', 'Mediano')),
+              PrismSegment(value: 12, label: tr(context, 'Large', 'Grande')),
+            ],
             selected: n,
             onChanged: (v) => setState(() {
               n = v;
@@ -586,14 +696,15 @@ class _MazeGameState extends State<MazeGame> {
           const SizedBox(height: 10),
           MoveInput(
             onMove: _move,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: CustomPaint(painter: _MazePainter(n, _open, _pos, _trail, scheme)),
-            ),
+            child: AspectRatio(aspectRatio: 1, child: CustomPaint(painter: _MazePainter(n, _open, _pos, _trail, scheme))),
           ),
           const SizedBox(height: 10),
           ArrowPad(onMove: _move),
-          Text(tr(context, 'Reach the bottom-right corner 🏁. Swipe, use arrow keys or the pad.', 'Llega a la esquina inferior derecha 🏁. Desliza, usa las flechas o los botones.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Reach the bottom-right corner 🏁. Swipe, use arrow keys or the pad.', 'Llega a la esquina inferior derecha 🏁. Desliza, usa las flechas o los botones.'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );
@@ -664,7 +775,10 @@ class _MergeGameState extends State<MergeGame> {
   }
 
   void _spawn() {
-    final empty = [for (var i = 0; i < 16; i++) if (_g[i] == 0) i];
+    final empty = [
+      for (var i = 0; i < 16; i++)
+        if (_g[i] == 0) i,
+    ];
     if (empty.isEmpty) return;
     _g[empty[_rng.nextInt(empty.length)]] = _rng.nextDouble() < 0.9 ? 2 : 4;
   }
@@ -690,10 +804,7 @@ class _MergeGameState extends State<MergeGame> {
   void _move(int dr, int dc) {
     final before = [..._g];
     for (var k = 0; k < n; k++) {
-      final idx = [
-        for (var j = 0; j < n; j++)
-          dc != 0 ? k * n + (dc < 0 ? j : n - 1 - j) : (dr < 0 ? j : n - 1 - j) * n + k,
-      ];
+      final idx = [for (var j = 0; j < n; j++) dc != 0 ? k * n + (dc < 0 ? j : n - 1 - j) : (dr < 0 ? j : n - 1 - j) * n + k];
       final res = _slide([for (final i in idx) _g[i]]);
       for (var j = 0; j < n; j++) {
         _g[idx[j]] = res[j];
@@ -725,15 +836,30 @@ class _MergeGameState extends State<MergeGame> {
                 final level = v == 0 ? 0.0 : (math.log(v) / math.ln2) / 11;
                 return Container(
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(color: v == 0 ? scheme.surfaceContainerHighest : Color.lerp(scheme.primaryContainer, scheme.primary, level.clamp(0, 1)), borderRadius: BorderRadius.circular(10)),
-                  child: v == 0 ? null : Text('$v', style: TextStyle(fontSize: v >= 1024 ? 18 : 24, fontWeight: FontWeight.w800, color: level > 0.45 ? scheme.onPrimary : scheme.onPrimaryContainer)),
+                  decoration: BoxDecoration(
+                    color: v == 0 ? scheme.surfaceContainerHighest : Color.lerp(scheme.primaryContainer, scheme.primary, level.clamp(0, 1)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: v == 0
+                      ? null
+                      : Text(
+                          '$v',
+                          style: TextStyle(fontSize: v >= 1024 ? 18 : 24, fontWeight: FontWeight.w800, color: level > 0.45 ? scheme.onPrimary : scheme.onPrimaryContainer),
+                        ),
                 );
               },
             ),
           ),
           const SizedBox(height: 10),
           ArrowPad(onMove: _move),
-          GameActions(children: [PrismButton(label: tr(context, 'Finish here', 'Terminar aquí'), onPressed: () => widget.session.finish(GameOutcome(score: _score, summary: tr(context, 'Best tile ${_g.reduce(math.max)}', 'Mejor ficha ${_g.reduce(math.max)}'))))]),
+          GameActions(
+            children: [
+              PrismButton(
+                label: tr(context, 'Finish here', 'Terminar aquí'),
+                onPressed: () => widget.session.finish(GameOutcome(score: _score, summary: tr(context, 'Best tile ${_g.reduce(math.max)}', 'Mejor ficha ${_g.reduce(math.max)}'))),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -782,7 +908,11 @@ class _LightsGameState extends State<LightsGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Tapping a light flips it and its neighbours. Turn them all off.', 'Tocar una luz la cambia a ella y a sus vecinas. Apágalas todas.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Tapping a light flips it and its neighbours. Turn them all off.', 'Tocar una luz la cambia a ella y a sus vecinas. Apágalas todas.'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           CellGrid(
             rows: n,
@@ -797,7 +927,8 @@ class _LightsGameState extends State<LightsGame> {
                 label: _on[i] ? 'On' : 'Off',
                 onTap: () {
                   setState(() => _toggle(i));
-                  if (!_on.contains(true)) widget.session.finish(GameOutcome(score: math.max(1, 40 - _presses), summary: tr(context, 'All off in $_presses taps', 'Todas apagadas en $_presses toques')));
+                  if (!_on.contains(true))
+                    widget.session.finish(GameOutcome(score: math.max(1, 40 - _presses), summary: tr(context, 'All off in $_presses taps', 'Todas apagadas en $_presses toques')));
                 },
                 child: Icon(_on[i] ? PhosphorIcons.lightbulb(PhosphorIconsStyle.fill) : PhosphorIcons.lightbulb(), color: _on[i] ? scheme.onTertiary : scheme.onSurfaceVariant),
               );
@@ -853,7 +984,15 @@ class _CodebreakerGameState extends State<CodebreakerGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Find the 4-digit code (digits 1–6, repeats allowed). ● right digit, right place · ○ right digit, wrong place.', 'Encuentra el código de 4 cifras (1–6, se pueden repetir). ● cifra y lugar correctos · ○ cifra correcta, lugar no.'), textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Find the 4-digit code (digits 1–6, repeats allowed). ● right digit, right place · ○ right digit, wrong place.',
+              'Encuentra el código de 4 cifras (1–6, se pueden repetir). ● cifra y lugar correctos · ○ cifra correcta, lugar no.',
+            ),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           for (final g in _guesses)
             Padding(
@@ -871,23 +1010,50 @@ class _CodebreakerGameState extends State<CodebreakerGame> {
             const SizedBox(height: 8),
             Text(_cur.join('  ').padRight(7, '_'), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: 2)),
             const SizedBox(height: 8),
-            Wrap(spacing: 6, children: [
-              for (var d = 1; d <= 6; d++) SizedBox(width: 44, height: 44, child: _box(context, label: '$d', onTap: _cur.length < 4 ? () => setState(() => _cur.add(d)) : null, child: Text('$d', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)))),
-            ]),
-            GameActions(children: [
-              PrismButton(label: '⌫', onPressed: () => _cur.isEmpty ? null : setState(() => _cur.removeLast())),
-              PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Try', 'Probar'), onPressed: () {
-                if (_cur.length != 4) return;
-                setState(() {
-                  _guesses.add(_cur);
-                  _cur = [];
-                });
-                final (exact, _) = _fb(_guesses.last);
-                if (exact == 4 || _guesses.length >= 10) {
-                  widget.session.finish(GameOutcome(score: exact == 4 ? 11 - _guesses.length : 0, max: 10, summary: exact == 4 ? tr(context, 'Cracked in ${_guesses.length}', 'Descifrado en ${_guesses.length}') : tr(context, 'The code was ${_code.join()}', 'El código era ${_code.join()}')));
-                }
-              }),
-            ]),
+            Wrap(
+              spacing: 6,
+              children: [
+                for (var d = 1; d <= 6; d++)
+                  SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: _box(
+                      context,
+                      label: '$d',
+                      onTap: _cur.length < 4 ? () => setState(() => _cur.add(d)) : null,
+                      child: Text('$d', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+              ],
+            ),
+            GameActions(
+              children: [
+                PrismButton(label: '⌫', onPressed: () => _cur.isEmpty ? null : setState(() => _cur.removeLast())),
+                PrismButton(
+                  tone: PrismButtonTone.filled,
+                  label: tr(context, 'Try', 'Probar'),
+                  onPressed: () {
+                    if (_cur.length != 4) return;
+                    setState(() {
+                      _guesses.add(_cur);
+                      _cur = [];
+                    });
+                    final (exact, _) = _fb(_guesses.last);
+                    if (exact == 4 || _guesses.length >= 10) {
+                      widget.session.finish(
+                        GameOutcome(
+                          score: exact == 4 ? 11 - _guesses.length : 0,
+                          max: 10,
+                          summary: exact == 4
+                              ? tr(context, 'Cracked in ${_guesses.length}', 'Descifrado en ${_guesses.length}')
+                              : tr(context, 'The code was ${_code.join()}', 'El código era ${_code.join()}'),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ],
         ],
       ),
@@ -964,7 +1130,11 @@ class _PipeGameState extends State<PipeGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Tap tiles to rotate them until every pipe connects to the centre.', 'Toca las piezas para girarlas hasta que todas las tuberías conecten con el centro.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Tap tiles to rotate them until every pipe connects to the centre.', 'Toca las piezas para girarlas hasta que todas las tuberías conecten con el centro.'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           CellGrid(
             rows: n,
@@ -982,7 +1152,8 @@ class _PipeGameState extends State<PipeGame> {
                     _rot[i] = (_rot[i] + 1) % 4;
                     _taps++;
                   });
-                  if (_connected().length == n * n) widget.session.finish(GameOutcome(score: math.max(1, 60 - _taps ~/ 2), summary: tr(context, 'All connected in $_taps turns', 'Todo conectado en $_taps giros')));
+                  if (_connected().length == n * n)
+                    widget.session.finish(GameOutcome(score: math.max(1, 60 - _taps ~/ 2), summary: tr(context, 'All connected in $_taps turns', 'Todo conectado en $_taps giros')));
                 },
                 child: CustomPaint(size: Size.infinite, painter: _PipePainter(_dirs(i), con.contains(i) ? scheme.primary : scheme.onSurfaceVariant)),
               );
@@ -1066,18 +1237,42 @@ class _TileMatchGameState extends State<TileMatchGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Tap tiles into the tray. Three alike disappear. Don\'t fill all 7 slots!', 'Toca fichas para llevarlas a la bandeja. Tres iguales desaparecen. ¡No llenes los 7 huecos!'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Tap tiles into the tray. Three alike disappear. Don\'t fill all 7 slots!', 'Toca fichas para llevarlas a la bandeja. Tres iguales desaparecen. ¡No llenes los 7 huecos!'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
-          CellGrid(rows: 5, cols: 6, gap: 4, cell: (r, c) {
-            final i = r * 6 + c;
-            final s = _board[i];
-            return s == null ? const SizedBox.shrink() : _box(context, radius: 10, label: s, onTap: () => _tap(i), child: Text(s, style: const TextStyle(fontSize: 26)));
-          }),
+          CellGrid(
+            rows: 5,
+            cols: 6,
+            gap: 4,
+            cell: (r, c) {
+              final i = r * 6 + c;
+              final s = _board[i];
+              return s == null
+                  ? const SizedBox.shrink()
+                  : _box(
+                      context,
+                      radius: 10,
+                      label: s,
+                      onTap: () => _tap(i),
+                      child: Text(s, style: const TextStyle(fontSize: 26)),
+                    );
+            },
+          ),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [for (var k = 0; k < 7; k++) Expanded(child: Center(child: Text(k < _tray.length ? _tray[k] : '·', style: const TextStyle(fontSize: 24))))]),
+            child: Row(
+              children: [
+                for (var k = 0; k < 7; k++)
+                  Expanded(
+                    child: Center(child: Text(k < _tray.length ? _tray[k] : '·', style: const TextStyle(fontSize: 24))),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1149,22 +1344,33 @@ class _ColorSequenceGameState extends State<ColorSequenceGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(_showing ? tr(context, 'Watch…', 'Observa…') : tr(context, 'Your turn — repeat the sequence (${_seq.length})', 'Tu turno: repite la secuencia (${_seq.length})'), style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(
+            _showing ? tr(context, 'Watch…', 'Observa…') : tr(context, 'Your turn — repeat the sequence (${_seq.length})', 'Tu turno: repite la secuencia (${_seq.length})'),
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 12),
-          CellGrid(rows: 2, cols: 2, gap: 10, cell: (r, c) {
-            final k = r * 2 + c;
-            final (color, name, shape) = gameplayColors[k];
-            final lit = _flash == k;
-            return _box(
-              context,
-              radius: 18,
-              selected: lit,
-              color: widget.symbols ? (lit ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4) : null) : color.withValues(alpha: lit ? 1 : 0.35),
-              label: widget.symbols ? _syms[k] : name,
-              onTap: () => _tap(k),
-              child: Text(widget.symbols ? _syms[k] : shape, style: TextStyle(fontSize: 34, color: widget.symbols ? null : Colors.white.withValues(alpha: lit ? 1 : 0.7))),
-            );
-          }),
+          CellGrid(
+            rows: 2,
+            cols: 2,
+            gap: 10,
+            cell: (r, c) {
+              final k = r * 2 + c;
+              final (color, name, shape) = gameplayColors[k];
+              final lit = _flash == k;
+              return _box(
+                context,
+                radius: 18,
+                selected: lit,
+                color: widget.symbols ? (lit ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4) : null) : color.withValues(alpha: lit ? 1 : 0.35),
+                label: widget.symbols ? _syms[k] : name,
+                onTap: () => _tap(k),
+                child: Text(
+                  widget.symbols ? _syms[k] : shape,
+                  style: TextStyle(fontSize: 34, color: widget.symbols ? null : Colors.white.withValues(alpha: lit ? 1 : 0.7)),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -1212,65 +1418,78 @@ class _JigsawGameState extends State<JigsawGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Tap two pieces to swap them. Rebuild the picture!', 'Toca dos piezas para intercambiarlas. ¡Recompón la imagen!'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Tap two pieces to swap them. Rebuild the picture!', 'Toca dos piezas para intercambiarlas. ¡Recompón la imagen!'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
-          LayoutBuilder(builder: (context, box) {
-            final side = box.maxWidth;
-            final piece = side / n;
-            Widget picture() => SizedBox(
-              width: side,
-              height: side,
-              child: CustomPaint(
-                painter: _ScenePainter(scheme),
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [for (final e in emojis.take(9)) Center(child: Text(e, style: TextStyle(fontSize: side / 6)))],
+          LayoutBuilder(
+            builder: (context, box) {
+              final side = box.maxWidth;
+              final piece = side / n;
+              Widget picture() => SizedBox(
+                width: side,
+                height: side,
+                child: CustomPaint(
+                  painter: _ScenePainter(scheme),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      for (final e in emojis.take(9))
+                        Center(
+                          child: Text(e, style: TextStyle(fontSize: side / 6)),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-            return SizedBox(
-              width: side,
-              height: side,
-              child: Stack(
-                children: [
-                  for (var pos = 0; pos < n * n; pos++)
-                    Positioned(
-                      left: (pos % n) * piece,
-                      top: (pos ~/ n) * piece,
-                      width: piece,
-                      height: piece,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (_pick == null) return setState(() => _pick = pos);
-                          setState(() {
-                            final t = _order[_pick!];
-                            _order[_pick!] = _order[pos];
-                            _order[pos] = t;
-                            _pick = null;
-                            _swaps++;
-                          });
-                          if (List.generate(n * n, (i) => _order[i] == i).every((x) => x)) {
-                            widget.session.finish(GameOutcome(score: math.max(1, 30 - _swaps), summary: tr(context, 'Pieced together in $_swaps swaps', 'Recompuesta en $_swaps cambios')));
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(border: Border.all(color: _pick == pos ? scheme.primary : scheme.surface, width: _pick == pos ? 3 : 1)),
-                          child: ClipRect(
-                            child: OverflowBox(
-                              maxWidth: side,
-                              maxHeight: side,
-                              alignment: Alignment(n == 1 ? 0 : -1 + 2 * (_order[pos] % n) / (n - 1), n == 1 ? 0 : -1 + 2 * (_order[pos] ~/ n) / (n - 1)),
-                              child: picture(),
+              );
+              return SizedBox(
+                width: side,
+                height: side,
+                child: Stack(
+                  children: [
+                    for (var pos = 0; pos < n * n; pos++)
+                      Positioned(
+                        left: (pos % n) * piece,
+                        top: (pos ~/ n) * piece,
+                        width: piece,
+                        height: piece,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_pick == null) return setState(() => _pick = pos);
+                            setState(() {
+                              final t = _order[_pick!];
+                              _order[_pick!] = _order[pos];
+                              _order[pos] = t;
+                              _pick = null;
+                              _swaps++;
+                            });
+                            if (List.generate(n * n, (i) => _order[i] == i).every((x) => x)) {
+                              widget.session.finish(GameOutcome(score: math.max(1, 30 - _swaps), summary: tr(context, 'Pieced together in $_swaps swaps', 'Recompuesta en $_swaps cambios')));
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: _pick == pos ? scheme.primary : scheme.surface, width: _pick == pos ? 3 : 1),
+                            ),
+                            child: ClipRect(
+                              child: OverflowBox(
+                                maxWidth: side,
+                                maxHeight: side,
+                                alignment: Alignment(n == 1 ? 0 : -1 + 2 * (_order[pos] % n) / (n - 1), n == 1 ? 0 : -1 + 2 * (_order[pos] ~/ n) / (n - 1)),
+                                child: picture(),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-            );
-          }),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -1283,7 +1502,10 @@ class _ScenePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size s) {
     final rect = Offset.zero & s;
-    canvas.drawRect(rect, Paint()..shader = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [scheme.primaryContainer, scheme.tertiaryContainer, scheme.secondaryContainer]).createShader(rect));
+    canvas.drawRect(
+      rect,
+      Paint()..shader = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [scheme.primaryContainer, scheme.tertiaryContainer, scheme.secondaryContainer]).createShader(rect),
+    );
     final p = Paint()..color = scheme.surface.withValues(alpha: 0.18);
     for (var i = 0; i < 6; i++) {
       canvas.drawCircle(Offset(s.width * (0.15 + 0.15 * i), s.height * (0.2 + 0.12 * (i % 3))), s.width * 0.08, p);
@@ -1335,30 +1557,44 @@ class _SpotDifferenceGameState extends State<SpotDifferenceGame> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    Widget grid(List<String> items, bool tappable) => CellGrid(rows: 5, cols: 6, gap: 2, cell: (r, c) {
-      final i = r * 6 + c;
-      return GestureDetector(
-        onTap: !tappable
-            ? null
-            : () {
-                if (_diff.contains(i)) {
-                  setState(() => _found.add(i));
-                  if (_found.length == _diff.length) widget.session.finish(GameOutcome(score: math.max(1, 5 - _misses ~/ 2), max: 5, summary: tr(context, 'Found all 5 differences', 'Encontraste las 5 diferencias')));
-                } else {
-                  setState(() => _misses++);
-                }
-              },
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(color: _found.contains(i) ? scheme.primary.withValues(alpha: 0.25) : scheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(6), border: _found.contains(i) ? Border.all(color: scheme.primary, width: 2) : null),
-          child: Text(items[i], style: const TextStyle(fontSize: 20)),
-        ),
-      );
-    });
+    Widget grid(List<String> items, bool tappable) => CellGrid(
+      rows: 5,
+      cols: 6,
+      gap: 2,
+      cell: (r, c) {
+        final i = r * 6 + c;
+        return GestureDetector(
+          onTap: !tappable
+              ? null
+              : () {
+                  if (_diff.contains(i)) {
+                    setState(() => _found.add(i));
+                    if (_found.length == _diff.length)
+                      widget.session.finish(GameOutcome(score: math.max(1, 5 - _misses ~/ 2), max: 5, summary: tr(context, 'Found all 5 differences', 'Encontraste las 5 diferencias')));
+                  } else {
+                    setState(() => _misses++);
+                  }
+                },
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _found.contains(i) ? scheme.primary.withValues(alpha: 0.25) : scheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(6),
+              border: _found.contains(i) ? Border.all(color: scheme.primary, width: 2) : null,
+            ),
+            child: Text(items[i], style: const TextStyle(fontSize: 20)),
+          ),
+        );
+      },
+    );
     return GamePanel(
       child: Column(
         children: [
-          Text(tr(context, 'Five things changed in the second garden. Tap them there.', 'Cinco cosas cambiaron en el segundo jardín. Tócalas ahí.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Five things changed in the second garden. Tap them there.', 'Cinco cosas cambiaron en el segundo jardín. Tócalas ahí.'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 8),
           grid(_left, false),
           const SizedBox(height: 10),
@@ -1405,42 +1641,54 @@ class _ConnectDotsGameState extends State<ConnectDotsGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(done ? tr(context, 'It\'s a $_name!', '¡Es una figura: $_name!') : tr(context, 'Tap the dots in order, starting at 1.', 'Toca los puntos en orden, empezando por el 1.'), style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(
+            done ? tr(context, 'It\'s a $_name!', '¡Es una figura: $_name!') : tr(context, 'Tap the dots in order, starting at 1.', 'Toca los puntos en orden, empezando por el 1.'),
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 10),
           AspectRatio(
             aspectRatio: 1,
-            child: LayoutBuilder(builder: (context, box) {
-              final s = box.maxWidth / 100;
-              return Stack(
-                children: [
-                  Positioned.fill(child: CustomPaint(painter: _LinesPainter([for (var i = 0; i < _next; i++) Offset(_pts[i].$1 * s, _pts[i].$2 * s)], scheme.primary, done))),
-                  for (var i = 0; i < _pts.length - 1; i++)
-                    Positioned(
-                      left: _pts[i].$1 * s - 18,
-                      top: _pts[i].$2 * s - 18,
-                      width: 36,
-                      height: 36,
-                      child: GestureDetector(
-                        onTap: () {
-                          final target = _next % (_pts.length - 1);
-                          if (i != target) return;
-                          setState(() => _next++);
-                          if (_next >= _pts.length) widget.session.finish(GameOutcome(score: 1, max: 1, summary: tr(context, 'Drew a $_name', 'Dibujaste: $_name')));
-                        },
-                        child: Center(
-                          child: Container(
-                            width: 26,
-                            height: 26,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: i < _next ? scheme.primary : scheme.surfaceContainerHighest, border: Border.all(color: scheme.outline)),
-                            child: Text('${i + 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: i < _next ? scheme.onPrimary : scheme.onSurface)),
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final s = box.maxWidth / 100;
+                return Stack(
+                  children: [
+                    Positioned.fill(child: CustomPaint(painter: _LinesPainter([for (var i = 0; i < _next; i++) Offset(_pts[i].$1 * s, _pts[i].$2 * s)], scheme.primary, done))),
+                    for (var i = 0; i < _pts.length - 1; i++)
+                      Positioned(
+                        left: _pts[i].$1 * s - 18,
+                        top: _pts[i].$2 * s - 18,
+                        width: 36,
+                        height: 36,
+                        child: GestureDetector(
+                          onTap: () {
+                            final target = _next % (_pts.length - 1);
+                            if (i != target) return;
+                            setState(() => _next++);
+                            if (_next >= _pts.length) widget.session.finish(GameOutcome(score: 1, max: 1, summary: tr(context, 'Drew a $_name', 'Dibujaste: $_name')));
+                          },
+                          child: Center(
+                            child: Container(
+                              width: 26,
+                              height: 26,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: i < _next ? scheme.primary : scheme.surfaceContainerHighest,
+                                border: Border.all(color: scheme.outline),
+                              ),
+                              child: Text(
+                                '${i + 1}',
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: i < _next ? scheme.onPrimary : scheme.onSurface),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              );
-            }),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -1461,11 +1709,14 @@ class _LinesPainter extends CustomPainter {
       path.lineTo(p.dx, p.dy);
     }
     if (fill) canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.18));
-    canvas.drawPath(path, Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeJoin = StrokeJoin.round);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeJoin = StrokeJoin.round,
+    );
   }
 
   @override
@@ -1492,8 +1743,20 @@ const logicPuzzles = <LogicPuzzle>[
   LogicPuzzle(['Dee', 'Eli', 'Fin'], ['cat', 'dog', 'fish'], 'pet', ['Eli\'s pet barks.', 'Fin\'s pet doesn\'t have fur.'], [0, 1, 2]),
   LogicPuzzle(['Gus', 'Hal', 'Ivy'], ['red', 'blue', 'green'], 'scarf', ['Ivy\'s scarf is the colour of grass.', 'Gus doesn\'t wear red.'], [1, 0, 2]),
   LogicPuzzle(['Jo', 'Kai', 'Lux'], ['piano', 'drums', 'flute'], 'instrument', ['Kai plays with sticks.', 'Jo\'s instrument has no keys.'], [2, 1, 0]),
-  LogicPuzzle(['Max', 'Nia', 'Oz', 'Pip'], ['Mon', 'Tue', 'Wed', 'Thu'], 'day off', ['Nia\'s day off is right after Max\'s.', 'Pip is off on Thursday.', 'Oz isn\'t off on Monday or Tuesday.'], [0, 1, 2, 3]),
-  LogicPuzzle(['Quin', 'Rae', 'Sol', 'Tam'], ['rose', 'tulip', 'daisy', 'lily'], 'flower', ['Rae\'s flower has thorns.', 'Tam\'s flower is white and yellow and often picked for "loves me, loves me not".', 'Quin didn\'t pick the lily.'], [1, 0, 3, 2]),
+  LogicPuzzle(
+    ['Max', 'Nia', 'Oz', 'Pip'],
+    ['Mon', 'Tue', 'Wed', 'Thu'],
+    'day off',
+    ['Nia\'s day off is right after Max\'s.', 'Pip is off on Thursday.', 'Oz isn\'t off on Monday or Tuesday.'],
+    [0, 1, 2, 3],
+  ),
+  LogicPuzzle(
+    ['Quin', 'Rae', 'Sol', 'Tam'],
+    ['rose', 'tulip', 'daisy', 'lily'],
+    'flower',
+    ['Rae\'s flower has thorns.', 'Tam\'s flower is white and yellow and often picked for "loves me, loves me not".', 'Quin didn\'t pick the lily.'],
+    [1, 0, 3, 2],
+  ),
 ];
 
 class LogicGridGame extends StatefulWidget {
@@ -1517,40 +1780,71 @@ class _LogicGridGameState extends State<LogicGridGame> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(tr(context, 'Each person has a different ${_p.thingLabel}. Tap cells to mark ✓ or ✗.', 'Cada persona tiene un ${_p.thingLabel} distinto. Toca para marcar ✓ o ✗.'), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(context, 'Each person has a different ${_p.thingLabel}. Tap cells to mark ✓ or ✗.', 'Cada persona tiene un ${_p.thingLabel} distinto. Toca para marcar ✓ o ✗.'),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 8),
           for (final c in _p.clues) Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: Text('• $c')),
           const SizedBox(height: 10),
           Table(
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: [
-              TableRow(children: [const SizedBox(), for (final t in _p.things) Center(child: Text(t, style: const TextStyle(fontWeight: FontWeight.w700)))]),
-              for (var i = 0; i < n; i++)
-                TableRow(children: [
-                  Padding(padding: const EdgeInsets.all(6), child: Text(_p.people[i], style: const TextStyle(fontWeight: FontWeight.w700))),
-                  for (var j = 0; j < n; j++)
-                    Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: SizedBox(
-                        height: 42,
-                        child: _box(context, label: '${_p.people[i]} ${_p.things[j]}', onTap: () => setState(() => _marks[i * n + j] = (_marks[i * n + j] + 1) % 3), child: Text(['', '✓', '✗'][_marks[i * n + j]], style: TextStyle(fontSize: 20, color: _marks[i * n + j] == 1 ? scheme.primary : scheme.error))),
-                      ),
+              TableRow(
+                children: [
+                  const SizedBox(),
+                  for (final t in _p.things)
+                    Center(
+                      child: Text(t, style: const TextStyle(fontWeight: FontWeight.w700)),
                     ),
-                ]),
+                ],
+              ),
+              for (var i = 0; i < n; i++)
+                TableRow(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Text(_p.people[i], style: const TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                    for (var j = 0; j < n; j++)
+                      Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: SizedBox(
+                          height: 42,
+                          child: _box(
+                            context,
+                            label: '${_p.people[i]} ${_p.things[j]}',
+                            onTap: () => setState(() => _marks[i * n + j] = (_marks[i * n + j] + 1) % 3),
+                            child: Text(['', '✓', '✗'][_marks[i * n + j]], style: TextStyle(fontSize: 20, color: _marks[i * n + j] == 1 ? scheme.primary : scheme.error)),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
             ],
           ),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(_msg!, textAlign: TextAlign.center)),
-          GameActions(children: [
-            PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Check', 'Comprobar'), onPressed: () {
-              _checks++;
-              final ok = List.generate(n, (i) => _marks[i * n + _p.answer[i]] == 1 && List.generate(n, (j) => j == _p.answer[i] || _marks[i * n + j] != 1).every((x) => x)).every((x) => x);
-              if (ok) {
-                widget.session.finish(GameOutcome(score: math.max(1, 4 - _checks), max: 3, summary: tr(context, 'Solved!', '¡Resuelto!')));
-              } else {
-                setState(() => _msg = tr(context, 'Not quite — re-read the clues.', 'Todavía no: vuelve a leer las pistas.'));
-              }
-            }),
-          ]),
+          if (_msg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(_msg!, textAlign: TextAlign.center),
+            ),
+          GameActions(
+            children: [
+              PrismButton(
+                tone: PrismButtonTone.filled,
+                label: tr(context, 'Check', 'Comprobar'),
+                onPressed: () {
+                  _checks++;
+                  final ok = List.generate(n, (i) => _marks[i * n + _p.answer[i]] == 1 && List.generate(n, (j) => j == _p.answer[i] || _marks[i * n + j] != 1).every((x) => x)).every((x) => x);
+                  if (ok) {
+                    widget.session.finish(GameOutcome(score: math.max(1, 4 - _checks), max: 3, summary: tr(context, 'Solved!', '¡Resuelto!')));
+                  } else {
+                    setState(() => _msg = tr(context, 'Not quite — re-read the clues.', 'Todavía no: vuelve a leer las pistas.'));
+                  }
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
