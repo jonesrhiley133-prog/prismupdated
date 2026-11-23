@@ -1512,6 +1512,7 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.introductions, _introductionsRootTitle),
       (AppRoutePaths.prismSocial, _socialRootTitle),
       (AppRoutePaths.health, _healthRootTitle),
+      (AppRoutePaths.astro, _astroRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1584,6 +1585,7 @@ String _rootTitle(String location) {
     AppRoutePaths.introductions => _introductionsRootTitle,
     AppRoutePaths.prismSocial => _socialRootTitle,
     AppRoutePaths.health => _healthRootTitle,
+    AppRoutePaths.astro => _astroRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1752,6 +1754,7 @@ const _availabilityRootTitle = 'Route contract: availability root';
 const _introductionsRootTitle = 'Route contract: introductions root';
 const _socialRootTitle = 'Route contract: social root';
 const _healthRootTitle = 'Route contract: health root';
+const _astroRootTitle = 'Route contract: astro root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';
