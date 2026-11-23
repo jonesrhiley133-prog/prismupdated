@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.39.3+39003
+version: 0.40.0+40000
 
 environment:
   sdk: ^3.11.1
@@ -184,6 +184,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/
+    - assets/astro/
     - assets/textures/
     - assets/icon_layers/
     - assets/app_icons/
@@ -223,6 +224,14 @@ flutter:
         - asset: assets/fonts/AtkinsonHyperlegible-BoldItalic.ttf
           weight: 700
           style: italic
+    # Astrology glyphs (Noto Sans Symbols 1 & 2, OFL; subset to the zodiac,
+    # planet and aspect symbols). See assets/astro/fonts-OFL.txt.
+    - family: PrismAstro
+      fonts:
+        - asset: assets/fonts/PrismAstro-Symbols.ttf
+    - family: PrismAstro2
+      fonts:
+        - asset: assets/fonts/PrismAstro-Symbols2.ttf
     - family: Lexend
       fonts:
         - asset: assets/fonts/Lexend[wght].ttf

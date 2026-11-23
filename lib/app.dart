@@ -44,6 +44,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_sync/generated/api.dart' as ffi;
 import 'core/database/app_database.dart';
+import 'core/database/database_providers.dart' show memberRepositoryProvider;
+import 'package:prism_plurality/features/astro/data/astro_model.dart';
+import 'package:prism_plurality/features/members/providers/members_providers.dart' show membersNotifierProvider;
+import 'package:prism_plurality/features/astro/engine/chart.dart' show BirthPlace;
 import 'core/database/database_encryption.dart';
 import 'core/database/database_provider.dart';
 import 'core/diagnostics/main_isolate_stalls.dart';
@@ -177,6 +181,35 @@ class _PrismAppState extends ConsumerState<PrismApp> {
       });
       PerfProbe.register('route', (_) {
         return ref.read(routerProvider).state.uri.toString();
+      });
+      PerfProbe.register('astroSeed', (_) {
+        // Birth details for a few stress-fixture alters (harness only).
+        unawaited(() async {
+          const seeds = [
+            ('stress-member-0', '1994-02-03', 14, 20, 'London', 51.507, -0.128, 'Europe/London', 'system'),
+            ('stress-member-1', '1988-10-12', 7, 5, 'New York City', 40.713, -74.006, 'America/New_York', 'system'),
+            ('stress-member-2', '2001-07-28', null, null, null, null, null, null, 'system'),
+            ('stress-member-3', '1979-05-15', 22, 40, 'Madrid', 40.417, -3.704, 'Europe/Madrid', 'shareable'),
+            ('stress-member-4', '0004-12-01', null, null, null, null, null, null, 'private'),
+          ];
+          final members = ref.read(membersNotifierProvider.notifier);
+          final repo = ref.read(memberRepositoryProvider);
+          for (final x in seeds) {
+            final m = await repo.getMemberById(x.$1);
+            if (m == null) continue;
+            await members.updateMember(m.copyWith(birthday: x.$2));
+            final existing = ref.read(astroProfilesProvider)[x.$1];
+            await ref.read(astroActionsProvider).saveProfile(
+              (existing ?? AstroProfile(memberId: x.$1)).copyWith(
+                hour: x.$3,
+                minute: x.$4,
+                place: x.$5 == null ? null : BirthPlace(name: x.$5!, lat: x.$6!, lon: x.$7!, timeZone: x.$8!),
+                visibility: AstroVisibility.parse(x.$9),
+              ),
+            );
+          }
+        }());
+        return 'ok';
       });
       String? sampleIds;
       PerfProbe.register('ids', (_) {

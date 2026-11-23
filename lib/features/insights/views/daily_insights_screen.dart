@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show astroInsight;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -134,6 +135,13 @@ class _DailyInsightsScreenState extends ConsumerState<DailyInsightsScreen> {
     return [
       _Opening(summary: t, isToday: isToday),
       const SizedBox(height: 12),
+      if (isToday ? astroInsight(ref, Localizations.localeOf(context).languageCode == 'es') : null case final line?) ...[
+        PrismSurface(
+          onTap: () => context.push(AppRoutePaths.astro),
+          child: Text(line, style: theme.textTheme.bodyMedium?.copyWith(height: 1.45)),
+        ),
+        const SizedBox(height: 12),
+      ],
       Row(
         children: [
           Expanded(

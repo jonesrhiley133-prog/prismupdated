@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroFrontingCard;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,7 +39,8 @@ class HomeNowSection extends ConsumerWidget {
         : locations.where((l) => l.id == activeLocation.locationId).firstOrNull;
 
     if (!showQuickChips && activeLocation == null && activeWork.isEmpty) {
-      return const SizedBox.shrink();
+      // The Astro card hides itself unless it has something to show.
+      return const AstroFrontingCard();
     }
     return Padding(
       padding: showQuickChips
@@ -47,6 +49,7 @@ class HomeNowSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const AstroFrontingCard(),
           if (activeLocation != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),

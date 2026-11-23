@@ -13,6 +13,7 @@ import 'package:prism_media_codec/prism_media_codec.dart' as media_codec;
 import 'package:prism_sync/generated/frb_generated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:prism_plurality/features/astro/astro_licenses.dart';
 import 'package:timezone/timezone.dart' as tz;
 // import 'package:workmanager/workmanager.dart';
 
@@ -60,6 +61,7 @@ const _debugSeedStressPresetName = String.fromEnvironment(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  registerAstroLicenses();
   if (kIsWeb) {
     await runWebApp();
     return;

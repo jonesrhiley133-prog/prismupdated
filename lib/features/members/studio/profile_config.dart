@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Profile modules that can be shown, hidden and reordered.
-const profileModuleIds = ['about', 'interests', 'personality', 'gallery', 'relationships', 'fronting', 'memories', 'custom', 'music', 'links', 'pinned', 'journal'];
+const profileModuleIds = ['about', 'interests', 'personality', 'gallery', 'relationships', 'fronting', 'memories', 'custom', 'music', 'links', 'pinned', 'journal', 'astro'];
 
 String moduleLabel(BuildContext c, String id) => switch (id) {
   'about' => tr(c, 'About me', 'Sobre mí'),
@@ -18,6 +18,7 @@ String moduleLabel(BuildContext c, String id) => switch (id) {
   'links' => tr(c, 'Links', 'Enlaces'),
   'pinned' => tr(c, 'Pinned note', 'Nota fijada'),
   'journal' => tr(c, 'Journal', 'Diario'),
+  'astro' => tr(c, 'Astrology', 'Astrología'),
   _ => id,
 };
 
@@ -156,7 +157,7 @@ class ProfileConfig {
       if (v is Map && v['id'] is String && profileModuleIds.contains(v['id'])) out.add((v['id'] as String, v['visible'] != false));
     }
     for (final id in profileModuleIds) {
-      if (!out.any((e) => e.$1 == id)) out.add((id, const {'about', 'interests', 'personality', 'custom', 'pinned', 'links', 'music', 'gallery'}.contains(id)));
+      if (!out.any((e) => e.$1 == id)) out.add((id, const {'about', 'interests', 'personality', 'custom', 'pinned', 'links', 'music', 'gallery', 'astro'}.contains(id)));
     }
     return out;
   }

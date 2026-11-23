@@ -7,6 +7,7 @@ import 'package:prism_plurality/shared/theme/palette_moods.dart';
 import 'package:prism_plurality/shared/theme/theme_variants.dart';
 import 'package:prism_plurality/features/members/studio/profile_studio.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
+import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 import 'package:prism_plurality/features/members/studio/profile_view.dart';
 import 'package:prism_plurality/features/relationships/hub/member_relationships.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
@@ -15,6 +16,7 @@ import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroProfileModule;
 import 'package:intl/intl.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -290,6 +292,7 @@ class _MemberDetailBody extends ConsumerWidget {
         ),
       ),
       ProxyTagsSection(member: member),
+      _AstroSection(member: member),
       _RetainedProfileSection(
         key: const ValueKey('frontingStats'),
         child: _FrontingStatsSection(memberId: member.id),
@@ -563,6 +566,27 @@ class _MemberProfileTheme extends StatelessWidget {
         paletteCustom,
       ),
       child: child,
+    );
+  }
+}
+
+// ── Astrology (only when visible to the current viewer) ─────────────────────
+
+class _AstroSection extends ConsumerWidget {
+  const _AstroSection({required this.member});
+  final Member member;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!AstroProfileModule.visible(ref, member.id)) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    return _SectionCard(
+      icon: AppIcons.navAstro,
+      title: tr(context, 'Astrology', 'Astrología'),
+      theme: theme,
+      child: PrismSurface(
+        child: AstroProfileModule(member: member, accent: theme.colorScheme.primary, showTitle: false),
+      ),
     );
   }
 }

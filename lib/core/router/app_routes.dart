@@ -127,6 +127,11 @@ abstract final class AppRoutePaths {
   static const settingsPalette = '/settings/appearance/palette';
   static const timeline = '/timeline';
 
+  /// Astro: the system astrology hub, and one alter's astrology.
+  static const astro = '/astro';
+  static String astroAlter(String memberId, {String? section}) =>
+      '/astro/alter/${Uri.encodeComponent(memberId)}${section == null ? '' : '?section=$section'}';
+
   // Parameterized helpers — groups
   static String memberGroup(String id) => '/members/groups/$id';
   static String settingsGroup(String id) => '/settings/members/groups/$id';
@@ -251,6 +256,7 @@ enum AppShellTabId {
   introductions,
   social,
   health,
+  astro,
 }
 
 class AppShellTab {
@@ -335,6 +341,7 @@ class AppShellTab {
       AppShellTabId.introductions => l10n.navIntroductions,
       AppShellTabId.social => 'Social',
       AppShellTabId.health => l10n.localeName.startsWith('es') ? 'Salud' : 'Health',
+      AppShellTabId.astro => 'Astro',
     };
   }
 
@@ -391,6 +398,7 @@ class AppShellTab {
       AppShellTabId.introductions => true,
       AppShellTabId.social => true,
       AppShellTabId.health => true,
+      AppShellTabId.astro => true,
     };
   }
 }
@@ -717,6 +725,14 @@ final appShellTabs = [
     branchIndex: 39,
     rootLocation: AppRoutePaths.health,
   ),
+  AppShellTab(
+    id: AppShellTabId.astro,
+    label: 'Astro',
+    icon: AppIcons.navAstro,
+    activeIcon: AppIcons.navAstroActive,
+    branchIndex: 40,
+    rootLocation: AppRoutePaths.astro,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -732,6 +748,7 @@ const defaultNavBarOverflowTabIds = [
   'calendar',
   'mood',
   'health',
+  'astro',
   'insights',
   'locations',
   'work',

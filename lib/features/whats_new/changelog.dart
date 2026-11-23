@@ -32,6 +32,38 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.40.0',
+    date: DateTime(2026, 11, 23),
+    features: const [
+      LocalizedText(
+        'Astro: astrology for every alter. A birthday gives the Sun sign and daily readings; a birth time and birthplace unlock the Rising sign, houses and a full interactive birth chart — tap any planet for Planet → Sign → House → Meaning. Nothing is guessed.',
+        'Astro: astrología para cada alter. El cumpleaños da el signo solar y las lecturas diarias; la hora y el lugar de nacimiento desbloquean el ascendente, las casas y una carta natal interactiva completa: toca cualquier planeta para ver Planeta → Signo → Casa → Significado. No se adivina nada.',
+      ),
+      LocalizedText(
+        'Readings come from the real sky: Today\'s Astro (theme, energy, emotions, relationships, focus, reflection prompt), tomorrow, the week day by day, the month and a yearly overview with growth and reflection periods.',
+        'Las lecturas salen del cielo real: la astrología de hoy (tema, energía, emociones, relaciones, enfoque, pregunta para reflexionar), mañana, la semana día a día, el mes y un resumen anual con periodos de crecimiento y de reflexión.',
+      ),
+      LocalizedText(
+        'Moon calendar, solar calendar, tarot (daily card and ten spreads, saved per alter), compatibility between alters, contacts or anyone — described in words, never a percentage — and Ask Astro, which answers questions about each alter\'s own chart.',
+        'Calendario lunar, calendario solar, tarot (carta del día y diez tiradas, guardadas por alter), compatibilidad entre alters, contactos o cualquier persona —descrita con palabras, nunca con porcentajes— y Pregunta a Astro, que responde sobre la carta de cada alter.',
+      ),
+      LocalizedText(
+        'Astrology Journal: after the day\'s reading, note how the day actually felt and compare over time, next to your Mood logs.',
+        'Diario astrológico: tras la lectura del día, anota cómo se sintió realmente y compáralo con el tiempo, junto a tus registros de ánimo.',
+      ),
+      LocalizedText(
+        'System astrology with a zodiac constellation of your alters, plus an Astrology card on profiles, a fronting card on Home, moon phases and sky events in the Calendar and a line in Daily Insights.',
+        'Astrología del sistema con una constelación zodiacal de tus alters, además de una tarjeta de Astrología en los perfiles, una tarjeta de frente en Inicio, fases lunares y eventos del cielo en el Calendario y una línea en Perspectivas diarias.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Private by default: each alter chooses Private, System-visible, Shareable or Hidden. Everything is calculated on the device — birthplaces are searched offline and nothing is sent anywhere.',
+        'Privado por defecto: cada alter elige Privado, Visible en el sistema, Compartible u Oculto. Todo se calcula en el dispositivo: los lugares se buscan sin conexión y no se envía nada.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.39.3',
     date: DateTime(2026, 11, 22),
     improvements: const [

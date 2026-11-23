@@ -7,6 +7,8 @@ import 'package:prism_plurality/shared/extensions/app_localizations_extension.da
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_plurality/shared/widgets/prism_top_bar_action.dart';
 import 'package:prism_plurality/features/health/health_screen.dart';
+import 'package:prism_plurality/features/astro/views/astro_alter_screen.dart';
+import 'package:prism_plurality/features/astro/views/astro_hub_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
@@ -225,6 +227,7 @@ final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
 final _healthNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'health');
+final _astroNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'astro');
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -1691,6 +1694,29 @@ final routerProvider = Provider<GoRouter>((ref) {
                   moodId: state.uri.queryParameters['mood'],
                   tab: state.uri.queryParameters['tab'],
                 ),
+              ),
+            ],
+          ),
+          // Branch 40: Astro (per-alter astrology and the system hub)
+          StatefulShellBranch(
+            navigatorKey: _astroNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.astro,
+                builder: (context, state) => AstroHubScreen(
+                  key: ValueKey(state.uri.query),
+                  tab: state.uri.queryParameters['tab'],
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'alter/:id',
+                    builder: (context, state) => AstroAlterScreen(
+                      key: ValueKey('${state.pathParameters['id']}|${state.uri.query}'),
+                      memberId: state.pathParameters['id']!,
+                      section: state.uri.queryParameters['section'],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

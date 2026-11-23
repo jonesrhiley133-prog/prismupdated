@@ -21,6 +21,7 @@ const Set<String> kPrismTabRootPaths = {
   AppRoutePaths.statistics,
   AppRoutePaths.timeline,
   AppRoutePaths.sleep,
+  AppRoutePaths.astro,
 };
 
 /// Where pages can be left from without a back button: the tabs shown in

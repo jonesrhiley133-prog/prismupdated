@@ -212,6 +212,16 @@ final List<PrismFeature> prismFeatures = [
     data: const FeatureData(activityKinds: [TrackerKind.healthCheckin, TrackerKind.healthSpot, TrackerKind.healthFollowup, TrackerKind.healthEpisode], permanentKinds: [TrackerKind.healthVocab]),
   ),
   PrismFeature(
+    id: 'astro',
+    name: ('Astro', 'Astro'),
+    description: ('Per-alter astrology: birth charts, horoscopes, moon calendar, tarot, compatibility and an astrology journal. Private by default.', 'Astrología por alter: cartas natales, horóscopos, calendario lunar, tarot, compatibilidad y un diario astrológico. Privado por defecto.'),
+    category: FeatureCategory.tracking,
+    icon: PhosphorIcons.planet(),
+    tabs: const [AppShellTabId.astro],
+    route: AppRoutePaths.astro,
+    data: const FeatureData(activityKinds: [TrackerKind.astroJournal, TrackerKind.astroTarot], permanentKinds: [TrackerKind.astroProfile, TrackerKind.astroSettings]),
+  ),
+  PrismFeature(
     id: 'journal',
     name: ('Journal & dreams', 'Diario y sueños'),
     description: ('Journal entries and the dream journal.', 'Entradas de diario y diario de sueños.'),

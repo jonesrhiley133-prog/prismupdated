@@ -8,6 +8,7 @@ import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroProfileModule;
 import 'package:prism_plurality/features/relationships/utils/relationships.dart';
 import 'package:prism_plurality/features/relationships/views/relationship_labels.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
@@ -392,6 +393,10 @@ class _Body extends ConsumerWidget {
         final p = cfg.str('pinned');
         if (p.isEmpty) return null;
         return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(PhosphorIcons.pushPin(PhosphorIconsStyle.fill), size: 18, color: accent), const SizedBox(width: 10), Expanded(child: Text(p, style: theme.textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic, height: 1.5)))]);
+      case 'astro':
+        // Shows only when this alter's astrology is visible to the viewer.
+        if (!AstroProfileModule.visible(ref, member.id)) return null;
+        return AstroProfileModule(member: member, accent: accent);
       case 'journal':
         final entries = (ref.watch(trackerKindProvider(TrackerKind.journalEntry)).value ?? const <TrackerRecord>[]).where((e) => e.memberId == member.id && !e.isPrivate).toList()
           ..sort((a, b) => (b.occurredAt ?? b.createdAt).compareTo(a.occurredAt ?? a.createdAt));

@@ -117,6 +117,13 @@ abstract final class TrackerKind {
   static const healthEpisode = 'health.episode';
   static const healthVocab = 'health.vocab';
 
+  // Astro: per-alter birth details and privacy (one profile each), the
+  // astrology journal, saved tarot readings, and system-wide settings.
+  static const astroProfile = 'astro.profile';
+  static const astroJournal = 'astro.journal';
+  static const astroTarot = 'astro.tarot';
+  static const astroSettings = 'astro.settings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

@@ -1,5 +1,6 @@
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/habits/center/habit_center_screen.dart'
     show CalendarHabitsForDay;
@@ -378,6 +379,7 @@ class _MonthView extends StatelessWidget {
                                       ),
                                     ),
                                     const Spacer(),
+                                    AstroDayGlyph(day: day),
                                     if (mood != null)
                                       Container(
                                         width: 7,
@@ -580,6 +582,7 @@ class _DayPanel extends ConsumerWidget {
                 }).join(', ')}',
           ),
         if (data.overlays.habits) CalendarHabitsForDay(day: day),
+        CalendarAstroForDay(day: day),
         if (occurrences.isEmpty &&
             birthdays.isEmpty &&
             reminders.isEmpty &&
