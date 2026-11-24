@@ -7,7 +7,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/features/feature_state.dart';
+import 'package:prism_plurality/features/cycle/utils/cycle_import.dart';
 import 'package:prism_plurality/features/fitness/utils/fitness.dart';
+import 'package:prism_plurality/features/fronting/providers/sleep_providers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 // Why imports used to fail (kept here so it isn't reintroduced):
@@ -28,7 +30,7 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 // its own progress cursor; results report exactly what came back per type.
 
 /// Categories the user can choose to import.
-enum HealthCategory { workouts, steps, distance, calories, heartRate, activeMinutes, sleep }
+enum HealthCategory { workouts, steps, distance, calories, heartRate, activeMinutes, sleep, cycle }
 
 String healthCategoryText(BuildContext c, HealthCategory k) => switch (k) {
   HealthCategory.workouts => tr(c, 'Workouts & exercise sessions', 'Entrenamientos y sesiones'),
@@ -38,6 +40,7 @@ String healthCategoryText(BuildContext c, HealthCategory k) => switch (k) {
   HealthCategory.heartRate => tr(c, 'Heart rate', 'Frecuencia cardiaca'),
   HealthCategory.activeMinutes => tr(c, 'Active minutes', 'Minutos activos'),
   HealthCategory.sleep => tr(c, 'Sleep (separate opt-in)', 'Sueño (opcional aparte)'),
+  HealthCategory.cycle => tr(c, 'Periods (separate opt-in)', 'Periodos (opcional aparte)'),
 };
 
 String healthCategoryWhy(BuildContext c, HealthCategory k) => switch (k) {
@@ -47,7 +50,8 @@ String healthCategoryWhy(BuildContext c, HealthCategory k) => switch (k) {
   HealthCategory.calories => tr(c, 'Daily calories burned, as recorded by the source app.', 'Calorías diarias quemadas, según la app de origen.'),
   HealthCategory.heartRate => tr(c, 'Average heart rate per day.', 'Frecuencia media por día.'),
   HealthCategory.activeMinutes => tr(c, 'Minutes of exercise per day.', 'Minutos de ejercicio al día.'),
-  HealthCategory.sleep => tr(c, 'Nightly sleep duration, shown in Fitness only.', 'Duración del sueño, solo en Ejercicio.'),
+  HealthCategory.sleep => tr(c, 'Nightly sleep: totals in Fitness, and each night added to your Sleep log.', 'Sueño: totales en Ejercicio y cada noche en tu registro de sueño.'),
+  HealthCategory.cycle => tr(c, 'Period days and flow, added to Cycle. Days you logged yourself are never overwritten.', 'Días de periodo y flujo, en Ciclo. Lo que registraste tú nunca se sobrescribe.'),
 };
 
 /// Types read for a category.
@@ -59,6 +63,7 @@ List<HealthDataType> healthTypesFor(HealthCategory c, {required bool ios}) => sw
   HealthCategory.heartRate => [HealthDataType.HEART_RATE],
   HealthCategory.activeMinutes => ios ? [HealthDataType.EXERCISE_TIME] : [HealthDataType.WORKOUT],
   HealthCategory.sleep => [ios ? HealthDataType.SLEEP_ASLEEP : HealthDataType.SLEEP_SESSION],
+  HealthCategory.cycle => [HealthDataType.MENSTRUATION_FLOW],
 };
 
 /// Types that must be granted before a category can be read. On Health
@@ -105,6 +110,23 @@ String sourceAppName(String raw) {
     'com.ouraring.oura': 'Oura',
   };
   return known[raw] ?? raw;
+}
+
+/// Joins sleep segments (Apple Health stores a night as many pieces) into
+/// nights: pieces less than an hour apart belong together. Nights shorter
+/// than 30 minutes are dropped.
+List<(DateTime, DateTime)> mergeSleepSegments(List<(DateTime, DateTime)> segments) {
+  final sorted = [for (final x in segments) if (x.$2.isAfter(x.$1)) x]..sort((a, b) => a.$1.compareTo(b.$1));
+  final out = <(DateTime, DateTime)>[];
+  for (final (a, b) in sorted) {
+    if (out.isNotEmpty && a.difference(out.last.$2).inMinutes < 60) {
+      final last = out.removeLast();
+      out.add((last.$1, b.isAfter(last.$2) ? b : last.$2));
+    } else {
+      out.add((a, b));
+    }
+  }
+  return [for (final x in out) if (x.$2.difference(x.$1).inMinutes >= 30) x];
 }
 
 /// A workout from a provider or file.
@@ -673,16 +695,59 @@ class HealthSyncService {
 
       await run(HealthCategory.sleep, (from) async {
         final perDay = <String, Map<String, double>>{};
-        for (final p in await _g.read(healthTypesFor(HealthCategory.sleep, ios: ios), from, end)) {
+        final sleepPoints = await _g.read(healthTypesFor(HealthCategory.sleep, ios: ios), from, end);
+        for (final p in sleepPoints) {
           final k = dayKey(p.dateTo);
           final m = perDay.putIfAbsent(k, () => {});
           m[p.sourceName] = (m[p.sourceName] ?? 0) + p.dateTo.difference(p.dateFrom).inMinutes;
           sources.add(p.sourceName);
         }
-        return saveDaily({
+        // Each night also goes into the Sleep log, unless a night that
+        // overlaps it is already there (logged by hand or imported before).
+        var nights = 0;
+        if (s.f['sleepToLog'] != false) {
+          try {
+            final segments = [for (final p in sleepPoints) (p.dateFrom.toLocal(), p.dateTo.toLocal())];
+            final existing = await ref.read(frontingSessionRepositoryProvider).watchRecentSleepSessions(limit: 400).first;
+            final taken = [for (final x in existing) (x.startTime, x.endTime ?? x.startTime)];
+            for (final (a, b) in mergeSleepSegments(segments)) {
+              if (taken.any((t) => a.isBefore(t.$2) && b.isAfter(t.$1))) continue;
+              await ref.read(sleepNotifierProvider.notifier).logHistoricalSleep(startTime: a, endTime: b, notes: 'Imported from health data');
+              taken.add((a, b));
+              nights++;
+            }
+          } catch (_) {}
+        }
+        final daily = await saveDaily({
           for (final e in perDay.entries)
             if (pickDailySource(e.value) case (final total, _)) e.key: {'sleepMinutes': total.round()},
         });
+        return nights == 0 ? daily : CategoryResult(status: 'ok', created: daily.created + nights, updated: daily.updated, duplicates: daily.duplicates);
+      });
+
+      await run(HealthCategory.cycle, (from) async {
+        final days = <String, ImportedCycleDay>{};
+        for (final p in await _g.read([HealthDataType.MENSTRUATION_FLOW], from, end)) {
+          final v = p.value;
+          if (v is! MenstruationFlowHealthValue) continue;
+          final flow = switch (v.flow) {
+            MenstrualFlow.spotting => 1,
+            MenstrualFlow.light => 2,
+            MenstrualFlow.medium || MenstrualFlow.unspecified || null => 3,
+            MenstrualFlow.heavy => 4,
+            MenstrualFlow.none => 0,
+          };
+          if (flow == 0) continue;
+          sources.add(p.sourceName);
+          final d = p.dateFrom.toLocal();
+          final day = ImportedCycleDay(DateTime(d.year, d.month, d.day), flow, source: sourceAppName(p.sourceName));
+          final prev = days[day.key];
+          if (prev == null || prev.flow < flow) days[day.key] = day;
+        }
+        if (days.isEmpty) return const CategoryResult(status: 'empty');
+        final (cr, up, same) = await ref.read(cycleImportWriterProvider).apply(days.values.toList(), memberId: s.defaultAlter);
+        created += cr;
+        return CategoryResult(status: 'ok', created: cr, updated: up, duplicates: same);
       });
 
       final anyOk = results.values.any((r) => r.status == 'ok' || r.status == 'empty');

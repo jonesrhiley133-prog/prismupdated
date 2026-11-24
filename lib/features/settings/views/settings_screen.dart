@@ -225,6 +225,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       route: AppRoutePaths.frontingNotification,
                     ),
                     _navLink(
+                      icon: Icons.extension_outlined,
+                      iconColor: Colors.indigo,
+                      title: 'Integrations',
+                      route: AppRoutePaths.integrations,
+                    ),
+                    _navLink(
                       icon: Icons.star_outline,
                       iconColor: Colors.amber,
                       title: "Fronting statuses & Who's there",

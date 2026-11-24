@@ -129,6 +129,8 @@ abstract final class AppRoutePaths {
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';
+  static const cycleImport = '/cycle-import';
+  static const integrations = '/integrations';
   static const timeline = '/timeline';
 
   /// Astro: the system astrology hub, and one alter's astrology.
