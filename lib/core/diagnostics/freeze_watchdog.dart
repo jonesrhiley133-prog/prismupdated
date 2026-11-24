@@ -124,7 +124,9 @@ abstract final class FreezeWatchdog {
           _clock.elapsed - _lastFrame > const Duration(seconds: 4)) {
         _stallLogged = true;
         crumb(
-          'frames stalled ${(_clock.elapsed - _lastFrame).inSeconds}s',
+          'frames stalled ${(_clock.elapsed - _lastFrame).inSeconds}s '
+          '(animations running: ${SchedulerBinding.instance.transientCallbackCount}, '
+          'phase: ${SchedulerBinding.instance.schedulerPhase.name})',
         );
         _port?.send(_trail.join('\n'));
         _port?.send('stall');

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -1726,6 +1727,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
     Haptics.selection();
     setState(() {
       _expanded = !_expanded;
+      FreezeWatchdog.crumb('nav more ${_expanded ? 'open' : 'close'}');
       if (_expanded) {
         _expandController.forward();
       } else {
@@ -1803,11 +1805,11 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
           label: context.l10n.navigationBar,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(shapes.radius(radius)),
-            child: BackdropFilter.grouped(
-              filter: ImageFilter.blur(
-                sigmaX: PrismTokens.glassBlurStrong,
-                sigmaY: PrismTokens.glassBlurStrong,
-              ),
+            child: _NavGlass(
+              // While the More panel is open or animating, a live blur
+              // over the page is recomputed every frame (Android's
+              // renderer doesn't cache it) and can stall drawing.
+              liveBlur: t == 0,
               child: Container(
                 height: currentHeight,
                 decoration: _barDecoration(isDark, isOled, radius, shapes),
@@ -2234,11 +2236,8 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
       label: context.l10n.navigationBar,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(shapes.radius(_collapsedRadius)),
-        child: BackdropFilter.grouped(
-          filter: ImageFilter.blur(
-            sigmaX: PrismTokens.glassBlurStrong,
-            sigmaY: PrismTokens.glassBlurStrong,
-          ),
+        child: _NavGlass(
+          liveBlur: true,
           child: Container(
             height: widget.rowHeight,
             decoration: _barDecoration(
@@ -2429,6 +2428,35 @@ class _MoreTrigger extends StatelessWidget {
 }
 
 /// Individual nav bar item.
+/// The nav bar's glass. Uses a live backdrop blur only when it is cheap
+/// (small and still); otherwise — expanded/animating on Android, or with
+/// reduced motion / high contrast — a near-opaque backing instead.
+class _NavGlass extends StatelessWidget {
+  const _NavGlass({required this.liveBlur, required this.child});
+
+  final bool liveBlur;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final android = !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+    final reduced = mq.disableAnimations || mq.highContrast;
+    final blur = !reduced && (liveBlur || !android);
+    if (blur) {
+      return BackdropFilter.grouped(
+        filter: ImageFilter.blur(sigmaX: PrismTokens.glassBlurStrong, sigmaY: PrismTokens.glassBlurStrong),
+        child: child,
+      );
+    }
+    final scheme = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(color: scheme.surface.withValues(alpha: 0.9)),
+      child: child,
+    );
+  }
+}
+
 class _NavBarItem extends StatelessWidget {
   const _NavBarItem({
     required this.tab,
