@@ -125,6 +125,7 @@ abstract final class AppRoutePaths {
   static const settingsMediaUsage = '/settings/media/usage';
   static const settingsSystemInfo = '/settings/system-info';
   static const settingsPalette = '/settings/appearance/palette';
+  static const settingsLaunch = '/settings/appearance/launch';
   static const timeline = '/timeline';
 
   /// Astro: the system astrology hub, and one alter's astrology.

@@ -85,6 +85,15 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                   onPressed: () => context.push(AppRoutePaths.headmateBanners),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: Localizations.localeOf(context).languageCode == 'es' ? 'Pantalla de inicio y saludo' : 'Launch screen & greeting',
+                  icon: Icons.auto_awesome_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.settingsLaunch),
+                ),
+              ),
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(

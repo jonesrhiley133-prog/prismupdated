@@ -11,6 +11,7 @@ import 'package:prism_plurality/features/astro/views/astro_alter_screen.dart';
 import 'package:prism_plurality/features/astro/views/astro_hub_screen.dart';
 import 'package:prism_plurality/features/cozy/views/cozy_hub_screen.dart';
 import 'package:prism_plurality/features/games/views/game_night_view.dart';
+import 'package:prism_plurality/features/launch/launch_settings_screen.dart';
 import 'package:prism_plurality/features/games/views/games_hub_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
@@ -877,6 +878,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'palette',
                         builder: (context, state) =>
                             const PaletteSettingsScreen(),
+                      ),
+                      GoRoute(
+                        path: 'launch',
+                        builder: (context, state) =>
+                            const LaunchSettingsScreen(),
                       ),
                     ],
                   ),

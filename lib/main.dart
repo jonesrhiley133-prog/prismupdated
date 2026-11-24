@@ -42,6 +42,7 @@ import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:prism_plurality/core/services/system_nav_bar.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
+import 'package:prism_plurality/features/launch/launch_settings.dart';
 // import 'package:prism_plurality/features/pluralkit/services/pluralkit_background_service.dart';
 import 'app.dart';
 import 'web/web_bootstrap.dart';
@@ -62,6 +63,8 @@ const _debugSeedStressPresetName = String.fromEnvironment(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Launch screen preferences (device-only) and the launch clock.
+  await LaunchBoot.load();
   registerAstroLicenses();
   if (kIsWeb) {
     await runWebApp();

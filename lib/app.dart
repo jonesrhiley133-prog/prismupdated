@@ -21,6 +21,8 @@ import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
 import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
 import 'package:prism_plurality/features/app_update/app_update_provider.dart';
+import 'package:prism_plurality/features/launch/launch_overlay.dart';
+import 'package:prism_plurality/features/launch/launch_settings.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/social/services/social_onboarding.dart';
@@ -112,7 +114,11 @@ class _PrismAppState extends ConsumerState<PrismApp> {
   @override
   void initState() {
     super.initState();
-    _appLifecycleListener = AppLifecycleListener(onResume: _onResume);
+    _appLifecycleListener = AppLifecycleListener(
+      onResume: _onResume,
+      // Lets the next cold start know whether it's a quick reopen.
+      onPause: () => unawaited(LaunchBoot.noteClosed()),
+    );
     // Look for app updates shortly after launch (Android builds that know
     // their release feed; a no-op elsewhere), whichever screen opens first.
     _updateCheckTimer = Timer(const Duration(seconds: 8), () {
@@ -801,6 +807,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             }
             // The player host sits above the navigator so music and its
             // controls survive every page change.
+            result = LaunchOverlay(child: result);
             return A11yScope(
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),
@@ -955,7 +962,11 @@ class _DatabaseStartupScreen extends ConsumerWidget {
                     schemaVersionBeforeOpen: schemaVersion,
                   );
                 }
-                return const SizedBox.shrink();
+                // The launch animation starts here and carries on over the
+                // app once the database is ready.
+                return LaunchBoot.shouldPlay
+                    ? const LaunchMark(liveData: false)
+                    : const SizedBox.shrink();
               },
               error: (error, _) => _DatabaseStartupError(
                 error: error,
