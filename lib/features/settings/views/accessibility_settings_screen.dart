@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/core/services/system_nav_bar.dart';
 import 'package:prism_plurality/features/accessibility/a11y_views.dart';
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/features/settings/widgets/font_settings_section.dart';
@@ -106,6 +107,22 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+          if (SystemNavBar.supported)
+            PrismSection(
+              title: Localizations.localeOf(context).languageCode == 'es' ? 'Pantalla del teléfono' : 'Phone screen',
+              child: PrismSectionCard(
+                padding: EdgeInsets.zero,
+                child: PrismSwitchRow(
+                  title: Localizations.localeOf(context).languageCode == 'es' ? 'Ocultar la barra de navegación del teléfono' : 'Hide the phone\'s navigation bar',
+                  subtitle: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Más espacio para formularios y botones. Desliza desde el borde inferior para mostrarla un momento.'
+                      : 'More room for forms and Save buttons. Swipe up from the bottom edge to show it for a moment.',
+                  icon: Icons.fullscreen_rounded,
+                  value: ref.watch(hidePhoneNavBarProvider).value ?? false,
+                  onChanged: (v) => ref.read(hidePhoneNavBarProvider.notifier).set(v),
+                ),
+              ),
+            ),
           const A11ySections(),
         ],
       ),

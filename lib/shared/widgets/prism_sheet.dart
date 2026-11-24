@@ -98,6 +98,11 @@ class PrismSheet extends StatelessWidget {
             actions: actions,
             child: content,
           );
+        } else {
+          // Untitled sheets get the same bottom room as titled ones, so
+          // Save buttons sit above the phone's navigation bar and the
+          // keyboard. Inner widgets see a zero inset (no double padding).
+          content = _SheetBottomInset(child: content);
         }
 
         content = _SheetChrome(
@@ -314,6 +319,30 @@ class PrismSheet extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _SheetBottomInset extends StatelessWidget {
+  const _SheetBottomInset({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.decelerate,
+      padding: EdgeInsets.only(bottom: modalBottomInsetOf(context)),
+      child: MediaQuery(
+        data: mediaQuery.copyWith(
+          padding: mediaQuery.padding.copyWith(bottom: 0),
+          viewInsets: mediaQuery.viewInsets.copyWith(bottom: 0),
+          viewPadding: mediaQuery.viewPadding.copyWith(bottom: 0),
+        ),
+        child: child,
       ),
     );
   }

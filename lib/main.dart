@@ -39,6 +39,7 @@ import 'package:prism_plurality/features/pluralkit/services/pk_sync_event_bus.da
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/features/settings/services/stress_data_generator.dart';
 import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
+import 'package:prism_plurality/core/services/system_nav_bar.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
 // import 'package:prism_plurality/features/pluralkit/services/pluralkit_background_service.dart';
@@ -67,6 +68,8 @@ void main() async {
     return;
   }
   BootTimings.mark('binding');
+  // Optional: keep the phone's navigation bar hidden (Android setting).
+  unawaited(SystemNavBar.instance.restore());
   MainIsolateStalls.start();
 
   // Flip the PK sync-log bus's main-isolate guard ON before runApp so any

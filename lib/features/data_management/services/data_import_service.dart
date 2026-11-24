@@ -455,6 +455,21 @@ class DataImportService {
   resolveForCompute(({Uint8List bytes, String? password}) args) =>
       resolveBytes(args.bytes, password: args.password);
 
+  /// Decrypts / reads an export without blocking the UI: a background
+  /// isolate on native platforms, WebCrypto plus a fast scrypt on the web
+  /// (where `compute` would run everything on the page's only thread).
+  static Future<({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})> resolveInBackground(Uint8List bytes, {String? password}) async {
+    if (!kIsWeb || !ExportCrypto.isEncrypted(bytes)) {
+      return kIsWeb ? resolveBytes(bytes, password: password) : compute(resolveForCompute, (bytes: bytes, password: password));
+    }
+    if (password == null || password.isEmpty) {
+      throw const FormatException('This file is encrypted. Please provide a password.');
+    }
+    final result = await ExportCrypto.decryptAsync(bytes, password);
+    _validateMediaManifest(result.json, result.mediaBlobs);
+    return (json: result.json, mediaBlobs: result.mediaBlobs);
+  }
+
   static ({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})
   resolveBytes(Uint8List bytes, {String? password}) {
     if (ExportCrypto.isEncrypted(bytes)) {
@@ -473,10 +488,8 @@ class DataImportService {
     } catch (_) {
       throw const FormatException('File is not a valid export');
     }
-    // Unencrypted Prism backups are not accepted — re-export from the app.
-    if (raw.contains('"formatVersion"')) {
-      throw const FormatException('unencrypted-prism-backup');
-    }
+    // Plain .json Prism exports are accepted (Settings › Import & export
+    // can write them). They carry no media; the encrypted .prism file does.
     return (json: raw, mediaBlobs: const []);
   }
 

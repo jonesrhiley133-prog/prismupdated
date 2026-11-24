@@ -151,7 +151,7 @@ void main() {
     expect(find.text('Import and Continue'), findsOneWidget);
   });
 
-  testWidgets('Prism export onboarding rejects unencrypted backups', (
+  testWidgets('Prism export onboarding accepts plain .json exports', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -184,9 +184,9 @@ void main() {
       find.text(
         "This backup isn't encrypted. Re-export from the app to get a secure .prism file.",
       ),
-      findsOneWidget,
+      findsNothing,
     );
-    expect(find.text('Try Again'), findsOneWidget);
+    expect(find.text('Try Again'), findsNothing);
   });
 
   testWidgets('shows progress instead of a blank body for SP decision states', (

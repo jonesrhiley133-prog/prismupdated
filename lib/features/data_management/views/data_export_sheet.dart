@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -423,8 +424,61 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
           tone: PrismButtonTone.filled,
           expanded: true,
         ),
+        const SizedBox(height: 10),
+        PrismButton(
+          onPressed: _isSaving ? () {} : _exportPlainJson,
+          icon: AppIcons.download,
+          label: Localizations.localeOf(context).languageCode == 'es' ? 'Exportar como .json (sin cifrar)' : 'Export as .json (not encrypted)',
+          tone: PrismButtonTone.outlined,
+          expanded: true,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          Localizations.localeOf(context).languageCode == 'es'
+              ? 'Un archivo .json legible que se puede importar en cualquier dispositivo. No tiene contraseña ni incluye fotos del chat: guárdalo en un lugar seguro.'
+              : 'A readable .json file you can import on any device. It has no password and doesn\'t include chat photos — keep it somewhere safe.',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
       ],
     );
+  }
+
+  /// Saves an unencrypted .json export (any platform).
+  Future<void> _exportPlainJson() async {
+    setState(() => _isSaving = true);
+    try {
+      final export = await ref.read(dataExportServiceProvider).buildExport();
+      final json = const JsonEncoder.withIndent(' ').convert(export.toJson());
+      final name = 'Prism-Export-${DateTime.now().toIso8601String().substring(0, 10)}.json';
+      final outcome = await ref.read(prismFileDialogServiceProvider).saveBytes(
+        bytes: Uint8List.fromList(utf8.encode(json)),
+        suggestedName: name,
+        allowedExtensions: const ['json'],
+        dialogTitle: 'Save Prism export',
+        mimeType: 'application/json',
+      );
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      if (outcome.status == SaveFileStatus.saved) {
+        setState(() {
+          _state = _ExportState.complete;
+          _savedDisplayName = outcome.savedDisplayName ?? name;
+        });
+      } else if (outcome.status != SaveFileStatus.cancelled && outcome.status != SaveFileStatus.alreadyActive) {
+        setState(() {
+          _state = _ExportState.error;
+          _errorMessage = outcome.error?.toString() ?? outcome.status.name;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isSaving = false;
+        _state = _ExportState.error;
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   Widget _buildPassword(ThemeData theme) {

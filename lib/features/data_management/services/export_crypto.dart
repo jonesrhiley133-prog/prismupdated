@@ -6,6 +6,9 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:pointycastle/export.dart';
 
+import 'package:prism_plurality/features/data_management/services/aes_gcm.dart';
+import 'package:prism_plurality/features/data_management/services/fast_scrypt.dart';
+
 class ExportMediaBlobDescriptor {
   const ExportMediaBlobDescriptor({
     required this.mediaId,
@@ -294,28 +297,58 @@ class ExportCrypto {
     offset += jsonLen;
 
     final key = _deriveKey(password, salt, n: n, r: r, p: p);
+    final json = utf8.decode(aesGcmDecryptSync(key, Uint8List.fromList(nonce), Uint8List.fromList(jsonCt)));
+    return (json: json, mediaBlobs: _readMedia(data, offset));
+  }
 
-    final cipher = GCMBlockCipher(AESEngine())
-      ..init(
-        false,
-        AEADParameters(
-          KeyParameter(key),
-          128,
-          Uint8List.fromList(nonce),
-          Uint8List(0),
-        ),
-      );
+  /// Like [decrypt], but the AES step uses the platform's native crypto
+  /// (WebCrypto in browsers) and yields to the UI. Used on the web, where
+  /// there is no background isolate and the pure-Dart cipher is slow.
+  static Future<({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})> decryptAsync(Uint8List data, String password) async {
+    final h = _readHeader(data);
+    // Let the "decrypting" state paint before the key derivation runs.
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    final key = _deriveKey(password, h.salt, n: h.n, r: h.r, p: h.p);
+    final plain = await aesGcmDecrypt(key, h.nonce, h.jsonCt);
+    final json = utf8.decode(plain);
+    return (json: json, mediaBlobs: _readMedia(data, h.offset));
+  }
 
-    final plaintext = Uint8List(cipher.getOutputSize(jsonCt.length));
-    var decLen = cipher.processBytes(
-      Uint8List.fromList(jsonCt),
-      0,
-      jsonCt.length,
-      plaintext,
-      0,
-    );
-    decLen += cipher.doFinal(plaintext, decLen);
-    final json = utf8.decode(plaintext.sublist(0, decLen));
+  static ({int n, int r, int p, Uint8List salt, Uint8List nonce, Uint8List jsonCt, int offset}) _readHeader(Uint8List data) {
+    final magic = utf8.decode(data.sublist(0, _magic.length));
+    if (magic != _magic) {
+      throw const FormatException('Not a Prism encrypted export');
+    }
+    const minHeaderLength = 6 + 4 + 4 + 4 + _saltLength + _nonceLength + 4 + 16 + 4;
+    if (data.length < minHeaderLength) {
+      throw const FormatException('Encrypted export is too short');
+    }
+    var offset = _magic.length;
+    final n = _readUint32BE(data, offset);
+    offset += 4;
+    final r = _readUint32BE(data, offset);
+    offset += 4;
+    final p = _readUint32BE(data, offset);
+    offset += 4;
+    if (n != _scryptN || r != _scryptR || p != _scryptP) {
+      throw const FormatException('Unsupported KDF parameters');
+    }
+    final salt = data.sublist(offset, offset + _saltLength);
+    offset += _saltLength;
+    final nonce = data.sublist(offset, offset + _nonceLength);
+    offset += _nonceLength;
+    final jsonLen = _readUint32BE(data, offset);
+    offset += 4;
+    if (data.length < offset + jsonLen) {
+      throw const FormatException('Encrypted export is truncated (JSON section)');
+    }
+    final jsonCt = data.sublist(offset, offset + jsonLen);
+    offset += jsonLen;
+    return (n: n, r: r, p: p, salt: salt, nonce: nonce, jsonCt: jsonCt, offset: offset);
+  }
+
+  static List<({String mediaId, Uint8List blob})> _readMedia(Uint8List data, int offset) {
+
 
     // Media section
     if (data.length < offset + 4) {
@@ -365,7 +398,7 @@ class ExportCrypto {
       throw const FormatException('Unexpected trailing bytes');
     }
 
-    return (json: json, mediaBlobs: mediaBlobs);
+    return mediaBlobs;
   }
 
   /// Returns `true` when [data] starts with the PRISM1 encrypted export header.
@@ -391,8 +424,8 @@ class ExportCrypto {
     int r = _scryptR,
     int p = _scryptP,
   }) {
-    final scrypt = Scrypt()..init(ScryptParameters(n, r, p, _keyLength, salt));
-    return scrypt.process(Uint8List.fromList(utf8.encode(password)));
+    // Same output as pointycastle's Scrypt, much faster in browsers.
+    return fastScrypt(Uint8List.fromList(utf8.encode(password)), salt, n: n, r: r, p: p, dkLen: _keyLength);
   }
 
   static Uint8List _uint32BE(int value) {

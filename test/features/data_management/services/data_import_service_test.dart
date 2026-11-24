@@ -1274,25 +1274,13 @@ void main() {
     );
   });
 
-  group('DataImportService.resolveBytes — Prism JSON rejection', () {
-    test(
-      'unencrypted Prism JSON (has "formatVersion") throws FormatException',
-      () {
-        final prismJson = utf8.encode(
-          '{"formatVersion":"prism_v3","headmates":[]}',
-        );
-        expect(
-          () => DataImportService.resolveBytes(Uint8List.fromList(prismJson)),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              equals('unencrypted-prism-backup'),
-            ),
-          ),
-        );
-      },
-    );
+  group('DataImportService.resolveBytes — plain JSON', () {
+    test('unencrypted Prism JSON (has "formatVersion") is accepted', () {
+      const raw = '{"formatVersion":"prism_v3","headmates":[]}';
+      final result = DataImportService.resolveBytes(Uint8List.fromList(utf8.encode(raw)));
+      expect(result.json, raw);
+      expect(result.mediaBlobs, isEmpty);
+    });
 
     test('third-party SP JSON (no "formatVersion") is accepted', () {
       final spJson = utf8.encode('{"content":"Hello"}');

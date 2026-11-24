@@ -140,9 +140,9 @@ const cozyLists = <CozyList>[
 
 CozyList cozyListFor(String key) => cozyLists.firstWhere((l) => l.key == key, orElse: () => cozyLists.first);
 
-void openCozyList(BuildContext context, String key) => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => CozyListScreen(list: cozyListFor(key))));
+void openCozyList(BuildContext context, String key) => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute<void>(builder: (_) => CozyListScreen(list: cozyListFor(key))));
 
-void openDoodleWall(BuildContext context) => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DoodleWallScreen()));
+void openDoodleWall(BuildContext context) => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute<void>(builder: (_) => const DoodleWallScreen()));
 
 class CollectionsView extends ConsumerWidget {
   const CollectionsView({super.key});
@@ -170,7 +170,7 @@ class CollectionsView extends ConsumerWidget {
             const SizedBox(width: 10),
             Expanded(
               child: PrismSurface(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const GiftsScreen())),
+                onTap: () => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute<void>(builder: (_) => const GiftsScreen())),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

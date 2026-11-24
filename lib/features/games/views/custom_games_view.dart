@@ -158,7 +158,7 @@ class CustomGamesView extends ConsumerWidget {
   }
 }
 
-void openCustomEditor(BuildContext context, {required CustomTemplate template, CustomGame? existing}) => Navigator.of(context).push(
+void openCustomEditor(BuildContext context, {required CustomTemplate template, CustomGame? existing}) => Navigator.of(context, rootNavigator: true).push(
   MaterialPageRoute<void>(
     builder: (_) => CustomGameEditor(template: template, existing: existing),
   ),
