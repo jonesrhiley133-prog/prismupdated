@@ -103,6 +103,7 @@ class PrismApp extends ConsumerStatefulWidget {
 
 class _PrismAppState extends ConsumerState<PrismApp> {
   late final AppLifecycleListener _appLifecycleListener;
+  Timer? _updateCheckTimer;
   bool _ranOrphanMediaReconcile = false;
   bool _ranBioMediaReconcile = false;
   bool _ranMediaHydration = false;
@@ -114,7 +115,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     _appLifecycleListener = AppLifecycleListener(onResume: _onResume);
     // Look for app updates shortly after launch (Android builds that know
     // their release feed; a no-op elsewhere), whichever screen opens first.
-    Future<void>.delayed(const Duration(seconds: 8), () {
+    _updateCheckTimer = Timer(const Duration(seconds: 8), () {
       if (mounted) unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
     });
     if (kPerfMode) {
@@ -341,6 +342,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
 
   @override
   void dispose() {
+    _updateCheckTimer?.cancel();
     _appLifecycleListener.dispose();
     super.dispose();
   }
