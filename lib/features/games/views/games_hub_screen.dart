@@ -31,6 +31,7 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Games', 'Juegos'),
         actions: [
+          PrismTopBarAction(icon: PhosphorIcons.globe(), tooltip: tr(context, 'Play online', 'Jugar en línea'), onPressed: () => context.push(AppRoutePaths.onlineGames)),
           PrismTopBarAction(icon: PhosphorIcons.shuffle(), tooltip: tr(context, 'Random game', 'Juego al azar'), onPressed: () => openRandomGame(context)),
           const FeatureDataAction(featureId: 'games'),
         ],
@@ -53,6 +54,24 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
               onChanged: (t) => setState(() => _tab = t),
             ),
             const SizedBox(height: 14),
+            if (_tab == GamesTab.play) ...[
+              PrismSurface(
+                onTap: () => context.push(AppRoutePaths.onlineGames),
+                padding: const EdgeInsets.all(14),
+                child: Row(children: [
+                  const Text('🌐', style: TextStyle(fontSize: 28)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(tr(context, 'Play online with friends', 'Juega en línea con amigos'), style: Theme.of(context).textTheme.titleSmall),
+                      Text(tr(context, 'Tic-tac-toe, Four in a Row, Rock Paper Scissors and Word Chain — share a room code.', 'Tres en raya, Cuatro en línea, Piedra papel tijera y Cadena de palabras — comparte un código.'), style: Theme.of(context).textTheme.bodySmall),
+                    ]),
+                  ),
+                  const Icon(Icons.chevron_right),
+                ]),
+              ),
+              const SizedBox(height: 14),
+            ],
             SectionSwitcher(
               id: _tab,
               child: switch (_tab) {

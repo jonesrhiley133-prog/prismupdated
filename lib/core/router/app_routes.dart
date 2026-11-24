@@ -132,6 +132,7 @@ abstract final class AppRoutePaths {
   static const cycleImport = '/cycle-import';
   static const integrations = '/integrations';
   static const account = '/account';
+  static const onlineGames = '/games-online';
   static const timeline = '/timeline';
 
   /// Astro: the system astrology hub, and one alter's astrology.

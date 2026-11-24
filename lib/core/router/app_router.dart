@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/online_games/online_screens.dart';
 import 'package:prism_plurality/features/account/account_screens.dart';
 import 'package:prism_plurality/features/cycle/views/cycle_import_screen.dart';
 import 'package:prism_plurality/features/integrations/integrations_center_screen.dart';
@@ -513,6 +514,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.account,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AccountScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.onlineGames,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const OnlineLobbyScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.importCenter,
