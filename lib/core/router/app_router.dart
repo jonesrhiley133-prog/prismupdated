@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/smart_notifications/notify_settings_screen.dart';
 import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -489,6 +490,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.settingsFrontStatuses,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const FrontStatusesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.settingsMoments,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const NotifySettingsScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.importCenter,

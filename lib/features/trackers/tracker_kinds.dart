@@ -155,6 +155,7 @@ abstract final class TrackerKind {
   static const frontStatusType = 'front.statusType';
   static const frontRole = 'front.role';
   static const frontRoleSettings = 'front.roleSettings';
+  static const notifySettings = 'notify.settings';
 
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {

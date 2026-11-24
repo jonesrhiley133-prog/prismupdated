@@ -798,7 +798,13 @@ class _AppShellState extends ConsumerState<AppShell>
     final contextEpoch = intents.contextEpoch;
     try {
       String? destination;
-      if (claim.intent.isFronting) {
+      if (claim.intent.isAstro) {
+        final id = claim.intent.astroMemberId!;
+        final members = ref.read(userVisibleMembersProvider).value ?? const [];
+        if (members.any((m) => m.id == id)) {
+          destination = AppRoutePaths.astroAlter(id, section: 'horoscope');
+        }
+      } else if (claim.intent.isFronting) {
         if (ref.read(systemSettingsProvider).value?.frontingRemindersEnabled ==
             true) {
           destination = AppRoutePaths.home;
@@ -827,7 +833,9 @@ class _AppShellState extends ConsumerState<AppShell>
       }
       intents.bindAuthorizedContext(currentIdentity.value);
       // Feature settings may change during the repository await.
-      if (claim.intent.isFronting
+      if (claim.intent.isAstro
+          ? false
+          : claim.intent.isFronting
           ? ref.read(systemSettingsProvider).value?.frontingRemindersEnabled !=
                 true
           : !ref.read(featureFlagsProvider).reminders) {

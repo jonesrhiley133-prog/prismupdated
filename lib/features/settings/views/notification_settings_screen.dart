@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:prism_plurality/core/router/app_routes.dart';
 
 import 'package:prism_plurality/core/services/local_notification_service.dart';
 import 'package:prism_plurality/core/services/notification_providers.dart';
@@ -56,6 +59,14 @@ class NotificationSettingsScreen extends ConsumerWidget {
         children: [
           // ── Permission Status (top) ──────────────────
           const _NotificationPermissionTile(),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          PrismListRow(
+            leading: const Icon(Icons.cake_outlined),
+            title: const Text('Birthdays, holidays & horoscopes'),
+            subtitle: const Text('Reminders, holiday calendar, quiet hours'),
+            showChevron: true,
+            onTap: () => context.push(AppRoutePaths.settingsMoments),
+          ),
           const Divider(height: 1, indent: 16, endIndent: 16),
 
           // ── Fronting Reminders (grayed out without permission) ──

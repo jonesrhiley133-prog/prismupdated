@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
+import 'package:prism_plurality/features/smart_notifications/notify_service.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
 import 'package:prism_plurality/app.dart';
 import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
@@ -87,6 +88,7 @@ Future<void> runWebApp() async {
         reminderSchedulerListenerProvider.overrideWithValue(null),
         habitNotificationListenerProvider.overrideWithValue(null),
         calendarNotificationListenerProvider.overrideWithValue(null),
+        smartNotificationListenerProvider.overrideWithValue(null),
         socialNotificationListenerProvider.overrideWithValue(null),
         frontingReminderListenerProvider.overrideWithValue(null),
         screenPrivacyControllerProvider.overrideWithValue(null),

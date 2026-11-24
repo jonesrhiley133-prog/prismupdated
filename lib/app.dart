@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/smart_notifications/notify_service.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/shared/theme/theme_variants.dart';
 import 'package:prism_plurality/features/music/services/music_library.dart';
@@ -556,6 +557,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(habitNotificationListenerProvider, (_, _) {});
     // Keep calendar event alerts armed — reschedules on event changes.
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
+    // Birthdays, holidays and horoscopes.
+    ref.listen(smartNotificationListenerProvider, (_, _) {});
     ref.listen(socialNotificationListenerProvider, (_, _) {});
     ref.listen(socialSyncProvider, (_, _) {});
     // Resumes a Dictionary wiki import that was running when Prism closed.

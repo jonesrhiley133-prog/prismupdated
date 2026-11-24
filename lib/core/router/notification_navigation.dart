@@ -3,11 +3,16 @@ import 'dart:convert';
 /// Untrusted notification data can name a target, never a route or record.
 /// Fingerprints are validated for legacy compatibility, then discarded.
 class NotificationIntent {
-  const NotificationIntent.fronting() : reminderId = null;
-  const NotificationIntent.reminder(this.reminderId);
+  const NotificationIntent.fronting() : reminderId = null, astroMemberId = null;
+  const NotificationIntent.reminder(this.reminderId) : astroMemberId = null;
+
+  /// A horoscope notification: opens that alter's astrology page.
+  const NotificationIntent.astro(this.astroMemberId) : reminderId = null;
 
   final String? reminderId;
-  bool get isFronting => reminderId == null;
+  final String? astroMemberId;
+  bool get isFronting => reminderId == null && astroMemberId == null;
+  bool get isAstro => astroMemberId != null;
 
   static const maxPayloadLength = 8192;
   static final _id = RegExp(r'^[a-zA-Z0-9_-]{1,128}$');
@@ -19,6 +24,11 @@ class NotificationIntent {
     if (payload == null || payload.length > maxPayloadLength) return null;
     if (payload == 'prism:fronting:v1') {
       return const NotificationIntent.fronting();
+    }
+    const astro = 'prism:astro:';
+    if (payload.startsWith(astro)) {
+      final id = payload.substring(astro.length);
+      return _validId(id) ? NotificationIntent.astro(id) : null;
     }
     for (final prefix in [
       'prism:reminder:scheduled:',
@@ -53,10 +63,12 @@ class NotificationIntent {
 
   @override
   bool operator ==(Object other) =>
-      other is NotificationIntent && reminderId == other.reminderId;
+      other is NotificationIntent &&
+      reminderId == other.reminderId &&
+      astroMemberId == other.astroMemberId;
 
   @override
-  int get hashCode => reminderId.hashCode;
+  int get hashCode => Object.hash(reminderId, astroMemberId);
 }
 
 /// One latest distinct target. No raw payload, DB object or route is retained.
