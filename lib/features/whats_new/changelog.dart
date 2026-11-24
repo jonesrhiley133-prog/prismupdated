@@ -32,6 +32,48 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.42.0',
+    date: DateTime(2026, 11, 24),
+    features: const [
+      LocalizedText(
+        'A launch animation: the Prism mark assembles with a greeting for your system. Choose the style, speed, logo, background and greeting (with {system_name}, {primary_fronter} and more) in Settings › Appearance › Launch.',
+        'Animación de inicio: el logo de Prism se arma con un saludo para tu sistema. Elige estilo, velocidad, logo, fondo y saludo en Ajustes › Apariencia › Inicio.',
+      ),
+      LocalizedText(
+        "Fronting statuses and Who's There: Primary, Co-front, Co-conscious and your own statuses. A gentle \"Who's there?\" check-in appears on Home when it's due, and new entries and events are credited to whoever is Primary.",
+        'Estados de frente y ¿Quién está?: Principal, Co-frente, Co-consciente y tus propios estados. Un aviso suave aparece en Inicio cuando toca, y las nuevas entradas se atribuyen a quien esté como Principal.',
+      ),
+      LocalizedText(
+        'Birthday, holiday and horoscope notifications: reminders for alters, the system, contacts and birthday events; a holiday calendar by country; daily or weekly horoscopes for the Primary fronter; New and Full Moons; and quiet hours.',
+        'Notificaciones de cumpleaños, festivos y horóscopo: recordatorios para alters, el sistema, contactos y eventos; calendario de festivos por país; horóscopo diario o semanal para el Principal; lunas nueva y llena; y horas de silencio.',
+      ),
+      LocalizedText(
+        'Optional account with end-to-end encrypted cloud backup: automatic daily backups, restore on any device, two-step sign-in, devices list and a recovery key. Prism still works fully without an account.',
+        'Cuenta opcional con copia en la nube cifrada de extremo a extremo: copias diarias automáticas, restauración en cualquier dispositivo, verificación en dos pasos, lista de dispositivos y clave de recuperación.',
+      ),
+      LocalizedText(
+        'Play online with friends: Tic-tac-toe, Four in a Row, Rock Paper Scissors and Word Chain, with a room code and no account needed (Games › Play online).',
+        'Juega en línea con amigos: Tres en raya, Cuatro en línea, Piedra papel tijera y Cadena de palabras, con un código de sala y sin cuenta (Juegos › Jugar en línea).',
+      ),
+      LocalizedText(
+        'Integrations page (Settings › Integrations) showing every connection and its real status, plus cycle history import from Clue, CSV or JSON.',
+        'Página de integraciones (Ajustes › Integraciones) con cada conexión y su estado real, e importación del historial del ciclo desde Clue, CSV o JSON.',
+      ),
+    ],
+    improvements: const [
+      LocalizedText(
+        'Health Connect and Apple Health sleep now fills your Sleep log night by night, a new Periods option brings flow into Cycle without overwriting what you logged, and Home shows today\'s steps, sleep and heart rate with their source.',
+        'El sueño de Health Connect y Apple Health llena tu registro de sueño, una nueva opción de Periodos lleva el flujo a Ciclo sin sobrescribir lo tuyo, e Inicio muestra pasos, sueño y pulso de hoy con su origen.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'The Class Schedule time picker opens as a full-size wheel instead of a tiny one at the top of the screen.',
+        'El selector de hora del horario de clases se abre como una rueda grande en lugar de una diminuta arriba de la pantalla.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.41.1',
     date: DateTime(2026, 11, 24),
     improvements: const [

@@ -2,6 +2,29 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.42.0] - 2026-11-24
+
+### Added
+- Launch animation with greetings and launch settings.
+- Fronting statuses (Primary, Co-front, Co-conscious, custom), a Who's There
+  check-in on Home, a Home roles strip, and Primary attribution for new
+  entries and calendar events.
+- Birthday, holiday and horoscope notifications with quiet hours and a
+  coming-up preview; tapping a horoscope opens the alter's astrology page.
+- Optional accounts on the Prism server with zero-knowledge encrypted cloud
+  backups, device sessions, two-step (TOTP) sign-in and recovery keys.
+- Online multiplayer rooms (Tic-tac-toe, Four in a Row, Rock Paper Scissors,
+  Word Chain) refereed by the server.
+- Integrations page and cycle history import (Clue, CSV, JSON).
+
+### Changed
+- Health sleep sessions are added to the Sleep log; period flow can be
+  imported into Cycle; Home shows a health summary with source and time.
+- Server 0.2.0: account, backup and room endpoints.
+
+### Fixed
+- Class Schedule time picker opened tiny at the top of the screen.
+
 ## [0.15.3] - 2026-09-30
 
 Patch release. Prism does less work on the main thread while unlocking,
