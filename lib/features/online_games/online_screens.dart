@@ -721,9 +721,10 @@ class _WordChainBoardState extends State<_WordChainBoard> {
               ),
             ],
           ),
-          TextButton(
+          PrismButton(
+            label: 'Pass (costs a strike)',
+            density: PrismControlDensity.compact,
             onPressed: () => widget.onWord(''),
-            child: const Text("Pass (costs a strike)"),
           ),
         ],
       ],
@@ -793,9 +794,10 @@ class _ChatState extends State<_Chat> {
                 'Nice move 👀',
                 'Hold on a sec',
               ])
-                ActionChip(
-                  label: Text(q),
-                  onPressed: () => widget.session.say(q),
+                PrismChip(
+                  label: q,
+                  selected: false,
+                  onTap: () => widget.session.say(q),
                 ),
             ],
           ),
