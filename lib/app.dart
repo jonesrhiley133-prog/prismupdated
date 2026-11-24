@@ -21,6 +21,10 @@ import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
 import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
 import 'package:prism_plurality/features/app_update/app_update_provider.dart';
+import 'package:prism_plurality/features/fronting_roles/roles_data.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
+import 'package:prism_plurality/features/members/providers/members_providers.dart';
+import 'package:prism_plurality/features/fronting/providers/fronting_providers.dart';
 import 'package:prism_plurality/features/launch/launch_overlay.dart';
 import 'package:prism_plurality/features/launch/launch_settings.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
@@ -49,7 +53,6 @@ import 'package:prism_sync/generated/api.dart' as ffi;
 import 'core/database/app_database.dart';
 import 'core/database/database_providers.dart' show memberRepositoryProvider;
 import 'package:prism_plurality/features/astro/data/astro_model.dart';
-import 'package:prism_plurality/features/members/providers/members_providers.dart' show membersNotifierProvider;
 import 'package:prism_plurality/features/astro/engine/chart.dart' show BirthPlace;
 import 'core/database/database_encryption.dart';
 import 'core/database/database_provider.dart';
@@ -106,6 +109,9 @@ class PrismApp extends ConsumerStatefulWidget {
 class _PrismAppState extends ConsumerState<PrismApp> {
   late final AppLifecycleListener _appLifecycleListener;
   Timer? _updateCheckTimer;
+  Timer? _whosThereTimer;
+  GoRouter? _watchedRouter;
+  String _lastPath = '';
   bool _ranOrphanMediaReconcile = false;
   bool _ranBioMediaReconcile = false;
   bool _ranMediaHydration = false;
@@ -121,6 +127,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     );
     // Look for app updates shortly after launch (Android builds that know
     // their release feed; a no-op elsewhere), whichever screen opens first.
+    // Who's There: after the launch animation, on resume, and when returning
+    // to Home.
+    _scheduleWhosThere(const Duration(milliseconds: 3500));
     _updateCheckTimer = Timer(const Duration(seconds: 8), () {
       if (mounted) unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
     });
@@ -349,12 +358,66 @@ class _PrismAppState extends ConsumerState<PrismApp> {
   @override
   void dispose() {
     _updateCheckTimer?.cancel();
+    _whosThereTimer?.cancel();
+    _watchedRouter?.routerDelegate.removeListener(_onRouteChanged);
     _appLifecycleListener.dispose();
     super.dispose();
   }
 
+  void _watchRouter() {
+    if (!mounted) return;
+    try {
+      final r = ref.read(routerProvider);
+      if (identical(r, _watchedRouter)) return;
+      _watchedRouter?.routerDelegate.removeListener(_onRouteChanged);
+      _watchedRouter = r..routerDelegate.addListener(_onRouteChanged);
+    } catch (_) {}
+  }
+
+  void _onRouteChanged() {
+    final c = _watchedRouter?.routerDelegate.currentConfiguration;
+    final path = c == null || c.isEmpty ? '' : c.uri.path;
+    if (path == AppRoutePaths.home && _lastPath != AppRoutePaths.home) _scheduleWhosThere(const Duration(milliseconds: 600));
+    _lastPath = path;
+  }
+
+  void _scheduleWhosThere(Duration delay) {
+    _whosThereTimer?.cancel();
+    _whosThereTimer = Timer(delay, _maybeShowWhosThere);
+  }
+
+  /// Shows Who's There when it's due — only on Home, with nothing open on
+  /// top and no text being typed, so it never interrupts an activity.
+  void _maybeShowWhosThere({int retries = 3}) {
+    if (!mounted) return;
+    try {
+      if (!ref.read(databaseReadyProvider).hasValue) {
+        if (retries > 0) _whosThereTimer = Timer(const Duration(seconds: 2), () => _maybeShowWhosThere(retries: retries - 1));
+        return;
+      }
+      _watchRouter();
+      // Wait until role data has loaded, so defaults never trigger it early.
+      final settingsLoaded = ref.read(trackerKindProvider(TrackerKind.frontRoleSettings)).hasValue;
+      final sessionsLoaded = ref.read(activeSessionsProvider).hasValue;
+      final membersLoaded = ref.read(userVisibleMembersProvider).hasValue;
+      if (!settingsLoaded || !sessionsLoaded || !membersLoaded) {
+        if (retries > 0) _whosThereTimer = Timer(const Duration(seconds: 2), () => _maybeShowWhosThere(retries: retries - 1));
+        return;
+      }
+      if ((ref.read(userVisibleMembersProvider).value ?? const []).isEmpty) return;
+      if (!whosThereDue(settings: ref.read(roleSettingsProvider), lastChange: ref.read(lastFrontingChangeProvider), now: DateTime.now())) return;
+      final router = ref.read(routerProvider);
+      final c = router.routerDelegate.currentConfiguration;
+      if (c.isEmpty || c.uri.path != AppRoutePaths.home || router.canPop()) return;
+      final focus = FocusManager.instance.primaryFocus?.context;
+      if (focus != null && (focus.widget is EditableText || focus.findAncestorWidgetOfExactType<EditableText>() != null)) return;
+      router.push(AppRoutePaths.whosThere);
+    } catch (_) {}
+  }
+
   void _onResume() {
     MainIsolateStalls.mark('resume');
+    _scheduleWhosThere(const Duration(milliseconds: 800));
     // At most every few hours (see AppUpdateNotifier.autoCheckInterval).
     unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
     ref.read(localNotificationServiceProvider).refreshDesktopSchedules();

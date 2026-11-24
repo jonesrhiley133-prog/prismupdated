@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/fronting_roles/roles_widgets.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/features/alter_status/status_widgets.dart' show StatusesDashboardCard;
 import 'package:prism_plurality/features/automations/automations_screen.dart' show AutomationDashboardCard;
@@ -184,6 +185,7 @@ class HomeDashboard extends ConsumerWidget {
             ],
           ),
           const AppUpdateBanner(),
+          const FrontingRolesStrip(),
           const WhatsNewLauncher(),
           ..._cards(context, ids),
         ],

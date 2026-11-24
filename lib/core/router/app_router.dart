@@ -12,6 +12,8 @@ import 'package:prism_plurality/features/astro/views/astro_hub_screen.dart';
 import 'package:prism_plurality/features/cozy/views/cozy_hub_screen.dart';
 import 'package:prism_plurality/features/games/views/game_night_view.dart';
 import 'package:prism_plurality/features/launch/launch_settings_screen.dart';
+import 'package:prism_plurality/features/fronting_roles/statuses_screen.dart';
+import 'package:prism_plurality/features/fronting_roles/whos_there_screen.dart';
 import 'package:prism_plurality/features/games/views/games_hub_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/core/router/onboarding_local_completion.dart';
@@ -472,6 +474,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.syncSetup,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const DemoGuard(child: SyncSetupScreen()),
+      ),
+      GoRoute(
+        path: AppRoutePaths.whosThere,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          child: const WhosThereScreen(),
+          transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: ScaleTransition(scale: Tween(begin: 1.04, end: 1.0).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)), child: child)),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.settingsFrontStatuses,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FrontStatusesScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.importCenter,

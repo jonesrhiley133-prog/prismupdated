@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
+import 'package:prism_plurality/features/fronting_roles/roles_data.dart';
 
 /// Every live tracker record.
 final trackerRecordsProvider = StreamProvider<List<TrackerRecord>>(
@@ -53,6 +54,14 @@ class TrackerNotifier extends Notifier<void> {
     DateTime? now,
   }) async {
     final t = now ?? DateTime.now();
+    // Who was Primary when this was written, for attribution.
+    if (!kind.startsWith('front.') && !fields.containsKey('recordedBy')) {
+      String? by;
+      try {
+        by = ref.read(primaryFronterIdProvider);
+      } catch (_) {}
+      if (by != null) fields = {...fields, 'recordedBy': by};
+    }
     final record = TrackerRecord(
       id: _uuid.v4(),
       kind: kind,

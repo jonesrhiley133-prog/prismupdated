@@ -224,6 +224,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       title: context.l10n.fnTitle,
                       route: AppRoutePaths.frontingNotification,
                     ),
+                    _navLink(
+                      icon: Icons.star_outline,
+                      iconColor: Colors.amber,
+                      title: "Fronting statuses & Who's there",
+                      route: AppRoutePaths.settingsFrontStatuses,
+                    ),
                     _SettingsLink(
                       icon: Icons.dynamic_feed_outlined,
                       iconColor: Colors.deepOrange,

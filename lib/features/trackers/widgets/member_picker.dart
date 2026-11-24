@@ -3,14 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/fronting/providers/fronting_providers.dart';
+import 'package:prism_plurality/features/fronting_roles/roles_data.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/widgets/prism_chip.dart';
 
 /// The member fronting right now, used to attribute new entries.
-String? currentFronterId(WidgetRef ref) =>
-    ref.read(currentFronterProvider).value?.id;
+/// Prefers the Primary fronter when fronting statuses are in use.
+String? currentFronterId(WidgetRef ref) {
+  try {
+    final primary = ref.read(primaryFronterIdProvider);
+    if (primary != null) return primary;
+  } catch (_) {}
+  return ref.read(currentFronterProvider).value?.id;
+}
 
 Color? _memberColor(Member m) {
   final hex = m.customColorHex;

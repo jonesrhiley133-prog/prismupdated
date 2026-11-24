@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/features/fronting_roles/roles_data.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/domain/models/calendar_event.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
@@ -145,6 +146,13 @@ class _EditEventSheetState extends ConsumerState<EditEventSheet> {
     _category = source?.category;
     _colorHex = source?.colorHex;
     _memberIds = {...?source?.memberIds};
+    if (source == null) {
+      // New events default to whoever is Primary right now.
+      try {
+        final primary = ref.read(primaryFronterIdProvider);
+        if (primary != null) _memberIds = {primary};
+      } catch (_) {}
+    }
     _initialSignature = _signature();
   }
 

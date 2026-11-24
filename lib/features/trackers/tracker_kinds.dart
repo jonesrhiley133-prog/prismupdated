@@ -149,6 +149,13 @@ abstract final class TrackerKind {
   static const cozyDoodle = 'cozy.doodle';
   static const cozyComfort = 'cozy.comfort';
 
+  // Fronting roles: custom fronting statuses (Primary / Co-front /
+  // Co-conscious are built in), each alter's assigned status, and
+  // Who's There settings (interval, last confirmation, snooze).
+  static const frontStatusType = 'front.statusType';
+  static const frontRole = 'front.role';
+  static const frontRoleSettings = 'front.roleSettings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');
