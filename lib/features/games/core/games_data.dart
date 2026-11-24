@@ -231,7 +231,7 @@ Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<Stri
               child: PrismButton(
                 tone: PrismButtonTone.filled,
                 expanded: true,
-                label: picked.isEmpty ? tr(ctx, 'Play without choosing', 'Jugar sin elegir') : tr(ctx, 'Done (${picked.length})', 'Listo (${picked.length})'),
+                label: picked.isEmpty ? tr(ctx, 'Continue without choosing', 'Seguir sin elegir') : tr(ctx, 'Done (${picked.length})', 'Listo (${picked.length})'),
                 onPressed: () => Navigator.of(ctx).pop(picked),
               ),
             ),

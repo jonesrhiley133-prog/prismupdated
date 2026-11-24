@@ -305,7 +305,9 @@ class PrismSheet extends StatelessWidget {
             ],
             const SizedBox(height: 16),
           ],
-          child,
+          // Bounded, so long content (alter lists, forms) scrolls inside the
+          // sheet and the buttons below it stay on screen.
+          Flexible(child: child),
           if (actions != null && actions!.isNotEmpty) ...[
             const SizedBox(height: 16),
             Row(

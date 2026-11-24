@@ -20,6 +20,7 @@ import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
 import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
+import 'package:prism_plurality/features/app_update/app_update_provider.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/social/services/social_onboarding.dart';
@@ -111,6 +112,11 @@ class _PrismAppState extends ConsumerState<PrismApp> {
   void initState() {
     super.initState();
     _appLifecycleListener = AppLifecycleListener(onResume: _onResume);
+    // Look for app updates shortly after launch (Android builds that know
+    // their release feed; a no-op elsewhere), whichever screen opens first.
+    Future<void>.delayed(const Duration(seconds: 8), () {
+      if (mounted) unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
+    });
     if (kPerfMode) {
       PerfProbe.register('go', (path) {
         ref.read(routerProvider).go(path);
@@ -341,6 +347,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
 
   void _onResume() {
     MainIsolateStalls.mark('resume');
+    // At most every few hours (see AppUpdateNotifier.autoCheckInterval).
+    unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
     ref.read(localNotificationServiceProvider).refreshDesktopSchedules();
     if (!ref.read(databaseReadyProvider).hasValue) return;
     _repairPrimaryDatabaseKeySlotOnce();

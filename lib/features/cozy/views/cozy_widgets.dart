@@ -207,7 +207,7 @@ class _ComposerState extends ConsumerState<_Composer> {
   @override
   Widget build(BuildContext context) {
     final names = ref.watch(gameNamesProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,

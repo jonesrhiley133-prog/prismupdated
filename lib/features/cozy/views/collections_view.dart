@@ -412,7 +412,7 @@ class _ItemEditorState extends ConsumerState<_ItemEditor> {
   Widget build(BuildContext context) {
     final l = widget.list;
     final names = ref.watch(gameNamesProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -773,7 +773,7 @@ class _GiftComposerState extends ConsumerState<_GiftComposer> {
   @override
   Widget build(BuildContext context) {
     final names = ref.watch(gameNamesProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,

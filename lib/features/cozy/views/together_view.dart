@@ -263,7 +263,7 @@ class _CardDrawerState extends ConsumerState<_CardDrawer> {
   @override
   Widget build(BuildContext context) {
     final card = widget.deck[_i];
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,

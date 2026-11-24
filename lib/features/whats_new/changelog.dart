@@ -32,6 +32,30 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.41.1',
+    date: DateTime(2026, 11, 24),
+    improvements: const [
+      LocalizedText(
+        'App updates are back: Prism checks for a new version when it starts and whenever you return to it (every few hours at most), falls back to Codeberg if GitHub can\'t be reached, and never offers an older version.',
+        'Vuelven las actualizaciones: Prism busca una versión nueva al abrirse y al volver a la app (como mucho cada pocas horas), usa Codeberg si GitHub no responde y nunca ofrece una versión anterior.',
+      ),
+      LocalizedText(
+        'Plain .json export and import, and an optional setting to hide the phone\'s navigation bar (Settings › Accessibility).',
+        'Exportación e importación en .json y una opción para ocultar la barra de navegación del teléfono (Ajustes › Accesibilidad).',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Pop-up sheets with long lists — choosing alters in Games, Cozy, Astro and elsewhere — now scroll, and their Save and Done buttons are always reachable.',
+        'Las hojas emergentes con listas largas (elegir alters en Juegos, Acogedor, Astro y otros) ahora se desplazan, y sus botones Guardar y Listo siempre están accesibles.',
+      ),
+      LocalizedText(
+        'The Decrypt step of importing works on iPhone web, and Save buttons stay above the phone\'s navigation bar.',
+        'El paso Descifrar de la importación funciona en la web del iPhone, y los botones Guardar quedan por encima de la barra de navegación del teléfono.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.41.0',
     date: DateTime(2026, 11, 23),
     features: const [

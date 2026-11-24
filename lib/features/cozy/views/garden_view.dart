@@ -145,7 +145,7 @@ class _PlantSheetState extends ConsumerState<_PlantSheet> {
   @override
   Widget build(BuildContext context) {
     final names = ref.watch(gameNamesProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -201,7 +201,7 @@ class _PlantDetail extends ConsumerWidget {
     for (final w in p.waterings) {
       carers[w.$1] = (carers[w.$1] ?? 0) + 1;
     }
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,

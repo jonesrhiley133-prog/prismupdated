@@ -130,7 +130,7 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -473,7 +473,7 @@ class _RoomEditorState extends ConsumerState<_RoomEditor> {
   Widget build(BuildContext context) {
     final names = ref.watch(gameNamesProvider);
     final subs = ref.watch(subsystemsProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -695,7 +695,7 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
     final t = await PrismSheet.show<String>(
       context: context,
       title: type == 'note' ? tr(context, 'Pin a note', 'Fijar una nota') : tr(context, 'Add to-do', 'Añadir tarea'),
-      builder: (ctx) => Padding(
+      builder: (ctx) => SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,

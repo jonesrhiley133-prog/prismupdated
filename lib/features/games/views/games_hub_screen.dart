@@ -510,7 +510,7 @@ class _GamePickerState extends State<_GamePicker> {
   Widget build(BuildContext context) {
     final q = _q.text.trim().toLowerCase();
     final list = gameCatalog.where((g) => (widget.where?.call(g) ?? true) && (q.isEmpty || '${g.name.$1} ${g.name.$2}'.toLowerCase().contains(q))).toList();
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -543,7 +543,7 @@ Future<String?> promptText(BuildContext context, {required String title, String 
   return PrismSheet.show<String>(
     context: context,
     title: title,
-    builder: (ctx) => Padding(
+    builder: (ctx) => SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -164,7 +164,7 @@ class _LetterView extends ConsumerWidget {
     final names = ref.watch(gameNamesProvider);
     final (emoji, bg, fg) = stationery[l.stationery] ?? stationery['plain']!;
     final fav = viewer != null && l.favoritedBy.contains(viewer);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -299,7 +299,7 @@ class _LetterComposerState extends ConsumerState<_LetterComposer> {
   @override
   Widget build(BuildContext context) {
     final names = ref.watch(gameNamesProvider);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -149,7 +149,8 @@ jobs:
             --target-platform android-arm64,android-arm \
             --no-tree-shake-icons \
             --build-number "${{ github.run_number }}" \
-            --dart-define=PRISM_UPDATE_REPO=${{ github.repository }}
+            --dart-define=PRISM_UPDATE_REPO=${{ github.repository }} \
+            --dart-define=PRISM_UPDATE_CODEBERG=${{ vars.PRISM_UPDATE_CODEBERG || 'rhileytheratchet/prismupdated' }}
 
       - name: Collect APKs
         run: |

@@ -78,6 +78,31 @@ void main() {
     expect(await service(client, current: 50).checkForUpdate(), isNull);
   });
 
+  test('never offers an older app version, even with a higher build', () async {
+    Map<String, dynamic> rel(int build, String version) => {..._release(build: build), 'name': 'Prism $version (build $build)'};
+    final client = MockClient((_) async => http.Response(jsonEncode([rel(44, '0.31.0'), rel(43, '0.37.0')]), 200));
+    final s = AppUpdateService(client: client, repo: 'o/r', currentBuild: () async => 43, currentVersion: () async => '0.37.0', cacheDir: () async => tmp);
+    expect(await s.checkForUpdate(), isNull);
+    final client2 = MockClient((_) async => http.Response(jsonEncode([rel(63, '0.41.0'), rel(44, '0.31.0')]), 200));
+    final s2 = AppUpdateService(client: client2, repo: 'o/r', currentBuild: () async => 43, currentVersion: () async => '0.37.0', cacheDir: () async => tmp);
+    expect((await s2.checkForUpdate())!.buildNumber, 63);
+    expect(compareVersions('0.41.0', '0.37.0'), greaterThan(0));
+    expect(compareVersions('x', '0.37.0'), isNull);
+  });
+
+  test('falls back to Codeberg when GitHub is unreachable', () async {
+    final client = MockClient((req) async {
+      if (req.url.host == 'api.github.com') throw const SocketException('down');
+      expect(req.url.host, 'codeberg.org');
+      expect(req.url.path, '/api/v1/repos/c/r/releases');
+      return http.Response(jsonEncode([_release(build: 70)]), 200);
+    });
+    final s = AppUpdateService(client: client, repo: 'o/r', codebergRepo: 'c/r', currentBuild: () async => 10, cacheDir: () async => tmp);
+    expect((await s.checkForUpdate())!.buildNumber, 70);
+    final onlyCodeberg = AppUpdateService(client: client, repo: '', codebergRepo: 'c/r', currentBuild: () async => 10, cacheDir: () async => tmp);
+    expect((await onlyCodeberg.checkForUpdate())!.buildNumber, 70);
+  });
+
   test('no releases yet is not an error; bad responses are', () async {
     expect(
       await service(
