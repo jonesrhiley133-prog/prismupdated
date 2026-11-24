@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/features/account/account_core.dart';
 import 'package:prism_plurality/core/services/notification_providers.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
 import 'package:prism_plurality/domain/models/contact.dart';
@@ -28,6 +29,7 @@ class IntegrationsCenterScreen extends ConsumerWidget {
     final deviceContacts = contacts.where((c) => c.source != 'manual').length;
     final notif = ref.watch(notificationPermissionProvider).value;
     final fmt = DateFormat.MMMd().add_jm();
+    final account = ref.watch(activeAccountProvider);
 
     String? ago(DateTime? t) => t == null
         ? null
@@ -94,6 +96,15 @@ class IntegrationsCenterScreen extends ConsumerWidget {
                       ? null
                       : () =>
                             context.go('${AppRoutePaths.fitness}/integrations'),
+                ),
+                _Row(
+                  icon: Icons.cloud_outlined,
+                  title: tr(context, 'Prism account & cloud backup', 'Cuenta de Prism y copia en la nube'),
+                  state: account != null ? (account.backupKey == null ? _State.attention : _State.connected) : _State.off,
+                  detail: account != null
+                      ? [account.username, account.lastBackupAt == null ? tr(context, 'no backup yet', 'sin copia aún') : tr(context, 'last backup ${fmt.format(account.lastBackupAt!.toLocal())}', 'última copia ${fmt.format(account.lastBackupAt!.toLocal())}')].join(' · ')
+                      : tr(context, 'Optional. End-to-end encrypted backups you can restore anywhere.', 'Opcional. Copias cifradas de extremo a extremo.'),
+                  onTap: () => context.push(AppRoutePaths.account),
                 ),
                 _Row(
                   icon: Icons.sync,

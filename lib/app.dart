@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/account/account_core.dart';
 import 'package:prism_plurality/features/smart_notifications/notify_service.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/shared/theme/theme_variants.dart';
@@ -559,6 +560,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     ref.listen(calendarNotificationListenerProvider, (_, _) {});
     // Birthdays, holidays and horoscopes.
     ref.listen(smartNotificationListenerProvider, (_, _) {});
+    // Optional account: daily encrypted backup when switched on.
+    ref.listen(autoBackupListenerProvider, (_, _) {});
     ref.listen(socialNotificationListenerProvider, (_, _) {});
     ref.listen(socialSyncProvider, (_, _) {});
     // Resumes a Dictionary wiki import that was running when Prism closed.

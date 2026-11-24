@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/account/account_screens.dart';
 import 'package:prism_plurality/features/cycle/views/cycle_import_screen.dart';
 import 'package:prism_plurality/features/integrations/integrations_center_screen.dart';
 import 'package:prism_plurality/features/smart_notifications/notify_settings_screen.dart';
@@ -507,6 +508,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.integrations,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const IntegrationsCenterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.account,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AccountScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.importCenter,

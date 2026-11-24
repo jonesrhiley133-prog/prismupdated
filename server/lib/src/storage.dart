@@ -5,9 +5,13 @@ import 'dart:typed_data';
 import 'package:postgres/postgres.dart';
 import 'package:prism_social_core/prism_social_core.dart';
 
+import 'accounts.dart';
+import 'accounts_pg.dart';
+
 /// Everything the server persists.
 abstract class ServerStorage {
   SocialStore get social;
+  AccountStore get users;
   Future<void> init();
   Future<void> close();
   Future<bool> healthy();
@@ -29,6 +33,8 @@ String newId([int bytes = 16]) => List.generate(bytes, (_) => _rand.nextInt(256)
 class MemoryStorage implements ServerStorage {
   @override
   final MemorySocialStore social = MemorySocialStore();
+  @override
+  final MemoryAccountStore users = MemoryAccountStore();
   final accounts = <String, String>{}; // tokenHash -> account
   final media = <String, ({String account, String mime, Uint8List bytes})>{};
 
@@ -79,6 +85,8 @@ class PostgresStorage implements ServerStorage {
   final Pool<void> _pool;
   late final PgSocialStore _social = PgSocialStore(_pool);
   @override
+  late final PgAccountStore users = PgAccountStore(_pool);
+  @override
   SocialStore get social => _social;
 
   @override
@@ -112,13 +120,14 @@ class PostgresStorage implements ServerStorage {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )''');
     await _pool.execute('CREATE INDEX IF NOT EXISTS media_account ON media (account)');
+    await users.init();
   }
 
   @override
   Future<void> close() => _pool.close();
 
   /// Empties every table (tests only).
-  Future<void> resetForTests() => _pool.execute('TRUNCATE accounts, records, media');
+  Future<void> resetForTests() => _pool.execute('TRUNCATE accounts, records, media, users, user_sessions, backups');
 
   @override
   Future<bool> healthy() async {

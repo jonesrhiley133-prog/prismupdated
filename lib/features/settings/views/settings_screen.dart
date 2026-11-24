@@ -225,6 +225,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       route: AppRoutePaths.frontingNotification,
                     ),
                     _navLink(
+                      icon: Icons.cloud_outlined,
+                      iconColor: Colors.lightBlue,
+                      title: 'Account & backup',
+                      route: AppRoutePaths.account,
+                    ),
+                    _navLink(
                       icon: Icons.extension_outlined,
                       iconColor: Colors.indigo,
                       title: 'Integrations',

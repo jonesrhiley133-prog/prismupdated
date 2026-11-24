@@ -7,10 +7,11 @@ import 'package:prism_social_core/prism_social_core.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import 'account_routes.dart';
 import 'rpc.dart';
 import 'storage.dart';
 
-const serverVersion = '0.1.0';
+const serverVersion = '0.2.0';
 
 class ServerConfig {
   const ServerConfig({
@@ -69,13 +70,15 @@ class _Lock {
 }
 
 class PrismSocialServer {
-  PrismSocialServer(this.storage, {this.config = const ServerConfig()}) : _writes = _Limiter(config.writesPerMinute, const Duration(minutes: 1)), _regs = _Limiter(config.registrationsPerHour, const Duration(hours: 1));
+  PrismSocialServer(this.storage, {this.config = const ServerConfig(), this.accountConfig = const AccountConfig()}) : _writes = _Limiter(config.writesPerMinute, const Duration(minutes: 1)), _regs = _Limiter(config.registrationsPerHour, const Duration(hours: 1));
 
   final ServerStorage storage;
   final ServerConfig config;
   final _Limiter _writes;
   final _Limiter _regs;
   final _lock = _Lock();
+  late final AccountRoutes _accounts = AccountRoutes(storage, config: accountConfig, clientIp: _clientIp, json: _json, error: _error, body: _body);
+  final AccountConfig accountConfig;
 
   /// Bumped on every write; clients send it back so idle polls are cheap.
   int _version = DateTime.now().millisecondsSinceEpoch;
@@ -83,7 +86,7 @@ class PrismSocialServer {
   static const _cors = {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS',
-    'access-control-allow-headers': 'authorization, content-type, if-none-match, x-registration-code',
+    'access-control-allow-headers': 'authorization, content-type, if-none-match, x-registration-code, x-backup-label, x-backup-device',
     'access-control-max-age': '86400',
   };
 
@@ -115,13 +118,14 @@ class PrismSocialServer {
     final r = Router()
       ..get('/', (Request _) => _json({'name': 'Prism Social', 'version': serverVersion}))
       ..get('/healthz', (Request _) async => await storage.healthy() ? _json({'ok': true}) : _error(503, 'unhealthy'))
-      ..get('/v1/info', (Request _) => _json({'name': 'Prism Social', 'version': serverVersion, 'maxMediaBytes': config.maxMediaBytes, 'registration': config.allowRegistration ? (config.registrationCode == null ? 'open' : 'invite') : 'closed'}))
+      ..get('/v1/info', (Request _) => _json({'name': 'Prism Social', 'version': serverVersion, 'maxMediaBytes': config.maxMediaBytes, 'registration': config.allowRegistration ? (config.registrationCode == null ? 'open' : 'invite') : 'closed', 'accounts': true, 'maxBackupBytes': accountConfig.maxBackupBytes, 'backupsKept': accountConfig.backupsKept}))
       ..post('/v1/auth/register', _register)
       ..post('/v1/rpc/<method>', _rpc)
       ..get('/v1/sync', _sync)
       ..post('/v1/media', _uploadMedia)
       ..get('/v1/media/<id>', _getMedia)
       ..delete('/v1/account', _deleteAccount);
+    _accounts.mount(r);
     return const Pipeline().addMiddleware(_corsAndErrors()).addHandler(r.call);
   }
 
