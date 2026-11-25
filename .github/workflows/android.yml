@@ -92,6 +92,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          # Reuse downloaded Gradle dependencies between runs, so builds
+          # don't hit Maven Central's rate limit (HTTP 429) every time.
+          cache: gradle
 
       - uses: subosito/flutter-action@v2
         with:
@@ -145,12 +148,25 @@ jobs:
         run: |
           # One APK for both 64-bit and 32-bit ARM phones. (Per-ABI splits
           # conflict with the debug-only abiFilters in android/app.)
-          flutter build apk --release \
-            --target-platform android-arm64,android-arm \
-            --no-tree-shake-icons \
-            --build-number "${{ github.run_number }}" \
-            --dart-define=PRISM_UPDATE_REPO=${{ github.repository }} \
-            --dart-define=PRISM_UPDATE_CODEBERG=${{ vars.PRISM_UPDATE_CODEBERG || 'rhileytheratchet/prismupdated' }}
+          set -o pipefail
+          # Maven Central sometimes answers "429 Too Many Requests" while
+          # Gradle downloads dependencies. Retry only that kind of failure,
+          # with a pause; a real build error fails straight away.
+          for attempt in 1 2 3; do
+            if flutter build apk --release \
+              --target-platform android-arm64,android-arm \
+              --no-tree-shake-icons \
+              --build-number "${{ github.run_number }}" \
+              --dart-define=PRISM_UPDATE_REPO=${{ github.repository }} \
+              --dart-define=PRISM_UPDATE_CODEBERG=${{ vars.PRISM_UPDATE_CODEBERG || 'rhileytheratchet/prismupdated' }} 2>&1 | tee /tmp/build.log; then
+              break
+            fi
+            if [ "$attempt" = 3 ] || ! grep -qE "Too Many Requests|error while downloading artifacts|Could not GET" /tmp/build.log; then
+              exit 1
+            fi
+            echo "Network error while downloading dependencies; retrying in $((attempt * 60))s"
+            sleep $((attempt * 60))
+          done
 
       - name: Collect APKs
         run: |
