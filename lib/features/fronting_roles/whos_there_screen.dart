@@ -138,7 +138,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
     final byId = {for (final m in members) m.id: m};
     List<Member> ids(Iterable<String> l) => [for (final id in l) ?byId[id]];
 
-    Widget tile(Member m) {
+    Widget tile(Member m, [double width = 104]) {
       final role = roleOf[m.id];
       final picked = _picked.indexOf(m.id);
       return Semantics(
@@ -150,7 +150,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
           borderRadius: BorderRadius.circular(20),
           onTap: _busy ? null : () => _choose(m),
           child: SizedBox(
-            width: 104,
+            width: width,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
@@ -245,7 +245,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
     Widget section(String title, List<Member> list) => list.isEmpty
         ? const SizedBox.shrink()
         : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(4, 14, 4, 4),
@@ -257,11 +257,18 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
                   ),
                 ),
               ),
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 4,
-                runSpacing: 4,
-                children: [for (final m in list) tile(m)],
+              // Tiles share each row evenly so the grid fills the screen.
+              LayoutBuilder(
+                builder: (context, box) {
+                  const gap = 4.0;
+                  final cols = (box.maxWidth / 112).floor().clamp(3, 12);
+                  final w = (box.maxWidth - gap * (cols - 1)) / cols;
+                  return Wrap(
+                    spacing: gap,
+                    runSpacing: gap,
+                    children: [for (final m in list) tile(m, w)],
+                  );
+                },
               ),
             ],
           );
