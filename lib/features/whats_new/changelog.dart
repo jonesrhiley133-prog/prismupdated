@@ -32,6 +32,26 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.42.1',
+    date: DateTime(2026, 11, 25),
+    features: const [
+      LocalizedText(
+        'Preview: Virtual Companions — adopt or hatch one of 31 creatures (cats, foxes, owls, tiny dragons, slimes, clouds…), dress them up, decorate their habitat, take photos and play together. They never get hungry, sick or lonely. Open them from Settings › Companions or the paw button in Cozy.',
+        'Vista previa: Compañeros virtuales — adopta o incuba una de 31 criaturas, vístelas, decora su hábitat, haz fotos y jueguen juntos. Nunca tienen hambre, ni se enferman ni se sienten solas. Ábrelos en Ajustes › Compañeros o con el botón de huella en Acogedor.',
+      ),
+      LocalizedText(
+        'Preview: Prism Passport — souvenir books for your experiences, with designed covers, page turns, a stamp designer, stamp ideas from recent moments, and PDF or image export with a privacy review. Open from Settings › Passports or the stamp button in Cozy.',
+        'Vista previa: Pasaporte Prism — libros de recuerdos con portadas, páginas que se pasan, diseñador de sellos, ideas de sellos y exportación en PDF o imagen con revisión de privacidad. Ábrelo en Ajustes › Pasaportes o con el botón de sello en Acogedor.',
+      ),
+    ],
+    fixes: const [
+      LocalizedText(
+        'Custom backgrounds now show on every page, including Home, Sleep, Chat, Habits, Polls and Scrapbook.',
+        'Los fondos personalizados ahora se ven en todas las páginas, incluidas Inicio, Sueño, Chat, Hábitos, Encuestas y Álbum.',
+      ),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.42.0',
     date: DateTime(2026, 11, 24),
     features: const [

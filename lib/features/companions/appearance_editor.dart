@@ -122,9 +122,10 @@ class _AppearanceEditorScreenState
               Text(label, style: theme.textTheme.labelLarge),
               const Spacer(),
               if (allowReset)
-                TextButton(
+                PrismButton(
+                  label: 'Species default',
+                  density: PrismControlDensity.compact,
                   onPressed: () => _set(key, null),
-                  child: const Text('Species default'),
                 ),
             ],
           ),
