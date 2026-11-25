@@ -15,23 +15,50 @@ enum BodySide { left, right, center }
 
 extension BodySideText on BodySide {
   String get key => name;
-  static BodySide parse(String? s) => BodySide.values.where((v) => v.name == s).firstOrNull ?? BodySide.center;
+  static BodySide parse(String? s) =>
+      BodySide.values.where((v) => v.name == s).firstOrNull ?? BodySide.center;
 }
 
 /// The drawings the map can show.
 enum BodyView { front, back, face, handPalm, handBack, footTop, footSole }
 
 extension BodyViewText on BodyView {
-  static BodyView parse(String? s) => BodyView.values.where((v) => v.name == s).firstOrNull ?? BodyView.front;
+  static BodyView parse(String? s) =>
+      BodyView.values.where((v) => v.name == s).firstOrNull ?? BodyView.front;
   bool get isZoom => this != BodyView.front && this != BodyView.back;
 }
 
 /// Descriptor groups: which region-specific sensation words apply.
-enum DescriptorGroup { none, head, ears, eyes, nose, jaw, mouth, throat, chest, abdomen, back, joint, hand, leg, skin }
+enum DescriptorGroup {
+  none,
+  head,
+  ears,
+  eyes,
+  nose,
+  jaw,
+  mouth,
+  throat,
+  chest,
+  abdomen,
+  back,
+  joint,
+  hand,
+  leg,
+  skin,
+}
 
 /// One selectable place on the body.
 class BodyRegion {
-  const BodyRegion(this.id, this.en, this.es, {this.sided = false, this.group = DescriptorGroup.none, this.synonyms = const [], this.section = RegionSection.torso, this.anchor});
+  const BodyRegion(
+    this.id,
+    this.en,
+    this.es, {
+    this.sided = false,
+    this.group = DescriptorGroup.none,
+    this.synonyms = const [],
+    this.section = RegionSection.torso,
+    this.anchor,
+  });
   final String id;
   final String en;
   final String es;
@@ -52,11 +79,25 @@ class BodyRegion {
   String label(bool es, [BodySide side = BodySide.center]) {
     final base = es ? this.es : en;
     if (!sided || side == BodySide.center) return base;
-    return es ? '$base (${side == BodySide.left ? 'izq.' : 'der.'})' : '${side == BodySide.left ? 'Left' : 'Right'} ${base[0].toLowerCase()}${base.substring(1)}';
+    return es
+        ? '$base (${side == BodySide.left ? 'izq.' : 'der.'})'
+        : '${side == BodySide.left ? 'Left' : 'Right'} ${base[0].toLowerCase()}${base.substring(1)}';
   }
 }
 
-enum RegionSection { general, head, face, mouth, neck, torso, back, arm, hand, leg, foot }
+enum RegionSection {
+  general,
+  head,
+  face,
+  mouth,
+  neck,
+  torso,
+  back,
+  arm,
+  hand,
+  leg,
+  foot,
+}
 
 String regionSectionLabel(RegionSection s, bool es) => switch (s) {
   RegionSection.general => es ? 'General' : 'General',
@@ -64,7 +105,8 @@ String regionSectionLabel(RegionSection s, bool es) => switch (s) {
   RegionSection.face => es ? 'Cara' : 'Face',
   RegionSection.mouth => es ? 'Boca' : 'Mouth',
   RegionSection.neck => es ? 'Cuello y garganta' : 'Neck & throat',
-  RegionSection.torso => es ? 'Pecho, abdomen y pelvis' : 'Chest, abdomen & pelvis',
+  RegionSection.torso =>
+    es ? 'Pecho, abdomen y pelvis' : 'Chest, abdomen & pelvis',
   RegionSection.back => es ? 'Espalda' : 'Back',
   RegionSection.arm => es ? 'Hombros y brazos' : 'Shoulders & arms',
   RegionSection.hand => es ? 'Manos y dedos' : 'Hands & fingers',
@@ -81,112 +123,780 @@ const _r = RegionSection.general;
 
 final List<BodyRegion> bodyRegions = [
   // General / special
-  const BodyRegion(whole, 'Whole body', 'Todo el cuerpo', section: _r, synonyms: ['everywhere', 'all over', 'entire']),
-  const BodyRegion(hardToLocate, 'Hard to locate', 'Difícil de ubicar', section: _r, synonyms: ['unsure', 'unknown', 'somewhere']),
-  const BodyRegion(customLocation, 'Custom location', 'Ubicación personalizada', section: _r),
+  const BodyRegion(
+    whole,
+    'Whole body',
+    'Todo el cuerpo',
+    section: _r,
+    synonyms: ['everywhere', 'all over', 'entire'],
+  ),
+  const BodyRegion(
+    hardToLocate,
+    'Hard to locate',
+    'Difícil de ubicar',
+    section: _r,
+    synonyms: ['unsure', 'unknown', 'somewhere'],
+  ),
+  const BodyRegion(
+    customLocation,
+    'Custom location',
+    'Ubicación personalizada',
+    section: _r,
+  ),
   // Coarse areas (also used by entries carried over from Mood).
-  const BodyRegion('head', 'Head (general)', 'Cabeza (general)', section: _r, group: DescriptorGroup.head, anchor: (BodyView.front, 100, 36)),
-  const BodyRegion('face_general', 'Face / jaw (general)', 'Cara / mandíbula (general)', section: _r, group: DescriptorGroup.jaw, anchor: (BodyView.front, 100, 48)),
-  const BodyRegion('shoulders', 'Shoulders (general)', 'Hombros (general)', section: _r, anchor: (BodyView.front, 64, 94)),
-  const BodyRegion('back', 'Back (general)', 'Espalda (general)', section: _r, group: DescriptorGroup.back, anchor: (BodyView.back, 100, 150)),
-  const BodyRegion('arms', 'Arms (general)', 'Brazos (general)', section: _r, anchor: (BodyView.front, 52, 160)),
-  const BodyRegion('hands', 'Hands (general)', 'Manos (general)', section: _r, group: DescriptorGroup.hand, anchor: (BodyView.front, 42, 250)),
-  const BodyRegion('legs', 'Legs (general)', 'Piernas (general)', section: _r, group: DescriptorGroup.leg, anchor: (BodyView.front, 85, 330)),
-  const BodyRegion('feet', 'Feet (general)', 'Pies (general)', section: _r, group: DescriptorGroup.leg, anchor: (BodyView.front, 88, 430)),
+  const BodyRegion(
+    'head',
+    'Head (general)',
+    'Cabeza (general)',
+    section: _r,
+    group: DescriptorGroup.head,
+    anchor: (BodyView.front, 100, 31),
+  ),
+  const BodyRegion(
+    'face_general',
+    'Face / jaw (general)',
+    'Cara / mandíbula (general)',
+    section: _r,
+    group: DescriptorGroup.jaw,
+    anchor: (BodyView.front, 100, 42),
+  ),
+  const BodyRegion(
+    'shoulders',
+    'Shoulders (general)',
+    'Hombros (general)',
+    section: _r,
+    anchor: (BodyView.front, 64, 82),
+  ),
+  const BodyRegion(
+    'back',
+    'Back (general)',
+    'Espalda (general)',
+    section: _r,
+    group: DescriptorGroup.back,
+    anchor: (BodyView.back, 100, 130),
+  ),
+  const BodyRegion(
+    'arms',
+    'Arms (general)',
+    'Brazos (general)',
+    section: _r,
+    anchor: (BodyView.front, 52, 139),
+  ),
+  const BodyRegion(
+    'hands',
+    'Hands (general)',
+    'Manos (general)',
+    section: _r,
+    group: DescriptorGroup.hand,
+    anchor: (BodyView.front, 42, 219),
+  ),
+  const BodyRegion(
+    'legs',
+    'Legs (general)',
+    'Piernas (general)',
+    section: _r,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.front, 85, 319),
+  ),
+  const BodyRegion(
+    'feet',
+    'Feet (general)',
+    'Pies (general)',
+    section: _r,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.front, 88, 443),
+  ),
 
   // Head
-  const BodyRegion('scalp', 'Scalp', 'Cuero cabelludo', section: RegionSection.head, group: DescriptorGroup.head, synonyms: ['skin of head', 'hair'], anchor: (BodyView.back, 100, 26)),
-  const BodyRegion('crown', 'Crown', 'Coronilla', section: RegionSection.head, group: DescriptorGroup.head, synonyms: ['top of head', 'vertex'], anchor: (BodyView.front, 100, 15)),
-  const BodyRegion('forehead', 'Forehead', 'Frente', section: RegionSection.head, group: DescriptorGroup.head, synonyms: ['brow'], anchor: (BodyView.front, 100, 25)),
-  const BodyRegion('temple', 'Temple', 'Sien', sided: true, section: RegionSection.head, group: DescriptorGroup.head, anchor: (BodyView.front, 82, 31)),
-  const BodyRegion('back_of_head', 'Back of head', 'Nuca / parte posterior de la cabeza', section: RegionSection.head, group: DescriptorGroup.head, synonyms: ['occipital', 'occiput'], anchor: (BodyView.back, 100, 46)),
+  const BodyRegion(
+    'scalp',
+    'Scalp',
+    'Cuero cabelludo',
+    section: RegionSection.head,
+    group: DescriptorGroup.head,
+    synonyms: ['skin of head', 'hair'],
+    anchor: (BodyView.back, 100, 23),
+  ),
+  const BodyRegion(
+    'crown',
+    'Crown',
+    'Coronilla',
+    section: RegionSection.head,
+    group: DescriptorGroup.head,
+    synonyms: ['top of head', 'vertex'],
+    anchor: (BodyView.front, 100, 13),
+  ),
+  const BodyRegion(
+    'forehead',
+    'Forehead',
+    'Frente',
+    section: RegionSection.head,
+    group: DescriptorGroup.head,
+    synonyms: ['brow'],
+    anchor: (BodyView.front, 100, 22),
+  ),
+  const BodyRegion(
+    'temple',
+    'Temple',
+    'Sien',
+    sided: true,
+    section: RegionSection.head,
+    group: DescriptorGroup.head,
+    anchor: (BodyView.front, 82, 27),
+  ),
+  const BodyRegion(
+    'back_of_head',
+    'Back of head',
+    'Nuca / parte posterior de la cabeza',
+    section: RegionSection.head,
+    group: DescriptorGroup.head,
+    synonyms: ['occipital', 'occiput'],
+    anchor: (BodyView.back, 100, 40),
+  ),
 
   // Face
-  const BodyRegion('eye', 'Eye', 'Ojo', sided: true, section: RegionSection.face, group: DescriptorGroup.eyes, synonyms: ['vision', 'eyeball'], anchor: (BodyView.front, 91, 38)),
-  const BodyRegion('eyelid', 'Eyelid', 'Párpado', sided: true, section: RegionSection.face, group: DescriptorGroup.eyes, synonyms: ['lid'], anchor: (BodyView.front, 91, 35)),
-  const BodyRegion('ear', 'Ear', 'Oído / oreja', sided: true, section: RegionSection.face, group: DescriptorGroup.ears, synonyms: ['hearing'], anchor: (BodyView.front, 79, 40)),
-  const BodyRegion('nose', 'Nose', 'Nariz', section: RegionSection.face, group: DescriptorGroup.nose, synonyms: ['nostril'], anchor: (BodyView.front, 100, 44)),
-  const BodyRegion('sinus', 'Sinuses', 'Senos nasales', sided: true, section: RegionSection.face, group: DescriptorGroup.nose, synonyms: ['sinus', 'behind eyes'], anchor: (BodyView.front, 93, 45)),
-  const BodyRegion('cheek', 'Cheek', 'Mejilla', sided: true, section: RegionSection.face, group: DescriptorGroup.skin, anchor: (BodyView.front, 88, 48)),
-  const BodyRegion('jaw', 'Jaw', 'Mandíbula', sided: true, section: RegionSection.face, group: DescriptorGroup.jaw, synonyms: ['tmj', 'chin'], anchor: (BodyView.front, 90, 56)),
-  const BodyRegion('lips', 'Lips', 'Labios', section: RegionSection.face, group: DescriptorGroup.mouth, synonyms: ['mouth'], anchor: (BodyView.front, 100, 54)),
+  const BodyRegion(
+    'eye',
+    'Eye',
+    'Ojo',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.eyes,
+    synonyms: ['vision', 'eyeball'],
+    anchor: (BodyView.front, 91, 33),
+  ),
+  const BodyRegion(
+    'eyelid',
+    'Eyelid',
+    'Párpado',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.eyes,
+    synonyms: ['lid'],
+    anchor: (BodyView.front, 91, 30),
+  ),
+  const BodyRegion(
+    'ear',
+    'Ear',
+    'Oído / oreja',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.ears,
+    synonyms: ['hearing'],
+    anchor: (BodyView.front, 79, 35),
+  ),
+  const BodyRegion(
+    'nose',
+    'Nose',
+    'Nariz',
+    section: RegionSection.face,
+    group: DescriptorGroup.nose,
+    synonyms: ['nostril'],
+    anchor: (BodyView.front, 100, 38),
+  ),
+  const BodyRegion(
+    'sinus',
+    'Sinuses',
+    'Senos nasales',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.nose,
+    synonyms: ['sinus', 'behind eyes'],
+    anchor: (BodyView.front, 93, 39),
+  ),
+  const BodyRegion(
+    'cheek',
+    'Cheek',
+    'Mejilla',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.skin,
+    anchor: (BodyView.front, 88, 42),
+  ),
+  const BodyRegion(
+    'jaw',
+    'Jaw',
+    'Mandíbula',
+    sided: true,
+    section: RegionSection.face,
+    group: DescriptorGroup.jaw,
+    synonyms: ['tmj', 'chin'],
+    anchor: (BodyView.front, 90, 49),
+  ),
+  const BodyRegion(
+    'lips',
+    'Lips',
+    'Labios',
+    section: RegionSection.face,
+    group: DescriptorGroup.mouth,
+    synonyms: ['mouth'],
+    anchor: (BodyView.front, 100, 47),
+  ),
   // Mouth (inside — chosen from the face sheet's list)
-  const BodyRegion('teeth', 'Teeth', 'Dientes', section: RegionSection.mouth, group: DescriptorGroup.jaw, synonyms: ['tooth', 'molar'], anchor: (BodyView.front, 100, 53)),
-  const BodyRegion('gums', 'Gums', 'Encías', section: RegionSection.mouth, group: DescriptorGroup.mouth, anchor: (BodyView.front, 100, 53)),
-  const BodyRegion('tongue', 'Tongue', 'Lengua', section: RegionSection.mouth, group: DescriptorGroup.mouth, synonyms: ['taste'], anchor: (BodyView.front, 100, 54)),
+  const BodyRegion(
+    'teeth',
+    'Teeth',
+    'Dientes',
+    section: RegionSection.mouth,
+    group: DescriptorGroup.jaw,
+    synonyms: ['tooth', 'molar'],
+    anchor: (BodyView.front, 100, 46),
+  ),
+  const BodyRegion(
+    'gums',
+    'Gums',
+    'Encías',
+    section: RegionSection.mouth,
+    group: DescriptorGroup.mouth,
+    anchor: (BodyView.front, 100, 46),
+  ),
+  const BodyRegion(
+    'tongue',
+    'Tongue',
+    'Lengua',
+    section: RegionSection.mouth,
+    group: DescriptorGroup.mouth,
+    synonyms: ['taste'],
+    anchor: (BodyView.front, 100, 47),
+  ),
 
   // Neck
-  const BodyRegion('throat', 'Throat', 'Garganta', section: RegionSection.neck, group: DescriptorGroup.throat, synonyms: ['swallowing', 'voice'], anchor: (BodyView.front, 100, 72)),
-  const BodyRegion('neck_front', 'Front of neck', 'Parte delantera del cuello', section: RegionSection.neck, group: DescriptorGroup.back, anchor: (BodyView.front, 100, 66)),
-  const BodyRegion('neck_back', 'Back of neck', 'Parte trasera del cuello', section: RegionSection.neck, group: DescriptorGroup.back, synonyms: ['nape'], anchor: (BodyView.back, 100, 70)),
+  const BodyRegion(
+    'throat',
+    'Throat',
+    'Garganta',
+    section: RegionSection.neck,
+    group: DescriptorGroup.throat,
+    synonyms: ['swallowing', 'voice'],
+    anchor: (BodyView.front, 100, 63),
+  ),
+  const BodyRegion(
+    'neck_front',
+    'Front of neck',
+    'Parte delantera del cuello',
+    section: RegionSection.neck,
+    group: DescriptorGroup.back,
+    anchor: (BodyView.front, 100, 57),
+  ),
+  const BodyRegion(
+    'neck_back',
+    'Back of neck',
+    'Parte trasera del cuello',
+    section: RegionSection.neck,
+    group: DescriptorGroup.back,
+    synonyms: ['nape'],
+    anchor: (BodyView.back, 100, 61),
+  ),
 
   // Torso
-  const BodyRegion('collarbone', 'Collarbone', 'Clavícula', sided: true, synonyms: ['clavicle'], group: DescriptorGroup.joint, anchor: (BodyView.front, 89, 83)),
-  const BodyRegion('chest', 'Chest', 'Pecho', sided: true, group: DescriptorGroup.chest, synonyms: ['breast', 'pectoral', 'heart'], anchor: (BodyView.front, 84, 104)),
-  const BodyRegion('sternum', 'Sternum', 'Esternón', group: DescriptorGroup.chest, synonyms: ['breastbone', 'centre of chest', 'center of chest'], anchor: (BodyView.front, 100, 108)),
-  const BodyRegion('ribs', 'Ribs', 'Costillas', sided: true, group: DescriptorGroup.chest, synonyms: ['rib cage', 'side of chest'], anchor: (BodyView.front, 77, 136)),
-  const BodyRegion('abdomen_upper', 'Upper abdomen', 'Abdomen superior', group: DescriptorGroup.abdomen, synonyms: ['stomach', 'upper belly', 'epigastric'], anchor: (BodyView.front, 100, 144)),
-  const BodyRegion('abdomen_mid', 'Mid abdomen', 'Abdomen medio', group: DescriptorGroup.abdomen, synonyms: ['belly', 'stomach', 'navel', 'belly button'], anchor: (BodyView.front, 100, 171)),
-  const BodyRegion('abdomen_lower', 'Lower abdomen', 'Abdomen inferior', group: DescriptorGroup.abdomen, synonyms: ['lower belly', 'bladder', 'gut'], anchor: (BodyView.front, 100, 198)),
-  const BodyRegion('flank', 'Flank', 'Costado', sided: true, group: DescriptorGroup.abdomen, synonyms: ['side', 'kidney area'], anchor: (BodyView.front, 72, 178)),
-  const BodyRegion('hip', 'Hip', 'Cadera', sided: true, group: DescriptorGroup.joint, anchor: (BodyView.front, 70, 218)),
-  const BodyRegion('pelvis', 'Pelvis', 'Pelvis', group: DescriptorGroup.abdomen, synonyms: ['groin', 'pelvic'], anchor: (BodyView.front, 100, 226)),
-  const BodyRegion('buttock', 'Buttock', 'Glúteo', sided: true, section: RegionSection.back, synonyms: ['bottom', 'glute', 'seat'], anchor: (BodyView.back, 84, 226)),
+  const BodyRegion(
+    'collarbone',
+    'Collarbone',
+    'Clavícula',
+    sided: true,
+    synonyms: ['clavicle'],
+    group: DescriptorGroup.joint,
+    anchor: (BodyView.front, 89, 72),
+  ),
+  const BodyRegion(
+    'chest',
+    'Chest',
+    'Pecho',
+    sided: true,
+    group: DescriptorGroup.chest,
+    synonyms: ['breast', 'pectoral', 'heart'],
+    anchor: (BodyView.front, 84, 90),
+  ),
+  const BodyRegion(
+    'sternum',
+    'Sternum',
+    'Esternón',
+    group: DescriptorGroup.chest,
+    synonyms: ['breastbone', 'centre of chest', 'center of chest'],
+    anchor: (BodyView.front, 100, 94),
+  ),
+  const BodyRegion(
+    'ribs',
+    'Ribs',
+    'Costillas',
+    sided: true,
+    group: DescriptorGroup.chest,
+    synonyms: ['rib cage', 'side of chest'],
+    anchor: (BodyView.front, 77, 118),
+  ),
+  const BodyRegion(
+    'abdomen_upper',
+    'Upper abdomen',
+    'Abdomen superior',
+    group: DescriptorGroup.abdomen,
+    synonyms: ['stomach', 'upper belly', 'epigastric'],
+    anchor: (BodyView.front, 100, 125),
+  ),
+  const BodyRegion(
+    'abdomen_mid',
+    'Mid abdomen',
+    'Abdomen medio',
+    group: DescriptorGroup.abdomen,
+    synonyms: ['belly', 'stomach', 'navel', 'belly button'],
+    anchor: (BodyView.front, 100, 149),
+  ),
+  const BodyRegion(
+    'abdomen_lower',
+    'Lower abdomen',
+    'Abdomen inferior',
+    group: DescriptorGroup.abdomen,
+    synonyms: ['lower belly', 'bladder', 'gut'],
+    anchor: (BodyView.front, 100, 172),
+  ),
+  const BodyRegion(
+    'flank',
+    'Flank',
+    'Costado',
+    sided: true,
+    group: DescriptorGroup.abdomen,
+    synonyms: ['side', 'kidney area'],
+    anchor: (BodyView.front, 72, 155),
+  ),
+  const BodyRegion(
+    'hip',
+    'Hip',
+    'Cadera',
+    sided: true,
+    group: DescriptorGroup.joint,
+    anchor: (BodyView.front, 70, 190),
+  ),
+  const BodyRegion(
+    'pelvis',
+    'Pelvis',
+    'Pelvis',
+    group: DescriptorGroup.abdomen,
+    synonyms: ['groin', 'pelvic'],
+    anchor: (BodyView.front, 100, 197),
+  ),
+  const BodyRegion(
+    'buttock',
+    'Buttock',
+    'Glúteo',
+    sided: true,
+    section: RegionSection.back,
+    synonyms: ['bottom', 'glute', 'seat'],
+    anchor: (BodyView.back, 84, 197),
+  ),
 
   // Back
-  const BodyRegion('upper_back', 'Upper back', 'Espalda alta', sided: true, section: RegionSection.back, group: DescriptorGroup.back, anchor: (BodyView.back, 86, 98)),
-  const BodyRegion('shoulder_blade', 'Shoulder blade', 'Omóplato', sided: true, section: RegionSection.back, group: DescriptorGroup.back, synonyms: ['scapula'], anchor: (BodyView.back, 84, 110)),
-  const BodyRegion('mid_back', 'Mid-back', 'Espalda media', section: RegionSection.back, group: DescriptorGroup.back, synonyms: ['middle back'], anchor: (BodyView.back, 100, 144)),
-  const BodyRegion('lower_back', 'Lower back', 'Zona lumbar', section: RegionSection.back, group: DescriptorGroup.back, synonyms: ['lumbar', 'low back'], anchor: (BodyView.back, 100, 186)),
-  const BodyRegion('spine', 'Spine', 'Columna', section: RegionSection.back, group: DescriptorGroup.back, synonyms: ['backbone', 'vertebrae'], anchor: (BodyView.back, 100, 150)),
-  const BodyRegion('tailbone', 'Tailbone', 'Coxis', section: RegionSection.back, group: DescriptorGroup.back, synonyms: ['coccyx', 'sacrum'], anchor: (BodyView.back, 100, 214)),
+  const BodyRegion(
+    'upper_back',
+    'Upper back',
+    'Espalda alta',
+    sided: true,
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    anchor: (BodyView.back, 86, 85),
+  ),
+  const BodyRegion(
+    'shoulder_blade',
+    'Shoulder blade',
+    'Omóplato',
+    sided: true,
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    synonyms: ['scapula'],
+    anchor: (BodyView.back, 84, 96),
+  ),
+  const BodyRegion(
+    'mid_back',
+    'Mid-back',
+    'Espalda media',
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    synonyms: ['middle back'],
+    anchor: (BodyView.back, 100, 125),
+  ),
+  const BodyRegion(
+    'lower_back',
+    'Lower back',
+    'Zona lumbar',
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    synonyms: ['lumbar', 'low back'],
+    anchor: (BodyView.back, 100, 162),
+  ),
+  const BodyRegion(
+    'spine',
+    'Spine',
+    'Columna',
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    synonyms: ['backbone', 'vertebrae'],
+    anchor: (BodyView.back, 100, 130),
+  ),
+  const BodyRegion(
+    'tailbone',
+    'Tailbone',
+    'Coxis',
+    section: RegionSection.back,
+    group: DescriptorGroup.back,
+    synonyms: ['coccyx', 'sacrum'],
+    anchor: (BodyView.back, 100, 186),
+  ),
 
   // Arms
-  const BodyRegion('shoulder_front', 'Front of shoulder', 'Parte delantera del hombro', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, anchor: (BodyView.front, 63, 96)),
-  const BodyRegion('shoulder_back', 'Back of shoulder', 'Parte trasera del hombro', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, anchor: (BodyView.back, 63, 96)),
-  const BodyRegion('upper_arm_front', 'Front of upper arm', 'Parte delantera del brazo', sided: true, section: RegionSection.arm, synonyms: ['bicep', 'biceps'], anchor: (BodyView.front, 53, 132)),
-  const BodyRegion('upper_arm_back', 'Back of upper arm', 'Parte trasera del brazo', sided: true, section: RegionSection.arm, synonyms: ['tricep', 'triceps'], anchor: (BodyView.back, 53, 132)),
-  const BodyRegion('elbow_front', 'Inner elbow', 'Pliegue del codo', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, synonyms: ['elbow crease', 'front of elbow'], anchor: (BodyView.front, 50, 167)),
-  const BodyRegion('elbow_back', 'Back of elbow', 'Codo', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, synonyms: ['elbow', 'funny bone'], anchor: (BodyView.back, 50, 167)),
-  const BodyRegion('forearm_front', 'Front of forearm', 'Antebrazo (interior)', sided: true, section: RegionSection.arm, anchor: (BodyView.front, 47, 198)),
-  const BodyRegion('forearm_back', 'Back of forearm', 'Antebrazo (exterior)', sided: true, section: RegionSection.arm, anchor: (BodyView.back, 47, 198)),
-  const BodyRegion('wrist_front', 'Front of wrist', 'Muñeca (interior)', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, synonyms: ['wrist', 'inner wrist'], anchor: (BodyView.front, 44, 231)),
-  const BodyRegion('wrist_back', 'Back of wrist', 'Muñeca (exterior)', sided: true, section: RegionSection.arm, group: DescriptorGroup.joint, synonyms: ['wrist'], anchor: (BodyView.back, 44, 231)),
+  const BodyRegion(
+    'shoulder_front',
+    'Front of shoulder',
+    'Parte delantera del hombro',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    anchor: (BodyView.front, 63, 84),
+  ),
+  const BodyRegion(
+    'shoulder_back',
+    'Back of shoulder',
+    'Parte trasera del hombro',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    anchor: (BodyView.back, 63, 84),
+  ),
+  const BodyRegion(
+    'upper_arm_front',
+    'Front of upper arm',
+    'Parte delantera del brazo',
+    sided: true,
+    section: RegionSection.arm,
+    synonyms: ['bicep', 'biceps'],
+    anchor: (BodyView.front, 53, 115),
+  ),
+  const BodyRegion(
+    'upper_arm_back',
+    'Back of upper arm',
+    'Parte trasera del brazo',
+    sided: true,
+    section: RegionSection.arm,
+    synonyms: ['tricep', 'triceps'],
+    anchor: (BodyView.back, 53, 115),
+  ),
+  const BodyRegion(
+    'elbow_front',
+    'Inner elbow',
+    'Pliegue del codo',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    synonyms: ['elbow crease', 'front of elbow'],
+    anchor: (BodyView.front, 50, 145),
+  ),
+  const BodyRegion(
+    'elbow_back',
+    'Back of elbow',
+    'Codo',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    synonyms: ['elbow', 'funny bone'],
+    anchor: (BodyView.back, 50, 145),
+  ),
+  const BodyRegion(
+    'forearm_front',
+    'Front of forearm',
+    'Antebrazo (interior)',
+    sided: true,
+    section: RegionSection.arm,
+    anchor: (BodyView.front, 47, 172),
+  ),
+  const BodyRegion(
+    'forearm_back',
+    'Back of forearm',
+    'Antebrazo (exterior)',
+    sided: true,
+    section: RegionSection.arm,
+    anchor: (BodyView.back, 47, 172),
+  ),
+  const BodyRegion(
+    'wrist_front',
+    'Front of wrist',
+    'Muñeca (interior)',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    synonyms: ['wrist', 'inner wrist'],
+    anchor: (BodyView.front, 44, 201),
+  ),
+  const BodyRegion(
+    'wrist_back',
+    'Back of wrist',
+    'Muñeca (exterior)',
+    sided: true,
+    section: RegionSection.arm,
+    group: DescriptorGroup.joint,
+    synonyms: ['wrist'],
+    anchor: (BodyView.back, 44, 201),
+  ),
 
   // Hands
-  const BodyRegion('palm', 'Palm', 'Palma', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['hand'], anchor: (BodyView.front, 42, 250)),
-  const BodyRegion('back_of_hand', 'Back of hand', 'Dorso de la mano', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['hand', 'knuckles'], anchor: (BodyView.back, 42, 250)),
-  const BodyRegion('thumb', 'Thumb', 'Pulgar', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, anchor: (BodyView.front, 46, 254)),
-  const BodyRegion('finger_index', 'Index finger', 'Dedo índice', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['pointer', 'first finger', 'forefinger'], anchor: (BodyView.front, 42, 262)),
-  const BodyRegion('finger_middle', 'Middle finger', 'Dedo corazón', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, anchor: (BodyView.front, 42, 263)),
-  const BodyRegion('finger_ring', 'Ring finger', 'Dedo anular', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['fourth finger'], anchor: (BodyView.front, 41, 262)),
-  const BodyRegion('finger_little', 'Little finger', 'Dedo meñique', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['pinky', 'pinkie', 'small finger'], anchor: (BodyView.front, 40, 261)),
-  const BodyRegion('fingertips', 'Fingertips', 'Yemas de los dedos', sided: true, section: RegionSection.hand, group: DescriptorGroup.hand, synonyms: ['tips of fingers', 'finger tip'], anchor: (BodyView.front, 42, 265)),
+  const BodyRegion(
+    'palm',
+    'Palm',
+    'Palma',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['hand'],
+    anchor: (BodyView.front, 42, 219),
+  ),
+  const BodyRegion(
+    'back_of_hand',
+    'Back of hand',
+    'Dorso de la mano',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['hand', 'knuckles'],
+    anchor: (BodyView.back, 42, 219),
+  ),
+  const BodyRegion(
+    'thumb',
+    'Thumb',
+    'Pulgar',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    anchor: (BodyView.front, 46, 224),
+  ),
+  const BodyRegion(
+    'finger_index',
+    'Index finger',
+    'Dedo índice',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['pointer', 'first finger', 'forefinger'],
+    anchor: (BodyView.front, 42, 234),
+  ),
+  const BodyRegion(
+    'finger_middle',
+    'Middle finger',
+    'Dedo corazón',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    anchor: (BodyView.front, 42, 235),
+  ),
+  const BodyRegion(
+    'finger_ring',
+    'Ring finger',
+    'Dedo anular',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['fourth finger'],
+    anchor: (BodyView.front, 41, 234),
+  ),
+  const BodyRegion(
+    'finger_little',
+    'Little finger',
+    'Dedo meñique',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['pinky', 'pinkie', 'small finger'],
+    anchor: (BodyView.front, 40, 233),
+  ),
+  const BodyRegion(
+    'fingertips',
+    'Fingertips',
+    'Yemas de los dedos',
+    sided: true,
+    section: RegionSection.hand,
+    group: DescriptorGroup.hand,
+    synonyms: ['tips of fingers', 'finger tip'],
+    anchor: (BodyView.front, 42, 238),
+  ),
 
   // Legs
-  const BodyRegion('thigh_front', 'Front of thigh', 'Muslo (delante)', sided: true, section: RegionSection.leg, group: DescriptorGroup.leg, synonyms: ['quad', 'quadriceps', 'thigh'], anchor: (BodyView.front, 85, 280)),
-  const BodyRegion('thigh_back', 'Back of thigh', 'Muslo (detrás)', sided: true, section: RegionSection.leg, group: DescriptorGroup.leg, synonyms: ['hamstring', 'thigh'], anchor: (BodyView.back, 85, 280)),
-  const BodyRegion('inner_thigh', 'Inner thigh', 'Cara interna del muslo', sided: true, section: RegionSection.leg, group: DescriptorGroup.leg, synonyms: ['groin'], anchor: (BodyView.front, 95, 268)),
-  const BodyRegion('knee', 'Knee', 'Rodilla', sided: true, section: RegionSection.leg, group: DescriptorGroup.joint, synonyms: ['kneecap'], anchor: (BodyView.front, 84, 334)),
-  const BodyRegion('knee_back', 'Back of knee', 'Corva', sided: true, section: RegionSection.leg, group: DescriptorGroup.joint, synonyms: ['behind knee'], anchor: (BodyView.back, 84, 334)),
-  const BodyRegion('shin', 'Shin', 'Espinilla', sided: true, section: RegionSection.leg, group: DescriptorGroup.leg, synonyms: ['lower leg'], anchor: (BodyView.front, 85, 378)),
-  const BodyRegion('calf', 'Calf', 'Pantorrilla', sided: true, section: RegionSection.leg, group: DescriptorGroup.leg, synonyms: ['lower leg'], anchor: (BodyView.back, 85, 378)),
-  const BodyRegion('ankle', 'Ankle', 'Tobillo', sided: true, section: RegionSection.leg, group: DescriptorGroup.joint, anchor: (BodyView.front, 86, 416)),
+  const BodyRegion(
+    'thigh_front',
+    'Front of thigh',
+    'Muslo (delante)',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.leg,
+    synonyms: ['quad', 'quadriceps', 'thigh'],
+    anchor: (BodyView.front, 85, 256),
+  ),
+  const BodyRegion(
+    'thigh_back',
+    'Back of thigh',
+    'Muslo (detrás)',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.leg,
+    synonyms: ['hamstring', 'thigh'],
+    anchor: (BodyView.back, 85, 256),
+  ),
+  const BodyRegion(
+    'inner_thigh',
+    'Inner thigh',
+    'Cara interna del muslo',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.leg,
+    synonyms: ['groin'],
+    anchor: (BodyView.front, 95, 241),
+  ),
+  const BodyRegion(
+    'knee',
+    'Knee',
+    'Rodilla',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.joint,
+    synonyms: ['kneecap'],
+    anchor: (BodyView.front, 84, 324),
+  ),
+  const BodyRegion(
+    'knee_back',
+    'Back of knee',
+    'Corva',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.joint,
+    synonyms: ['behind knee'],
+    anchor: (BodyView.back, 84, 324),
+  ),
+  const BodyRegion(
+    'shin',
+    'Shin',
+    'Espinilla',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.leg,
+    synonyms: ['lower leg'],
+    anchor: (BodyView.front, 85, 378),
+  ),
+  const BodyRegion(
+    'calf',
+    'Calf',
+    'Pantorrilla',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.leg,
+    synonyms: ['lower leg'],
+    anchor: (BodyView.back, 85, 378),
+  ),
+  const BodyRegion(
+    'ankle',
+    'Ankle',
+    'Tobillo',
+    sided: true,
+    section: RegionSection.leg,
+    group: DescriptorGroup.joint,
+    anchor: (BodyView.front, 86, 426),
+  ),
 
   // Feet
-  const BodyRegion('foot_top', 'Top of foot', 'Empeine', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['instep', 'foot'], anchor: (BodyView.front, 88, 430)),
-  const BodyRegion('heel', 'Heel', 'Talón', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, anchor: (BodyView.back, 88, 432)),
-  const BodyRegion('arch', 'Arch', 'Arco del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, anchor: (BodyView.back, 88, 428)),
-  const BodyRegion('sole', 'Sole', 'Planta del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['bottom of foot', 'foot'], anchor: (BodyView.back, 88, 430)),
-  const BodyRegion('ball_of_foot', 'Ball of foot', 'Almohadilla del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['forefoot'], anchor: (BodyView.back, 88, 426)),
-  const BodyRegion('toe_big', 'Big toe', 'Dedo gordo', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['first toe', 'hallux'], anchor: (BodyView.front, 90, 438)),
-  const BodyRegion('toe_2', 'Second toe', 'Segundo dedo del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, anchor: (BodyView.front, 88, 438)),
-  const BodyRegion('toe_3', 'Third toe', 'Tercer dedo del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['middle toe'], anchor: (BodyView.front, 87, 438)),
-  const BodyRegion('toe_4', 'Fourth toe', 'Cuarto dedo del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, anchor: (BodyView.front, 86, 437)),
-  const BodyRegion('toe_little', 'Little toe', 'Dedo pequeño del pie', sided: true, section: RegionSection.foot, group: DescriptorGroup.leg, synonyms: ['pinky toe', 'fifth toe'], anchor: (BodyView.front, 85, 436)),
+  const BodyRegion(
+    'foot_top',
+    'Top of foot',
+    'Empeine',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['instep', 'foot'],
+    anchor: (BodyView.front, 88, 443),
+  ),
+  const BodyRegion(
+    'heel',
+    'Heel',
+    'Talón',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.back, 88, 446),
+  ),
+  const BodyRegion(
+    'arch',
+    'Arch',
+    'Arco del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.back, 88, 441),
+  ),
+  const BodyRegion(
+    'sole',
+    'Sole',
+    'Planta del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['bottom of foot', 'foot'],
+    anchor: (BodyView.back, 88, 443),
+  ),
+  const BodyRegion(
+    'ball_of_foot',
+    'Ball of foot',
+    'Almohadilla del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['forefoot'],
+    anchor: (BodyView.back, 88, 438),
+  ),
+  const BodyRegion(
+    'toe_big',
+    'Big toe',
+    'Dedo gordo',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['first toe', 'hallux'],
+    anchor: (BodyView.front, 90, 453),
+  ),
+  const BodyRegion(
+    'toe_2',
+    'Second toe',
+    'Segundo dedo del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.front, 88, 453),
+  ),
+  const BodyRegion(
+    'toe_3',
+    'Third toe',
+    'Tercer dedo del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['middle toe'],
+    anchor: (BodyView.front, 87, 453),
+  ),
+  const BodyRegion(
+    'toe_4',
+    'Fourth toe',
+    'Cuarto dedo del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    anchor: (BodyView.front, 86, 452),
+  ),
+  const BodyRegion(
+    'toe_little',
+    'Little toe',
+    'Dedo pequeño del pie',
+    sided: true,
+    section: RegionSection.foot,
+    group: DescriptorGroup.leg,
+    synonyms: ['pinky toe', 'fifth toe'],
+    anchor: (BodyView.front, 85, 451),
+  ),
 ];
 
-final Map<String, BodyRegion> regionById = {for (final r in bodyRegions) r.id: r};
+final Map<String, BodyRegion> regionById = {
+  for (final r in bodyRegions) r.id: r,
+};
 
 /// Regions offered when asked to find something by name.
 List<BodyRegion> searchRegions(String query, bool es) {
@@ -194,7 +904,10 @@ List<BodyRegion> searchRegions(String query, bool es) {
   if (q.isEmpty) return bodyRegions;
   return [
     for (final r in bodyRegions)
-      if (r.en.toLowerCase().contains(q) || r.es.toLowerCase().contains(q) || r.synonyms.any((s) => s.contains(q))) r,
+      if (r.en.toLowerCase().contains(q) ||
+          r.es.toLowerCase().contains(q) ||
+          r.synonyms.any((s) => s.contains(q)))
+        r,
   ];
 }
 
@@ -220,7 +933,13 @@ class RegionShape {
 
 /// One drawing: outline, hit areas and size.
 class BodySheet {
-  BodySheet(this.view, this.size, this.outline, this.shapes, {this.details = const []});
+  BodySheet(
+    this.view,
+    this.size,
+    this.outline,
+    this.shapes, {
+    this.details = const [],
+  });
   final BodyView view;
   final Size size;
   final Path outline;
@@ -232,11 +951,22 @@ class BodySheet {
   final List<Path> details;
 }
 
-Path _ell(double cx, double cy, double rx, double ry) => Path()..addOval(Rect.fromCenter(center: Offset(cx, cy), width: rx * 2, height: ry * 2));
-Path _rr(double l, double t, double r, double b, [double rad = 6]) => Path()..addRRect(RRect.fromLTRBR(l, t, r, b, Radius.circular(rad)));
+Path _ell(double cx, double cy, double rx, double ry) => Path()
+  ..addOval(
+    Rect.fromCenter(center: Offset(cx, cy), width: rx * 2, height: ry * 2),
+  );
+Path _rr(double l, double t, double r, double b, [double rad = 6]) =>
+    Path()..addRRect(RRect.fromLTRBR(l, t, r, b, Radius.circular(rad)));
 
 /// A limb segment: a tapered capsule from (x1,y1) width w1 to (x2,y2) w2.
-Path _capsule(double x1, double y1, double w1, double x2, double y2, double w2) {
+Path _capsule(
+  double x1,
+  double y1,
+  double w1,
+  double x2,
+  double y2,
+  double w2,
+) {
   final a = math.atan2(y2 - y1, x2 - x1) + math.pi / 2;
   final dx = math.cos(a), dy = math.sin(a);
   final p = Path()
@@ -245,7 +975,11 @@ Path _capsule(double x1, double y1, double w1, double x2, double y2, double w2) 
     ..lineTo(x2 - dx * w2 / 2, y2 - dy * w2 / 2)
     ..lineTo(x1 - dx * w1 / 2, y1 - dy * w1 / 2)
     ..close();
-  return Path.combine(PathOperation.union, Path.combine(PathOperation.union, p, _ell(x1, y1, w1 / 2, w1 / 2)), _ell(x2, y2, w2 / 2, w2 / 2));
+  return Path.combine(
+    PathOperation.union,
+    Path.combine(PathOperation.union, p, _ell(x1, y1, w1 / 2, w1 / 2)),
+    _ell(x2, y2, w2 / 2, w2 / 2),
+  );
 }
 
 Path _union(Iterable<Path> paths) {
@@ -256,7 +990,84 @@ Path _union(Iterable<Path> paths) {
   return out ?? Path();
 }
 
-Path _mirror(Path p, double width) => p.transform(Float64List.fromList([-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, width, 0, 0, 1]));
+Path _mirror(Path p, double width) => p.transform(
+  Float64List.fromList([-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, width, 0, 0, 1]),
+);
+
+/// The figure was first drawn with short legs; regions are still authored
+/// in that space and remapped here so the legs take up about half the
+/// height, like a real body (crotch at y≈214 of 460, soles at 452).
+double _figY(double y) =>
+    y <= 246 ? y * 214 / 246 : 214 + (y - 246) * (452 - 214) / (437 - 246);
+
+Path _remap(Path p) {
+  final b = p.getBounds();
+  final top = _figY(b.top), bottom = _figY(b.bottom);
+  final s = b.height == 0 ? 214 / 246 : (bottom - top) / b.height;
+  // y' = top + (y - b.top) * s
+  return p.transform(
+    Float64List.fromList([
+      1,
+      0,
+      0,
+      0,
+      0,
+      s,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      top - b.top * s,
+      0,
+      1,
+    ]),
+  );
+}
+
+/// The natural figure: one smooth contour for the viewer's left half
+/// (head, neck, shoulder, arm, hand, flank, leg, foot), mirrored.
+Path _naturalFigure() {
+  final head = Path()
+    ..moveTo(100, 9)
+    ..cubicTo(88, 9, 80.5, 18, 80.5, 30)
+    ..cubicTo(80.5, 42, 85, 51, 92, 55.5)
+    ..cubicTo(95, 57.5, 97.5, 58, 100, 58)
+    ..close();
+  final body = Path()
+    ..moveTo(100, 56)
+    ..lineTo(91.5, 56)
+    ..cubicTo(91.5, 62, 90, 66, 84, 69) // neck into trapezius
+    ..cubicTo(76, 72, 66, 73, 60, 76.5)
+    ..cubicTo(53, 80, 50.5, 88, 50.5, 96) // deltoid
+    ..cubicTo(50, 112, 48.5, 126, 47.5, 140) // outer upper arm
+    ..cubicTo(46.5, 160, 44, 180, 42.5, 197) // outer forearm
+    ..cubicTo(41, 204, 38.5, 212, 39, 221) // outer hand
+    ..cubicTo(39.5, 229, 42, 234, 45.5, 234) // fingertips
+    ..cubicTo(49, 234, 50.5, 228, 51, 221) // inner fingers
+    ..cubicTo(51.5, 214, 52.5, 208, 53.5, 203) // thumb side / inner wrist
+    ..cubicTo(55, 186, 57.5, 168, 58.5, 148) // inner forearm
+    ..cubicTo(59.5, 130, 61, 112, 63.5, 101) // inner upper arm to armpit
+    ..cubicTo(65, 106, 66, 112, 66.5, 118)
+    ..cubicTo(67.5, 132, 70, 142, 70.5, 152) // ribs to waist
+    ..cubicTo(71, 162, 66.5, 172, 65.5, 186) // hip flare
+    ..cubicTo(64.5, 202, 66, 218, 68.5, 236) // outer thigh
+    ..cubicTo(71, 262, 73, 290, 74.5, 312) // thigh to knee
+    ..cubicTo(75.5, 322, 74.5, 332, 74, 340) // knee
+    ..cubicTo(72.5, 362, 75, 392, 78.5, 420) // calf to ankle
+    ..cubicTo(79.5, 428, 75.5, 438, 77, 445) // ankle into foot
+    ..cubicTo(78.5, 451, 92, 452, 94.5, 446) // foot
+    ..cubicTo(96, 440, 93.5, 432, 92.5, 424) // inner ankle
+    ..cubicTo(91.5, 398, 93.5, 372, 92.5, 348) // inner calf
+    ..cubicTo(92.5, 338, 93.5, 330, 93.5, 322) // inner knee
+    ..cubicTo(94.5, 290, 96.5, 250, 97.5, 226) // inner thigh
+    ..cubicTo(98.5, 219, 99.5, 216, 100, 214) // crotch
+    ..close();
+  final half = Path.combine(PathOperation.union, head, body);
+  return Path.combine(PathOperation.union, half, _mirror(half, 200));
+}
 
 /// Torso outline for the half on the viewer's left, mirrored.
 Path _torso() {
@@ -293,7 +1104,10 @@ Path _figureOutline() => _union([
 
 /// Shapes for the viewer's left half; [sideLeft] is the body side that
 /// appears there (right on the front view, left on the back view).
-List<RegionShape> _sidedShapes(BodySide sideLeft, List<(String, Path, BodyView?)> leftHalf) {
+List<RegionShape> _sidedShapes(
+  BodySide sideLeft,
+  List<(String, Path, BodyView?)> leftHalf,
+) {
   final sideRight = sideLeft == BodySide.right ? BodySide.left : BodySide.right;
   return [
     for (final (id, p, z) in leftHalf) ...[
@@ -303,14 +1117,20 @@ List<RegionShape> _sidedShapes(BodySide sideLeft, List<(String, Path, BodyView?)
   ];
 }
 
-List<RegionShape> _sorted(List<RegionShape> s) => s..sort((a, b) => a.area.compareTo(b.area));
+List<RegionShape> _sorted(List<RegionShape> s) =>
+    s..sort((a, b) => a.area.compareTo(b.area));
 
 BodySheet _front() {
   final c = BodySide.center;
   final shapes = <RegionShape>[
     RegionShape('crown', c, _rr(78, 8, 122, 19, 8)),
     RegionShape('forehead', c, _rr(80, 19, 120, 31, 6)),
-    RegionShape('face_general', c, _rr(80, 31, 120, 64, 10), zoomTo: BodyView.face),
+    RegionShape(
+      'face_general',
+      c,
+      _rr(80, 31, 120, 64, 10),
+      zoomTo: BodyView.face,
+    ),
     RegionShape('throat', c, _ell(100, 73, 6, 6)),
     RegionShape('neck_front', c, _rr(89, 58, 111, 82, 4)),
     RegionShape('sternum', c, _rr(95, 84, 105, 134, 4)),
@@ -339,7 +1159,16 @@ BodySheet _front() {
       ('foot_top', _ell(87, 426, 9, 12), BodyView.footTop),
     ]),
   ];
-  return BodySheet(BodyView.front, const Size(200, 460), _figureOutline(), _sorted(shapes), details: _figureDetails(front: true));
+  return BodySheet(
+    BodyView.front,
+    const Size(200, 460),
+    _naturalFigure(),
+    _sorted([
+      for (final r in shapes)
+        RegionShape(r.regionId, r.side, _remap(r.path), zoomTo: r.zoomTo),
+    ]),
+    details: [for (final d in _figureDetails(front: true)) _remap(d)],
+  );
 }
 
 BodySheet _back() {
@@ -370,7 +1199,16 @@ BodySheet _back() {
       ('heel', _ell(87, 426, 9, 12), BodyView.footSole),
     ]),
   ];
-  return BodySheet(BodyView.back, const Size(200, 460), _figureOutline(), _sorted(shapes), details: _figureDetails(front: false));
+  return BodySheet(
+    BodyView.back,
+    const Size(200, 460),
+    _naturalFigure(),
+    _sorted([
+      for (final r in shapes)
+        RegionShape(r.regionId, r.side, _remap(r.path), zoomTo: r.zoomTo),
+    ]),
+    details: [for (final d in _figureDetails(front: false)) _remap(d)],
+  );
 }
 
 /// Subtle anatomical guides: midline, clavicles, ribcage curve, knees.
@@ -389,14 +1227,18 @@ List<Path> _figureDetails({required bool front}) {
     out
       ..add(rib)
       ..add(_mirror(rib, 200));
-    out.add(Path()
-      ..moveTo(100, 136)
-      ..lineTo(100, 206));
+    out.add(
+      Path()
+        ..moveTo(100, 136)
+        ..lineTo(100, 206),
+    );
     out.add(_ell(100, 176, 1.6, 1.6));
   } else {
-    out.add(Path()
-      ..moveTo(100, 82)
-      ..lineTo(100, 206));
+    out.add(
+      Path()
+        ..moveTo(100, 82)
+        ..lineTo(100, 206),
+    );
     final blade = Path()
       ..moveTo(78, 96)
       ..quadraticBezierTo(76, 112, 88, 120);
@@ -410,7 +1252,11 @@ List<Path> _figureDetails({required bool front}) {
       ..add(glute)
       ..add(_mirror(glute, 200));
   }
-  for (final p in [Path()..moveTo(78, 334)..quadraticBezierTo(84, 340, 90, 334)]) {
+  for (final p in [
+    Path()
+      ..moveTo(78, 334)
+      ..quadraticBezierTo(84, 340, 90, 334),
+  ]) {
     out
       ..add(p)
       ..add(_mirror(p, 200));
@@ -457,7 +1303,13 @@ BodySheet _face() {
         ..moveTo(x - 14, 88)
         ..quadraticBezierTo(x, 82, x + 14, 88),
   ];
-  return BodySheet(BodyView.face, const Size(200, 240), outline, _sorted(shapes), details: details);
+  return BodySheet(
+    BodyView.face,
+    const Size(200, 240),
+    outline,
+    _sorted(shapes),
+    details: details,
+  );
 }
 
 /// Hand drawing with the thumb on the viewer's left.
@@ -481,7 +1333,13 @@ BodySheet _face() {
     (palm ? 'palm' : 'back_of_hand', palmShape),
     (palm ? 'wrist_front' : 'wrist_back', wrist),
   ];
-  final outline = _union([for (final (_, x, top, w) in fingers) _rr(x - w / 2, top, x + w / 2, 116, w / 2), palmShape, thumb, wrist]);
+  final outline = _union([
+    for (final (_, x, top, w) in fingers)
+      _rr(x - w / 2, top, x + w / 2, 116, w / 2),
+    palmShape,
+    thumb,
+    wrist,
+  ]);
   final details = <Path>[
     if (palm) ...[
       Path()
@@ -532,10 +1390,14 @@ BodySheet _face() {
       ('sole', foot),
     ],
   ];
-  final outline = _union([foot, for (final (_, x, y, rx, ry) in toes) _ell(x, y, rx, ry)]);
+  final outline = _union([
+    foot,
+    for (final (_, x, y, rx, ry) in toes) _ell(x, y, rx, ry),
+  ]);
   final details = <Path>[
     if (top)
-      for (final (_, x, y, rx, ry) in toes) _ell(x, y - ry * 0.35, rx * 0.55, ry * 0.3)
+      for (final (_, x, y, rx, ry) in toes)
+        _ell(x, y - ry * 0.35, rx * 0.55, ry * 0.3)
     else ...[
       Path()
         ..moveTo(42, 104)
@@ -564,7 +1426,15 @@ BodySheet sheetFor(BodyView view, {BodySide side = BodySide.right}) {
       final palm = view == BodyView.handPalm;
       final mirror = palm ? side == BodySide.left : side == BodySide.right;
       final (outline, parts, details) = _handParts(palm: palm);
-      return _zoomSheet(view, const Size(160, 230), outline, parts, details, side, mirror);
+      return _zoomSheet(
+        view,
+        const Size(160, 230),
+        outline,
+        parts,
+        details,
+        side,
+        mirror,
+      );
     case BodyView.footTop:
     case BodyView.footSole:
       // Top: the left foot has its big toe on the viewer's left. Sole
@@ -572,13 +1442,35 @@ BodySheet sheetFor(BodyView view, {BodySide side = BodySide.right}) {
       final top = view == BodyView.footTop;
       final mirror = top ? side == BodySide.right : side == BodySide.left;
       final (outline, parts, details) = _footParts(top: top);
-      return _zoomSheet(view, const Size(160, 240), outline, parts, details, side, mirror);
+      return _zoomSheet(
+        view,
+        const Size(160, 240),
+        outline,
+        parts,
+        details,
+        side,
+        mirror,
+      );
   }
 }
 
-BodySheet _zoomSheet(BodyView view, Size size, Path outline, List<(String, Path)> parts, List<Path> details, BodySide side, bool mirror) {
+BodySheet _zoomSheet(
+  BodyView view,
+  Size size,
+  Path outline,
+  List<(String, Path)> parts,
+  List<Path> details,
+  BodySide side,
+  bool mirror,
+) {
   Path m(Path p) => mirror ? _mirror(p, size.width) : p;
-  return BodySheet(view, size, m(outline), _sorted([for (final (id, p) in parts) RegionShape(id, side, m(p))]), details: [for (final d in details) m(d)]);
+  return BodySheet(
+    view,
+    size,
+    m(outline),
+    _sorted([for (final (id, p) in parts) RegionShape(id, side, m(p))]),
+    details: [for (final d in details) m(d)],
+  );
 }
 
 final BodySheet _frontSheet = _front();
@@ -586,7 +1478,8 @@ final BodySheet _backSheet = _back();
 final BodySheet _faceSheet = _face();
 
 /// Body side shown on the viewer's left half of [view].
-BodySide viewerLeftSide(BodyView view) => view == BodyView.back ? BodySide.left : BodySide.right;
+BodySide viewerLeftSide(BodyView view) =>
+    view == BodyView.back ? BodySide.left : BodySide.right;
 
 /// What a tap at [p] (in sheet space) could mean.
 class HitResult {
@@ -601,17 +1494,31 @@ class HitResult {
 HitResult hitTestSheet(BodySheet sheet, Offset p, {double slop = 7}) {
   if (!sheet.outline.contains(p)) {
     // Allow a near miss just outside a thin limb.
-    final near = [for (final s in sheet.shapes) if (_nearAny(s.path, p, slop)) s];
+    final near = [
+      for (final s in sheet.shapes)
+        if (_nearAny(s.path, p, slop)) s,
+    ];
     if (near.isEmpty) return const HitResult(null, []);
     return HitResult(near.first, _distinct(near.skip(1), near.first));
   }
-  final inside = [for (final s in sheet.shapes) if (s.path.contains(p)) s];
+  final inside = [
+    for (final s in sheet.shapes)
+      if (s.path.contains(p)) s,
+  ];
   if (inside.isEmpty) return const HitResult(null, []);
   final primary = inside.first;
-  final probes = [for (var i = 0; i < 8; i++) p + Offset(math.cos(i * math.pi / 4) * slop, math.sin(i * math.pi / 4) * slop)];
+  final probes = [
+    for (var i = 0; i < 8; i++)
+      p +
+          Offset(
+            math.cos(i * math.pi / 4) * slop,
+            math.sin(i * math.pi / 4) * slop,
+          ),
+  ];
   final nearby = [
     for (final s in sheet.shapes)
-      if (s != primary && (inside.contains(s) || probes.any(s.path.contains))) s,
+      if (s != primary && (inside.contains(s) || probes.any(s.path.contains)))
+        s,
   ];
   final edge = probes.any((q) => !primary.path.contains(q));
   return HitResult(primary, edge ? _distinct(nearby, primary) : const []);
@@ -619,7 +1526,14 @@ HitResult hitTestSheet(BodySheet sheet, Offset p, {double slop = 7}) {
 
 bool _nearAny(Path path, Offset p, double slop) {
   for (var i = 0; i < 8; i++) {
-    if (path.contains(p + Offset(math.cos(i * math.pi / 4) * slop, math.sin(i * math.pi / 4) * slop))) return true;
+    if (path.contains(
+      p +
+          Offset(
+            math.cos(i * math.pi / 4) * slop,
+            math.sin(i * math.pi / 4) * slop,
+          ),
+    ))
+      return true;
   }
   return false;
 }
@@ -653,8 +1567,12 @@ BodyView preferredViewFor(String regionId) {
   if (r == null) return BodyView.front;
   return switch (r.section) {
     RegionSection.face || RegionSection.mouth => BodyView.face,
-    RegionSection.hand => regionId == 'back_of_hand' ? BodyView.handBack : BodyView.handPalm,
-    RegionSection.foot => const {'heel', 'arch', 'sole', 'ball_of_foot'}.contains(regionId) ? BodyView.footSole : BodyView.footTop,
+    RegionSection.hand =>
+      regionId == 'back_of_hand' ? BodyView.handBack : BodyView.handPalm,
+    RegionSection.foot =>
+      const {'heel', 'arch', 'sole', 'ball_of_foot'}.contains(regionId)
+          ? BodyView.footSole
+          : BodyView.footTop,
     RegionSection.back => BodyView.back,
     _ => r.anchor?.$1 ?? BodyView.front,
   };
@@ -667,7 +1585,13 @@ BodyView preferredViewFor(String regionId) {
 /// A sensation word. [id] is stored; labels may change without changing
 /// what a past entry meant.
 class Descriptor {
-  const Descriptor(this.id, this.en, this.es, {this.synonyms = const [], this.neutral = false});
+  const Descriptor(
+    this.id,
+    this.en,
+    this.es, {
+    this.synonyms = const [],
+    this.neutral = false,
+  });
   final String id;
   final String en;
   final String es;
@@ -686,17 +1610,42 @@ const generalDescriptors = <Descriptor>[
   Descriptor('burning', 'Burning', 'Ardor', synonyms: ['hot', 'fire']),
   Descriptor('throbbing', 'Throbbing', 'Palpitante'),
   Descriptor('pulsing', 'Pulsing', 'Pulsátil'),
-  Descriptor('squeezing', 'Squeezing', 'Opresivo', synonyms: ['pressure', 'crushing']),
+  Descriptor(
+    'squeezing',
+    'Squeezing',
+    'Opresivo',
+    synonyms: ['pressure', 'crushing'],
+  ),
   Descriptor('pulling', 'Pulling', 'Tirante'),
   Descriptor('tight', 'Tight', 'Tenso', synonyms: ['tense', 'tension']),
-  Descriptor('tender', 'Tender', 'Sensible al tacto', synonyms: ['sore to touch']),
+  Descriptor(
+    'tender',
+    'Tender',
+    'Sensible al tacto',
+    synonyms: ['sore to touch'],
+  ),
   Descriptor('hot', 'Hot', 'Caliente'),
   Descriptor('cold', 'Cold', 'Frío', synonyms: ['chilly']),
-  Descriptor('crawling', 'Crawling', 'Hormigueo reptante', synonyms: ['bugs', 'creeping']),
+  Descriptor(
+    'crawling',
+    'Crawling',
+    'Hormigueo reptante',
+    synonyms: ['bugs', 'creeping'],
+  ),
   Descriptor('prickly', 'Prickly', 'Picante / punzadas leves'),
-  Descriptor('electric', 'Electric', 'Eléctrico', synonyms: ['shock', 'zap', 'zing']),
+  Descriptor(
+    'electric',
+    'Electric',
+    'Eléctrico',
+    synonyms: ['shock', 'zap', 'zing'],
+  ),
   Descriptor('tingly', 'Tingly', 'Hormigueo', synonyms: ['tingling']),
-  Descriptor('numb', 'Numb', 'Entumecido', synonyms: ['no feeling', 'numbness']),
+  Descriptor(
+    'numb',
+    'Numb',
+    'Entumecido',
+    synonyms: ['no feeling', 'numbness'],
+  ),
   Descriptor('heavy', 'Heavy', 'Pesado'),
   Descriptor('weak', 'Weak', 'Débil'),
   Descriptor('shaky', 'Shaky', 'Tembloroso', synonyms: ['trembling', 'tremor']),
@@ -708,7 +1657,12 @@ const generalDescriptors = <Descriptor>[
   Descriptor('warm', 'Warm', 'Cálido', neutral: true),
   Descriptor('loose', 'Loose', 'Suelto', neutral: true),
   Descriptor('light', 'Light', 'Ligero', neutral: true),
-  Descriptor('comfortably_heavy', 'Comfortably heavy', 'Agradablemente pesado', neutral: true),
+  Descriptor(
+    'comfortably_heavy',
+    'Comfortably heavy',
+    'Agradablemente pesado',
+    neutral: true,
+  ),
   Descriptor('neutral', 'Neutral', 'Neutro', neutral: true),
 ];
 
@@ -718,84 +1672,182 @@ const regionDescriptors = <DescriptorGroup, List<Descriptor>>{
     Descriptor('buzzing', 'Buzzing', 'Murmullo'),
     Descriptor('muffled', 'Muffled hearing', 'Audición apagada'),
     Descriptor('popping', 'Popping', 'Chasquidos'),
-    Descriptor('fullness', 'Fullness', 'Sensación de oído tapado', synonyms: ['blocked ear', 'plugged']),
+    Descriptor(
+      'fullness',
+      'Fullness',
+      'Sensación de oído tapado',
+      synonyms: ['blocked ear', 'plugged'],
+    ),
   ],
   DescriptorGroup.eyes: [
     Descriptor('gritty', 'Gritty', 'Arenilla', synonyms: ['sandy']),
     Descriptor('watery', 'Watery', 'Lloroso', synonyms: ['tearing']),
     Descriptor('dry_eye', 'Dry', 'Seco'),
-    Descriptor('twitching', 'Twitching', 'Tic / temblor del párpado', synonyms: ['twitch']),
+    Descriptor(
+      'twitching',
+      'Twitching',
+      'Tic / temblor del párpado',
+      synonyms: ['twitch'],
+    ),
     Descriptor('strained', 'Strained', 'Forzado / cansado'),
-    Descriptor('light_sensitive', 'Light-sensitive', 'Sensible a la luz', synonyms: ['photophobia', 'bright']),
+    Descriptor(
+      'light_sensitive',
+      'Light-sensitive',
+      'Sensible a la luz',
+      synonyms: ['photophobia', 'bright'],
+    ),
   ],
   DescriptorGroup.nose: [
-    Descriptor('blocked', 'Blocked', 'Tapado', synonyms: ['stuffy', 'congested']),
+    Descriptor(
+      'blocked',
+      'Blocked',
+      'Tapado',
+      synonyms: ['stuffy', 'congested'],
+    ),
     Descriptor('dripping', 'Dripping', 'Goteo', synonyms: ['runny']),
-    Descriptor('pressure_eyes', 'Pressure behind the eyes', 'Presión detrás de los ojos'),
+    Descriptor(
+      'pressure_eyes',
+      'Pressure behind the eyes',
+      'Presión detrás de los ojos',
+    ),
     Descriptor('stinging', 'Stinging', 'Escozor'),
   ],
   DescriptorGroup.jaw: [
-    Descriptor('clenching', 'Clenching', 'Apretando', synonyms: ['grinding teeth', 'bruxism']),
+    Descriptor(
+      'clenching',
+      'Clenching',
+      'Apretando',
+      synonyms: ['grinding teeth', 'bruxism'],
+    ),
     Descriptor('clicking_jaw', 'Clicking', 'Chasquido'),
     Descriptor('locking_jaw', 'Locking', 'Bloqueo'),
     Descriptor('tooth_sensitive', 'Tooth sensitivity', 'Sensibilidad dental'),
   ],
   DescriptorGroup.mouth: [
     Descriptor('dry_mouth', 'Dry', 'Seco'),
-    Descriptor('altered_taste', 'Altered taste', 'Sabor alterado', synonyms: ['metallic']),
+    Descriptor(
+      'altered_taste',
+      'Altered taste',
+      'Sabor alterado',
+      synonyms: ['metallic'],
+    ),
     Descriptor('stinging', 'Stinging', 'Escozor'),
   ],
   DescriptorGroup.throat: [
     Descriptor('scratchy', 'Scratchy', 'Raspa', synonyms: ['itchy throat']),
     Descriptor('hoarse', 'Hoarse', 'Ronco', synonyms: ['voice']),
     Descriptor('dry_throat', 'Dry', 'Seco'),
-    Descriptor('lump', 'Lump sensation', 'Sensación de nudo', synonyms: ['globus']),
-    Descriptor('painful_swallow', 'Pain when swallowing', 'Dolor al tragar', synonyms: ['swallow']),
+    Descriptor(
+      'lump',
+      'Lump sensation',
+      'Sensación de nudo',
+      synonyms: ['globus'],
+    ),
+    Descriptor(
+      'painful_swallow',
+      'Pain when swallowing',
+      'Dolor al tragar',
+      synonyms: ['swallow'],
+    ),
   ],
   DescriptorGroup.chest: [
-    Descriptor('fluttering', 'Fluttering', 'Aleteo', synonyms: ['palpitations', 'flutter']),
+    Descriptor(
+      'fluttering',
+      'Fluttering',
+      'Aleteo',
+      synonyms: ['palpitations', 'flutter'],
+    ),
     Descriptor('pounding', 'Pounding', 'Golpeteo', synonyms: ['racing heart']),
     Descriptor('tightness', 'Tightness', 'Opresión'),
-    Descriptor('deep_breath', 'Discomfort when taking a deep breath', 'Molestia al respirar hondo', synonyms: ['breathing']),
+    Descriptor(
+      'deep_breath',
+      'Discomfort when taking a deep breath',
+      'Molestia al respirar hondo',
+      synonyms: ['breathing'],
+    ),
   ],
   DescriptorGroup.abdomen: [
-    Descriptor('knotted', 'Knotted', 'Hecho un nudo', synonyms: ['butterflies']),
+    Descriptor(
+      'knotted',
+      'Knotted',
+      'Hecho un nudo',
+      synonyms: ['butterflies'],
+    ),
     Descriptor('cramping', 'Cramping', 'Calambres', synonyms: ['cramps']),
     Descriptor('bloated', 'Bloated', 'Hinchado', synonyms: ['gassy']),
     Descriptor('gurgling', 'Gurgling', 'Ruidos'),
-    Descriptor('rolling', 'Rolling', 'Revuelto', synonyms: ['churning', 'queasy']),
+    Descriptor(
+      'rolling',
+      'Rolling',
+      'Revuelto',
+      synonyms: ['churning', 'queasy'],
+    ),
   ],
   DescriptorGroup.back: [
     Descriptor('spasm', 'Spasm', 'Espasmo'),
     Descriptor('seized', 'Seized up', 'Bloqueado'),
-    Descriptor('radiating', 'Radiating', 'Irradiado', synonyms: ['spreading', 'shooting']),
+    Descriptor(
+      'radiating',
+      'Radiating',
+      'Irradiado',
+      synonyms: ['spreading', 'shooting'],
+    ),
     Descriptor('tight_band', 'Tight band', 'Banda tensa'),
     Descriptor('pain_turning', 'Pain when turning', 'Dolor al girar'),
   ],
   DescriptorGroup.joint: [
     Descriptor('catching', 'Catching', 'Enganche'),
     Descriptor('locking', 'Locking', 'Bloqueo'),
-    Descriptor('clicking', 'Clicking', 'Chasquido', synonyms: ['popping', 'cracking']),
+    Descriptor(
+      'clicking',
+      'Clicking',
+      'Chasquido',
+      synonyms: ['popping', 'cracking'],
+    ),
     Descriptor('grinding', 'Grinding', 'Crujido', synonyms: ['crepitus']),
     Descriptor('giving_way', 'Giving way', 'Fallo / cede'),
   ],
   DescriptorGroup.hand: [
-    Descriptor('pins_needles', 'Pins and needles', 'Hormigueo (alfileres)', synonyms: ['asleep']),
-    Descriptor('reduced_grip', 'Reduced grip', 'Menos fuerza de agarre', synonyms: ['clumsy', 'dropping things']),
+    Descriptor(
+      'pins_needles',
+      'Pins and needles',
+      'Hormigueo (alfileres)',
+      synonyms: ['asleep'],
+    ),
+    Descriptor(
+      'reduced_grip',
+      'Reduced grip',
+      'Menos fuerza de agarre',
+      synonyms: ['clumsy', 'dropping things'],
+    ),
     Descriptor('numb_tips', 'Numb fingertips', 'Yemas entumecidas'),
     Descriptor('trembling', 'Trembling', 'Temblor'),
   ],
   DescriptorGroup.leg: [
     Descriptor('restless', 'Restless', 'Inquieto', synonyms: ['restless legs']),
-    Descriptor('cramping', 'Cramping', 'Calambres', synonyms: ['charley horse']),
+    Descriptor(
+      'cramping',
+      'Cramping',
+      'Calambres',
+      synonyms: ['charley horse'],
+    ),
     Descriptor('dragging', 'Dragging', 'Arrastre'),
     Descriptor('unsteady', 'Unsteady', 'Inestable', synonyms: ['wobbly']),
-    Descriptor('pressure_standing', 'Pressure when standing', 'Presión al estar de pie'),
+    Descriptor(
+      'pressure_standing',
+      'Pressure when standing',
+      'Presión al estar de pie',
+    ),
   ],
   DescriptorGroup.head: [
     Descriptor('pressure', 'Pressure', 'Presión'),
     Descriptor('band', 'Band-like', 'Como una banda'),
-    Descriptor('dizzy', 'Dizzy', 'Mareo', synonyms: ['spinning', 'lightheaded']),
+    Descriptor(
+      'dizzy',
+      'Dizzy',
+      'Mareo',
+      synonyms: ['spinning', 'lightheaded'],
+    ),
   ],
   DescriptorGroup.skin: [
     Descriptor('flushed', 'Flushed', 'Enrojecido', synonyms: ['red']),
@@ -816,7 +1868,11 @@ List<Descriptor> descriptorsFor(String? regionId) {
   final group = regionById[regionId]?.group ?? DescriptorGroup.none;
   final specific = regionDescriptors[group] ?? const [];
   final ids = {for (final d in specific) d.id};
-  return [...specific, for (final d in generalDescriptors) if (!ids.contains(d.id)) d];
+  return [
+    ...specific,
+    for (final d in generalDescriptors)
+      if (!ids.contains(d.id)) d,
+  ];
 }
 
 List<Descriptor> searchDescriptors(String regionId, String query, bool es) {
@@ -825,7 +1881,10 @@ List<Descriptor> searchDescriptors(String regionId, String query, bool es) {
   if (q.isEmpty) return all;
   return [
     for (final d in all)
-      if (d.en.toLowerCase().contains(q) || d.es.toLowerCase().contains(q) || d.synonyms.any((s) => s.contains(q))) d,
+      if (d.en.toLowerCase().contains(q) ||
+          d.es.toLowerCase().contains(q) ||
+          d.synonyms.any((s) => s.contains(q)))
+        d,
   ];
 }
 

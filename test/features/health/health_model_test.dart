@@ -181,9 +181,16 @@ void main() {
       final front = sheetFor(BodyView.front);
       final back = sheetFor(BodyView.back);
       // Viewer's left on the front is the body's right; on the back, its left.
-      expect(hitTestSheet(front, const Offset(84, 104), slop: 0).primary!.side, BodySide.right);
-      final blade = hitTestSheet(back, const Offset(116, 107), slop: 0).primary!;
+      expect(hitTestSheet(front, const Offset(84, 90), slop: 0).primary!.side, BodySide.right);
+      final blade = hitTestSheet(back, const Offset(116, 93), slop: 0).primary!;
       expect((blade.regionId, blade.side), ('shoulder_blade', BodySide.right));
+    });
+
+    test('legs take up about half the figure', () {
+      final front = sheetFor(BodyView.front);
+      final b = front.outline.getBounds();
+      final crotch = front.shapes.firstWhere((s) => s.regionId == 'pelvis').path.getBounds().bottom;
+      expect((b.bottom - crotch) / b.height, inInclusiveRange(0.48, 0.58));
     });
 
     test('a tap between wrist and forearm offers both', () {
