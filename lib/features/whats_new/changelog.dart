@@ -32,6 +32,21 @@ class ChangelogRelease {
 /// Newest first. Add an entry (and bump pubspec.yaml) with every release.
 final List<ChangelogRelease> prismChangelog = [
   ChangelogRelease(
+    version: '0.43.1',
+    date: DateTime(2026, 11, 25),
+    features: const [
+      LocalizedText('Introduction cards: a symbol library with about 530 symbols and kaomoji — categories, search, favourites, your own collections and recents, with colour and size. Decorate the card front or type symbols into any field.', 'Tarjetas de presentación: biblioteca de unos 530 símbolos y kaomoji con categorías, búsqueda, favoritos, colecciones y recientes, con color y tamaño.'),
+      LocalizedText('Subsystem palettes: five colours with presets; nested subsystems can keep their own colours, match their parent, blend with it, or follow the app theme.', 'Paletas de subsistemas: cinco colores con preajustes; los subsistemas anidados pueden usar los suyos, los del padre, mezclarlos o seguir el tema.'),
+      LocalizedText('Built-in backgrounds now take on the accent colour of the alter whose profile you\'re viewing, keeping their texture. Choose alter accent, system accent, app theme, original, custom colour or gradient, and set the intensity.', 'Los fondos integrados toman el color de acento del alter cuyo perfil ves, conservando su textura. Elige el modo y la intensidad.'),
+      LocalizedText('Body Map: left and right side views, and colour themes (soft, four skin tones, outline only, high contrast).', 'Mapa corporal: vistas laterales izquierda y derecha, y temas de color.'),
+    ],
+    fixes: const [
+      LocalizedText('Body Map: the figure is now drawn with natural proportions — the legs were too short for the body.', 'Mapa corporal: la figura tiene proporciones naturales; las piernas eran demasiado cortas.'),
+      LocalizedText('Who\'s There now fills the whole screen instead of leaving one side empty.', '¿Quién está? ahora ocupa toda la pantalla.'),
+      LocalizedText('Editing an introduction card no longer drops other settings saved on it.', 'Editar una tarjeta de presentación ya no borra otros ajustes guardados.'),
+    ],
+  ),
+  ChangelogRelease(
     version: '0.43.0',
     date: DateTime(2026, 11, 25),
     features: const [
