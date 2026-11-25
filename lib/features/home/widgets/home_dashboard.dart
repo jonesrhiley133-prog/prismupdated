@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prism_plurality/features/companions/companion_home_card.dart';
 import 'package:prism_plurality/features/fitness/health/health_home_card.dart';
 import 'package:prism_plurality/features/fronting_roles/roles_widgets.dart';
@@ -51,10 +52,47 @@ import 'package:prism_plurality/shared/widgets/prism_sheet.dart';
 import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 
 final dashboardWidgetsProvider = StreamProvider<List<String>>((ref) {
-  return ref
-      .watch(appPreferenceRepositoryProvider)
-      .watch(dashboardWidgetsPreference);
+  final repo = ref.watch(appPreferenceRepositoryProvider);
+  // One-time: lists saved before the roles strip, health card and companion
+  // card became regular cards keep showing them (they used to be fixed).
+  return repo.watch(dashboardWidgetsPreference).asyncMap((list) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('dashboard.cards.v2') == true) return list;
+      await prefs.setBool('dashboard.cards.v2', true);
+      final missing = [for (final id in const [DashboardWidgetId.frontingRoles, DashboardWidgetId.health, DashboardWidgetId.companion]) if (!list.contains(id)) id];
+      if (missing.isEmpty) return list;
+      final at = list.indexOf(DashboardWidgetId.now);
+      final next = [...list]..insertAll(at < 0 ? 0 : at + 1, missing);
+      await repo.set(dashboardWidgetsPreference, next);
+      return next;
+    } catch (_) {
+      return list;
+    }
+  });
 });
+
+/// Compact or full size per resizable Home card (device setting).
+final homeCardSizesProvider = NotifierProvider<HomeCardSizes, Map<String, String>>(HomeCardSizes.new);
+
+class HomeCardSizes extends Notifier<Map<String, String>> {
+  static const _key = 'home.card.sizes';
+  @override
+  Map<String, String> build() {
+    SharedPreferences.getInstance().then((p) {
+      final raw = p.getStringList(_key) ?? const [];
+      state = {for (final e in raw) if (e.contains('=')) e.split('=').first: e.split('=').last};
+    });
+    return const {};
+  }
+
+  bool compact(String id) => state[id] == 'compact';
+
+  Future<void> toggle(String id) async {
+    state = {...state, id: state[id] == 'compact' ? 'full' : 'compact'};
+    (await SharedPreferences.getInstance()).setStringList(_key, [for (final e in state.entries) '${e.key}=${e.value}']);
+  }
+}
 
 final dashboardQuickActionsProvider = StreamProvider<List<String>>((ref) {
   return ref
@@ -81,6 +119,9 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     DashboardWidgetId.hydration => tr(context, 'Hydration', 'Hidratación'),
     DashboardWidgetId.availability => tr(context, 'Availability', 'Disponibilidad'),
     DashboardWidgetId.automation => tr(context, 'Automations', 'Automatizaciones'),
+    DashboardWidgetId.frontingRoles => tr(context, 'Who\'s fronting (statuses)', 'Quién está al frente'),
+    DashboardWidgetId.health => tr(context, 'Steps & health today', 'Pasos y salud hoy'),
+    DashboardWidgetId.companion => tr(context, 'My companion', 'Mi compañero'),
     _ => id,
   };
 }
@@ -187,9 +228,6 @@ class HomeDashboard extends ConsumerWidget {
             ],
           ),
           const AppUpdateBanner(),
-          const FrontingRolesStrip(),
-          const HealthHomeCard(),
-          const CompanionHomeCard(),
           const WhatsNewLauncher(),
           ..._cards(context, ids),
         ],
@@ -240,6 +278,9 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.hydration => HydrationDashboardCard(onOpen: () => context.push('/nutrition')),
       DashboardWidgetId.availability => AvailabilityNowCard(onOpen: () => context.push('/availability')),
       DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
+      DashboardWidgetId.frontingRoles => const FrontingRolesStrip(),
+      DashboardWidgetId.health => const HealthHomeCard(),
+      DashboardWidgetId.companion => const CompanionHomeCard(),
       _ => const SizedBox.shrink(),
     };
     // Each card repaints on its own (stories, timers, charts animate).
@@ -619,9 +660,16 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
         .where((a) => !_actions.contains(a))
         .toList();
 
+    final sizes = ref.watch(homeCardSizesProvider);
     Widget orderedRow(List<String> list, int i, String label) => Row(
       children: [
         Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
+        if (identical(list, _widgets) && DashboardWidgetId.resizable.contains(list[i]))
+          IconButton(
+            tooltip: sizes[list[i]] == 'compact' ? 'Make full size' : 'Make compact',
+            icon: Icon(sizes[list[i]] == 'compact' ? Icons.unfold_more : Icons.unfold_less, size: 18),
+            onPressed: () => ref.read(homeCardSizesProvider.notifier).toggle(list[i]),
+          ),
         IconButton(
           tooltip: l10n.dashboardMoveUp,
           icon: const Icon(Icons.arrow_upward, size: 18),

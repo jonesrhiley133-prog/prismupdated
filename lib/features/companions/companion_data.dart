@@ -483,7 +483,6 @@ class CompanionSettings {
   final bool passportSuggestions;
 
   static const placementLabels = {
-    'dashboard': 'Home card',
     'habitatPreview': 'Habitat preview on Home',
     'besideFronter': 'Beside the current fronter',
     'profile': 'On headmate profiles',

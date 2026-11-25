@@ -34,7 +34,7 @@ class FrontingRolesStrip extends ConsumerWidget {
       ..sort((a, b) => a.key.order.compareTo(b.key.order));
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.zero,
       child: PrismSurface(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         onTap: () => context.push(AppRoutePaths.whosThere),

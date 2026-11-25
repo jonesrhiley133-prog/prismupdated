@@ -19,10 +19,21 @@ abstract final class DashboardWidgetId {
   static const hydration = 'hydration';
   static const availability = 'availability';
   static const automation = 'automation';
+  // Cards that used to be fixed on Home; now they can be hidden, moved and
+  // resized like the rest without turning their feature off.
+  static const frontingRoles = 'fronting_roles';
+  static const health = 'health_today';
+  static const companion = 'companion';
+
+  /// Cards whose size can be switched between compact and full.
+  static const resizable = {health, companion};
 
   static const all = [
     stories,
+    frontingRoles,
     now,
+    health,
+    companion,
     quickActions,
     howWeFeel,
     insight,
@@ -40,7 +51,10 @@ abstract final class DashboardWidgetId {
   ];
   static const defaults = [
     stories,
+    frontingRoles,
     now,
+    health,
+    companion,
     quickActions,
     howWeFeel,
     insight,
