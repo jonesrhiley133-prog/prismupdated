@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 
 import 'package:prism_plurality/features/companions/companion_art.dart';
 import 'package:prism_plurality/features/companions/companion_data.dart';
+import 'package:prism_plurality/features/companions/custom_art_editor.dart';
 import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
     show SocialImage;
 import 'package:prism_plurality/shared/ui_kit.dart';
@@ -43,10 +44,7 @@ class CompanionFigure extends ConsumerWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Padding(
-              padding: EdgeInsets.all(size * 0.12),
-              child: SocialImage(id: custom!.media!, fit: BoxFit.contain),
-            ),
+            FittedArt(media: custom!.media!, fit: custom.fit, size: size),
             CompanionView(
               species: species,
               look: look ?? companion.look,
@@ -56,6 +54,7 @@ class CompanionFigure extends ConsumerWidget {
               traits: companion.traits,
               expression: expression,
               accessoriesOnly: true,
+              fit: custom.fit,
               showParticles: showParticles,
               semanticLabel: '${companion.name}, ${custom.name}',
             ),

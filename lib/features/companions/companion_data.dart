@@ -101,6 +101,9 @@ class CustomSpecies {
   /// Built from a base species, with optional uploaded artwork.
   String get baseId => '${r.fields['base'] ?? 'slime'}';
   Species get base => speciesById(baseId);
+
+  /// Placement of the uploaded picture and its accessory anchors.
+  ArtFit get fit => ArtFit.fromJson(r.fields['fit']);
 }
 
 /// Habitat environments, drawn as layered gradients and shapes.
@@ -769,9 +772,241 @@ const _finds = [
   'a nice story to tell',
 ];
 
+/// Which family of reactions a species uses.
+String speciesGroup(Species s) {
+  final id = s.id;
+  if (const {
+    'cat',
+    'siamese',
+    'maine_coon',
+    'persian',
+    'celestial_cat',
+  }.contains(id))
+    return 'cat';
+  if (const {'dog', 'corgi', 'pug', 'husky', 'dachshund', 'wolf'}.contains(id))
+    return 'dog';
+  if (const {
+    'hamster',
+    'guinea_pig',
+    'chinchilla',
+    'squirrel',
+    'ferret',
+  }.contains(id))
+    return 'rodent';
+  if (const {'rabbit', 'moon_rabbit'}.contains(id)) return 'rabbit';
+  if (const {'pony', 'unicorn', 'deer'}.contains(id)) return 'hoofed';
+  if (const {'ghost', 'spirit', 'shadow', 'forest_spirit'}.contains(id))
+    return 'spirit';
+  if (const {
+    'star',
+    'constellation',
+    'crystal',
+    'crystal_fox',
+    'celestial_fox',
+  }.contains(id))
+    return 'celestial';
+  if (id == 'mini_pig') return 'pig';
+  if (id == 'bat') return 'bat';
+  if (id == 'chicken' || id == 'duck') return 'farmbird';
+  return switch (s.body) {
+    BodyKind.bird => 'bird',
+    BodyKind.fish || BodyKind.jelly || BodyKind.seahorse => 'swimmer',
+    BodyKind.octopus => 'octopus',
+    BodyKind.serpent || BodyKind.lizard || BodyKind.turtle => 'reptile',
+    BodyKind.frog => 'frog',
+    BodyKind.flame => 'fire',
+    _ => 'critter',
+  };
+}
+
+const _speciesLines = <String, Map<String, List<String>>>{
+  'cat': {
+    'pet': [
+      '{n} purrs like a tiny engine.',
+      '{n} kneads the air with happy paws.',
+      '{n} headbutts your hand for more.',
+    ],
+    'play': [
+      '{n} wiggles, then pounces!',
+      '{n} chases an invisible dot.',
+      '{n} pretends not to care, then plays anyway.',
+    ],
+    'treat': [
+      '{n} sniffs the treat, judges it, approves.',
+      '{n} eats it with a slow, satisfied blink.',
+    ],
+    'wave': ['{n} gives a slow blink — that\'s cat for "hello, I love you."'],
+  },
+  'dog': {
+    'pet': [
+      '{n}\'s tail wags so hard their whole body wiggles.',
+      '{n} rolls over for belly rubs.',
+      '{n} leans all their weight on you.',
+    ],
+    'play': [
+      '{n} brings the ball back. Again. And again.',
+      '{n} does zoomies around the room!',
+      '{n} play-bows, ready for fun.',
+    ],
+    'treat': [
+      '{n} sits perfectly, then gobbles it up.',
+      '{n} looks at you like you invented treats.',
+    ],
+    'wave': ['{n} barks a happy little "woof!"'],
+  },
+  'rodent': {
+    'pet': [
+      '{n} squeaks contentedly.',
+      '{n} does a happy popcorn jump!',
+      '{n} grooms their whiskers, pleased.',
+    ],
+    'treat': [
+      '{n} stuffs the treat into their cheeks for later.',
+      '{n} holds it in tiny paws and nibbles fast.',
+    ],
+    'play': [
+      '{n} scurries through a pretend tunnel.',
+      '{n} runs a lap and comes right back.',
+    ],
+  },
+  'rabbit': {
+    'pet': [
+      '{n} flops over sideways — the happiest bunny flop.',
+      '{n} grinds their teeth softly, content.',
+    ],
+    'play': [
+      '{n} does a binky, twisting mid-air!',
+      '{n} thumps a foot, then hops in circles.',
+    ],
+    'treat': ['{n} munches with an adorable wiggly nose.'],
+  },
+  'hoofed': {
+    'pet': [
+      '{n} nuzzles your shoulder gently.',
+      '{n} gives a soft, happy whinny.',
+    ],
+    'play': [
+      '{n} prances in a proud little circle.',
+      '{n} trots up and down, showing off.',
+    ],
+    'treat': ['{n} takes the treat with soft, careful lips.'],
+  },
+  'spirit': {
+    'pet': [
+      '{n} glows a little warmer.',
+      '{n} goes slightly see-through with happiness.',
+    ],
+    'play': [
+      '{n} floats through the wall and back, giggling.',
+      '{n} plays hide-and-seek and is very bad at hiding.',
+    ],
+    'wave': ['{n} waves, leaving a soft shimmer behind.'],
+  },
+  'celestial': {
+    'pet': ['{n} twinkles brightly.', '{n} hums like a far-off star.'],
+    'play': [
+      '{n} scatters little sparkles everywhere.',
+      '{n} draws a shape in the air with stardust.',
+    ],
+  },
+  'pig': {
+    'pet': [
+      '{n} oinks happily and flops for belly rubs.',
+      '{n} snuffles your hand looking for snacks.',
+    ],
+    'treat': ['{n} wiggles their snout and gobbles it up.'],
+  },
+  'bat': {
+    'pet': [
+      '{n} wraps their wings around themselves like a cozy blanket.',
+      '{n} chirps a tiny, happy chirp.',
+    ],
+    'play': [
+      '{n} swoops a loop around the room.',
+      '{n} hangs upside down to get a better look at you.',
+    ],
+  },
+  'farmbird': {
+    'pet': [
+      '{n} fluffs up all their feathers proudly.',
+      '{n} makes a soft, happy cluck.',
+    ],
+    'play': [
+      '{n} struts around like they own the place.',
+      '{n} flaps excitedly.',
+    ],
+    'treat': ['{n} pecks at the treat with great enthusiasm.'],
+  },
+  'bird': {
+    'pet': [
+      '{n} fluffs up and closes their eyes.',
+      '{n} chirps a little song for you.',
+    ],
+    'play': [
+      '{n} hops along your arm.',
+      '{n} bobs their head to an invisible beat.',
+    ],
+    'music': ['{n} whistles along, nearly in tune.'],
+  },
+  'swimmer': {
+    'pet': [
+      '{n} swirls in a happy little loop.',
+      '{n} blows a stream of tiny bubbles.',
+    ],
+    'play': [
+      '{n} darts back and forth, playing chase.',
+      '{n} does a twirl in the water.',
+    ],
+    'treat': ['{n} gobbles the flake before it sinks.'],
+  },
+  'octopus': {
+    'pet': [
+      '{n} gives you a gentle eight-armed hug.',
+      '{n} changes to a happy colour.',
+    ],
+    'play': [
+      '{n} juggles three toys at once.',
+      '{n} squeezes into a tiny box, then pops out!',
+    ],
+  },
+  'reptile': {
+    'pet': [
+      '{n} blinks slowly and stays very still — that means comfy.',
+      '{n} basks happily in your attention.',
+    ],
+    'play': [
+      '{n} scuttles a short lap, then naps.',
+      '{n} flicks their tongue, curious.',
+    ],
+    'treat': ['{n} snaps up the treat in one quick bite.'],
+  },
+  'frog': {
+    'pet': ['{n} lets out a pleased little ribbit.', '{n} puffs up proudly.'],
+    'play': [
+      '{n} hops onto a pretend lily pad!',
+      '{n} catches an imaginary fly.',
+    ],
+  },
+  'fire': {
+    'pet': [
+      '{n} crackles warmly — careful, it\'s cozy-hot.',
+      '{n} flickers in pleased colours.',
+    ],
+    'play': ['{n} spins into a little whirl of sparks.'],
+  },
+};
+
 String companionFlavor(Companion c, String interaction, {math.Random? rnd}) {
   final r = rnd ?? math.Random();
   final name = c.name;
+  final own = _speciesLines[speciesGroup(c.species)]?[interaction];
+  if (own != null && r.nextDouble() < 0.6) {
+    final base = own[r.nextInt(own.length)].replaceAll('{n}', name);
+    final traits = c.traits.where(_traitTails.containsKey).toList();
+    if (traits.isEmpty || r.nextDouble() < 0.6) return base;
+    final tail = _traitTails[traits[r.nextInt(traits.length)]]!;
+    return '$base ${tail[r.nextInt(tail.length)]}';
+  }
   if (interaction == 'explore') {
     return '$name went to ${_places[r.nextInt(_places.length)]} and came back with ${_finds[r.nextInt(_finds.length)]}.';
   }
@@ -959,11 +1194,20 @@ class CompanionActions {
     required String name,
     required String base,
     String? media,
+    ArtFit? fit,
   }) => _t.create(
     kind: TrackerKind.companionSpecies,
     title: name.trim(),
-    fields: {'v': companionSchemaVersion, 'base': base, 'image': media},
+    fields: {
+      'v': companionSchemaVersion,
+      'base': base,
+      'image': media,
+      if (fit != null) 'fit': fit.toJson(),
+    },
   );
+
+  Future<void> saveCustomFit(CustomSpecies s, ArtFit fit) =>
+      _t.save(s.r.withFields({...s.r.fields, 'fit': fit.toJson()}));
 
   Future<TrackerRecord> createHabitat(String env, {String name = ''}) =>
       _t.create(

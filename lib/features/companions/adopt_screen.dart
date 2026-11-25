@@ -9,6 +9,7 @@ import 'package:prism_plurality/features/companions/companion_widgets.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
+import 'package:prism_plurality/features/companions/custom_art_editor.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Adopt or hatch a companion, step by step. Every choice is made by you —
@@ -375,6 +376,24 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
                   ),
                   selected: _custom?.r.id == cs.r.id,
                   onTap: () => _pickSpecies(cs.base, custom: cs),
+                  trailing: cs.media == null
+                      ? null
+                      : IconButton(
+                          tooltip: 'Adjust picture',
+                          icon: const Icon(Icons.crop_rotate),
+                          onPressed: () async {
+                            final f = await CustomArtEditor.open(
+                              context,
+                              media: cs.media!,
+                              base: cs.base,
+                              initial: cs.fit,
+                            );
+                            if (f != null)
+                              await ref
+                                  .read(companionActionsProvider)
+                                  .saveCustomFit(cs, f);
+                          },
+                        ),
                 ),
               PrismButton(
                 label: 'Create a custom creature',
@@ -799,6 +818,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
     final name = TextEditingController();
     var base = 'slime';
     String? media;
+    ArtFit? fit;
     final ok = await PrismSheet.show<bool>(
       context: context,
       title: 'Custom creature',
@@ -838,9 +858,31 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
               icon: Icons.image_outlined,
               onPressed: () async {
                 final id = await PrismMedia.pickImage(ref);
-                if (id != null) set(() => media = id);
+                if (id == null || !ctx.mounted) return;
+                set(() => media = id);
+                final f = await CustomArtEditor.open(
+                  ctx,
+                  media: id,
+                  base: speciesById(base),
+                  initial: fit ?? const ArtFit(),
+                );
+                if (f != null) set(() => fit = f);
               },
             ),
+            if (media != null)
+              PrismButton(
+                label: 'Adjust picture (crop, size, anchors)',
+                icon: Icons.crop_rotate,
+                onPressed: () async {
+                  final f = await CustomArtEditor.open(
+                    ctx,
+                    media: media!,
+                    base: speciesById(base),
+                    initial: fit ?? const ArtFit(),
+                  );
+                  if (f != null) set(() => fit = f);
+                },
+              ),
             const SizedBox(height: 6),
             Text(
               'A PNG with a transparent background looks best. It replaces the drawn body; hats and effects still fit on top.',
@@ -859,7 +901,12 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
     if (ok == true && name.text.trim().isNotEmpty) {
       final rec = await ref
           .read(companionActionsProvider)
-          .saveCustomSpecies(name: name.text, base: base, media: media);
+          .saveCustomSpecies(
+            name: name.text,
+            base: base,
+            media: media,
+            fit: fit,
+          );
       _pickSpecies(speciesById(base), custom: CustomSpecies(rec));
     }
     name.dispose();

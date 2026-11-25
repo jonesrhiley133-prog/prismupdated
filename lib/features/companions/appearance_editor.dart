@@ -50,12 +50,14 @@ class _AppearanceEditorScreenState
   )!;
   late CompanionLook _look = _c.look;
   String _tab = 'Colours';
+  String _slot = 'hat';
 
   static const _tabs = [
     'Colours',
     'Body',
     'Face',
     'Wear',
+    'Adjust',
     'Effects',
     'Outfits',
   ];
@@ -71,6 +73,215 @@ class _AppearanceEditorScreenState
       _look = _look.copyWith({key: value});
     }
   });
+
+  void _setAdjust(AccessoryAdjust a) => setState(() {
+    _look = _look.copyWith({
+      'adjust': {
+        for (final e in _look.adjust.entries) e.key: e.value.toJson(),
+        _slot: a.toJson(),
+      },
+    });
+  });
+
+  String _slotValue(String slot) => switch (slot) {
+    'hat' => _look.hat,
+    'glasses' => _look.glasses,
+    'neck' => _look.neck,
+    'body' => _look.body,
+    _ => _look.floating,
+  };
+
+  /// Fine-tune where each accessory sits: position, size, angle, mirror,
+  /// opacity and which goes in front. Buttons work without dragging.
+  List<Widget> _adjustControls(ThemeData theme) {
+    final a = _look.adjustOf(_slot);
+    const labels = {
+      'hat': 'Hat',
+      'glasses': 'Glasses',
+      'neck': 'Neck',
+      'body': 'Outfit',
+      'floating': 'Floating friend',
+    };
+    Widget slider(
+      String label,
+      double v,
+      double min,
+      double max,
+      String unit,
+      ValueChanged<double> on,
+    ) => Row(
+      children: [
+        SizedBox(
+          width: 72,
+          child: Text(label, style: theme.textTheme.bodySmall),
+        ),
+        Expanded(
+          child: Slider(
+            value: v.clamp(min, max),
+            min: min,
+            max: max,
+            onChanged: on,
+            semanticFormatterCallback: (x) =>
+                '$label ${x.toStringAsFixed(unit == '×' ? 2 : 0)}$unit',
+          ),
+        ),
+        SizedBox(
+          width: 44,
+          child: Text(
+            '${v.toStringAsFixed(unit == '×' ? 2 : 0)}$unit',
+            style: theme.textTheme.labelSmall,
+          ),
+        ),
+      ],
+    );
+    return [
+      Text(
+        'Pick an accessory, then nudge it into place for this companion.',
+        style: theme.textTheme.bodySmall,
+      ),
+      const SizedBox(height: 6),
+      Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: [
+          for (final k in CompanionLook.accessorySlots)
+            PrismChip(
+              label:
+                  '${labels[k]}${_slotValue(k) == 'none' ? ' (none)' : ''}${_look.adjustOf(k).isIdentity ? '' : ' •'}',
+              selected: _slot == k,
+              onTap: () => setState(() => _slot = k),
+            ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      if (_slotValue(_slot) == 'none')
+        Text(
+          'Nothing is worn here yet — choose one under Wear or Effects.',
+          style: theme.textTheme.bodySmall,
+        ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            tooltip: 'Move left',
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () =>
+                _setAdjust(a.copyWith(dx: (a.dx - 1).clamp(-40, 40))),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: 'Move up',
+                icon: const Icon(Icons.arrow_upward),
+                onPressed: () =>
+                    _setAdjust(a.copyWith(dy: (a.dy - 1).clamp(-40, 40))),
+              ),
+              IconButton(
+                tooltip: 'Move down',
+                icon: const Icon(Icons.arrow_downward),
+                onPressed: () =>
+                    _setAdjust(a.copyWith(dy: (a.dy + 1).clamp(-40, 40))),
+              ),
+            ],
+          ),
+          IconButton(
+            tooltip: 'Move right',
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: () =>
+                _setAdjust(a.copyWith(dx: (a.dx + 1).clamp(-40, 40))),
+          ),
+        ],
+      ),
+      slider(
+        'Left/right',
+        a.dx,
+        -40,
+        40,
+        '',
+        (v) => _setAdjust(a.copyWith(dx: v.roundToDouble())),
+      ),
+      slider(
+        'Up/down',
+        a.dy,
+        -40,
+        40,
+        '',
+        (v) => _setAdjust(a.copyWith(dy: v.roundToDouble())),
+      ),
+      slider(
+        'Size',
+        a.scale,
+        0.3,
+        2.5,
+        '×',
+        (v) => _setAdjust(a.copyWith(scale: v)),
+      ),
+      slider(
+        'Angle',
+        a.rotation,
+        -180,
+        180,
+        '°',
+        (v) => _setAdjust(a.copyWith(rotation: v.roundToDouble())),
+      ),
+      slider(
+        'Opacity',
+        a.opacity * 100,
+        5,
+        100,
+        '%',
+        (v) => _setAdjust(a.copyWith(opacity: v / 100)),
+      ),
+      Row(
+        children: [
+          SizedBox(
+            width: 72,
+            child: Text('Layer', style: theme.textTheme.bodySmall),
+          ),
+          IconButton(
+            tooltip: 'Send backward',
+            icon: const Icon(Icons.flip_to_back),
+            onPressed: () =>
+                _setAdjust(a.copyWith(layer: (a.layer - 1).clamp(-5, 5))),
+          ),
+          Text('${a.layer}'),
+          IconButton(
+            tooltip: 'Bring forward',
+            icon: const Icon(Icons.flip_to_front),
+            onPressed: () =>
+                _setAdjust(a.copyWith(layer: (a.layer + 1).clamp(-5, 5))),
+          ),
+          const Spacer(),
+          PrismChip(
+            label: 'Mirror',
+            selected: a.mirror,
+            onTap: () => _setAdjust(a.copyWith(mirror: !a.mirror)),
+          ),
+        ],
+      ),
+      const SizedBox(height: 6),
+      Wrap(
+        spacing: 8,
+        children: [
+          PrismButton(
+            label: 'Reset this',
+            icon: Icons.restart_alt,
+            density: PrismControlDensity.compact,
+            onPressed: () => _setAdjust(const AccessoryAdjust()),
+          ),
+          PrismButton(
+            label: 'Reset all',
+            density: PrismControlDensity.compact,
+            onPressed: () => setState(
+              () =>
+                  _look = _look.copyWith({'adjust': const <String, Object?>{}}),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +456,7 @@ class _AppearanceEditorScreenState
         options('Neck', CompanionLook.necks, _look.neck, 'neck'),
         options('Outfit', CompanionLook.bodies, _look.body, 'body'),
       ],
+      'Adjust' => _adjustControls(theme),
       'Effects' => [
         options(
           'Floating friend',

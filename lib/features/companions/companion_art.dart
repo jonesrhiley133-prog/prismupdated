@@ -30,6 +30,7 @@ class CompanionLook {
     this.background = 'none',
     this.frame = 'none',
     this.accent = 0xFFE86A92,
+    this.adjust = const {},
   });
 
   final int? primary, secondary, belly;
@@ -51,6 +52,12 @@ class CompanionLook {
 
   /// Colour of accessories (scarf, bow, sweater…).
   final int accent;
+
+  /// Per-slot fine-tuning (body, neck, glasses, hat, floating).
+  final Map<String, AccessoryAdjust> adjust;
+  AccessoryAdjust adjustOf(String slot) =>
+      adjust[slot] ?? const AccessoryAdjust();
+  static const accessorySlots = ['hat', 'glasses', 'neck', 'body', 'floating'];
 
   static const patterns = [
     'none',
@@ -172,6 +179,10 @@ class CompanionLook {
     'background': background,
     'frame': frame,
     'accent': accent,
+    'adjust': {
+      for (final e in adjust.entries)
+        if (!e.value.isIdentity) e.key: e.value.toJson(),
+    },
   };
 
   static CompanionLook fromJson(Object? raw) {
@@ -205,11 +216,182 @@ class CompanionLook {
       background: '${j['background'] ?? 'none'}',
       frame: s('frame', 'none', frames),
       accent: i('accent') ?? 0xFFE86A92,
+      adjust: {
+        for (final e in ((j['adjust'] as Map?) ?? const {}).entries)
+          if (accessorySlots.contains(e.key))
+            '${e.key}': AccessoryAdjust.fromJson(e.value),
+      },
     );
   }
 
   CompanionLook copyWith(Map<String, Object?> changes) =>
       fromJson({...toJson(), ...changes});
+}
+
+/// How an uploaded picture sits in a companion's frame, and where
+/// accessories attach to it (coordinates are 0–100 across the frame).
+@immutable
+class ArtFit {
+  const ArtFit({
+    this.x = 0,
+    this.y = 0,
+    this.scale = 1,
+    this.rotation = 0,
+    this.mirror = false,
+    this.crop = 'none',
+    this.background = 'none',
+    this.bgColor = 0xFFFFF4E0,
+    this.headX = 50,
+    this.headY = 40,
+    this.headR = 26,
+    this.neckY = 62,
+  });
+  final double x, y, scale, rotation;
+  final bool mirror;
+
+  /// none, circle, rounded
+  final String crop;
+
+  /// none, soft, circle, color
+  final String background;
+  final int bgColor;
+  final double headX, headY, headR, neckY;
+
+  ArtFit copyWith({
+    double? x,
+    double? y,
+    double? scale,
+    double? rotation,
+    bool? mirror,
+    String? crop,
+    String? background,
+    int? bgColor,
+    double? headX,
+    double? headY,
+    double? headR,
+    double? neckY,
+  }) => ArtFit(
+    x: x ?? this.x,
+    y: y ?? this.y,
+    scale: scale ?? this.scale,
+    rotation: rotation ?? this.rotation,
+    mirror: mirror ?? this.mirror,
+    crop: crop ?? this.crop,
+    background: background ?? this.background,
+    bgColor: bgColor ?? this.bgColor,
+    headX: headX ?? this.headX,
+    headY: headY ?? this.headY,
+    headR: headR ?? this.headR,
+    neckY: neckY ?? this.neckY,
+  );
+
+  Map<String, Object?> toJson() => {
+    'x': x,
+    'y': y,
+    's': scale,
+    'r': rotation,
+    'm': mirror,
+    'crop': crop,
+    'bg': background,
+    'bgc': bgColor,
+    'hx': headX,
+    'hy': headY,
+    'hr': headR,
+    'ny': neckY,
+  };
+  static ArtFit fromJson(Object? raw) {
+    final j = raw is Map ? raw : const {};
+    double d(String k, double def, double lo, double hi) =>
+        ((j[k] as num?)?.toDouble() ?? def).clamp(lo, hi);
+    return ArtFit(
+      x: d('x', 0, -0.6, 0.6),
+      y: d('y', 0, -0.6, 0.6),
+      scale: d('s', 1, 0.3, 3),
+      rotation: d('r', 0, -180, 180),
+      mirror: j['m'] == true,
+      crop: const ['none', 'circle', 'rounded'].contains(j['crop'])
+          ? j['crop'] as String
+          : 'none',
+      background: const ['none', 'soft', 'circle', 'color'].contains(j['bg'])
+          ? j['bg'] as String
+          : 'none',
+      bgColor: (j['bgc'] as num?)?.toInt() ?? 0xFFFFF4E0,
+      headX: d('hx', 50, 0, 100),
+      headY: d('hy', 40, 0, 100),
+      headR: d('hr', 26, 8, 50),
+      neckY: d('ny', 62, 0, 100),
+    );
+  }
+}
+
+/// Where an accessory sits relative to its anchor on the species.
+@immutable
+class AccessoryAdjust {
+  const AccessoryAdjust({
+    this.dx = 0,
+    this.dy = 0,
+    this.scale = 1,
+    this.rotation = 0,
+    this.mirror = false,
+    this.opacity = 1,
+    this.layer = 0,
+  });
+  final double dx, dy, scale, rotation, opacity;
+  final bool mirror;
+
+  /// Draw order among accessories: lower is further back.
+  final int layer;
+
+  bool get isIdentity =>
+      dx == 0 &&
+      dy == 0 &&
+      scale == 1 &&
+      rotation == 0 &&
+      !mirror &&
+      opacity == 1 &&
+      layer == 0;
+
+  AccessoryAdjust copyWith({
+    double? dx,
+    double? dy,
+    double? scale,
+    double? rotation,
+    bool? mirror,
+    double? opacity,
+    int? layer,
+  }) => AccessoryAdjust(
+    dx: dx ?? this.dx,
+    dy: dy ?? this.dy,
+    scale: scale ?? this.scale,
+    rotation: rotation ?? this.rotation,
+    mirror: mirror ?? this.mirror,
+    opacity: opacity ?? this.opacity,
+    layer: layer ?? this.layer,
+  );
+
+  Map<String, Object?> toJson() => {
+    'dx': dx,
+    'dy': dy,
+    's': scale,
+    'r': rotation,
+    'm': mirror,
+    'o': opacity,
+    'l': layer,
+  };
+  static AccessoryAdjust fromJson(Object? raw) {
+    final j = raw is Map ? raw : const {};
+    double d(String k, double def, double lo, double hi) =>
+        ((j[k] as num?)?.toDouble() ?? def).clamp(lo, hi);
+    return AccessoryAdjust(
+      dx: d('dx', 0, -40, 40),
+      dy: d('dy', 0, -40, 40),
+      scale: d('s', 1, 0.3, 2.5),
+      rotation: d('r', 0, -180, 180),
+      mirror: j['m'] == true,
+      opacity: d('o', 1, 0.05, 1),
+      layer: ((j['l'] as num?)?.toInt() ?? 0).clamp(-5, 5),
+    );
+  }
 }
 
 /// Poses for interactions and photos.
@@ -230,7 +412,11 @@ class CompanionView extends StatefulWidget {
     this.accessoriesOnly = false,
     this.semanticLabel,
     this.showParticles = true,
+    this.fit,
   });
+
+  /// Accessory anchors for uploaded artwork.
+  final ArtFit? fit;
 
   final Species species;
   final CompanionLook look;
@@ -318,6 +504,7 @@ class _CompanionViewState extends State<CompanionView>
                 expression: widget.expression,
                 particles: widget.showParticles,
                 accessoriesOnly: widget.accessoriesOnly,
+                fit: widget.fit,
               ),
             ),
           ),
@@ -344,6 +531,7 @@ class CreaturePainter extends CustomPainter {
     this.expression,
     this.accessoriesOnly = false,
     this.particles = true,
+    this.fit,
   }) : _t = t,
        super(repaint: t);
 
@@ -354,12 +542,20 @@ class CreaturePainter extends CustomPainter {
   final String? expression;
   final bool accessoriesOnly;
   final bool particles;
+  final ArtFit? fit;
 
   static const _tau = math.pi * 2;
+
+  /// Where the eyes were actually drawn this frame, so glasses sit on them
+  /// whatever the body plan.
+  Offset? _eyeCenter;
+  double? _eyeGapPx;
 
   @override
   void paint(Canvas canvas, Size size) {
     final t = _t.value;
+    _eyeCenter = null;
+    _eyeGapPx = null;
     canvas.save();
     canvas.scale(size.width / 100, size.height / 100);
     final floats = species.floats || pose == CompanionPose.hop;
@@ -382,8 +578,26 @@ class CreaturePainter extends CustomPainter {
       canvas.rotate(math.sin(t * _tau) * 0.12);
       canvas.translate(-50, -70);
     }
+    final f = fit;
     final anchor = accessoriesOnly
-        ? const _Anchor(Offset(50, 40), 26, 62, Rect.fromLTWH(26, 56, 48, 36))
+        ? (f == null
+              ? const _Anchor(
+                  Offset(50, 40),
+                  26,
+                  62,
+                  Rect.fromLTWH(26, 56, 48, 36),
+                )
+              : _Anchor(
+                  Offset(f.headX, f.headY),
+                  f.headR,
+                  f.neckY,
+                  Rect.fromLTWH(
+                    f.headX - f.headR * 0.95,
+                    f.neckY - 4,
+                    f.headR * 1.9,
+                    math.max(12, 94 - f.neckY),
+                  ),
+                ))
         : _body(canvas, t);
     _accessories(canvas, anchor, t);
     canvas.restore();
@@ -1791,6 +2005,8 @@ class CreaturePainter extends CustomPainter {
           _fill(s),
         );
       }
+      _eyeCenter = const Offset(50, 58);
+      _eyeGapPx = 9;
       return _Anchor(const Offset(50, 54), 22, 70, r);
     }
     final head = Offset(
@@ -2410,6 +2626,8 @@ class CreaturePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
     final scale = hr / 23;
+    _eyeCenter = head + Offset(0, eyeY * scale);
+    _eyeGapPx = eyeGap * scale;
     for (final side in [-1.0, 1.0]) {
       final e = head + Offset(side * eyeGap * scale, eyeY * scale);
       if (owl)
@@ -2650,506 +2868,576 @@ class CreaturePainter extends CustomPainter {
     final accent = Color(look.accent);
     final dark = Color.lerp(accent, Colors.black, 0.25)!;
     final top = a.head.translate(0, -a.headR * 0.78);
-    // Body wear first (under the neck piece).
-    switch (look.body) {
-      case 'sweater' || 'hoodie' || 'raincoat' || 'overalls':
-        final r = a.bodyRect.deflate(2);
-        final rr = RRect.fromRectAndRadius(
-          Rect.fromLTRB(r.left, a.neckY, r.right, r.bottom - 4),
-          const Radius.circular(14),
-        );
-        final col = look.body == 'raincoat'
-            ? const Color(0xFFFFD34E)
-            : (look.body == 'overalls' ? const Color(0xFF5A7FBF) : accent);
-        c.drawRRect(rr, _fill(col));
-        if (look.body == 'sweater') {
-          for (var y = rr.top + 6; y < rr.bottom - 2; y += 6) {
-            c.drawLine(
-              Offset(rr.left + 4, y),
-              Offset(rr.right - 4, y),
-              Paint()
-                ..color = dark.withValues(alpha: 0.5)
-                ..strokeWidth = 1,
-            );
-          }
-        } else if (look.body == 'hoodie') {
-          c.drawArc(
-            Rect.fromCenter(
-              center: Offset(a.head.dx, a.neckY + 2),
-              width: 30,
-              height: 12,
-            ),
-            0,
-            math.pi,
-            false,
-            Paint()
-              ..color = dark
-              ..strokeWidth = 2
-              ..style = PaintingStyle.stroke,
-          );
-        } else if (look.body == 'overalls') {
-          c.drawCircle(
-            Offset(rr.left + 9, rr.top + 6),
-            1.6,
-            _fill(const Color(0xFFFFD34E)),
-          );
-          c.drawCircle(
-            Offset(rr.right - 9, rr.top + 6),
-            1.6,
-            _fill(const Color(0xFFFFD34E)),
-          );
-        }
-        c.drawRRect(rr, _line);
-      case 'cape':
-        final cape = Path()
-          ..moveTo(a.head.dx - 14, a.neckY)
-          ..quadraticBezierTo(
-            a.head.dx - 30,
-            a.bodyRect.bottom,
-            a.head.dx - 22,
-            a.bodyRect.bottom + 2,
-          )
-          ..lineTo(a.head.dx + 22, a.bodyRect.bottom + 2)
-          ..quadraticBezierTo(
-            a.head.dx + 30,
-            a.bodyRect.bottom,
-            a.head.dx + 14,
-            a.neckY,
-          )
-          ..close();
-        c.drawPath(cape, _fill(accent.withValues(alpha: 0.9)));
-    }
     final ny = a.neckY;
-    switch (look.neck) {
-      case 'scarf':
-        final s = RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: Offset(a.head.dx, ny),
-            width: a.headR * 1.7,
-            height: 7,
-          ),
-          const Radius.circular(4),
-        );
-        c.drawRRect(s, _fill(accent));
-        final tail = RRect.fromRectAndRadius(
-          Rect.fromLTWH(a.head.dx + 6, ny, 6, 14 + math.sin(t * _tau) * 1.5),
-          const Radius.circular(3),
-        );
-        c.drawRRect(tail, _fill(dark));
-      case 'bow':
-        final o = Offset(a.head.dx, ny);
-        for (final side in [-1.0, 1.0]) {
-          c.drawPath(
-            Path()
-              ..moveTo(o.dx, o.dy)
-              ..lineTo(o.dx + side * 9, o.dy - 5)
-              ..lineTo(o.dx + side * 9, o.dy + 5)
-              ..close(),
-            _fill(accent),
-          );
-        }
-        c.drawCircle(o, 2.6, _fill(dark));
-      case 'collar':
-        c.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromCenter(
-              center: Offset(a.head.dx, ny),
-              width: a.headR * 1.5,
-              height: 4.5,
-            ),
-            const Radius.circular(3),
-          ),
-          _fill(accent),
-        );
-        c.drawCircle(
-          Offset(a.head.dx, ny + 4),
-          3,
-          _fill(const Color(0xFFFFD34E)),
-        );
-        c.drawCircle(Offset(a.head.dx, ny + 4), 3, _line);
-      case 'bandana':
-        c.drawPath(
-          Path()
-            ..moveTo(a.head.dx - a.headR * 0.8, ny - 2)
-            ..lineTo(a.head.dx + a.headR * 0.8, ny - 2)
-            ..lineTo(a.head.dx, ny + 10)
-            ..close(),
-          _fill(accent),
-        );
-        for (final o in const [Offset(-4, 1), Offset(3, 2), Offset(0, 5)]) {
-          c.drawCircle(Offset(a.head.dx, ny) + o, 0.9, _fill(Colors.white));
-        }
-      case 'pearls':
-        for (var i = -3; i <= 3; i++) {
-          c.drawCircle(
-            Offset(a.head.dx + i * 4.2, ny + (i.abs() < 2 ? 1.5 : 0)),
-            2,
-            _fill(const Color(0xFFFFF8F0)),
-          );
-        }
-    }
     // Glasses.
-    final eyes = a.head.translate(0, a.headR * 0.05);
-    final gap = 9 * a.headR / 23;
+    final eyes = _eyeCenter ?? a.head.translate(0, a.headR * 0.05);
+    final gap = _eyeGapPx ?? 9 * a.headR / 23;
     final frame = Paint()
       ..color = const Color(0xFF2E2E36)
       ..strokeWidth = 1.4
       ..style = PaintingStyle.stroke;
-    switch (look.glasses) {
-      case 'round':
-        for (final side in [-1.0, 1.0]) {
-          c.drawCircle(eyes + Offset(side * gap, 0), 5.5, frame);
+    final slots = <String, void Function()>{
+      'body': () {
+        // Body wear first (under the neck piece).
+        switch (look.body) {
+          case 'sweater' || 'hoodie' || 'raincoat' || 'overalls':
+            final r = a.bodyRect.deflate(2);
+            final rr = RRect.fromRectAndRadius(
+              Rect.fromLTRB(r.left, a.neckY, r.right, r.bottom - 4),
+              const Radius.circular(14),
+            );
+            final col = look.body == 'raincoat'
+                ? const Color(0xFFFFD34E)
+                : (look.body == 'overalls' ? const Color(0xFF5A7FBF) : accent);
+            c.drawRRect(rr, _fill(col));
+            if (look.body == 'sweater') {
+              for (var y = rr.top + 6; y < rr.bottom - 2; y += 6) {
+                c.drawLine(
+                  Offset(rr.left + 4, y),
+                  Offset(rr.right - 4, y),
+                  Paint()
+                    ..color = dark.withValues(alpha: 0.5)
+                    ..strokeWidth = 1,
+                );
+              }
+            } else if (look.body == 'hoodie') {
+              c.drawArc(
+                Rect.fromCenter(
+                  center: Offset(a.head.dx, a.neckY + 2),
+                  width: 30,
+                  height: 12,
+                ),
+                0,
+                math.pi,
+                false,
+                Paint()
+                  ..color = dark
+                  ..strokeWidth = 2
+                  ..style = PaintingStyle.stroke,
+              );
+            } else if (look.body == 'overalls') {
+              c.drawCircle(
+                Offset(rr.left + 9, rr.top + 6),
+                1.6,
+                _fill(const Color(0xFFFFD34E)),
+              );
+              c.drawCircle(
+                Offset(rr.right - 9, rr.top + 6),
+                1.6,
+                _fill(const Color(0xFFFFD34E)),
+              );
+            }
+            c.drawRRect(rr, _line);
+          case 'cape':
+            final cape = Path()
+              ..moveTo(a.head.dx - 14, a.neckY)
+              ..quadraticBezierTo(
+                a.head.dx - 30,
+                a.bodyRect.bottom,
+                a.head.dx - 22,
+                a.bodyRect.bottom + 2,
+              )
+              ..lineTo(a.head.dx + 22, a.bodyRect.bottom + 2)
+              ..quadraticBezierTo(
+                a.head.dx + 30,
+                a.bodyRect.bottom,
+                a.head.dx + 14,
+                a.neckY,
+              )
+              ..close();
+            c.drawPath(cape, _fill(accent.withValues(alpha: 0.9)));
         }
-        c.drawLine(
-          eyes + Offset(-gap + 5.5, 0),
-          eyes + Offset(gap - 5.5, 0),
-          frame,
-        );
-      case 'star':
-        for (final side in [-1.0, 1.0]) {
-          _tinyStar(
-            c,
-            eyes + Offset(side * gap, 0),
-            7,
-            _fill(accent.withValues(alpha: 0.75)),
-          );
-        }
-      case 'heart':
-        for (final side in [-1.0, 1.0]) {
-          _heart(
-            c,
-            eyes + Offset(side * gap, 0.5),
-            4,
-            _fill(const Color(0xFFFF6B8F).withValues(alpha: 0.8)),
-          );
-        }
-      case 'shades':
-        for (final side in [-1.0, 1.0]) {
-          c.drawRRect(
-            RRect.fromRectAndRadius(
+      },
+      'neck': () {
+        switch (look.neck) {
+          case 'scarf':
+            final s = RRect.fromRectAndRadius(
               Rect.fromCenter(
-                center: eyes + Offset(side * gap, 0),
-                width: 11,
+                center: Offset(a.head.dx, ny),
+                width: a.headR * 1.7,
                 height: 7,
               ),
-              const Radius.circular(3),
-            ),
-            _fill(const Color(0xEE1E1E26)),
-          );
-        }
-        c.drawLine(
-          eyes + Offset(-gap + 5, -1),
-          eyes + Offset(gap - 5, -1),
-          frame,
-        );
-      case 'monocle':
-        c.drawCircle(
-          eyes + Offset(gap, 0),
-          5.5,
-          frame..color = const Color(0xFFC9A44A),
-        );
-        c.drawLine(
-          eyes + Offset(gap + 4, 4),
-          eyes + Offset(gap + 6, 16),
-          Paint()
-            ..color = const Color(0xFFC9A44A)
-            ..strokeWidth = 0.8,
-        );
-    }
-    // Hats.
-    switch (look.hat) {
-      case 'beanie':
-        final r = Rect.fromCenter(
-          center: top.translate(0, -2),
-          width: a.headR * 1.7,
-          height: a.headR * 0.9,
-        );
-        c.drawArc(r, math.pi, math.pi, true, _fill(accent));
-        c.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromCenter(
-              center: top.translate(0, 1),
-              width: a.headR * 1.8,
-              height: 6,
-            ),
-            const Radius.circular(3),
-          ),
-          _fill(dark),
-        );
-        c.drawCircle(top.translate(0, -a.headR * 0.48), 4, _fill(Colors.white));
-      case 'witch':
-        c.drawOval(
-          Rect.fromCenter(
-            center: top.translate(0, 1),
-            width: a.headR * 2.3,
-            height: 7,
-          ),
-          _fill(const Color(0xFF3B2F5C)),
-        );
-        c.drawPath(
-          Path()
-            ..moveTo(top.dx - a.headR * 0.6, top.dy)
-            ..quadraticBezierTo(
-              top.dx,
-              top.dy - 20,
-              top.dx + a.headR * 0.4,
-              top.dy - 30,
-            )
-            ..lineTo(top.dx + a.headR * 0.6, top.dy)
-            ..close(),
-          _fill(const Color(0xFF3B2F5C)),
-        );
-        c.drawRect(
-          Rect.fromCenter(
-            center: top.translate(0, -3),
-            width: a.headR * 1.15,
-            height: 3,
-          ),
-          _fill(accent),
-        );
-      case 'crown':
-        final w = a.headR * 1.1;
-        final path = Path()
-          ..moveTo(top.dx - w / 2, top.dy)
-          ..lineTo(top.dx - w / 2, top.dy - 10)
-          ..lineTo(top.dx - w / 4, top.dy - 4)
-          ..lineTo(top.dx, top.dy - 13)
-          ..lineTo(top.dx + w / 4, top.dy - 4)
-          ..lineTo(top.dx + w / 2, top.dy - 10)
-          ..lineTo(top.dx + w / 2, top.dy)
-          ..close();
-        c.drawPath(path, _fill(const Color(0xFFFFCF4D)));
-        c.drawPath(path, _line);
-        c.drawCircle(top.translate(0, -5), 1.8, _fill(accent));
-      case 'flowers':
-        for (var i = -2; i <= 2; i++) {
-          final o = top + Offset(i * a.headR * 0.32, (i.abs() * 1.5) + 1);
-          final col = [
-            accent,
-            const Color(0xFFFFE07A),
-            const Color(0xFFB8E0FF),
-          ][(i + 2) % 3];
-          for (var k = 0; k < 5; k++) {
-            c.drawCircle(
-              o +
-                  Offset(
-                    math.cos(k / 5 * _tau) * 2.4,
-                    math.sin(k / 5 * _tau) * 2.4,
-                  ),
-              2,
-              _fill(col),
-            );
-          }
-          c.drawCircle(o, 1.4, _fill(const Color(0xFFFFF3B0)));
-        }
-      case 'party':
-        c.drawPath(
-          Path()
-            ..moveTo(top.dx - 8, top.dy)
-            ..lineTo(top.dx, top.dy - 22)
-            ..lineTo(top.dx + 8, top.dy)
-            ..close(),
-          _fill(accent),
-        );
-        c.drawCircle(top.translate(0, -23), 3, _fill(const Color(0xFFFFE07A)));
-        c.drawLine(
-          top.translate(-5, -7),
-          top.translate(5, -10),
-          Paint()
-            ..color = Colors.white
-            ..strokeWidth = 1.5,
-        );
-      case 'tophat':
-        c.drawOval(
-          Rect.fromCenter(center: top, width: a.headR * 1.7, height: 6),
-          _fill(const Color(0xFF26262E)),
-        );
-        c.drawRect(
-          Rect.fromCenter(
-            center: top.translate(0, -9),
-            width: a.headR * 1.05,
-            height: 18,
-          ),
-          _fill(const Color(0xFF26262E)),
-        );
-        c.drawRect(
-          Rect.fromCenter(
-            center: top.translate(0, -3),
-            width: a.headR * 1.05,
-            height: 3.5,
-          ),
-          _fill(accent),
-        );
-      case 'santa':
-        c.drawPath(
-          Path()
-            ..moveTo(top.dx - a.headR * 0.8, top.dy + 1)
-            ..quadraticBezierTo(
-              top.dx,
-              top.dy - 24,
-              top.dx + a.headR * 0.9,
-              top.dy - 10,
-            )
-            ..lineTo(top.dx + a.headR * 0.8, top.dy + 1)
-            ..close(),
-          _fill(const Color(0xFFE53E3E)),
-        );
-        c.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromCenter(
-              center: top.translate(0, 1),
-              width: a.headR * 1.8,
-              height: 6,
-            ),
-            const Radius.circular(3),
-          ),
-          _fill(Colors.white),
-        );
-        c.drawCircle(
-          top + Offset(a.headR * 0.9, -10),
-          3.5,
-          _fill(Colors.white),
-        );
-      case 'pumpkin':
-        c.drawOval(
-          Rect.fromCenter(
-            center: top.translate(0, -4),
-            width: a.headR * 1.1,
-            height: 11,
-          ),
-          _fill(const Color(0xFFFF8A3D)),
-        );
-        c.drawRect(
-          Rect.fromCenter(center: top.translate(0, -11), width: 2.5, height: 5),
-          _fill(const Color(0xFF4F7A3A)),
-        );
-      case 'bunny':
-        for (final side in [-1.0, 1.0]) {
-          c.drawRRect(
-            RRect.fromRectAndRadius(
-              Rect.fromCenter(
-                center: top + Offset(side * 7, -11),
-                width: 7,
-                height: 20,
-              ),
               const Radius.circular(4),
-            ),
-            _fill(Colors.white),
-          );
-          c.drawRRect(
-            RRect.fromRectAndRadius(
-              Rect.fromCenter(
-                center: top + Offset(side * 7, -11),
-                width: 3.5,
-                height: 14,
-              ),
-              const Radius.circular(2),
-            ),
-            _fill(const Color(0xFFFFC2D4)),
-          );
-        }
-        c.drawArc(
-          Rect.fromCenter(
-            center: top.translate(0, 4),
-            width: a.headR * 1.8,
-            height: 10,
-          ),
-          math.pi,
-          math.pi,
-          false,
-          Paint()
-            ..color = accent
-            ..strokeWidth = 2.5
-            ..style = PaintingStyle.stroke,
-        );
-      case 'beret':
-        c.drawOval(
-          Rect.fromCenter(
-            center: top.translate(-2, -2),
-            width: a.headR * 1.6,
-            height: 10,
-          ),
-          _fill(accent),
-        );
-        c.drawCircle(top.translate(-2, -7), 1.6, _fill(dark));
-      case 'halo':
-        c.drawOval(
-          Rect.fromCenter(
-            center: top.translate(0, -8 + math.sin(t * _tau) * 1.2),
-            width: a.headR * 1.2,
-            height: 5,
-          ),
-          Paint()
-            ..color = const Color(0xFFFFE07A)
-            ..strokeWidth = 2.2
-            ..style = PaintingStyle.stroke,
-        );
-    }
-    // Floating accessory orbits slowly.
-    if (look.floating != 'none') {
-      final a2 = t * _tau;
-      final o =
-          a.head +
-          Offset(
-            math.cos(a2) * (a.headR + 12),
-            -a.headR * 0.4 + math.sin(a2) * 6,
-          );
-      switch (look.floating) {
-        case 'star':
-          _tinyStar(c, o, 5, _fill(const Color(0xFFFFD866)));
-        case 'heart':
-          _heart(c, o, 3.6, _fill(const Color(0xFFFF7FA0)));
-        case 'moon':
-          c.drawPath(
-            Path()
-              ..addOval(Rect.fromCircle(center: o, radius: 5))
-              ..addOval(
-                Rect.fromCircle(center: o.translate(2.5, -1.5), radius: 4.4),
-              )
-              ..fillType = PathFillType.evenOdd,
-            _fill(const Color(0xFFFFE9A6)),
-          );
-        case 'leaf':
-          c.save();
-          c.translate(o.dx, o.dy);
-          c.rotate(a2);
-          c.drawOval(
-            const Rect.fromLTWH(-2.5, -5, 5, 10),
-            _fill(const Color(0xFF7BC96F)),
-          );
-          c.restore();
-        case 'bubble':
-          c.drawCircle(
-            o,
-            4.5,
-            Paint()
-              ..color = const Color(0xAA9AD8FF)
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1.2,
-          );
-          c.drawCircle(o.translate(-1.5, -1.5), 1, _fill(Colors.white));
-        case 'note':
-          final tp = TextPainter(
-            text: TextSpan(
-              text: '♪',
-              style: TextStyle(fontSize: 11, color: accent),
-            ),
-            textDirection: TextDirection.ltr,
-          )..layout();
-          tp.paint(c, o.translate(-3, -6));
-        case 'sun':
-          c.drawCircle(o, 3.6, _fill(const Color(0xFFFFC94D)));
-          for (var k = 0; k < 8; k++) {
-            final d = Offset(math.cos(k / 8 * _tau), math.sin(k / 8 * _tau));
-            c.drawLine(
-              o + d * 5,
-              o + d * 7,
-              Paint()
-                ..color = const Color(0xFFFFC94D)
-                ..strokeWidth = 1.2,
             );
+            c.drawRRect(s, _fill(accent));
+            final tail = RRect.fromRectAndRadius(
+              Rect.fromLTWH(
+                a.head.dx + 6,
+                ny,
+                6,
+                14 + math.sin(t * _tau) * 1.5,
+              ),
+              const Radius.circular(3),
+            );
+            c.drawRRect(tail, _fill(dark));
+          case 'bow':
+            final o = Offset(a.head.dx, ny);
+            for (final side in [-1.0, 1.0]) {
+              c.drawPath(
+                Path()
+                  ..moveTo(o.dx, o.dy)
+                  ..lineTo(o.dx + side * 9, o.dy - 5)
+                  ..lineTo(o.dx + side * 9, o.dy + 5)
+                  ..close(),
+                _fill(accent),
+              );
+            }
+            c.drawCircle(o, 2.6, _fill(dark));
+          case 'collar':
+            c.drawRRect(
+              RRect.fromRectAndRadius(
+                Rect.fromCenter(
+                  center: Offset(a.head.dx, ny),
+                  width: a.headR * 1.5,
+                  height: 4.5,
+                ),
+                const Radius.circular(3),
+              ),
+              _fill(accent),
+            );
+            c.drawCircle(
+              Offset(a.head.dx, ny + 4),
+              3,
+              _fill(const Color(0xFFFFD34E)),
+            );
+            c.drawCircle(Offset(a.head.dx, ny + 4), 3, _line);
+          case 'bandana':
+            c.drawPath(
+              Path()
+                ..moveTo(a.head.dx - a.headR * 0.8, ny - 2)
+                ..lineTo(a.head.dx + a.headR * 0.8, ny - 2)
+                ..lineTo(a.head.dx, ny + 10)
+                ..close(),
+              _fill(accent),
+            );
+            for (final o in const [Offset(-4, 1), Offset(3, 2), Offset(0, 5)]) {
+              c.drawCircle(Offset(a.head.dx, ny) + o, 0.9, _fill(Colors.white));
+            }
+          case 'pearls':
+            for (var i = -3; i <= 3; i++) {
+              c.drawCircle(
+                Offset(a.head.dx + i * 4.2, ny + (i.abs() < 2 ? 1.5 : 0)),
+                2,
+                _fill(const Color(0xFFFFF8F0)),
+              );
+            }
+        }
+      },
+      'glasses': () {
+        switch (look.glasses) {
+          case 'round':
+            for (final side in [-1.0, 1.0]) {
+              c.drawCircle(eyes + Offset(side * gap, 0), 5.5, frame);
+            }
+            c.drawLine(
+              eyes + Offset(-gap + 5.5, 0),
+              eyes + Offset(gap - 5.5, 0),
+              frame,
+            );
+          case 'star':
+            for (final side in [-1.0, 1.0]) {
+              _tinyStar(
+                c,
+                eyes + Offset(side * gap, 0),
+                7,
+                _fill(accent.withValues(alpha: 0.75)),
+              );
+            }
+          case 'heart':
+            for (final side in [-1.0, 1.0]) {
+              _heart(
+                c,
+                eyes + Offset(side * gap, 0.5),
+                4,
+                _fill(const Color(0xFFFF6B8F).withValues(alpha: 0.8)),
+              );
+            }
+          case 'shades':
+            for (final side in [-1.0, 1.0]) {
+              c.drawRRect(
+                RRect.fromRectAndRadius(
+                  Rect.fromCenter(
+                    center: eyes + Offset(side * gap, 0),
+                    width: 11,
+                    height: 7,
+                  ),
+                  const Radius.circular(3),
+                ),
+                _fill(const Color(0xEE1E1E26)),
+              );
+            }
+            c.drawLine(
+              eyes + Offset(-gap + 5, -1),
+              eyes + Offset(gap - 5, -1),
+              frame,
+            );
+          case 'monocle':
+            c.drawCircle(
+              eyes + Offset(gap, 0),
+              5.5,
+              frame..color = const Color(0xFFC9A44A),
+            );
+            c.drawLine(
+              eyes + Offset(gap + 4, 4),
+              eyes + Offset(gap + 6, 16),
+              Paint()
+                ..color = const Color(0xFFC9A44A)
+                ..strokeWidth = 0.8,
+            );
+        }
+      },
+      'hat': () {
+        // Hats.
+        switch (look.hat) {
+          case 'beanie':
+            final r = Rect.fromCenter(
+              center: top.translate(0, -2),
+              width: a.headR * 1.7,
+              height: a.headR * 0.9,
+            );
+            c.drawArc(r, math.pi, math.pi, true, _fill(accent));
+            c.drawRRect(
+              RRect.fromRectAndRadius(
+                Rect.fromCenter(
+                  center: top.translate(0, 1),
+                  width: a.headR * 1.8,
+                  height: 6,
+                ),
+                const Radius.circular(3),
+              ),
+              _fill(dark),
+            );
+            c.drawCircle(
+              top.translate(0, -a.headR * 0.48),
+              4,
+              _fill(Colors.white),
+            );
+          case 'witch':
+            c.drawOval(
+              Rect.fromCenter(
+                center: top.translate(0, 1),
+                width: a.headR * 2.3,
+                height: 7,
+              ),
+              _fill(const Color(0xFF3B2F5C)),
+            );
+            c.drawPath(
+              Path()
+                ..moveTo(top.dx - a.headR * 0.6, top.dy)
+                ..quadraticBezierTo(
+                  top.dx,
+                  top.dy - 20,
+                  top.dx + a.headR * 0.4,
+                  top.dy - 30,
+                )
+                ..lineTo(top.dx + a.headR * 0.6, top.dy)
+                ..close(),
+              _fill(const Color(0xFF3B2F5C)),
+            );
+            c.drawRect(
+              Rect.fromCenter(
+                center: top.translate(0, -3),
+                width: a.headR * 1.15,
+                height: 3,
+              ),
+              _fill(accent),
+            );
+          case 'crown':
+            final w = a.headR * 1.1;
+            final path = Path()
+              ..moveTo(top.dx - w / 2, top.dy)
+              ..lineTo(top.dx - w / 2, top.dy - 10)
+              ..lineTo(top.dx - w / 4, top.dy - 4)
+              ..lineTo(top.dx, top.dy - 13)
+              ..lineTo(top.dx + w / 4, top.dy - 4)
+              ..lineTo(top.dx + w / 2, top.dy - 10)
+              ..lineTo(top.dx + w / 2, top.dy)
+              ..close();
+            c.drawPath(path, _fill(const Color(0xFFFFCF4D)));
+            c.drawPath(path, _line);
+            c.drawCircle(top.translate(0, -5), 1.8, _fill(accent));
+          case 'flowers':
+            for (var i = -2; i <= 2; i++) {
+              final o = top + Offset(i * a.headR * 0.32, (i.abs() * 1.5) + 1);
+              final col = [
+                accent,
+                const Color(0xFFFFE07A),
+                const Color(0xFFB8E0FF),
+              ][(i + 2) % 3];
+              for (var k = 0; k < 5; k++) {
+                c.drawCircle(
+                  o +
+                      Offset(
+                        math.cos(k / 5 * _tau) * 2.4,
+                        math.sin(k / 5 * _tau) * 2.4,
+                      ),
+                  2,
+                  _fill(col),
+                );
+              }
+              c.drawCircle(o, 1.4, _fill(const Color(0xFFFFF3B0)));
+            }
+          case 'party':
+            c.drawPath(
+              Path()
+                ..moveTo(top.dx - 8, top.dy)
+                ..lineTo(top.dx, top.dy - 22)
+                ..lineTo(top.dx + 8, top.dy)
+                ..close(),
+              _fill(accent),
+            );
+            c.drawCircle(
+              top.translate(0, -23),
+              3,
+              _fill(const Color(0xFFFFE07A)),
+            );
+            c.drawLine(
+              top.translate(-5, -7),
+              top.translate(5, -10),
+              Paint()
+                ..color = Colors.white
+                ..strokeWidth = 1.5,
+            );
+          case 'tophat':
+            c.drawOval(
+              Rect.fromCenter(center: top, width: a.headR * 1.7, height: 6),
+              _fill(const Color(0xFF26262E)),
+            );
+            c.drawRect(
+              Rect.fromCenter(
+                center: top.translate(0, -9),
+                width: a.headR * 1.05,
+                height: 18,
+              ),
+              _fill(const Color(0xFF26262E)),
+            );
+            c.drawRect(
+              Rect.fromCenter(
+                center: top.translate(0, -3),
+                width: a.headR * 1.05,
+                height: 3.5,
+              ),
+              _fill(accent),
+            );
+          case 'santa':
+            c.drawPath(
+              Path()
+                ..moveTo(top.dx - a.headR * 0.8, top.dy + 1)
+                ..quadraticBezierTo(
+                  top.dx,
+                  top.dy - 24,
+                  top.dx + a.headR * 0.9,
+                  top.dy - 10,
+                )
+                ..lineTo(top.dx + a.headR * 0.8, top.dy + 1)
+                ..close(),
+              _fill(const Color(0xFFE53E3E)),
+            );
+            c.drawRRect(
+              RRect.fromRectAndRadius(
+                Rect.fromCenter(
+                  center: top.translate(0, 1),
+                  width: a.headR * 1.8,
+                  height: 6,
+                ),
+                const Radius.circular(3),
+              ),
+              _fill(Colors.white),
+            );
+            c.drawCircle(
+              top + Offset(a.headR * 0.9, -10),
+              3.5,
+              _fill(Colors.white),
+            );
+          case 'pumpkin':
+            c.drawOval(
+              Rect.fromCenter(
+                center: top.translate(0, -4),
+                width: a.headR * 1.1,
+                height: 11,
+              ),
+              _fill(const Color(0xFFFF8A3D)),
+            );
+            c.drawRect(
+              Rect.fromCenter(
+                center: top.translate(0, -11),
+                width: 2.5,
+                height: 5,
+              ),
+              _fill(const Color(0xFF4F7A3A)),
+            );
+          case 'bunny':
+            for (final side in [-1.0, 1.0]) {
+              c.drawRRect(
+                RRect.fromRectAndRadius(
+                  Rect.fromCenter(
+                    center: top + Offset(side * 7, -11),
+                    width: 7,
+                    height: 20,
+                  ),
+                  const Radius.circular(4),
+                ),
+                _fill(Colors.white),
+              );
+              c.drawRRect(
+                RRect.fromRectAndRadius(
+                  Rect.fromCenter(
+                    center: top + Offset(side * 7, -11),
+                    width: 3.5,
+                    height: 14,
+                  ),
+                  const Radius.circular(2),
+                ),
+                _fill(const Color(0xFFFFC2D4)),
+              );
+            }
+            c.drawArc(
+              Rect.fromCenter(
+                center: top.translate(0, 4),
+                width: a.headR * 1.8,
+                height: 10,
+              ),
+              math.pi,
+              math.pi,
+              false,
+              Paint()
+                ..color = accent
+                ..strokeWidth = 2.5
+                ..style = PaintingStyle.stroke,
+            );
+          case 'beret':
+            c.drawOval(
+              Rect.fromCenter(
+                center: top.translate(-2, -2),
+                width: a.headR * 1.6,
+                height: 10,
+              ),
+              _fill(accent),
+            );
+            c.drawCircle(top.translate(-2, -7), 1.6, _fill(dark));
+          case 'halo':
+            c.drawOval(
+              Rect.fromCenter(
+                center: top.translate(0, -8 + math.sin(t * _tau) * 1.2),
+                width: a.headR * 1.2,
+                height: 5,
+              ),
+              Paint()
+                ..color = const Color(0xFFFFE07A)
+                ..strokeWidth = 2.2
+                ..style = PaintingStyle.stroke,
+            );
+        }
+      },
+      'floating': () {
+        // Floating accessory orbits slowly.
+        if (look.floating != 'none') {
+          final a2 = t * _tau;
+          final o =
+              a.head +
+              Offset(
+                math.cos(a2) * (a.headR + 12),
+                -a.headR * 0.4 + math.sin(a2) * 6,
+              );
+          switch (look.floating) {
+            case 'star':
+              _tinyStar(c, o, 5, _fill(const Color(0xFFFFD866)));
+            case 'heart':
+              _heart(c, o, 3.6, _fill(const Color(0xFFFF7FA0)));
+            case 'moon':
+              c.drawPath(
+                Path()
+                  ..addOval(Rect.fromCircle(center: o, radius: 5))
+                  ..addOval(
+                    Rect.fromCircle(
+                      center: o.translate(2.5, -1.5),
+                      radius: 4.4,
+                    ),
+                  )
+                  ..fillType = PathFillType.evenOdd,
+                _fill(const Color(0xFFFFE9A6)),
+              );
+            case 'leaf':
+              c.save();
+              c.translate(o.dx, o.dy);
+              c.rotate(a2);
+              c.drawOval(
+                const Rect.fromLTWH(-2.5, -5, 5, 10),
+                _fill(const Color(0xFF7BC96F)),
+              );
+              c.restore();
+            case 'bubble':
+              c.drawCircle(
+                o,
+                4.5,
+                Paint()
+                  ..color = const Color(0xAA9AD8FF)
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = 1.2,
+              );
+              c.drawCircle(o.translate(-1.5, -1.5), 1, _fill(Colors.white));
+            case 'note':
+              final tp = TextPainter(
+                text: TextSpan(
+                  text: '♪',
+                  style: TextStyle(fontSize: 11, color: accent),
+                ),
+                textDirection: TextDirection.ltr,
+              )..layout();
+              tp.paint(c, o.translate(-3, -6));
+            case 'sun':
+              c.drawCircle(o, 3.6, _fill(const Color(0xFFFFC94D)));
+              for (var k = 0; k < 8; k++) {
+                final d = Offset(
+                  math.cos(k / 8 * _tau),
+                  math.sin(k / 8 * _tau),
+                );
+                c.drawLine(
+                  o + d * 5,
+                  o + d * 7,
+                  Paint()
+                    ..color = const Color(0xFFFFC94D)
+                    ..strokeWidth = 1.2,
+                );
+              }
           }
+        }
+      },
+    };
+    final pivots = <String, Offset>{
+      'body': a.bodyRect.center,
+      'neck': Offset(a.head.dx, ny),
+      'glasses': eyes,
+      'hat': top,
+      'floating': a.head,
+    };
+    final order = slots.keys.toList();
+    final base = {for (final (i, k) in order.indexed) k: i};
+    order.sort((x, y) {
+      final d = look.adjustOf(x).layer.compareTo(look.adjustOf(y).layer);
+      return d != 0 ? d : base[x]!.compareTo(base[y]!);
+    });
+    for (final k in order) {
+      final adj = look.adjustOf(k);
+      if (adj.isIdentity) {
+        slots[k]!();
+        continue;
       }
+      final pv = pivots[k]!;
+      if (adj.opacity < 1) {
+        c.saveLayer(
+          null,
+          Paint()..color = Color.fromRGBO(0, 0, 0, adj.opacity.clamp(0.05, 1)),
+        );
+      } else {
+        c.save();
+      }
+      c.translate(pv.dx + adj.dx, pv.dy + adj.dy);
+      c.rotate(adj.rotation * math.pi / 180);
+      c.scale(adj.mirror ? -adj.scale : adj.scale, adj.scale);
+      c.translate(-pv.dx, -pv.dy);
+      slots[k]!();
+      c.restore();
     }
   }
 
