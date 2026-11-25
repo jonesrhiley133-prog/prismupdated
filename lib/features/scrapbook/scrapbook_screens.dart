@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -1087,63 +1088,66 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         await _save();
         if (context.mounted) Navigator.of(context).pop();
       },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        body: SafeArea(
-          child: Column(
-            children: [
-              PrismSheetTopBar(
-                title: tr(context, 'Edit page', 'Editar página'),
-                leading: IconButton(
-                  tooltip: tr(context, 'Undo', 'Deshacer'),
-                  icon: Icon(PhosphorIcons.arrowCounterClockwise()),
-                  onPressed: _undo.length < 2
-                      ? null
-                      : () {
-                          _undo.removeLast();
-                          setState(() {
-                            _els
-                              ..clear()
-                              ..addAll([
-                                for (final m in _undo.last)
-                                  ?ScrapElement.fromJson(m),
-                              ]);
-                            _sel = null;
-                            _dirty = true;
-                          });
+      child: LookBackdrop(
+        builder: (lookBg) => Scaffold(
+          backgroundColor:
+              lookBg ?? Theme.of(context).colorScheme.surfaceContainerLowest,
+          body: SafeArea(
+            child: Column(
+              children: [
+                PrismSheetTopBar(
+                  title: tr(context, 'Edit page', 'Editar página'),
+                  leading: IconButton(
+                    tooltip: tr(context, 'Undo', 'Deshacer'),
+                    icon: Icon(PhosphorIcons.arrowCounterClockwise()),
+                    onPressed: _undo.length < 2
+                        ? null
+                        : () {
+                            _undo.removeLast();
+                            setState(() {
+                              _els
+                                ..clear()
+                                ..addAll([
+                                  for (final m in _undo.last)
+                                    ?ScrapElement.fromJson(m),
+                                ]);
+                              _sel = null;
+                              _dirty = true;
+                            });
+                          },
+                  ),
+                  trailing: IconButton(
+                    tooltip: context.l10n.save,
+                    icon: Icon(AppIcons.check),
+                    onPressed: () async {
+                      await _save();
+                      if (context.mounted) Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ScrapPageCanvas(
+                        elements: _els,
+                        background: bg,
+                        pattern: _pattern,
+                        selectedId: _sel,
+                        onSelect: (id) => setState(() => _sel = id),
+                        onChanged: _changed,
+                        onEditElement: (e) {
+                          if (e.type == ScrapType.text ||
+                              e.type == ScrapType.note)
+                            _editText(e);
                         },
-                ),
-                trailing: IconButton(
-                  tooltip: context.l10n.save,
-                  icon: Icon(AppIcons.check),
-                  onPressed: () async {
-                    await _save();
-                    if (context.mounted) Navigator.of(context).pop();
-                  },
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ScrapPageCanvas(
-                      elements: _els,
-                      background: bg,
-                      pattern: _pattern,
-                      selectedId: _sel,
-                      onSelect: (id) => setState(() => _sel = id),
-                      onChanged: _changed,
-                      onEditElement: (e) {
-                        if (e.type == ScrapType.text ||
-                            e.type == ScrapType.note)
-                          _editText(e);
-                      },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (s != null) _elementBar(s) else _addBar(bg),
-            ],
+                if (s != null) _elementBar(s) else _addBar(bg),
+              ],
+            ),
           ),
         ),
       ),

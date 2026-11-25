@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,186 +66,190 @@ class _PollsListScreenState extends ConsumerState<PollsListScreen> {
     final theme = Theme.of(context);
     final pollsAsync = _pollsForFilter(ref);
 
-    return Scaffold(
-      body: ClampedBody(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            _invalidateForFilter();
-          },
-          child: CustomScrollView(
-            physics: pollsAsync.whenOrNull(
-              data: (polls) =>
-                  polls.isEmpty ? const NeverScrollableScrollPhysics() : null,
-            ),
-            slivers: [
-              SliverPinnedTopBar(
-                child: PrismTopBar(
-                  title: context.l10n.pollsListTitle,
-                  actions: [FeatureDataAction(featureId: 'polls'), 
-                    BlurPopupAnchor(
-                      preferredDirection: BlurPopupDirection.down,
-                      width: 180,
-                      maxHeight: 200,
-                      itemCount: _PollFilter.values.length,
-                      itemBuilder: (context, index, close) {
-                        final filter = _PollFilter.values[index];
-                        final isSelected = _filter == filter;
-                        final filterTheme = Theme.of(context);
-                        final (icon, label) = switch (filter) {
-                          _PollFilter.active => (
-                            AppIcons.howToVoteOutlined,
-                            context.l10n.pollsFilterActive,
-                          ),
-                          _PollFilter.closed => (
-                            AppIcons.checkCircleOutline,
-                            context.l10n.pollsFilterClosed,
-                          ),
-                          _PollFilter.all => (
-                            AppIcons.pollOutlined,
-                            context.l10n.pollsFilterAll,
-                          ),
-                        };
-                        return PrismListRow(
-                          dense: true,
-                          leading: Icon(
-                            icon,
-                            size: 20,
-                            color: isSelected
-                                ? filterTheme.colorScheme.primary
-                                : filterTheme.colorScheme.onSurface,
-                          ),
-                          title: Text(
-                            label,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+    return LookBackdrop(
+      builder: (bg) => Scaffold(
+        backgroundColor: bg,
+        body: ClampedBody(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              _invalidateForFilter();
+            },
+            child: CustomScrollView(
+              physics: pollsAsync.whenOrNull(
+                data: (polls) =>
+                    polls.isEmpty ? const NeverScrollableScrollPhysics() : null,
+              ),
+              slivers: [
+                SliverPinnedTopBar(
+                  child: PrismTopBar(
+                    title: context.l10n.pollsListTitle,
+                    actions: [
+                      FeatureDataAction(featureId: 'polls'),
+                      BlurPopupAnchor(
+                        preferredDirection: BlurPopupDirection.down,
+                        width: 180,
+                        maxHeight: 200,
+                        itemCount: _PollFilter.values.length,
+                        itemBuilder: (context, index, close) {
+                          final filter = _PollFilter.values[index];
+                          final isSelected = _filter == filter;
+                          final filterTheme = Theme.of(context);
+                          final (icon, label) = switch (filter) {
+                            _PollFilter.active => (
+                              AppIcons.howToVoteOutlined,
+                              context.l10n.pollsFilterActive,
+                            ),
+                            _PollFilter.closed => (
+                              AppIcons.checkCircleOutline,
+                              context.l10n.pollsFilterClosed,
+                            ),
+                            _PollFilter.all => (
+                              AppIcons.pollOutlined,
+                              context.l10n.pollsFilterAll,
+                            ),
+                          };
+                          return PrismListRow(
+                            dense: true,
+                            leading: Icon(
+                              icon,
+                              size: 20,
                               color: isSelected
                                   ? filterTheme.colorScheme.primary
                                   : filterTheme.colorScheme.onSurface,
                             ),
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  AppIcons.check,
-                                  size: 18,
-                                  color: filterTheme.colorScheme.primary,
-                                )
+                            title: Text(
+                              label,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? filterTheme.colorScheme.primary
+                                    : filterTheme.colorScheme.onSurface,
+                              ),
+                            ),
+                            trailing: isSelected
+                                ? Icon(
+                                    AppIcons.check,
+                                    size: 18,
+                                    color: filterTheme.colorScheme.primary,
+                                  )
+                                : null,
+                            onTap: () {
+                              close();
+                              setState(() => _filter = filter);
+                            },
+                          );
+                        },
+                        child: PrismGlassIconButton(
+                          icon: AppIcons.filterList,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).showMenuTooltip,
+                          onPressed: null,
+                          enabled: true,
+                          size: PrismTokens.topBarActionSize,
+                          tint: _filter != _PollFilter.active
+                              ? theme.colorScheme.primary
                               : null,
-                          onTap: () {
-                            close();
-                            setState(() => _filter = filter);
-                          },
-                        );
-                      },
-                      child: PrismGlassIconButton(
-                        icon: AppIcons.filterList,
-                        tooltip: MaterialLocalizations.of(
-                          context,
-                        ).showMenuTooltip,
-                        onPressed: null,
-                        enabled: true,
-                        size: PrismTokens.topBarActionSize,
-                        tint: _filter != _PollFilter.active
-                            ? theme.colorScheme.primary
-                            : null,
-                      ),
-                    ),
-                    PrismTopBarAction(
-                      icon: AppIcons.patterns,
-                      tooltip: context.l10n.pollStatsTitle,
-                      onPressed: () => context.push(AppRoutePaths.pollStats),
-                    ),
-                    PrismTopBarAction(
-                      icon: AppIcons.add,
-                      tooltip: context.l10n.pollsCreateTooltip,
-                      onPressed: () => _showCreateSheet(context),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Poll list
-              pollsAsync.when(
-                skipLoadingOnReload: true,
-                data: (polls) {
-                  if (polls.isEmpty) {
-                    final (icon, title, subtitle) = switch (_filter) {
-                      _PollFilter.active => (
-                        Icon(AppIcons.howToVoteOutlined),
-                        context.l10n.pollsEmptyActiveTitle,
-                        context.l10n.pollsEmptyActiveSubtitle,
-                      ),
-                      _PollFilter.closed => (
-                        Icon(AppIcons.checkCircleOutline),
-                        context.l10n.pollsEmptyClosedTitle,
-                        context.l10n.pollsEmptyClosedSubtitle,
-                      ),
-                      _PollFilter.all => (
-                        Icon(AppIcons.pollOutlined),
-                        context.l10n.pollsEmptyAllTitle,
-                        context.l10n.pollsEmptyAllSubtitle,
-                      ),
-                    };
-
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: EmptyState(
-                        icon: icon,
-                        title: title,
-                        subtitle: subtitle,
-                        actionLabel: _filter == _PollFilter.all
-                            ? context.l10n.pollsEmptyCreateLabel
-                            : null,
-                        onAction: _filter == _PollFilter.all
-                            ? () => _showCreateSheet(context)
-                            : null,
-                      ),
-                    );
-                  }
-
-                  final sorted = [...polls]
-                    ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-                  return SliverList.builder(
-                    itemCount: sorted.length,
-                    itemBuilder: (context, index) {
-                      return _PollCard(poll: sorted[index]);
-                    },
-                  );
-                },
-                loading: () => const PrismLoadingState.sliver(),
-                error: (error, _) => SliverFillRemaining(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          AppIcons.errorOutline,
-                          size: 48,
-                          color: theme.colorScheme.error,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          context.l10n.pollsLoadError,
-                          style: theme.textTheme.bodyLarge?.copyWith(
+                      ),
+                      PrismTopBarAction(
+                        icon: AppIcons.patterns,
+                        tooltip: context.l10n.pollStatsTitle,
+                        onPressed: () => context.push(AppRoutePaths.pollStats),
+                      ),
+                      PrismTopBarAction(
+                        icon: AppIcons.add,
+                        tooltip: context.l10n.pollsCreateTooltip,
+                        onPressed: () => _showCreateSheet(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Poll list
+                pollsAsync.when(
+                  skipLoadingOnReload: true,
+                  data: (polls) {
+                    if (polls.isEmpty) {
+                      final (icon, title, subtitle) = switch (_filter) {
+                        _PollFilter.active => (
+                          Icon(AppIcons.howToVoteOutlined),
+                          context.l10n.pollsEmptyActiveTitle,
+                          context.l10n.pollsEmptyActiveSubtitle,
+                        ),
+                        _PollFilter.closed => (
+                          Icon(AppIcons.checkCircleOutline),
+                          context.l10n.pollsEmptyClosedTitle,
+                          context.l10n.pollsEmptyClosedSubtitle,
+                        ),
+                        _PollFilter.all => (
+                          Icon(AppIcons.pollOutlined),
+                          context.l10n.pollsEmptyAllTitle,
+                          context.l10n.pollsEmptyAllSubtitle,
+                        ),
+                      };
+
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: EmptyState(
+                          icon: icon,
+                          title: title,
+                          subtitle: subtitle,
+                          actionLabel: _filter == _PollFilter.all
+                              ? context.l10n.pollsEmptyCreateLabel
+                              : null,
+                          onAction: _filter == _PollFilter.all
+                              ? () => _showCreateSheet(context)
+                              : null,
+                        ),
+                      );
+                    }
+
+                    final sorted = [...polls]
+                      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+                    return SliverList.builder(
+                      itemCount: sorted.length,
+                      itemBuilder: (context, index) {
+                        return _PollCard(poll: sorted[index]);
+                      },
+                    );
+                  },
+                  loading: () => const PrismLoadingState.sliver(),
+                  error: (error, _) => SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            AppIcons.errorOutline,
+                            size: 48,
                             color: theme.colorScheme.error,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text('$error', style: theme.textTheme.bodySmall),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.pollsLoadError,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('$error', style: theme.textTheme.bodySmall),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Bottom padding to clear floating nav bar
-              SliverPadding(
-                padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
-              ),
-            ],
+                // Bottom padding to clear floating nav bar
+                SliverPadding(
+                  padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -520,220 +521,223 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     required Member? speakingAsMember,
   }) {
     final theme = Theme.of(context);
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(conversationsProvider);
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverPinnedTopBar(
-              child: _ChatTopBar(
-                activeTab: _activeTab,
-                onTabSelected: _selectTab,
-                speakingAs: speakingAs,
-                hasArchived: hasArchived,
-                showArchived: showArchived,
-                onSearchTap: () => context.go('${AppRoutePaths.chat}/search'),
-                onArchiveTap: () =>
-                    ref.read(showArchivedProvider.notifier).toggle(),
-                onCreateTap: () => _showCreateSheet(context),
+    return LookBackdrop(
+      builder: (bg) => Scaffold(
+        backgroundColor: bg,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(conversationsProvider);
+          },
+          child: CustomScrollView(
+            slivers: [
+              SliverPinnedTopBar(
+                child: _ChatTopBar(
+                  activeTab: _activeTab,
+                  onTabSelected: _selectTab,
+                  speakingAs: speakingAs,
+                  hasArchived: hasArchived,
+                  showArchived: showArchived,
+                  onSearchTap: () => context.go('${AppRoutePaths.chat}/search'),
+                  onArchiveTap: () =>
+                      ref.read(showArchivedProvider.notifier).toggle(),
+                  onCreateTap: () => _showCreateSheet(context),
+                ),
               ),
-            ),
 
-            // Conversation list
-            ...conversationsAsync.when(
-              skipLoadingOnReload: true,
-              data: (conversations) {
-                _seedDefaultConversation(conversations);
+              // Conversation list
+              ...conversationsAsync.when(
+                skipLoadingOnReload: true,
+                data: (conversations) {
+                  _seedDefaultConversation(conversations);
 
-                final visibleConversations = conversations
-                    .where(
-                      (conversation) => _matchesActiveTab(
-                        conversation,
-                        speakingAs,
-                        speakingAsMember,
-                      ),
-                    )
-                    .toList();
+                  final visibleConversations = conversations
+                      .where(
+                        (conversation) => _matchesActiveTab(
+                          conversation,
+                          speakingAs,
+                          speakingAsMember,
+                        ),
+                      )
+                      .toList();
 
-                // Separate section for admin-only access — keeps "I'm in
-                // this chat" distinct from "I see this because I'm admin".
-                final participantConversations = <Conversation>[];
-                final adminOnlyConversations = <Conversation>[];
-                for (final conversation in visibleConversations) {
-                  final permissions = conversationPermissionsForViewer(
-                    conversation,
-                    speakingAsMemberId: speakingAs,
-                    speakingAsMember: speakingAsMember,
-                  );
-                  if (permissions.isAdminNonParticipantGroup &&
-                      !permissions.isParticipant) {
-                    adminOnlyConversations.add(conversation);
-                  } else {
-                    participantConversations.add(conversation);
+                  // Separate section for admin-only access — keeps "I'm in
+                  // this chat" distinct from "I see this because I'm admin".
+                  final participantConversations = <Conversation>[];
+                  final adminOnlyConversations = <Conversation>[];
+                  for (final conversation in visibleConversations) {
+                    final permissions = conversationPermissionsForViewer(
+                      conversation,
+                      speakingAsMemberId: speakingAs,
+                      speakingAsMember: speakingAsMember,
+                    );
+                    if (permissions.isAdminNonParticipantGroup &&
+                        !permissions.isParticipant) {
+                      adminOnlyConversations.add(conversation);
+                    } else {
+                      participantConversations.add(conversation);
+                    }
                   }
-                }
 
-                if (conversations.isEmpty || visibleConversations.isEmpty) {
-                  if (speakingAs == null) {
-                    return const [
-                      SliverToBoxAdapter(child: _PickSpeakerBanner()),
+                  if (conversations.isEmpty || visibleConversations.isEmpty) {
+                    if (speakingAs == null) {
+                      return const [
+                        SliverToBoxAdapter(child: _PickSpeakerBanner()),
+                      ];
+                    }
+                    return [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: EmptyState(
+                          icon: Icon(AppIcons.chatBubbleOutline),
+                          title: _activeTab == _ChatSubTab.directMessages
+                              ? context.l10n.chatNoDirectMessages
+                              : context.l10n.chatNoGroupChats,
+                          subtitle: _activeTab == _ChatSubTab.directMessages
+                              ? context.l10n.chatNoDirectMessagesSubtitle
+                              : context.l10n.chatNoGroupChatsSubtitle,
+                          actionLabel: context.l10n.chatNewConversation,
+                          onAction: () => _showCreateSheet(context),
+                        ),
+                      ),
                     ];
                   }
-                  return [
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: EmptyState(
-                        icon: Icon(AppIcons.chatBubbleOutline),
-                        title: _activeTab == _ChatSubTab.directMessages
-                            ? context.l10n.chatNoDirectMessages
-                            : context.l10n.chatNoGroupChats,
-                        subtitle: _activeTab == _ChatSubTab.directMessages
-                            ? context.l10n.chatNoDirectMessagesSubtitle
-                            : context.l10n.chatNoGroupChatsSubtitle,
-                        actionLabel: context.l10n.chatNewConversation,
-                        onAction: () => _showCreateSheet(context),
-                      ),
-                    ),
-                  ];
-                }
 
-                final categories = categoriesAsync.value ?? [];
-                final showVisibilityNudge =
-                    _activeTab == _ChatSubTab.groupChats &&
-                    _groupChatVisibilityNudgeDismissed == false &&
-                    visibleConversations.any(
-                      (conversation) => conversation.includesAllMembers,
-                    );
-                final visibilityNudgeSlivers = showVisibilityNudge
-                    ? <Widget>[
-                        SliverToBoxAdapter(
-                          child: _GroupChatVisibilityNudge(
-                            onDismiss: () {
-                              unawaited(_dismissGroupChatVisibilityNudge());
-                            },
+                  final categories = categoriesAsync.value ?? [];
+                  final showVisibilityNudge =
+                      _activeTab == _ChatSubTab.groupChats &&
+                      _groupChatVisibilityNudgeDismissed == false &&
+                      visibleConversations.any(
+                        (conversation) => conversation.includesAllMembers,
+                      );
+                  final visibilityNudgeSlivers = showVisibilityNudge
+                      ? <Widget>[
+                          SliverToBoxAdapter(
+                            child: _GroupChatVisibilityNudge(
+                              onDismiss: () {
+                                unawaited(_dismissGroupChatVisibilityNudge());
+                              },
+                            ),
                           ),
-                        ),
-                      ]
-                    : const <Widget>[];
+                        ]
+                      : const <Widget>[];
 
-                List<Widget> adminSlivers() {
-                  if (adminOnlyConversations.isEmpty) return const [];
-                  return _buildCategorySlivers(
-                    context: context,
-                    theme: theme,
-                    label: context.l10n.chatAdminNonParticipantSection,
-                    conversations: adminOnlyConversations,
-                    speakingAs: speakingAs,
-                    speakingAsMember: speakingAsMember,
-                  );
-                }
-
-                // No categories: flat list, then admin section if any.
-                if (categories.isEmpty) {
-                  return [
-                    ...visibilityNudgeSlivers,
-                    ..._buildCategorySlivers(
+                  List<Widget> adminSlivers() {
+                    if (adminOnlyConversations.isEmpty) return const [];
+                    return _buildCategorySlivers(
                       context: context,
                       theme: theme,
-                      label: null,
-                      conversations: participantConversations,
+                      label: context.l10n.chatAdminNonParticipantSection,
+                      conversations: adminOnlyConversations,
                       speakingAs: speakingAs,
                       speakingAsMember: speakingAsMember,
-                    ),
-                    ...adminSlivers(),
-                  ];
-                }
-
-                // Group conversations by category.
-                final grouped = <String?, List<Conversation>>{};
-                for (final cat in categories) {
-                  grouped[cat.id] = [];
-                }
-                grouped[null] = []; // uncategorized
-
-                for (final conv in participantConversations) {
-                  if (conv.categoryId != null &&
-                      grouped.containsKey(conv.categoryId)) {
-                    grouped[conv.categoryId]!.add(conv);
-                  } else {
-                    grouped[null]!.add(conv);
+                    );
                   }
-                }
 
-                final categoryMap = {
-                  for (final cat in categories) cat.id: cat.name,
-                };
+                  // No categories: flat list, then admin section if any.
+                  if (categories.isEmpty) {
+                    return [
+                      ...visibilityNudgeSlivers,
+                      ..._buildCategorySlivers(
+                        context: context,
+                        theme: theme,
+                        label: null,
+                        conversations: participantConversations,
+                        speakingAs: speakingAs,
+                        speakingAsMember: speakingAsMember,
+                      ),
+                      ...adminSlivers(),
+                    ];
+                  }
 
-                final slivers = <Widget>[];
-                slivers.addAll(visibilityNudgeSlivers);
-                // Category groups in display order
-                for (final cat in categories) {
-                  if (grouped[cat.id]!.isNotEmpty) {
+                  // Group conversations by category.
+                  final grouped = <String?, List<Conversation>>{};
+                  for (final cat in categories) {
+                    grouped[cat.id] = [];
+                  }
+                  grouped[null] = []; // uncategorized
+
+                  for (final conv in participantConversations) {
+                    if (conv.categoryId != null &&
+                        grouped.containsKey(conv.categoryId)) {
+                      grouped[conv.categoryId]!.add(conv);
+                    } else {
+                      grouped[null]!.add(conv);
+                    }
+                  }
+
+                  final categoryMap = {
+                    for (final cat in categories) cat.id: cat.name,
+                  };
+
+                  final slivers = <Widget>[];
+                  slivers.addAll(visibilityNudgeSlivers);
+                  // Category groups in display order
+                  for (final cat in categories) {
+                    if (grouped[cat.id]!.isNotEmpty) {
+                      slivers.addAll(
+                        _buildCategorySlivers(
+                          context: context,
+                          theme: theme,
+                          label: categoryMap[cat.id],
+                          conversations: grouped[cat.id]!,
+                          speakingAs: speakingAs,
+                          speakingAsMember: speakingAsMember,
+                        ),
+                      );
+                    }
+                  }
+                  // Uncategorized at the bottom
+                  if (grouped[null]!.isNotEmpty) {
                     slivers.addAll(
                       _buildCategorySlivers(
                         context: context,
                         theme: theme,
-                        label: categoryMap[cat.id],
-                        conversations: grouped[cat.id]!,
+                        label: categories.isNotEmpty
+                            ? context.l10n.chatUncategorized
+                            : null,
+                        conversations: grouped[null]!,
                         speakingAs: speakingAs,
                         speakingAsMember: speakingAsMember,
                       ),
                     );
                   }
-                }
-                // Uncategorized at the bottom
-                if (grouped[null]!.isNotEmpty) {
-                  slivers.addAll(
-                    _buildCategorySlivers(
-                      context: context,
-                      theme: theme,
-                      label: categories.isNotEmpty
-                          ? context.l10n.chatUncategorized
-                          : null,
-                      conversations: grouped[null]!,
-                      speakingAs: speakingAs,
-                      speakingAsMember: speakingAsMember,
-                    ),
-                  );
-                }
-                slivers.addAll(adminSlivers());
-                return slivers;
-              },
-              loading: () => [const PrismLoadingState.sliver()],
-              error: (error, _) => [
-                SliverFillRemaining(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          AppIcons.errorOutline,
-                          size: 48,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          context.l10n.chatErrorLoadingConversations,
-                          style: theme.textTheme.bodyLarge?.copyWith(
+                  slivers.addAll(adminSlivers());
+                  return slivers;
+                },
+                loading: () => [const PrismLoadingState.sliver()],
+                error: (error, _) => [
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            AppIcons.errorOutline,
+                            size: 48,
                             color: theme.colorScheme.error,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text('$error', style: theme.textTheme.bodySmall),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.chatErrorLoadingConversations,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('$error', style: theme.textTheme.bodySmall),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            // Bottom padding to clear floating nav bar
-            SliverPadding(
-              padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
-            ),
-          ],
+              // Bottom padding to clear floating nav bar
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -876,7 +880,8 @@ class _ChatTopBar extends ConsumerWidget implements PreferredSizeWidget {
           title: context.l10n.chatTitle,
           leading: const _ChatMemberSelectorButton(),
           backBeforeLeading: true,
-          actions: [FeatureDataAction(featureId: 'chat'), 
+          actions: [
+            FeatureDataAction(featureId: 'chat'),
             PrismTopBarAction(
               icon: AppIcons.add,
               tooltip: context.l10n.chatNewConversation,

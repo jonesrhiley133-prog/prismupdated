@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -115,115 +116,118 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
     final showRecoveryBanner =
         recoverableCount > 0 && !_recoveryBannerDismissed;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: ClampedBody(
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPinnedTopBar(
-              child: PrismTopBar(
-                title: l10n.sleepScreenTitle,
-                showBackButton: widget.showBackButton,
-                actions: [FeatureDataAction(featureId: 'sleep'), 
-                  PrismTopBarAction(
-                    icon: AppIcons.navSettings,
-                    tooltip: l10n.sleepScreenSettingsTooltip,
-                    onPressed: _openSettings,
-                  ),
-                  PrismTopBarAction(
-                    icon: AppIcons.add,
-                    tooltip: l10n.sleepScreenAddTooltip,
-                    onPressed: _openAddSheet,
-                  ),
-                ],
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: SleepFrontingInfoBanner(onOpenSettings: _openSettings),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: PrismSurface(
-                  onTap: () => context.push(AppRoutePaths.sleepLog),
-                  child: Row(
-                    children: [
-                      Icon(
-                        AppIcons.patterns,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.slpAnalysisTitle,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            Text(
-                              l10n.slpAnalysisEntry,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(AppIcons.chevronRight, size: 18),
-                    ],
-                  ),
+    return LookBackdrop(
+      builder: (bg) => Scaffold(
+        backgroundColor: bg ?? Colors.transparent,
+        body: ClampedBody(
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverPinnedTopBar(
+                child: PrismTopBar(
+                  title: l10n.sleepScreenTitle,
+                  showBackButton: widget.showBackButton,
+                  actions: [
+                    FeatureDataAction(featureId: 'sleep'),
+                    PrismTopBarAction(
+                      icon: AppIcons.navSettings,
+                      tooltip: l10n.sleepScreenSettingsTooltip,
+                      onPressed: _openSettings,
+                    ),
+                    PrismTopBarAction(
+                      icon: AppIcons.add,
+                      tooltip: l10n.sleepScreenAddTooltip,
+                      onPressed: _openAddSheet,
+                    ),
+                  ],
                 ),
               ),
-            ),
-            if (showRecoveryBanner)
+
+              SliverToBoxAdapter(
+                child: SleepFrontingInfoBanner(onOpenSettings: _openSettings),
+              ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: InfoBanner(
-                    icon: AppIcons.history,
-                    iconColor: AppColors.sleep(Theme.of(context).brightness),
-                    title: l10n.featureSleepRecoveryBannerTitle,
-                    message: l10n.featureSleepRecoveryBannerBody(
-                      recoverableCount,
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: PrismSurface(
+                    onTap: () => context.push(AppRoutePaths.sleepLog),
+                    child: Row(
+                      children: [
+                        Icon(
+                          AppIcons.patterns,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.slpAnalysisTitle,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              Text(
+                                l10n.slpAnalysisEntry,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(AppIcons.chevronRight, size: 18),
+                      ],
                     ),
-                    buttonText: l10n.featureSleepRecoveryBannerAction,
-                    onButtonPressed: _openRecoverySheet,
-                    onDismiss: () =>
-                        setState(() => _recoveryBannerDismissed = true),
-                    dismissLabel: l10n.dismiss,
-                    dismissTooltip: l10n.dismiss,
-                    actionsBelow: true,
                   ),
                 ),
               ),
+              if (showRecoveryBanner)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: InfoBanner(
+                      icon: AppIcons.history,
+                      iconColor: AppColors.sleep(Theme.of(context).brightness),
+                      title: l10n.featureSleepRecoveryBannerTitle,
+                      message: l10n.featureSleepRecoveryBannerBody(
+                        recoverableCount,
+                      ),
+                      buttonText: l10n.featureSleepRecoveryBannerAction,
+                      onButtonPressed: _openRecoverySheet,
+                      onDismiss: () =>
+                          setState(() => _recoveryBannerDismissed = true),
+                      dismissLabel: l10n.dismiss,
+                      dismissTooltip: l10n.dismiss,
+                      actionsBelow: true,
+                    ),
+                  ),
+                ),
 
-            if (activeSleep != null)
+              if (activeSleep != null)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: SleepModeCard(),
+                  ),
+                ),
+
+              // Stat cards (visibility rule lives inside the widget)
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: SleepModeCard(),
+                  child: SleepStatCards(),
                 ),
               ),
 
-            // Stat cards (visibility rule lives inside the widget)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: SleepStatCards(),
+              ..._buildBody(
+                l10n: l10n,
+                sessionsAsync: sessionsAsync,
+                statsAsync: statsAsync,
               ),
-            ),
 
-            ..._buildBody(
-              l10n: l10n,
-              sessionsAsync: sessionsAsync,
-              statsAsync: statsAsync,
-            ),
-
-            SliverPadding(
-              padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
-            ),
-          ],
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
+              ),
+            ],
+          ),
         ),
       ),
     );

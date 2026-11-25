@@ -35,7 +35,8 @@ class TimelineScreen extends ConsumerWidget {
             onPressed: () => _pickDate(context, anchorContext, ref),
           ),
         ),
-        actions: [FeatureDataAction(featureId: 'fronting'), 
+        actions: [
+          FeatureDataAction(featureId: 'fronting'),
           PrismTopBarAction(
             icon: AppIcons.removeRounded,
             tooltip: context.l10n.frontingTimelineZoomOut,

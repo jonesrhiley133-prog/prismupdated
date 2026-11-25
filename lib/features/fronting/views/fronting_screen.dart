@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,10 +88,7 @@ Widget frontingHistoryLoadMoreSliver({required bool hasMore}) {
 // flex spacers would be zero-width (a SliverCrossAxisGroup assert), so skip the
 // group and let the content fill the width.
 @visibleForTesting
-Widget clampSliver(
-  Widget sliver, {
-  double? maxWidth,
-}) {
+Widget clampSliver(Widget sliver, {double? maxWidth}) {
   return SliverLayoutBuilder(
     builder: (context, constraints) {
       final maxWidth1 = maxWidth ?? PrismTokens.contentMaxWidth;
@@ -114,13 +112,12 @@ Widget clampSliver(
   );
 }
 
-Widget _clampHomeBox(
-  Widget child, {
-  double? maxWidth,
-}) {
+Widget _clampHomeBox(Widget child, {double? maxWidth}) {
   return Center(
     child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: maxWidth ?? PrismTokens.contentMaxWidth),
+      constraints: BoxConstraints(
+        maxWidth: maxWidth ?? PrismTokens.contentMaxWidth,
+      ),
       child: SizedBox(width: double.infinity, child: child),
     ),
   );
@@ -263,13 +260,15 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
     final systemName = ref.watch(systemNameProvider) ?? 'Prism';
 
     if (isEmpty == true) {
-      return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            PrismTopBar(title: systemName),
-            const Expanded(child: EmptySystemView()),
-          ],
+      return LookBackdrop(
+        builder: (bg) => Scaffold(
+          backgroundColor: bg ?? Colors.transparent,
+          body: Column(
+            children: [
+              PrismTopBar(title: systemName),
+              const Expanded(child: EmptySystemView()),
+            ],
+          ),
         ),
       );
     }
@@ -285,11 +284,13 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
       'sleeping=$isSleeping',
     );
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: isTimelineView
-          ? _buildTimelineView(systemName, isSleeping, sleepAsync.value)
-          : _buildListView(theme, systemName, isSleeping, sleepAsync.value),
+    return LookBackdrop(
+      builder: (bg) => Scaffold(
+        backgroundColor: bg ?? Colors.transparent,
+        body: isTimelineView
+            ? _buildTimelineView(systemName, isSleeping, sleepAsync.value)
+            : _buildListView(theme, systemName, isSleeping, sleepAsync.value),
+      ),
     );
   }
 

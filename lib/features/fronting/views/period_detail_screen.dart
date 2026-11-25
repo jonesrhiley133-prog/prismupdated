@@ -237,8 +237,11 @@ class _PeriodDetailScreenState extends ConsumerState<PeriodDetailScreen> {
     // While a post-frame pop is queued, keep showing a loading shell so the
     // screen doesn't flash empty content for the one frame before it fires.
     if (_popQueued) {
-      return Scaffold(
-        body: Center(child: PrismSpinner(color: theme.colorScheme.primary)),
+      return LookBackdrop(
+        builder: (bg) => Scaffold(
+          backgroundColor: bg,
+          body: Center(child: PrismSpinner(color: theme.colorScheme.primary)),
+        ),
       );
     }
 

@@ -67,23 +67,43 @@ class PrismPageScaffold extends StatelessWidget {
       floatingActionButton: floatingActionButton,
     );
 
+    return LookBackdrop(fixedColor: backgroundColor, builder: scaffold);
+  }
+}
+
+/// Draws the user's background (app-wide or per-page) behind a page and
+/// applies a page's own appearance preset. [builder] gets the colour the
+/// page's Scaffold should use: transparent when a custom background is
+/// showing, otherwise [fixedColor] (or null for the theme default).
+///
+/// Every full page should go through this — directly, or via
+/// [PrismPageScaffold] — so custom backgrounds show everywhere.
+class LookBackdrop extends StatelessWidget {
+  const LookBackdrop({super.key, required this.builder, this.fixedColor});
+
+  final Widget Function(Color? background) builder;
+
+  /// A colour the page insists on (e.g. a full-screen viewer). Wins over
+  /// the custom background.
+  final Color? fixedColor;
+
+  @override
+  Widget build(BuildContext context) {
     final look = LookTheme.of(context);
-    if (look == null) return scaffold(backgroundColor);
+    if (look == null) return builder(fixedColor);
 
     // Appearance presets: a page can have its own theme and background.
     final page = lookPageOf(context);
     return Consumer(
       builder: (context, ref, _) {
-        final pageLook = ref.watch(
-          appearancePageLookProvider(page),
-        );
+        final pageLook = ref.watch(appearancePageLookProvider(page));
         final effective = pageLook ?? look.look;
         final bg = effective.backgroundFor(page);
-        if (pageLook == null && (!bg.isCustom || backgroundColor != null)) {
-          return scaffold(backgroundColor);
+        if (pageLook == null && (!bg.isCustom || fixedColor != null)) {
+          return builder(fixedColor);
         }
-        Widget built = !bg.isCustom || backgroundColor != null
-            ? scaffold(backgroundColor)
+        Widget built = !bg.isCustom || fixedColor != null
+            ? builder(fixedColor)
             : Stack(
                 fit: StackFit.expand,
                 children: [
@@ -93,7 +113,7 @@ class PrismPageScaffold extends StatelessWidget {
                     reduceEffects: look.reduceEffects,
                     reduceTransparency: look.reduceTransparency,
                   ),
-                  scaffold(Colors.transparent),
+                  builder(Colors.transparent),
                 ],
               );
         if (pageLook != null) {

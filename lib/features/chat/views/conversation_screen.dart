@@ -182,188 +182,193 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
         // Mark conversation as read when opened.
         _markAsReadIfNeeded();
 
-        return Scaffold(
-          appBar: PrismGlassAppBar(
-            title: _conversationTitle(context, ref, conversation),
-            leading: widget.showBackButton
-                ? PrismGlassIconButton(
-                    icon: AppIcons.arrowBackIosNewRounded,
-                    iconSize: 18,
-                    tooltip: context.l10n.back,
-                    onPressed: () => context.pop(),
-                  )
-                : null,
-            trailing: PrismGlassIconButton(
-              icon: AppIcons.infoOutlineRounded,
-              iconSize: 20,
-              tooltip: context.l10n.chatConversationInfo,
-              onPressed: () =>
-                  ConversationInfoSheet.show(context, widget.conversationId),
+        return LookBackdrop(
+          builder: (bg) => Scaffold(
+            backgroundColor: bg,
+            appBar: PrismGlassAppBar(
+              title: _conversationTitle(context, ref, conversation),
+              leading: widget.showBackButton
+                  ? PrismGlassIconButton(
+                      icon: AppIcons.arrowBackIosNewRounded,
+                      iconSize: 18,
+                      tooltip: context.l10n.back,
+                      onPressed: () => context.pop(),
+                    )
+                  : null,
+              trailing: PrismGlassIconButton(
+                icon: AppIcons.infoOutlineRounded,
+                iconSize: 20,
+                tooltip: context.l10n.chatConversationInfo,
+                onPressed: () =>
+                    ConversationInfoSheet.show(context, widget.conversationId),
+              ),
             ),
-          ),
-          body: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            behavior: HitTestBehavior.translucent,
-            child: Column(
-              children: [
-                // Messages list
-                Expanded(
-                  child: messagesAsync.when(
-                    skipLoadingOnReload: true,
-                    data: (messages) {
-                      if (messages.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                AppIcons.chatBubbleOutline,
-                                size: 64,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withValues(alpha: 0.4),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                context.l10n.chatNoMessages,
-                                style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                context.l10n.chatStartConversation,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                              ),
-                            ],
-                          ),
+            body: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.translucent,
+              child: Column(
+                children: [
+                  // Messages list
+                  Expanded(
+                    child: messagesAsync.when(
+                      skipLoadingOnReload: true,
+                      data: (messages) {
+                        if (messages.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  AppIcons.chatBubbleOutline,
+                                  size: 64,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant
+                                      .withValues(alpha: 0.4),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  context.l10n.chatNoMessages,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  context.l10n.chatStartConversation,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        // Batch-load every member referenced by visible messages so
+                        // inline mentions and reply previews can resolve names
+                        // without waiting for unrelated rows to scroll into view.
+                        final authorIds = collectReferencedMemberIds(messages);
+                        final authorMap = ref.watch(
+                          membersByIdsProvider(
+                            memberIdsKey(authorIds),
+                          ).select((s) => s.value ?? {}),
                         );
-                      }
 
-                      // Batch-load every member referenced by visible messages so
-                      // inline mentions and reply previews can resolve names
-                      // without waiting for unrelated rows to scroll into view.
-                      final authorIds = collectReferencedMemberIds(messages);
-                      final authorMap = ref.watch(
-                        membersByIdsProvider(
-                          memberIdsKey(authorIds),
-                        ).select((s) => s.value ?? {}),
-                      );
+                        final messageAuthorMap = {
+                          for (final m in messages) m.id: m.authorId,
+                        };
 
-                      final messageAuthorMap = {
-                        for (final m in messages) m.id: m.authorId,
-                      };
+                        // Group messages by author / time, inserting date
+                        // separators between days.
+                        final groupItems = _groupBuilder.build(messages);
 
-                      // Group messages by author / time, inserting date
-                      // separators between days.
-                      final groupItems = _groupBuilder.build(messages);
-
-                      // Populate GlobalKeys for each message and prune stale entries.
-                      final currentMessageIds = <String>{};
-                      for (final item in groupItems) {
-                        if (item is MessageGroup) {
-                          for (final msg in item.messages) {
-                            currentMessageIds.add(msg.id);
-                            _messageKeys.putIfAbsent(msg.id, GlobalKey.new);
+                        // Populate GlobalKeys for each message and prune stale entries.
+                        final currentMessageIds = <String>{};
+                        for (final item in groupItems) {
+                          if (item is MessageGroup) {
+                            for (final msg in item.messages) {
+                              currentMessageIds.add(msg.id);
+                              _messageKeys.putIfAbsent(msg.id, GlobalKey.new);
+                            }
                           }
                         }
-                      }
-                      _messageKeys.removeWhere(
-                        (id, _) => !currentMessageIds.contains(id),
-                      );
+                        _messageKeys.removeWhere(
+                          (id, _) => !currentMessageIds.contains(id),
+                        );
 
-                      // Auto-scroll to initial message (from search)
-                      if (!_hasScrolledToInitial &&
-                          widget.initialMessageId != null &&
-                          _messageKeys.containsKey(widget.initialMessageId)) {
-                        _hasScrolledToInitial = true;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) {
-                            _scrollToMessage(widget.initialMessageId!);
-                          }
-                        });
-                      }
+                        // Auto-scroll to initial message (from search)
+                        if (!_hasScrolledToInitial &&
+                            widget.initialMessageId != null &&
+                            _messageKeys.containsKey(widget.initialMessageId)) {
+                          _hasScrolledToInitial = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              _scrollToMessage(widget.initialMessageId!);
+                            }
+                          });
+                        }
 
-                      final hasMore =
-                          messages.length >=
-                          ref.read(messageLimitProvider(widget.conversationId));
-
-                      return ListView.builder(
-                        controller: _scrollController,
-                        reverse: true,
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: groupItems.length + (hasMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (hasMore && index == groupItems.length) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: PrismLoadingState(),
+                        final hasMore =
+                            messages.length >=
+                            ref.read(
+                              messageLimitProvider(widget.conversationId),
                             );
-                          }
-                          final item = groupItems[index];
-                          return switch (item) {
-                            DateSeparatorItem(:final date) => DateSeparator(
-                              key: ValueKey('date_${date.toIso8601String()}'),
-                              date: date,
-                            ),
-                            MessageGroup() => PrismMessageGroup(
-                              key: ValueKey(
-                                'group_${item.messages.firstOrNull?.id}',
+
+                        return ListView.builder(
+                          controller: _scrollController,
+                          reverse: true,
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: groupItems.length + (hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (hasMore && index == groupItems.length) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: PrismLoadingState(),
+                              );
+                            }
+                            final item = groupItems[index];
+                            return switch (item) {
+                              DateSeparatorItem(:final date) => DateSeparator(
+                                key: ValueKey('date_${date.toIso8601String()}'),
+                                date: date,
                               ),
-                              group: item,
-                              conversationId: widget.conversationId,
-                              permissions: permissions,
-                              authorMap: authorMap,
-                              messageAuthorMap: messageAuthorMap,
-                              messageKeys: _messageKeys,
-                              onScrollToMessage: _scrollToMessage,
-                              onReply: (msg) => ref
-                                  .read(
-                                    replyingToProvider(
-                                      widget.conversationId,
-                                    ).notifier,
-                                  )
-                                  .setReplyTo(msg),
+                              MessageGroup() => PrismMessageGroup(
+                                key: ValueKey(
+                                  'group_${item.messages.firstOrNull?.id}',
+                                ),
+                                group: item,
+                                conversationId: widget.conversationId,
+                                permissions: permissions,
+                                authorMap: authorMap,
+                                messageAuthorMap: messageAuthorMap,
+                                messageKeys: _messageKeys,
+                                onScrollToMessage: _scrollToMessage,
+                                onReply: (msg) => ref
+                                    .read(
+                                      replyingToProvider(
+                                        widget.conversationId,
+                                      ).notifier,
+                                    )
+                                    .setReplyTo(msg),
+                              ),
+                            };
+                          },
+                        );
+                      },
+                      loading: () => const PrismLoadingState(),
+                      error: (error, _) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              AppIcons.errorOutline,
+                              size: 48,
+                              color: Theme.of(context).colorScheme.error,
                             ),
-                          };
-                        },
-                      );
-                    },
-                    loading: () => const PrismLoadingState(),
-                    error: (error, _) => Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            AppIcons.errorOutline,
-                            size: 48,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(context.l10n.chatErrorLoadingMessages(error)),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(context.l10n.chatErrorLoadingMessages(error)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                // Message input
-                if (permissions.isAdminNonParticipantGroup)
-                  const _AdminReadOnlyBanner(),
-                MessageInput(conversationId: widget.conversationId),
-              ],
+                  // Message input
+                  if (permissions.isAdminNonParticipantGroup)
+                    const _AdminReadOnlyBanner(),
+                  MessageInput(conversationId: widget.conversationId),
+                ],
+              ),
             ),
           ),
         );
