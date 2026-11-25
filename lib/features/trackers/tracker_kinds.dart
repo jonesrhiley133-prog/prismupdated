@@ -174,6 +174,10 @@ abstract final class TrackerKind {
   static const passportStampTemplate = 'pass.template';
   static const passportSettings = 'pass.settings';
 
+  // Prism Wrapped
+  static const wrapSnapshot = 'wrap.snapshot';
+  static const wrapSettings = 'wrap.settings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

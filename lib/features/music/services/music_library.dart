@@ -202,6 +202,7 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
       lib.copyWith(
         tracks: [for (final x in lib.tracks) x.id == id ? updated : x],
         recent: [id, ...lib.recent.where((r) => r != id)].take(50).toList(),
+        plays: [...lib.plays.skip(lib.plays.length >= 5000 ? lib.plays.length - 4999 : 0), (id, DateTime.now())],
       ),
     );
   }

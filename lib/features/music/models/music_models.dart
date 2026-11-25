@@ -125,13 +125,17 @@ enum TrackSort { title, artist, album, recentlyAdded, mostPlayed }
 
 @immutable
 class MusicLibrary {
-  const MusicLibrary({this.tracks = const [], this.playlists = const [], this.recent = const []});
+  const MusicLibrary({this.tracks = const [], this.playlists = const [], this.recent = const [], this.plays = const []});
 
   final List<Track> tracks;
   final List<Playlist> playlists;
 
   /// Recently played track ids, newest first.
   final List<String> recent;
+
+  /// Every play Prism itself recorded (track id, when), oldest first, kept
+  /// to the last 5,000. Recaps count only these — never guesses.
+  final List<(String, DateTime)> plays;
 
   Track? track(String? id) {
     if (id == null) return null;
@@ -143,16 +147,18 @@ class MusicLibrary {
 
   List<Track> resolve(Iterable<String> ids) => [for (final id in ids) ?track(id)];
 
-  MusicLibrary copyWith({List<Track>? tracks, List<Playlist>? playlists, List<String>? recent}) => MusicLibrary(
+  MusicLibrary copyWith({List<Track>? tracks, List<Playlist>? playlists, List<String>? recent, List<(String, DateTime)>? plays}) => MusicLibrary(
     tracks: tracks ?? this.tracks,
     playlists: playlists ?? this.playlists,
     recent: recent ?? this.recent,
+    plays: plays ?? this.plays,
   );
 
   Map<String, Object?> toJson() => {
     'tracks': [for (final t in tracks) t.toJson()],
     'playlists': [for (final p in playlists) p.toJson()],
     'recent': recent,
+    'plays': [for (final (id, at) in plays) [id, at.millisecondsSinceEpoch]],
   };
 
   static MusicLibrary fromJson(Object? j) {
@@ -170,6 +176,11 @@ class MusicLibrary {
         if (j['recent'] is List)
           for (final r in j['recent'] as List)
             if (r is String) r,
+      ],
+      plays: [
+        if (j['plays'] is List)
+          for (final p in j['plays'] as List)
+            if (p is List && p.length == 2 && p[0] is String && p[1] is num) (p[0] as String, DateTime.fromMillisecondsSinceEpoch((p[1] as num).toInt())),
       ],
     );
   }
