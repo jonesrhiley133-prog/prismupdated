@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:prism_plurality/core/web/render_mode.dart' show clearWebStorage;
 import 'dart:convert';
 import 'dart:io';
 
@@ -97,10 +100,12 @@ final resetNativeKeysProvider = Provider<NativeResetKeys>((ref) {
   return const MethodChannelNativeResetKeys();
 });
 
-final resetIsAndroidProvider = Provider<bool>((ref) => Platform.isAndroid);
+// dart:io's Platform throws in browsers, which used to stop Reset on the
+// web (including desktop browsers) before anything was deleted.
+final resetIsAndroidProvider = Provider<bool>((ref) => !kIsWeb && Platform.isAndroid);
 
 final resetRequiresRestartAfterLocalPairingWipeProvider = Provider<bool>(
-  (ref) => Platform.isIOS,
+  (ref) => !kIsWeb && Platform.isIOS,
 );
 
 final resetDocumentsDirectoryProvider = FutureProvider<Directory>((ref) async {
@@ -408,6 +413,7 @@ class ResetDataNotifier extends AsyncNotifier<void> {
 
   Future<void> _resetCategory(ResetCategory category) async {
     final result = await AsyncValue.guard(() async {
+      if (_usesSyncedDelete(category)) return _resetSyncedCategory(category);
       switch (category) {
         case ResetCategory.members:
           await _resetMembers();
@@ -687,6 +693,92 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       await db.customStatement('DELETE FROM polls');
     });
     _notifyTableChanges(['poll_votes', 'poll_options', 'polls']);
+  }
+
+  /// Browsers keep the database in IndexedDB/OPFS, not files, so the native
+  /// file wipe can't run. Empty every table, clear stored preferences and
+  /// secrets; the caller then reloads the page into onboarding.
+  Future<void> _resetAllWeb() async {
+    try {
+      await _resetSyncSystem(
+        reason: SyncDisconnectReason.fullReset,
+        cleanupPolicy: SyncRelayCleanupPolicy.aggressive,
+        localAppDataOutcome: LocalAppDataOutcome.wiped,
+        nextSetupConstraint: SyncSetupConstraint.freshSetupChoice,
+      );
+    } catch (e) {
+      _log('Sync teardown skipped on web: $e');
+    }
+    final db = ref.read(databaseProvider);
+    final rows = await db.customSelect("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get();
+    final tables = [for (final r in rows) r.read<String>('name')];
+    await db.transaction(() async {
+      for (final t in tables) {
+        await db.customStatement('DELETE FROM "$t"');
+      }
+    });
+    _notifyTableChanges(tables);
+    try {
+      await (await SharedPreferences.getInstance()).clear();
+    } catch (_) {}
+    try {
+      await const FlutterSecureStorage().deleteAll();
+    } catch (_) {}
+    clearWebStorage();
+    _log('Completed full web reset (${tables.length} tables emptied)');
+  }
+
+  /// Simple table categories. With sync on, rows are deleted through their
+  /// repositories so the deletions sync — otherwise another device would
+  /// quietly send the data back.
+  bool _usesSyncedDelete(ResetCategory category) {
+    const synced = {ResetCategory.mood, ResetCategory.calendar, ResetCategory.locations, ResetCategory.work, ResetCategory.cycle, ResetCategory.contacts, ResetCategory.lifeTrackers};
+    if (!synced.contains(category)) return false;
+    try {
+      return ref.read(syncEnabledProvider);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _resetSyncedCategory(ResetCategory category) async {
+    Future<void> each<T>(Future<List<T>> Function() all, Future<void> Function(T) del) async {
+      for (final x in await all()) {
+        await del(x);
+      }
+    }
+
+    switch (category) {
+      case ResetCategory.mood:
+        final r = ref.read(moodRepositoryProvider);
+        await each(r.getAll, (x) => r.delete(x.id));
+      case ResetCategory.calendar:
+        final r = ref.read(calendarRepositoryProvider);
+        await each(r.getAll, (x) => r.delete(x.id));
+      case ResetCategory.locations:
+        final a = ref.read(locationSessionRepositoryProvider);
+        final b = ref.read(savedLocationRepositoryProvider);
+        await each(a.getAll, (x) => a.delete(x.id));
+        await each(b.getAll, (x) => b.delete(x.id));
+      case ResetCategory.work:
+        final a = ref.read(workSessionRepositoryProvider);
+        final b = ref.read(jobRepositoryProvider);
+        await each(a.getAll, (x) => a.delete(x.id));
+        await each(b.getAll, (x) => b.delete(x.id));
+      case ResetCategory.cycle:
+        final r = ref.read(cycleEntryRepositoryProvider);
+        await each(r.getAll, (x) => r.delete(x.id));
+      case ResetCategory.contacts:
+        final r = ref.read(contactRepositoryProvider);
+        await each(r.getAll, (x) => r.delete(x.id));
+      case ResetCategory.lifeTrackers:
+        final r = ref.read(trackerRecordRepositoryProvider);
+        await each(r.getAll, (x) => r.delete(x.id));
+      default:
+        return false;
+    }
+    _log('Reset ${category.name} with synced deletions');
+    return true;
   }
 
   Future<void> _resetTables(String label, List<String> tables) async {
@@ -994,6 +1086,8 @@ class ResetDataNotifier extends AsyncNotifier<void> {
 
   Future<void> _resetAll() async {
     _log('Resetting all app data');
+
+    if (kIsWeb) return _resetAllWeb();
 
     // Android's OS-level app-data clear is the most complete local wipe, but
     // it kills the process after acceptance. Do best-effort remote sync teardown

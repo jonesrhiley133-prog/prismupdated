@@ -1,4 +1,13 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:prism_plurality/core/database/database_providers.dart';
+import 'package:prism_plurality/core/router/app_routes.dart';
+import 'package:prism_plurality/core/web/render_mode.dart' show reloadWebPage;
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
+import 'package:prism_plurality/shared/widgets/prism_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/core/reset/reset_recovery_app.dart';
@@ -38,6 +47,47 @@ class ResetDataScreen extends ConsumerWidget {
       body: ListView(
         padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
         children: [
+          PrismSection(
+            title: 'Settings & looks',
+            description: 'These keep all your records. Nothing synced is deleted.',
+            child: PrismGroupedSectionCard(
+              child: Column(
+                children: [
+                  PrismSettingsRow(
+                    icon: Icons.tune,
+                    iconColor: Colors.blueGrey,
+                    title: 'App preferences',
+                    subtitle: 'Settings stored on this device (launch screen, notifications choices, layout). Your records, appearance and account stay.',
+                    onTap: () => _resetPreferences(context, ref),
+                  ),
+                  const Divider(height: 1, indent: 60, endIndent: 12),
+                  PrismSettingsRow(
+                    icon: Icons.palette_outlined,
+                    iconColor: Colors.purple,
+                    title: 'Appearance & themes',
+                    subtitle: 'Back to the default Prism look. Saved looks and per-page themes are removed; records stay.',
+                    onTap: () => _resetAppearance(context, ref),
+                  ),
+                  const Divider(height: 1, indent: 60, endIndent: 12),
+                  PrismSettingsRow(
+                    icon: Icons.extension_outlined,
+                    iconColor: Colors.indigo,
+                    title: 'One feature\'s data',
+                    subtitle: 'Pick a feature in Settings › Features to reset just its data, with a recovery window.',
+                    onTap: () => context.push(AppRoutePaths.settingsFeatures),
+                  ),
+                  const Divider(height: 1, indent: 60, endIndent: 12),
+                  PrismSettingsRow(
+                    icon: Icons.cloud_off_outlined,
+                    iconColor: Colors.lightBlue,
+                    title: 'Cloud backups',
+                    subtitle: 'Delete backups or your whole account from Account & backup. This device\'s data stays.',
+                    onTap: () => context.push(AppRoutePaths.account),
+                  ),
+                ],
+              ),
+            ),
+          ),
           PrismSection(
             title: context.l10n.resetDataCategoriesSection,
             description: context.l10n.resetDataCategoriesDescription,
@@ -124,6 +174,8 @@ class ResetDataScreen extends ConsumerWidget {
   ) async {
     final isAll = category == ResetCategory.all;
     final isSync = category == ResetCategory.sync;
+    if (isAll && !await _offerBackup(context)) return;
+    if (!context.mounted) return;
     final isCustomFields = category == ResetCategory.customFields;
     final terms = readTerminology(context, ref);
     final frontingTerms = readFrontingTerms(context, ref);
@@ -157,6 +209,11 @@ class ResetDataScreen extends ConsumerWidget {
       final isAndroid = ref.read(resetIsAndroidProvider);
       await ref.read(resetDataNotifierProvider.notifier).reset(category);
       if (!context.mounted) return;
+      if (isAll && kIsWeb) {
+        // The browser database is empty now; reload into onboarding.
+        reloadWebPage();
+        return;
+      }
       if (isAll) {
         final restartRequired = await ref
             .read(fullResetServiceProvider)
@@ -204,6 +261,52 @@ class ResetDataScreen extends ConsumerWidget {
       if (!context.mounted) return;
       PrismToast.error(context, message: context.l10n.resetDataFailed(e));
     }
+  }
+
+  /// Offers to make a backup first. Returns false if the user cancels.
+  Future<bool> _offerBackup(BuildContext context) async {
+    final pick = await PrismDialog.show<String>(
+      context: context,
+      title: 'Make a backup first?',
+      message: 'A backup lets you undo this later by importing it. Deleted data can\'t be recovered otherwise.',
+      builder: (_) => const SizedBox.shrink(),
+      actions: [
+        PrismButton(label: 'Cancel', onPressed: () => Navigator.of(context, rootNavigator: true).pop('cancel')),
+        PrismButton(label: 'Back up first', onPressed: () => Navigator.of(context, rootNavigator: true).pop('backup')),
+        PrismButton(label: 'Continue', tone: PrismButtonTone.destructive, onPressed: () => Navigator.of(context, rootNavigator: true).pop('go')),
+      ],
+    );
+    if (pick == 'backup' && context.mounted) {
+      await context.push(AppRoutePaths.settingsImportExport);
+      return false;
+    }
+    return pick == 'go';
+  }
+
+  Future<void> _resetPreferences(BuildContext context, WidgetRef ref) async {
+    final ok = await PrismDialog.confirm(context: context, title: 'Reset app preferences?', message: 'Device settings go back to their defaults. Records, appearance, accounts and synced data are kept.', confirmLabel: 'Reset preferences', destructive: true);
+    if (!ok) return;
+    final prefs = await SharedPreferences.getInstance();
+    for (final k in prefs.getKeys().toList()) {
+      if (k == 'appearance.state.v1') continue;
+      await prefs.remove(k);
+    }
+    if (!context.mounted) return;
+    if (kIsWeb) return reloadWebPage();
+    PrismToast.show(context, message: 'Preferences reset. Some take effect the next time Prism opens.');
+  }
+
+  Future<void> _resetAppearance(BuildContext context, WidgetRef ref) async {
+    final ok = await PrismDialog.confirm(context: context, title: 'Reset appearance?', message: 'Prism goes back to its default look. Saved looks and page themes are removed. Records are kept.', confirmLabel: 'Reset appearance', destructive: true);
+    if (!ok) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('appearance.state.v1');
+    final repo = ref.read(trackerRecordRepositoryProvider);
+    for (final r in await repo.getAll()) {
+      if (r.kind == appearanceSettingKind) await repo.delete(r.id);
+    }
+    ref.invalidate(appearanceProvider);
+    if (context.mounted) PrismToast.show(context, message: 'Appearance reset');
   }
 
   String _categoryLabel(

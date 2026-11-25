@@ -22,3 +22,7 @@ void setWebChromeColor(int argb) {}
 
 /// Downloads [bytes] as a file named [name] (web only; false elsewhere).
 bool downloadWebFile(List<int> bytes, String name, String mimeType) => false;
+
+void clearWebStorage() {}
+
+void reloadWebPage() {}

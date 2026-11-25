@@ -16,7 +16,11 @@ external _Storage get _storage;
 extension type _Storage._(JSObject _) implements JSObject {
   external void setItem(String key, String value);
   external void removeItem(String key);
+  external void clear();
 }
+
+@JS('sessionStorage')
+external _Storage get _session;
 
 @JS('location')
 external _Location get _location;
@@ -85,4 +89,21 @@ bool downloadWebFile(List<int> bytes, String name, String mimeType) {
   final data = bytes is Uint8List ? bytes : Uint8List.fromList(bytes);
   final ok = fn.callAsFunction(null, data.toJS, name.toJS, mimeType.toJS);
   return ok.dartify() == true;
+}
+
+/// Clears this site's localStorage and sessionStorage (used by full reset).
+void clearWebStorage() {
+  try {
+    _storage.clear();
+  } catch (_) {}
+  try {
+    _session.clear();
+  } catch (_) {}
+}
+
+/// Reloads the page, so a reset app starts completely fresh.
+void reloadWebPage() {
+  try {
+    _location.reload();
+  } catch (_) {}
 }
