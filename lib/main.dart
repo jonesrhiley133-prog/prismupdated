@@ -5,6 +5,7 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:flutter/services.dart'
     show FontLoader, SystemNavigator, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,6 +85,8 @@ void main() async {
   // Global error boundaries — install immediately so startup failures are reported.
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
+    final first = details.exceptionAsString().split('\n').first;
+    FreezeWatchdog.crumb('error ${details.library ?? ''}: ${first.length > 160 ? first.substring(0, 160) : first}');
     ErrorReportingService.instance.report(
       details.exceptionAsString(),
       stackTrace: details.stack,
@@ -260,23 +263,9 @@ void main() async {
   // Show a plain error message instead of the red/yellow error screen in
   // release builds. Cannot use Theme.of or l10n here — runs outside the widget tree.
   if (kReleaseMode) {
-    ErrorWidget.builder = (FlutterErrorDetails details) {
-      return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Material(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Something went wrong. Please restart the app.',
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ),
-      );
-    };
+    // A themed, recoverable view instead of a blank/black area, with the
+    // error recorded for diagnostics.
+    ErrorWidget.builder = (FlutterErrorDetails details) => RecoverableErrorView(details: details);
   }
 
   // Read cached theme prefs so the first frame uses the correct colors,

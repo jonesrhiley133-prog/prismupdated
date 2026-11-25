@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
 import 'package:prism_plurality/features/online_games/online_screens.dart';
@@ -415,6 +416,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
+    observers: [PrismNavObserver()],
     initialLocation: AppRoutePaths.home,
     refreshListenable: _onboardingRedirectNotifier,
     onException: (context, state, router) {

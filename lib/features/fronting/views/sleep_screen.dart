@@ -118,7 +118,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
 
     return LookBackdrop(
       builder: (bg) => Scaffold(
-        backgroundColor: bg ?? Colors.transparent,
+        backgroundColor: bg ?? Theme.of(context).scaffoldBackgroundColor,
         body: ClampedBody(
           child: CustomScrollView(
             controller: _scrollController,

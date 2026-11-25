@@ -262,7 +262,7 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
     if (isEmpty == true) {
       return LookBackdrop(
         builder: (bg) => Scaffold(
-          backgroundColor: bg ?? Colors.transparent,
+          backgroundColor: bg ?? Theme.of(context).scaffoldBackgroundColor,
           body: Column(
             children: [
               PrismTopBar(title: systemName),
@@ -286,7 +286,7 @@ class _FrontingScreenState extends ConsumerState<FrontingScreen> {
 
     return LookBackdrop(
       builder: (bg) => Scaffold(
-        backgroundColor: bg ?? Colors.transparent,
+        backgroundColor: bg ?? Theme.of(context).scaffoldBackgroundColor,
         body: isTimelineView
             ? _buildTimelineView(systemName, isSleeping, sleepAsync.value)
             : _buildListView(theme, systemName, isSleeping, sleepAsync.value),
