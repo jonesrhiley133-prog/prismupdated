@@ -157,6 +157,15 @@ abstract final class TrackerKind {
   static const frontRoleSettings = 'front.roleSettings';
   static const notifySettings = 'notify.settings';
 
+  // Virtual Companions
+  static const companion = 'comp.companion';
+  static const companionOutfit = 'comp.outfit';
+  static const companionHabitat = 'comp.habitat';
+  static const companionInteraction = 'comp.interaction';
+  static const companionMemory = 'comp.memory';
+  static const companionSpecies = 'comp.species';
+  static const companionSettings = 'comp.settings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');
