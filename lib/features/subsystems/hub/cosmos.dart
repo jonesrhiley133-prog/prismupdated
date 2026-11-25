@@ -20,11 +20,25 @@ class SubPalette {
       onPrimary = t.colorScheme.onPrimary,
       secondary = t.colorScheme.secondary,
       tertiary = t.colorScheme.tertiary;
-  final Color bg, panel, panelHi, line, text, dim, faint, primary, onPrimary, secondary, tertiary;
+  final Color bg,
+      panel,
+      panelHi,
+      line,
+      text,
+      dim,
+      faint,
+      primary,
+      onPrimary,
+      secondary,
+      tertiary;
 }
 
 extension SubPaletteX on BuildContext {
-  SubPalette get sp => SubPalette(Theme.of(this));
+  SubPalette get sp {
+    final t = Theme.of(this);
+    syncSubThemeAccents(t);
+    return SubPalette(t);
+  }
 }
 
 /// Kept for call sites; subsystem screens now use the regular app theme.
@@ -39,9 +53,33 @@ class CosmicScope extends StatelessWidget {
 /// Warm default colours for subsystems (dusty rose, salmon, cocoa, cream…).
 const subsystemDefaultColor = 0xFFC98B8B;
 
-Color subColor(TrackerRecord s) => Color(SubSettings(s).color);
-Color subColor2(TrackerRecord s) => Color(SubSettings(s).color2 ?? SubSettings(s).color);
-String subEmoji(TrackerRecord s) => s.str('emoji')?.trim().isNotEmpty == true ? s.str('emoji')! : '✦';
+Color subColor(TrackerRecord s) {
+  final p = effectiveSubPalette(s);
+  return p == null ? _themeAccent : Color(p[0]);
+}
+
+Color subColor2(TrackerRecord s) {
+  final p = effectiveSubPalette(s);
+  return p == null ? _themeAccent2 : Color(p.length > 1 ? p[1] : p[0]);
+}
+
+/// Every colour of a subsystem's palette (empty when following the theme).
+List<Color> subPalette(TrackerRecord s) => [
+  for (final c in effectiveSubPalette(s) ?? const <int>[]) Color(c),
+];
+
+// Set by SubThemeAccents from the app theme for 'theme' mode subsystems.
+Color _themeAccent = const Color(subsystemDefaultColor);
+Color _themeAccent2 = const Color(subsystemDefaultColor);
+
+/// Keeps 'follow the app theme' subsystem colours in step with the theme.
+void syncSubThemeAccents(ThemeData t) {
+  _themeAccent = t.colorScheme.primary;
+  _themeAccent2 = t.colorScheme.tertiary;
+}
+
+String subEmoji(TrackerRecord s) =>
+    s.str('emoji')?.trim().isNotEmpty == true ? s.str('emoji')! : '✦';
 
 /// All members by id, isolated ones included (subsystem screens only).
 final memberIndexProvider = Provider<Map<String, Member>>((ref) {
@@ -51,7 +89,12 @@ final memberIndexProvider = Provider<Map<String, Member>>((ref) {
 
 /// Thin orbit rings with a small node on each.
 class OrbitPainter extends CustomPainter {
-  OrbitPainter({required this.rings, required this.center, required this.color, this.phase = 0});
+  OrbitPainter({
+    required this.rings,
+    required this.center,
+    required this.color,
+    this.phase = 0,
+  });
   final List<double> rings;
   final Offset center;
   final Color color;
@@ -66,31 +109,60 @@ class OrbitPainter extends CustomPainter {
     final node = Paint()..color = color.withValues(alpha: 0.55);
     for (var i = 0; i < rings.length; i++) {
       final r = rings[i];
-      canvas.drawOval(Rect.fromCenter(center: center, width: r * 2, height: r * 2 * 0.86), line);
+      canvas.drawOval(
+        Rect.fromCenter(center: center, width: r * 2, height: r * 2 * 0.86),
+        line,
+      );
       final a = phase * 2 * math.pi * (i.isEven ? 1 : -0.7) + i * 2.1;
-      canvas.drawCircle(Offset(center.dx + r * math.cos(a), center.dy + r * 0.86 * math.sin(a)), 2.5, node);
+      canvas.drawCircle(
+        Offset(center.dx + r * math.cos(a), center.dy + r * 0.86 * math.sin(a)),
+        2.5,
+        node,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(OrbitPainter old) => old.phase != phase || old.rings != rings || old.center != center || old.color != color;
+  bool shouldRepaint(OrbitPainter old) =>
+      old.phase != phase ||
+      old.rings != rings ||
+      old.center != center ||
+      old.color != color;
 }
 
 /// The app's standard rounded, subtly bordered card.
 class CosmicPanel extends StatelessWidget {
-  const CosmicPanel({super.key, required this.child, this.padding = const EdgeInsets.all(16), this.accent, this.onTap, this.radius = PrismTokens.radiusMedium});
+  const CosmicPanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.accent,
+    this.onTap,
+    this.radius = PrismTokens.radiusMedium,
+  });
   final Widget child;
   final EdgeInsets padding;
   final Color? accent;
   final VoidCallback? onTap;
   final double radius;
   @override
-  Widget build(BuildContext context) => PrismSurface(onTap: onTap, padding: padding, borderRadius: radius, child: child);
+  Widget build(BuildContext context) => PrismSurface(
+    onTap: onTap,
+    padding: padding,
+    borderRadius: radius,
+    child: child,
+  );
 }
 
 /// Round emoji badge tinted with a subsystem's colour.
 class SubOrb extends StatelessWidget {
-  const SubOrb({super.key, required this.emoji, required this.color, this.color2, this.size = 44});
+  const SubOrb({
+    super.key,
+    required this.emoji,
+    required this.color,
+    this.color2,
+    this.size = 44,
+  });
   final String emoji;
   final Color color;
   final Color? color2;
@@ -100,20 +172,36 @@ class SubOrb extends StatelessWidget {
     width: size,
     height: size,
     alignment: Alignment.center,
-    decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.22), border: Border.all(color: color.withValues(alpha: 0.5))),
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: color.withValues(alpha: 0.22),
+      border: Border.all(color: color.withValues(alpha: 0.5)),
+    ),
     child: Text(emoji, style: TextStyle(fontSize: size * 0.46)),
   );
 }
 
 /// Primary action button (the app's filled button).
 class GlowButton extends StatelessWidget {
-  const GlowButton({super.key, required this.label, required this.onPressed, this.icon, this.large = false});
+  const GlowButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.large = false,
+  });
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
   final bool large;
   @override
-  Widget build(BuildContext context) => PrismButton(label: label, icon: icon, tone: PrismButtonTone.filled, enabled: onPressed != null, onPressed: onPressed ?? () {});
+  Widget build(BuildContext context) => PrismButton(
+    label: label,
+    icon: icon,
+    tone: PrismButtonTone.filled,
+    enabled: onPressed != null,
+    onPressed: onPressed ?? () {},
+  );
 }
 
 /// Small rounded pill (roles, tags).
@@ -137,8 +225,18 @@ class GlowPill extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) ...[Icon(icon, size: 13, color: c), const SizedBox(width: 4)],
-              Text(label, style: TextStyle(color: context.sp.text, fontSize: 12, fontWeight: FontWeight.w600)),
+              if (icon != null) ...[
+                Icon(icon, size: 13, color: c),
+                const SizedBox(width: 4),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: context.sp.text,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),

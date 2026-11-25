@@ -9,8 +9,34 @@ import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 
-const subsystemEmojis = ['✦', '🌙', '🌸', '🪐', '🌊', '🔥', '🌿', '🦋', '⭐', '🛡️', '🎨', '🕯️', '🌈', '❄️', '🍄', '🐾'];
-const subsystemColors = [0xFFC98B8B, 0xFFE29A86, 0xFF8B6A5C, 0xFFEAD9C6, 0xFFB5838D, 0xFFD3B48C, 0xFF9CA88B, 0xFF8E8AA0];
+const subsystemEmojis = [
+  '✦',
+  '🌙',
+  '🌸',
+  '🪐',
+  '🌊',
+  '🔥',
+  '🌿',
+  '🦋',
+  '⭐',
+  '🛡️',
+  '🎨',
+  '🕯️',
+  '🌈',
+  '❄️',
+  '🍄',
+  '🐾',
+];
+const subsystemColors = [
+  0xFFC98B8B,
+  0xFFE29A86,
+  0xFF8B6A5C,
+  0xFFEAD9C6,
+  0xFFB5838D,
+  0xFFD3B48C,
+  0xFF9CA88B,
+  0xFF8E8AA0,
+];
 
 /// Splits role input on spaces/commas; quote multi-word roles ("Inner Self Helper").
 List<String> parseRoles(String input) {
@@ -23,11 +49,16 @@ List<String> parseRoles(String input) {
   return out;
 }
 
-Future<void> showSubsystemWizard(BuildContext context, {String? parentId}) async {
+Future<void> showSubsystemWizard(
+  BuildContext context, {
+  String? parentId,
+}) async {
   final router = GoRouter.of(context);
   final created = await PrismSheet.showFullScreen<String>(
     context: context,
-    builder: (ctx, scroll) => CosmicScope(child: SubsystemWizard(scroll: scroll, parentId: parentId)),
+    builder: (ctx, scroll) => CosmicScope(
+      child: SubsystemWizard(scroll: scroll, parentId: parentId),
+    ),
   );
   if (created != null) router.push('${AppRoutePaths.subsystems}/$created');
 }
@@ -81,7 +112,10 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
     super.dispose();
   }
 
-  List<Member> _members() => [for (final m in ref.watch(allMemberListProvider).value ?? const <Member>[]) if (m.id != unknownSentinelMemberId) m];
+  List<Member> _members() => [
+    for (final m in ref.watch(allMemberListProvider).value ?? const <Member>[])
+      if (m.id != unknownSentinelMemberId) m,
+  ];
 
   bool get _canNext => switch (_step) {
     0 => _founder != null && _name.text.trim().isNotEmpty,
@@ -90,24 +124,38 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
 
   Future<void> _create() async {
     setState(() => _busy = true);
-    final s = await ref.read(subsystemActionsProvider).create(
-      name: _name.text.trim(),
-      founderId: _founder!,
-      emoji: _emoji,
-      description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
-      color: _color,
-      color2: _color2,
-      parentId: _parent,
-      tags: parseRoles(_tags.text),
-      settings: {'isolate': _isolate, 'coFronting': _coFront, 'notifyFronting': _notify, 'chat': _chat, 'separateJournal': _journal, 'visibility': _visibility},
-      members: [for (final p in _picks.values) (p.id, p.roles, p.perms)],
-    );
+    final s = await ref
+        .read(subsystemActionsProvider)
+        .create(
+          name: _name.text.trim(),
+          founderId: _founder!,
+          emoji: _emoji,
+          description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
+          color: _color,
+          color2: _color2,
+          parentId: _parent,
+          tags: parseRoles(_tags.text),
+          settings: {
+            'isolate': _isolate,
+            'coFronting': _coFront,
+            'notifyFronting': _notify,
+            'chat': _chat,
+            'separateJournal': _journal,
+            'visibility': _visibility,
+          },
+          members: [for (final p in _picks.values) (p.id, p.roles, p.perms)],
+        );
     if (mounted) Navigator.of(context).pop(s.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final steps = [tr(context, 'Founder', 'Fundador'), tr(context, 'Members', 'Miembros'), tr(context, 'Settings', 'Ajustes'), tr(context, 'Review', 'Revisar')];
+    final steps = [
+      tr(context, 'Founder', 'Fundador'),
+      tr(context, 'Members', 'Miembros'),
+      tr(context, 'Settings', 'Ajustes'),
+      tr(context, 'Review', 'Revisar'),
+    ];
     return ColoredBox(
       color: Colors.transparent,
       child: Stack(
@@ -122,17 +170,44 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(tr(context, 'Step ${_step + 1} of 4', 'Paso ${_step + 1} de 4'), style: TextStyle(color: context.sp.faint, fontSize: 12, letterSpacing: 1.2)),
-                          Text(steps[_step], style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text)),
+                          Text(
+                            tr(
+                              context,
+                              'Step ${_step + 1} of 4',
+                              'Paso ${_step + 1} de 4',
+                            ),
+                            style: TextStyle(
+                              color: context.sp.faint,
+                              fontSize: 12,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          Text(
+                            steps[_step],
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: context.sp.text,
+                                ),
+                          ),
                         ],
                       ),
                     ),
-                    PrismTopBarAction(icon: AppIcons.close, tooltip: context.mounted ? tr(context, 'Close', 'Cerrar') : '', onPressed: () => Navigator.of(context).pop()),
+                    PrismTopBarAction(
+                      icon: AppIcons.close,
+                      tooltip: context.mounted
+                          ? tr(context, 'Close', 'Cerrar')
+                          : '',
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
                     for (var i = 0; i < 4; i++)
@@ -141,7 +216,12 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                           duration: const Duration(milliseconds: 250),
                           height: 4,
                           margin: EdgeInsets.only(right: i == 3 ? 0 : 6),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: i <= _step ? context.sp.primary : context.sp.line),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: i <= _step
+                                ? context.sp.primary
+                                : context.sp.line,
+                          ),
                         ),
                       ),
                   ],
@@ -171,12 +251,33 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: Row(
                     children: [
-                      if (_step > 0) PrismButton(label: tr(context, 'Back', 'Atrás'), icon: PhosphorIcons.arrowLeft(), onPressed: () => setState(() => _step--)),
+                      if (_step > 0)
+                        PrismButton(
+                          label: tr(context, 'Back', 'Atrás'),
+                          icon: PhosphorIcons.arrowLeft(),
+                          onPressed: () => setState(() => _step--),
+                        ),
                       const Spacer(),
                       if (_step < 3)
-                        GlowButton(label: tr(context, 'Next', 'Siguiente'), icon: PhosphorIcons.arrowRight(), onPressed: _canNext ? () => setState(() => _step++) : null)
+                        GlowButton(
+                          label: tr(context, 'Next', 'Siguiente'),
+                          icon: PhosphorIcons.arrowRight(),
+                          onPressed: _canNext
+                              ? () => setState(() => _step++)
+                              : null,
+                        )
                       else
-                        GlowButton(label: _busy ? '…' : tr(context, 'Create subsystem', 'Crear subsistema'), icon: PhosphorIcons.sparkle(), onPressed: _busy ? null : _create),
+                        GlowButton(
+                          label: _busy
+                              ? '…'
+                              : tr(
+                                  context,
+                                  'Create subsystem',
+                                  'Crear subsistema',
+                                ),
+                          icon: PhosphorIcons.sparkle(),
+                          onPressed: _busy ? null : _create,
+                        ),
                     ],
                   ),
                 ),
@@ -190,23 +291,67 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
 
   Widget _avatar(Member m, {double size = 36}) {
     final prefer = ref.watch(memberNamePreferDisplayProvider);
-    return MemberAvatar(avatarImageData: m.avatarImageData, memberName: m.effectiveName(preferDisplayName: prefer), emoji: m.emoji, customColorEnabled: m.customColorEnabled, customColorHex: m.customColorHex, size: size);
+    return MemberAvatar(
+      avatarImageData: m.avatarImageData,
+      memberName: m.effectiveName(preferDisplayName: prefer),
+      emoji: m.emoji,
+      customColorEnabled: m.customColorEnabled,
+      customColorHex: m.customColorHex,
+      size: size,
+    );
   }
 
   List<Widget> _identity(BuildContext context) {
     final members = _members();
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final q = _search.text.trim().toLowerCase();
-    final shown = [for (final m in members) if (q.isEmpty || m.effectiveName(preferDisplayName: prefer).toLowerCase().contains(q)) m];
+    final shown = [
+      for (final m in members)
+        if (q.isEmpty ||
+            m
+                .effectiveName(preferDisplayName: prefer)
+                .toLowerCase()
+                .contains(q))
+          m,
+    ];
     return [
-      Center(child: SubOrb(emoji: _emoji, color: Color(_color), color2: Color(_color2), size: 84)),
+      Center(
+        child: SubOrb(
+          emoji: _emoji,
+          color: Color(_color),
+          color2: Color(_color2),
+          size: 84,
+        ),
+      ),
       const SizedBox(height: 18),
       CosmicHeading(tr(context, 'Founding alter', 'Alter fundador')),
-      Text(tr(context, 'The founder becomes the subsystem’s first member.', 'El fundador será el primer miembro del subsistema.'), style: TextStyle(color: context.sp.dim)),
+      Text(
+        tr(
+          context,
+          'The founder becomes the subsystem’s first member.',
+          'El fundador será el primer miembro del subsistema.',
+        ),
+        style: TextStyle(color: context.sp.dim),
+      ),
       const SizedBox(height: 10),
-      if (members.length > 8) ...[PrismTextField(controller: _search, hintText: tr(context, 'Search alters', 'Buscar alters'), prefixIcon: Icon(AppIcons.search), onChanged: (_) => setState(() {})), const SizedBox(height: 10)],
+      if (members.length > 8) ...[
+        PrismTextField(
+          controller: _search,
+          hintText: tr(context, 'Search alters', 'Buscar alters'),
+          prefixIcon: Icon(AppIcons.search),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 10),
+      ],
       if (members.isEmpty)
-        Text(tr(context, 'Add an alter in Headmates first.', 'Añade primero un alter en Headmates.'), style: TextStyle(color: context.sp.dim))
+        Text(
+          tr(
+            context,
+            'Add an alter in Headmates first.',
+            'Añade primero un alter en Headmates.',
+          ),
+          style: TextStyle(color: context.sp.dim),
+        )
       else
         Wrap(
           spacing: 8,
@@ -224,10 +369,23 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
               ),
           ],
         ),
-      CosmicHeading(tr(context, 'Identity', 'Identidad'), color: context.sp.secondary),
-      PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), onChanged: (_) => setState(() {}), textCapitalization: TextCapitalization.words),
+      CosmicHeading(
+        tr(context, 'Identity', 'Identidad'),
+        color: context.sp.secondary,
+      ),
+      PrismTextField(
+        controller: _name,
+        labelText: tr(context, 'Name', 'Nombre'),
+        onChanged: (_) => setState(() {}),
+        textCapitalization: TextCapitalization.words,
+      ),
       const SizedBox(height: 10),
-      PrismTextField(controller: _desc, labelText: tr(context, 'Description', 'Descripción'), minLines: 2, maxLines: 4),
+      PrismTextField(
+        controller: _desc,
+        labelText: tr(context, 'Description', 'Descripción'),
+        minLines: 2,
+        maxLines: 4,
+      ),
       const SizedBox(height: 14),
       TrackerLabel(tr(context, 'Icon', 'Icono')),
       Wrap(
@@ -241,7 +399,15 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                 width: 42,
                 height: 42,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: _emoji == e ? Color(_color).withValues(alpha: 0.25) : context.sp.panel, border: Border.all(color: _emoji == e ? Color(_color) : context.sp.line)),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _emoji == e
+                      ? Color(_color).withValues(alpha: 0.25)
+                      : context.sp.panel,
+                  border: Border.all(
+                    color: _emoji == e ? Color(_color) : context.sp.line,
+                  ),
+                ),
                 child: Text(e, style: const TextStyle(fontSize: 20)),
               ),
             ),
@@ -249,28 +415,83 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
       ),
       const SizedBox(height: 14),
       TrackerLabel(tr(context, 'Main colour', 'Color principal')),
-      ColorChoiceRow(value: _color, colors: subsystemColors, onChanged: (v) => setState(() => _color = v)),
+      ColorChoiceRow(
+        value: _color,
+        colors: subsystemColors,
+        onChanged: (v) => setState(() => _color = v),
+      ),
       const SizedBox(height: 10),
       TrackerLabel(tr(context, 'Glow colour', 'Color de brillo')),
-      ColorChoiceRow(value: _color2, colors: subsystemColors, onChanged: (v) => setState(() => _color2 = v)),
+      ColorChoiceRow(
+        value: _color2,
+        colors: subsystemColors,
+        onChanged: (v) => setState(() => _color2 = v),
+      ),
     ];
   }
 
   List<Widget> _membersStep(BuildContext context) {
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final q = _search.text.trim().toLowerCase();
-    final members = [for (final m in _members()) if (m.id != _founder && (q.isEmpty || m.effectiveName(preferDisplayName: prefer).toLowerCase().contains(q))) m];
+    final members = [
+      for (final m in _members())
+        if (m.id != _founder &&
+            (q.isEmpty ||
+                m
+                    .effectiveName(preferDisplayName: prefer)
+                    .toLowerCase()
+                    .contains(q)))
+          m,
+    ];
     return [
       Text(
-        tr(context, 'Pick who belongs here. Alters can belong to more than one subsystem — they are never copied, and their main profile stays the same.', 'Elige quién pertenece aquí. Un alter puede estar en varios subsistemas: nunca se copia y su perfil principal no cambia.'),
+        tr(
+          context,
+          'Pick who belongs here. Alters can belong to more than one subsystem — they are never copied, and their main profile stays the same.',
+          'Elige quién pertenece aquí. Un alter puede estar en varios subsistemas: nunca se copia y su perfil principal no cambia.',
+        ),
         style: TextStyle(color: context.sp.dim, height: 1.4),
       ),
       const SizedBox(height: 12),
-      PrismTextField(controller: _search, hintText: tr(context, 'Search alters', 'Buscar alters'), prefixIcon: Icon(AppIcons.search), onChanged: (_) => setState(() {})),
+      PrismTextField(
+        controller: _search,
+        hintText: tr(context, 'Search alters', 'Buscar alters'),
+        prefixIcon: Icon(AppIcons.search),
+        onChanged: (_) => setState(() {}),
+      ),
       const SizedBox(height: 8),
-      if (_picks.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(tr(context, '${_picks.length} selected', '${_picks.length} seleccionados'), style: TextStyle(color: context.sp.secondary, fontWeight: FontWeight.w700))),
-      for (final m in members) Padding(padding: const EdgeInsets.only(bottom: 8), child: _memberPick(context, m)),
-      if (members.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(tr(context, 'No other alters match.', 'Ningún otro alter coincide.'), style: TextStyle(color: context.sp.dim))),
+      if (_picks.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Text(
+            tr(
+              context,
+              '${_picks.length} selected',
+              '${_picks.length} seleccionados',
+            ),
+            style: TextStyle(
+              color: context.sp.secondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      for (final m in members)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: _memberPick(context, m),
+        ),
+      if (members.isEmpty)
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            tr(
+              context,
+              'No other alters match.',
+              'Ningún otro alter coincide.',
+            ),
+            style: TextStyle(color: context.sp.dim),
+          ),
+        ),
     ];
   }
 
@@ -280,7 +501,9 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
     return CosmicPanel(
       accent: p != null ? Color(_color) : context.sp.line,
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-      onTap: () => setState(() => p == null ? _picks[m.id] = _Pick(m.id) : _picks.remove(m.id)),
+      onTap: () => setState(
+        () => p == null ? _picks[m.id] = _Pick(m.id) : _picks.remove(m.id),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -288,15 +511,34 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
             children: [
               _avatar(m),
               const SizedBox(width: 12),
-              Expanded(child: Text(m.effectiveName(preferDisplayName: prefer), style: TextStyle(fontWeight: FontWeight.w600, color: context.sp.text))),
-              Icon(p != null ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill) : PhosphorIcons.circle(), color: p != null ? Color(_color) : context.sp.faint),
+              Expanded(
+                child: Text(
+                  m.effectiveName(preferDisplayName: prefer),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: context.sp.text,
+                  ),
+                ),
+              ),
+              Icon(
+                p != null
+                    ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.circle(),
+                color: p != null ? Color(_color) : context.sp.faint,
+              ),
             ],
           ),
           if (p != null) ...[
             const SizedBox(height: 10),
             PrismTextField(
-              initialValue: p.roles.map((r) => r.contains(' ') ? '"$r"' : r).join(' '),
-              hintText: tr(context, 'Subsystem roles (space-separated)', 'Roles en el subsistema (separados por espacios)'),
+              initialValue: p.roles
+                  .map((r) => r.contains(' ') ? '"$r"' : r)
+                  .join(' '),
+              hintText: tr(
+                context,
+                'Subsystem roles (space-separated)',
+                'Roles en el subsistema (separados por espacios)',
+              ),
               onChanged: (v) => p.roles = parseRoles(v),
             ),
             const SizedBox(height: 8),
@@ -305,7 +547,15 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
               runSpacing: 6,
               children: [
                 for (final (key, en, es) in subsystemPermissions)
-                  PrismChip(label: tr(context, en, es), selected: p.perms.contains(key), onTap: () => setState(() => p.perms.contains(key) ? p.perms.remove(key) : p.perms.add(key))),
+                  PrismChip(
+                    label: tr(context, en, es),
+                    selected: p.perms.contains(key),
+                    onTap: () => setState(
+                      () => p.perms.contains(key)
+                          ? p.perms.remove(key)
+                          : p.perms.add(key),
+                    ),
+                  ),
               ],
             ),
           ],
@@ -317,38 +567,111 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
   List<Widget> _settings(BuildContext context) {
     final subs = ref.watch(subsystemsProvider);
     return [
-      CosmicHeading(tr(context, 'Privacy', 'Privacidad'), color: context.sp.tertiary),
+      CosmicHeading(
+        tr(context, 'Privacy', 'Privacidad'),
+        color: context.sp.tertiary,
+      ),
       PrismSwitchRow(
         title: tr(context, 'Member isolation', 'Aislamiento de miembros'),
-        subtitle: tr(context, 'Members only appear inside this subsystem, not in Headmates or system-wide lists.', 'Los miembros solo aparecen dentro de este subsistema, no en Headmates ni listas del sistema.'),
+        subtitle: tr(
+          context,
+          'Members only appear inside this subsystem, not in Headmates or system-wide lists.',
+          'Los miembros solo aparecen dentro de este subsistema, no en Headmates ni listas del sistema.',
+        ),
         value: _isolate,
         onChanged: (v) => setState(() => _isolate = v),
       ),
       const SizedBox(height: 8),
       PrismSegmentedControl<String>(
-        segments: [PrismSegment(value: 'system', label: tr(context, 'Whole system', 'Todo el sistema')), PrismSegment(value: 'members', label: tr(context, 'Members only', 'Solo miembros'))],
+        segments: [
+          PrismSegment(
+            value: 'system',
+            label: tr(context, 'Whole system', 'Todo el sistema'),
+          ),
+          PrismSegment(
+            value: 'members',
+            label: tr(context, 'Members only', 'Solo miembros'),
+          ),
+        ],
         selected: _visibility,
         onChanged: (v) => setState(() => _visibility = v),
       ),
       CosmicHeading(tr(context, 'Fronting', 'Frente')),
-      PrismSwitchRow(title: tr(context, 'Allow co-fronting', 'Permitir co-frente'), value: _coFront, onChanged: (v) => setState(() => _coFront = v)),
-      PrismSwitchRow(title: tr(context, 'Notify when a member fronts', 'Avisar cuando un miembro esté al frente'), value: _notify, onChanged: (v) => setState(() => _notify = v)),
-      CosmicHeading(tr(context, 'Communication & data', 'Comunicación y datos'), color: context.sp.secondary),
-      PrismSwitchRow(title: tr(context, 'Internal chat & announcements', 'Chat interno y anuncios'), value: _chat, onChanged: (v) => setState(() => _chat = v)),
-      PrismSwitchRow(title: tr(context, 'Separate journal & notes', 'Diario y notas propios'), value: _journal, onChanged: (v) => setState(() => _journal = v)),
-      CosmicHeading(tr(context, 'Structure', 'Estructura'), color: context.sp.tertiary),
-      Text(tr(context, 'Nest inside another subsystem', 'Anidar dentro de otro subsistema'), style: TextStyle(color: context.sp.dim)),
+      PrismSwitchRow(
+        title: tr(context, 'Allow co-fronting', 'Permitir co-frente'),
+        value: _coFront,
+        onChanged: (v) => setState(() => _coFront = v),
+      ),
+      PrismSwitchRow(
+        title: tr(
+          context,
+          'Notify when a member fronts',
+          'Avisar cuando un miembro esté al frente',
+        ),
+        value: _notify,
+        onChanged: (v) => setState(() => _notify = v),
+      ),
+      CosmicHeading(
+        tr(context, 'Communication & data', 'Comunicación y datos'),
+        color: context.sp.secondary,
+      ),
+      PrismSwitchRow(
+        title: tr(
+          context,
+          'Internal chat & announcements',
+          'Chat interno y anuncios',
+        ),
+        value: _chat,
+        onChanged: (v) => setState(() => _chat = v),
+      ),
+      PrismSwitchRow(
+        title: tr(
+          context,
+          'Separate journal & notes',
+          'Diario y notas propios',
+        ),
+        value: _journal,
+        onChanged: (v) => setState(() => _journal = v),
+      ),
+      CosmicHeading(
+        tr(context, 'Structure', 'Estructura'),
+        color: context.sp.tertiary,
+      ),
+      Text(
+        tr(
+          context,
+          'Nest inside another subsystem',
+          'Anidar dentro de otro subsistema',
+        ),
+        style: TextStyle(color: context.sp.dim),
+      ),
       const SizedBox(height: 8),
       Wrap(
         spacing: 6,
         runSpacing: 6,
         children: [
-          PrismChip(label: tr(context, 'Top level', 'Nivel superior'), selected: _parent == null, onTap: () => setState(() => _parent = null)),
-          for (final s in subs) PrismChip(label: '${subEmoji(s)} ${s.title}', selected: _parent == s.id, onTap: () => setState(() => _parent = s.id)),
+          PrismChip(
+            label: tr(context, 'Top level', 'Nivel superior'),
+            selected: _parent == null,
+            onTap: () => setState(() => _parent = null),
+          ),
+          for (final s in subs)
+            PrismChip(
+              label: '${subEmoji(s)} ${s.title}',
+              selected: _parent == s.id,
+              onTap: () => setState(() => _parent = s.id),
+            ),
         ],
       ),
       const SizedBox(height: 14),
-      PrismTextField(controller: _tags, labelText: tr(context, 'Tags (space-separated)', 'Etiquetas (separadas por espacios)')),
+      PrismTextField(
+        controller: _tags,
+        labelText: tr(
+          context,
+          'Tags (space-separated)',
+          'Etiquetas (separadas por espacios)',
+        ),
+      ),
     ];
   }
 
@@ -362,19 +685,46 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            SubOrb(emoji: _emoji, color: Color(_color), color2: Color(_color2), size: 72),
+            SubOrb(
+              emoji: _emoji,
+              color: Color(_color),
+              color2: Color(_color2),
+              size: 72,
+            ),
             const SizedBox(height: 12),
-            Text(_name.text.trim(), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text)),
-            if (_desc.text.trim().isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_desc.text.trim(), textAlign: TextAlign.center, style: TextStyle(color: context.sp.dim))),
+            Text(
+              _name.text.trim(),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: context.sp.text,
+              ),
+            ),
+            if (_desc.text.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  _desc.text.trim(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.sp.dim),
+                ),
+              ),
             const SizedBox(height: 14),
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 6,
               runSpacing: 6,
               children: [
-                if (founder != null) GlowPill('👑 ${founder.effectiveName(preferDisplayName: prefer)}', color: context.sp.secondary),
+                if (founder != null)
+                  GlowPill(
+                    '👑 ${founder.effectiveName(preferDisplayName: prefer)}',
+                    color: context.sp.secondary,
+                  ),
                 for (final p in _picks.values)
-                  if (index[p.id] != null) GlowPill(index[p.id]!.effectiveName(preferDisplayName: prefer), color: Color(_color)),
+                  if (index[p.id] != null)
+                    GlowPill(
+                      index[p.id]!.effectiveName(preferDisplayName: prefer),
+                      color: Color(_color),
+                    ),
               ],
             ),
             const SizedBox(height: 14),
@@ -383,10 +733,27 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                if (_isolate) GlowPill(tr(context, 'Isolated', 'Aislado'), icon: PhosphorIcons.lockSimple(), color: context.sp.tertiary),
-                if (_coFront) GlowPill(tr(context, 'Co-fronting', 'Co-frente'), color: context.sp.primary),
-                if (_chat) GlowPill(tr(context, 'Chat', 'Chat'), color: context.sp.secondary),
-                if (_journal) GlowPill(tr(context, 'Own journal', 'Diario propio'), color: context.sp.tertiary),
+                if (_isolate)
+                  GlowPill(
+                    tr(context, 'Isolated', 'Aislado'),
+                    icon: PhosphorIcons.lockSimple(),
+                    color: context.sp.tertiary,
+                  ),
+                if (_coFront)
+                  GlowPill(
+                    tr(context, 'Co-fronting', 'Co-frente'),
+                    color: context.sp.primary,
+                  ),
+                if (_chat)
+                  GlowPill(
+                    tr(context, 'Chat', 'Chat'),
+                    color: context.sp.secondary,
+                  ),
+                if (_journal)
+                  GlowPill(
+                    tr(context, 'Own journal', 'Diario propio'),
+                    color: context.sp.tertiary,
+                  ),
               ],
             ),
           ],
@@ -394,7 +761,11 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
       ),
       const SizedBox(height: 14),
       Text(
-        tr(context, 'You can change everything later in the subsystem’s settings.', 'Puedes cambiarlo todo después en los ajustes del subsistema.'),
+        tr(
+          context,
+          'You can change everything later in the subsystem’s settings.',
+          'Puedes cambiarlo todo después en los ajustes del subsistema.',
+        ),
         textAlign: TextAlign.center,
         style: TextStyle(color: context.sp.faint),
       ),

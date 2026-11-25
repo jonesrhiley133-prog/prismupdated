@@ -22,8 +22,12 @@ class SubsystemHubScreen extends ConsumerStatefulWidget {
   ConsumerState<SubsystemHubScreen> createState() => _SubsystemHubScreenState();
 }
 
-class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController _spin = AnimationController(vsync: this, duration: const Duration(seconds: 40));
+class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _spin = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 40),
+  );
   bool _migrated = false;
 
   @override
@@ -41,7 +45,9 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
 
   void _maybeMigrate() {
     if (_migrated) return;
-    final legacy = ref.read(subMembershipsProvider).any((m) => m.record.flag('legacy'));
+    final legacy = ref
+        .read(subMembershipsProvider)
+        .any((m) => m.record.flag('legacy'));
     if (!legacy) return;
     _migrated = true;
     Future.microtask(() => ref.read(subsystemActionsProvider).migrateLegacy());
@@ -52,7 +58,9 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
     final subs = ref.watch(subsystemsProvider);
     final memberships = ref.watch(subMembershipsProvider);
     if (subs.isNotEmpty) _maybeMigrate();
-    final roots = subsystemTree(subs).where((e) => e.$2 == 0).map((e) => e.$1).toList();
+    final roots = subsystemTree(
+      subs,
+    ).where((e) => e.$2 == 0).map((e) => e.$1).toList();
     final counts = <String, int>{};
     for (final m in memberships) {
       counts[m.subsystemId] = (counts[m.subsystemId] ?? 0) + 1;
@@ -64,7 +72,15 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
           topBar: PrismTopBar(
             title: tr(context, 'Subsystems', 'Subsistemas'),
             showBackButton: Navigator.of(context).canPop(),
-            actions: [FeatureDataAction(featureId: 'subsystems'), if (subs.isNotEmpty) PrismTopBarAction(icon: AppIcons.add, tooltip: tr(context, 'New subsystem', 'Nuevo subsistema'), onPressed: () => showSubsystemWizard(context))],
+            actions: [
+              FeatureDataAction(featureId: 'subsystems'),
+              if (subs.isNotEmpty)
+                PrismTopBarAction(
+                  icon: AppIcons.add,
+                  tooltip: tr(context, 'New subsystem', 'Nuevo subsistema'),
+                  onPressed: () => showSubsystemWizard(context),
+                ),
+            ],
           ),
           bodyPadding: EdgeInsets.zero,
           body: Stack(
@@ -73,15 +89,32 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
                 slivers: [
                   SliverToBoxAdapter(
                     child: ClampedBody(
-                      child: _OrbitStage(subs: roots, all: subs, counts: counts, spin: _spin),
+                      child: _OrbitStage(
+                        subs: roots,
+                        all: subs,
+                        counts: counts,
+                        spin: _spin,
+                      ),
                     ),
                   ),
                   if (subs.isEmpty)
-                    SliverToBoxAdapter(child: ClampedBody(child: _EmptyCall(onCreate: () => showSubsystemWizard(context))))
+                    SliverToBoxAdapter(
+                      child: ClampedBody(
+                        child: _EmptyCall(
+                          onCreate: () => showSubsystemWizard(context),
+                        ),
+                      ),
+                    )
                   else ...[
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverToBoxAdapter(child: ClampedBody(child: CosmicHeading(tr(context, 'Constellation', 'Constelación')))),
+                      sliver: SliverToBoxAdapter(
+                        child: ClampedBody(
+                          child: CosmicHeading(
+                            tr(context, 'Constellation', 'Constelación'),
+                          ),
+                        ),
+                      ),
                     ),
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -90,8 +123,18 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
                           for (final (s, depth) in subsystemTree(subs))
                             ClampedBody(
                               child: Padding(
-                                padding: EdgeInsets.only(left: depth * 22.0, bottom: 10),
-                                child: _SubsystemRow(s: s, depth: depth, members: [for (final m in memberships) if (m.subsystemId == s.id) m.memberId]),
+                                padding: EdgeInsets.only(
+                                  left: depth * 22.0,
+                                  bottom: 10,
+                                ),
+                                child: _SubsystemRow(
+                                  s: s,
+                                  depth: depth,
+                                  members: [
+                                    for (final m in memberships)
+                                      if (m.subsystemId == s.id) m.memberId,
+                                  ],
+                                ),
                               ),
                             ),
                         ],
@@ -99,8 +142,15 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
                     ),
                   ],
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(16, 8, 16, NavBarInset.of(context) + 32),
-                    sliver: const SliverToBoxAdapter(child: ClampedBody(child: _LearnMore())),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      8,
+                      16,
+                      NavBarInset.of(context) + 32,
+                    ),
+                    sliver: const SliverToBoxAdapter(
+                      child: ClampedBody(child: _LearnMore()),
+                    ),
                   ),
                 ],
               ),
@@ -113,7 +163,12 @@ class _SubsystemHubScreenState extends ConsumerState<SubsystemHubScreen> with Si
 }
 
 class _OrbitStage extends StatelessWidget {
-  const _OrbitStage({required this.subs, required this.all, required this.counts, required this.spin});
+  const _OrbitStage({
+    required this.subs,
+    required this.all,
+    required this.counts,
+    required this.spin,
+  });
   final List<TrackerRecord> subs;
   final List<TrackerRecord> all;
   final Map<String, int> counts;
@@ -141,7 +196,11 @@ class _OrbitStage extends StatelessWidget {
         for (var ring = 0; ring < 3 && i < shown.length; ring++) {
           final n = math.min(_capacity[ring], shown.length - i);
           for (var k = 0; k < n; k++) {
-            placed.add((shown[i++], ring, -math.pi / 2 + (2 * math.pi * k / n) + ring * 0.5));
+            placed.add((
+              shown[i++],
+              ring,
+              -math.pi / 2 + (2 * math.pi * k / n) + ring * 0.5,
+            ));
           }
         }
 
@@ -154,17 +213,38 @@ class _OrbitStage extends StatelessWidget {
               return Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
-                  Positioned.fill(child: CustomPaint(painter: OrbitPainter(rings: rings, center: c, color: context.sp.line, phase: t))),
-                  Positioned(left: c.dx - 46, top: c.dy - 46, child: _Core(extra: extra, empty: subs.isEmpty)),
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: OrbitPainter(
+                        rings: rings,
+                        center: c,
+                        color: context.sp.line,
+                        phase: t,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: c.dx - 46,
+                    top: c.dy - 46,
+                    child: _Core(extra: extra, empty: subs.isEmpty),
+                  ),
                   for (final (s, ring, a) in placed)
                     Builder(
                       builder: (context) {
-                        final p = Offset(c.dx + rings[ring] * math.cos(a), c.dy + rings[ring] * 0.86 * math.sin(a));
+                        final p = Offset(
+                          c.dx + rings[ring] * math.cos(a),
+                          c.dy + rings[ring] * 0.86 * math.sin(a),
+                        );
                         return Positioned(
                           left: p.dx - cardW / 2,
                           top: p.dy - cardW / 2,
                           width: cardW,
-                          child: _FloatingCard(s: s, size: cardW, members: counts[s.id] ?? 0, nested: all.where((x) => x.parentId == s.id).length),
+                          child: _FloatingCard(
+                            s: s,
+                            size: cardW,
+                            members: counts[s.id] ?? 0,
+                            nested: all.where((x) => x.parentId == s.id).length,
+                          ),
                         );
                       },
                     ),
@@ -189,18 +269,35 @@ class _Core extends StatelessWidget {
       width: 92,
       height: 92,
       alignment: Alignment.center,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.surfaceContainerHigh, border: Border.all(color: theme.colorScheme.outlineVariant)),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: theme.colorScheme.surfaceContainerHigh,
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
       child: Text(
-        extra > 0 ? '+$extra' : tr(context, empty ? 'Your system' : 'System', empty ? 'Tu sistema' : 'Sistema'),
+        extra > 0
+            ? '+$extra'
+            : tr(
+                context,
+                empty ? 'Your system' : 'System',
+                empty ? 'Tu sistema' : 'Sistema',
+              ),
         textAlign: TextAlign.center,
-        style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 }
 
 class _FloatingCard extends ConsumerWidget {
-  const _FloatingCard({required this.s, required this.size, required this.members, required this.nested});
+  const _FloatingCard({
+    required this.s,
+    required this.size,
+    required this.members,
+    required this.nested,
+  });
   final TrackerRecord s;
   final double size;
   final int members;
@@ -210,7 +307,8 @@ class _FloatingCard extends ConsumerWidget {
     final color = subColor(s);
     return Semantics(
       button: true,
-      label: '${s.title}, ${tr(context, '$members members', '$members miembros')}',
+      label:
+          '${s.title}, ${tr(context, '$members members', '$members miembros')}',
       child: GestureDetector(
         onTap: () => context.push('${AppRoutePaths.subsystems}/${s.id}'),
         child: Container(
@@ -218,16 +316,35 @@ class _FloatingCard extends ConsumerWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SubOrb(emoji: subEmoji(s), color: color, color2: subColor2(s), size: size * 0.42),
+              SubOrb(
+                emoji: subEmoji(s),
+                color: color,
+                color2: subColor2(s),
+                size: size * 0.42,
+              ),
               const SizedBox(height: 6),
-              Text(s.title, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: context.sp.text, fontSize: 12, fontWeight: FontWeight.w700)),
               Text(
-                nested > 0 ? '$members · ◎$nested' : tr(context, '$members members', '$members miembros'),
+                s.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.sp.text,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                nested > 0
+                    ? '$members · ◎$nested'
+                    : tr(context, '$members members', '$members miembros'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: context.sp.faint, fontSize: 10),
@@ -251,7 +368,10 @@ class _EmptyCall extends StatelessWidget {
         Text(
           tr(context, 'No subsystems yet', 'Aún no hay subsistemas'),
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: context.sp.text),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: context.sp.text,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -264,7 +384,12 @@ class _EmptyCall extends StatelessWidget {
           style: TextStyle(color: context.sp.dim, height: 1.45),
         ),
         const SizedBox(height: 22),
-        GlowButton(label: tr(context, 'Create a subsystem', 'Crear un subsistema'), icon: PhosphorIcons.planet(), large: true, onPressed: onCreate),
+        GlowButton(
+          label: tr(context, 'Create a subsystem', 'Crear un subsistema'),
+          icon: PhosphorIcons.planet(),
+          large: true,
+          onPressed: onCreate,
+        ),
         const SizedBox(height: 12),
       ],
     ),
@@ -272,7 +397,11 @@ class _EmptyCall extends StatelessWidget {
 }
 
 class _SubsystemRow extends ConsumerWidget {
-  const _SubsystemRow({required this.s, required this.depth, required this.members});
+  const _SubsystemRow({
+    required this.s,
+    required this.depth,
+    required this.members,
+  });
   final TrackerRecord s;
   final int depth;
   final List<String> members;
@@ -288,16 +417,44 @@ class _SubsystemRow extends ConsumerWidget {
       onTap: () => context.push('${AppRoutePaths.subsystems}/${s.id}'),
       child: Row(
         children: [
-          if (depth > 0) Padding(padding: const EdgeInsets.only(right: 8), child: Icon(PhosphorIcons.arrowElbowDownRight(), size: 16, color: context.sp.faint)),
-          SubOrb(emoji: subEmoji(s), color: color, color2: subColor2(s), size: 42),
+          if (depth > 0)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Icon(
+                PhosphorIcons.arrowElbowDownRight(),
+                size: 16,
+                color: context.sp.faint,
+              ),
+            ),
+          SubOrb(
+            emoji: subEmoji(s),
+            color: color,
+            color2: subColor2(s),
+            size: 42,
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(s.title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: context.sp.text)),
+                Text(
+                  s.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: context.sp.text,
+                  ),
+                ),
                 if ((s.body ?? '').trim().isNotEmpty)
-                  Padding(padding: const EdgeInsets.only(top: 2), child: Text(s.body!.trim(), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.sp.dim, fontSize: 12.5))),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      s.body!.trim(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: context.sp.dim, fontSize: 12.5),
+                    ),
+                  ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -310,12 +467,21 @@ class _SubsystemRow extends ConsumerWidget {
                             Positioned(
                               left: i * 16.0,
                               child: Container(
-                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: context.sp.bg, width: 1.5)),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: context.sp.bg,
+                                    width: 1.5,
+                                  ),
+                                ),
                                 child: MemberAvatar(
                                   avatarImageData: shown[i].avatarImageData,
-                                  memberName: shown[i].effectiveName(preferDisplayName: prefer),
+                                  memberName: shown[i].effectiveName(
+                                    preferDisplayName: prefer,
+                                  ),
                                   emoji: shown[i].emoji,
-                                  customColorEnabled: shown[i].customColorEnabled,
+                                  customColorEnabled:
+                                      shown[i].customColorEnabled,
                                   customColorHex: shown[i].customColorHex,
                                   size: 22,
                                 ),
@@ -325,8 +491,22 @@ class _SubsystemRow extends ConsumerWidget {
                       ),
                     ),
                     if (shown.isNotEmpty) const SizedBox(width: 8),
-                    Text(tr(context, '${members.length} members', '${members.length} miembros'), style: TextStyle(color: context.sp.faint, fontSize: 12)),
-                    if (SubSettings(s).isolate) ...[const SizedBox(width: 8), Icon(PhosphorIcons.lockSimple(), size: 13, color: context.sp.faint)],
+                    Text(
+                      tr(
+                        context,
+                        '${members.length} members',
+                        '${members.length} miembros',
+                      ),
+                      style: TextStyle(color: context.sp.faint, fontSize: 12),
+                    ),
+                    if (SubSettings(s).isolate) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        PhosphorIcons.lockSimple(),
+                        size: 13,
+                        color: context.sp.faint,
+                      ),
+                    ],
                   ],
                 ),
               ],
@@ -344,29 +524,90 @@ class _LearnMore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (PhosphorIcons.planet(), context.sp.primary, tr(context, 'What is a subsystem?', '¿Qué es un subsistema?'),
-          tr(context, 'A group of alters who form their own smaller system — with its own members, fronters, roles, relationships, rules and history — while still being part of your whole system.', 'Un grupo de alters que forman su propio sistema más pequeño —con sus miembros, frentes, roles, relaciones, normas e historial— sin dejar de ser parte de todo tu sistema.')),
-      (PhosphorIcons.crown(), context.sp.secondary, tr(context, 'Founders, roles & permissions', 'Fundadores, roles y permisos'),
-          tr(context, 'Every subsystem starts with a founding alter. Members get subsystem-only roles and permissions; an alter can belong to several subsystems without being copied, and their main profile never changes.', 'Cada subsistema empieza con un alter fundador. Los miembros tienen roles y permisos propios del subsistema; un alter puede estar en varios subsistemas sin copiarse, y su perfil principal no cambia.')),
-      (PhosphorIcons.lockSimple(), context.sp.tertiary, tr(context, 'Private membership', 'Membresía privada'),
-          tr(context, 'With member isolation on (the default), a subsystem’s members appear only inside that subsystem — not in Headmates, alter searches or other system-wide member lists.', 'Con el aislamiento activado (por defecto), los miembros de un subsistema solo aparecen dentro de él —no en Headmates, búsquedas de alters ni otras listas del sistema.')),
-      (PhosphorIcons.treeStructure(), context.sp.primary, tr(context, 'Nesting & groups', 'Anidación y grupos'),
-          tr(context, 'Subsystems can hold nested subsystems and internal groups, so layered or branching structures stay readable.', 'Los subsistemas pueden contener subsistemas anidados y grupos internos, para que las estructuras por capas o ramas sean claras.')),
-      (PhosphorIcons.graph(), context.sp.secondary, tr(context, 'Its own space', 'Su propio espacio'),
-          tr(context, 'Each subsystem keeps its own fronting history, journal, notes, chat and announcements, rules and boundaries, and connections to the main system and other subsystems.', 'Cada subsistema guarda su historial de frente, diario, notas, chat y anuncios, normas y límites, y conexiones con el sistema principal y otros subsistemas.')),
+      (
+        PhosphorIcons.planet(),
+        context.sp.primary,
+        tr(context, 'What is a subsystem?', '¿Qué es un subsistema?'),
+        tr(
+          context,
+          'A group of alters who form their own smaller system — with its own members, fronters, roles, relationships, rules and history — while still being part of your whole system.',
+          'Un grupo de alters que forman su propio sistema más pequeño —con sus miembros, frentes, roles, relaciones, normas e historial— sin dejar de ser parte de todo tu sistema.',
+        ),
+      ),
+      (
+        PhosphorIcons.crown(),
+        context.sp.secondary,
+        tr(
+          context,
+          'Founders, roles & permissions',
+          'Fundadores, roles y permisos',
+        ),
+        tr(
+          context,
+          'Every subsystem starts with a founding alter. Members get subsystem-only roles and permissions; an alter can belong to several subsystems without being copied, and their main profile never changes.',
+          'Cada subsistema empieza con un alter fundador. Los miembros tienen roles y permisos propios del subsistema; un alter puede estar en varios subsistemas sin copiarse, y su perfil principal no cambia.',
+        ),
+      ),
+      (
+        PhosphorIcons.lockSimple(),
+        context.sp.tertiary,
+        tr(context, 'Private membership', 'Membresía privada'),
+        tr(
+          context,
+          'With member isolation on (the default), a subsystem’s members appear only inside that subsystem — not in Headmates, alter searches or other system-wide member lists.',
+          'Con el aislamiento activado (por defecto), los miembros de un subsistema solo aparecen dentro de él —no en Headmates, búsquedas de alters ni otras listas del sistema.',
+        ),
+      ),
+      (
+        PhosphorIcons.treeStructure(),
+        context.sp.primary,
+        tr(context, 'Nesting & groups', 'Anidación y grupos'),
+        tr(
+          context,
+          'Subsystems can hold nested subsystems and internal groups, so layered or branching structures stay readable.',
+          'Los subsistemas pueden contener subsistemas anidados y grupos internos, para que las estructuras por capas o ramas sean claras.',
+        ),
+      ),
+      (
+        PhosphorIcons.graph(),
+        context.sp.secondary,
+        tr(context, 'Its own space', 'Su propio espacio'),
+        tr(
+          context,
+          'Each subsystem keeps its own fronting history, journal, notes, chat and announcements, rules and boundaries, and connections to the main system and other subsystems.',
+          'Cada subsistema guarda su historial de frente, diario, notas, chat y anuncios, normas y límites, y conexiones con el sistema principal y otros subsistemas.',
+        ),
+      ),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CosmicHeading(tr(context, 'Learn more', 'Más información'), color: context.sp.tertiary),
-        for (final (icon, color, title, body) in items) Padding(padding: const EdgeInsets.only(bottom: 8), child: _Expander(icon: icon, color: color, title: title, body: body)),
+        CosmicHeading(
+          tr(context, 'Learn more', 'Más información'),
+          color: context.sp.tertiary,
+        ),
+        for (final (icon, color, title, body) in items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _Expander(
+              icon: icon,
+              color: color,
+              title: title,
+              body: body,
+            ),
+          ),
       ],
     );
   }
 }
 
 class _Expander extends StatelessWidget {
-  const _Expander({required this.icon, required this.color, required this.title, required this.body});
+  const _Expander({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.body,
+  });
   final IconData icon;
   final Color color;
   final String title;
@@ -374,7 +615,20 @@ class _Expander extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PrismExpandableSection(
     leading: Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-    title: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-    children: [Text(body, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5))],
+    title: Text(
+      title,
+      style: Theme.of(
+        context,
+      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+    ),
+    children: [
+      Text(
+        body,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          height: 1.5,
+        ),
+      ),
+    ],
   );
 }
