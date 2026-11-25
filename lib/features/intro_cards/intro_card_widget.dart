@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/intro_cards/intro_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
+import 'package:prism_plurality/features/intro_cards/intro_patterns.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Width cards are laid out at before scaling to their display size.
@@ -145,9 +146,9 @@ class _CardFace extends StatelessWidget {
       ),
       child: CustomPaint(
         foregroundPainter: _BorderPainter(Color(template.border)),
-        painter: _PatternPainter(
-          template.pattern,
-          Color(template.border).withValues(alpha: 0.18),
+        painter: IntroPatternPainter(
+          template.patternSpec,
+          Color(template.border),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
@@ -433,87 +434,4 @@ class _BorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BorderPainter old) => old.color != color;
-}
-
-class _PatternPainter extends CustomPainter {
-  _PatternPainter(this.pattern, this.color);
-  final String pattern;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (pattern == 'none') return;
-    final rnd = math.Random(pattern.hashCode);
-    final p = Paint()..color = color;
-    for (var i = 0; i < 26; i++) {
-      final o = Offset(
-        rnd.nextDouble() * size.width,
-        rnd.nextDouble() * size.height,
-      );
-      final r = 2 + rnd.nextDouble() * 5;
-      switch (pattern) {
-        case 'stars':
-          final path = Path();
-          for (var k = 0; k < 10; k++) {
-            final rr = k.isEven ? r : r * 0.45;
-            final a = -math.pi / 2 + k * math.pi / 5;
-            final pt = o + Offset(math.cos(a) * rr, math.sin(a) * rr);
-            k == 0 ? path.moveTo(pt.dx, pt.dy) : path.lineTo(pt.dx, pt.dy);
-          }
-          canvas.drawPath(path..close(), p);
-        case 'moons':
-          canvas.drawPath(
-            Path.combine(
-              PathOperation.difference,
-              Path()..addOval(Rect.fromCircle(center: o, radius: r)),
-              Path()..addOval(
-                Rect.fromCircle(
-                  center: o + Offset(r * 0.5, -r * 0.2),
-                  radius: r,
-                ),
-              ),
-            ),
-            p,
-          );
-        case 'suns':
-          canvas.drawCircle(o, r * 0.6, p);
-          for (var k = 0; k < 8; k++) {
-            final a = k * math.pi / 4;
-            canvas.drawLine(
-              o + Offset(math.cos(a), math.sin(a)) * r * 0.9,
-              o + Offset(math.cos(a), math.sin(a)) * r * 1.5,
-              p..strokeWidth = 1,
-            );
-          }
-        case 'leaves':
-          canvas.save();
-          canvas.translate(o.dx, o.dy);
-          canvas.rotate(rnd.nextDouble() * math.pi);
-          canvas.drawOval(
-            Rect.fromCenter(
-              center: Offset.zero,
-              width: r * 1.2,
-              height: r * 2.6,
-            ),
-            p,
-          );
-          canvas.restore();
-        case 'waves':
-          final path = Path()..moveTo(o.dx - r * 2, o.dy);
-          path.quadraticBezierTo(o.dx - r, o.dy - r, o.dx, o.dy);
-          path.quadraticBezierTo(o.dx + r, o.dy + r, o.dx + r * 2, o.dy);
-          canvas.drawPath(
-            path,
-            Paint()
-              ..color = color
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1.4,
-          );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_PatternPainter old) =>
-      old.pattern != pattern || old.color != color;
 }

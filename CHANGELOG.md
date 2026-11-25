@@ -2,6 +2,20 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.43.2] - 2026-11-25
+
+### Added
+- Introduction card patterns: 47 motifs and 29 tiled patterns, with presets,
+  a second layer, colour, opacity, size, density, rotation, line width,
+  scatter, size variety, filled or outline shapes, placement (border,
+  corners, sides, centre, frame and more) and fades.
+- Each card can use its own pattern instead of its design's.
+- Companion birthdays and adoption days in notifications and the calendar.
+
+### Changed
+- Squared, Rounded and the Look corner setting now apply across the app,
+  including story rings, avatars, chips, sheets and cards.
+
 ## [0.42.0] - 2026-11-24
 
 ### Added

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:prism_plurality/core/web/render_mode.dart' show clearWebStorage;
 import 'dart:convert';
 import 'dart:io';
@@ -722,7 +721,7 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       await (await SharedPreferences.getInstance()).clear();
     } catch (_) {}
     try {
-      await const FlutterSecureStorage().deleteAll();
+      await safeSecureDeleteAll();
     } catch (_) {}
     clearWebStorage();
     _log('Completed full web reset (${tables.length} tables emptied)');

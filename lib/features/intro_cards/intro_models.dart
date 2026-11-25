@@ -1,3 +1,4 @@
+import 'package:prism_plurality/features/intro_cards/intro_patterns.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Visual design of a card.
@@ -12,7 +13,16 @@ class IntroTemplate {
     this.font = 'serif',
     this.pattern = 'stars',
     this.record,
+    this.patternStyle,
   });
+
+  /// Full pattern settings (see [IntroPattern]); null = defaults for [pattern].
+  final Map<String, Object?>? patternStyle;
+
+  IntroPattern get patternSpec => IntroPattern.fromJson(
+    patternStyle,
+    fallbackKind: introPatternNames.containsKey(pattern) ? pattern : 'stars',
+  );
 
   final String id;
   final String name;
@@ -48,7 +58,21 @@ class IntroTemplate {
   /// This design with the card's own colours (Card colours in the editor).
   IntroTemplate withCardColors(TrackerRecord card) {
     final c = card.fields['colors'];
-    if (c is! Map) return this;
+    final ps = card.fields['patternStyle'];
+    final own = ps is Map ? ps.cast<String, Object?>() : patternStyle;
+    if (c is! Map)
+      return IntroTemplate(
+        id: id,
+        name: name,
+        bg1: bg1,
+        bg2: bg2,
+        border: border,
+        ink: ink,
+        font: font,
+        pattern: pattern,
+        record: record,
+        patternStyle: own,
+      );
     int pick(String k, int fallback) => (c[k] as num?)?.toInt() ?? fallback;
     return IntroTemplate(
       id: id,
@@ -70,6 +94,7 @@ class IntroTemplate {
     'ink': ink,
     'font': font,
     'pattern': pattern,
+    if (patternStyle != null) 'patternStyle': patternStyle,
   };
 
   static IntroTemplate fromRecord(TrackerRecord r) => IntroTemplate(
@@ -82,6 +107,9 @@ class IntroTemplate {
     font: r.str('font') ?? 'serif',
     pattern: r.str('pattern') ?? 'stars',
     record: r,
+    patternStyle: r.fields['patternStyle'] is Map
+        ? (r.fields['patternStyle'] as Map).cast<String, Object?>()
+        : null,
   );
 }
 

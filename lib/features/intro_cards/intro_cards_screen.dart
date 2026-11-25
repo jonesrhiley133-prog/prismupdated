@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/intro_cards/intro_pattern_editor.dart';
+import 'package:prism_plurality/features/intro_cards/intro_patterns.dart';
 import 'package:prism_plurality/shared/widgets/symbol_library.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
@@ -578,6 +580,9 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
   bool _init = false;
   bool _back = false;
 
+  /// This card's own pattern (null = the design's).
+  IntroPattern? _patternStyle;
+
   /// Decorative symbols on the card front: (symbol, colour or null, size).
   final List<(String, int?, double)> _symbols = [];
 
@@ -623,6 +628,8 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
     }
     _arcana.text = card.str('arcana') ?? '';
     _numeral.text = card.str('numeral') ?? '';
+    if (card.fields['patternStyle'] is Map)
+      _patternStyle = IntroPattern.fromJson(card.fields['patternStyle']);
     for (final x in (card.fields['symbols'] as List? ?? const [])) {
       if (x is Map)
         _symbols.add((
@@ -680,6 +687,7 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
         if (e.value.text.trim().isNotEmpty) e.key: e.value.text.trim(),
     },
     'shown': _shown.toList(),
+    'patternStyle': _patternStyle?.toJson(),
     'symbols': [
       for (final (t, c, z) in _symbols) {'s': t, 'c': c, 'z': z},
     ],
@@ -717,7 +725,9 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
       onSave: () async {
         final t = ref.read(trackerNotifierProvider.notifier);
         if (_existing != null) {
-          await t.save(_existing!.withFields({..._existing!.fields, ..._fields()}));
+          await t.save(
+            _existing!.withFields({..._existing!.fields, ..._fields()}),
+          );
         } else {
           await t.create(
             kind: TrackerKind.introCard,
@@ -731,7 +741,9 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
       children: [
         Center(
           child: IntroCardView(
-            key: ValueKey('$_back-$_template-${_colors == null}'),
+            key: ValueKey(
+              '$_back-$_template-${_colors == null}-${_patternStyle?.toJson()}',
+            ),
             card: preview,
             member: m,
             template: templates
@@ -859,6 +871,40 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
             ),
             const SizedBox(height: 6),
           ],
+        const SizedBox(height: 8),
+        Builder(
+          builder: (context) {
+            final t = templates.firstWhere(
+              (t) => t.id == _template,
+              orElse: () => templates.first,
+            );
+            final c = _colors;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                PrismSwitchRow(
+                  title: tr(context, 'Custom pattern', 'Patrón propio'),
+                  subtitle: tr(
+                    context,
+                    'Give this card its own pattern instead of the design\'s.',
+                    'Dale a esta tarjeta su propio patrón en vez del del diseño.',
+                  ),
+                  value: _patternStyle != null,
+                  onChanged: (v) =>
+                      setState(() => _patternStyle = v ? t.patternSpec : null),
+                ),
+                if (_patternStyle != null)
+                  IntroPatternEditor(
+                    value: _patternStyle!,
+                    onChanged: (p) => setState(() => _patternStyle = p),
+                    bg1: Color(c?['bg1'] ?? t.bg1),
+                    bg2: Color(c?['bg2'] ?? t.bg2),
+                    ink: Color(c?['border'] ?? t.border),
+                  ),
+              ],
+            );
+          },
+        ),
         const SizedBox(height: 8),
         TrackerLabel(tr(context, 'Artwork', 'Ilustración')),
         Wrap(
@@ -1128,6 +1174,7 @@ class _TemplateEditorState extends ConsumerState<_TemplateEditor> {
   );
   late int _bg1 = _b.bg1, _bg2 = _b.bg2, _border = _b.border, _ink = _b.ink;
   late String _font = _b.font, _pattern = _b.pattern;
+  late Map<String, Object?>? _patternStyle = _b.patternStyle;
 
   @override
   void dispose() {
@@ -1144,6 +1191,7 @@ class _TemplateEditorState extends ConsumerState<_TemplateEditor> {
     ink: _ink,
     font: _font,
     pattern: _pattern,
+    patternStyle: _patternStyle,
   );
 
   @override
@@ -1261,23 +1309,20 @@ class _TemplateEditorState extends ConsumerState<_TemplateEditor> {
         ),
         const SizedBox(height: 10),
         TrackerLabel(tr(context, 'Pattern', 'Patrón')),
-        Wrap(
-          spacing: 6,
-          children: [
-            for (final p in const [
-              'stars',
-              'moons',
-              'suns',
-              'leaves',
-              'waves',
-              'none',
-            ])
-              PrismChip(
-                label: p,
-                selected: _pattern == p,
-                onTap: () => setState(() => _pattern = p),
-              ),
-          ],
+        IntroPatternEditor(
+          value: IntroPattern.fromJson(
+            _patternStyle,
+            fallbackKind: introPatternNames.containsKey(_pattern)
+                ? _pattern
+                : 'stars',
+          ),
+          onChanged: (p) => setState(() {
+            _patternStyle = p.toJson();
+            _pattern = p.kind;
+          }),
+          bg1: Color(_bg1),
+          bg2: Color(_bg2),
+          ink: Color(_border),
         ),
         if (editing != null) ...[
           const SizedBox(height: 16),

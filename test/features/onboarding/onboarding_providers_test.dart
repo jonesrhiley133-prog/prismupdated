@@ -390,6 +390,7 @@ void main() {
         AppShellTabId.astro,
         AppShellTabId.games,
         AppShellTabId.cozy,
+        AppShellTabId.experiences,
         AppShellTabId.insights,
         AppShellTabId.locations,
         AppShellTabId.work,
