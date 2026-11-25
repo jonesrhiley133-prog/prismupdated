@@ -6,7 +6,15 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 /// One freehand stroke. Points are stored normalised (0–1) so drawings
 /// scale with the screen and save compactly.
 class Stroke {
-  Stroke({required this.points, required this.color, required this.width, this.eraser = false, this.author, this.layer = 0, this.brush = 'pen'});
+  Stroke({
+    required this.points,
+    required this.color,
+    required this.width,
+    this.eraser = false,
+    this.author,
+    this.layer = 0,
+    this.brush = 'pen',
+  });
   final List<Offset> points;
   final int color;
   final double width;
@@ -30,9 +38,14 @@ class Stroke {
   };
 
   static Stroke fromJson(Map m) {
-    final raw = [for (final v in (m['p'] as List? ?? const [])) (v as num).toDouble() / 1000];
+    final raw = [
+      for (final v in (m['p'] as List? ?? const []))
+        (v as num).toDouble() / 1000,
+    ];
     return Stroke(
-      points: [for (var i = 0; i + 1 < raw.length; i += 2) Offset(raw[i], raw[i + 1])],
+      points: [
+        for (var i = 0; i + 1 < raw.length; i += 2) Offset(raw[i], raw[i + 1]),
+      ],
       color: (m['c'] as num?)?.toInt() ?? 0xFF000000,
       width: (m['w'] as num?)?.toDouble() ?? 4,
       eraser: m['e'] == 1,
@@ -45,7 +58,13 @@ class Stroke {
 
 /// State for a drawing: strokes, undo/redo and the current tool.
 class DrawingController extends ChangeNotifier {
-  DrawingController({List<Stroke>? strokes, this.symmetry = 1, this.author, Color? color}) : strokes = strokes ?? [], color = color ?? const Color(0xFF3B3B58);
+  DrawingController({
+    List<Stroke>? strokes,
+    this.symmetry = 1,
+    this.author,
+    Color? color,
+  }) : strokes = strokes ?? [],
+       color = color ?? const Color(0xFF3B3B58);
   final List<Stroke> strokes;
   final List<Stroke> _redo = [];
   int symmetry;
@@ -62,7 +81,15 @@ class DrawingController extends ChangeNotifier {
   bool get canRedo => _redo.isNotEmpty;
 
   void start(Offset p) {
-    _live = Stroke(points: [p], color: color.toARGB32(), width: width, eraser: eraser, author: author, layer: layer, brush: brush);
+    _live = Stroke(
+      points: [p],
+      color: color.toARGB32(),
+      width: width,
+      eraser: eraser,
+      author: author,
+      layer: layer,
+      brush: brush,
+    );
     strokes.add(_live!);
     _redo.clear();
     notifyListeners();
@@ -95,7 +122,13 @@ class DrawingController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void set({Color? color, double? width, bool? eraser, int? layer, String? brush}) {
+  void set({
+    Color? color,
+    double? width,
+    bool? eraser,
+    int? layer,
+    String? brush,
+  }) {
     if (color != null) {
       this.color = color;
       this.eraser = false;
@@ -159,18 +192,29 @@ class _StrokePainter extends CustomPainter {
       for (final off in offsets) {
         final path = Path();
         for (var i = 0; i < s.points.length; i++) {
-          final p = Offset(s.points[i].dx * size.width, s.points[i].dy * size.height);
+          final p = Offset(
+            s.points[i].dx * size.width,
+            s.points[i].dy * size.height,
+          );
           var q = p;
           if (off != 0 && s.points.length > 1) {
-            final a = s.points[math.max(0, i - 1)], b = s.points[math.min(s.points.length - 1, i + 1)];
+            final a = s.points[math.max(0, i - 1)],
+                b = s.points[math.min(s.points.length - 1, i + 1)];
             final d = Offset(b.dx - a.dx, b.dy - a.dy);
             final len = d.distance == 0 ? 1 : d.distance;
-            q = p + Offset(-d.dy / len, d.dx / len) * (off * paint.strokeWidth * 1.6);
+            q =
+                p +
+                Offset(-d.dy / len, d.dx / len) *
+                    (off * paint.strokeWidth * 1.6);
           }
           i == 0 ? path.moveTo(q.dx, q.dy) : path.lineTo(q.dx, q.dy);
         }
         if (s.points.length == 1) {
-          canvas.drawCircle(Offset(s.points[0].dx * size.width, s.points[0].dy * size.height), paint.strokeWidth / 2, paint..style = PaintingStyle.fill);
+          canvas.drawCircle(
+            Offset(s.points[0].dx * size.width, s.points[0].dy * size.height),
+            paint.strokeWidth / 2,
+            paint..style = PaintingStyle.fill,
+          );
         } else {
           canvas.drawPath(path, paint);
         }
@@ -180,12 +224,20 @@ class _StrokePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _StrokePainter old) => old.background != background;
+  bool shouldRepaint(covariant _StrokePainter old) =>
+      old.background != background;
 }
 
 /// A square drawing surface.
 class DrawingBoard extends StatelessWidget {
-  const DrawingBoard({super.key, required this.controller, this.background, this.onChanged, this.child, this.aspectRatio = 1});
+  const DrawingBoard({
+    super.key,
+    required this.controller,
+    this.background,
+    this.onChanged,
+    this.child,
+    this.aspectRatio = 1,
+  });
   final DrawingController controller;
   final Color? background;
   final VoidCallback? onChanged;
@@ -203,7 +255,10 @@ class DrawingBoard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: LayoutBuilder(
           builder: (context, box) {
-            Offset norm(Offset p) => Offset((p.dx / box.maxWidth).clamp(0, 1), (p.dy / box.maxHeight).clamp(0, 1));
+            Offset norm(Offset p) => Offset(
+              (p.dx / box.maxWidth).clamp(0, 1),
+              (p.dy / box.maxHeight).clamp(0, 1),
+            );
             return Semantics(
               label: tr(context, 'Drawing canvas', 'Lienzo de dibujo'),
               child: GestureDetector(
@@ -221,7 +276,11 @@ class DrawingBoard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: RepaintBoundary(child: CustomPaint(painter: _StrokePainter(controller, bg))),
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          painter: _StrokePainter(controller, bg),
+                        ),
+                      ),
                     ),
                     if (child != null) Positioned.fill(child: child!),
                   ],
@@ -253,7 +312,14 @@ const drawingPalette = <Color>[
 
 /// Colour swatches, brush size, eraser, undo/redo, clear.
 class DrawingToolbar extends StatelessWidget {
-  const DrawingToolbar({super.key, required this.controller, this.palette = drawingPalette, this.onChanged, this.showEraser = true, this.layers = 0});
+  const DrawingToolbar({
+    super.key,
+    required this.controller,
+    this.palette = drawingPalette,
+    this.onChanged,
+    this.showEraser = true,
+    this.layers = 0,
+  });
   final DrawingController controller;
   final List<Color> palette;
   final VoidCallback? onChanged;
@@ -288,7 +354,14 @@ class DrawingToolbar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: c,
                         shape: BoxShape.circle,
-                        border: Border.all(color: !controller.eraser && controller.color == c ? scheme.primary : scheme.outlineVariant, width: !controller.eraser && controller.color == c ? 3 : 1),
+                        border: Border.all(
+                          color: !controller.eraser && controller.color == c
+                              ? scheme.primary
+                              : scheme.outlineVariant,
+                          width: !controller.eraser && controller.color == c
+                              ? 3
+                              : 1,
+                        ),
                       ),
                     ),
                   ),
@@ -351,14 +424,27 @@ class DrawingToolbar extends StatelessWidget {
               alignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(tr(context, 'Layer', 'Capa'), style: Theme.of(context).textTheme.labelMedium),
+                Text(
+                  tr(context, 'Layer', 'Capa'),
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
                 for (var l = 0; l < layers; l++)
                   PrismChip(
-                    label: '${l + 1}${controller.hiddenLayers.contains(l) ? ' (hidden)' : ''}',
+                    label:
+                        '${l + 1}${controller.hiddenLayers.contains(l) ? ' (hidden)' : ''}',
                     selected: controller.layer == l,
-                    onTap: () => controller.layer == l ? controller.toggleLayer(l) : controller.set(layer: l),
+                    onTap: () => controller.layer == l
+                        ? controller.toggleLayer(l)
+                        : controller.set(layer: l),
                   ),
-                Text(tr(context, 'Tap the active layer to hide it', 'Toca la capa activa para ocultarla'), style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  tr(
+                    context,
+                    'Tap the active layer to hide it',
+                    'Toca la capa activa para ocultarla',
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
         ],
@@ -377,8 +463,20 @@ class Sticker {
   double x, y, size;
   final String? author;
 
-  Map<String, Object?> toJson() => {'e': emoji, 'x': (x * 1000).round(), 'y': (y * 1000).round(), 's': (size * 1000).round(), if (author != null) 'a': author};
-  static Sticker fromJson(Map m) => Sticker('${m['e']}', ((m['x'] as num?) ?? 500) / 1000, ((m['y'] as num?) ?? 500) / 1000, size: ((m['s'] as num?) ?? 120) / 1000, author: m['a'] as String?);
+  Map<String, Object?> toJson() => {
+    'e': emoji,
+    'x': (x * 1000).round(),
+    'y': (y * 1000).round(),
+    's': (size * 1000).round(),
+    if (author != null) 'a': author,
+  };
+  static Sticker fromJson(Map m) => Sticker(
+    '${m['e']}',
+    ((m['x'] as num?) ?? 500) / 1000,
+    ((m['y'] as num?) ?? 500) / 1000,
+    size: ((m['s'] as num?) ?? 120) / 1000,
+    author: m['a'] as String?,
+  );
   static List<Sticker> parse(Object? raw) => [
     for (final m in (raw as List?) ?? const [])
       if (m is Map) Sticker.fromJson(m),
@@ -387,7 +485,13 @@ class Sticker {
 
 /// Lays out stickers; tap to select, drag to move, pinch or buttons to resize.
 class StickerLayer extends StatelessWidget {
-  const StickerLayer({super.key, required this.stickers, required this.selected, required this.onSelect, required this.onChanged});
+  const StickerLayer({
+    super.key,
+    required this.stickers,
+    required this.selected,
+    required this.onSelect,
+    required this.onChanged,
+  });
   final List<Sticker> stickers;
   final int? selected;
   final ValueChanged<int?> onSelect;
@@ -417,16 +521,22 @@ class StickerLayer extends StatelessWidget {
                         onTap: () => onSelect(selected == i ? null : i),
                         onScaleStart: (_) => onSelect(i),
                         onScaleUpdate: (d) {
-                          s.x = (s.x + d.focalPointDelta.dx / box.maxWidth).clamp(0.0, 1.0);
-                          s.y = (s.y + d.focalPointDelta.dy / box.maxHeight).clamp(0.0, 1.0);
-                          if (d.scale != 1) s.size = (s.size * (1 + (d.scale - 1) * 0.06)).clamp(0.05, 0.5);
+                          s.x = (s.x + d.focalPointDelta.dx / box.maxWidth)
+                              .clamp(0.0, 1.0);
+                          s.y = (s.y + d.focalPointDelta.dy / box.maxHeight)
+                              .clamp(0.0, 1.0);
+                          if (d.scale != 1)
+                            s.size = (s.size * (1 + (d.scale - 1) * 0.06))
+                                .clamp(0.05, 0.5);
                           (context as Element).markNeedsBuild();
                           onSelect(i);
                         },
                         onScaleEnd: (_) => onChanged(),
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            border: selected == i ? Border.all(color: scheme.primary, width: 2) : null,
+                            border: selected == i
+                                ? Border.all(color: scheme.primary, width: 2)
+                                : null,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: FittedBox(child: Text(s.emoji)),
@@ -445,7 +555,13 @@ class StickerLayer extends StatelessWidget {
 
 /// Size/remove controls for the selected sticker.
 class StickerControls extends StatelessWidget {
-  const StickerControls({super.key, required this.stickers, required this.selected, required this.onChanged, required this.onDeselect});
+  const StickerControls({
+    super.key,
+    required this.stickers,
+    required this.selected,
+    required this.onChanged,
+    required this.onDeselect,
+  });
   final List<Sticker> stickers;
   final int? selected;
   final VoidCallback onChanged;

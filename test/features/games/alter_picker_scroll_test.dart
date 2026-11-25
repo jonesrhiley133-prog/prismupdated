@@ -13,27 +13,38 @@ void main() {
     tester.view.physicalSize = const Size(360, 640);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final members = [for (var i = 0; i < 60; i++) Member(id: 'm$i', name: 'Alter $i', createdAt: DateTime(2024))];
+    final members = [
+      for (var i = 0; i < 60; i++)
+        Member(id: 'm$i', name: 'Alter $i', createdAt: DateTime(2024)),
+    ];
     List<String>? result;
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        gameMembersProvider.overrideWithValue(members),
-        gameNamesProvider.overrideWithValue({for (final m in members) m.id: m.name}),
-        gamePlayerDefaultProvider.overrideWithValue(null),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Consumer(
-          builder: (context, ref, _) => Scaffold(
-            body: Center(
-              child: ElevatedButton(onPressed: () async => result = await pickAlters(context, ref), child: const Text('open')),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          gameMembersProvider.overrideWithValue(members),
+          gameNamesProvider.overrideWithValue({
+            for (final m in members) m.id: m.name,
+          }),
+          gamePlayerDefaultProvider.overrideWithValue(null),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Consumer(
+            builder: (context, ref, _) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async =>
+                      result = await pickAlters(context, ref),
+                  child: const Text('open'),
+                ),
+              ),
             ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull, reason: 'no overflow');
@@ -44,7 +55,11 @@ void main() {
     expect(box.bottom, lessThanOrEqualTo(640), reason: 'Done button on screen');
 
     // The last alter is reachable by scrolling.
-    await tester.scrollUntilVisible(find.text('Alter 59'), 300, scrollable: find.byType(Scrollable).last);
+    await tester.scrollUntilVisible(
+      find.text('Alter 59'),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Alter 59'));
     await tester.pump();
     await tester.tap(find.text('Done (1)'));

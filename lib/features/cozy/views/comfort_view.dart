@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:prism_plurality/features/cozy/data/cozy_data.dart';
 import 'package:prism_plurality/features/games/content/prompt_bank.dart';
 import 'package:prism_plurality/features/games/core/games_data.dart';
+import 'package:prism_plurality/features/games/engines/ambience_synth.dart';
 import 'package:prism_plurality/features/games/engines/tone_player.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -42,10 +43,17 @@ class _ComfortViewState extends State<ComfortView> {
               (_Tool.sounds, tr(context, '🌧️ Sounds', '🌧️ Sonidos')),
               (_Tool.ground, tr(context, '🖐️ Grounding', '🖐️ Anclaje')),
               (_Tool.timer, tr(context, '⏳ Timer', '⏳ Temporizador')),
-              (_Tool.jar, tr(context, '🫙 Message jar', '🫙 Tarro de mensajes')),
+              (
+                _Tool.jar,
+                tr(context, '🫙 Message jar', '🫙 Tarro de mensajes'),
+              ),
               (_Tool.fidget, tr(context, '🫧 Bubble pop', '🫧 Burbujas')),
             ])
-              PrismChip(label: l, selected: _tool == t, onTap: () => setState(() => _tool = t)),
+              PrismChip(
+                label: l,
+                selected: _tool == t,
+                onTap: () => setState(() => _tool = t),
+              ),
           ],
         ),
         const SizedBox(height: 12),
@@ -72,8 +80,17 @@ class _Breathe extends StatefulWidget {
 
 class _BreatheState extends State<_Breathe> {
   static const patterns = <String, List<(String, String, int)>>{
-    'Box 4·4·4·4': [('Breathe in', 'Inhala', 4), ('Hold', 'Mantén', 4), ('Breathe out', 'Exhala', 4), ('Hold', 'Mantén', 4)],
-    '4·7·8': [('Breathe in', 'Inhala', 4), ('Hold', 'Mantén', 7), ('Breathe out', 'Exhala', 8)],
+    'Box 4·4·4·4': [
+      ('Breathe in', 'Inhala', 4),
+      ('Hold', 'Mantén', 4),
+      ('Breathe out', 'Exhala', 4),
+      ('Hold', 'Mantén', 4),
+    ],
+    '4·7·8': [
+      ('Breathe in', 'Inhala', 4),
+      ('Hold', 'Mantén', 7),
+      ('Breathe out', 'Exhala', 8),
+    ],
     'Calm 4·6': [('Breathe in', 'Inhala', 4), ('Breathe out', 'Exhala', 6)],
     'Gentle 3·3': [('Breathe in', 'Inhala', 3), ('Breathe out', 'Exhala', 3)],
   };
@@ -116,44 +133,70 @@ class _BreatheState extends State<_Breathe> {
     final exhale = en == 'Breathe out';
     final reduce = MediaQuery.of(context).disableAnimations;
     final scheme = Theme.of(context).colorScheme;
-    final target = !running ? 0.6 : (inhale ? 1.0 : (exhale ? 0.45 : (_step == 1 ? 1.0 : 0.45)));
+    final target = !running
+        ? 0.6
+        : (inhale ? 1.0 : (exhale ? 0.45 : (_step == 1 ? 1.0 : 0.45)));
     return PrismSurface(
       child: Column(
         children: [
           Wrap(
             spacing: 6,
-            children: [for (final k in patterns.keys) PrismChip(label: k, selected: _p == k, onTap: () => setState(() => _p = k))],
+            children: [
+              for (final k in patterns.keys)
+                PrismChip(
+                  label: k,
+                  selected: _p == k,
+                  onTap: () => setState(() => _p = k),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
           SizedBox(
             height: 220,
             child: Center(
               child: AnimatedContainer(
-                duration: reduce || !running ? Duration.zero : Duration(seconds: secs),
+                duration: reduce || !running
+                    ? Duration.zero
+                    : Duration(seconds: secs),
                 curve: Curves.easeInOut,
                 width: 220 * target,
                 height: 220 * target,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: RadialGradient(colors: [scheme.primary.withValues(alpha: 0.55), scheme.primary.withValues(alpha: 0.12)]),
+                  gradient: RadialGradient(
+                    colors: [
+                      scheme.primary.withValues(alpha: 0.55),
+                      scheme.primary.withValues(alpha: 0.12),
+                    ],
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Semantics(
                   liveRegion: true,
                   child: Text(
-                    running ? '${tr(context, en, es)}\n$_left' : tr(context, 'Ready', 'Listo'),
+                    running
+                        ? '${tr(context, en, es)}\n$_left'
+                        : tr(context, 'Ready', 'Listo'),
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-          if (running) Text(tr(context, '$_cycles rounds', '$_cycles rondas'), style: Theme.of(context).textTheme.bodySmall),
+          if (running)
+            Text(
+              tr(context, '$_cycles rounds', '$_cycles rondas'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           const SizedBox(height: 10),
           PrismButton(
             tone: PrismButtonTone.filled,
-            label: running ? tr(context, 'Stop', 'Parar') : tr(context, 'Start', 'Empezar'),
+            label: running
+                ? tr(context, 'Stop', 'Parar')
+                : tr(context, 'Start', 'Empezar'),
             onPressed: () {
               if (running) {
                 _t?.cancel();
@@ -178,14 +221,6 @@ class _Sounds extends StatefulWidget {
 }
 
 class _SoundsState extends State<_Sounds> {
-  static const kinds = [
-    ('rain', '🌧️', 'Rain', 'Lluvia'),
-    ('wind', '🍃', 'Wind', 'Viento'),
-    ('waves', '🌊', 'Waves', 'Olas'),
-    ('fire', '🔥', 'Fireplace', 'Chimenea'),
-    ('stream', '💧', 'Stream', 'Arroyo'),
-    ('white', '☁️', 'Soft noise', 'Ruido suave'),
-  ];
   final Map<String, TonePlayer> _players = {};
   final Map<String, double> _vol = {};
 
@@ -209,6 +244,30 @@ class _SoundsState extends State<_Sounds> {
     await p.loop(k, volume: _vol[k] ?? 0.4);
   }
 
+  Widget _row(BuildContext context, String k, String e, String en, String es) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 190,
+          child: PrismChip(
+            label: '$e ${tr(context, en, es)}',
+            selected: _players.containsKey(k),
+            onTap: () => _toggle(k),
+          ),
+        ),
+        Expanded(
+          child: Slider(
+            value: _vol[k] ?? 0.4,
+            onChanged: (v) {
+              setState(() => _vol[k] = v);
+              _players[k]?.setVolume(v);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PrismSurface(
@@ -216,28 +275,29 @@ class _SoundsState extends State<_Sounds> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            tr(context, 'Mix gentle sounds. They\'re made on your device and play alongside your music.', 'Mezcla sonidos suaves. Se generan en tu dispositivo y suenan junto a tu música.'),
+            tr(
+              context,
+              'Mix gentle sounds. They\'re made on your device and play alongside your music.',
+              'Mezcla sonidos suaves. Se generan en tu dispositivo y suenan junto a tu música.',
+            ),
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 8),
-          for (final (k, e, en, es) in kinds)
-            Row(
-              children: [
-                SizedBox(
-                  width: 130,
-                  child: PrismChip(label: '$e ${tr(context, en, es)}', selected: _players.containsKey(k), onTap: () => _toggle(k)),
+          for (final a in ambienceCatalog) ...[
+            if (a == ambienceCatalog.first ||
+                a.musical !=
+                    ambienceCatalog[ambienceCatalog.indexOf(a) - 1].musical)
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 2),
+                child: Text(
+                  a.musical
+                      ? tr(context, 'Peaceful music', 'Música tranquila')
+                      : tr(context, 'Nature', 'Naturaleza'),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                Expanded(
-                  child: Slider(
-                    value: _vol[k] ?? 0.4,
-                    onChanged: (v) {
-                      setState(() => _vol[k] = v);
-                      _players[k]?.setVolume(v);
-                    },
-                  ),
-                ),
-              ],
-            ),
+              ),
+            _row(context, a.id, a.emoji, a.label, a.labelEs),
+          ],
           if (_players.isNotEmpty)
             PrismButton(
               label: tr(context, 'Stop all', 'Parar todo'),
@@ -281,7 +341,14 @@ class _GroundingState extends State<_Grounding> {
         child: Column(
           children: [
             const Text('🌿', style: TextStyle(fontSize: 44)),
-            Text(tr(context, 'You\'re here. You did that. 💛', 'Estás aquí. Lo has hecho. 💛'), style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              tr(
+                context,
+                'You\'re here. You did that. 💛',
+                'Estás aquí. Lo has hecho. 💛',
+              ),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 10),
             PrismButton(
               label: tr(context, 'Start again', 'Empezar de nuevo'),
@@ -299,9 +366,21 @@ class _GroundingState extends State<_Grounding> {
       child: Column(
         children: [
           Text(e, style: const TextStyle(fontSize: 44)),
-          Text('$n ${tr(context, en, es)}', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            '$n ${tr(context, en, es)}',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 6),
-          Text(tr(context, 'Notice each one, then tap a dot.', 'Fíjate en cada una y toca un punto.'), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Notice each one, then tap a dot.',
+              'Fíjate en cada una y toca un punto.',
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 10,
@@ -321,7 +400,14 @@ class _GroundingState extends State<_Grounding> {
                     child: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: k < _ticks ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surfaceContainerHighest),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: k < _ticks
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                      ),
                     ),
                   ),
                 ),
@@ -360,20 +446,40 @@ class _CalmTimerState extends State<_CalmTimer> {
     return PrismSurface(
       child: Column(
         children: [
-          Text(tr(context, 'Take a break. A soft chime plays at the end.', 'Tómate un descanso. Al final suena un tono suave.'), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Take a break. A soft chime plays at the end.',
+              'Tómate un descanso. Al final suena un tono suave.',
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           if (!running)
             Wrap(
               spacing: 6,
               children: [
-                for (final m in const [1, 3, 5, 10, 15, 20]) PrismChip(label: '$m min', selected: _minutes == m, onTap: () => setState(() => _minutes = m)),
+                for (final m in const [1, 3, 5, 10, 15, 20])
+                  PrismChip(
+                    label: '$m min',
+                    selected: _minutes == m,
+                    onTap: () => setState(() => _minutes = m),
+                  ),
               ],
             ),
-          if (running) Text('${_left ~/ 60}:${(_left % 60).toString().padLeft(2, '0')}', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w300)),
+          if (running)
+            Text(
+              '${_left ~/ 60}:${(_left % 60).toString().padLeft(2, '0')}',
+              style: Theme.of(
+                context,
+              ).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w300),
+            ),
           const SizedBox(height: 10),
           PrismButton(
             tone: PrismButtonTone.filled,
-            label: running ? tr(context, 'Stop', 'Parar') : tr(context, 'Start', 'Empezar'),
+            label: running
+                ? tr(context, 'Stop', 'Parar')
+                : tr(context, 'Start', 'Empezar'),
             onPressed: () {
               if (running) {
                 _t?.cancel();
@@ -386,7 +492,15 @@ class _CalmTimerState extends State<_CalmTimer> {
                 if (_left <= 0) {
                   t.cancel();
                   _tone.play(TonePlayer.scale[4], ms: 900, volume: 0.5);
-                  if (mounted) PrismToast.show(context, message: tr(context, 'Time\'s up — gently 🌿', 'Se acabó el tiempo, con calma 🌿'));
+                  if (mounted)
+                    PrismToast.show(
+                      context,
+                      message: tr(
+                        context,
+                        'Time\'s up — gently 🌿',
+                        'Se acabó el tiempo, con calma 🌿',
+                      ),
+                    );
                 }
               });
             },
@@ -425,21 +539,39 @@ class _MessageJarState extends ConsumerState<_MessageJar> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            tr(context, 'Comforting messages from alters to whoever needs them, plus a few from Prism.', 'Mensajes reconfortantes de los alters para quien los necesite, y algunos de Prism.'),
+            tr(
+              context,
+              'Comforting messages from alters to whoever needs them, plus a few from Prism.',
+              'Mensajes reconfortantes de los alters para quien los necesite, y algunos de Prism.',
+            ),
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 10),
           if (_drawn != null)
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Column(
                 children: [
-                  Text(_drawn!, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium?.copyWith(height: 1.35)),
+                  Text(
+                    _drawn!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(height: 1.35),
+                  ),
                   if (_from != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Text('— ${names[_from] ?? ''}', style: Theme.of(context).textTheme.bodySmall),
+                      child: Text(
+                        '— ${names[_from] ?? ''}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ),
                 ],
               ),
@@ -450,7 +582,10 @@ class _MessageJarState extends ConsumerState<_MessageJar> {
             icon: PhosphorIcons.handGrabbing(),
             label: tr(context, 'Take a message', 'Sacar un mensaje'),
             onPressed: () {
-              final pool = [for (final r in mine) (r.title, r.memberId), for (final a in affirmations) (a, null)];
+              final pool = [
+                for (final r in mine) (r.title, r.memberId),
+                for (final a in affirmations) (a, null),
+              ];
               final pick = pool[math.Random().nextInt(pool.length)];
               setState(() {
                 _drawn = pick.$1;
@@ -462,7 +597,14 @@ class _MessageJarState extends ConsumerState<_MessageJar> {
           Row(
             children: [
               Expanded(
-                child: PrismTextField(controller: _ctl, hintText: tr(context, 'Leave a kind message for someone who needs it', 'Deja un mensaje amable para quien lo necesite')),
+                child: PrismTextField(
+                  controller: _ctl,
+                  hintText: tr(
+                    context,
+                    'Leave a kind message for someone who needs it',
+                    'Deja un mensaje amable para quien lo necesite',
+                  ),
+                ),
               ),
               PrismIconButton(
                 icon: PhosphorIcons.plus(),
@@ -470,14 +612,36 @@ class _MessageJarState extends ConsumerState<_MessageJar> {
                 onPressed: () async {
                   final t = _ctl.text.trim();
                   if (t.isEmpty) return;
-                  await ref.read(trackerNotifierProvider.notifier).create(kind: TrackerKind.cozyComfort, title: t, memberId: ref.read(cozyMeProvider), fields: const {'type': 'message'});
+                  await ref
+                      .read(trackerNotifierProvider.notifier)
+                      .create(
+                        kind: TrackerKind.cozyComfort,
+                        title: t,
+                        memberId: ref.read(cozyMeProvider),
+                        fields: const {'type': 'message'},
+                      );
                   _ctl.clear();
-                  if (context.mounted) PrismToast.show(context, message: tr(context, 'Added to the jar 💛', 'Añadido al tarro 💛'));
+                  if (context.mounted)
+                    PrismToast.show(
+                      context,
+                      message: tr(
+                        context,
+                        'Added to the jar 💛',
+                        'Añadido al tarro 💛',
+                      ),
+                    );
                 },
               ),
             ],
           ),
-          Text(tr(context, '${mine.length} messages from the system', '${mine.length} mensajes del sistema'), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              '${mine.length} messages from the system',
+              '${mine.length} mensajes del sistema',
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );
@@ -519,21 +683,36 @@ class _BubblePopState extends State<_BubblePop> {
               for (var i = 0; i < 36; i++)
                 Semantics(
                   button: true,
-                  label: _popped.contains(i) ? tr(context, 'popped', 'explotada') : tr(context, 'bubble', 'burbuja'),
+                  label: _popped.contains(i)
+                      ? tr(context, 'popped', 'explotada')
+                      : tr(context, 'bubble', 'burbuja'),
                   child: GestureDetector(
                     onTap: _popped.contains(i)
                         ? null
                         : () {
                             HapticFeedback.lightImpact();
-                            if (_sound) _tone.play(TonePlayer.scale[i % TonePlayer.scale.length], ms: 120, volume: 0.35);
+                            if (_sound)
+                              _tone.play(
+                                TonePlayer.scale[i % TonePlayer.scale.length],
+                                ms: 120,
+                                volume: 0.35,
+                              );
                             setState(() => _popped.add(i));
                           },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _popped.contains(i) ? scheme.surfaceContainerHighest.withValues(alpha: 0.4) : scheme.primary.withValues(alpha: 0.25),
-                        border: Border.all(color: scheme.primary.withValues(alpha: _popped.contains(i) ? 0.1 : 0.5)),
+                        color: _popped.contains(i)
+                            ? scheme.surfaceContainerHighest.withValues(
+                                alpha: 0.4,
+                              )
+                            : scheme.primary.withValues(alpha: 0.25),
+                        border: Border.all(
+                          color: scheme.primary.withValues(
+                            alpha: _popped.contains(i) ? 0.1 : 0.5,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -544,9 +723,16 @@ class _BubblePopState extends State<_BubblePop> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              PrismChip(label: tr(context, '🔈 Sound', '🔈 Sonido'), selected: _sound, onTap: () => setState(() => _sound = !_sound)),
+              PrismChip(
+                label: tr(context, '🔈 Sound', '🔈 Sonido'),
+                selected: _sound,
+                onTap: () => setState(() => _sound = !_sound),
+              ),
               const SizedBox(width: 8),
-              PrismButton(label: tr(context, 'New sheet', 'Nueva hoja'), onPressed: () => setState(_popped.clear)),
+              PrismButton(
+                label: tr(context, 'New sheet', 'Nueva hoja'),
+                onPressed: () => setState(_popped.clear),
+              ),
             ],
           ),
         ],

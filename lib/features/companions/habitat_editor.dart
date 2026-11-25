@@ -2,16 +2,13 @@ import 'dart:math' as math;
 
 import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/companions/companion_widgets.dart';
+import 'package:prism_plurality/features/games/engines/ambience_synth.dart';
 import 'package:prism_plurality/features/games/engines/tone_player.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
-const ambientSounds = {
+final ambientSounds = {
   'none': 'None',
-  'rain': 'Rain',
-  'wind': 'Wind',
-  'waves': 'Waves',
-  'fire': 'Crackling fire',
-  'stream': 'Stream',
+  for (final a in ambienceCatalog) a.id: a.label,
 };
 
 /// Decorate a habitat: place, move and resize decorations by dragging —

@@ -12,16 +12,24 @@ void main() {
   test('catalog has 120 uniquely numbered games across all categories', () {
     expect(gameCatalog, hasLength(120));
     expect({for (final g in gameCatalog) g.id}, hasLength(120));
-    expect([for (final g in gameCatalog) g.number], List.generate(120, (i) => i + 1));
+    expect([
+      for (final g in gameCatalog) g.number,
+    ], List.generate(120, (i) => i + 1));
     for (final c in GameCategory.values) {
-      expect(gameCatalog.where((g) => g.category == c), isNotEmpty, reason: c.name);
+      expect(
+        gameCatalog.where((g) => g.category == c),
+        isNotEmpty,
+        reason: c.name,
+      );
     }
     expect(gameById('sudoku')?.number, 41);
     expect(dailyGames(DateTime(2026, 11, 23)), isNotEmpty);
   });
 
   for (final def in gameCatalog) {
-    testWidgets('#${def.number} ${def.id} builds and runs briefly', (tester) async {
+    testWidgets('#${def.number} ${def.id} builds and runs briefly', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
@@ -39,14 +47,24 @@ void main() {
         ProviderScope(
           overrides: [
             gameProfilesProvider.overrideWithValue(const {}),
-            gameNamesProvider.overrideWithValue(const {'m1': 'Ash', 'm2': 'Bee'}),
+            gameNamesProvider.overrideWithValue(const {
+              'm1': 'Ash',
+              'm2': 'Bee',
+            }),
             gameMembersProvider.overrideWithValue(const []),
           ],
           child: MaterialApp(
             theme: AppTheme.light(),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: Scaffold(body: SingleChildScrollView(child: Padding(padding: const EdgeInsets.all(16), child: buildGame(def.id, session)))),
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: buildGame(def.id, session),
+                ),
+              ),
+            ),
           ),
         ),
       );

@@ -20,7 +20,16 @@ class Q {
 /// Plays a set of questions: difficulty choice, optional timer, an
 /// explanation after each answer and a score at the end.
 class QuizGame extends StatefulWidget {
-  const QuizGame({super.key, required this.session, required this.bank, this.count = 10, this.askDifficulty = true, this.marathon = false, this.seconds = 20, this.promptSize = 19});
+  const QuizGame({
+    super.key,
+    required this.session,
+    required this.bank,
+    this.count = 10,
+    this.askDifficulty = true,
+    this.marathon = false,
+    this.seconds = 20,
+    this.promptSize = 19,
+  });
   final GameSession session;
   final List<Q> bank;
   final int count;
@@ -53,9 +62,14 @@ class _QuizGameState extends State<QuizGame> {
 
   void _begin(int difficulty) {
     final rng = widget.session.rng();
-    var pool = difficulty == 0 ? widget.bank : widget.bank.where((q) => q.d == difficulty).toList();
+    var pool = difficulty == 0
+        ? widget.bank
+        : widget.bank.where((q) => q.d == difficulty).toList();
     if (pool.length < 4) pool = widget.bank;
-    var picked = shuffled(pool, rng).take(math.min(widget.count, pool.length)).toList();
+    var picked = shuffled(
+      pool,
+      rng,
+    ).take(math.min(widget.count, pool.length)).toList();
     if (widget.marathon) picked.sort((a, b) => a.d.compareTo(b.d));
     setState(() {
       _difficulty = difficulty;
@@ -81,7 +95,14 @@ class _QuizGameState extends State<QuizGame> {
 
   void _next() {
     if (_i + 1 >= _qs.length) {
-      widget.session.finish(GameOutcome(score: _score, max: _qs.length, summary: '$_score / ${_qs.length}', details: {'missed': _missed}));
+      widget.session.finish(
+        GameOutcome(
+          score: _score,
+          max: _qs.length,
+          summary: '$_score / ${_qs.length}',
+          details: {'missed': _missed},
+        ),
+      );
       return;
     }
     setState(() {
@@ -100,13 +121,21 @@ class _QuizGameState extends State<QuizGame> {
           children: [
             GamePrompt(tr(context, 'Pick a difficulty', 'Elige la dificultad')),
             const SizedBox(height: 14),
-            for (final (d, label) in [(1, tr(context, 'Easy', 'Fácil')), (2, tr(context, 'Medium', 'Media')), (3, tr(context, 'Hard', 'Difícil')), (0, tr(context, 'Mixed', 'Mezcla'))])
+            for (final (d, label) in [
+              (1, tr(context, 'Easy', 'Fácil')),
+              (2, tr(context, 'Medium', 'Media')),
+              (3, tr(context, 'Hard', 'Difícil')),
+              (0, tr(context, 'Mixed', 'Mezcla')),
+            ])
               OptionTile(label: label, onTap: () => _begin(d)),
           ],
         ),
       );
     }
-    if (_qs.isEmpty) return GamePanel(child: Text(tr(context, 'No questions yet.', 'Aún no hay preguntas.')));
+    if (_qs.isEmpty)
+      return GamePanel(
+        child: Text(tr(context, 'No questions yet.', 'Aún no hay preguntas.')),
+      );
     final q = _qs[_i];
     final answered = _picked != null || _timedOut;
     return Column(
@@ -120,25 +149,58 @@ class _QuizGameState extends State<QuizGame> {
               if (widget.session.timer && !answered)
                 Align(
                   alignment: Alignment.centerRight,
-                  child: GameTimer(key: ValueKey(_i), seconds: widget.seconds, onDone: () => _answer(null)),
+                  child: GameTimer(
+                    key: ValueKey(_i),
+                    seconds: widget.seconds,
+                    onDone: () => _answer(null),
+                  ),
                 ),
               GamePrompt(q.q, size: widget.promptSize),
               const SizedBox(height: 14),
-              for (final o in _opts[_i]) OptionTile(label: o, state: !answered ? null : (o == q.answer ? true : (o == _picked ? false : null)), onTap: answered ? null : () => _answer(o)),
+              for (final o in _opts[_i])
+                OptionTile(
+                  label: o,
+                  state: !answered
+                      ? null
+                      : (o == q.answer ? true : (o == _picked ? false : null)),
+                  onTap: answered ? null : () => _answer(o),
+                ),
               if (answered) ...[
                 const SizedBox(height: 10),
                 Text(
                   _picked == q.answer
                       ? tr(context, 'Correct!', '¡Correcto!')
                       : _timedOut
-                      ? tr(context, 'Time\'s up — the answer is ${q.answer}.', 'Se acabó el tiempo: la respuesta es ${q.answer}.')
-                      : tr(context, 'The answer is ${q.answer}.', 'La respuesta es ${q.answer}.'),
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                      ? tr(
+                          context,
+                          'Time\'s up — the answer is ${q.answer}.',
+                          'Se acabó el tiempo: la respuesta es ${q.answer}.',
+                        )
+                      : tr(
+                          context,
+                          'The answer is ${q.answer}.',
+                          'La respuesta es ${q.answer}.',
+                        ),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                if (q.explain.isNotEmpty) ...[const SizedBox(height: 4), Text(q.explain, style: theme.textTheme.bodyMedium?.copyWith(height: 1.4))],
+                if (q.explain.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    q.explain,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+                  ),
+                ],
                 GameActions(
                   children: [
-                    PrismButton(tone: PrismButtonTone.filled, label: _i + 1 >= _qs.length ? tr(context, 'See results', 'Ver resultados') : tr(context, 'Next', 'Siguiente'), onPressed: _next),
+                    PrismButton(
+                      tone: PrismButtonTone.filled,
+                      label: _i + 1 >= _qs.length
+                          ? tr(context, 'See results', 'Ver resultados')
+                          : tr(context, 'Next', 'Siguiente'),
+                      onPressed: _next,
+                    ),
                   ],
                 ),
               ],
@@ -153,7 +215,13 @@ class _QuizGameState extends State<QuizGame> {
 /// A quiz whose questions are made on the fly from [make] (maths, sequences,
 /// balance puzzles…). [make] gets a seeded random and a difficulty.
 class GeneratedQuiz extends StatelessWidget {
-  const GeneratedQuiz({super.key, required this.session, required this.make, this.count = 10, this.seconds = 20});
+  const GeneratedQuiz({
+    super.key,
+    required this.session,
+    required this.make,
+    this.count = 10,
+    this.seconds = 20,
+  });
   final GameSession session;
   final Q Function(math.Random rng, int difficulty) make;
   final int count;
@@ -166,7 +234,12 @@ class GeneratedQuiz extends StatelessWidget {
       for (var d = 1; d <= 3; d++)
         for (var i = 0; i < count; i++) make(rng, d),
     ];
-    return QuizGame(session: session, bank: bank, count: count, seconds: seconds);
+    return QuizGame(
+      session: session,
+      bank: bank,
+      count: count,
+      seconds: seconds,
+    );
   }
 }
 

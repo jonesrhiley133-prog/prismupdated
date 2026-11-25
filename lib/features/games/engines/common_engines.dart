@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:prism_plurality/features/games/core/game_kit.dart';
-import 'package:prism_plurality/features/games/engines/grid_engines.dart' show CellGrid;
+import 'package:prism_plurality/features/games/engines/grid_engines.dart'
+    show CellGrid;
 import 'package:prism_plurality/features/games/engines/tone_player.dart';
-import 'package:prism_plurality/features/games/engines/word_engines.dart' show Chip2;
+import 'package:prism_plurality/features/games/engines/word_engines.dart'
+    show Chip2;
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 // ---------------------------------------------------------------------------
@@ -12,7 +14,15 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 // ---------------------------------------------------------------------------
 
 class MatchPairsGame extends StatefulWidget {
-  const MatchPairsGame({super.key, required this.session, required this.pairs, this.perRound = 5, this.rounds = 3, this.leftLabel, this.rightLabel});
+  const MatchPairsGame({
+    super.key,
+    required this.session,
+    required this.pairs,
+    this.perRound = 5,
+    this.rounds = 3,
+    this.leftLabel,
+    this.rightLabel,
+  });
   final GameSession session;
   final List<(String, String)> pairs;
   final int perRound;
@@ -33,7 +43,8 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
   int? _leftSel;
   int? _wrongFlash;
 
-  int get _rounds => math.min(widget.rounds, (_all.length / widget.perRound).ceil());
+  int get _rounds =>
+      math.min(widget.rounds, (_all.length / widget.perRound).ceil());
 
   @override
   void initState() {
@@ -59,7 +70,17 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
       });
       if (_done.length == _set.length) {
         if (_round + 1 >= _rounds) {
-          widget.session.finish(GameOutcome(score: _score, max: _score + _mistakes, summary: tr(context, '$_score matches, $_mistakes slips', '$_score parejas, $_mistakes fallos')));
+          widget.session.finish(
+            GameOutcome(
+              score: _score,
+              max: _score + _mistakes,
+              summary: tr(
+                context,
+                '$_score matches, $_mistakes slips',
+                '$_score parejas, $_mistakes fallos',
+              ),
+            ),
+          );
         } else {
           setState(() {
             _round++;
@@ -72,7 +93,10 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
         _mistakes++;
         _wrongFlash = j;
       });
-      Future.delayed(const Duration(milliseconds: 500), () => mounted ? setState(() => _wrongFlash = null) : null);
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => mounted ? setState(() => _wrongFlash = null) : null,
+      );
     }
   }
 
@@ -82,12 +106,20 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GameProgress(current: _round + 1, total: _rounds, trailing: '★ $_score'),
+        GameProgress(
+          current: _round + 1,
+          total: _rounds,
+          trailing: '★ $_score',
+        ),
         GamePanel(
           child: Column(
             children: [
               Text(
-                tr(context, 'Tap a word on the left, then its match on the right.', 'Toca una palabra a la izquierda y luego su pareja a la derecha.'),
+                tr(
+                  context,
+                  'Tap a word on the left, then its match on the right.',
+                  'Toca una palabra a la izquierda y luego su pareja a la derecha.',
+                ),
                 style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -98,9 +130,20 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
                   Expanded(
                     child: Column(
                       children: [
-                        if (widget.leftLabel != null) Text(widget.leftLabel!, style: const TextStyle(fontWeight: FontWeight.w700)),
+                        if (widget.leftLabel != null)
+                          Text(
+                            widget.leftLabel!,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                         for (var i = 0; i < _set.length; i++)
-                          OptionTile(label: _set[i].$1, selected: _leftSel == i, state: _done.contains(i) ? true : null, onTap: _done.contains(i) ? null : () => setState(() => _leftSel = i)),
+                          OptionTile(
+                            label: _set[i].$1,
+                            selected: _leftSel == i,
+                            state: _done.contains(i) ? true : null,
+                            onTap: _done.contains(i)
+                                ? null
+                                : () => setState(() => _leftSel = i),
+                          ),
                       ],
                     ),
                   ),
@@ -108,12 +151,20 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
                   Expanded(
                     child: Column(
                       children: [
-                        if (widget.rightLabel != null) Text(widget.rightLabel!, style: const TextStyle(fontWeight: FontWeight.w700)),
+                        if (widget.rightLabel != null)
+                          Text(
+                            widget.rightLabel!,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                         for (var j = 0; j < _right.length; j++)
                           OptionTile(
                             label: _right[j],
-                            state: doneRight.contains(_right[j]) ? true : (_wrongFlash == j ? false : null),
-                            onTap: doneRight.contains(_right[j]) ? null : () => _pickRight(j),
+                            state: doneRight.contains(_right[j])
+                                ? true
+                                : (_wrongFlash == j ? false : null),
+                            onTap: doneRight.contains(_right[j])
+                                ? null
+                                : () => _pickRight(j),
                           ),
                       ],
                     ),
@@ -133,7 +184,14 @@ class _MatchPairsGameState extends State<MatchPairsGame> {
 // ---------------------------------------------------------------------------
 
 class OrderingGame extends StatefulWidget {
-  const OrderingGame({super.key, required this.session, required this.sets, required this.prompt, this.rounds = 3, this.reveal});
+  const OrderingGame({
+    super.key,
+    required this.session,
+    required this.sets,
+    required this.prompt,
+    this.rounds = 3,
+    this.reveal,
+  });
   final GameSession session;
 
   /// Each set in the correct order; title shown above.
@@ -149,7 +207,10 @@ class OrderingGame extends StatefulWidget {
 
 class _OrderingGameState extends State<OrderingGame> {
   late final math.Random _rng = widget.session.rng(61);
-  late final List<(String, List<String>)> _sets = shuffled(widget.sets, _rng).take(widget.rounds).toList();
+  late final List<(String, List<String>)> _sets = shuffled(
+    widget.sets,
+    _rng,
+  ).take(widget.rounds).toList();
   int _i = 0, _score = 0;
   late List<String> _pool;
   final List<String> _placed = [];
@@ -164,11 +225,20 @@ class _OrderingGameState extends State<OrderingGame> {
   @override
   Widget build(BuildContext context) {
     final (title, correct) = _sets[_i];
-    final right = _checked && List.generate(correct.length, (k) => k < _placed.length && _placed[k] == correct[k]).every((x) => x);
+    final right =
+        _checked &&
+        List.generate(
+          correct.length,
+          (k) => k < _placed.length && _placed[k] == correct[k],
+        ).every((x) => x);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GameProgress(current: _i + 1, total: _sets.length, trailing: '★ $_score'),
+        GameProgress(
+          current: _i + 1,
+          total: _sets.length,
+          trailing: '★ $_score',
+        ),
         GamePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -177,16 +247,28 @@ class _OrderingGameState extends State<OrderingGame> {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              Text(widget.prompt, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                widget.prompt,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               const SizedBox(height: 10),
               for (var k = 0; k < _placed.length; k++)
                 OptionTile(
-                  leading: Text('${k + 1}.', style: const TextStyle(fontWeight: FontWeight.w800)),
-                  label: '${_placed[k]}${_checked && widget.reveal != null ? ' — ${widget.reveal!(_placed[k])}' : ''}',
+                  leading: Text(
+                    '${k + 1}.',
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  label:
+                      '${_placed[k]}${_checked && widget.reveal != null ? ' — ${widget.reveal!(_placed[k])}' : ''}',
                   state: _checked ? _placed[k] == correct[k] : null,
-                  onTap: _checked ? null : () => setState(() => _pool.add(_placed.removeAt(k))),
+                  onTap: _checked
+                      ? null
+                      : () => setState(() => _pool.add(_placed.removeAt(k))),
                 ),
               if (_pool.isNotEmpty) ...[
                 const Divider(height: 20),
@@ -214,17 +296,39 @@ class _OrderingGameState extends State<OrderingGame> {
                       label: tr(context, 'Check', 'Comprobar'),
                       onPressed: () => setState(() {
                         _checked = true;
-                        if (List.generate(correct.length, (k) => _placed[k] == correct[k]).every((x) => x)) _score++;
+                        if (List.generate(
+                          correct.length,
+                          (k) => _placed[k] == correct[k],
+                        ).every((x) => x))
+                          _score++;
                       }),
                     ),
                   if (_checked) ...[
-                    Text(right ? tr(context, '✓ Perfect order!', '✓ ¡Orden perfecto!') : tr(context, 'Close! Correct order: ${correct.join(' → ')}', '¡Casi! Orden correcto: ${correct.join(' → ')}')),
+                    Text(
+                      right
+                          ? tr(
+                              context,
+                              '✓ Perfect order!',
+                              '✓ ¡Orden perfecto!',
+                            )
+                          : tr(
+                              context,
+                              'Close! Correct order: ${correct.join(' → ')}',
+                              '¡Casi! Orden correcto: ${correct.join(' → ')}',
+                            ),
+                    ),
                     PrismButton(
                       tone: PrismButtonTone.filled,
                       label: tr(context, 'Next', 'Siguiente'),
                       onPressed: () {
                         if (_i + 1 >= _sets.length) {
-                          widget.session.finish(GameOutcome(score: _score, max: _sets.length, summary: '$_score / ${_sets.length}'));
+                          widget.session.finish(
+                            GameOutcome(
+                              score: _score,
+                              max: _sets.length,
+                              summary: '$_score / ${_sets.length}',
+                            ),
+                          );
                         } else {
                           setState(() {
                             _i++;
@@ -293,7 +397,15 @@ class PromptDeckGame extends StatefulWidget {
 
 class _PromptDeckGameState extends State<PromptDeckGame> {
   late final math.Random _rng = widget.session.rng(62);
-  late final List<int> _order = shuffled(List.generate(widget.mode == DeckMode.choice ? widget.choices.length : widget.prompts.length, (i) => i), _rng);
+  late final List<int> _order = shuffled(
+    List.generate(
+      widget.mode == DeckMode.choice
+          ? widget.choices.length
+          : widget.prompts.length,
+      (i) => i,
+    ),
+    _rng,
+  );
   int _i = 0;
   final Map<String, String> _answers = {}; // player -> answer for current card
   final List<String> _log = [];
@@ -307,8 +419,10 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
     super.dispose();
   }
 
-  List<String?> get _players => widget.session.players.isEmpty ? [null] : widget.session.players;
-  String? get _whoNext => _players.where((p) => !_answers.containsKey(p ?? '')).firstOrNull;
+  List<String?> get _players =>
+      widget.session.players.isEmpty ? [null] : widget.session.players;
+  String? get _whoNext =>
+      _players.where((p) => !_answers.containsKey(p ?? '')).firstOrNull;
   bool get _allAnswered => _players.every((p) => _answers.containsKey(p ?? ''));
 
   void _answer(String a) {
@@ -319,11 +433,21 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
   void _next() {
     final card = _cardText();
     if (_answers.isNotEmpty) {
-      _log.add('$card — ${[for (final e in _answers.entries) '${e.key.isEmpty ? '' : '${widget.session.nameOf(e.key)}: '}${e.value}'].join('; ')}');
+      _log.add(
+        '$card — ${[for (final e in _answers.entries) '${e.key.isEmpty ? '' : '${widget.session.nameOf(e.key)}: '}${e.value}'].join('; ')}',
+      );
     }
     if (_i + 1 >= math.min(widget.count, _order.length)) {
       widget.session.finish(
-        GameOutcome(summary: tr(context, '${_i + 1} cards together', '${_i + 1} cartas juntos'), memorable: _log.isEmpty ? null : _log[_rng.nextInt(_log.length)], details: {'log': _log}),
+        GameOutcome(
+          summary: tr(
+            context,
+            '${_i + 1} cards together',
+            '${_i + 1} cartas juntos',
+          ),
+          memorable: _log.isEmpty ? null : _log[_rng.nextInt(_log.length)],
+          details: {'log': _log},
+        ),
       );
       return;
     }
@@ -337,8 +461,12 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
   }
 
   String _cardText() => switch (widget.mode) {
-    DeckMode.choice => '${widget.choices[_order[_i]].$1} / ${widget.choices[_order[_i]].$2}',
-    DeckMode.truthDare => _tdChoice == 'dare' ? widget.dares[_tdPick % widget.dares.length] : widget.prompts[_order[_i]],
+    DeckMode.choice =>
+      '${widget.choices[_order[_i]].$1} / ${widget.choices[_order[_i]].$2}',
+    DeckMode.truthDare =>
+      _tdChoice == 'dare'
+          ? widget.dares[_tdPick % widget.dares.length]
+          : widget.prompts[_order[_i]],
     _ => widget.prompts[_order[_i]],
   };
 
@@ -353,7 +481,8 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
         final (a, b) = widget.choices[_order[_i]];
         answerArea = Column(
           children: [
-            if (widget.choiceLabel != null) Text(widget.choiceLabel!, style: theme.textTheme.labelLarge),
+            if (widget.choiceLabel != null)
+              Text(widget.choiceLabel!, style: theme.textTheme.labelLarge),
             const SizedBox(height: 8),
             OptionTile(label: a, onTap: _allAnswered ? null : () => _answer(a)),
             Text(tr(context, 'or', 'o'), style: theme.textTheme.labelMedium),
@@ -365,8 +494,18 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
           children: [
             GamePrompt(widget.prompts[_order[_i]], size: 18),
             const SizedBox(height: 10),
-            OptionTile(label: tr(context, '🙋 I have', '🙋 Yo sí'), onTap: _allAnswered ? null : () => _answer(tr(context, 'I have', 'Yo sí'))),
-            OptionTile(label: tr(context, '🙅 I haven\'t', '🙅 Yo no'), onTap: _allAnswered ? null : () => _answer(tr(context, 'I haven\'t', 'Yo no'))),
+            OptionTile(
+              label: tr(context, '🙋 I have', '🙋 Yo sí'),
+              onTap: _allAnswered
+                  ? null
+                  : () => _answer(tr(context, 'I have', 'Yo sí')),
+            ),
+            OptionTile(
+              label: tr(context, '🙅 I haven\'t', '🙅 Yo no'),
+              onTap: _allAnswered
+                  ? null
+                  : () => _answer(tr(context, 'I haven\'t', 'Yo no')),
+            ),
           ],
         );
       case DeckMode.truthDare:
@@ -375,10 +514,23 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
                 children: [
                   GamePrompt(tr(context, 'Truth or dare?', '¿Verdad o reto?')),
                   const SizedBox(height: 10),
-                  OptionTile(label: tr(context, '💬 Truth', '💬 Verdad'), onTap: () => setState(() => _tdChoice = 'truth')),
-                  OptionTile(label: tr(context, '✨ Dare (gentle)', '✨ Reto (suave)'), onTap: () => setState(() => _tdChoice = 'dare')),
+                  OptionTile(
+                    label: tr(context, '💬 Truth', '💬 Verdad'),
+                    onTap: () => setState(() => _tdChoice = 'truth'),
+                  ),
+                  OptionTile(
+                    label: tr(context, '✨ Dare (gentle)', '✨ Reto (suave)'),
+                    onTap: () => setState(() => _tdChoice = 'dare'),
+                  ),
                   const SizedBox(height: 6),
-                  Text(tr(context, 'Everything is optional — skip anything you like.', 'Todo es opcional: salta lo que quieras.'), style: theme.textTheme.bodySmall),
+                  Text(
+                    tr(
+                      context,
+                      'Everything is optional — skip anything you like.',
+                      'Todo es opcional: salta lo que quieras.',
+                    ),
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ],
               )
             : Column(
@@ -386,9 +538,25 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
                   GamePrompt(_cardText(), size: 18),
                   const SizedBox(height: 10),
                   if (!_allAnswered) ...[
-                    PrismTextField(controller: _ctl, hintText: tr(context, 'Answer or note (optional)', 'Respuesta o nota (opcional)'), maxLines: 2),
+                    PrismTextField(
+                      controller: _ctl,
+                      hintText: tr(
+                        context,
+                        'Answer or note (optional)',
+                        'Respuesta o nota (opcional)',
+                      ),
+                      maxLines: 2,
+                    ),
                     GameActions(
-                      children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Done', 'Hecho'), onPressed: () => _answer(_ctl.text.trim().isEmpty ? '✓' : _ctl.text.trim()))],
+                      children: [
+                        PrismButton(
+                          tone: PrismButtonTone.filled,
+                          label: tr(context, 'Done', 'Hecho'),
+                          onPressed: () => _answer(
+                            _ctl.text.trim().isEmpty ? '✓' : _ctl.text.trim(),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ],
@@ -399,14 +567,24 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
             GamePrompt(widget.prompts[_order[_i]], size: 18),
             const SizedBox(height: 10),
             if (widget.writeAnswers && !_allAnswered) ...[
-              PrismTextField(controller: _ctl, hintText: tr(context, 'Write an answer (optional)', 'Escribe una respuesta (opcional)'), maxLines: 3),
+              PrismTextField(
+                controller: _ctl,
+                hintText: tr(
+                  context,
+                  'Write an answer (optional)',
+                  'Escribe una respuesta (opcional)',
+                ),
+                maxLines: 3,
+              ),
               GameActions(
                 children: [
                   PrismButton(
                     tone: PrismButtonTone.filled,
                     label: tr(context, 'Save answer', 'Guardar respuesta'),
                     onPressed: () {
-                      _answer(_ctl.text.trim().isEmpty ? '—' : _ctl.text.trim());
+                      _answer(
+                        _ctl.text.trim().isEmpty ? '—' : _ctl.text.trim(),
+                      );
                       _ctl.clear();
                     },
                   ),
@@ -424,10 +602,20 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (who != null && !_allAnswered && (widget.mode != DeckMode.prompt || widget.writeAnswers))
+              if (who != null &&
+                  !_allAnswered &&
+                  (widget.mode != DeckMode.prompt || widget.writeAnswers))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(tr(context, '${widget.session.nameOf(who)}\'s turn', 'Turno de ${widget.session.nameOf(who)}'), textAlign: TextAlign.center, style: theme.textTheme.titleSmall),
+                  child: Text(
+                    tr(
+                      context,
+                      '${widget.session.nameOf(who)}\'s turn',
+                      'Turno de ${widget.session.nameOf(who)}',
+                    ),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               answerArea,
               if (_answers.isNotEmpty) ...[
@@ -436,18 +624,33 @@ class _PromptDeckGameState extends State<PromptDeckGame> {
                   spacing: 6,
                   runSpacing: 6,
                   alignment: WrapAlignment.center,
-                  children: [for (final e in _answers.entries) Chip2('${e.key.isEmpty ? '' : '${widget.session.nameOf(e.key)}: '}${e.value}')],
+                  children: [
+                    for (final e in _answers.entries)
+                      Chip2(
+                        '${e.key.isEmpty ? '' : '${widget.session.nameOf(e.key)}: '}${e.value}',
+                      ),
+                  ],
                 ),
               ],
               GameActions(
                 children: [
-                  if (widget.mode == DeckMode.prompt && !widget.writeAnswers || _allAnswered || widget.mode == DeckMode.truthDare && _tdChoice != null)
+                  if (widget.mode == DeckMode.prompt && !widget.writeAnswers ||
+                      _allAnswered ||
+                      widget.mode == DeckMode.truthDare && _tdChoice != null)
                     PrismButton(
-                      tone: _allAnswered || !widget.writeAnswers ? PrismButtonTone.filled : PrismButtonTone.subtle,
-                      label: _i + 1 >= total ? tr(context, 'Finish', 'Terminar') : tr(context, 'Next card', 'Siguiente carta'),
+                      tone: _allAnswered || !widget.writeAnswers
+                          ? PrismButtonTone.filled
+                          : PrismButtonTone.subtle,
+                      label: _i + 1 >= total
+                          ? tr(context, 'Finish', 'Terminar')
+                          : tr(context, 'Next card', 'Siguiente carta'),
                       onPressed: _next,
                     ),
-                  if (!_allAnswered && widget.mode != DeckMode.prompt) PrismButton(label: tr(context, 'Skip', 'Saltar'), onPressed: _next),
+                  if (!_allAnswered && widget.mode != DeckMode.prompt)
+                    PrismButton(
+                      label: tr(context, 'Skip', 'Saltar'),
+                      onPressed: _next,
+                    ),
                 ],
               ),
             ],
@@ -471,17 +674,24 @@ class BingoGame extends StatefulWidget {
 }
 
 class _BingoGameState extends State<BingoGame> {
-  late final List<String> _board = shuffled(widget.squares, widget.session.rng(63)).take(25).toList();
+  late final List<String> _board = shuffled(
+    widget.squares,
+    widget.session.rng(63),
+  ).take(25).toList();
   late final Set<int> _marked = {
-    for (final v in (widget.session.saved?['marked'] as List?) ?? const [12]) (v as num).toInt(),
+    for (final v in (widget.session.saved?['marked'] as List?) ?? const [12])
+      (v as num).toInt(),
   };
 
   bool get _bingo {
     for (var k = 0; k < 5; k++) {
-      if (List.generate(5, (j) => _marked.contains(k * 5 + j)).every((x) => x)) return true;
-      if (List.generate(5, (j) => _marked.contains(j * 5 + k)).every((x) => x)) return true;
+      if (List.generate(5, (j) => _marked.contains(k * 5 + j)).every((x) => x))
+        return true;
+      if (List.generate(5, (j) => _marked.contains(j * 5 + k)).every((x) => x))
+        return true;
     }
-    return List.generate(5, (j) => _marked.contains(j * 6)).every((x) => x) || List.generate(5, (j) => _marked.contains(j * 4 + 4)).every((x) => x);
+    return List.generate(5, (j) => _marked.contains(j * 6)).every((x) => x) ||
+        List.generate(5, (j) => _marked.contains(j * 4 + 4)).every((x) => x);
   }
 
   @override
@@ -492,7 +702,11 @@ class _BingoGameState extends State<BingoGame> {
       child: Column(
         children: [
           Text(
-            tr(context, 'Mark squares as you do them — over days if you like. Progress is saved.', 'Marca las casillas al hacerlas, aunque sea durante días. Se guarda el progreso.'),
+            tr(
+              context,
+              'Mark squares as you do them — over days if you like. Progress is saved.',
+              'Marca las casillas al hacerlas, aunque sea durante días. Se guarda el progreso.',
+            ),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall,
           ),
@@ -513,19 +727,35 @@ class _BingoGameState extends State<BingoGame> {
                   onTap: free
                       ? null
                       : () {
-                          setState(() => on ? _marked.remove(i) : _marked.add(i));
+                          setState(
+                            () => on ? _marked.remove(i) : _marked.add(i),
+                          );
                           widget.session.save({'marked': _marked.toList()});
-                          if (_bingo && !on) PrismToast.show(context, message: tr(context, 'Bingo! 🎉', '¡Bingo! 🎉'));
+                          if (_bingo && !on)
+                            PrismToast.show(
+                              context,
+                              message: tr(context, 'Bingo! 🎉', '¡Bingo! 🎉'),
+                            );
                         },
                   child: Container(
                     padding: const EdgeInsets.all(3),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: on ? scheme.primary.withValues(alpha: 0.25) : scheme.surfaceContainerHighest,
+                      color: on
+                          ? scheme.primary.withValues(alpha: 0.25)
+                          : scheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: on ? scheme.primary : scheme.outlineVariant),
+                      border: Border.all(
+                        color: on ? scheme.primary : scheme.outlineVariant,
+                      ),
                     ),
-                    child: Text(free ? '⭐' : _board[i], textAlign: TextAlign.center, style: const TextStyle(fontSize: 9.5, height: 1.1), maxLines: 4, overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      free ? '⭐' : _board[i],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 9.5, height: 1.1),
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               );
@@ -535,14 +765,24 @@ class _BingoGameState extends State<BingoGame> {
             children: [
               PrismButton(
                 tone: PrismButtonTone.filled,
-                label: _bingo ? tr(context, 'Finish — bingo!', 'Terminar: ¡bingo!') : tr(context, 'Finish for now', 'Terminar por ahora'),
+                label: _bingo
+                    ? tr(context, 'Finish — bingo!', 'Terminar: ¡bingo!')
+                    : tr(context, 'Finish for now', 'Terminar por ahora'),
                 onPressed: () => widget.session.finish(
                   GameOutcome(
                     score: _marked.length - 1,
                     max: 24,
                     summary: _bingo
-                        ? tr(context, 'Bingo with ${_marked.length - 1} squares', 'Bingo con ${_marked.length - 1} casillas')
-                        : tr(context, '${_marked.length - 1} squares done', '${_marked.length - 1} casillas hechas'),
+                        ? tr(
+                            context,
+                            'Bingo with ${_marked.length - 1} squares',
+                            'Bingo con ${_marked.length - 1} casillas',
+                          )
+                        : tr(
+                            context,
+                            '${_marked.length - 1} squares done',
+                            '${_marked.length - 1} casillas hechas',
+                          ),
                   ),
                 ),
               ),
@@ -605,7 +845,8 @@ class _RhythmGameState extends State<RhythmGame> {
       await Future<void>.delayed(const Duration(milliseconds: 120));
       if (!mounted) return;
       setState(() => _pulse = null);
-      if (i < _gaps.length) await Future<void>.delayed(Duration(milliseconds: _gaps[i] - 120));
+      if (i < _gaps.length)
+        await Future<void>.delayed(Duration(milliseconds: _gaps[i] - 120));
     }
     if (mounted) setState(() => _playing = false);
   }
@@ -615,13 +856,26 @@ class _RhythmGameState extends State<RhythmGame> {
     _tone.play(TonePlayer.scale[5], ms: 120);
     setState(() => _taps.add(DateTime.now().millisecondsSinceEpoch));
     if (_taps.length == _gaps.length + 1) {
-      final got = [for (var i = 1; i < _taps.length; i++) _taps[i] - _taps[i - 1]];
+      final got = [
+        for (var i = 1; i < _taps.length; i++) _taps[i] - _taps[i - 1],
+      ];
       // Generous tolerance: compare the shape (relative gaps), not speed.
       final scale = got.reduce((a, b) => a + b) / _gaps.reduce((a, b) => a + b);
-      final err = [for (var i = 0; i < got.length; i++) ((got[i] / scale - _gaps[i]).abs() / _gaps[i])].reduce((a, b) => a + b) / got.length;
+      final err =
+          [
+            for (var i = 0; i < got.length; i++)
+              ((got[i] / scale - _gaps[i]).abs() / _gaps[i]),
+          ].reduce((a, b) => a + b) /
+          got.length;
       final ok = err < 0.3;
       setState(() {
-        _result = ok ? tr(context, '✓ Nice rhythm!', '✓ ¡Buen ritmo!') : tr(context, 'Not quite — try the next one', 'Casi: prueba el siguiente');
+        _result = ok
+            ? tr(context, '✓ Nice rhythm!', '✓ ¡Buen ritmo!')
+            : tr(
+                context,
+                'Not quite — try the next one',
+                'Casi: prueba el siguiente',
+              );
         if (ok) _score++;
       });
     }
@@ -651,7 +905,14 @@ class _RhythmGameState extends State<RhythmGame> {
                 Container(
                   width: 16,
                   height: 16,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: _pulse == i ? scheme.primary : (i < _taps.length ? scheme.tertiary : scheme.surfaceContainerHighest)),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _pulse == i
+                        ? scheme.primary
+                        : (i < _taps.length
+                              ? scheme.tertiary
+                              : scheme.surfaceContainerHighest),
+                  ),
                 ),
                 if (i < _gaps.length) SizedBox(width: _gaps[i] / 20),
               ],
@@ -670,7 +931,13 @@ class _RhythmGameState extends State<RhythmGame> {
                 child: InkWell(
                   customBorder: const CircleBorder(),
                   onTapDown: (_) => _tap(),
-                  child: Center(child: Icon(PhosphorIcons.handTap(), size: 48, color: scheme.primary)),
+                  child: Center(
+                    child: Icon(
+                      PhosphorIcons.handTap(),
+                      size: 48,
+                      color: scheme.primary,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -678,18 +945,31 @@ class _RhythmGameState extends State<RhythmGame> {
           if (_result != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
-              child: Text(_result!, style: const TextStyle(fontWeight: FontWeight.w700)),
+              child: Text(
+                _result!,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
             ),
           GameActions(
             children: [
-              PrismButton(label: tr(context, 'Play rhythm', 'Escuchar ritmo'), icon: PhosphorIcons.play(), onPressed: _playing ? () {} : _play),
+              PrismButton(
+                label: tr(context, 'Play rhythm', 'Escuchar ritmo'),
+                icon: PhosphorIcons.play(),
+                onPressed: _playing ? () {} : _play,
+              ),
               if (_result != null)
                 PrismButton(
                   tone: PrismButtonTone.filled,
                   label: tr(context, 'Next', 'Siguiente'),
                   onPressed: () {
                     if (_round + 1 >= 6) {
-                      widget.session.finish(GameOutcome(score: _score, max: 6, summary: '$_score / 6'));
+                      widget.session.finish(
+                        GameOutcome(
+                          score: _score,
+                          max: 6,
+                          summary: '$_score / 6',
+                        ),
+                      );
                     } else {
                       setState(() {
                         _round++;
@@ -698,7 +978,11 @@ class _RhythmGameState extends State<RhythmGame> {
                     }
                   },
                 ),
-              if (_result == null && _taps.isNotEmpty) PrismButton(label: tr(context, 'Reset taps', 'Reiniciar'), onPressed: () => setState(_taps.clear)),
+              if (_result == null && _taps.isNotEmpty)
+                PrismButton(
+                  label: tr(context, 'Reset taps', 'Reiniciar'),
+                  onPressed: () => setState(_taps.clear),
+                ),
             ],
           ),
         ],
@@ -712,7 +996,11 @@ class _RhythmGameState extends State<RhythmGame> {
 // ---------------------------------------------------------------------------
 
 class MapExplorerGame extends StatefulWidget {
-  const MapExplorerGame({super.key, required this.session, required this.places});
+  const MapExplorerGame({
+    super.key,
+    required this.session,
+    required this.places,
+  });
   final GameSession session;
   final List<(String, String)> places;
   @override
@@ -730,7 +1018,10 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
     ('Oceania', 84.0, 42.0, 9.0, 6.0),
     ('Antarctica', 50.0, 56.0, 30.0, 3.0),
   ];
-  late final List<(String, String)> _q = shuffled(widget.places, widget.session.rng(65)).take(10).toList();
+  late final List<(String, String)> _q = shuffled(
+    widget.places,
+    widget.session.rng(65),
+  ).take(10).toList();
   int _i = 0, _score = 0;
   String? _picked;
 
@@ -745,7 +1036,9 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
         GamePanel(
           child: Column(
             children: [
-              GamePrompt(tr(context, 'Where is $place?', '¿Dónde está $place?')),
+              GamePrompt(
+                tr(context, 'Where is $place?', '¿Dónde está $place?'),
+              ),
               const SizedBox(height: 10),
               AspectRatio(
                 aspectRatio: 100 / 60,
@@ -756,7 +1049,12 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
                       children: [
                         Positioned.fill(
                           child: DecoratedBox(
-                            decoration: BoxDecoration(color: scheme.secondaryContainer.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(12)),
+                            decoration: BoxDecoration(
+                              color: scheme.secondaryContainer.withValues(
+                                alpha: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                         for (final (name, cx, cy, rx, ry) in continents)
@@ -779,18 +1077,30 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.all(Radius.elliptical(rx * s, ry * s)),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.elliptical(rx * s, ry * s),
+                                    ),
                                     color: _picked == null
                                         ? scheme.primary.withValues(alpha: 0.35)
                                         : name == answer
                                         ? scheme.primary
-                                        : (name == _picked ? scheme.error.withValues(alpha: 0.7) : scheme.primary.withValues(alpha: 0.2)),
+                                        : (name == _picked
+                                              ? scheme.error.withValues(
+                                                  alpha: 0.7,
+                                                )
+                                              : scheme.primary.withValues(
+                                                  alpha: 0.2,
+                                                )),
                                   ),
                                   child: _picked != null
                                       ? Text(
                                           name,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: scheme.onPrimary),
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w700,
+                                            color: scheme.onPrimary,
+                                          ),
                                         )
                                       : null,
                                 ),
@@ -805,7 +1115,13 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
               if (_picked != null) ...[
                 const SizedBox(height: 10),
                 Text(
-                  _picked == answer ? tr(context, '✓ Yes — $answer', '✓ Sí: $answer') : tr(context, '$place is in $answer', '$place está en $answer'),
+                  _picked == answer
+                      ? tr(context, '✓ Yes — $answer', '✓ Sí: $answer')
+                      : tr(
+                          context,
+                          '$place is in $answer',
+                          '$place está en $answer',
+                        ),
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 GameActions(
@@ -815,7 +1131,13 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
                       label: tr(context, 'Next', 'Siguiente'),
                       onPressed: () {
                         if (_i + 1 >= _q.length) {
-                          widget.session.finish(GameOutcome(score: _score, max: _q.length, summary: '$_score / ${_q.length}'));
+                          widget.session.finish(
+                            GameOutcome(
+                              score: _score,
+                              max: _q.length,
+                              summary: '$_score / ${_q.length}',
+                            ),
+                          );
                         } else {
                           setState(() {
                             _i++;
@@ -842,7 +1164,14 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
 
 /// Rolls random parts; lets the player reroll each, edit and keep notes.
 class GeneratorGame extends StatefulWidget {
-  const GeneratorGame({super.key, required this.session, required this.parts, required this.title, this.notesHint, this.compose});
+  const GeneratorGame({
+    super.key,
+    required this.session,
+    required this.parts,
+    required this.title,
+    this.notesHint,
+    this.compose,
+  });
   final GameSession session;
   final Map<String, List<String>> parts;
   final String title;
@@ -856,7 +1185,10 @@ class GeneratorGame extends StatefulWidget {
 
 class _GeneratorGameState extends State<GeneratorGame> {
   late final math.Random _rng = widget.session.rng(66);
-  late final Map<String, String> _picks = {for (final e in widget.parts.entries) e.key: e.value[_rng.nextInt(e.value.length)]};
+  late final Map<String, String> _picks = {
+    for (final e in widget.parts.entries)
+      e.key: e.value[_rng.nextInt(e.value.length)],
+  };
   final _notes = TextEditingController();
 
   @override
@@ -875,24 +1207,59 @@ class _GeneratorGameState extends State<GeneratorGame> {
           Text(
             widget.title,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 10),
           for (final e in _picks.entries)
             OptionTile(
-              leading: SizedBox(width: 74, child: Text(e.key, style: Theme.of(context).textTheme.labelMedium)),
+              leading: SizedBox(
+                width: 74,
+                child: Text(
+                  e.key,
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+              ),
               label: e.value,
-              onTap: () => setState(() => _picks[e.key] = widget.parts[e.key]![_rng.nextInt(widget.parts[e.key]!.length)]),
+              onTap: () => setState(
+                () => _picks[e.key] = widget
+                    .parts[e.key]![_rng.nextInt(widget.parts[e.key]!.length)],
+              ),
             ),
-          Text(tr(context, 'Tap any line to re-roll it.', 'Toca una línea para cambiarla.'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Tap any line to re-roll it.',
+              'Toca una línea para cambiarla.',
+            ),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           if (composed != null) ...[
             const SizedBox(height: 10),
             GamePanel(
-              child: Text(composed, style: const TextStyle(fontStyle: FontStyle.italic, height: 1.45)),
+              child: Text(
+                composed,
+                style: const TextStyle(
+                  fontStyle: FontStyle.italic,
+                  height: 1.45,
+                ),
+              ),
             ),
           ],
           const SizedBox(height: 10),
-          PrismTextField(controller: _notes, maxLines: 6, hintText: widget.notesHint ?? tr(context, 'Write, describe or plan…', 'Escribe, describe o planea…')),
+          PrismTextField(
+            controller: _notes,
+            maxLines: 6,
+            hintText:
+                widget.notesHint ??
+                tr(
+                  context,
+                  'Write, describe or plan…',
+                  'Escribe, describe o planea…',
+                ),
+          ),
           GameActions(
             children: [
               PrismButton(
@@ -900,7 +1267,8 @@ class _GeneratorGameState extends State<GeneratorGame> {
                 icon: PhosphorIcons.shuffle(),
                 onPressed: () => setState(() {
                   for (final k in _picks.keys) {
-                    _picks[k] = widget.parts[k]![_rng.nextInt(widget.parts[k]!.length)];
+                    _picks[k] =
+                        widget.parts[k]![_rng.nextInt(widget.parts[k]!.length)];
                   }
                 }),
               ),
@@ -908,8 +1276,20 @@ class _GeneratorGameState extends State<GeneratorGame> {
                 tone: PrismButtonTone.filled,
                 label: tr(context, 'Keep it', 'Guardarlo'),
                 onPressed: () {
-                  final text = [composed ?? _picks.entries.map((e) => '${e.key}: ${e.value}').join(' · '), if (_notes.text.trim().isNotEmpty) _notes.text.trim()].join('\n');
-                  widget.session.finish(GameOutcome(summary: widget.title, memorable: text, details: {'picks': _picks, 'notes': _notes.text}));
+                  final text = [
+                    composed ??
+                        _picks.entries
+                            .map((e) => '${e.key}: ${e.value}')
+                            .join(' · '),
+                    if (_notes.text.trim().isNotEmpty) _notes.text.trim(),
+                  ].join('\n');
+                  widget.session.finish(
+                    GameOutcome(
+                      summary: widget.title,
+                      memorable: text,
+                      details: {'picks': _picks, 'notes': _notes.text},
+                    ),
+                  );
                 },
               ),
             ],
@@ -947,8 +1327,20 @@ class _PoetryGameState extends State<PoetryGame> {
                 spacing: 6,
                 runSpacing: 6,
                 children: [
-                  for (var k = 0; k < _lines[l].length; k++) GestureDetector(onTap: () => setState(() => _lines[l].removeAt(k)), child: Chip2(_lines[l][k])),
-                  if (_lines[l].isEmpty) Text(tr(context, 'Line ${l + 1} — tap words below', 'Línea ${l + 1}: toca palabras abajo'), style: Theme.of(context).textTheme.bodySmall),
+                  for (var k = 0; k < _lines[l].length; k++)
+                    GestureDetector(
+                      onTap: () => setState(() => _lines[l].removeAt(k)),
+                      child: Chip2(_lines[l][k]),
+                    ),
+                  if (_lines[l].isEmpty)
+                    Text(
+                      tr(
+                        context,
+                        'Line ${l + 1} — tap words below',
+                        'Línea ${l + 1}: toca palabras abajo',
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                 ],
               ),
             ),
@@ -956,18 +1348,42 @@ class _PoetryGameState extends State<PoetryGame> {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: [for (final w in _tiles) PrismChip(label: w, selected: false, onTap: () => setState(() => _lines.last.add(w)))],
+            children: [
+              for (final w in _tiles)
+                PrismChip(
+                  label: w,
+                  selected: false,
+                  onTap: () => setState(() => _lines.last.add(w)),
+                ),
+            ],
           ),
           GameActions(
             children: [
-              PrismButton(label: tr(context, 'New line', 'Nueva línea'), onPressed: () => setState(() => _lines.add([]))),
-              PrismButton(label: tr(context, 'New words', 'Nuevas palabras'), icon: PhosphorIcons.shuffle(), onPressed: () => setState(() => _tiles = shuffled(widget.words, _rng).take(28).toList())),
+              PrismButton(
+                label: tr(context, 'New line', 'Nueva línea'),
+                onPressed: () => setState(() => _lines.add([])),
+              ),
+              PrismButton(
+                label: tr(context, 'New words', 'Nuevas palabras'),
+                icon: PhosphorIcons.shuffle(),
+                onPressed: () => setState(
+                  () => _tiles = shuffled(widget.words, _rng).take(28).toList(),
+                ),
+              ),
               PrismButton(
                 tone: PrismButtonTone.filled,
                 label: tr(context, 'Keep poem', 'Guardar poema'),
                 onPressed: () {
-                  final poem = _lines.where((l) => l.isNotEmpty).map((l) => l.join(' ')).join('\n');
-                  widget.session.finish(GameOutcome(summary: tr(context, 'A new poem', 'Un poema nuevo'), memorable: poem.isEmpty ? null : poem));
+                  final poem = _lines
+                      .where((l) => l.isNotEmpty)
+                      .map((l) => l.join(' '))
+                      .join('\n');
+                  widget.session.finish(
+                    GameOutcome(
+                      summary: tr(context, 'A new poem', 'Un poema nuevo'),
+                      memorable: poem.isEmpty ? null : poem,
+                    ),
+                  );
                 },
               ),
             ],
@@ -980,7 +1396,12 @@ class _PoetryGameState extends State<PoetryGame> {
 
 /// A one-off prompt from a jar, with a timer-free "I did it" and notes.
 class PromptJarGame extends StatefulWidget {
-  const PromptJarGame({super.key, required this.session, required this.prompts, required this.emoji});
+  const PromptJarGame({
+    super.key,
+    required this.session,
+    required this.prompts,
+    required this.emoji,
+  });
   final GameSession session;
   final List<String> prompts;
   final String emoji;
@@ -1005,18 +1426,42 @@ class _PromptJarGameState extends State<PromptJarGame> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.emoji, textAlign: TextAlign.center, style: const TextStyle(fontSize: 48)),
+          Text(
+            widget.emoji,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 48),
+          ),
           const SizedBox(height: 8),
           GamePrompt(widget.prompts[_i]),
           const SizedBox(height: 12),
-          PrismTextField(controller: _ctl, maxLines: 4, hintText: tr(context, 'Notes, a description, or what you made (optional)', 'Notas, descripción o lo que hiciste (opcional)')),
+          PrismTextField(
+            controller: _ctl,
+            maxLines: 4,
+            hintText: tr(
+              context,
+              'Notes, a description, or what you made (optional)',
+              'Notas, descripción o lo que hiciste (opcional)',
+            ),
+          ),
           GameActions(
             children: [
-              PrismButton(label: tr(context, 'Another', 'Otro'), icon: PhosphorIcons.shuffle(), onPressed: () => setState(() => _i = _rng.nextInt(widget.prompts.length))),
+              PrismButton(
+                label: tr(context, 'Another', 'Otro'),
+                icon: PhosphorIcons.shuffle(),
+                onPressed: () =>
+                    setState(() => _i = _rng.nextInt(widget.prompts.length)),
+              ),
               PrismButton(
                 tone: PrismButtonTone.filled,
                 label: tr(context, 'Done', 'Hecho'),
-                onPressed: () => widget.session.finish(GameOutcome(summary: widget.prompts[_i], memorable: _ctl.text.trim().isEmpty ? null : _ctl.text.trim())),
+                onPressed: () => widget.session.finish(
+                  GameOutcome(
+                    summary: widget.prompts[_i],
+                    memorable: _ctl.text.trim().isEmpty
+                        ? null
+                        : _ctl.text.trim(),
+                  ),
+                ),
               ),
             ],
           ),
@@ -1035,7 +1480,10 @@ class Elapsed extends StatefulWidget {
 
 class _ElapsedState extends State<Elapsed> {
   final _start = DateTime.now();
-  late final Timer _t = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
+  late final Timer _t = Timer.periodic(
+    const Duration(seconds: 1),
+    (_) => setState(() {}),
+  );
   @override
   void dispose() {
     _t.cancel();

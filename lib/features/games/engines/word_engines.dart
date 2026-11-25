@@ -12,7 +12,15 @@ abstract final class GameDictionary {
 
   static Future<Set<String>> load() {
     if (_words != null) return Future.value(_words);
-    return _loading ??= rootBundle.loadString('assets/games/words.txt').then((t) => _words = t.split('\n').map((w) => w.trim()).where((w) => w.isNotEmpty).toSet());
+    return _loading ??= rootBundle
+        .loadString('assets/games/words.txt')
+        .then(
+          (t) => _words = t
+              .split('\n')
+              .map((w) => w.trim())
+              .where((w) => w.isNotEmpty)
+              .toSet(),
+        );
   }
 
   static bool contains(String w) => _words?.contains(w.toLowerCase()) ?? false;
@@ -25,13 +33,25 @@ class WithDictionary extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FutureBuilder<Set<String>>(
     future: GameDictionary.load(),
-    builder: (context, s) => s.hasData ? builder(s.data!) : const Padding(padding: EdgeInsets.all(40), child: PrismLoadingState()),
+    builder: (context, s) => s.hasData
+        ? builder(s.data!)
+        : const Padding(
+            padding: EdgeInsets.all(40),
+            child: PrismLoadingState(),
+          ),
   );
 }
 
 /// Letter tiles in a row.
 class LetterTiles extends StatelessWidget {
-  const LetterTiles(this.letters, {super.key, this.size = 40, this.onTap, this.used = const {}, this.colors});
+  const LetterTiles(
+    this.letters, {
+    super.key,
+    this.size = 40,
+    this.onTap,
+    this.used = const {},
+    this.colors,
+  });
   final List<String> letters;
   final double size;
   final void Function(int index)? onTap;
@@ -65,7 +85,13 @@ class LetterTiles extends StatelessWidget {
                   ),
                   child: Text(
                     letters[i].toUpperCase(),
-                    style: TextStyle(fontSize: size * 0.48, fontWeight: FontWeight.w800, color: colors?[i] == null ? scheme.onSurface : Colors.white),
+                    style: TextStyle(
+                      fontSize: size * 0.48,
+                      fontWeight: FontWeight.w800,
+                      color: colors?[i] == null
+                          ? scheme.onSurface
+                          : Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -78,7 +104,14 @@ class LetterTiles extends StatelessWidget {
 
 /// A–Z keyboard. [states]: letter → true (good), false (absent), null (present elsewhere).
 class GameKeyboard extends StatelessWidget {
-  const GameKeyboard({super.key, required this.onKey, this.onEnter, this.onBack, this.disabled = const {}, this.states = const {}});
+  const GameKeyboard({
+    super.key,
+    required this.onKey,
+    this.onEnter,
+    this.onBack,
+    this.disabled = const {},
+    this.states = const {},
+  });
   final void Function(String) onKey;
   final VoidCallback? onEnter;
   final VoidCallback? onBack;
@@ -89,7 +122,12 @@ class GameKeyboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     const rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
-    Widget key(String label, VoidCallback? onTap, {double flex = 1, String? semantic}) {
+    Widget key(
+      String label,
+      VoidCallback? onTap, {
+      double flex = 1,
+      String? semantic,
+    }) {
       final st = states[label];
       final has = states.containsKey(label);
       return Expanded(
@@ -119,7 +157,11 @@ class GameKeyboard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: label.length == 1 ? 16 : 12,
-                        color: has && st != false ? Colors.white : (disabled.contains(label) ? scheme.onSurface.withValues(alpha: 0.3) : scheme.onSurface),
+                        color: has && st != false
+                            ? Colors.white
+                            : (disabled.contains(label)
+                                  ? scheme.onSurface.withValues(alpha: 0.3)
+                                  : scheme.onSurface),
                       ),
                     ),
                   ),
@@ -136,9 +178,12 @@ class GameKeyboard extends StatelessWidget {
         for (var r = 0; r < rows.length; r++)
           Row(
             children: [
-              if (r == 2 && onEnter != null) key('Enter', onEnter, flex: 1.6, semantic: 'Enter'),
-              for (final c in rows[r].split('')) key(c, disabled.contains(c) ? null : () => onKey(c)),
-              if (r == 2 && onBack != null) key('⌫', onBack, flex: 1.6, semantic: 'Delete'),
+              if (r == 2 && onEnter != null)
+                key('Enter', onEnter, flex: 1.6, semantic: 'Enter'),
+              for (final c in rows[r].split(''))
+                key(c, disabled.contains(c) ? null : () => onKey(c)),
+              if (r == 2 && onBack != null)
+                key('⌫', onBack, flex: 1.6, semantic: 'Delete'),
             ],
           ),
       ],
@@ -162,7 +207,13 @@ String _scramble(String w, math.Random rng) {
 enum TypeMode { scramble, missing }
 
 class TypeWordGame extends StatefulWidget {
-  const TypeWordGame({super.key, required this.session, required this.words, required this.mode, this.rounds = 8});
+  const TypeWordGame({
+    super.key,
+    required this.session,
+    required this.words,
+    required this.mode,
+    this.rounds = 8,
+  });
   final GameSession session;
   final List<(String, String)> words;
   final TypeMode mode;
@@ -173,7 +224,10 @@ class TypeWordGame extends StatefulWidget {
 
 class _TypeWordGameState extends State<TypeWordGame> {
   late final rng = widget.session.rng(1);
-  late final List<(String, String)> _round = shuffled(widget.words, rng).take(widget.rounds).toList();
+  late final List<(String, String)> _round = shuffled(
+    widget.words,
+    rng,
+  ).take(widget.rounds).toList();
   late final List<String> _shown = [
     for (final (w, _) in _round)
       widget.mode == TypeMode.scramble
@@ -184,7 +238,10 @@ class _TypeWordGameState extends State<TypeWordGame> {
               while (hide.length < n) {
                 hide.add(rng.nextInt(w.length));
               }
-              return [for (var i = 0; i < w.length; i++) hide.contains(i) ? '_' : w[i]].join();
+              return [
+                for (var i = 0; i < w.length; i++)
+                  hide.contains(i) ? '_' : w[i],
+              ].join();
             }(),
   ];
   int _i = 0, _score = 0;
@@ -208,7 +265,13 @@ class _TypeWordGameState extends State<TypeWordGame> {
 
   void _next() {
     if (_i + 1 >= _round.length) {
-      widget.session.finish(GameOutcome(score: _score, max: _round.length * 2, summary: tr(context, '$_score points', '$_score puntos')));
+      widget.session.finish(
+        GameOutcome(
+          score: _score,
+          max: _round.length * 2,
+          summary: tr(context, '$_score points', '$_score puntos'),
+        ),
+      );
       return;
     }
     setState(() {
@@ -226,31 +289,69 @@ class _TypeWordGameState extends State<TypeWordGame> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GameProgress(current: _i + 1, total: _round.length, trailing: '★ $_score'),
+        GameProgress(
+          current: _i + 1,
+          total: _round.length,
+          trailing: '★ $_score',
+        ),
         GamePanel(
           child: Column(
             children: [
               LetterTiles(shown.split(''), size: shown.length > 7 ? 34 : 42),
               const SizedBox(height: 10),
               Text(
-                _hint ? '${tr(context, 'Hint', 'Pista')}: $hint · ${word[0].toUpperCase()}…' : tr(context, '${word.length} letters', '${word.length} letras'),
+                _hint
+                    ? '${tr(context, 'Hint', 'Pista')}: $hint · ${word[0].toUpperCase()}…'
+                    : tr(
+                        context,
+                        '${word.length} letters',
+                        '${word.length} letras',
+                      ),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 14),
-              PrismTextField(controller: _ctl, hintText: tr(context, 'Type the word', 'Escribe la palabra'), autofocus: true, onSubmitted: (_) => _right == null ? _check() : _next()),
+              PrismTextField(
+                controller: _ctl,
+                hintText: tr(context, 'Type the word', 'Escribe la palabra'),
+                autofocus: true,
+                onSubmitted: (_) => _right == null ? _check() : _next(),
+              ),
               if (_right != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text(_right! ? tr(context, '✓ Correct!', '✓ ¡Correcto!') : tr(context, '✗ It was "$word"', '✗ Era "$word"'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                  child: Text(
+                    _right!
+                        ? tr(context, '✓ Correct!', '✓ ¡Correcto!')
+                        : tr(context, '✗ It was "$word"', '✗ Era "$word"'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
               GameActions(
                 children: _right == null
                     ? [
-                        if (!_hint) PrismButton(label: tr(context, 'Hint', 'Pista'), icon: PhosphorIcons.lightbulb(), onPressed: () => setState(() => _hint = true)),
-                        PrismButton(label: tr(context, 'Skip', 'Saltar'), onPressed: () => setState(() => _right = false)),
-                        PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Check', 'Comprobar'), onPressed: _check),
+                        if (!_hint)
+                          PrismButton(
+                            label: tr(context, 'Hint', 'Pista'),
+                            icon: PhosphorIcons.lightbulb(),
+                            onPressed: () => setState(() => _hint = true),
+                          ),
+                        PrismButton(
+                          label: tr(context, 'Skip', 'Saltar'),
+                          onPressed: () => setState(() => _right = false),
+                        ),
+                        PrismButton(
+                          tone: PrismButtonTone.filled,
+                          label: tr(context, 'Check', 'Comprobar'),
+                          onPressed: _check,
+                        ),
                       ]
-                    : [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Next', 'Siguiente'), onPressed: _next)],
+                    : [
+                        PrismButton(
+                          tone: PrismButtonTone.filled,
+                          label: tr(context, 'Next', 'Siguiente'),
+                          onPressed: _next,
+                        ),
+                      ],
               ),
             ],
           ),
@@ -273,7 +374,8 @@ class HangmanGame extends StatefulWidget {
 }
 
 class _HangmanGameState extends State<HangmanGame> {
-  late final (String, String) _w = widget.words[widget.session.rng(2).nextInt(widget.words.length)];
+  late final (String, String) _w =
+      widget.words[widget.session.rng(2).nextInt(widget.words.length)];
   final Set<String> _guessed = {};
   static const _lives = 7;
 
@@ -289,7 +391,13 @@ class _HangmanGameState extends State<HangmanGame> {
             GameOutcome(
               score: _won ? _lives - _wrong : 0,
               max: _lives,
-              summary: _won ? tr(context, 'Solved "${_w.$1}"', 'Resuelta: "${_w.$1}"') : tr(context, 'The word was "${_w.$1}"', 'La palabra era "${_w.$1}"'),
+              summary: _won
+                  ? tr(context, 'Solved "${_w.$1}"', 'Resuelta: "${_w.$1}"')
+                  : tr(
+                      context,
+                      'The word was "${_w.$1}"',
+                      'La palabra era "${_w.$1}"',
+                    ),
             ),
           );
       });
@@ -303,14 +411,34 @@ class _HangmanGameState extends State<HangmanGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text('${tr(context, 'Hint', 'Pista')}: ${_w.$2}', style: theme.textTheme.bodySmall),
+          Text(
+            '${tr(context, 'Hint', 'Pista')}: ${_w.$2}',
+            style: theme.textTheme.bodySmall,
+          ),
           const SizedBox(height: 8),
           // A gentle "lives" garland instead of a gallows.
-          Text(List.generate(_lives, (i) => i < lives ? '🌸' : '🍂').join(' '), style: const TextStyle(fontSize: 22), semanticsLabel: tr(context, '$lives tries left', 'Quedan $lives intentos')),
+          Text(
+            List.generate(_lives, (i) => i < lives ? '🌸' : '🍂').join(' '),
+            style: const TextStyle(fontSize: 22),
+            semanticsLabel: tr(
+              context,
+              '$lives tries left',
+              'Quedan $lives intentos',
+            ),
+          ),
           const SizedBox(height: 14),
-          LetterTiles([for (final c in _w.$1.split('')) _guessed.contains(c) || _wrong >= _lives ? c : ' '], size: 38),
+          LetterTiles([
+            for (final c in _w.$1.split(''))
+              _guessed.contains(c) || _wrong >= _lives ? c : ' ',
+          ], size: 38),
           const SizedBox(height: 16),
-          GameKeyboard(onKey: _won || _wrong >= _lives ? (_) {} : _guess, disabled: _guessed, states: {for (final c in _guessed) c: _w.$1.contains(c) ? true : false}),
+          GameKeyboard(
+            onKey: _won || _wrong >= _lives ? (_) {} : _guess,
+            disabled: _guessed,
+            states: {
+              for (final c in _guessed) c: _w.$1.contains(c) ? true : false,
+            },
+          ),
         ],
       ),
     );
@@ -322,7 +450,12 @@ class _HangmanGameState extends State<HangmanGame> {
 // ---------------------------------------------------------------------------
 
 class FiveLetterGame extends StatefulWidget {
-  const FiveLetterGame({super.key, required this.session, required this.answers, required this.words});
+  const FiveLetterGame({
+    super.key,
+    required this.session,
+    required this.answers,
+    required this.words,
+  });
   final GameSession session;
   final List<String> answers;
   final Set<String> words;
@@ -331,8 +464,12 @@ class FiveLetterGame extends StatefulWidget {
 }
 
 class _FiveLetterGameState extends State<FiveLetterGame> {
-  late final String _answer = widget.answers[widget.session.rng(3).nextInt(widget.answers.length)];
-  late final List<String> _guesses = [for (final g in (widget.session.saved?['guesses'] as List?) ?? const []) '$g'];
+  late final String _answer =
+      widget.answers[widget.session.rng(3).nextInt(widget.answers.length)];
+  late final List<String> _guesses = [
+    for (final g in (widget.session.saved?['guesses'] as List?) ?? const [])
+      '$g',
+  ];
   String _cur = '';
   String? _msg;
 
@@ -357,8 +494,18 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
   }
 
   void _enter() {
-    if (_cur.length != 5) return setState(() => _msg = tr(context, 'Five letters, please', 'Cinco letras, por favor'));
-    if (!widget.words.contains(_cur) && !widget.answers.contains(_cur)) return setState(() => _msg = tr(context, 'Not in the word list', 'No está en la lista'));
+    if (_cur.length != 5)
+      return setState(
+        () => _msg = tr(
+          context,
+          'Five letters, please',
+          'Cinco letras, por favor',
+        ),
+      );
+    if (!widget.words.contains(_cur) && !widget.answers.contains(_cur))
+      return setState(
+        () => _msg = tr(context, 'Not in the word list', 'No está en la lista'),
+      );
     setState(() {
       _guesses.add(_cur);
       _cur = '';
@@ -373,7 +520,17 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
             GameOutcome(
               score: won ? 7 - _guesses.length : 0,
               max: 6,
-              summary: won ? tr(context, 'Solved in ${_guesses.length}', 'Resuelto en ${_guesses.length}') : tr(context, 'The word was "$_answer"', 'La palabra era "$_answer"'),
+              summary: won
+                  ? tr(
+                      context,
+                      'Solved in ${_guesses.length}',
+                      'Resuelto en ${_guesses.length}',
+                    )
+                  : tr(
+                      context,
+                      'The word was "$_answer"',
+                      'La palabra era "$_answer"',
+                    ),
             ),
           );
       });
@@ -402,7 +559,9 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
         : v == null
         ? scheme.tertiary
         : scheme.outline;
-    final done = _guesses.isNotEmpty && (_guesses.last == _answer || _guesses.length >= 6);
+    final done =
+        _guesses.isNotEmpty &&
+        (_guesses.last == _answer || _guesses.length >= 6);
     return GamePanel(
       child: Column(
         children: [
@@ -413,14 +572,30 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
                   ? Builder(
                       builder: (context) {
                         final s = _score(_guesses[r]);
-                        return LetterTiles([for (var i = 0; i < 5; i++) _guesses[r][i]], size: 46, colors: [for (final v in s) colorOf(v)]);
+                        return LetterTiles(
+                          [for (var i = 0; i < 5; i++) _guesses[r][i]],
+                          size: 46,
+                          colors: [for (final v in s) colorOf(v)],
+                        );
                       },
                     )
-                  : LetterTiles(List.generate(5, (i) => r == _guesses.length && i < _cur.length ? _cur[i] : ' '), size: 46),
+                  : LetterTiles(
+                      List.generate(
+                        5,
+                        (i) => r == _guesses.length && i < _cur.length
+                            ? _cur[i]
+                            : ' ',
+                      ),
+                      size: 46,
+                    ),
             ),
           const SizedBox(height: 6),
           Text(
-            tr(context, 'Filled = right spot · tinted = in the word · grey = not in it', 'Relleno = sitio correcto · tono = está en la palabra · gris = no está'),
+            tr(
+              context,
+              'Filled = right spot · tinted = in the word · grey = not in it',
+              'Relleno = sitio correcto · tono = está en la palabra · gris = no está',
+            ),
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),
@@ -434,7 +609,9 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
             GameKeyboard(
               states: states,
               onKey: (c) => _cur.length < 5 ? setState(() => _cur += c) : null,
-              onBack: () => _cur.isEmpty ? null : setState(() => _cur = _cur.substring(0, _cur.length - 1)),
+              onBack: () => _cur.isEmpty
+                  ? null
+                  : setState(() => _cur = _cur.substring(0, _cur.length - 1)),
               onEnter: _enter,
             ),
         ],
@@ -448,7 +625,12 @@ class _FiveLetterGameState extends State<FiveLetterGame> {
 // ---------------------------------------------------------------------------
 
 class WordLadderGame extends StatefulWidget {
-  const WordLadderGame({super.key, required this.session, required this.ladders, required this.words});
+  const WordLadderGame({
+    super.key,
+    required this.session,
+    required this.ladders,
+    required this.words,
+  });
   final GameSession session;
   final List<(String, String, List<String>)> ladders;
   final Set<String> words;
@@ -457,7 +639,8 @@ class WordLadderGame extends StatefulWidget {
 }
 
 class _WordLadderGameState extends State<WordLadderGame> {
-  late final (String, String, List<String>) _l = widget.ladders[widget.session.rng(4).nextInt(widget.ladders.length)];
+  late final (String, String, List<String>) _l =
+      widget.ladders[widget.session.rng(4).nextInt(widget.ladders.length)];
   late final List<String> _steps = [_l.$1];
   final _ctl = TextEditingController();
   String? _msg;
@@ -480,8 +663,22 @@ class _WordLadderGameState extends State<WordLadderGame> {
 
   void _add([String? word]) {
     final w = (word ?? _ctl.text).trim().toLowerCase();
-    if (!_oneOff(_steps.last, w)) return setState(() => _msg = tr(context, 'Change exactly one letter', 'Cambia exactamente una letra'));
-    if (!widget.words.contains(w)) return setState(() => _msg = tr(context, '"$w" isn\'t in the word list', '"$w" no está en la lista'));
+    if (!_oneOff(_steps.last, w))
+      return setState(
+        () => _msg = tr(
+          context,
+          'Change exactly one letter',
+          'Cambia exactamente una letra',
+        ),
+      );
+    if (!widget.words.contains(w))
+      return setState(
+        () => _msg = tr(
+          context,
+          '"$w" isn\'t in the word list',
+          '"$w" no está en la lista',
+        ),
+      );
     setState(() {
       _steps.add(w);
       _ctl.clear();
@@ -494,7 +691,11 @@ class _WordLadderGameState extends State<WordLadderGame> {
         GameOutcome(
           score: math.max(1, 10 - (used - best) * 2 - _hints * 2),
           max: 10,
-          summary: tr(context, '${_l.$1} → ${_l.$2} in $used steps (shortest known: $best)', '${_l.$1} → ${_l.$2} en $used pasos (mínimo conocido: $best)'),
+          summary: tr(
+            context,
+            '${_l.$1} → ${_l.$2} in $used steps (shortest known: $best)',
+            '${_l.$1} → ${_l.$2} en $used pasos (mínimo conocido: $best)',
+          ),
           memorable: _steps.join(' → '),
         ),
       );
@@ -509,7 +710,13 @@ class _WordLadderGameState extends State<WordLadderGame> {
       _hints++;
       _add(path[at + 1]);
     } else {
-      setState(() => _msg = tr(context, 'Off the known path — undo a step for a hint', 'Fuera del camino conocido: deshaz un paso para una pista'));
+      setState(
+        () => _msg = tr(
+          context,
+          'Off the known path — undo a step for a hint',
+          'Fuera del camino conocido: deshaz un paso para una pista',
+        ),
+      );
     }
   }
 
@@ -522,24 +729,52 @@ class _WordLadderGameState extends State<WordLadderGame> {
           GamePrompt('${_l.$1.toUpperCase()}  →  ${_l.$2.toUpperCase()}'),
           const SizedBox(height: 4),
           Text(
-            tr(context, 'Change one letter at a time; every step must be a real word.', 'Cambia una letra cada vez; cada paso debe ser una palabra real.'),
+            tr(
+              context,
+              'Change one letter at a time; every step must be a real word.',
+              'Cambia una letra cada vez; cada paso debe ser una palabra real.',
+            ),
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-          for (final s in _steps) Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: LetterTiles(s.split(''), size: 36)),
+          for (final s in _steps)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: LetterTiles(s.split(''), size: 36),
+            ),
           const SizedBox(height: 10),
-          PrismTextField(controller: _ctl, hintText: tr(context, 'Next word', 'Siguiente palabra'), onSubmitted: (_) => _add()),
+          PrismTextField(
+            controller: _ctl,
+            hintText: tr(context, 'Next word', 'Siguiente palabra'),
+            onSubmitted: (_) => _add(),
+          ),
           if (_msg != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error)),
+              child: Text(
+                _msg!,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
             ),
           GameActions(
             children: [
-              if (_steps.length > 1) PrismButton(label: tr(context, 'Undo', 'Deshacer'), icon: PhosphorIcons.arrowUUpLeft(), onPressed: () => setState(() => _steps.removeLast())),
-              PrismButton(label: tr(context, 'Hint', 'Pista'), icon: PhosphorIcons.lightbulb(), onPressed: _hint),
-              PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
+              if (_steps.length > 1)
+                PrismButton(
+                  label: tr(context, 'Undo', 'Deshacer'),
+                  icon: PhosphorIcons.arrowUUpLeft(),
+                  onPressed: () => setState(() => _steps.removeLast()),
+                ),
+              PrismButton(
+                label: tr(context, 'Hint', 'Pista'),
+                icon: PhosphorIcons.lightbulb(),
+                onPressed: _hint,
+              ),
+              PrismButton(
+                tone: PrismButtonTone.filled,
+                label: tr(context, 'Add', 'Añadir'),
+                onPressed: _add,
+              ),
             ],
           ),
         ],
@@ -581,7 +816,9 @@ class _AnagramGameState extends State<AnagramGame> {
   void initState() {
     super.initState();
     final rng = widget.session.rng(5);
-    final sevens = widget.words.where((w) => w.length == 7 && !w.endsWith('s')).toList()..sort();
+    final sevens =
+        widget.words.where((w) => w.length == 7 && !w.endsWith('s')).toList()
+          ..sort();
     _base = sevens[rng.nextInt(sevens.length)];
     _letters = _base.split('')..shuffle(rng);
     final pool = <String, int>{};
@@ -603,11 +840,23 @@ class _AnagramGameState extends State<AnagramGame> {
   void _try() {
     final w = _ctl.text.trim().toLowerCase();
     _ctl.clear();
-    if (_found.contains(w)) return setState(() => _msg = tr(context, 'Already found', 'Ya encontrada'));
-    if (!_possible.contains(w)) return setState(() => _msg = tr(context, '"$w" doesn\'t work', '"$w" no vale'));
+    if (_found.contains(w))
+      return setState(
+        () => _msg = tr(context, 'Already found', 'Ya encontrada'),
+      );
+    if (!_possible.contains(w))
+      return setState(
+        () => _msg = tr(context, '"$w" doesn\'t work', '"$w" no vale'),
+      );
     setState(() {
       _found.add(w);
-      _msg = w.length == 7 ? tr(context, '🌟 You found the seven-letter word!', '🌟 ¡Encontraste la palabra de siete letras!') : null;
+      _msg = w.length == 7
+          ? tr(
+              context,
+              '🌟 You found the seven-letter word!',
+              '🌟 ¡Encontraste la palabra de siete letras!',
+            )
+          : null;
     });
   }
 
@@ -616,8 +865,16 @@ class _AnagramGameState extends State<AnagramGame> {
     widget.session.finish(
       GameOutcome(
         score: pts,
-        summary: tr(context, '${_found.length} of ${_possible.length} words', '${_found.length} de ${_possible.length} palabras'),
-        memorable: tr(context, 'The seven-letter word was "$_base"', 'La palabra de siete letras era "$_base"'),
+        summary: tr(
+          context,
+          '${_found.length} of ${_possible.length} words',
+          '${_found.length} de ${_possible.length} palabras',
+        ),
+        memorable: tr(
+          context,
+          'The seven-letter word was "$_base"',
+          'La palabra de siete letras era "$_base"',
+        ),
       ),
     );
   }
@@ -635,16 +892,45 @@ class _AnagramGameState extends State<AnagramGame> {
             ),
           LetterTiles(_letters, size: 42),
           const SizedBox(height: 8),
-          TextButtonLike(label: tr(context, 'Shuffle', 'Mezclar'), onTap: () => setState(() => _letters.shuffle())),
+          TextButtonLike(
+            label: tr(context, 'Shuffle', 'Mezclar'),
+            onTap: () => setState(() => _letters.shuffle()),
+          ),
           const SizedBox(height: 8),
-          PrismTextField(controller: _ctl, hintText: tr(context, 'Words of 3+ letters', 'Palabras de 3+ letras'), onSubmitted: (_) => _try()),
-          if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!)),
+          PrismTextField(
+            controller: _ctl,
+            hintText: tr(
+              context,
+              'Words of 3+ letters',
+              'Palabras de 3+ letras',
+            ),
+            onSubmitted: (_) => _try(),
+          ),
+          if (_msg != null)
+            Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!)),
           const SizedBox(height: 10),
-          Text(tr(context, 'Found ${_found.length} of ${_possible.length}', 'Encontradas ${_found.length} de ${_possible.length}'), style: theme.textTheme.labelLarge),
+          Text(
+            tr(
+              context,
+              'Found ${_found.length} of ${_possible.length}',
+              'Encontradas ${_found.length} de ${_possible.length}',
+            ),
+            style: theme.textTheme.labelLarge,
+          ),
           const SizedBox(height: 6),
-          Wrap(spacing: 6, runSpacing: 6, children: [for (final w in _found.toList()..sort()) Chip2(w)]),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [for (final w in _found.toList()..sort()) Chip2(w)],
+          ),
           GameActions(
-            children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)],
+            children: [
+              PrismButton(
+                tone: PrismButtonTone.filled,
+                label: tr(context, 'Finish', 'Terminar'),
+                onPressed: _finish,
+              ),
+            ],
           ),
         ],
       ),
@@ -662,7 +948,10 @@ class Chip2 extends StatelessWidget {
     final c = color ?? Theme.of(context).colorScheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.13), borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: c.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
@@ -674,7 +963,11 @@ class TextButtonLike extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => PrismButton(density: PrismControlDensity.compact, label: label, onPressed: onTap);
+  Widget build(BuildContext context) => PrismButton(
+    density: PrismControlDensity.compact,
+    label: label,
+    onPressed: onTap,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -707,14 +1000,31 @@ class _WordChainGameState extends State<WordChainGame> {
     super.dispose();
   }
 
-  String? get _player => widget.session.players.isEmpty ? null : widget.session.players[_turn % widget.session.players.length];
+  String? get _player => widget.session.players.isEmpty
+      ? null
+      : widget.session.players[_turn % widget.session.players.length];
 
   void _add() {
     final w = _ctl.text.trim().toLowerCase();
     final last = _chain.last[_chain.last.length - 1];
-    if (!w.startsWith(last)) return setState(() => _msg = tr(context, 'Start with "${last.toUpperCase()}"', 'Empieza por "${last.toUpperCase()}"'));
-    if (_chain.contains(w)) return setState(() => _msg = tr(context, 'Already used', 'Ya usada'));
-    if (!widget.words.contains(w)) return setState(() => _msg = tr(context, '"$w" isn\'t in the word list', '"$w" no está en la lista'));
+    if (!w.startsWith(last))
+      return setState(
+        () => _msg = tr(
+          context,
+          'Start with "${last.toUpperCase()}"',
+          'Empieza por "${last.toUpperCase()}"',
+        ),
+      );
+    if (_chain.contains(w))
+      return setState(() => _msg = tr(context, 'Already used', 'Ya usada'));
+    if (!widget.words.contains(w))
+      return setState(
+        () => _msg = tr(
+          context,
+          '"$w" isn\'t in the word list',
+          '"$w" no está en la lista',
+        ),
+      );
     setState(() {
       _chain.add(w);
       _by.add(_player);
@@ -731,16 +1041,42 @@ class _WordChainGameState extends State<WordChainGame> {
     return GamePanel(
       child: Column(
         children: [
-          if (_player != null) Text(tr(context, '${widget.session.nameOf(_player)}\'s turn', 'Turno de ${widget.session.nameOf(_player)}'), style: theme.textTheme.titleSmall),
-          GamePrompt(tr(context, 'Next word starts with $last', 'La siguiente empieza por $last')),
+          if (_player != null)
+            Text(
+              tr(
+                context,
+                '${widget.session.nameOf(_player)}\'s turn',
+                'Turno de ${widget.session.nameOf(_player)}',
+              ),
+              style: theme.textTheme.titleSmall,
+            ),
+          GamePrompt(
+            tr(
+              context,
+              'Next word starts with $last',
+              'La siguiente empieza por $last',
+            ),
+          ),
           const SizedBox(height: 12),
-          Wrap(spacing: 6, runSpacing: 6, alignment: WrapAlignment.center, children: [for (final w in _chain) Chip2(w)]),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: [for (final w in _chain) Chip2(w)],
+          ),
           const SizedBox(height: 12),
-          PrismTextField(controller: _ctl, hintText: tr(context, 'Your word', 'Tu palabra'), onSubmitted: (_) => _add()),
+          PrismTextField(
+            controller: _ctl,
+            hintText: tr(context, 'Your word', 'Tu palabra'),
+            onSubmitted: (_) => _add(),
+          ),
           if (_msg != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text(_msg!, style: TextStyle(color: theme.colorScheme.error)),
+              child: Text(
+                _msg!,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
             ),
           GameActions(
             children: [
@@ -754,14 +1090,22 @@ class _WordChainGameState extends State<WordChainGame> {
                   widget.session.finish(
                     GameOutcome(
                       score: _chain.length - 1,
-                      summary: tr(context, 'A chain of ${_chain.length} words', 'Una cadena de ${_chain.length} palabras'),
+                      summary: tr(
+                        context,
+                        'A chain of ${_chain.length} words',
+                        'Una cadena de ${_chain.length} palabras',
+                      ),
                       memorable: _chain.join(' → '),
                       details: counts,
                     ),
                   );
                 },
               ),
-              PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Add', 'Añadir'), onPressed: _add),
+              PrismButton(
+                tone: PrismButtonTone.filled,
+                label: tr(context, 'Add', 'Añadir'),
+                onPressed: _add,
+              ),
             ],
           ),
         ],
@@ -771,7 +1115,12 @@ class _WordChainGameState extends State<WordChainGame> {
 }
 
 class CategoryGame extends StatefulWidget {
-  const CategoryGame({super.key, required this.session, required this.categories, required this.alphabet});
+  const CategoryGame({
+    super.key,
+    required this.session,
+    required this.categories,
+    required this.alphabet,
+  });
   final GameSession session;
   final Map<String, List<String>> categories;
 
@@ -782,7 +1131,8 @@ class CategoryGame extends StatefulWidget {
 }
 
 class _CategoryGameState extends State<CategoryGame> {
-  late final String _cat = (widget.categories.keys.toList()..shuffle(widget.session.rng(8))).first;
+  late final String _cat =
+      (widget.categories.keys.toList()..shuffle(widget.session.rng(8))).first;
   final Map<String, String> _byLetter = {};
   final List<String> _list = [];
   final _ctl = TextEditingController();
@@ -806,14 +1156,30 @@ class _CategoryGameState extends State<CategoryGame> {
       } else if (!_list.contains(w)) {
         _list.add(w);
       }
-      _msg = _known(w) ? null : tr(context, '"$w" isn\'t on our list — kept, but no point', '"$w" no está en nuestra lista: se guarda, sin punto');
+      _msg = _known(w)
+          ? null
+          : tr(
+              context,
+              '"$w" isn\'t on our list — kept, but no point',
+              '"$w" no está en nuestra lista: se guarda, sin punto',
+            );
     });
   }
 
   void _finish() {
     final answers = widget.alphabet ? _byLetter.values.toList() : _list;
     final pts = answers.where(_known).length;
-    widget.session.finish(GameOutcome(score: pts, summary: tr(context, '$pts recognised answers', '$pts respuestas reconocidas'), memorable: answers.take(12).join(', ')));
+    widget.session.finish(
+      GameOutcome(
+        score: pts,
+        summary: tr(
+          context,
+          '$pts recognised answers',
+          '$pts respuestas reconocidas',
+        ),
+        memorable: answers.take(12).join(', '),
+      ),
+    );
   }
 
   @override
@@ -825,14 +1191,26 @@ class _CategoryGameState extends State<CategoryGame> {
           if (widget.session.timer)
             Align(
               alignment: Alignment.centerRight,
-              child: GameTimer(seconds: widget.alphabet ? 240 : 60, onDone: _finish),
+              child: GameTimer(
+                seconds: widget.alphabet ? 240 : 60,
+                onDone: _finish,
+              ),
             ),
-          Text(tr(context, 'Category', 'Categoría'), style: theme.textTheme.labelMedium),
+          Text(
+            tr(context, 'Category', 'Categoría'),
+            style: theme.textTheme.labelMedium,
+          ),
           GamePrompt(_cat),
           const SizedBox(height: 12),
           PrismTextField(
             controller: _ctl,
-            hintText: widget.alphabet ? tr(context, 'One answer per letter', 'Una respuesta por letra') : tr(context, 'Type answers', 'Escribe respuestas'),
+            hintText: widget.alphabet
+                ? tr(
+                    context,
+                    'One answer per letter',
+                    'Una respuesta por letra',
+                  )
+                : tr(context, 'Type answers', 'Escribe respuestas'),
             onSubmitted: (_) => _add(),
           ),
           if (_msg != null)
@@ -853,22 +1231,51 @@ class _CategoryGameState extends State<CategoryGame> {
                     decoration: BoxDecoration(
                       color: _byLetter[c] == null
                           ? theme.colorScheme.surfaceContainerHighest
-                          : (_known(_byLetter[c]!) ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.tertiary.withValues(alpha: 0.14)),
+                          : (_known(_byLetter[c]!)
+                                ? theme.colorScheme.primary.withValues(
+                                    alpha: 0.18,
+                                  )
+                                : theme.colorScheme.tertiary.withValues(
+                                    alpha: 0.14,
+                                  )),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
                       children: [
-                        Text(c.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w800)),
-                        Text(_byLetter[c] ?? '', style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                        Text(
+                          c.toUpperCase(),
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          _byLetter[c] ?? '',
+                          style: theme.textTheme.labelSmall,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
                   ),
               ],
             )
           else
-            Wrap(spacing: 6, runSpacing: 6, children: [for (final w in _list) Chip2(w, color: _known(w) ? null : theme.colorScheme.tertiary)]),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final w in _list)
+                  Chip2(
+                    w,
+                    color: _known(w) ? null : theme.colorScheme.tertiary,
+                  ),
+              ],
+            ),
           GameActions(
-            children: [PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Finish', 'Terminar'), onPressed: _finish)],
+            children: [
+              PrismButton(
+                tone: PrismButtonTone.filled,
+                label: tr(context, 'Finish', 'Terminar'),
+                onPressed: _finish,
+              ),
+            ],
           ),
         ],
       ),
@@ -881,7 +1288,12 @@ class _CategoryGameState extends State<CategoryGame> {
 // ---------------------------------------------------------------------------
 
 class HiddenWordGame extends StatefulWidget {
-  const HiddenWordGame({super.key, required this.session, required this.puzzles, this.rounds = 4});
+  const HiddenWordGame({
+    super.key,
+    required this.session,
+    required this.puzzles,
+    this.rounds = 4,
+  });
   final GameSession session;
   final List<(String, List<String>)> puzzles;
   final int rounds;
@@ -890,7 +1302,10 @@ class HiddenWordGame extends StatefulWidget {
 }
 
 class _HiddenWordGameState extends State<HiddenWordGame> {
-  late final List<(String, List<String>)> _round = shuffled(widget.puzzles, widget.session.rng(9)).take(widget.rounds).toList();
+  late final List<(String, List<String>)> _round = shuffled(
+    widget.puzzles,
+    widget.session.rng(9),
+  ).take(widget.rounds).toList();
   int _i = 0, _clues = 1, _score = 0;
   bool? _right;
   final _ctl = TextEditingController();
@@ -922,26 +1337,52 @@ class _HiddenWordGameState extends State<HiddenWordGame> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GameProgress(current: _i + 1, total: _round.length, trailing: '★ $_score'),
+        GameProgress(
+          current: _i + 1,
+          total: _round.length,
+          trailing: '★ $_score',
+        ),
         GamePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(tr(context, 'A ${word.length}-letter word', 'Una palabra de ${word.length} letras'), textAlign: TextAlign.center),
+              Text(
+                tr(
+                  context,
+                  'A ${word.length}-letter word',
+                  'Una palabra de ${word.length} letras',
+                ),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 8),
-              for (var k = 0; k < _clues; k++) OptionTile(label: '${k + 1}. ${clues[k]}', onTap: null),
+              for (var k = 0; k < _clues; k++)
+                OptionTile(label: '${k + 1}. ${clues[k]}', onTap: null),
               const SizedBox(height: 8),
               if (_right == null) ...[
-                PrismTextField(controller: _ctl, hintText: tr(context, 'Your guess', 'Tu respuesta'), onSubmitted: (_) => _guess()),
+                PrismTextField(
+                  controller: _ctl,
+                  hintText: tr(context, 'Your guess', 'Tu respuesta'),
+                  onSubmitted: (_) => _guess(),
+                ),
                 GameActions(
                   children: [
-                    if (_clues < clues.length) PrismButton(label: tr(context, 'Another clue', 'Otra pista'), onPressed: () => setState(() => _clues++)),
-                    PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Guess', 'Adivinar'), onPressed: _guess),
+                    if (_clues < clues.length)
+                      PrismButton(
+                        label: tr(context, 'Another clue', 'Otra pista'),
+                        onPressed: () => setState(() => _clues++),
+                      ),
+                    PrismButton(
+                      tone: PrismButtonTone.filled,
+                      label: tr(context, 'Guess', 'Adivinar'),
+                      onPressed: _guess,
+                    ),
                   ],
                 ),
               ] else ...[
                 Text(
-                  _right! ? tr(context, '✓ Yes — "$word"!', '✓ ¡Sí: "$word"!') : tr(context, 'It was "$word"', 'Era "$word"'),
+                  _right!
+                      ? tr(context, '✓ Yes — "$word"!', '✓ ¡Sí: "$word"!')
+                      : tr(context, 'It was "$word"', 'Era "$word"'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
@@ -952,7 +1393,17 @@ class _HiddenWordGameState extends State<HiddenWordGame> {
                       label: tr(context, 'Next', 'Siguiente'),
                       onPressed: () {
                         if (_i + 1 >= _round.length) {
-                          widget.session.finish(GameOutcome(score: _score, max: _round.length * 4, summary: tr(context, '$_score points', '$_score puntos')));
+                          widget.session.finish(
+                            GameOutcome(
+                              score: _score,
+                              max: _round.length * 4,
+                              summary: tr(
+                                context,
+                                '$_score points',
+                                '$_score puntos',
+                              ),
+                            ),
+                          );
                         } else {
                           setState(() {
                             _i++;
@@ -978,7 +1429,12 @@ class _HiddenWordGameState extends State<HiddenWordGame> {
 // ---------------------------------------------------------------------------
 
 class WordSearchGame extends StatefulWidget {
-  const WordSearchGame({super.key, required this.session, required this.themes, this.size = 10});
+  const WordSearchGame({
+    super.key,
+    required this.session,
+    required this.themes,
+    this.size = 10,
+  });
   final GameSession session;
   final Map<String, List<String>> themes;
   final int size;
@@ -990,7 +1446,9 @@ class _WordSearchGameState extends State<WordSearchGame> {
   late final String _theme;
   late final List<List<String>> _grid;
   late final Map<String, List<(int, int)>> _placed;
-  late final Set<String> _found = {for (final f in (widget.session.saved?['found'] as List?) ?? const []) '$f'};
+  late final Set<String> _found = {
+    for (final f in (widget.session.saved?['found'] as List?) ?? const []) '$f',
+  };
   (int, int)? _start;
 
   @override
@@ -1007,8 +1465,11 @@ class _WordSearchGameState extends State<WordSearchGame> {
       for (var attempt = 0; attempt < 200; attempt++) {
         final (dr, dc) = dirs[rng.nextInt(dirs.length)];
         final r0 = rng.nextInt(n), c0 = rng.nextInt(n);
-        final cells = [for (var k = 0; k < w.length; k++) (r0 + dr * k, c0 + dc * k)];
-        if (cells.any((p) => p.$1 < 0 || p.$1 >= n || p.$2 < 0 || p.$2 >= n)) continue;
+        final cells = [
+          for (var k = 0; k < w.length; k++) (r0 + dr * k, c0 + dc * k),
+        ];
+        if (cells.any((p) => p.$1 < 0 || p.$1 >= n || p.$2 < 0 || p.$2 >= n))
+          continue;
         var ok = true;
         for (var k = 0; k < w.length; k++) {
           final cur = _grid[cells[k].$1][cells[k].$2];
@@ -1039,14 +1500,25 @@ class _WordSearchGameState extends State<WordSearchGame> {
     for (final e in _placed.entries) {
       if (_found.contains(e.key)) continue;
       final cells = e.value;
-      if ((cells.first == s && cells.last == (r, c)) || (cells.last == s && cells.first == (r, c))) {
+      if ((cells.first == s && cells.last == (r, c)) ||
+          (cells.last == s && cells.first == (r, c))) {
         setState(() {
           _found.add(e.key);
           _start = null;
         });
         widget.session.save({'found': _found.toList()});
         if (_found.length == _placed.length) {
-          widget.session.finish(GameOutcome(score: _found.length, max: _placed.length, summary: tr(context, 'Found every $_theme word', 'Todas las palabras de $_theme')));
+          widget.session.finish(
+            GameOutcome(
+              score: _found.length,
+              max: _placed.length,
+              summary: tr(
+                context,
+                'Found every $_theme word',
+                'Todas las palabras de $_theme',
+              ),
+            ),
+          );
         }
         return;
       }
@@ -1062,9 +1534,21 @@ class _WordSearchGameState extends State<WordSearchGame> {
     return GamePanel(
       child: Column(
         children: [
-          Text(_theme, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            _theme,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 4),
-          Text(tr(context, 'Tap the first letter of a word, then its last letter.', 'Toca la primera letra de una palabra y luego la última.'), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Tap the first letter of a word, then its last letter.',
+              'Toca la primera letra de una palabra y luego la última.',
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           AspectRatio(
             aspectRatio: 1,
@@ -1090,7 +1574,10 @@ class _WordSearchGameState extends State<WordSearchGame> {
                                 ? scheme.primary.withValues(alpha: 0.25)
                                 : scheme.surfaceContainerHighest,
                           ),
-                          child: Text(_grid[r][c], style: const TextStyle(fontWeight: FontWeight.w700)),
+                          child: Text(
+                            _grid[r][c],
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ),
                     ),
@@ -1102,7 +1589,13 @@ class _WordSearchGameState extends State<WordSearchGame> {
             spacing: 6,
             runSpacing: 6,
             alignment: WrapAlignment.center,
-            children: [for (final w in _placed.keys) Chip2(_found.contains(w) ? '✓ ${w.toLowerCase()}' : w.toLowerCase(), color: _found.contains(w) ? null : scheme.outline)],
+            children: [
+              for (final w in _placed.keys)
+                Chip2(
+                  _found.contains(w) ? '✓ ${w.toLowerCase()}' : w.toLowerCase(),
+                  color: _found.contains(w) ? null : scheme.outline,
+                ),
+            ],
           ),
         ],
       ),
@@ -1123,7 +1616,11 @@ class _Slot {
 }
 
 class MiniCrosswordGame extends StatefulWidget {
-  const MiniCrosswordGame({super.key, required this.session, required this.clues});
+  const MiniCrosswordGame({
+    super.key,
+    required this.session,
+    required this.clues,
+  });
   final GameSession session;
   final Map<String, String> clues;
   @override
@@ -1135,7 +1632,12 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
   late final List<_Slot> _slots;
   late final Map<(int, int), String> _answer;
   late final Map<(int, int), String> _typed = {
-    for (final e in ((widget.session.saved?['typed'] as Map?) ?? const {}).entries) (int.parse('${e.key}'.split(',')[0]), int.parse('${e.key}'.split(',')[1])): '${e.value}',
+    for (final e
+        in ((widget.session.saved?['typed'] as Map?) ?? const {}).entries)
+      (
+        int.parse('${e.key}'.split(',')[0]),
+        int.parse('${e.key}'.split(',')[1]),
+      ): '${e.value}',
   };
   (int, int)? _sel;
   bool _checked = false;
@@ -1163,12 +1665,15 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
           continue;
         }
         // No touching neighbours on the sides.
-        final side = across ? [(p.$1 - 1, p.$2), (p.$1 + 1, p.$2)] : [(p.$1, p.$2 - 1), (p.$1, p.$2 + 1)];
+        final side = across
+            ? [(p.$1 - 1, p.$2), (p.$1 + 1, p.$2)]
+            : [(p.$1, p.$2 - 1), (p.$1, p.$2 + 1)];
         if (side.any(_answer.containsKey)) return false;
       }
       final before = across ? (r, c - 1) : (r - 1, c);
       final after = across ? (r, c + w.length) : (r + w.length, c);
-      if (_answer.containsKey(before) || _answer.containsKey(after)) return false;
+      if (_answer.containsKey(before) || _answer.containsKey(after))
+        return false;
       return _slots.isEmpty || crosses > 0;
     }
 
@@ -1204,7 +1709,10 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
   }
 
   int? _number(_Slot s) {
-    final starts = {for (final x in _slots) (x.r, x.c)}.toList()..sort((a, b) => a.$1 != b.$1 ? a.$1.compareTo(b.$1) : a.$2.compareTo(b.$2));
+    final starts = {for (final x in _slots) (x.r, x.c)}.toList()
+      ..sort(
+        (a, b) => a.$1 != b.$1 ? a.$1.compareTo(b.$1) : a.$2.compareTo(b.$2),
+      );
     return starts.indexOf((s.r, s.c)) + 1;
   }
 
@@ -1215,15 +1723,25 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
       _typed[s] = ch;
       _checked = false;
       // Move to the next cell of a slot through this cell.
-      final slot = _slots.firstWhere((x) => List.generate(x.word.length, x.cell).contains(s));
+      final slot = _slots.firstWhere(
+        (x) => List.generate(x.word.length, x.cell).contains(s),
+      );
       final k = List.generate(slot.word.length, slot.cell).indexOf(s);
       if (k + 1 < slot.word.length) _sel = slot.cell(k + 1);
     });
     widget.session.save({
-      'typed': {for (final e in _typed.entries) '${e.key.$1},${e.key.$2}': e.value},
+      'typed': {
+        for (final e in _typed.entries) '${e.key.$1},${e.key.$2}': e.value,
+      },
     });
     if (_answer.entries.every((e) => _typed[e.key] == e.value)) {
-      widget.session.finish(GameOutcome(score: _slots.length, max: _slots.length, summary: tr(context, 'Crossword complete', 'Crucigrama completo')));
+      widget.session.finish(
+        GameOutcome(
+          score: _slots.length,
+          max: _slots.length,
+          summary: tr(context, 'Crossword complete', 'Crucigrama completo'),
+        ),
+      );
     }
   }
 
@@ -1232,7 +1750,10 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
     final scheme = Theme.of(context).colorScheme;
     final rows = _answer.keys.map((p) => p.$1);
     final cols = _answer.keys.map((p) => p.$2);
-    final r0 = rows.reduce(math.min), r1 = rows.reduce(math.max), c0 = cols.reduce(math.min), c1 = cols.reduce(math.max);
+    final r0 = rows.reduce(math.min),
+        r1 = rows.reduce(math.max),
+        c0 = cols.reduce(math.min),
+        c1 = cols.reduce(math.max);
     final numbers = {for (final s in _slots) (s.r, s.c): _number(s)};
     return GamePanel(
       child: Column(
@@ -1257,7 +1778,11 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
                             decoration: BoxDecoration(
                               color: _sel == p
                                   ? scheme.primary.withValues(alpha: 0.25)
-                                  : (_checked && _typed[p] != null && _typed[p] != _answer[p] ? scheme.error.withValues(alpha: 0.2) : scheme.surfaceContainerHighest),
+                                  : (_checked &&
+                                            _typed[p] != null &&
+                                            _typed[p] != _answer[p]
+                                        ? scheme.error.withValues(alpha: 0.2)
+                                        : scheme.surfaceContainerHighest),
                               border: Border.all(color: scheme.outline),
                               borderRadius: BorderRadius.circular(4),
                             ),
@@ -1267,12 +1792,18 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
                                   Positioned(
                                     left: 2,
                                     top: 1,
-                                    child: Text('${numbers[p]}', style: TextStyle(fontSize: cell * 0.22)),
+                                    child: Text(
+                                      '${numbers[p]}',
+                                      style: TextStyle(fontSize: cell * 0.22),
+                                    ),
                                   ),
                                 Center(
                                   child: Text(
                                     (_typed[p] ?? '').toUpperCase(),
-                                    style: TextStyle(fontSize: cell * 0.5, fontWeight: FontWeight.w800),
+                                    style: TextStyle(
+                                      fontSize: cell * 0.5,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -1289,23 +1820,42 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
           for (final across in [true, false]) ...[
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(across ? tr(context, 'Across', 'Horizontales') : tr(context, 'Down', 'Verticales'), style: const TextStyle(fontWeight: FontWeight.w800)),
+              child: Text(
+                across
+                    ? tr(context, 'Across', 'Horizontales')
+                    : tr(context, 'Down', 'Verticales'),
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
             ),
             for (final s in _slots.where((s) => s.across == across))
               Align(
                 alignment: Alignment.centerLeft,
-                child: Padding(padding: const EdgeInsets.symmetric(vertical: 2), child: Text('${_number(s)}. ${widget.clues[s.word]} (${s.word.length})')),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text(
+                    '${_number(s)}. ${widget.clues[s.word]} (${s.word.length})',
+                  ),
+                ),
               ),
             const SizedBox(height: 6),
           ],
-          GameKeyboard(onKey: _type, onBack: () => _sel == null ? null : setState(() => _typed.remove(_sel))),
+          GameKeyboard(
+            onKey: _type,
+            onBack: () =>
+                _sel == null ? null : setState(() => _typed.remove(_sel)),
+          ),
           GameActions(
             children: [
-              PrismButton(label: tr(context, 'Check', 'Comprobar'), onPressed: () => setState(() => _checked = true)),
+              PrismButton(
+                label: tr(context, 'Check', 'Comprobar'),
+                onPressed: () => setState(() => _checked = true),
+              ),
               PrismButton(
                 label: tr(context, 'Reveal a letter', 'Revelar una letra'),
                 onPressed: () {
-                  final missing = _answer.entries.where((e) => _typed[e.key] != e.value).toList();
+                  final missing = _answer.entries
+                      .where((e) => _typed[e.key] != e.value)
+                      .toList();
                   if (missing.isNotEmpty) {
                     _sel = missing.first.key;
                     _type(missing.first.value);
