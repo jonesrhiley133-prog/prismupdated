@@ -47,6 +47,8 @@ class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
         title: tr(context, 'Cozy', 'Acogedor'),
         subtitle: settings.name.isEmpty ? null : '${settings.emoji} ${settings.name}',
         actions: [
+          PrismTopBarAction(icon: PhosphorIcons.pawPrint(), tooltip: tr(context, 'Companions', 'Compañeros'), onPressed: () => context.push(AppRoutePaths.companions)),
+          PrismTopBarAction(icon: PhosphorIcons.stamp(), tooltip: tr(context, 'Passports', 'Pasaportes'), onPressed: () => context.push(AppRoutePaths.passports)),
           PrismTopBarAction(icon: PhosphorIcons.slidersHorizontal(), tooltip: tr(context, 'Customize', 'Personalizar'), onPressed: () => _customize(context)),
           const FeatureDataAction(featureId: 'cozy'),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/companions/companion_home_card.dart';
 import 'package:prism_plurality/features/fitness/health/health_home_card.dart';
 import 'package:prism_plurality/features/fronting_roles/roles_widgets.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
@@ -188,6 +189,7 @@ class HomeDashboard extends ConsumerWidget {
           const AppUpdateBanner(),
           const FrontingRolesStrip(),
           const HealthHomeCard(),
+          const CompanionHomeCard(),
           const WhatsNewLauncher(),
           ..._cards(context, ids),
         ],
