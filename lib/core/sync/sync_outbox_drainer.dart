@@ -44,9 +44,9 @@ class SyncOutboxDrainer {
     this.quarantineAfter = kDefaultQuarantineAfter,
     DispatchOp? dispatchOp,
     DispatchDeleteMulti? dispatchDeleteMulti,
-  })  : _dispatchOp = dispatchOp ?? SyncRecordMixin.dispatchCapturedOpForDrain,
-        _dispatchDeleteMulti =
-            dispatchDeleteMulti ?? SyncRecordMixin.dispatchDeleteMultiForDrain;
+  }) : _dispatchOp = dispatchOp ?? SyncRecordMixin.dispatchCapturedOpForDrain,
+       _dispatchDeleteMulti =
+           dispatchDeleteMulti ?? SyncRecordMixin.dispatchDeleteMultiForDrain;
 
   /// How many deterministic failures before a row is quarantined.
   static const int kDefaultQuarantineAfter = 5;
@@ -134,11 +134,9 @@ class SyncOutboxDrainer {
       deleteRunTable = null;
       deleteRunRows.clear();
       try {
-        await _dispatchDeleteMulti(
-          handle,
-          table,
-          [for (final r in batch) r.entityId],
-        );
+        await _dispatchDeleteMulti(handle, table, [
+          for (final r in batch) r.entityId,
+        ]);
         await _dao.deleteByIds([for (final r in batch) r.id]);
         return true;
       } on Object catch (e) {
@@ -255,17 +253,16 @@ class SyncOutboxDrainer {
 }
 
 /// Dispatch a single captured op (create/update/delete) to the FFI.
-typedef DispatchOp = Future<void> Function(
-  ffi.PrismSyncHandle handle,
-  CapturedSyncOp op,
-);
+typedef DispatchOp =
+    Future<void> Function(ffi.PrismSyncHandle handle, CapturedSyncOp op);
 
 /// Dispatch a coalesced run of deletes for one table to the FFI.
-typedef DispatchDeleteMulti = Future<void> Function(
-  ffi.PrismSyncHandle handle,
-  String table,
-  List<String> entityIds,
-);
+typedef DispatchDeleteMulti =
+    Future<void> Function(
+      ffi.PrismSyncHandle handle,
+      String table,
+      List<String> entityIds,
+    );
 
 /// Decode an outbox `fields_json` payload into a field map. Kept here (rather
 /// than inline) so a malformed payload surfaces a clear error instead of a bare
@@ -276,4 +273,5 @@ Map<String, dynamic> jsonDecodeFields(String fieldsJson) {
   throw FormatException('Outbox fields_json is not a JSON object', fieldsJson);
 }
 
-Object? _decode(String s) => s.isEmpty ? const <String, dynamic>{} : jsonDecode(s);
+Object? _decode(String s) =>
+    s.isEmpty ? const <String, dynamic>{} : jsonDecode(s);

@@ -4842,11 +4842,10 @@ Future<DrainResult> drainRemoteDeliveries(
           );
           return DrainChunk.fromJson(jsonDecode(json) as Map<String, dynamic>);
         },
-        ack: (upToId) =>
-            ffi.ackConsumerDeliveries(
-              handle: handle,
-              upToId: PlatformInt64Util.from(upToId),
-            ),
+        ack: (upToId) => ffi.ackConsumerDeliveries(
+          handle: handle,
+          upToId: PlatformInt64Util.from(upToId),
+        ),
         applyChanges: (deliveries) async {
           final chunkBase = runningApplied;
           final applied = await applyConsumerDeliveriesHealingUnappliable(

@@ -3,8 +3,7 @@ import 'package:drift/drift.dart';
 class Polls extends Table {
   TextColumn get id => text()();
   TextColumn get question => text()();
-  BoolColumn get isAnonymous =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isAnonymous => boolean().withDefault(const Constant(false))();
   BoolColumn get allowsMultipleVotes =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get isClosed => boolean().withDefault(const Constant(false))();

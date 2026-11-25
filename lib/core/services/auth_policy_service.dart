@@ -31,5 +31,4 @@ class AuthPolicyService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_pinVerifiedKey, DateTime.now().millisecondsSinceEpoch);
   }
-
 }

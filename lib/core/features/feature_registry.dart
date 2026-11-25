@@ -2,16 +2,30 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:prism_plurality/core/router/app_routes.dart';
-import 'package:prism_plurality/features/prism_social/social_core.dart' show SocKind;
+import 'package:prism_plurality/features/prism_social/social_core.dart'
+    show SocKind;
 import 'package:prism_plurality/features/social/models/social.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 
 /// Feature categories shown in Settings › Features.
-enum FeatureCategory { system, tracking, organization, social, knowledge, community, analytics }
+enum FeatureCategory {
+  system,
+  tracking,
+  organization,
+  social,
+  knowledge,
+  community,
+  analytics,
+}
 
 /// What a feature stores, so it can be reset by date or cleared.
 class FeatureData {
-  const FeatureData({this.activityKinds = const [], this.permanentKinds = const [], this.sources = const [], this.note});
+  const FeatureData({
+    this.activityKinds = const [],
+    this.permanentKinds = const [],
+    this.sources = const [],
+    this.note,
+  });
 
   /// Tracker record kinds that are dated activity (removed by period resets).
   final List<String> activityKinds;
@@ -96,19 +110,31 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'members',
     name: ('Alters & members', 'Alters y miembros'),
-    description: ('Profiles, Profile Studio, custom fields and groups of your system’s members.', 'Perfiles, Profile Studio, campos propios y grupos de los miembros de tu sistema.'),
+    description: (
+      'Profiles, Profile Studio, custom fields and groups of your system’s members.',
+      'Perfiles, Profile Studio, campos propios y grupos de los miembros de tu sistema.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.users(),
     tabs: const [AppShellTabId.members],
     route: AppRoutePaths.members,
     core: true,
     essential: true,
-    data: const FeatureData(permanentKinds: [TrackerKind.memberProfile, TrackerKind.profileTemplate], note: ('Alter profiles are long-term information and are never reset by date.', 'Los perfiles son información a largo plazo y nunca se restablecen por fecha.')),
+    data: const FeatureData(
+      permanentKinds: [TrackerKind.memberProfile, TrackerKind.profileTemplate],
+      note: (
+        'Alter profiles are long-term information and are never reset by date.',
+        'Los perfiles son información a largo plazo y nunca se restablecen por fecha.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'fronting',
     name: ('Fronting', 'Frente'),
-    description: ('Who is fronting, co-fronting, history and the fronting timeline.', 'Quién está al frente, co-frente, historial y cronología.'),
+    description: (
+      'Who is fronting, co-fronting, history and the fronting timeline.',
+      'Quién está al frente, co-frente, historial y cronología.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.userFocus(),
     tabs: const [AppShellTabId.timeline],
@@ -121,53 +147,100 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'groups',
     name: ('Member groups', 'Grupos de miembros'),
-    description: ('Organise alters into groups.', 'Organiza a los alters en grupos.'),
+    description: (
+      'Organise alters into groups.',
+      'Organiza a los alters en grupos.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.usersThree(),
     tabs: const [AppShellTabId.groups],
     route: AppRoutePaths.groups,
     dependsOn: const ['members'],
-    data: const FeatureData(note: ('Groups are long-term information and aren’t reset by date.', 'Los grupos son información a largo plazo y no se restablecen por fecha.')),
+    data: const FeatureData(
+      note: (
+        'Groups are long-term information and aren’t reset by date.',
+        'Los grupos son información a largo plazo y no se restablecen por fecha.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'subsystems',
     name: ('Subsystems', 'Subsistemas'),
-    description: ('Small systems inside yours, with their own members, rules, journal and chat.', 'Pequeños sistemas dentro del tuyo, con miembros, normas, diario y chat propios.'),
+    description: (
+      'Small systems inside yours, with their own members, rules, journal and chat.',
+      'Pequeños sistemas dentro del tuyo, con miembros, normas, diario y chat propios.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.planet(),
     tabs: const [AppShellTabId.subsystems],
     route: AppRoutePaths.subsystems,
     dependsOn: const ['members'],
-    background: const [('Fronting notifications for subsystems', 'Avisos de frente de subsistemas')],
+    background: const [
+      (
+        'Fronting notifications for subsystems',
+        'Avisos de frente de subsistemas',
+      ),
+    ],
     data: const FeatureData(
-      activityKinds: [TrackerKind.subJournal, TrackerKind.subMessage, TrackerKind.subNote],
-      permanentKinds: [TrackerKind.subsystem, TrackerKind.subMember, TrackerKind.subGroup, TrackerKind.subRule],
+      activityKinds: [
+        TrackerKind.subJournal,
+        TrackerKind.subMessage,
+        TrackerKind.subNote,
+      ],
+      permanentKinds: [
+        TrackerKind.subsystem,
+        TrackerKind.subMember,
+        TrackerKind.subGroup,
+        TrackerKind.subRule,
+      ],
     ),
   ),
   PrismFeature(
     id: 'headspace',
     name: ('Headspace map', 'Mapa del headspace'),
-    description: ('Map the inner world and its areas.', 'Mapea el mundo interior y sus zonas.'),
+    description: (
+      'Map the inner world and its areas.',
+      'Mapea el mundo interior y sus zonas.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.mapTrifold(),
     tabs: const [AppShellTabId.headspace],
     route: AppRoutePaths.headspace,
-    data: const FeatureData(permanentKinds: [TrackerKind.headspaceMap, TrackerKind.headspaceArea, TrackerKind.headspaceLink]),
+    data: const FeatureData(
+      permanentKinds: [
+        TrackerKind.headspaceMap,
+        TrackerKind.headspaceArea,
+        TrackerKind.headspaceLink,
+      ],
+    ),
   ),
   PrismFeature(
     id: 'statuses',
     name: ('Alter statuses', 'Estados de alters'),
-    description: ('Short status messages and moods for each alter.', 'Mensajes de estado breves para cada alter.'),
+    description: (
+      'Short status messages and moods for each alter.',
+      'Mensajes de estado breves para cada alter.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.chatCircleText(),
     route: '/statuses',
     dependsOn: const ['members'],
-    data: const FeatureData(activityKinds: [TrackerKind.statusLog], permanentKinds: [TrackerKind.statusCurrent, TrackerKind.statusCustom, TrackerKind.statusSettings]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.statusLog],
+      permanentKinds: [
+        TrackerKind.statusCurrent,
+        TrackerKind.statusCustom,
+        TrackerKind.statusSettings,
+      ],
+    ),
   ),
   PrismFeature(
     id: 'availability',
     name: ('Availability', 'Disponibilidad'),
-    description: ('When alters are usually available, with optional reminders.', 'Cuándo suelen estar disponibles los alters, con avisos opcionales.'),
+    description: (
+      'When alters are usually available, with optional reminders.',
+      'Cuándo suelen estar disponibles los alters, con avisos opcionales.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.calendarCheck(),
     tabs: const [AppShellTabId.availability],
@@ -175,25 +248,36 @@ final List<PrismFeature> prismFeatures = [
     dependsOn: const ['members'],
     permissions: _notifications,
     background: const [('Availability reminders', 'Avisos de disponibilidad')],
-    data: const FeatureData(activityKinds: [TrackerKind.availOverride], permanentKinds: [TrackerKind.availRule, TrackerKind.availCategory]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.availOverride],
+      permanentKinds: [TrackerKind.availRule, TrackerKind.availCategory],
+    ),
   ),
   PrismFeature(
     id: 'introductions',
     name: ('Introduction cards', 'Tarjetas de presentación'),
-    description: ('Shareable intro cards for alters.', 'Tarjetas de presentación compartibles para los alters.'),
+    description: (
+      'Shareable intro cards for alters.',
+      'Tarjetas de presentación compartibles para los alters.',
+    ),
     category: FeatureCategory.system,
     icon: PhosphorIcons.identificationCard(),
     tabs: const [AppShellTabId.introductions],
     route: AppRoutePaths.introductions,
     dependsOn: const ['members'],
-    data: const FeatureData(permanentKinds: [TrackerKind.introCard, TrackerKind.introTemplate]),
+    data: const FeatureData(
+      permanentKinds: [TrackerKind.introCard, TrackerKind.introTemplate],
+    ),
   ),
 
   // ── Personal tracking ──
   PrismFeature(
     id: 'mood',
     name: ('Mood', 'Ánimo'),
-    description: ('Log moods and emotions over time.', 'Registra ánimos y emociones a lo largo del tiempo.'),
+    description: (
+      'Log moods and emotions over time.',
+      'Registra ánimos y emociones a lo largo del tiempo.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.smiley(),
     tabs: const [AppShellTabId.mood],
@@ -204,73 +288,168 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'health',
     name: ('Health', 'Salud'),
-    description: ('Private symptom and illness log with an interactive Body Map and episodes.', 'Registro privado de síntomas y enfermedades con mapa corporal interactivo y episodios.'),
+    description: (
+      'Private symptom and illness log with an interactive Body Map and episodes.',
+      'Registro privado de síntomas y enfermedades con mapa corporal interactivo y episodios.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.firstAid(),
     tabs: const [AppShellTabId.health],
     route: AppRoutePaths.health,
-    data: const FeatureData(activityKinds: [TrackerKind.healthCheckin, TrackerKind.healthSpot, TrackerKind.healthFollowup, TrackerKind.healthEpisode], permanentKinds: [TrackerKind.healthVocab]),
+    data: const FeatureData(
+      activityKinds: [
+        TrackerKind.healthCheckin,
+        TrackerKind.healthSpot,
+        TrackerKind.healthFollowup,
+        TrackerKind.healthEpisode,
+      ],
+      permanentKinds: [TrackerKind.healthVocab],
+    ),
   ),
   PrismFeature(
     id: 'astro',
     name: ('Astro', 'Astro'),
-    description: ('Per-alter astrology: birth charts, horoscopes, moon calendar, tarot, compatibility and an astrology journal. Private by default.', 'Astrología por alter: cartas natales, horóscopos, calendario lunar, tarot, compatibilidad y un diario astrológico. Privado por defecto.'),
+    description: (
+      'Per-alter astrology: birth charts, horoscopes, moon calendar, tarot, compatibility and an astrology journal. Private by default.',
+      'Astrología por alter: cartas natales, horóscopos, calendario lunar, tarot, compatibilidad y un diario astrológico. Privado por defecto.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.planet(),
     tabs: const [AppShellTabId.astro],
     route: AppRoutePaths.astro,
-    data: const FeatureData(activityKinds: [TrackerKind.astroJournal, TrackerKind.astroTarot], permanentKinds: [TrackerKind.astroProfile, TrackerKind.astroSettings]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.astroJournal, TrackerKind.astroTarot],
+      permanentKinds: [TrackerKind.astroProfile, TrackerKind.astroSettings],
+    ),
   ),
   PrismFeature(
     id: 'games',
     name: ('Games', 'Juegos'),
-    description: ('120 mini-games: trivia, word games, puzzles, cozy activities, memory, party games and creative play. Solo, pass & play, challenges and game nights.', '120 minijuegos: trivia, palabras, puzles, actividades relajantes, memoria, fiesta y creatividad. Individual, por turnos, retos y noches de juegos.'),
+    description: (
+      '120 mini-games: trivia, word games, puzzles, cozy activities, memory, party games and creative play. Solo, pass & play, challenges and game nights.',
+      '120 minijuegos: trivia, palabras, puzles, actividades relajantes, memoria, fiesta y creatividad. Individual, por turnos, retos y noches de juegos.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.gameController(),
     tabs: const [AppShellTabId.games],
     route: AppRoutePaths.games,
-    data: const FeatureData(activityKinds: [TrackerKind.gameResult, TrackerKind.gameSave, TrackerKind.gameChallenge, TrackerKind.gameNight], permanentKinds: [TrackerKind.gameProfile, TrackerKind.gameCustom, TrackerKind.gameProject]),
+    data: const FeatureData(
+      activityKinds: [
+        TrackerKind.gameResult,
+        TrackerKind.gameSave,
+        TrackerKind.gameChallenge,
+        TrackerKind.gameNight,
+      ],
+      permanentKinds: [
+        TrackerKind.gameProfile,
+        TrackerKind.gameCustom,
+        TrackerKind.gameProject,
+      ],
+    ),
   ),
   PrismFeature(
     id: 'cozy',
     name: ('Cozy', 'Acogedor'),
-    description: ('Cozy & Together: a shared lounge, rooms, letters, a system garden, comfort tools, bonding activities, jars, capsules, shelves, lists, a doodle wall and gifts.', 'Acogedor y juntos: sala común, habitaciones, cartas, jardín del sistema, herramientas de calma, actividades, tarros, cápsulas, estanterías, listas, muro de dibujos y regalos.'),
+    description: (
+      'Cozy & Together: a shared lounge, rooms, letters, a system garden, comfort tools, bonding activities, jars, capsules, shelves, lists, a doodle wall and gifts.',
+      'Acogedor y juntos: sala común, habitaciones, cartas, jardín del sistema, herramientas de calma, actividades, tarros, cápsulas, estanterías, listas, muro de dibujos y regalos.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.coffee(),
     tabs: const [AppShellTabId.cozy],
     route: AppRoutePaths.cozy,
     data: const FeatureData(
-      activityKinds: [TrackerKind.cozyPost, TrackerKind.cozyLetter, TrackerKind.cozyDoodle, TrackerKind.cozyGift],
-      permanentKinds: [TrackerKind.cozySettings, TrackerKind.cozyRoom, TrackerKind.cozyRoomItem, TrackerKind.cozyPlant, TrackerKind.cozyListItem, TrackerKind.cozyComfort],
+      activityKinds: [
+        TrackerKind.cozyPost,
+        TrackerKind.cozyLetter,
+        TrackerKind.cozyDoodle,
+        TrackerKind.cozyGift,
+      ],
+      permanentKinds: [
+        TrackerKind.cozySettings,
+        TrackerKind.cozyRoom,
+        TrackerKind.cozyRoomItem,
+        TrackerKind.cozyPlant,
+        TrackerKind.cozyListItem,
+        TrackerKind.cozyComfort,
+      ],
+    ),
+  ),
+  PrismFeature(
+    id: 'experiences',
+    name: ('Experiences', 'Experiencias'),
+    description: (
+      'Virtual companions, habitats and photo mode; passports with stamps; and Wrapped recaps of what you played, made and celebrated.',
+      'Compañeros virtuales, hábitats y modo foto; pasaportes con sellos; y resúmenes Wrapped de lo que jugaste, creaste y celebraste.',
+    ),
+    category: FeatureCategory.social,
+    icon: PhosphorIcons.sparkle(),
+    tabs: const [AppShellTabId.experiences],
+    route: AppRoutePaths.experiences,
+    data: const FeatureData(
+      activityKinds: [
+        TrackerKind.companionInteraction,
+        TrackerKind.companionMemory,
+        TrackerKind.passportStamp,
+        TrackerKind.wrapSnapshot,
+      ],
+      permanentKinds: [
+        TrackerKind.companion,
+        TrackerKind.companionOutfit,
+        TrackerKind.companionHabitat,
+        TrackerKind.companionSpecies,
+        TrackerKind.companionSettings,
+        TrackerKind.passport,
+        TrackerKind.passportPage,
+        TrackerKind.passportElement,
+        TrackerKind.passportStampTemplate,
+        TrackerKind.passportSettings,
+        TrackerKind.wrapSettings,
+      ],
     ),
   ),
   PrismFeature(
     id: 'journal',
     name: ('Journal & dreams', 'Diario y sueños'),
-    description: ('Journal entries and the dream journal.', 'Entradas de diario y diario de sueños.'),
+    description: (
+      'Journal entries and the dream journal.',
+      'Entradas de diario y diario de sueños.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.notebook(),
     tabs: const [AppShellTabId.journal],
     route: AppRoutePaths.journal,
     essential: true,
-    data: const FeatureData(activityKinds: [TrackerKind.journalEntry, TrackerKind.dreamEntry], permanentKinds: [TrackerKind.journalCategory]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.journalEntry, TrackerKind.dreamEntry],
+      permanentKinds: [TrackerKind.journalCategory],
+    ),
   ),
   PrismFeature(
     id: 'sleep',
     name: ('Sleep', 'Sueño'),
-    description: ('Sleep sessions, quality and the sleep log.', 'Sesiones de sueño, calidad y registro.'),
+    description: (
+      'Sleep sessions, quality and the sleep log.',
+      'Sesiones de sueño, calidad y registro.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.moon(),
     tabs: const [AppShellTabId.sleep],
     route: AppRoutePaths.sleep,
     legacyFlag: 'sleep',
     settingsRoute: '/settings/features/sleep',
-    data: const FeatureData(activityKinds: [TrackerKind.sleepLog], sources: ['sleepSessions']),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.sleepLog],
+      sources: ['sleepSessions'],
+    ),
   ),
   PrismFeature(
     id: 'habits',
     name: ('Habits & routines', 'Hábitos y rutinas'),
-    description: ('Habits with daily targets, routines, reminders and auto-logging.', 'Hábitos con metas diarias, rutinas, avisos y registro automático.'),
+    description: (
+      'Habits with daily targets, routines, reminders and auto-logging.',
+      'Hábitos con metas diarias, rutinas, avisos y registro automático.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.checkSquareOffset(),
     tabs: const [AppShellTabId.habits],
@@ -278,35 +457,70 @@ final List<PrismFeature> prismFeatures = [
     legacyFlag: 'habits',
     settingsRoute: '/settings/features/habits',
     permissions: _notifications,
-    background: const [('Habit reminders and auto-logging', 'Avisos y registro automático de hábitos')],
-    data: const FeatureData(activityKinds: [TrackerKind.habitLog, TrackerKind.habitSkip, TrackerKind.habitTimer], permanentKinds: [TrackerKind.habitMeta, TrackerKind.habitGroup], sources: ['habitCompletions']),
+    background: const [
+      (
+        'Habit reminders and auto-logging',
+        'Avisos y registro automático de hábitos',
+      ),
+    ],
+    data: const FeatureData(
+      activityKinds: [
+        TrackerKind.habitLog,
+        TrackerKind.habitSkip,
+        TrackerKind.habitTimer,
+      ],
+      permanentKinds: [TrackerKind.habitMeta, TrackerKind.habitGroup],
+      sources: ['habitCompletions'],
+    ),
   ),
   PrismFeature(
     id: 'fitness',
     name: ('Fitness', 'Ejercicio'),
-    description: ('Workouts, exercises and goals.', 'Entrenamientos, ejercicios y metas.'),
+    description: (
+      'Workouts, exercises and goals.',
+      'Entrenamientos, ejercicios y metas.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.barbell(),
     tabs: const [AppShellTabId.fitness],
     route: AppRoutePaths.fitness,
-    data: const FeatureData(activityKinds: [TrackerKind.fitnessWorkout, TrackerKind.fitnessDaily], permanentKinds: [TrackerKind.fitnessGoal, TrackerKind.fitnessExercise]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.fitnessWorkout, TrackerKind.fitnessDaily],
+      permanentKinds: [TrackerKind.fitnessGoal, TrackerKind.fitnessExercise],
+    ),
   ),
   PrismFeature(
     id: 'healthIntegration',
     name: ('Health app integration', 'Integración con apps de salud'),
-    description: ('Import workouts, steps and more from Health Connect or Apple Health.', 'Importa entrenamientos, pasos y más desde Health Connect o Apple Health.'),
+    description: (
+      'Import workouts, steps and more from Health Connect or Apple Health.',
+      'Importa entrenamientos, pasos y más desde Health Connect o Apple Health.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.heartbeat(),
     route: '/fitness/integrations',
     dependsOn: const ['fitness'],
-    permissions: ('Health data (you choose which types)', 'Datos de salud (tú eliges cuáles)'),
-    background: const [('Automatic health sync', 'Sincronización automática de salud')],
-    data: const FeatureData(note: ('Imported workouts belong to Fitness — reset them from Fitness.', 'Los entrenamientos importados pertenecen a Ejercicio: restablécelos desde Ejercicio.')),
+    permissions: (
+      'Health data (you choose which types)',
+      'Datos de salud (tú eliges cuáles)',
+    ),
+    background: const [
+      ('Automatic health sync', 'Sincronización automática de salud'),
+    ],
+    data: const FeatureData(
+      note: (
+        'Imported workouts belong to Fitness — reset them from Fitness.',
+        'Los entrenamientos importados pertenecen a Ejercicio: restablécelos desde Ejercicio.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'nutrition',
     name: ('Nourish', 'Nutrición'),
-    description: ('Meals, drinks and hydration reminders.', 'Comidas, bebidas y avisos de hidratación.'),
+    description: (
+      'Meals, drinks and hydration reminders.',
+      'Comidas, bebidas y avisos de hidratación.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.forkKnife(),
     tabs: const [AppShellTabId.nutrition],
@@ -315,23 +529,38 @@ final List<PrismFeature> prismFeatures = [
     background: const [('Hydration reminders', 'Avisos de hidratación')],
     data: const FeatureData(
       activityKinds: [TrackerKind.nutriMeal, TrackerKind.nutriDrink],
-      permanentKinds: [TrackerKind.nutriFood, TrackerKind.nutriCollection, TrackerKind.nutriCategory, TrackerKind.nutriBeverage, TrackerKind.nutriSettings],
+      permanentKinds: [
+        TrackerKind.nutriFood,
+        TrackerKind.nutriCollection,
+        TrackerKind.nutriCategory,
+        TrackerKind.nutriBeverage,
+        TrackerKind.nutriSettings,
+      ],
     ),
   ),
   PrismFeature(
     id: 'cycle',
     name: ('Cycle', 'Ciclo'),
-    description: ('Menstrual cycle phases and wellness.', 'Fases del ciclo y bienestar.'),
+    description: (
+      'Menstrual cycle phases and wellness.',
+      'Fases del ciclo y bienestar.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.drop(),
     tabs: const [AppShellTabId.cycle],
     route: AppRoutePaths.cycle,
-    data: const FeatureData(activityKinds: [TrackerKind.cyclePhase, TrackerKind.cycleWellness], sources: ['cycle']),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.cyclePhase, TrackerKind.cycleWellness],
+      sources: ['cycle'],
+    ),
   ),
   PrismFeature(
     id: 'locations',
     name: ('Locations', 'Lugares'),
-    description: ('Saved places and time spent there.', 'Lugares guardados y tiempo en ellos.'),
+    description: (
+      'Saved places and time spent there.',
+      'Lugares guardados y tiempo en ellos.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.mapPin(),
     tabs: const [AppShellTabId.locations],
@@ -341,7 +570,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'work',
     name: ('Work', 'Trabajo'),
-    description: ('Jobs, shifts and work sessions.', 'Trabajos, turnos y sesiones.'),
+    description: (
+      'Jobs, shifts and work sessions.',
+      'Trabajos, turnos y sesiones.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.briefcase(),
     tabs: const [AppShellTabId.work],
@@ -351,19 +583,33 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'finance',
     name: ('Finance', 'Finanzas'),
-    description: ('Transactions, accounts, budgets and savings goals.', 'Movimientos, cuentas, presupuestos y metas de ahorro.'),
+    description: (
+      'Transactions, accounts, budgets and savings goals.',
+      'Movimientos, cuentas, presupuestos y metas de ahorro.',
+    ),
     category: FeatureCategory.tracking,
     icon: PhosphorIcons.wallet(),
     tabs: const [AppShellTabId.finance],
     route: AppRoutePaths.finance,
-    data: const FeatureData(activityKinds: [TrackerKind.financeTxn], permanentKinds: [TrackerKind.financeAccount, TrackerKind.financeBudget, TrackerKind.financeGoal, TrackerKind.financeRecurring]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.financeTxn],
+      permanentKinds: [
+        TrackerKind.financeAccount,
+        TrackerKind.financeBudget,
+        TrackerKind.financeGoal,
+        TrackerKind.financeRecurring,
+      ],
+    ),
   ),
 
   // ── Organisation ──
   PrismFeature(
     id: 'calendar',
     name: ('Calendar', 'Calendario'),
-    description: ('Events with overlays from your other features.', 'Eventos con capas de tus otras funciones.'),
+    description: (
+      'Events with overlays from your other features.',
+      'Eventos con capas de tus otras funciones.',
+    ),
     category: FeatureCategory.organization,
     icon: PhosphorIcons.calendar(),
     tabs: const [AppShellTabId.calendar],
@@ -375,7 +621,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'reminders',
     name: ('Reminders', 'Recordatorios'),
-    description: ('Scheduled and recurring reminders.', 'Recordatorios programados y recurrentes.'),
+    description: (
+      'Scheduled and recurring reminders.',
+      'Recordatorios programados y recurrentes.',
+    ),
     category: FeatureCategory.organization,
     icon: PhosphorIcons.bell(),
     tabs: const [AppShellTabId.reminders],
@@ -389,7 +638,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'notes',
     name: ('Notes', 'Notas'),
-    description: ('Notes about and from alters.', 'Notas sobre y de los alters.'),
+    description: (
+      'Notes about and from alters.',
+      'Notas sobre y de los alters.',
+    ),
     category: FeatureCategory.organization,
     icon: PhosphorIcons.note(),
     tabs: const [AppShellTabId.notes],
@@ -402,44 +654,74 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'school',
     name: ('School', 'Estudios'),
-    description: ('Academic terms, classes, assignments, grades and study sessions.', 'Periodos, clases, tareas, notas y sesiones de estudio.'),
+    description: (
+      'Academic terms, classes, assignments, grades and study sessions.',
+      'Periodos, clases, tareas, notas y sesiones de estudio.',
+    ),
     category: FeatureCategory.organization,
     icon: PhosphorIcons.graduationCap(),
     tabs: const [AppShellTabId.school],
     route: AppRoutePaths.school,
-    data: const FeatureData(activityKinds: [TrackerKind.schoolAssignment, TrackerKind.schoolGrade, TrackerKind.schoolStudy], permanentKinds: [TrackerKind.schoolTerm, TrackerKind.schoolClass]),
+    data: const FeatureData(
+      activityKinds: [
+        TrackerKind.schoolAssignment,
+        TrackerKind.schoolGrade,
+        TrackerKind.schoolStudy,
+      ],
+      permanentKinds: [TrackerKind.schoolTerm, TrackerKind.schoolClass],
+    ),
   ),
   PrismFeature(
     id: 'automations',
     name: ('Automations', 'Automatizaciones'),
-    description: ('“When this happens, do that” rules.', 'Reglas de «cuando pase esto, haz aquello».'),
+    description: (
+      '“When this happens, do that” rules.',
+      'Reglas de «cuando pase esto, haz aquello».',
+    ),
     category: FeatureCategory.organization,
     icon: PhosphorIcons.lightning(),
     route: '/automations',
     permissions: _notifications,
     background: const [('Automation rules', 'Reglas de automatización')],
-    data: const FeatureData(activityKinds: [TrackerKind.autoLog, TrackerKind.autoCounter], permanentKinds: [TrackerKind.autoRule]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.autoLog, TrackerKind.autoCounter],
+      permanentKinds: [TrackerKind.autoRule],
+    ),
   ),
 
   // ── Social & relationships ──
   PrismFeature(
     id: 'relationships',
     name: ('Relationships', 'Relaciones'),
-    description: ('Relationship map, profiles, family tree, timeline, check-ins and the randomizer.', 'Mapa de relaciones, perfiles, árbol familiar, cronología, registros y aleatorizador.'),
+    description: (
+      'Relationship map, profiles, family tree, timeline, check-ins and the randomizer.',
+      'Mapa de relaciones, perfiles, árbol familiar, cronología, registros y aleatorizador.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.heart(),
     tabs: const [AppShellTabId.relationships],
     route: AppRoutePaths.relationships,
     dependsOn: const ['members'],
     data: const FeatureData(
-      activityKinds: [TrackerKind.relationshipEvent, TrackerKind.relationshipNote, TrackerKind.relationshipCheckin],
-      permanentKinds: [TrackerKind.relationship, TrackerKind.relationshipFamilyNote, TrackerKind.relationshipSettings],
+      activityKinds: [
+        TrackerKind.relationshipEvent,
+        TrackerKind.relationshipNote,
+        TrackerKind.relationshipCheckin,
+      ],
+      permanentKinds: [
+        TrackerKind.relationship,
+        TrackerKind.relationshipFamilyNote,
+        TrackerKind.relationshipSettings,
+      ],
     ),
   ),
   PrismFeature(
     id: 'chat',
     name: ('Chat', 'Chat'),
-    description: ('Conversations between alters.', 'Conversaciones entre alters.'),
+    description: (
+      'Conversations between alters.',
+      'Conversaciones entre alters.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.chatsCircle(),
     tabs: const [AppShellTabId.chat],
@@ -451,7 +733,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'boards',
     name: ('Bulletin boards', 'Tablones'),
-    description: ('Message boards for each alter.', 'Tablones de mensajes para cada alter.'),
+    description: (
+      'Message boards for each alter.',
+      'Tablones de mensajes para cada alter.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.pushPin(),
     tabs: const [AppShellTabId.boards],
@@ -459,19 +744,42 @@ final List<PrismFeature> prismFeatures = [
     defaultEnabled: false,
     legacyFlag: 'boards',
     settingsRoute: '/settings/features/boards',
-    data: const FeatureData(note: ('Board posts are kept as long-term messages.', 'Las publicaciones del tablón se guardan como mensajes a largo plazo.')),
+    data: const FeatureData(
+      note: (
+        'Board posts are kept as long-term messages.',
+        'Las publicaciones del tablón se guardan como mensajes a largo plazo.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'stories',
     name: ('Feed & stories', 'Muro e historias'),
-    description: ('Posts, comments and stories inside your system.', 'Publicaciones, comentarios e historias dentro de tu sistema.'),
+    description: (
+      'Posts, comments and stories inside your system.',
+      'Publicaciones, comentarios e historias dentro de tu sistema.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.newspaper(),
     tabs: const [AppShellTabId.stories],
     route: AppRoutePaths.stories,
     data: const FeatureData(
-      activityKinds: [SocialKind.post, SocialKind.comment, SocialKind.reaction, SocialKind.vote, SocialKind.seen, SocialKind.story, SocialKind.storyView],
-      permanentKinds: [SocialKind.profile, SocialKind.follow, SocialKind.block, SocialKind.hide, SocialKind.report, SocialKind.highlight],
+      activityKinds: [
+        SocialKind.post,
+        SocialKind.comment,
+        SocialKind.reaction,
+        SocialKind.vote,
+        SocialKind.seen,
+        SocialKind.story,
+        SocialKind.storyView,
+      ],
+      permanentKinds: [
+        SocialKind.profile,
+        SocialKind.follow,
+        SocialKind.block,
+        SocialKind.hide,
+        SocialKind.report,
+        SocialKind.highlight,
+      ],
     ),
   ),
   PrismFeature(
@@ -482,74 +790,123 @@ final List<PrismFeature> prismFeatures = [
     icon: PhosphorIcons.addressBook(),
     tabs: const [AppShellTabId.contacts],
     route: AppRoutePaths.contacts,
-    data: const FeatureData(note: ('Contacts are long-term information and aren’t reset by date.', 'Los contactos son información a largo plazo y no se restablecen por fecha.')),
+    data: const FeatureData(
+      note: (
+        'Contacts are long-term information and aren’t reset by date.',
+        'Los contactos son información a largo plazo y no se restablecen por fecha.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'connections',
     name: ('Connection maps', 'Mapas de conexiones'),
-    description: ('Draw internal connections between alters, places and ideas.', 'Dibuja conexiones internas entre alters, lugares e ideas.'),
+    description: (
+      'Draw internal connections between alters, places and ideas.',
+      'Dibuja conexiones internas entre alters, lugares e ideas.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.graph(),
     tabs: const [AppShellTabId.connections],
     route: AppRoutePaths.connections,
-    data: const FeatureData(permanentKinds: [TrackerKind.connMap, TrackerKind.connNode, TrackerKind.connEdge]),
+    data: const FeatureData(
+      permanentKinds: [
+        TrackerKind.connMap,
+        TrackerKind.connNode,
+        TrackerKind.connEdge,
+      ],
+    ),
   ),
 
   // ── Knowledge & documentation ──
   PrismFeature(
     id: 'dictionary',
     name: ('Dictionary', 'Diccionario'),
-    description: ('Your own terms, collections and the wiki importer.', 'Tus propios términos, colecciones e importador de wikis.'),
+    description: (
+      'Your own terms, collections and the wiki importer.',
+      'Tus propios términos, colecciones e importador de wikis.',
+    ),
     category: FeatureCategory.knowledge,
     icon: PhosphorIcons.bookOpenText(),
     tabs: const [AppShellTabId.dictionary],
     route: AppRoutePaths.dictionary,
-    data: const FeatureData(permanentKinds: [TrackerKind.dictTerm, TrackerKind.dictCollection]),
+    data: const FeatureData(
+      permanentKinds: [TrackerKind.dictTerm, TrackerKind.dictCollection],
+    ),
   ),
   PrismFeature(
     id: 'scrapbook',
     name: ('Scrapbook', 'Álbum'),
-    description: ('Scrapbooks with pages, photos and stickers.', 'Álbumes con páginas, fotos y pegatinas.'),
+    description: (
+      'Scrapbooks with pages, photos and stickers.',
+      'Álbumes con páginas, fotos y pegatinas.',
+    ),
     category: FeatureCategory.knowledge,
     icon: PhosphorIcons.images(),
     tabs: const [AppShellTabId.scrapbook],
     route: AppRoutePaths.scrapbook,
-    data: const FeatureData(activityKinds: [TrackerKind.scrapPage], permanentKinds: [TrackerKind.scrapBook, TrackerKind.scrapTemplate]),
+    data: const FeatureData(
+      activityKinds: [TrackerKind.scrapPage],
+      permanentKinds: [TrackerKind.scrapBook, TrackerKind.scrapTemplate],
+    ),
   ),
   PrismFeature(
     id: 'links',
     name: ('Record links', 'Enlaces entre registros'),
-    description: ('Connect any records to each other and explore them.', 'Conecta registros entre sí y explóralos.'),
+    description: (
+      'Connect any records to each other and explore them.',
+      'Conecta registros entre sí y explóralos.',
+    ),
     category: FeatureCategory.knowledge,
     icon: PhosphorIcons.linkSimple(),
     route: '/links',
-    data: const FeatureData(permanentKinds: [TrackerKind.linkEdge, TrackerKind.linkCategory]),
+    data: const FeatureData(
+      permanentKinds: [TrackerKind.linkEdge, TrackerKind.linkCategory],
+    ),
   ),
   PrismFeature(
     id: 'media',
     name: ('Media library', 'Biblioteca multimedia'),
-    description: ('Photos and files attached across Prism.', 'Fotos y archivos adjuntos en Prism.'),
+    description: (
+      'Photos and files attached across Prism.',
+      'Fotos y archivos adjuntos en Prism.',
+    ),
     category: FeatureCategory.knowledge,
     icon: PhosphorIcons.folderSimple(),
     tabs: const [AppShellTabId.media],
     route: AppRoutePaths.media,
-    data: const FeatureData(note: ('Media belongs to the records it’s attached to; reset those features instead.', 'Los archivos pertenecen a sus registros; restablece esas funciones.')),
+    data: const FeatureData(
+      note: (
+        'Media belongs to the records it’s attached to; reset those features instead.',
+        'Los archivos pertenecen a sus registros; restablece esas funciones.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'music',
     name: ('Music', 'Música'),
-    description: ('Playlists and listening for alters.', 'Listas y música para los alters.'),
+    description: (
+      'Playlists and listening for alters.',
+      'Listas y música para los alters.',
+    ),
     category: FeatureCategory.knowledge,
     icon: PhosphorIcons.musicNotes(),
     tabs: const [AppShellTabId.music],
     route: AppRoutePaths.music,
-    data: const FeatureData(note: ('Music has no dated records to reset.', 'La música no tiene registros con fecha.')),
+    data: const FeatureData(
+      note: (
+        'Music has no dated records to reset.',
+        'La música no tiene registros con fecha.',
+      ),
+    ),
   ),
 
   PrismFeature(
     id: 'prismSocial',
     name: ('Prism Social', 'Prism Social'),
-    description: ('Friends, messages, a shared feed and profiles between systems and their alters.', 'Amistades, mensajes, un muro compartido y perfiles entre sistemas y sus alters.'),
+    description: (
+      'Friends, messages, a shared feed and profiles between systems and their alters.',
+      'Amistades, mensajes, un muro compartido y perfiles entre sistemas y sus alters.',
+    ),
     category: FeatureCategory.social,
     icon: PhosphorIcons.usersFour(),
     tabs: const [AppShellTabId.social],
@@ -557,8 +914,24 @@ final List<PrismFeature> prismFeatures = [
     permissions: _notifications,
     background: const [('Social notifications', 'Avisos sociales')],
     data: const FeatureData(
-      activityKinds: [SocKind.post, SocKind.comment, SocKind.message, SocKind.react, SocKind.notif, SocKind.report],
-      permanentKinds: [SocKind.profile, SocKind.alter, SocKind.request, SocKind.friendship, SocKind.follow, SocKind.block, SocKind.circle, SocKind.conversation],
+      activityKinds: [
+        SocKind.post,
+        SocKind.comment,
+        SocKind.message,
+        SocKind.react,
+        SocKind.notif,
+        SocKind.report,
+      ],
+      permanentKinds: [
+        SocKind.profile,
+        SocKind.alter,
+        SocKind.request,
+        SocKind.friendship,
+        SocKind.follow,
+        SocKind.block,
+        SocKind.circle,
+        SocKind.conversation,
+      ],
     ),
   ),
 
@@ -566,7 +939,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'polls',
     name: ('Polls', 'Encuestas'),
-    description: ('Polls for system decisions.', 'Encuestas para decisiones del sistema.'),
+    description: (
+      'Polls for system decisions.',
+      'Encuestas para decisiones del sistema.',
+    ),
     category: FeatureCategory.community,
     icon: PhosphorIcons.chartBar(),
     tabs: const [AppShellTabId.polls],
@@ -578,7 +954,10 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'achievements',
     name: ('Achievements', 'Logros'),
-    description: ('Milestones unlocked as you use Prism.', 'Hitos que desbloqueas al usar Prism.'),
+    description: (
+      'Milestones unlocked as you use Prism.',
+      'Hitos que desbloqueas al usar Prism.',
+    ),
     category: FeatureCategory.community,
     icon: PhosphorIcons.trophy(),
     tabs: const [AppShellTabId.achievements],
@@ -590,37 +969,63 @@ final List<PrismFeature> prismFeatures = [
   PrismFeature(
     id: 'statistics',
     name: ('Statistics', 'Estadísticas'),
-    description: ('Fronting and usage statistics.', 'Estadísticas de frente y de uso.'),
+    description: (
+      'Fronting and usage statistics.',
+      'Estadísticas de frente y de uso.',
+    ),
     category: FeatureCategory.analytics,
     icon: PhosphorIcons.chartLine(),
     tabs: const [AppShellTabId.statistics],
     route: AppRoutePaths.statistics,
-    data: const FeatureData(note: ('Statistics are calculated from other features and store nothing themselves.', 'Las estadísticas se calculan desde otras funciones y no guardan nada.')),
+    data: const FeatureData(
+      note: (
+        'Statistics are calculated from other features and store nothing themselves.',
+        'Las estadísticas se calculan desde otras funciones y no guardan nada.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'insights',
     name: ('Daily insights', 'Perspectivas diarias'),
-    description: ('A daily summary built from your records.', 'Un resumen diario a partir de tus registros.'),
+    description: (
+      'A daily summary built from your records.',
+      'Un resumen diario a partir de tus registros.',
+    ),
     category: FeatureCategory.analytics,
     icon: PhosphorIcons.lightbulb(),
     tabs: const [AppShellTabId.insights],
     route: AppRoutePaths.insights,
-    data: const FeatureData(note: ('Insights are calculated and store nothing themselves.', 'Las perspectivas se calculan y no guardan nada.')),
+    data: const FeatureData(
+      note: (
+        'Insights are calculated and store nothing themselves.',
+        'Las perspectivas se calculan y no guardan nada.',
+      ),
+    ),
   ),
   PrismFeature(
     id: 'analytics',
     name: ('Analytics', 'Análisis'),
-    description: ('Co-fronting patterns and mood correlations.', 'Patrones de co-frente y correlaciones de ánimo.'),
+    description: (
+      'Co-fronting patterns and mood correlations.',
+      'Patrones de co-frente y correlaciones de ánimo.',
+    ),
     category: FeatureCategory.analytics,
     icon: PhosphorIcons.chartPieSlice(),
     tabs: const [AppShellTabId.analytics],
     route: AppRoutePaths.analytics,
     dependsOn: const ['mood'],
-    data: const FeatureData(note: ('Analytics are calculated and store nothing themselves.', 'Los análisis se calculan y no guardan nada.')),
+    data: const FeatureData(
+      note: (
+        'Analytics are calculated and store nothing themselves.',
+        'Los análisis se calculan y no guardan nada.',
+      ),
+    ),
   ),
 ];
 
-final Map<String, PrismFeature> prismFeatureIndex = {for (final f in prismFeatures) f.id: f};
+final Map<String, PrismFeature> prismFeatureIndex = {
+  for (final f in prismFeatures) f.id: f,
+};
 
 /// Feature owning a navigation tab (if any).
 final Map<AppShellTabId, PrismFeature> featureByTab = {
@@ -649,4 +1054,7 @@ String featureCategoryNameEs(FeatureCategory c) => switch (c) {
 };
 
 /// Features that need [id] (to warn before turning it off).
-List<PrismFeature> dependentsOf(String id) => [for (final f in prismFeatures) if (f.dependsOn.contains(id)) f];
+List<PrismFeature> dependentsOf(String id) => [
+  for (final f in prismFeatures)
+    if (f.dependsOn.contains(id)) f,
+];

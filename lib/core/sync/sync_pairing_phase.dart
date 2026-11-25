@@ -114,8 +114,8 @@ class SyncPairingPhaseService {
       );
     }
 
-    final isResetPath = to == SyncPairingPhase.unread &&
-        from != SyncPairingPhase.paired;
+    final isResetPath =
+        to == SyncPairingPhase.unread && from != SyncPairingPhase.paired;
     debugPrint(
       '[SYNC_PAIRING_PHASE] transition: ${from.name} → ${to.name}'
       '${isResetPath ? ' (reset)' : ''}',

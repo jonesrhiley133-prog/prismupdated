@@ -46,10 +46,12 @@ abstract final class AppRoutePaths {
   static const health = '/health';
 
   /// A Health entry (opens it if the current alter may see it).
-  static String healthEntry(String id) => '/health?entry=${Uri.encodeQueryComponent(id)}';
+  static String healthEntry(String id) =>
+      '/health?entry=${Uri.encodeQueryComponent(id)}';
 
   /// Body sensations recorded on a Mood check-in, now in Health › Body Map.
-  static String healthMoodSensations(String moodId) => '/health?tab=map&mood=${Uri.encodeQueryComponent(moodId)}';
+  static String healthMoodSensations(String moodId) =>
+      '/health?tab=map&mood=${Uri.encodeQueryComponent(moodId)}';
   static const importCenter = '/import';
   static const systemTimeline = '/system-timeline';
   static const patterns = '/patterns';
@@ -72,7 +74,8 @@ abstract final class AppRoutePaths {
   static const headmateBanners = '/headmate-banners';
   static String socialPost(String id) => '/social/post/$id';
   static String socialAlter(String id) => '/social/alter/$id';
-  static String socialTag(String tag) => '/social/tag/${Uri.encodeComponent(tag)}';
+  static String socialTag(String tag) =>
+      '/social/tag/${Uri.encodeComponent(tag)}';
   static const appearanceStudio = '/appearance-studio';
   static const accessibilityQuick = '/accessibility-quick';
 
@@ -146,12 +149,22 @@ abstract final class AppRoutePaths {
 
   /// Games: the recreation hub, one game, a custom game, a game night.
   static const games = '/games';
-  static String gamePlay(String id, {String? challenge, String? custom, String? night}) {
-    final q = {if (challenge != null) 'challenge': challenge, if (custom != null) 'custom': custom, if (night != null) 'night': night};
+  static String gamePlay(
+    String id, {
+    String? challenge,
+    String? custom,
+    String? night,
+  }) {
+    final q = {
+      if (challenge != null) 'challenge': challenge,
+      if (custom != null) 'custom': custom,
+      if (night != null) 'night': night,
+    };
     return '/games/play/${Uri.encodeComponent(id)}${q.isEmpty ? '' : '?${Uri(queryParameters: q).query}'}';
   }
 
-  static String gameNight(String id) => '/games/night/${Uri.encodeComponent(id)}';
+  static String gameNight(String id) =>
+      '/games/night/${Uri.encodeComponent(id)}';
 
   /// Cozy: shared spaces, letters, garden, comfort and collections.
   static const cozy = '/cozy';
@@ -284,6 +297,7 @@ enum AppShellTabId {
   astro,
   games,
   cozy,
+  experiences,
 }
 
 class AppShellTab {
@@ -367,10 +381,15 @@ class AppShellTab {
       AppShellTabId.availability => l10n.navAvailability,
       AppShellTabId.introductions => l10n.navIntroductions,
       AppShellTabId.social => 'Social',
-      AppShellTabId.health => l10n.localeName.startsWith('es') ? 'Salud' : 'Health',
+      AppShellTabId.health =>
+        l10n.localeName.startsWith('es') ? 'Salud' : 'Health',
       AppShellTabId.astro => 'Astro',
-      AppShellTabId.games => l10n.localeName.startsWith('es') ? 'Juegos' : 'Games',
-      AppShellTabId.cozy => l10n.localeName.startsWith('es') ? 'Acogedor' : 'Cozy',
+      AppShellTabId.games =>
+        l10n.localeName.startsWith('es') ? 'Juegos' : 'Games',
+      AppShellTabId.cozy =>
+        l10n.localeName.startsWith('es') ? 'Acogedor' : 'Cozy',
+      AppShellTabId.experiences =>
+        l10n.localeName.startsWith('es') ? 'Experiencias' : 'Experiences',
     };
   }
 
@@ -430,6 +449,7 @@ class AppShellTab {
       AppShellTabId.astro => true,
       AppShellTabId.games => true,
       AppShellTabId.cozy => true,
+      AppShellTabId.experiences => true,
     };
   }
 }
@@ -780,6 +800,14 @@ final appShellTabs = [
     branchIndex: 42,
     rootLocation: AppRoutePaths.cozy,
   ),
+  AppShellTab(
+    id: AppShellTabId.experiences,
+    label: 'Experiences',
+    icon: AppIcons.navExperiences,
+    activeIcon: AppIcons.navExperiencesActive,
+    branchIndex: 43,
+    rootLocation: AppRoutePaths.experiences,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -798,6 +826,7 @@ const defaultNavBarOverflowTabIds = [
   'astro',
   'games',
   'cozy',
+  'experiences',
   'insights',
   'locations',
   'work',

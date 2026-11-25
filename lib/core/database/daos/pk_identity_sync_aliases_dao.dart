@@ -14,12 +14,11 @@ class PkIdentitySyncAliasesDao extends DatabaseAccessor<AppDatabase>
     String entityTable,
     String legacyEntityId,
   ) =>
-      (select(pkIdentitySyncAliases)
-            ..where(
-              (t) =>
-                  t.entityTable.equals(entityTable) &
-                  t.legacyEntityId.equals(legacyEntityId),
-            ))
+      (select(pkIdentitySyncAliases)..where(
+            (t) =>
+                t.entityTable.equals(entityTable) &
+                t.legacyEntityId.equals(legacyEntityId),
+          ))
           .getSingleOrNull();
 
   /// All aliases recorded for one entity table whose redirected PK identity
@@ -100,10 +99,7 @@ class PkIdentitySyncAliasesDao extends DatabaseAccessor<AppDatabase>
   /// via IDENTITY re-resolution (the resolved-holder delete path) a SIBLING
   /// alias may still point at a DIFFERENT dead row of the same identity, so that
   /// path uses [deleteByIdentity] instead.
-  Future<void> deleteByTargetRowId(
-    String entityTable,
-    String targetRowId,
-  ) =>
+  Future<void> deleteByTargetRowId(String entityTable, String targetRowId) =>
       (delete(pkIdentitySyncAliases)..where(
             (t) =>
                 t.entityTable.equals(entityTable) &

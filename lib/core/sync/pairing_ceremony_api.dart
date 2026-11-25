@@ -150,10 +150,7 @@ class FrbPairingCeremonyApi extends PairingCeremonyApi {
     required ffi.PrismSyncHandle handle,
     BigInt? ttlSecs,
   }) {
-    return ffi.uploadPairingSnapshotResumable(
-      handle: handle,
-      ttlSecs: ttlSecs,
-    );
+    return ffi.uploadPairingSnapshotResumable(handle: handle, ttlSecs: ttlSecs);
   }
 
   @override

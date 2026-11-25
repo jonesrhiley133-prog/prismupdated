@@ -23,9 +23,9 @@ class SyncOutboxDao extends DatabaseAccessor<AppDatabase>
   /// Every row (including quarantined) in drain order. The drainer needs the
   /// quarantined rows to block later ops for the same entity.
   Future<List<SyncOpOutboxRow>> allInIdOrder() {
-    return (select(syncOpOutbox)
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    return (select(
+      syncOpOutbox,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
   }
 
   /// Delete the given rows after their FFI dispatch returned Ok. Batched so a
@@ -63,10 +63,11 @@ class SyncOutboxDao extends DatabaseAccessor<AppDatabase>
   /// drainer reads this to decide whether to file an ErrorReportingService
   /// report exactly once at the quarantine transition.
   Future<bool> isQuarantined(int id) async {
-    final row = await (select(syncOpOutbox)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(syncOpOutbox)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     return row?.quarantined ?? false;
   }
 

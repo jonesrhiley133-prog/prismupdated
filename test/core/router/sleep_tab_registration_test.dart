@@ -69,13 +69,13 @@ void main() {
   });
 
   group('appShellTabs with sleep', () {
-    test('has 43 entries', () {
-      expect(appShellTabs, hasLength(43));
+    test('has 44 entries', () {
+      expect(appShellTabs, hasLength(44));
     });
 
     test('branch indices are consecutive 0..40', () {
       final indices = appShellTabs.map((t) => t.branchIndex).toList()..sort();
-      expect(indices, List.generate(43, (i) => i));
+      expect(indices, List.generate(44, (i) => i));
     });
 
     test('no duplicate branch indices', () {

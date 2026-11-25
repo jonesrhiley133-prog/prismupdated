@@ -13,17 +13,25 @@ import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
 /// whole history), then every full blob. Deduping + the cap happen in
 /// [PairingMediaPush.run].
 Future<List<PairingMediaRef>> _pairingCandidates(Ref ref) async {
-  final attachments = await ref.read(databaseProvider).mediaAttachmentsDao.getAll();
+  final attachments = await ref
+      .read(databaseProvider)
+      .mediaAttachmentsDao
+      .getAll();
   final thumbs = <PairingMediaRef>[];
   final fulls = <PairingMediaRef>[];
   for (final a in attachments) {
     if (a.thumbnailMediaId.isNotEmpty && a.thumbnailContentHash.isNotEmpty) {
       thumbs.add(
-        PairingMediaRef(mediaId: a.thumbnailMediaId, contentHash: a.thumbnailContentHash),
+        PairingMediaRef(
+          mediaId: a.thumbnailMediaId,
+          contentHash: a.thumbnailContentHash,
+        ),
       );
     }
     if (a.mediaId.isNotEmpty && a.contentHash.isNotEmpty) {
-      fulls.add(PairingMediaRef(mediaId: a.mediaId, contentHash: a.contentHash));
+      fulls.add(
+        PairingMediaRef(mediaId: a.mediaId, contentHash: a.contentHash),
+      );
     }
   }
   return [...thumbs, ...fulls];

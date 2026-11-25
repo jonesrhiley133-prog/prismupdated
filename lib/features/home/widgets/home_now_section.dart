@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroFrontingCard;
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
+    show AstroFrontingCard;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

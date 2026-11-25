@@ -2,7 +2,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/preferences/dashboard_preferences.dart';
-import 'package:prism_plurality/features/home/widgets/home_dashboard.dart' show homeCardSizesProvider;
+import 'package:prism_plurality/features/home/widgets/home_dashboard.dart'
+    show homeCardSizesProvider;
 import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/companions/companion_widgets.dart';
@@ -14,7 +15,9 @@ class CompanionHomeCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final compact = ref.watch(homeCardSizesProvider)[DashboardWidgetId.companion] == 'compact';
+    final compact =
+        ref.watch(homeCardSizesProvider)[DashboardWidgetId.companion] ==
+        'compact';
     final c = ref.watch(shownCompanionProvider(currentFronterId(ref)));
     if (c == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
@@ -28,7 +31,11 @@ class CompanionHomeCard extends ConsumerWidget {
         semanticLabel: 'Visit ${c.name}',
         child: Row(
           children: [
-            CompanionFigure(companion: c, size: compact ? 40 : 64, showParticles: false),
+            CompanionFigure(
+              companion: c,
+              size: compact ? 40 : 64,
+              showParticles: false,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(

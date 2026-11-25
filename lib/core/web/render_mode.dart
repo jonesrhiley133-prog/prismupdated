@@ -2,4 +2,5 @@
 /// platforms these are no-ops.
 library;
 
-export 'render_mode_stub.dart' if (dart.library.js_interop) 'render_mode_web.dart';
+export 'render_mode_stub.dart'
+    if (dart.library.js_interop) 'render_mode_web.dart';

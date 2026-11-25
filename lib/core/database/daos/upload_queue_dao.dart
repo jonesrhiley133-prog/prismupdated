@@ -100,29 +100,30 @@ class UploadQueueDao extends DatabaseAccessor<AppDatabase>
   /// processor can schedule a wake instead of busy-polling. `null` if no
   /// pending rows are waiting in the future.
   Future<int?> earliestFutureAttempt(int nowMs) async {
-    final row = await (select(uploadQueueEntries)
-          ..where(
-            (t) =>
-                t.state.equals(statePending) &
-                t.nextAttemptAt.isBiggerThanValue(nowMs),
-          )
-          ..orderBy([(t) => OrderingTerm(expression: t.nextAttemptAt)])
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(uploadQueueEntries)
+              ..where(
+                (t) =>
+                    t.state.equals(statePending) &
+                    t.nextAttemptAt.isBiggerThanValue(nowMs),
+              )
+              ..orderBy([(t) => OrderingTerm(expression: t.nextAttemptAt)])
+              ..limit(1))
+            .getSingleOrNull();
     return row?.nextAttemptAt;
   }
 
   Future<UploadQueueEntry?> getById(String mediaId) {
-    return (select(uploadQueueEntries)
-          ..where((t) => t.mediaId.equals(mediaId)))
-        .getSingleOrNull();
+    return (select(
+      uploadQueueEntries,
+    )..where((t) => t.mediaId.equals(mediaId))).getSingleOrNull();
   }
 
   /// Remove a successfully-uploaded entry.
   Future<void> markCompleted(String mediaId) {
-    return (delete(uploadQueueEntries)
-          ..where((t) => t.mediaId.equals(mediaId)))
-        .go();
+    return (delete(
+      uploadQueueEntries,
+    )..where((t) => t.mediaId.equals(mediaId))).go();
   }
 
   /// Record a failed attempt and schedule the next retry.
@@ -132,15 +133,15 @@ class UploadQueueDao extends DatabaseAccessor<AppDatabase>
     required int nextAttemptAtMs,
     required String error,
   }) {
-    return (update(uploadQueueEntries)
-          ..where((t) => t.mediaId.equals(mediaId)))
-        .write(
-          UploadQueueEntriesCompanion(
-            attempts: Value(attempts),
-            nextAttemptAt: Value(nextAttemptAtMs),
-            lastError: Value(error),
-          ),
-        );
+    return (update(
+      uploadQueueEntries,
+    )..where((t) => t.mediaId.equals(mediaId))).write(
+      UploadQueueEntriesCompanion(
+        attempts: Value(attempts),
+        nextAttemptAt: Value(nextAttemptAtMs),
+        lastError: Value(error),
+      ),
+    );
   }
 
   /// Retries exhausted — retain a metadata tombstone in a terminal state (the
@@ -152,16 +153,16 @@ class UploadQueueDao extends DatabaseAccessor<AppDatabase>
     required int attempts,
     required String error,
   }) {
-    return (update(uploadQueueEntries)
-          ..where((t) => t.mediaId.equals(mediaId)))
-        .write(
-          UploadQueueEntriesCompanion(
-            state: const Value(stateTerminal),
-            attempts: Value(attempts),
-            lastError: Value(error),
-            ciphertext: Value(Uint8List(0)),
-          ),
-        );
+    return (update(
+      uploadQueueEntries,
+    )..where((t) => t.mediaId.equals(mediaId))).write(
+      UploadQueueEntriesCompanion(
+        state: const Value(stateTerminal),
+        attempts: Value(attempts),
+        lastError: Value(error),
+        ciphertext: Value(Uint8List(0)),
+      ),
+    );
   }
 
   Future<int> pendingCount() async {

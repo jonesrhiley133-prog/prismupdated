@@ -11,9 +11,9 @@ class SpImportDao extends DatabaseAccessor<AppDatabase>
   SpImportDao(super.db);
 
   // SpSyncState
-  Future<SpSyncStateRow?> getSyncState() =>
-      (select(spSyncStateTable)..where((t) => t.id.equals('singleton')))
-          .getSingleOrNull();
+  Future<SpSyncStateRow?> getSyncState() => (select(
+    spSyncStateTable,
+  )..where((t) => t.id.equals('singleton'))).getSingleOrNull();
 
   Future<void> upsertSyncState(SpSyncStateTableCompanion data) =>
       into(spSyncStateTable).insertOnConflictUpdate(data);
@@ -32,10 +32,8 @@ class SpImportDao extends DatabaseAccessor<AppDatabase>
   /// user disposition is no longer `importAsMember` (plan §Classification).
   Future<void> deleteMappings(List<String> spIds, String entityType) async {
     if (spIds.isEmpty) return;
-    await (delete(spIdMapTable)
-          ..where(
-            (t) => t.entityType.equals(entityType) & t.spId.isIn(spIds),
-          ))
-        .go();
+    await (delete(
+      spIdMapTable,
+    )..where((t) => t.entityType.equals(entityType) & t.spId.isIn(spIds))).go();
   }
 }

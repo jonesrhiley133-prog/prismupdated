@@ -28,9 +28,9 @@ class ConversationCategoriesDao extends DatabaseAccessor<AppDatabase>
 
   /// Single-row read by ID, including tombstones. Repository writers use this
   /// to guard sync emission for missing/tombstoned rows.
-  Future<ConversationCategoryRow?> getByIdRow(String id) =>
-      (select(conversationCategories)..where((c) => c.id.equals(id)))
-          .getSingleOrNull();
+  Future<ConversationCategoryRow?> getByIdRow(String id) => (select(
+    conversationCategories,
+  )..where((c) => c.id.equals(id))).getSingleOrNull();
 
   Future<int> create(ConversationCategoriesCompanion companion) =>
       into(conversationCategories).insert(companion);

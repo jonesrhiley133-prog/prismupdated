@@ -471,7 +471,8 @@ class FullResetService {
   Future<AndroidApplicationDataClearResult> startAndroidClearApplicationData({
     AppDatabase? openDatabase,
   }) async {
-    if (DemoMode.active) throw StateError('Leave Demo Mode before resetting data');
+    if (DemoMode.active)
+      throw StateError('Leave Demo Mode before resetting data');
     Object? clearFailure;
     try {
       final accepted = await nativeResetKeys.clearApplicationUserData();
@@ -493,7 +494,8 @@ class FullResetService {
     AppDatabase? openDatabase,
     bool requireRestart = true,
   }) async {
-    if (DemoMode.active) throw StateError('Leave Demo Mode before resetting data');
+    if (DemoMode.active)
+      throw StateError('Leave Demo Mode before resetting data');
     final failures = <String>[];
     Future<bool> attempt(String label, Future<void> Function() action) async {
       try {

@@ -47,10 +47,10 @@ class CryptoBootKeyEntry {
   final int? decodedLength;
 
   Map<String, dynamic> toJson() => {
-        'k': bareKey,
-        'p': present,
-        if (decodedLength != null) 'l': decodedLength,
-      };
+    'k': bareKey,
+    'p': present,
+    if (decodedLength != null) 'l': decodedLength,
+  };
 
   factory CryptoBootKeyEntry.fromJson(Map<String, dynamic> json) {
     return CryptoBootKeyEntry(
@@ -102,17 +102,17 @@ class CryptoBootSnapshot {
   final Map<String, dynamic>? platformDiagnostics;
 
   Map<String, dynamic> toJson() => {
-        'ts': timestamp.toIso8601String(),
-        'v': appVersion,
-        'p': platform,
-        'h': syncHealth,
-        'hp': handlePresent,
-        if (engineUnlocked != null) 'u': engineUnlocked,
-        't': trigger,
-        'k': keys.map((e) => e.toJson()).toList(),
-        if (unwrapFailure != null) 'uf': unwrapFailure!.toJson(),
-        if (platformDiagnostics != null) 'pd': platformDiagnostics,
-      };
+    'ts': timestamp.toIso8601String(),
+    'v': appVersion,
+    'p': platform,
+    'h': syncHealth,
+    'hp': handlePresent,
+    if (engineUnlocked != null) 'u': engineUnlocked,
+    't': trigger,
+    'k': keys.map((e) => e.toJson()).toList(),
+    if (unwrapFailure != null) 'uf': unwrapFailure!.toJson(),
+    if (platformDiagnostics != null) 'pd': platformDiagnostics,
+  };
 
   factory CryptoBootSnapshot.fromJson(Map<String, dynamic> json) {
     return CryptoBootSnapshot(
@@ -127,9 +127,7 @@ class CryptoBootSnapshot {
           .map((e) => CryptoBootKeyEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
       unwrapFailure: json['uf'] is Map<String, dynamic>
-          ? RuntimeDekUnwrapFailure.fromJson(
-              json['uf'] as Map<String, dynamic>,
-            )
+          ? RuntimeDekUnwrapFailure.fromJson(json['uf'] as Map<String, dynamic>)
           : null,
       platformDiagnostics: json['pd'] is Map<String, dynamic>
           ? Map<String, dynamic>.from(json['pd'] as Map<String, dynamic>)
@@ -177,14 +175,12 @@ class CryptoBootLog {
     // (the ones we care about most for crash triage). When readAll succeeds,
     // the probe is skipped — entries is identical to the unwrapped readAll.
     // See `docs/0.9.2-secure-storage-remediation.md` §2 / §10.
-    final readAll = await safeSecureReadAllWithSlotProbe(
-      const <String>[
-        kDatabaseKeyStorageKey,
-        '${kDatabaseKeyStorageKey}_staging',
-        kSyncDatabaseKeyStorageKey,
-        '${kSyncDatabaseKeyStorageKey}_staging',
-      ],
-    );
+    final readAll = await safeSecureReadAllWithSlotProbe(const <String>[
+      kDatabaseKeyStorageKey,
+      '${kDatabaseKeyStorageKey}_staging',
+      kSyncDatabaseKeyStorageKey,
+      '${kSyncDatabaseKeyStorageKey}_staging',
+    ]);
     final all = readAll.entries;
     final entries = <CryptoBootKeyEntry>[];
     for (final fullKey in all.keys) {
@@ -211,8 +207,8 @@ class CryptoBootLog {
     // or older builds without the method handler.
     Map<String, dynamic>? platformDiagnostics;
     try {
-      platformDiagnostics =
-          await const DeviceBoundRuntimeDekStore().getDiagnostics();
+      platformDiagnostics = await const DeviceBoundRuntimeDekStore()
+          .getDiagnostics();
     } catch (e) {
       debugPrint('[CryptoBootLog] platform diagnostics failed: $e');
     }
@@ -252,8 +248,7 @@ class CryptoBootLog {
       final existing = await _readUnsafe(file);
       final updated = [...existing, snapshot];
       final overflow = updated.length - _maxEntries;
-      final trimmed =
-          overflow > 0 ? updated.sublist(overflow) : updated;
+      final trimmed = overflow > 0 ? updated.sublist(overflow) : updated;
       final json = trimmed.map((s) => s.toJson()).toList();
       await file.writeAsString(jsonEncode(json), flush: true);
     } catch (e) {

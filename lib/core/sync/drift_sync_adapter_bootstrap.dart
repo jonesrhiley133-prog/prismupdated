@@ -116,10 +116,7 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       'location_sessions',
       () => db.select(db.locationSessions).get(),
     ),
-    'jobs': build(
-      'jobs',
-      () => db.select(db.jobs).get(),
-    ),
+    'jobs': build('jobs', () => db.select(db.jobs).get()),
     'work_sessions': build(
       'work_sessions',
       () => db.select(db.workSessions).get(),
@@ -132,10 +129,7 @@ Map<String, BootstrapFetcher> bootstrapFetchersFor(
       'tracker_records',
       () => db.select(db.trackerRecords).get(),
     ),
-    'contacts': build(
-      'contacts',
-      () => db.select(db.contacts).get(),
-    ),
+    'contacts': build('contacts', () => db.select(db.contacts).get()),
     'calendar_events': build(
       'calendar_events',
       () => db.select(db.calendarEvents).get(),

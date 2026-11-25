@@ -10,9 +10,12 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// The synced record holding feature switches and the Minimal preset.
 final featureRecordProvider = Provider<TrackerRecord?>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.appFeatures)).value ?? const <TrackerRecord>[];
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.appFeatures)).value ??
+      const <TrackerRecord>[];
   if (rows.isEmpty) return null;
-  return (rows.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt))).first;
+  return (rows.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
+      .first;
 });
 
 /// Whether each registered feature is on. Core features are always on; the
@@ -20,7 +23,10 @@ final featureRecordProvider = Provider<TrackerRecord?>((ref) {
 /// living in system settings so nothing changes for existing users.
 final featureStatesProvider = Provider<Map<String, bool>>((ref) {
   final flags = ref.watch(featureFlagsProvider);
-  final saved = (ref.watch(featureRecordProvider)?.fields['on'] as Map?)?.cast<String, Object?>() ?? const {};
+  final saved =
+      (ref.watch(featureRecordProvider)?.fields['on'] as Map?)
+          ?.cast<String, Object?>() ??
+      const {};
   bool legacy(String k) => switch (k) {
     'chat' => flags.chat,
     'polls' => flags.polls,
@@ -33,17 +39,34 @@ final featureStatesProvider = Provider<Map<String, bool>>((ref) {
   };
   return {
     for (final f in prismFeatures)
-      f.id: f.core ? true : (f.legacyFlag != null ? legacy(f.legacyFlag!) : (saved[f.id] is bool ? saved[f.id] as bool : f.defaultEnabled)),
+      f.id: f.core
+          ? true
+          : (f.legacyFlag != null
+                ? legacy(f.legacyFlag!)
+                : (saved[f.id] is bool
+                      ? saved[f.id] as bool
+                      : f.defaultEnabled)),
   };
 });
 
-final featureEnabledProvider = Provider.family<bool, String>((ref, id) => ref.watch(featureStatesProvider)[id] ?? true);
+final featureEnabledProvider = Provider.family<bool, String>(
+  (ref, id) => ref.watch(featureStatesProvider)[id] ?? true,
+);
 
 /// Feature ids in the (customisable) Minimal preset.
 final minimalPresetProvider = Provider<Set<String>>((ref) {
   final raw = ref.watch(featureRecordProvider)?.fields['minimal'];
-  if (raw is List && raw.isNotEmpty) return {for (final x in raw) if (x is String) x, for (final f in prismFeatures) if (f.core) f.id};
-  return {for (final f in prismFeatures) if (f.core || f.essential) f.id};
+  if (raw is List && raw.isNotEmpty)
+    return {
+      for (final x in raw)
+        if (x is String) x,
+      for (final f in prismFeatures)
+        if (f.core) f.id,
+    };
+  return {
+    for (final f in prismFeatures)
+      if (f.core || f.essential) f.id,
+  };
 });
 
 /// Reads a feature switch outside the widget tree (background services).
@@ -90,8 +113,13 @@ class FeatureActions {
       case 'reminders':
         await settings.updateRemindersEnabled(on);
       default:
-        final current = (ref.read(featureRecordProvider)?.fields['on'] as Map?)?.cast<String, Object?>() ?? const {};
-        await _saveRecord({'on': {...current, id: on}});
+        final current =
+            (ref.read(featureRecordProvider)?.fields['on'] as Map?)
+                ?.cast<String, Object?>() ??
+            const {};
+        await _saveRecord({
+          'on': {...current, id: on},
+        });
     }
     await _sideEffects(id, on);
   }
@@ -106,7 +134,8 @@ class FeatureActions {
     }
   }
 
-  Future<void> saveMinimalPreset(Set<String> ids) => _saveRecord({'minimal': ids.toList()});
+  Future<void> saveMinimalPreset(Set<String> ids) =>
+      _saveRecord({'minimal': ids.toList()});
 
   /// Pauses or resumes a feature's notifications and background work.
   Future<void> _sideEffects(String id, bool on) async {
@@ -120,9 +149,15 @@ class FeatureActions {
 
     switch (id) {
       case 'availability':
-        on ? await ref.read(availabilityActionsProvider).rescheduleNotifications() : await cancel(PrismNotify.availabilityBase);
+        on
+            ? await ref
+                  .read(availabilityActionsProvider)
+                  .rescheduleNotifications()
+            : await cancel(PrismNotify.availabilityBase);
       case 'nutrition':
-        on ? await ref.read(nutritionActionsProvider).rescheduleReminders() : await cancel(PrismNotify.hydrationBase);
+        on
+            ? await ref.read(nutritionActionsProvider).rescheduleReminders()
+            : await cancel(PrismNotify.hydrationBase);
       case 'habits':
         if (!on) await cancel(PrismNotify.habitBase);
       case 'automations':

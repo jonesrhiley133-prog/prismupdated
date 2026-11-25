@@ -255,9 +255,8 @@ class MediaService {
         contentHash: data.contentHash,
         encryptedData: data.encryptedImage,
         onSuccess: completer.complete,
-        onFailure: (e) => completer.completeError(
-          StateError('Bio image upload failed: $e'),
-        ),
+        onFailure: (e) =>
+            completer.completeError(StateError('Bio image upload failed: $e')),
       ),
     );
     await completer.future;

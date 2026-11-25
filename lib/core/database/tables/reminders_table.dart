@@ -5,7 +5,8 @@ class Reminders extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get message => text()();
-  IntColumn get trigger => integer().withDefault(const Constant(0))(); // ReminderTrigger enum index
+  IntColumn get trigger =>
+      integer().withDefault(const Constant(0))(); // ReminderTrigger enum index
   TextColumn get frequency => text().nullable()();
   IntColumn get intervalDays => integer().nullable()();
   TextColumn get weeklyDays => text().nullable()();
@@ -16,6 +17,7 @@ class Reminders extends Table {
   /// firing at least once.
   TextColumn get additionalTimes => text().nullable()();
   IntColumn get delayHours => integer().nullable()();
+
   /// Optional member ID this reminder targets. When null, a front-change
   /// reminder fires on any switch; when set, it fires only when the referenced
   /// member (or custom-front-tagged member) is in the current fronter set.

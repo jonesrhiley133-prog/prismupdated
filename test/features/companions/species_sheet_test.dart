@@ -15,26 +15,86 @@ void main() {
     final key = GlobalKey();
     final out = Platform.environment['PRISM_SHEET_OUT'];
     await tester.binding.setSurfaceSize(const Size(900, 760));
-    await tester.pumpWidget(MaterialApp(
-      home: RepaintBoundary(
-        key: key,
-        child: ColoredBox(
-          color: const Color(0xFFF6F2EE),
-          child: Wrap(children: [
-            for (final s in speciesCatalog)
-              SizedBox(width: 112, height: 124, child: Column(children: [CompanionView(species: s, look: const CompanionLook(), size: 100, animate: false), Text(s.name, style: const TextStyle(fontSize: 10))])),
-            SizedBox(width: 112, height: 124, child: CompanionView(species: speciesById('cat'), look: const CompanionLook(hat: 'witch', neck: 'scarf', glasses: 'round', body: 'sweater', floating: 'star', particles: 'sparkles', pattern: 'stripes'), size: 100, animate: false)),
-            SizedBox(width: 112, height: 124, child: CompanionView(species: speciesById('dog'), look: const CompanionLook(hat: 'crown', neck: 'bow', expression: 'wink'), pose: CompanionPose.wave, size: 100, animate: false)),
-            SizedBox(width: 112, height: 124, child: CompanionView(species: speciesById('fox'), look: const CompanionLook(hat: 'santa', body: 'hoodie'), pose: CompanionPose.sleep, size: 100, animate: false)),
-          ]),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: RepaintBoundary(
+          key: key,
+          child: ColoredBox(
+            color: const Color(0xFFF6F2EE),
+            child: Wrap(
+              children: [
+                for (final s in speciesCatalog)
+                  SizedBox(
+                    width: 112,
+                    height: 124,
+                    child: Column(
+                      children: [
+                        CompanionView(
+                          species: s,
+                          look: const CompanionLook(),
+                          size: 100,
+                          animate: false,
+                        ),
+                        Text(s.name, style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                SizedBox(
+                  width: 112,
+                  height: 124,
+                  child: CompanionView(
+                    species: speciesById('cat'),
+                    look: const CompanionLook(
+                      hat: 'witch',
+                      neck: 'scarf',
+                      glasses: 'round',
+                      body: 'sweater',
+                      floating: 'star',
+                      particles: 'sparkles',
+                      pattern: 'stripes',
+                    ),
+                    size: 100,
+                    animate: false,
+                  ),
+                ),
+                SizedBox(
+                  width: 112,
+                  height: 124,
+                  child: CompanionView(
+                    species: speciesById('dog'),
+                    look: const CompanionLook(
+                      hat: 'crown',
+                      neck: 'bow',
+                      expression: 'wink',
+                    ),
+                    pose: CompanionPose.wave,
+                    size: 100,
+                    animate: false,
+                  ),
+                ),
+                SizedBox(
+                  width: 112,
+                  height: 124,
+                  child: CompanionView(
+                    species: speciesById('fox'),
+                    look: const CompanionLook(hat: 'santa', body: 'hoodie'),
+                    pose: CompanionPose.sleep,
+                    size: 100,
+                    animate: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-    ));
+    );
     await tester.pump();
     expect(tester.takeException(), isNull);
     if (out != null) {
       await tester.runAsync(() async {
-        final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+        final boundary =
+            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
         final img = await boundary.toImage(pixelRatio: 1.5);
         final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
         File(out).writeAsBytesSync(bytes!.buffer.asUint8List());

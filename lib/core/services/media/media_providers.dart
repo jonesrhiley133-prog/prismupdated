@@ -33,34 +33,35 @@ final uploadQueueProvider = Provider<UploadQueue>((ref) {
   ref.keepAlive();
   final queue = UploadQueue(
     dao: ref.watch(databaseProvider).uploadQueueDao,
-    upload: ({
-      required String mediaId,
-      required String contentHash,
-      required Uint8List data,
-      BigInt? ttlSecs,
-    }) async {
-      // Resolve the handle lazily, per attempt, from the CURRENT value only —
-      // never `await`-ing the handle future. Awaiting it would park the single
-      // drain loop (with `_draining` held) behind a still-loading handle and
-      // strand every other due upload. A null/loading handle instead THROWS, so
-      // the durable queue records a failure, backs off, and re-reads the value
-      // on the next attempt — it never drops a configured user's send.
-      final handle = ref.read(prismSyncHandleProvider).value;
-      if (handle == null) {
-        throw StateError('sync handle unavailable; will retry');
-      }
-      // Fresh sends ignore the outcome (a brand-new media_id never returns a
-      // 202 in-progress); the committed/in-progress distinction is for media heal.
-      await ffi.uploadMedia(
-        handle: handle,
-        mediaId: mediaId,
-        contentHash: contentHash,
-        data: data,
-        ttlSecs: ttlSecs,
-        pairingPush: false,
-      );
-      return UploadAttemptResult.ok;
-    },
+    upload:
+        ({
+          required String mediaId,
+          required String contentHash,
+          required Uint8List data,
+          BigInt? ttlSecs,
+        }) async {
+          // Resolve the handle lazily, per attempt, from the CURRENT value only —
+          // never `await`-ing the handle future. Awaiting it would park the single
+          // drain loop (with `_draining` held) behind a still-loading handle and
+          // strand every other due upload. A null/loading handle instead THROWS, so
+          // the durable queue records a failure, backs off, and re-reads the value
+          // on the next attempt — it never drops a configured user's send.
+          final handle = ref.read(prismSyncHandleProvider).value;
+          if (handle == null) {
+            throw StateError('sync handle unavailable; will retry');
+          }
+          // Fresh sends ignore the outcome (a brand-new media_id never returns a
+          // 202 in-progress); the committed/in-progress distinction is for media heal.
+          await ffi.uploadMedia(
+            handle: handle,
+            mediaId: mediaId,
+            contentHash: contentHash,
+            data: data,
+            ttlSecs: ttlSecs,
+            pairingPush: false,
+          );
+          return UploadAttemptResult.ok;
+        },
   );
   ref.onDispose(queue.dispose);
   return queue;

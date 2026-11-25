@@ -51,8 +51,7 @@ class MemberGroups extends Table {
   /// generation N-1. NOT in prismSyncSchema: each device tracks its own live
   /// incarnation independently and the id itself (not this counter) crosses the
   /// wire. See `lib/core/sync/pk_incarnation_ids.dart` + [TombstoneGate].
-  IntColumn get syncGeneration =>
-      integer().withDefault(const Constant(0))();
+  IntColumn get syncGeneration => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

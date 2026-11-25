@@ -45,7 +45,9 @@ PkGroupIncarnation? parseGroupIncarnationEntityId(String entityId) {
   );
 }
 
-final RegExp _groupIncarnationPattern = RegExp(r'^pk-group-g([1-9][0-9]*):(.+)$');
+final RegExp _groupIncarnationPattern = RegExp(
+  r'^pk-group-g([1-9][0-9]*):(.+)$',
+);
 
 /// Parsed group incarnation: the base pk uuid and its generation.
 class PkGroupIncarnation {

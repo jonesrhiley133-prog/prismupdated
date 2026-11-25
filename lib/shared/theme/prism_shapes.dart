@@ -7,8 +7,12 @@ class PrismShapes extends ThemeExtension<PrismShapes> {
   final CornerStyle cornerStyle;
   const PrismShapes({required this.cornerStyle});
 
-  static const PrismShapes rounded = PrismShapes(cornerStyle: CornerStyle.rounded);
-  static const PrismShapes angular = PrismShapes(cornerStyle: CornerStyle.angular);
+  static const PrismShapes rounded = PrismShapes(
+    cornerStyle: CornerStyle.rounded,
+  );
+  static const PrismShapes angular = PrismShapes(
+    cornerStyle: CornerStyle.angular,
+  );
 
   /// Access from a BuildContext. Falls back to `rounded` if extension is missing.
   static PrismShapes of(BuildContext context) =>
@@ -21,7 +25,8 @@ class PrismShapes extends ThemeExtension<PrismShapes> {
   double radius(double value) => cornerStyle == CornerStyle.angular ? 0 : value;
 
   /// Returns [height] / 2 when rounded (pill), 0 when angular.
-  double pill(double height) => cornerStyle == CornerStyle.angular ? 0 : height / 2;
+  double pill(double height) =>
+      cornerStyle == CornerStyle.angular ? 0 : height / 2;
 
   /// Shape for avatar-like surfaces.
   BoxShape avatarShape() =>

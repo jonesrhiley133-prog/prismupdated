@@ -429,7 +429,461 @@ class CreaturePainter extends CustomPainter {
         return _crystal(c, t, p, s);
       case BodyKind.flame:
         return _flame(c, t, p, s);
+      case BodyKind.serpent:
+        return _serpent(c, t, p, s);
+      case BodyKind.lizard:
+        return _lizard(c, t, p, s);
+      case BodyKind.frog:
+        return _frog(c, t, p, s);
+      case BodyKind.jelly:
+        return _jelly(c, t, p, s);
+      case BodyKind.octopus:
+        return _octopus(c, t, p, s);
+      case BodyKind.seahorse:
+        return _seahorse(c, t, p, s);
+      case BodyKind.constellation:
+        return _constellation(c, t, p, s);
     }
+  }
+
+  // ── More body plans ───────────────────────────────────────────────────
+
+  _Anchor _serpent(Canvas c, double t, Color p, Color s) {
+    // A coiled snake: stacked coils, head raised on the top coil.
+    final sway = math.sin(t * _tau) * 2;
+    for (final (y, w) in const [(84.0, 66.0), (72.0, 54.0)]) {
+      final r = Rect.fromCenter(center: Offset(50, y), width: w, height: 18);
+      final coil = Path()
+        ..addRRect(RRect.fromRectAndRadius(r, const Radius.circular(9)));
+      c.drawPath(coil, _patternPaint(p, s, r));
+      _pattern(c, coil, r, p, s);
+      c.drawPath(coil, _line);
+      for (var i = 0; i < 5; i++) {
+        c.drawCircle(
+          Offset(r.left + 10 + i * (w - 20) / 4, y),
+          2,
+          _fill(s.withValues(alpha: 0.7)),
+        );
+      }
+    }
+    final neck = Path()
+      ..moveTo(58, 66)
+      ..quadraticBezierTo(66 + sway, 52, 54 + sway, 40)
+      ..lineTo(46 + sway, 44)
+      ..quadraticBezierTo(56 + sway, 54, 46, 66)
+      ..close();
+    c.drawPath(neck, _fill(p));
+    c.drawPath(neck, _line);
+    final head = Offset(50 + sway, 34);
+    final hr = 15.0;
+    final hp = Path()
+      ..addOval(
+        Rect.fromCenter(center: head, width: hr * 2.3, height: hr * 1.6),
+      );
+    c.drawPath(hp, _fill(p));
+    c.drawPath(hp, _line);
+    // Little forked tongue.
+    final tongue = Paint()
+      ..color = const Color(0xFFE5383B)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+    if (math.sin(t * _tau * 3) > 0.6) {
+      c.drawLine(
+        head.translate(0, hr * 0.7),
+        head.translate(0, hr * 1.2),
+        tongue,
+      );
+      c.drawLine(
+        head.translate(0, hr * 1.2),
+        head.translate(-2, hr * 1.45),
+        tongue,
+      );
+      c.drawLine(
+        head.translate(0, hr * 1.2),
+        head.translate(2, hr * 1.45),
+        tongue,
+      );
+    }
+    _face(c, t, head, hr, eyeY: -1, eyeGap: 9);
+    return _Anchor(head, hr, 48, const Rect.fromLTWH(20, 64, 60, 28));
+  }
+
+  _Anchor _lizard(Canvas c, double t, Color p, Color s) {
+    final ex = species.extras;
+    final sh = species.shape;
+    // Long low body seen from the front-ish, with splayed legs and a tail.
+    final body = Rect.fromCenter(
+      center: Offset(50, sh.bodyY == 72 ? 76 : sh.bodyY),
+      width: sh.bodyW == 46 ? 56 : sh.bodyW,
+      height: sh.bodyH == 36 ? 26 : sh.bodyH,
+    );
+    final sway = math.sin(t * _tau) * 0.2;
+    c.save();
+    c.translate(body.right - 6, body.center.dy + 4);
+    c.rotate(sway);
+    final tail = Path()
+      ..moveTo(0, -6)
+      ..quadraticBezierTo(22 * sh.tailScale, -4, 30 * sh.tailScale, 12)
+      ..quadraticBezierTo(18 * sh.tailScale, 4, 0, 6)
+      ..close();
+    c.drawPath(tail, _fill(p));
+    c.drawPath(tail, _line);
+    c.restore();
+    for (final side in [-1.0, 1.0]) {
+      for (final dy in [-4.0, 8.0]) {
+        final leg = Path()
+          ..moveTo(50 + side * body.width * 0.35, body.center.dy + dy)
+          ..lineTo(
+            50 + side * (body.width * 0.5 + 10),
+            body.center.dy + dy + 10,
+          )
+          ..lineTo(50 + side * (body.width * 0.5 + 4), body.center.dy + dy + 14)
+          ..close();
+        c.drawPath(leg, _fill(Color.lerp(p, Colors.black, 0.1)!));
+        c.drawPath(leg, _line);
+        for (final f in [-3.0, 0.0, 3.0]) {
+          c.drawCircle(
+            Offset(
+              50 + side * (body.width * 0.5 + 9) + f,
+              body.center.dy + dy + 13,
+            ),
+            1.8,
+            _fill(Color.lerp(p, Colors.black, 0.1)!),
+          );
+        }
+      }
+    }
+    final bp = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(body, Radius.circular(body.height / 2)),
+      );
+    c.drawPath(bp, _patternPaint(p, s, body));
+    _pattern(c, bp, body, p, s);
+    if (species.spots) {
+      for (final o in const [
+        Offset(-16, -4),
+        Offset(-4, 4),
+        Offset(10, -5),
+        Offset(20, 3),
+      ]) {
+        c.drawCircle(body.center + o, 2.6, _fill(s));
+      }
+    }
+    c.drawPath(bp, _line);
+    final head = Offset(50, body.top - 6);
+    final hr = 18.0;
+    if (ex.contains('gills')) {
+      for (final side in [-1.0, 1.0]) {
+        for (final a in [-0.5, 0.0, 0.5]) {
+          c.save();
+          c.translate(head.dx + side * hr * 1.05, head.dy - 2);
+          c.rotate(
+            side * (math.pi / 2 + a) -
+                math.pi / 2 +
+                math.sin(t * _tau + a) * 0.08,
+          );
+          final g = Path()
+            ..moveTo(0, 0)
+            ..quadraticBezierTo(-4, -8, 0, -15)
+            ..quadraticBezierTo(4, -8, 0, 0);
+          c.drawPath(g, _fill(s));
+          c.drawPath(g, _line);
+          c.restore();
+        }
+      }
+    }
+    if (ex.contains('beard')) {
+      final b = Path()..moveTo(head.dx - hr, head.dy + 4);
+      for (var i = 0; i <= 8; i++) {
+        final x = head.dx - hr + i * hr / 4;
+        b.lineTo(x, head.dy + (i.isEven ? 16 : 11));
+      }
+      b
+        ..lineTo(head.dx + hr, head.dy + 4)
+        ..close();
+      c.drawPath(b, _fill(Color.lerp(p, Colors.black, 0.2)!));
+      c.drawPath(b, _line);
+    }
+    final hp = Path()
+      ..addOval(
+        Rect.fromCenter(center: head, width: hr * 2.5, height: hr * 1.55),
+      );
+    c.drawPath(
+      hp,
+      _patternPaint(p, s, Rect.fromCircle(center: head, radius: hr)),
+    );
+    c.drawPath(hp, _line);
+    _face(c, t, head, hr, eyeY: -2, eyeGap: 12);
+    return _Anchor(head, hr, head.dy + hr * 0.8, body);
+  }
+
+  _Anchor _frog(Canvas c, double t, Color p, Color s) {
+    final squat = pose == CompanionPose.hop
+        ? -math.sin(t * _tau).abs() * 4
+        : 0.0;
+    final body = Rect.fromCenter(
+      center: Offset(50, 72 + squat),
+      width: 60,
+      height: 38,
+    );
+    // Back legs folded at the sides.
+    for (final side in [-1.0, 1.0]) {
+      final leg = Rect.fromCenter(
+        center: Offset(50 + side * 28, 82),
+        width: 24,
+        height: 18,
+      );
+      c.drawOval(leg, _fill(Color.lerp(p, Colors.black, 0.1)!));
+      c.drawOval(leg, _line);
+      final foot = Rect.fromCenter(
+        center: Offset(50 + side * 34, 91),
+        width: 18,
+        height: 6,
+      );
+      c.drawOval(foot, _fill(Color.lerp(p, Colors.black, 0.1)!));
+    }
+    final bp = Path()..addOval(body);
+    c.drawPath(bp, _patternPaint(p, s, body));
+    _pattern(c, bp, body, p, s);
+    c.drawOval(
+      Rect.fromCenter(
+        center: body.center.translate(0, 6),
+        width: 36,
+        height: 22,
+      ),
+      _fill(look.bellyOf(species)),
+    );
+    c.drawPath(bp, _line);
+    // Wide flat head with big eye bumps on top.
+    final head = Offset(50, 50 + squat);
+    final hr = 20.0;
+    for (final side in [-1.0, 1.0]) {
+      final bump = Offset(head.dx + side * 13, head.dy - 12);
+      c.drawCircle(bump, 9, _fill(p));
+      c.drawCircle(bump, 9, _line);
+    }
+    final hp = Path()
+      ..addOval(
+        Rect.fromCenter(center: head, width: hr * 2.9, height: hr * 1.5),
+      );
+    c.drawPath(hp, _fill(p));
+    c.drawPath(hp, _line);
+    c.drawArc(
+      Rect.fromCenter(
+        center: head.translate(0, 3),
+        width: hr * 1.8,
+        height: 10,
+      ),
+      0.2,
+      math.pi - 0.4,
+      false,
+      _line,
+    );
+    _face(c, t, head.translate(0, -12), hr, eyeY: 0, eyeGap: 13);
+    return _Anchor(head.translate(0, -6), hr, head.dy + 12, body);
+  }
+
+  _Anchor _jelly(Canvas c, double t, Color p, Color s) {
+    final pulse = math.sin(t * _tau) * 2;
+    final bell = Rect.fromCenter(
+      center: Offset(50, 40 - pulse),
+      width: 56 + pulse * 2,
+      height: 40,
+    );
+    _glow(c, bell.center, 50, p);
+    // Tentacles.
+    final tp = Paint()
+      ..color = s.withValues(alpha: 0.85)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i < 6; i++) {
+      final x = bell.left + 8 + i * (bell.width - 16) / 5;
+      final path = Path()..moveTo(x, bell.bottom - 6);
+      for (var k = 1; k <= 4; k++) {
+        path.quadraticBezierTo(
+          x + (k.isEven ? 5 : -5) + math.sin(t * _tau + i) * 2,
+          bell.bottom - 6 + k * 9 - 4,
+          x,
+          bell.bottom - 6 + k * 9,
+        );
+      }
+      c.drawPath(path, tp);
+    }
+    final bp = Path()
+      ..addArc(bell, math.pi, math.pi)
+      ..quadraticBezierTo(
+        bell.right - 6,
+        bell.center.dy + 8,
+        bell.center.dx,
+        bell.center.dy + 6,
+      )
+      ..quadraticBezierTo(
+        bell.left + 6,
+        bell.center.dy + 8,
+        bell.left,
+        bell.center.dy,
+      )
+      ..close();
+    c.drawPath(bp, _fill(p.withValues(alpha: 0.85)));
+    c.drawPath(bp, _line);
+    c.drawOval(
+      Rect.fromCenter(
+        center: bell.center.translate(-10, -10),
+        width: 12,
+        height: 7,
+      ),
+      _fill(Colors.white.withValues(alpha: 0.4)),
+    );
+    final head = bell.center.translate(0, -2);
+    _face(c, t, head, 18, eyeY: 0, eyeGap: 9);
+    return _Anchor(head, 22, bell.bottom, bell);
+  }
+
+  _Anchor _octopus(Canvas c, double t, Color p, Color s) {
+    final head = const Offset(50, 42);
+    final hr = 24.0;
+    // Eight curling arms.
+    for (var i = 0; i < 8; i++) {
+      final x = 22.0 + i * 8;
+      final dir = i < 4 ? -1.0 : 1.0;
+      final wig = math.sin(t * _tau + i) * 3;
+      final arm = Path()
+        ..moveTo(x - 4, 58)
+        ..quadraticBezierTo(x + dir * 4 + wig, 76, x + dir * 10, 86)
+        ..quadraticBezierTo(x + dir * 16, 92, x + dir * 12 + wig, 82)
+        ..quadraticBezierTo(x + dir * 6, 78, x + 4, 58)
+        ..close();
+      c.drawPath(
+        arm,
+        _fill(Color.lerp(p, Colors.black, i.isEven ? 0.0 : 0.08)!),
+      );
+      c.drawPath(arm, _line);
+      c.drawCircle(Offset(x + dir * 9, 84), 1.4, _fill(s));
+    }
+    final hp = Path()
+      ..addOval(
+        Rect.fromCenter(center: head, width: hr * 2.1, height: hr * 2.2),
+      );
+    c.drawPath(
+      hp,
+      _patternPaint(p, s, Rect.fromCircle(center: head, radius: hr)),
+    );
+    _pattern(c, hp, Rect.fromCircle(center: head, radius: hr), p, s);
+    for (final o in const [Offset(-10, -14), Offset(8, -18), Offset(14, -6)]) {
+      c.drawCircle(head + o, 2.4, _fill(s.withValues(alpha: 0.8)));
+    }
+    c.drawPath(hp, _line);
+    _face(c, t, head.translate(0, 8), hr, eyeY: 0, eyeGap: 9);
+    return _Anchor(head, hr, 62, const Rect.fromLTWH(22, 58, 56, 30));
+  }
+
+  _Anchor _seahorse(Canvas c, double t, Color p, Color s) {
+    final bob = math.sin(t * _tau) * 1.5;
+    // S-shaped body: head with snout, belly, curled tail.
+    final body = Path()
+      ..moveTo(46, 30 + bob)
+      ..cubicTo(64, 34 + bob, 66, 56 + bob, 56, 66 + bob)
+      ..cubicTo(50, 74, 56, 84, 62, 84)
+      ..cubicTo(68, 84, 68, 76, 62, 76)
+      ..cubicTo(58, 76, 58, 80, 60, 80)
+      ..cubicTo(50, 80, 44, 70, 42, 62)
+      ..cubicTo(38, 50, 40, 36, 46, 30 + bob)
+      ..close();
+    final rect = Rect.fromLTWH(38, 28, 30, 58);
+    c.drawPath(body, _patternPaint(p, s, rect));
+    _pattern(c, body, rect, p, s);
+    c.drawPath(body, _line);
+    for (var i = 0; i < 6; i++) {
+      c.drawLine(
+        Offset(45 + i * 1.5, 42.0 + i * 5 + bob),
+        Offset(52 + i * 1.5, 42.0 + i * 5 + bob),
+        _line,
+      );
+    }
+    // Dorsal fin flutters.
+    final fin = Path()
+      ..moveTo(58, 46 + bob)
+      ..quadraticBezierTo(
+        70 + math.sin(t * _tau * 4) * 2,
+        50 + bob,
+        60,
+        58 + bob,
+      )
+      ..close();
+    c.drawPath(fin, _fill(s.withValues(alpha: 0.8)));
+    // Head and snout.
+    final head = Offset(46, 28 + bob);
+    final hp = Path()
+      ..addOval(Rect.fromCenter(center: head, width: 22, height: 18));
+    c.drawPath(hp, _fill(p));
+    c.drawPath(hp, _line);
+    final snout = RRect.fromRectAndRadius(
+      Rect.fromLTWH(26, head.dy - 1, 14, 6),
+      const Radius.circular(3),
+    );
+    c.drawRRect(snout, _fill(p));
+    c.drawRRect(snout, _line);
+    for (final o in const [Offset(-2, -10), Offset(3, -11), Offset(7, -9)]) {
+      c.drawCircle(head + o, 2, _fill(s));
+    }
+    _face(c, t, head.translate(2, 0), 13, eyeY: -1, eyeGap: 5);
+    return _Anchor(head, 13, 40 + bob, rect);
+  }
+
+  _Anchor _constellation(Canvas c, double t, Color p, Color s) {
+    // A creature drawn as stars joined by faint lines (a little bear).
+    const pts = [
+      Offset(40, 28),
+      Offset(60, 28),
+      Offset(50, 40),
+      Offset(36, 46),
+      Offset(64, 46),
+      Offset(30, 64),
+      Offset(70, 64),
+      Offset(42, 72),
+      Offset(58, 72),
+      Offset(36, 90),
+      Offset(64, 90),
+      Offset(80, 74),
+    ];
+    const links = [
+      (0, 2),
+      (1, 2),
+      (2, 3),
+      (2, 4),
+      (3, 5),
+      (4, 6),
+      (5, 7),
+      (6, 8),
+      (7, 8),
+      (7, 9),
+      (8, 10),
+      (6, 11),
+    ];
+    _glow(c, const Offset(50, 56), 54, p);
+    final line = Paint()
+      ..color = s.withValues(alpha: 0.55)
+      ..strokeWidth = 1.4;
+    for (final (a, b) in links) {
+      c.drawLine(pts[a], pts[b], line);
+    }
+    // Soft body haze so it reads as one creature.
+    c.drawOval(
+      Rect.fromCenter(center: const Offset(50, 66), width: 42, height: 34),
+      _fill(p.withValues(alpha: 0.22)),
+    );
+    c.drawCircle(const Offset(50, 38), 16, _fill(p.withValues(alpha: 0.22)));
+    for (final (i, o) in pts.indexed) {
+      _tinyStar(
+        c,
+        o,
+        3.2 + math.sin(t * _tau * 2 + i) * 0.9,
+        _fill(i.isEven ? s : Colors.white),
+      );
+    }
+    _face(c, t, const Offset(50, 38), 14, eyeY: 0, eyeGap: 6);
+    return const _Anchor(Offset(50, 38), 16, 50, Rect.fromLTWH(30, 50, 40, 36));
   }
 
   void _glow(Canvas c, Offset center, double r, Color color) {
@@ -445,16 +899,61 @@ class CreaturePainter extends CustomPainter {
   }
 
   _Anchor _critter(Canvas c, double t, Color p, Color s) {
-    const head = Offset(50, 42);
-    const hr = 23.0;
+    final sh = species.shape;
+    final ex = species.extras;
+    final head = Offset(50, sh.headY);
+    final hr = sh.headR;
     final body = Rect.fromCenter(
-      center: const Offset(50, 72),
-      width: 46,
-      height: 36,
+      center: Offset(50, sh.bodyY),
+      width: sh.bodyW,
+      height: sh.bodyH,
     );
+    final feetY = math.min(92.0, body.bottom + 3 + sh.legs);
     _glow(c, const Offset(50, 60), 48, p);
-    if (look.wingsOf(species)) _wings(c, t, const Offset(50, 64), p, s, 26);
-    _tail(c, t, const Offset(68, 80), p, s);
+    if (look.wingsOf(species)) {
+      if (ex.contains('membrane')) {
+        _batWings(c, t, Offset(50, body.top + 6), p, s);
+      } else {
+        _wings(c, t, Offset(50, body.top + 8), p, s, 26);
+      }
+    }
+    final tailBase = Offset(body.right - 4, body.bottom - 6);
+    final tp = ex.contains('bareTail') ? const Color(0xFFF2B5C4) : p;
+    if (ex.contains('multiTail')) {
+      for (final a in const [-0.55, 0.0, 0.55]) {
+        c.save();
+        c.translate(tailBase.dx, tailBase.dy);
+        c.rotate(a);
+        c.translate(-tailBase.dx, -tailBase.dy);
+        _tail(c, t, tailBase, tp, s);
+        c.restore();
+      }
+    } else {
+      c.save();
+      final k = species.shape.tailScale;
+      c.translate(tailBase.dx, tailBase.dy);
+      c.scale(k);
+      c.translate(-tailBase.dx, -tailBase.dy);
+      _tail(c, t, tailBase, tp, s);
+      c.restore();
+    }
+    // Legs: long-legged species stand on visible legs.
+    if (sh.legs > 3) {
+      final legPaint = _fill(Color.lerp(p, Colors.black, 0.06)!);
+      for (final x in [
+        body.left + body.width * 0.2,
+        body.left + body.width * 0.4,
+        body.left + body.width * 0.6,
+        body.left + body.width * 0.8,
+      ]) {
+        final leg = RRect.fromRectAndRadius(
+          Rect.fromLTRB(x - 3.2, body.center.dy, x + 3.2, feetY),
+          const Radius.circular(3),
+        );
+        c.drawRRect(leg, legPaint);
+        c.drawRRect(leg, _line);
+      }
+    }
     if (species.spines) {
       final sp = Path();
       for (var i = 0; i < 11; i++) {
@@ -476,11 +975,16 @@ class CreaturePainter extends CustomPainter {
     // Body and belly.
     final bodyPaint = _patternPaint(p, s, body);
     final bodyPath = Path()
-      ..addRRect(RRect.fromRectAndRadius(body, const Radius.circular(20)));
+      ..addRRect(RRect.fromRectAndRadius(body, Radius.circular(sh.bodyRound)));
     c.drawPath(bodyPath, bodyPaint);
     _pattern(c, bodyPath, body, p, s);
+    _extrasOnBody(c, bodyPath, body, p, s);
     c.drawOval(
-      Rect.fromCenter(center: const Offset(50, 76), width: 26, height: 22),
+      Rect.fromCenter(
+        center: body.center.translate(0, body.height * 0.1),
+        width: body.width * 0.56,
+        height: body.height * 0.6,
+      ),
       _fill(look.bellyOf(species)),
     );
     c.drawPath(bodyPath, _line);
@@ -488,8 +992,12 @@ class CreaturePainter extends CustomPainter {
     final foot = look.pattern == 'socks'
         ? Colors.white
         : Color.lerp(p, Colors.black, 0.08)!;
-    for (final x in [39.0, 61.0]) {
-      final r = Rect.fromCenter(center: Offset(x, 89), width: 13, height: 8);
+    for (final x in [50 - body.width * 0.24, 50 + body.width * 0.24]) {
+      final r = Rect.fromCenter(
+        center: Offset(x, feetY - 3),
+        width: 13,
+        height: 8,
+      );
       c.drawOval(r, _fill(foot));
       c.drawOval(r, _line);
     }
@@ -499,8 +1007,11 @@ class CreaturePainter extends CustomPainter {
         pose == CompanionPose.cuddle ||
         pose == CompanionPose.read ||
         pose == CompanionPose.eat;
-    for (final (i, x) in [(0, 40.0), (1, 60.0)]) {
-      var center = Offset(x, hug ? 70 : 76);
+    for (final (i, x) in [
+      (0, 50 - body.width * 0.22),
+      (1, 50 + body.width * 0.22),
+    ]) {
+      var center = Offset(x, body.center.dy + (hug ? -2 : 4));
       if (i == 0 && pose == CompanionPose.wave) center = Offset(28, 58 + wave);
       final r = Rect.fromCenter(center: center, width: 10, height: 9);
       c.drawOval(r, _fill(foot));
@@ -508,14 +1019,29 @@ class CreaturePainter extends CustomPainter {
     }
     if (pose == CompanionPose.read) _book(c);
     if (pose == CompanionPose.eat) _treat(c);
+    if (ex.contains('mane')) _mane(c, head, hr, Color.lerp(p, s, 0.35)!);
     // Ears behind head.
-    _ears(c, t, head, hr, p, s, behind: true);
+    _scaledEars(c, t, head, hr, p, s, behind: true);
     // Head.
     final headRect = Rect.fromCenter(
       center: head,
-      width: hr * 2.15,
-      height: hr * 1.9,
+      width: hr * sh.headW,
+      height: hr * sh.headH,
     );
+    if (ex.contains('cheeks')) {
+      for (final side in [-1.0, 1.0]) {
+        c.drawCircle(
+          head + Offset(side * hr * 0.82, hr * 0.32),
+          hr * 0.42,
+          _fill(Color.lerp(p, s, 0.4)!),
+        );
+        c.drawCircle(
+          head + Offset(side * hr * 0.82, hr * 0.32),
+          hr * 0.42,
+          _line,
+        );
+      }
+    }
     final headPath = Path()..addOval(headRect);
     c.drawPath(headPath, _patternPaint(p, s, headRect));
     if (species.mask) {
@@ -543,13 +1069,100 @@ class CreaturePainter extends CustomPainter {
         c.drawCircle(head + o, 2.2, _fill(s.withValues(alpha: 0.85)));
       }
     }
-    if (species.muzzle)
+    if (ex.contains('facemask')) {
+      for (final side in [-1.0, 1.0]) {
+        c.drawOval(
+          Rect.fromCenter(
+            center: head + Offset(side * hr * 0.42, -hr * 0.28),
+            width: hr * 0.5,
+            height: hr * 0.34,
+          ),
+          _fill(Colors.white.withValues(alpha: 0.9)),
+        );
+      }
+      c.drawOval(
+        Rect.fromCenter(
+          center: head.translate(0, hr * 0.42),
+          width: hr * 0.9,
+          height: hr * 0.5,
+        ),
+        _fill(Colors.white.withValues(alpha: 0.9)),
+      );
+    }
+    if (species.muzzle && sh.snout == 0)
       c.drawOval(
         Rect.fromCenter(center: head.translate(0, 9), width: 21, height: 14),
         _fill(s),
       );
     c.drawPath(headPath, _line);
-    _ears(c, t, head, hr, p, s, behind: false);
+    if (sh.snout > 0)
+      _snout(
+        c,
+        head,
+        hr,
+        sh.snout,
+        sh.snoutW,
+        p,
+        species.muzzle ? s : Color.lerp(p, s, 0.55)!,
+      );
+    if (ex.contains('pigNose')) {
+      final n = Rect.fromCenter(
+        center: head.translate(0, hr * 0.38),
+        width: hr * 0.75,
+        height: hr * 0.5,
+      );
+      c.drawOval(n, _fill(Color.lerp(p, const Color(0xFFFF8FAB), 0.5)!));
+      c.drawOval(n, _line);
+      for (final side in [-1.0, 1.0]) {
+        c.drawOval(
+          Rect.fromCenter(
+            center: n.center.translate(side * hr * 0.14, 0),
+            width: 2.6,
+            height: 3.6,
+          ),
+          _fill(const Color(0x88000000)),
+        );
+      }
+    }
+    if (ex.contains('whiskers')) {
+      final w = Paint()
+        ..color = const Color(0x66000000)
+        ..strokeWidth = 0.7;
+      for (final side in [-1.0, 1.0]) {
+        for (final dy in [-1.5, 1.5]) {
+          final o = head + Offset(side * hr * 0.35, hr * 0.38);
+          c.drawLine(o, o + Offset(side * hr * 0.75, dy * 2), w);
+        }
+      }
+    }
+    if (ex.contains('horn')) {
+      final h = Path()
+        ..moveTo(head.dx - 3.5, head.dy - hr * 0.8)
+        ..lineTo(head.dx, head.dy - hr * 1.65)
+        ..lineTo(head.dx + 3.5, head.dy - hr * 0.8)
+        ..close();
+      c.drawPath(h, _fill(const Color(0xFFFFE08A)));
+      c.drawPath(h, _line);
+    }
+    if (ex.contains('leaf')) {
+      final l = Path()
+        ..moveTo(head.dx, head.dy - hr * 0.9)
+        ..quadraticBezierTo(
+          head.dx + 12,
+          head.dy - hr * 1.7,
+          head.dx + 2,
+          head.dy - hr * 1.8,
+        )
+        ..quadraticBezierTo(
+          head.dx - 6,
+          head.dy - hr * 1.3,
+          head.dx,
+          head.dy - hr * 0.9,
+        );
+      c.drawPath(l, _fill(const Color(0xFF7BC96F)));
+      c.drawPath(l, _line);
+    }
+    _scaledEars(c, t, head, hr, p, s, behind: false);
     if (species.crescent) {
       final m = Path()
         ..addOval(Rect.fromCircle(center: head.translate(0, -14), radius: 5))
@@ -561,21 +1174,246 @@ class CreaturePainter extends CustomPainter {
     }
     if (look.horns != 'none' || species.horns)
       _horns(c, head, hr, look.horns == 'none' ? 'curved' : look.horns, s);
-    _face(c, t, head, hr, beak: species.beak, eyeY: 1, eyeGap: 9);
-    return _Anchor(head, hr, 58, body);
+    _face(c, t, head, hr, beak: species.beak, eyeY: 1, eyeGap: sh.eyeGap);
+    if (ex.contains('wrinkles')) {
+      for (final dy in [-0.55, -0.42]) {
+        c.drawArc(
+          Rect.fromCenter(
+            center: head.translate(0, hr * dy + 4),
+            width: hr * 0.7,
+            height: 6,
+          ),
+          math.pi + 0.4,
+          math.pi - 0.8,
+          false,
+          _line,
+        );
+      }
+    }
+    if (ex.contains('tufts')) {
+      final tuft = _fill(Color.lerp(p, s, 0.5)!);
+      for (final side in [-1.0, 1.0]) {
+        final b = head + Offset(side * hr * sh.headW * 0.48, hr * 0.2);
+        final path = Path()
+          ..moveTo(b.dx, b.dy - 5)
+          ..lineTo(b.dx + side * 6, b.dy - 2)
+          ..lineTo(b.dx, b.dy)
+          ..lineTo(b.dx + side * 6, b.dy + 3)
+          ..lineTo(b.dx, b.dy + 5)
+          ..close();
+        c.drawPath(path, tuft);
+      }
+    }
+    if (ex.contains('sparkles')) {
+      final sp = _fill(const Color(0xFFFFF3B0));
+      for (final o in const [
+        Offset(-30, -20),
+        Offset(28, -26),
+        Offset(32, 10),
+      ]) {
+        _tinyStar(c, head + o, 2.6 + math.sin(t * _tau + o.dx) * 0.8, sp);
+      }
+    }
+    return _Anchor(head, hr, head.dy + hr * sh.headH / 2, body);
+  }
+
+  void _extrasOnBody(Canvas c, Path clip, Rect r, Color p, Color s) {
+    final ex = species.extras;
+    if (ex.contains('stripes')) {
+      c.save();
+      c.clipPath(clip);
+      final dark = _fill(
+        Color.lerp(p, Colors.black, 0.35)!.withValues(alpha: 0.7),
+      );
+      for (var i = 1; i <= 3; i++) {
+        final x = r.left + r.width * i / 4;
+        c.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(
+              center: Offset(x, r.top + r.height * 0.3),
+              width: 4,
+              height: r.height * 0.6,
+            ),
+            const Radius.circular(2),
+          ),
+          dark,
+        );
+      }
+      c.restore();
+    }
+    if (ex.contains('gem')) {
+      c.save();
+      c.clipPath(clip);
+      final facet = Paint()
+        ..color = Colors.white.withValues(alpha: 0.55)
+        ..strokeWidth = 1;
+      c.drawLine(r.topLeft, r.center, facet);
+      c.drawLine(r.topRight, r.center, facet);
+      c.drawLine(r.center, r.bottomCenter, facet);
+      c.drawLine(r.centerLeft, r.center, facet);
+      c.drawLine(r.centerRight, r.center, facet);
+      c.restore();
+    }
+  }
+
+  /// Ears scaled per species around the top of the head.
+  void _scaledEars(
+    Canvas c,
+    double t,
+    Offset head,
+    double hr,
+    Color p,
+    Color s, {
+    required bool behind,
+  }) {
+    final k = species.shape.earScale;
+    if (species.extras.contains('lop')) {
+      if (!behind) return;
+      for (final side in [-1.0, 1.0]) {
+        final e = Path()
+          ..moveTo(head.dx + side * hr * 0.4, head.dy - hr * 0.7)
+          ..quadraticBezierTo(
+            head.dx + side * hr * 1.5,
+            head.dy - hr * 0.6,
+            head.dx + side * hr * 1.25,
+            head.dy + hr * 0.9,
+          )
+          ..quadraticBezierTo(
+            head.dx + side * hr * 0.9,
+            head.dy + hr * 0.2,
+            head.dx + side * hr * 0.4,
+            head.dy - hr * 0.7,
+          );
+        c.drawPath(e, _fill(Color.lerp(p, Colors.black, 0.08)!));
+        c.drawPath(e, _line);
+      }
+      return;
+    }
+    if (k == 1) return _ears(c, t, head, hr, p, s, behind: behind);
+    final pivot = head.translate(0, -hr * 0.6);
+    c.save();
+    c.translate(pivot.dx, pivot.dy);
+    c.scale(k);
+    c.translate(-pivot.dx, -pivot.dy);
+    _ears(c, t, head, hr, p, s, behind: behind);
+    c.restore();
+  }
+
+  /// A muzzle that sticks out below the eyes, ending in a nose.
+  void _snout(
+    Canvas c,
+    Offset head,
+    double hr,
+    double len,
+    double w,
+    Color p,
+    Color s,
+  ) {
+    final top = head.translate(0, hr * 0.05);
+    final tip = head.translate(0, hr * (0.55 + len * 0.55));
+    final half = hr * 0.42 * w;
+    final m = Path()
+      ..moveTo(top.dx - half, top.dy)
+      ..quadraticBezierTo(
+        top.dx - half * 0.9,
+        tip.dy - hr * 0.1,
+        tip.dx,
+        tip.dy,
+      )
+      ..quadraticBezierTo(
+        top.dx + half * 0.9,
+        tip.dy - hr * 0.1,
+        top.dx + half,
+        top.dy,
+      )
+      ..close();
+    c.drawPath(m, _fill(s));
+    c.drawPath(m, _line);
+    c.drawOval(
+      Rect.fromCenter(
+        center: tip.translate(0, -2.5),
+        width: 6 * w.clamp(0.8, 1.4),
+        height: 4,
+      ),
+      _fill(const Color(0xFF2B2B33)),
+    );
+  }
+
+  /// A fluffy ruff around the head (wolves, lions, unicorn manes).
+  void _mane(Canvas c, Offset head, double hr, Color color) {
+    final path = Path();
+    const n = 14;
+    for (var i = 0; i <= n; i++) {
+      final a = math.pi * 0.85 + i / n * math.pi * 1.3;
+      final r = hr * (i.isEven ? 1.32 : 1.12);
+      final pt = head + Offset(math.cos(a) * r, math.sin(a) * r + hr * 0.2);
+      i == 0 ? path.moveTo(pt.dx, pt.dy) : path.lineTo(pt.dx, pt.dy);
+    }
+    path.close();
+    c.drawPath(path, _fill(color));
+    c.drawPath(path, _line);
+  }
+
+  /// Leathery wings with finger struts (bats).
+  void _batWings(Canvas c, double t, Offset base, Color p, Color s) {
+    final flap = math.sin(t * _tau * 2) * 0.15;
+    final paint = _fill(Color.lerp(p, Colors.black, 0.25)!);
+    for (final side in [-1.0, 1.0]) {
+      c.save();
+      c.translate(base.dx, base.dy);
+      c.rotate(side * flap);
+      final w = Path()
+        ..moveTo(0, 0)
+        ..lineTo(side * 44, -18)
+        ..quadraticBezierTo(side * 38, -2, side * 42, 8)
+        ..quadraticBezierTo(side * 30, 2, side * 28, 14)
+        ..quadraticBezierTo(side * 18, 6, side * 14, 18)
+        ..close();
+      c.drawPath(w, paint);
+      c.drawPath(w, _line);
+      c.restore();
+    }
   }
 
   _Anchor _bird(Canvas c, double t, Color p, Color s) {
-    const center = Offset(50, 62);
-    final r = Rect.fromCenter(center: center, width: 54, height: 60);
+    final sh = species.shape;
+    final ex = species.extras;
+    final custom = sh.bodyW != 46;
+    final center = Offset(50, custom ? sh.bodyY : 62);
+    final r = Rect.fromCenter(
+      center: center,
+      width: custom ? sh.bodyW : 54,
+      height: custom ? sh.bodyH : 60,
+    );
     _glow(c, center, 50, p);
-    _tail(c, t, const Offset(50, 88), p, s);
+    if (ex.contains('longTail')) {
+      for (final a in const [-0.18, 0.0, 0.18]) {
+        final f = Path()
+          ..moveTo(50, r.bottom - 8)
+          ..quadraticBezierTo(
+            50 + a * 60,
+            r.bottom + 10 * sh.tailScale,
+            50 + a * 40,
+            math.min(98, r.bottom + 18 * sh.tailScale),
+          )
+          ..quadraticBezierTo(50 + a * 20, r.bottom + 4, 50, r.bottom - 8);
+        c.drawPath(f, _fill(a == 0 ? s : Color.lerp(p, s, 0.5)!));
+        c.drawPath(f, _line);
+      }
+    } else {
+      _tail(c, t, Offset(50, r.bottom - 2), p, s);
+    }
     if (species.wings) _wings(c, t, const Offset(50, 60), p, s, 32);
     final body = Path()..addOval(r);
     c.drawPath(body, _patternPaint(p, s, r));
     _pattern(c, body, r, p, s);
+    _extrasOnBody(c, body, r, p, s);
     c.drawOval(
-      Rect.fromCenter(center: const Offset(50, 72), width: 32, height: 32),
+      Rect.fromCenter(
+        center: center.translate(0, r.height * 0.17),
+        width: r.width * 0.6,
+        height: r.height * 0.53,
+      ),
       _fill(look.bellyOf(species)),
     );
     c.drawPath(body, _line);
@@ -585,7 +1423,7 @@ class CreaturePainter extends CustomPainter {
         : math.sin(t * _tau) * 0.06;
     for (final side in [-1.0, 1.0]) {
       c.save();
-      c.translate(50 + side * 25, 64);
+      c.translate(50 + side * (r.width / 2 - 2), center.dy + 2);
       c.rotate(side * (0.25 + flap));
       final w = Rect.fromCenter(
         center: Offset(side * 2, 4),
@@ -600,30 +1438,113 @@ class CreaturePainter extends CustomPainter {
     for (final x in [42.0, 58.0]) {
       c.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromCenter(center: Offset(x, 92), width: 9, height: 4),
+          Rect.fromCenter(
+            center: Offset(x, math.min(94, r.bottom + 3)),
+            width: 9,
+            height: 4,
+          ),
           const Radius.circular(2),
         ),
         _fill(const Color(0xFFFF9F43)),
       );
     }
-    const head = Offset(50, 48);
-    _ears(c, t, head, 22, p, s, behind: false);
+    final head = Offset(50, custom ? sh.headY : 48);
+    final hr = custom ? sh.headR : 22.0;
+    if (ex.contains('crest')) {
+      for (final a in const [-0.35, -0.1, 0.15]) {
+        final f = Path()
+          ..moveTo(head.dx, head.dy - hr * 0.7)
+          ..quadraticBezierTo(
+            head.dx + a * 30,
+            head.dy - hr * 1.6,
+            head.dx + a * 30 + 6,
+            head.dy - hr * 1.9,
+          )
+          ..quadraticBezierTo(
+            head.dx + a * 10,
+            head.dy - hr * 1.2,
+            head.dx + 4,
+            head.dy - hr * 0.7,
+          );
+        c.drawPath(f, _fill(s));
+        c.drawPath(f, _line);
+      }
+    }
+    if (ex.contains('comb')) {
+      final f = Path()..moveTo(head.dx - 8, head.dy - hr * 0.75);
+      for (var i = 0; i < 3; i++) {
+        f.quadraticBezierTo(
+          head.dx - 8 + i * 6 + 3,
+          head.dy - hr * 1.35,
+          head.dx - 8 + (i + 1) * 6,
+          head.dy - hr * 0.8,
+        );
+      }
+      f.close();
+      c.drawPath(f, _fill(const Color(0xFFE5383B)));
+      c.drawPath(f, _line);
+      final w = Rect.fromCenter(
+        center: head.translate(0, hr * 0.6),
+        width: 6,
+        height: 9,
+      );
+      c.drawOval(w, _fill(const Color(0xFFE5383B)));
+    }
+    _scaledEars(c, t, head, hr, p, s, behind: false);
+    if (ex.contains('cheeks')) {
+      for (final side in [-1.0, 1.0]) {
+        c.drawCircle(
+          head + Offset(side * hr * 0.62, hr * 0.28),
+          hr * 0.22,
+          _fill(const Color(0xFFF28C38)),
+        );
+      }
+    }
+    if (ex.contains('bill')) {
+      final bill = Rect.fromCenter(
+        center: head.translate(0, hr * 0.42),
+        width: hr * 1.05,
+        height: hr * 0.42,
+      );
+      c.drawRRect(
+        RRect.fromRectAndRadius(bill, Radius.circular(hr * 0.2)),
+        _fill(const Color(0xFFFFB347)),
+      );
+      c.drawRRect(
+        RRect.fromRectAndRadius(bill, Radius.circular(hr * 0.2)),
+        _line,
+      );
+    }
     _face(
       c,
       t,
       head,
-      22,
-      beak: true,
+      hr,
+      beak: !ex.contains('bill'),
       eyeY: 0,
       eyeGap: 9,
       owl: species.id == 'owl',
     );
-    return _Anchor(head, 22, 66, r);
+    return _Anchor(head, hr, head.dy + hr * 0.9, r);
   }
 
   _Anchor _fish(Canvas c, double t, Color p, Color s) {
     const center = Offset(46, 56);
-    final r = Rect.fromCenter(center: center, width: 58, height: 44);
+    final custom = species.shape.bodyW != 46;
+    final r = Rect.fromCenter(
+      center: center,
+      width: custom ? species.shape.bodyW : 58,
+      height: custom ? species.shape.bodyH : 44,
+    );
+    if (species.extras.contains('dorsal')) {
+      final d = Path()
+        ..moveTo(40, r.top + 4)
+        ..lineTo(52, r.top - 18)
+        ..quadraticBezierTo(56, r.top - 4, 62, r.top + 4)
+        ..close();
+      c.drawPath(d, _fill(Color.lerp(p, Colors.black, 0.1)!));
+      c.drawPath(d, _line);
+    }
     final sway = math.sin(t * _tau * 2) * 0.25;
     // Tail fan.
     c.save();
@@ -658,6 +1579,34 @@ class CreaturePainter extends CustomPainter {
     }
     c.drawPath(body, _line);
     const head = Offset(38, 54);
+    if (species.extras.contains('barbels')) {
+      final b = Paint()
+        ..color = Color.lerp(p, Colors.black, 0.3)!
+        ..strokeWidth = 1.2
+        ..style = PaintingStyle.stroke;
+      for (final side in [-1.0, 1.0]) {
+        c.drawPath(
+          Path()
+            ..moveTo(r.left + 6, 60)
+            ..quadraticBezierTo(
+              r.left - 2,
+              62 + side * 4,
+              r.left - 6,
+              70 + side * 3,
+            ),
+          b,
+        );
+      }
+    }
+    if (species.extras.contains('dorsal')) {
+      for (final o in const [-3.0, 0.0, 3.0]) {
+        c.drawLine(
+          Offset(r.left + 14 + o, 62),
+          Offset(r.left + 15 + o, 66),
+          _line,
+        );
+      }
+    }
     _face(c, t, head, 18, eyeY: -2, eyeGap: 7);
     return _Anchor(head, 18, 70, r);
   }
@@ -713,8 +1662,79 @@ class CreaturePainter extends CustomPainter {
 
   _Anchor _blob(Canvas c, double t, Color p, Color s, {required bool slime}) {
     final squish = math.sin(t * _tau) * (slime ? 2.5 : 1);
+    final ex = species.extras;
     final path = Path();
-    if (slime) {
+    if (ex.contains('sheet')) {
+      // A classic little sheet ghost: tall dome, wavy hem, stubby arms.
+      path
+        ..moveTo(32, 60)
+        ..cubicTo(30, 16, 70, 16, 68, 60)
+        ..quadraticBezierTo(80, 58 + squish, 76, 66)
+        ..quadraticBezierTo(70, 66, 68, 64)
+        ..lineTo(68, 86);
+      for (var i = 0; i < 3; i++) {
+        final x0 = 68 - i * 12.0;
+        path
+          ..quadraticBezierTo(
+            x0 - 3,
+            94 + (i.isEven ? squish : -squish) * 2,
+            x0 - 6,
+            86,
+          )
+          ..quadraticBezierTo(x0 - 9, 80, x0 - 12, 86);
+      }
+      path
+        ..lineTo(32, 64)
+        ..quadraticBezierTo(30, 66, 24, 66)
+        ..quadraticBezierTo(20, 58 - squish, 32, 60)
+        ..close();
+    } else if (ex.contains('leaf')) {
+      // A round moss puff with a crown of leaves and twig arms.
+      final twig = Paint()
+        ..color = const Color(0xFF8C6A4F)
+        ..strokeWidth = 2.4
+        ..strokeCap = StrokeCap.round;
+      for (final side in [-1.0, 1.0]) {
+        c.drawLine(
+          Offset(50 + side * 24, 66),
+          Offset(50 + side * 38, 56 + squish * 2),
+          twig,
+        );
+        c.drawLine(
+          Offset(50 + side * 33, 59),
+          Offset(50 + side * 36, 52),
+          twig,
+        );
+      }
+      for (final a in const [-0.6, 0.0, 0.6]) {
+        c.save();
+        c.translate(50, 42);
+        c.rotate(a + math.sin(t * _tau) * 0.05);
+        final l = Path()
+          ..moveTo(0, 0)
+          ..quadraticBezierTo(10, -12, 0, -24)
+          ..quadraticBezierTo(-10, -12, 0, 0);
+        c.drawPath(l, _fill(s));
+        c.drawPath(l, _line);
+        c.restore();
+      }
+      path.addOval(
+        Rect.fromCircle(center: Offset(50, 66 + squish), radius: 24),
+      );
+    } else if (ex.contains('wisps')) {
+      // A shadowy wisp: flickering flame-like top, soft base.
+      path.moveTo(24, 84);
+      const n = 7;
+      for (var i = 0; i <= n; i++) {
+        final x = 24 + i * 52 / n;
+        final top = 30 + (i - n / 2).abs() * 5 + math.sin(t * _tau * 2 + i) * 3;
+        path.lineTo(x, i.isEven ? top : top + 12);
+      }
+      path
+        ..lineTo(76, 84)
+        ..quadraticBezierTo(50, 94, 24, 84)
+        ..close();
+    } else if (slime) {
       path
         ..moveTo(50, 28 + squish)
         ..cubicTo(64, 30 + squish, 82, 60, 80, 78)
@@ -759,9 +1779,31 @@ class CreaturePainter extends CustomPainter {
       Rect.fromCenter(center: const Offset(36, 46), width: 9, height: 13),
       _fill(Colors.white.withValues(alpha: 0.55)),
     );
-    const head = Offset(50, 58);
+    if (ex.contains('wisps')) {
+      // Tall glowing eyes instead of a face.
+      for (final side in [-1.0, 1.0]) {
+        c.drawOval(
+          Rect.fromCenter(
+            center: Offset(50 + side * 9, 58),
+            width: 7,
+            height: 13,
+          ),
+          _fill(s),
+        );
+      }
+      return _Anchor(const Offset(50, 54), 22, 70, r);
+    }
+    final head = Offset(
+      50,
+      ex.contains('sheet') ? 46 : (ex.contains('leaf') ? 64 : 58),
+    );
     _face(c, t, head, 22, eyeY: 2, eyeGap: 10);
-    return _Anchor(Offset(50, slime ? 52 : 48), 24, 68, r);
+    return _Anchor(
+      Offset(50, slime ? 52 : (ex.contains('leaf') ? 60 : 48)),
+      24,
+      68,
+      r,
+    );
   }
 
   _Anchor _cloud(Canvas c, double t, Color p, Color s) {

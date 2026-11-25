@@ -50,8 +50,7 @@ class MediaAttachmentsDao extends DatabaseAccessor<AppDatabase>
     return (select(mediaAttachments)
           ..where(
             (a) =>
-                a.mediaId.equals(mediaId) |
-                a.thumbnailMediaId.equals(mediaId),
+                a.mediaId.equals(mediaId) | a.thumbnailMediaId.equals(mediaId),
           )
           ..limit(1))
         .getSingleOrNull();

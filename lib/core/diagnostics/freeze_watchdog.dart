@@ -111,7 +111,9 @@ abstract final class FreezeWatchdog {
       final gap = _clock.elapsed - lastTick;
       lastTick = _clock.elapsed;
       if (_foreground && gap > const Duration(milliseconds: 1500)) {
-        crumb('UI thread busy ${(gap.inMilliseconds / 1000).toStringAsFixed(1)}s (app code, not drawing)');
+        crumb(
+          'UI thread busy ${(gap.inMilliseconds / 1000).toStringAsFixed(1)}s (app code, not drawing)',
+        );
       }
       // Frames requested but none finished: the GPU/raster side is stuck
       // even though Dart is still running.

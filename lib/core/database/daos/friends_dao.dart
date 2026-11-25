@@ -24,6 +24,7 @@ class FriendsDao extends DatabaseAccessor<AppDatabase> with _$FriendsDaoMixin {
       (update(friends)..where((f) => f.id.equals(id))).write(companion);
 
   Future<void> softDelete(String id) =>
-      (update(friends)..where((f) => f.id.equals(id)))
-          .write(const FriendsCompanion(isDeleted: Value(true)));
+      (update(friends)..where((f) => f.id.equals(id))).write(
+        const FriendsCompanion(isDeleted: Value(true)),
+      );
 }

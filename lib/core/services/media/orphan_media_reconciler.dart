@@ -132,10 +132,7 @@ Future<int> reconcileOrphanMedia({
 }
 
 void _defaultLog(String message) {
-  ErrorReportingService.instance.report(
-    message,
-    severity: ErrorSeverity.info,
-  );
+  ErrorReportingService.instance.report(message, severity: ErrorSeverity.info);
 }
 
 /// Convenience wrapper that resolves the directory + DB from a [WidgetRef]

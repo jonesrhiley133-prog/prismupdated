@@ -15,7 +15,8 @@ class SystemNavBar with WidgetsBindingObserver {
   bool _hidden = false;
   bool _observing = false;
 
-  static bool get supported => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  static bool get supported =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   /// Reads the saved choice and applies it. Call once after binding init.
   Future<bool> restore() async {
@@ -48,7 +49,10 @@ class SystemNavBar with WidgetsBindingObserver {
   Future<void> _apply() async {
     if (!supported) return;
     if (_hidden) {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: const [SystemUiOverlay.top]);
+      await SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.immersiveSticky,
+        overlays: const [SystemUiOverlay.top],
+      );
     } else {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
@@ -71,4 +75,7 @@ class HidePhoneNavBarNotifier extends AsyncNotifier<bool> {
   }
 }
 
-final hidePhoneNavBarProvider = AsyncNotifierProvider<HidePhoneNavBarNotifier, bool>(HidePhoneNavBarNotifier.new);
+final hidePhoneNavBarProvider =
+    AsyncNotifierProvider<HidePhoneNavBarNotifier, bool>(
+      HidePhoneNavBarNotifier.new,
+    );

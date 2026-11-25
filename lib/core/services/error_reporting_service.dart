@@ -1,10 +1,5 @@
 /// Severity levels for reported errors.
-enum ErrorSeverity {
-  info,
-  warning,
-  error,
-  fatal,
-}
+enum ErrorSeverity { info, warning, error, fatal }
 
 /// Represents a single error entry in the in-memory log.
 class AppError {
@@ -21,8 +16,7 @@ class AppError {
   final StackTrace? stackTrace;
 
   @override
-  String toString() =>
-      '[${severity.name.toUpperCase()}] $timestamp: $message';
+  String toString() => '[${severity.name.toUpperCase()}] $timestamp: $message';
 }
 
 /// Callback type for error listeners.

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prism_plurality/features/companions/companion_home_card.dart';
+import 'package:prism_plurality/features/experiences/experiences_hub.dart';
 import 'package:prism_plurality/features/fitness/health/health_home_card.dart';
 import 'package:prism_plurality/features/fronting_roles/roles_widgets.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
-import 'package:prism_plurality/features/alter_status/status_widgets.dart' show StatusesDashboardCard;
-import 'package:prism_plurality/features/automations/automations_screen.dart' show AutomationDashboardCard;
-import 'package:prism_plurality/features/availability/availability_screen.dart' show AvailabilityNowCard;
-import 'package:prism_plurality/features/nutrition/nutrition_screen.dart' show HydrationDashboardCard;
+import 'package:prism_plurality/features/alter_status/status_widgets.dart'
+    show StatusesDashboardCard;
+import 'package:prism_plurality/features/automations/automations_screen.dart'
+    show AutomationDashboardCard;
+import 'package:prism_plurality/features/availability/availability_screen.dart'
+    show AvailabilityNowCard;
+import 'package:prism_plurality/features/nutrition/nutrition_screen.dart'
+    show HydrationDashboardCard;
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,13 +63,37 @@ final dashboardWidgetsProvider = StreamProvider<List<String>>((ref) {
   return repo.watch(dashboardWidgetsPreference).asyncMap((list) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      if (prefs.getBool('dashboard.cards.v2') == true) return list;
-      await prefs.setBool('dashboard.cards.v2', true);
-      final missing = [for (final id in const [DashboardWidgetId.frontingRoles, DashboardWidgetId.health, DashboardWidgetId.companion]) if (!list.contains(id)) id];
-      if (missing.isEmpty) return list;
-      final at = list.indexOf(DashboardWidgetId.now);
-      final next = [...list]..insertAll(at < 0 ? 0 : at + 1, missing);
-      await repo.set(dashboardWidgetsPreference, next);
+      var next = list;
+      if (prefs.getBool('dashboard.cards.v2') != true) {
+        await prefs.setBool('dashboard.cards.v2', true);
+        final missing = [
+          for (final id in const [
+            DashboardWidgetId.frontingRoles,
+            DashboardWidgetId.health,
+            DashboardWidgetId.companion,
+          ])
+            if (!next.contains(id)) id,
+        ];
+        final at = next.indexOf(DashboardWidgetId.now);
+        if (missing.isNotEmpty)
+          next = [...next]..insertAll(at < 0 ? 0 : at + 1, missing);
+      }
+      // v3: the Experiences modules (memory of the day, latest recap).
+      if (prefs.getBool('dashboard.cards.v3') != true) {
+        await prefs.setBool('dashboard.cards.v3', true);
+        final missing = [
+          for (final id in const [
+            DashboardWidgetId.memoryOfDay,
+            DashboardWidgetId.wrapped,
+          ])
+            if (!next.contains(id)) id,
+        ];
+        final at = next.indexOf(DashboardWidgetId.companion);
+        if (missing.isNotEmpty)
+          next = [...next]..insertAll(at < 0 ? next.length : at + 1, missing);
+      }
+      if (!identical(next, list))
+        await repo.set(dashboardWidgetsPreference, next);
       return next;
     } catch (_) {
       return list;
@@ -73,7 +102,8 @@ final dashboardWidgetsProvider = StreamProvider<List<String>>((ref) {
 });
 
 /// Compact or full size per resizable Home card (device setting).
-final homeCardSizesProvider = NotifierProvider<HomeCardSizes, Map<String, String>>(HomeCardSizes.new);
+final homeCardSizesProvider =
+    NotifierProvider<HomeCardSizes, Map<String, String>>(HomeCardSizes.new);
 
 class HomeCardSizes extends Notifier<Map<String, String>> {
   static const _key = 'home.card.sizes';
@@ -81,7 +111,10 @@ class HomeCardSizes extends Notifier<Map<String, String>> {
   Map<String, String> build() {
     SharedPreferences.getInstance().then((p) {
       final raw = p.getStringList(_key) ?? const [];
-      state = {for (final e in raw) if (e.contains('=')) e.split('=').first: e.split('=').last};
+      state = {
+        for (final e in raw)
+          if (e.contains('=')) e.split('=').first: e.split('=').last,
+      };
     });
     return const {};
   }
@@ -90,7 +123,9 @@ class HomeCardSizes extends Notifier<Map<String, String>> {
 
   Future<void> toggle(String id) async {
     state = {...state, id: state[id] == 'compact' ? 'full' : 'compact'};
-    (await SharedPreferences.getInstance()).setStringList(_key, [for (final e in state.entries) '${e.key}=${e.value}']);
+    (await SharedPreferences.getInstance()).setStringList(_key, [
+      for (final e in state.entries) '${e.key}=${e.value}',
+    ]);
   }
 }
 
@@ -117,11 +152,47 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     DashboardWidgetId.stories => l10n.stoTitle,
     DashboardWidgetId.statuses => tr(context, 'Statuses', 'Estados'),
     DashboardWidgetId.hydration => tr(context, 'Hydration', 'Hidratación'),
-    DashboardWidgetId.availability => tr(context, 'Availability', 'Disponibilidad'),
-    DashboardWidgetId.automation => tr(context, 'Automations', 'Automatizaciones'),
-    DashboardWidgetId.frontingRoles => tr(context, 'Who\'s fronting (statuses)', 'Quién está al frente'),
-    DashboardWidgetId.health => tr(context, 'Steps & health today', 'Pasos y salud hoy'),
+    DashboardWidgetId.availability => tr(
+      context,
+      'Availability',
+      'Disponibilidad',
+    ),
+    DashboardWidgetId.automation => tr(
+      context,
+      'Automations',
+      'Automatizaciones',
+    ),
+    DashboardWidgetId.frontingRoles => tr(
+      context,
+      'Who\'s fronting (statuses)',
+      'Quién está al frente',
+    ),
+    DashboardWidgetId.health => tr(
+      context,
+      'Steps & health today',
+      'Pasos y salud hoy',
+    ),
     DashboardWidgetId.companion => tr(context, 'My companion', 'Mi compañero'),
+    DashboardWidgetId.memoryOfDay => tr(
+      context,
+      'Memory of the day',
+      'Recuerdo del día',
+    ),
+    DashboardWidgetId.wrapped => tr(
+      context,
+      'Recaps (Wrapped)',
+      'Resúmenes (Wrapped)',
+    ),
+    DashboardWidgetId.passportStamps => tr(
+      context,
+      'Passport & latest stamps',
+      'Pasaporte y sellos',
+    ),
+    DashboardWidgetId.habitat => tr(
+      context,
+      'Companion habitat',
+      'Hábitat del compañero',
+    ),
     _ => id,
   };
 }
@@ -138,8 +209,14 @@ String dashboardWidgetLabel(BuildContext context, String id) {
     ),
     QuickActionId.clockIn => (AppIcons.navWork, l10n.workClockIn),
     QuickActionId.journal => (AppIcons.navJournal, l10n.quickActionJournal),
-    QuickActionId.dictionary => (AppIcons.navDictionary, l10n.quickActionDictionary),
-    QuickActionId.achievements => (AppIcons.navAchievements, l10n.navAchievements),
+    QuickActionId.dictionary => (
+      AppIcons.navDictionary,
+      l10n.quickActionDictionary,
+    ),
+    QuickActionId.achievements => (
+      AppIcons.navAchievements,
+      l10n.navAchievements,
+    ),
     QuickActionId.event => (AppIcons.navCalendar, l10n.calendarNewEvent),
     QuickActionId.birthday => (AppIcons.cake, l10n.quickActionBirthday),
     QuickActionId.contact => (AppIcons.navContacts, l10n.contactsNew),
@@ -238,11 +315,24 @@ class HomeDashboard extends ConsumerWidget {
   /// Phones: one column. Wide web windows: the "now" card across the top,
   /// then the rest in two balanced columns, like a web dashboard.
   List<Widget> _cards(BuildContext context, List<String> ids) {
-    final wide = PrismTokens.desktopWebContentWidth != null && MediaQuery.sizeOf(context).width >= 1180;
-    if (!wide || ids.length < 3) return [for (final id in ids) _widgetFor(context, id)];
-    final full = {DashboardWidgetId.now, DashboardWidgetId.quickActions, DashboardWidgetId.stories};
-    final top = [for (final id in ids) if (full.contains(id)) id];
-    final rest = [for (final id in ids) if (!full.contains(id)) id];
+    final wide =
+        PrismTokens.desktopWebContentWidth != null &&
+        MediaQuery.sizeOf(context).width >= 1180;
+    if (!wide || ids.length < 3)
+      return [for (final id in ids) _widgetFor(context, id)];
+    final full = {
+      DashboardWidgetId.now,
+      DashboardWidgetId.quickActions,
+      DashboardWidgetId.stories,
+    };
+    final top = [
+      for (final id in ids)
+        if (full.contains(id)) id,
+    ];
+    final rest = [
+      for (final id in ids)
+        if (!full.contains(id)) id,
+    ];
     final left = <Widget>[], right = <Widget>[];
     for (final (i, id) in rest.indexed) {
       (i.isEven ? left : right).add(_widgetFor(context, id));
@@ -252,9 +342,19 @@ class HomeDashboard extends ConsumerWidget {
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: left)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: left,
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: right)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: right,
+            ),
+          ),
         ],
       ),
     ];
@@ -274,17 +374,32 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.achievements => const _AchievementsWidget(),
       DashboardWidgetId.journal => const _JournalWidget(),
       DashboardWidgetId.stories => const StoriesRow(),
-      DashboardWidgetId.statuses => StatusesDashboardCard(onOpenAll: () => context.push('/statuses')),
-      DashboardWidgetId.hydration => HydrationDashboardCard(onOpen: () => context.push('/nutrition')),
-      DashboardWidgetId.availability => AvailabilityNowCard(onOpen: () => context.push('/availability')),
-      DashboardWidgetId.automation => AutomationDashboardCard(onOpen: () => context.push('/automations')),
+      DashboardWidgetId.statuses => StatusesDashboardCard(
+        onOpenAll: () => context.push('/statuses'),
+      ),
+      DashboardWidgetId.hydration => HydrationDashboardCard(
+        onOpen: () => context.push('/nutrition'),
+      ),
+      DashboardWidgetId.availability => AvailabilityNowCard(
+        onOpen: () => context.push('/availability'),
+      ),
+      DashboardWidgetId.automation => AutomationDashboardCard(
+        onOpen: () => context.push('/automations'),
+      ),
       DashboardWidgetId.frontingRoles => const FrontingRolesStrip(),
       DashboardWidgetId.health => const HealthHomeCard(),
       DashboardWidgetId.companion => const CompanionHomeCard(),
+      DashboardWidgetId.memoryOfDay => const MemoryOfDayHomeCard(),
+      DashboardWidgetId.wrapped => const WrappedHomeCard(),
+      DashboardWidgetId.passportStamps => const StampsHomeCard(),
+      DashboardWidgetId.habitat => const HabitatHomeCard(),
       _ => const SizedBox.shrink(),
     };
     // Each card repaints on its own (stories, timers, charts animate).
-    return Padding(padding: const EdgeInsets.only(bottom: 8), child: RepaintBoundary(child: child));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: RepaintBoundary(child: child),
+    );
   }
 }
 
@@ -664,11 +779,20 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
     Widget orderedRow(List<String> list, int i, String label) => Row(
       children: [
         Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
-        if (identical(list, _widgets) && DashboardWidgetId.resizable.contains(list[i]))
+        if (identical(list, _widgets) &&
+            DashboardWidgetId.resizable.contains(list[i]))
           IconButton(
-            tooltip: sizes[list[i]] == 'compact' ? 'Make full size' : 'Make compact',
-            icon: Icon(sizes[list[i]] == 'compact' ? Icons.unfold_more : Icons.unfold_less, size: 18),
-            onPressed: () => ref.read(homeCardSizesProvider.notifier).toggle(list[i]),
+            tooltip: sizes[list[i]] == 'compact'
+                ? 'Make full size'
+                : 'Make compact',
+            icon: Icon(
+              sizes[list[i]] == 'compact'
+                  ? Icons.unfold_more
+                  : Icons.unfold_less,
+              size: 18,
+            ),
+            onPressed: () =>
+                ref.read(homeCardSizesProvider.notifier).toggle(list[i]),
           ),
         IconButton(
           tooltip: l10n.dashboardMoveUp,

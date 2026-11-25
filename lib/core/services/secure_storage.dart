@@ -388,7 +388,10 @@ Future<SecureReadResult> safeSecureRead(
     return SecureReadResult(value: value);
   } on PlatformException catch (e) {
     if (_shouldTryMacLegacyKeychain(e, storage)) {
-      final legacy = await safeSecureRead(key, storage: _macLegacySecureStorage);
+      final legacy = await safeSecureRead(
+        key,
+        storage: _macLegacySecureStorage,
+      );
       // If legacy had the key (or failed itself), return that. But a clean
       // empty from legacy is NOT "key absent" — the data-protection slot that
       // errored above was never read. Surface the original error as a failure
@@ -763,7 +766,9 @@ Future<SecureDeleteResult> _deleteMacLegacyKeyIfPresent(String key) async {
       () => _macLegacySecureStorage.read(key: key),
     );
     if (existing == null) return const SecureDeleteResult();
-    await runLockedSecureStorageOp(() => _macLegacySecureStorage.delete(key: key));
+    await runLockedSecureStorageOp(
+      () => _macLegacySecureStorage.delete(key: key),
+    );
     return const SecureDeleteResult();
   } on PlatformException catch (e) {
     return SecureDeleteResult(
@@ -788,7 +793,9 @@ Future<SecureDeleteResult> _deleteAllMacLegacyKeychainEntries() async {
       () => _macLegacySecureStorage.readAll(),
     );
     for (final key in entries.keys) {
-      await runLockedSecureStorageOp(() => _macLegacySecureStorage.delete(key: key));
+      await runLockedSecureStorageOp(
+        () => _macLegacySecureStorage.delete(key: key),
+      );
     }
     return const SecureDeleteResult();
   } on PlatformException catch (e) {

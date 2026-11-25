@@ -90,12 +90,12 @@ class KeychainDegradedState {
   /// All-healthy state. Used as the default when no save exists and the
   /// recovery state after a successful re-pair / fresh install.
   const KeychainDegradedState.healthy()
-      : appDbKey = SlotState.ok,
-        syncKey = SlotState.ok,
-        syncCredentials = SlotState.ok,
-        pin = SlotState.ok,
-        firstObservedAt = null,
-        schemaVersion = currentSchemaVersion;
+    : appDbKey = SlotState.ok,
+      syncKey = SlotState.ok,
+      syncCredentials = SlotState.ok,
+      pin = SlotState.ok,
+      firstObservedAt = null,
+      schemaVersion = currentSchemaVersion;
 
   final SlotState appDbKey;
   final SlotState syncKey;
@@ -157,13 +157,13 @@ class KeychainDegradedState {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'schemaVersion': schemaVersion,
-        'appDbKey': _encodeSlot(appDbKey),
-        'syncKey': _encodeSlot(syncKey),
-        'syncCredentials': _encodeSlot(syncCredentials),
-        'pin': _encodeSlot(pin),
-        'firstObservedAt': firstObservedAt?.toIso8601String(),
-      };
+    'schemaVersion': schemaVersion,
+    'appDbKey': _encodeSlot(appDbKey),
+    'syncKey': _encodeSlot(syncKey),
+    'syncCredentials': _encodeSlot(syncCredentials),
+    'pin': _encodeSlot(pin),
+    'firstObservedAt': firstObservedAt?.toIso8601String(),
+  };
 
   /// Parse from JSON with the tolerance rules documented at the top of
   /// this library. Throws [FormatException] when a field that existed at
@@ -237,13 +237,13 @@ class KeychainDegradedState {
 
   @override
   int get hashCode => Object.hash(
-        appDbKey,
-        syncKey,
-        syncCredentials,
-        pin,
-        firstObservedAt,
-        schemaVersion,
-      );
+    appDbKey,
+    syncKey,
+    syncCredentials,
+    pin,
+    firstObservedAt,
+    schemaVersion,
+  );
 
   @override
   String toString() {
@@ -427,7 +427,8 @@ String? deriveDegradedBannerMessage(KeychainDegradedState state) {
 /// instance — the service resolves one on first call via
 /// `SharedPreferences.getInstance()`. Tests inject directly via the
 /// constructor instead of overriding this provider.
-final keychainDegradedStateProvider =
-    Provider<KeychainDegradedStateService>((ref) {
+final keychainDegradedStateProvider = Provider<KeychainDegradedStateService>((
+  ref,
+) {
   return KeychainDegradedStateService();
 });

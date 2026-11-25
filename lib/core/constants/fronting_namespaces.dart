@@ -59,8 +59,7 @@ String deriveSpSessionId(String entryId) =>
 /// Key format: SP comment `_id` string from the source export.
 /// Used so repeated imports of the same SP comment converge instead of
 /// creating a new random Prism comment each time.
-const String spFrontCommentNamespace =
-    '420e95f8-67e4-417f-88af-0d3e5534dec0';
+const String spFrontCommentNamespace = '420e95f8-67e4-417f-88af-0d3e5534dec0';
 
 /// Canonical SP front-history comment id derivation.
 String deriveSpFrontCommentId(String commentId) =>
@@ -73,7 +72,8 @@ String deriveSpFrontCommentId(String commentId) =>
 /// row per member.  The primary member's row keeps the legacy id; additional
 /// co-fronter rows are derived from this namespace.  Paired devices migrating
 /// concurrently produce identical ids (§2.6, §4.1 step 4).
-const String migrationFrontingNamespace = 'ca045f95-3051-4412-b7b4-2935f96b895a';
+const String migrationFrontingNamespace =
+    'ca045f95-3051-4412-b7b4-2935f96b895a';
 
 /// Canonical migration fan-out id for a co-fronter's per-member row.
 ///
@@ -85,8 +85,10 @@ const String migrationFrontingNamespace = 'ca045f95-3051-4412-b7b4-2935f96b895a'
 /// concurrent migrations converge via field-LWW on a single row rather than
 /// duplicating.  Open-coding the v5 call invites drift — route every site
 /// through this helper instead.
-String deriveMigrationFanoutSessionId(String legacySessionId, String memberId) =>
-    const Uuid().v5(migrationFrontingNamespace, '$legacySessionId:$memberId');
+String deriveMigrationFanoutSessionId(
+  String legacySessionId,
+  String memberId,
+) => const Uuid().v5(migrationFrontingNamespace, '$legacySessionId:$memberId');
 
 /// Deterministic id for the Unknown sentinel member.
 ///
@@ -99,8 +101,10 @@ String deriveMigrationFanoutSessionId(String legacySessionId, String memberId) =
 /// Derivation: `Uuid().v5(spFrontingNamespace, 'unknown-member-sentinel')`.
 /// Top-level `final` rather than `const` because `Uuid().v5(...)` is a
 /// runtime call.  Never recompute this elsewhere — import this constant.
-final String unknownSentinelMemberId =
-    const Uuid().v5(spFrontingNamespace, 'unknown-member-sentinel');
+final String unknownSentinelMemberId = const Uuid().v5(
+  spFrontingNamespace,
+  'unknown-member-sentinel',
+);
 
 /// Reason tag for sync-repairs enqueued when an orphan fronting row is
 /// re-homed to the Unknown sentinel. Shared by the migration rescue (which

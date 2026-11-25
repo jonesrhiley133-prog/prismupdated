@@ -12,8 +12,7 @@ class PkMappingStateDao extends DatabaseAccessor<AppDatabase>
   PkMappingStateDao(super.db);
 
   Future<PkMappingStateData?> getById(String id) =>
-      (select(pkMappingState)..where((t) => t.id.equals(id)))
-          .getSingleOrNull();
+      (select(pkMappingState)..where((t) => t.id.equals(id))).getSingleOrNull();
 
   Future<List<PkMappingStateData>> getAll() => select(pkMappingState).get();
 

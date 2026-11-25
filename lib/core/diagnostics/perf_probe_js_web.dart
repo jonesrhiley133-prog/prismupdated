@@ -5,8 +5,9 @@ import 'dart:js_interop_unsafe';
 void exposeDispatcher(String Function(String name, String arg) dispatch) {
   globalContext.setProperty(
     'prismPerf'.toJS,
-    ((JSString name, JSString? arg) =>
-            dispatch(name.toDart, arg?.toDart ?? '').toJS)
-        .toJS,
+    ((JSString name, JSString? arg) => dispatch(
+      name.toDart,
+      arg?.toDart ?? '',
+    ).toJS).toJS,
   );
 }

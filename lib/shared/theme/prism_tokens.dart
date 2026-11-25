@@ -44,7 +44,8 @@ class PrismTokens {
   /// boards, stats) so the body doesn't stretch edge-to-edge on wide windows.
   /// These screens clamp their content and open per-item detail in a modal
   /// side sheet rather than squishing into a permanent list pane.
-  static double get contentMaxWidth => desktopWebContentWidth ?? mobileContentMaxWidth;
+  static double get contentMaxWidth =>
+      desktopWebContentWidth ?? mobileContentMaxWidth;
 
   /// The phone/tablet reading width.
   static const double mobileContentMaxWidth = 720;

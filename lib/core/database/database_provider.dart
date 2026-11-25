@@ -663,12 +663,11 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 LazyDatabase _openVerifiedConnection(String hexKey) {
   return LazyDatabase(() async {
     // Demo Mode opens its own file; the real prism.db is never touched.
-    final file = DemoMode.active ? await DemoMode.demoFile() : await getDatabaseFile();
+    final file = DemoMode.active
+        ? await DemoMode.demoFile()
+        : await getDatabaseFile();
     await excludeFromiCloudBackup(file.path);
-    return openNativeDatabaseInBackground(
-      file,
-      setup: makeCipherSetup(hexKey),
-    );
+    return openNativeDatabaseInBackground(file, setup: makeCipherSetup(hexKey));
   });
 }
 

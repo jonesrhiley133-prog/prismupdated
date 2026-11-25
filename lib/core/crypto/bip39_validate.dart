@@ -21,8 +21,7 @@ const Set<int> _validWordCounts = {12, 15, 18, 21, 24};
 /// similar).
 bool validateBip39Mnemonic(String phrase) {
   if (phrase.isEmpty) return false;
-  final words = phrase.split(RegExp(r'\s+'))
-    ..removeWhere((w) => w.isEmpty);
+  final words = phrase.split(RegExp(r'\s+'))..removeWhere((w) => w.isEmpty);
   final count = words.length;
   if (!_validWordCounts.contains(count)) return false;
 

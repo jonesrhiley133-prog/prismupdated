@@ -301,9 +301,9 @@ class _ResetRecoveryScreenState extends State<ResetRecoveryScreen> {
         'storage this time. Fully close Prism and reopen it. If it keeps '
         'happening, restart your device.',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
       ),
       const SizedBox(height: 8),
       TextButton(
@@ -323,9 +323,9 @@ class _ResetRecoveryScreenState extends State<ResetRecoveryScreen> {
           'Still stuck after restarting several times? As a last resort you '
           'can reset local data on this device.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
         PrismButton(
@@ -361,9 +361,9 @@ class _ResetRecoveryScreenState extends State<ResetRecoveryScreen> {
         'If you set up Sync on another device, re-pair instead to keep your '
         'data.',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
       ),
       const SizedBox(height: 12),
       TextButton(
@@ -412,10 +412,15 @@ class _ResetRecoveryScreenState extends State<ResetRecoveryScreen> {
       DiagnosticSlotIds.appDbSyncStaging,
     };
     final probedExistingDb = slotOutcomes.keys.any(recoverySlotKeys.contains);
-    final triedFreshKey = slotOutcomes.containsKey(DiagnosticSlotIds.appDbFresh);
+    final triedFreshKey = slotOutcomes.containsKey(
+      DiagnosticSlotIds.appDbFresh,
+    );
 
-    final (IconData dataIcon, Color dataColor, String dataLabel) =
-        probedExistingDb
+    final (
+      IconData dataIcon,
+      Color dataColor,
+      String dataLabel,
+    ) = probedExistingDb
         ? (
             Icons.lock_outline,
             Colors.amber.shade700,
@@ -471,9 +476,7 @@ class _ResetRecoveryScreenState extends State<ResetRecoveryScreen> {
               for (final entry in slotOutcomes.entries)
                 _statusRow(
                   colorScheme,
-                  icon: entry.value == 'ok'
-                      ? Icons.check_circle
-                      : Icons.cancel,
+                  icon: entry.value == 'ok' ? Icons.check_circle : Icons.cancel,
                   color: entry.value == 'ok' ? okColor : colorScheme.error,
                   label: '${entry.key}: ${entry.value}',
                   dense: true,

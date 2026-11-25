@@ -341,33 +341,33 @@ final savedLocationsDaoProvider = Provider<SavedLocationsDao>(
   (ref) => ref.watch(databaseProvider).savedLocationsDao,
 );
 
-final savedLocationRepositoryProvider = Provider<EntityRepository<SavedLocation>>(
-  (ref) => DriftSavedLocationRepository(
-    ref.watch(savedLocationsDaoProvider),
-    _resolveSyncHandle(ref),
-  ),
-);
+final savedLocationRepositoryProvider =
+    Provider<EntityRepository<SavedLocation>>(
+      (ref) => DriftSavedLocationRepository(
+        ref.watch(savedLocationsDaoProvider),
+        _resolveSyncHandle(ref),
+      ),
+    );
 
 final locationSessionsDaoProvider = Provider<LocationSessionsDao>(
   (ref) => ref.watch(databaseProvider).locationSessionsDao,
 );
 
-final locationSessionRepositoryProvider = Provider<EntityRepository<LocationSession>>(
-  (ref) => DriftLocationSessionRepository(
-    ref.watch(locationSessionsDaoProvider),
-    _resolveSyncHandle(ref),
-  ),
-);
+final locationSessionRepositoryProvider =
+    Provider<EntityRepository<LocationSession>>(
+      (ref) => DriftLocationSessionRepository(
+        ref.watch(locationSessionsDaoProvider),
+        _resolveSyncHandle(ref),
+      ),
+    );
 
 final jobsDaoProvider = Provider<JobsDao>(
   (ref) => ref.watch(databaseProvider).jobsDao,
 );
 
 final jobRepositoryProvider = Provider<EntityRepository<Job>>(
-  (ref) => DriftJobRepository(
-    ref.watch(jobsDaoProvider),
-    _resolveSyncHandle(ref),
-  ),
+  (ref) =>
+      DriftJobRepository(ref.watch(jobsDaoProvider), _resolveSyncHandle(ref)),
 );
 
 final workSessionsDaoProvider = Provider<WorkSessionsDao>(

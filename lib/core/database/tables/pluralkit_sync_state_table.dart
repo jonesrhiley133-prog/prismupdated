@@ -5,9 +5,9 @@ class PluralKitSyncState extends Table {
   TextColumn get systemId => text().nullable()();
   DateTimeColumn get lastSyncDate => dateTime().nullable()();
   DateTimeColumn get lastManualSyncDate => dateTime().nullable()();
-  BoolColumn get isConnected =>
-      boolean().withDefault(const Constant(false))();
-  TextColumn get fieldSyncConfig => text().nullable()(); // JSON map of memberId → field config
+  BoolColumn get isConnected => boolean().withDefault(const Constant(false))();
+  TextColumn get fieldSyncConfig =>
+      text().nullable()(); // JSON map of memberId → field config
 
   /// True once the user has completed (or explicitly dismissed) the member
   /// mapping flow for the current PK connection. While false, the connection

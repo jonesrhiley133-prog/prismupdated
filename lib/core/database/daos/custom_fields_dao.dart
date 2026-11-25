@@ -268,8 +268,7 @@ class CustomFieldsDao extends DatabaseAccessor<AppDatabase>
             await (select(customFieldValues)
                   ..where(
                     (v) =>
-                        v.isDeleted.equals(false) &
-                        v.customFieldId.isIn(chunk),
+                        v.isDeleted.equals(false) & v.customFieldId.isIn(chunk),
                   )
                   ..orderBy([(v) => OrderingTerm.asc(v.id)]))
                 .get();

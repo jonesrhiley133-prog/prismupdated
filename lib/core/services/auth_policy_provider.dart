@@ -11,4 +11,3 @@ final pinVerificationDueProvider = FutureProvider<bool>((ref) async {
   final service = ref.watch(authPolicyServiceProvider);
   return service.isPinVerificationDue();
 });
-

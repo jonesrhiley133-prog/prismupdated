@@ -47,8 +47,9 @@ class SessionTransitionService {
           // Only end the specific member's active sessions (if any) to avoid
           // self-overlap when transitioning a single member.
           final activeSessions = await repo.getAllActiveSessionsUnfiltered();
-          final memberSessions =
-              activeSessions.where((s) => s.memberId == newMemberId).toList();
+          final memberSessions = activeSessions
+              .where((s) => s.memberId == newMemberId)
+              .toList();
           for (final session in memberSessions) {
             await repo.endSession(session.id, now);
           }

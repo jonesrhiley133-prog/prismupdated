@@ -61,7 +61,8 @@ const appIconPresets = [
 ];
 
 /// Where changing the icon works: the Android launcher and the browser tab.
-bool get appIconSupported => kIsWeb || defaultTargetPlatform == TargetPlatform.android;
+bool get appIconSupported =>
+    kIsWeb || defaultTargetPlatform == TargetPlatform.android;
 
 class AppIconService {
   const AppIconService();
@@ -73,7 +74,8 @@ class AppIconService {
 
   Future<String> current() async {
     try {
-      if ((await SharedPreferences.getInstance()).getString(_key) == 'custom') return 'custom';
+      if ((await SharedPreferences.getInstance()).getString(_key) == 'custom')
+        return 'custom';
     } catch (_) {}
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       try {
@@ -83,7 +85,8 @@ class AppIconService {
       }
     }
     try {
-      return (await SharedPreferences.getInstance()).getString(_key) ?? 'classic';
+      return (await SharedPreferences.getInstance()).getString(_key) ??
+          'classic';
     } catch (_) {
       return 'classic';
     }
@@ -111,7 +114,9 @@ extension CustomAppIcon on AppIconService {
   /// The saved custom icon (small PNG), if any.
   Future<Uint8List?> customPng() async {
     try {
-      final v = (await SharedPreferences.getInstance()).getString(AppIconService._customKey);
+      final v = (await SharedPreferences.getInstance()).getString(
+        AppIconService._customKey,
+      );
       return v == null ? null : base64Decode(v);
     } catch (_) {
       return null;
@@ -120,8 +125,14 @@ extension CustomAppIcon on AppIconService {
 
   Future<CustomIconSpec?> customSpec() async {
     try {
-      final v = (await SharedPreferences.getInstance()).getString(AppIconService._specKey);
-      return v == null ? null : CustomIconSpec.fromJson((jsonDecode(v) as Map).cast<String, Object?>());
+      final v = (await SharedPreferences.getInstance()).getString(
+        AppIconService._specKey,
+      );
+      return v == null
+          ? null
+          : CustomIconSpec.fromJson(
+              (jsonDecode(v) as Map).cast<String, Object?>(),
+            );
     } catch (_) {
       return null;
     }
@@ -137,7 +148,12 @@ extension CustomAppIcon on AppIconService {
       setFavicon('data:image/png;base64,${base64Encode(small)}');
     } else if (defaultTargetPlatform == TargetPlatform.android) {
       final big = await renderCustomIcon(spec, size: 432);
-      ok = await AppIconService._channel.invokeMethod<bool>('pinShortcut', {'png': big, 'label': 'Prism'}) ?? false;
+      ok =
+          await AppIconService._channel.invokeMethod<bool>('pinShortcut', {
+            'png': big,
+            'label': 'Prism',
+          }) ??
+          false;
     } else {
       return false;
     }
@@ -157,7 +173,9 @@ final customAppIconProvider = FutureProvider<Uint8List?>((ref) {
   return ref.read(appIconServiceProvider).customPng();
 });
 
-final appIconServiceProvider = Provider<AppIconService>((ref) => const AppIconService());
+final appIconServiceProvider = Provider<AppIconService>(
+  (ref) => const AppIconService(),
+);
 
 class AppIconNotifier extends AsyncNotifier<String> {
   @override
@@ -176,4 +194,6 @@ class AppIconNotifier extends AsyncNotifier<String> {
   }
 }
 
-final appIconProvider = AsyncNotifierProvider<AppIconNotifier, String>(AppIconNotifier.new);
+final appIconProvider = AsyncNotifierProvider<AppIconNotifier, String>(
+  AppIconNotifier.new,
+);

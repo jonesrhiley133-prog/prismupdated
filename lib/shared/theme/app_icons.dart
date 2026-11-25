@@ -15,86 +15,150 @@ abstract final class AppIcons {
   static final navHome = PhosphorIcons.house();
   static final navHomeActive = PhosphorIcons.house(PhosphorIconsStyle.fill);
   static final navChat = PhosphorIcons.chatCircle();
-  static final navChatActive = PhosphorIcons.chatCircle(PhosphorIconsStyle.fill);
+  static final navChatActive = PhosphorIcons.chatCircle(
+    PhosphorIconsStyle.fill,
+  );
   static final navHabits = PhosphorIcons.checkCircle();
-  static final navHabitsActive = PhosphorIcons.checkCircle(PhosphorIconsStyle.fill);
+  static final navHabitsActive = PhosphorIcons.checkCircle(
+    PhosphorIconsStyle.fill,
+  );
   static final navPolls = PhosphorIcons.chartBarHorizontal();
-  static final navPollsActive = PhosphorIcons.chartBarHorizontal(PhosphorIconsStyle.fill);
+  static final navPollsActive = PhosphorIcons.chartBarHorizontal(
+    PhosphorIconsStyle.fill,
+  );
   static final navSettings = PhosphorIcons.gear();
   static final navSettingsActive = PhosphorIcons.gear(PhosphorIconsStyle.fill);
   static final navMembers = PhosphorIcons.usersThree();
-  static final navMembersActive = PhosphorIcons.usersThree(PhosphorIconsStyle.fill);
+  static final navMembersActive = PhosphorIcons.usersThree(
+    PhosphorIconsStyle.fill,
+  );
   static final navGroups = PhosphorIcons.circlesThree();
-  static final navGroupsActive = PhosphorIcons.circlesThree(PhosphorIconsStyle.fill);
+  static final navGroupsActive = PhosphorIcons.circlesThree(
+    PhosphorIconsStyle.fill,
+  );
   static final navMedia = PhosphorIcons.imagesSquare();
-  static final navMediaActive = PhosphorIcons.imagesSquare(PhosphorIconsStyle.fill);
+  static final navMediaActive = PhosphorIcons.imagesSquare(
+    PhosphorIconsStyle.fill,
+  );
   static final navReminders = PhosphorIcons.alarm();
-  static final navRemindersActive = PhosphorIcons.alarm(PhosphorIconsStyle.fill);
+  static final navRemindersActive = PhosphorIcons.alarm(
+    PhosphorIconsStyle.fill,
+  );
   static final navMood = PhosphorIcons.smiley();
   static final navMoodActive = PhosphorIcons.smiley(PhosphorIconsStyle.fill);
   static final navCalendar = PhosphorIcons.calendarDots();
-  static final navCalendarActive = PhosphorIcons.calendarDots(PhosphorIconsStyle.fill);
+  static final navCalendarActive = PhosphorIcons.calendarDots(
+    PhosphorIconsStyle.fill,
+  );
   static final repeat = PhosphorIcons.repeat();
   static final locationOn = PhosphorIcons.mapPin();
   static final calendarJumpToday = PhosphorIcons.calendarCheck();
   static final cake = PhosphorIcons.cake();
   static final funnel = PhosphorIcons.funnel();
   static final navLocations = PhosphorIcons.mapPinArea();
-  static final navLocationsActive = PhosphorIcons.mapPinArea(PhosphorIconsStyle.fill);
+  static final navLocationsActive = PhosphorIcons.mapPinArea(
+    PhosphorIconsStyle.fill,
+  );
   static final navWork = PhosphorIcons.briefcase();
   static final navWorkActive = PhosphorIcons.briefcase(PhosphorIconsStyle.fill);
   static final heartOutline = PhosphorIcons.heart();
   static final navCycle = PhosphorIcons.drop();
   static final navCycleActive = PhosphorIcons.drop(PhosphorIconsStyle.fill);
   static final navContacts = PhosphorIcons.addressBook();
-  static final navContactsActive = PhosphorIcons.addressBook(PhosphorIconsStyle.fill);
+  static final navContactsActive = PhosphorIcons.addressBook(
+    PhosphorIconsStyle.fill,
+  );
   static final navTimelineSystem = PhosphorIcons.clockCounterClockwise();
-  static final navTimelineSystemActive = PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill);
+  static final navTimelineSystemActive = PhosphorIcons.clockCounterClockwise(
+    PhosphorIconsStyle.fill,
+  );
   static final navImport = PhosphorIcons.downloadSimple();
   static final navJournal = PhosphorIcons.bookOpenText();
-  static final navJournalActive = PhosphorIcons.bookOpenText(PhosphorIconsStyle.fill);
+  static final navJournalActive = PhosphorIcons.bookOpenText(
+    PhosphorIconsStyle.fill,
+  );
   static final navDictionary = PhosphorIcons.books();
-  static final navDictionaryActive = PhosphorIcons.books(PhosphorIconsStyle.fill);
+  static final navDictionaryActive = PhosphorIcons.books(
+    PhosphorIconsStyle.fill,
+  );
   static final navAchievements = PhosphorIcons.trophy();
-  static final navAchievementsActive = PhosphorIcons.trophy(PhosphorIconsStyle.fill);
+  static final navAchievementsActive = PhosphorIcons.trophy(
+    PhosphorIconsStyle.fill,
+  );
   static final navFitness = PhosphorIcons.barbell();
-  static final navFitnessActive = PhosphorIcons.barbell(PhosphorIconsStyle.fill);
+  static final navFitnessActive = PhosphorIcons.barbell(
+    PhosphorIconsStyle.fill,
+  );
   static final navFinance = PhosphorIcons.wallet();
   static final navFinanceActive = PhosphorIcons.wallet(PhosphorIconsStyle.fill);
   static final navSchool = PhosphorIcons.graduationCap();
-  static final navSchoolActive = PhosphorIcons.graduationCap(PhosphorIconsStyle.fill);
+  static final navSchoolActive = PhosphorIcons.graduationCap(
+    PhosphorIconsStyle.fill,
+  );
   static final navRelationships = PhosphorIcons.usersThree();
-  static final navRelationshipsActive = PhosphorIcons.usersThree(PhosphorIconsStyle.fill);
+  static final navRelationshipsActive = PhosphorIcons.usersThree(
+    PhosphorIconsStyle.fill,
+  );
   static final navHeadspace = PhosphorIcons.mapTrifold();
-  static final navHeadspaceActive = PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill);
+  static final navHeadspaceActive = PhosphorIcons.mapTrifold(
+    PhosphorIconsStyle.fill,
+  );
   static final navMusic = PhosphorIcons.musicNotes();
-  static final navMusicActive = PhosphorIcons.musicNotes(PhosphorIconsStyle.fill);
+  static final navMusicActive = PhosphorIcons.musicNotes(
+    PhosphorIconsStyle.fill,
+  );
   static final navStories = PhosphorIcons.aperture();
-  static final navStoriesActive = PhosphorIcons.aperture(PhosphorIconsStyle.fill);
+  static final navStoriesActive = PhosphorIcons.aperture(
+    PhosphorIconsStyle.fill,
+  );
   static final navNutrition = PhosphorIcons.forkKnife();
-  static final navNutritionActive = PhosphorIcons.forkKnife(PhosphorIconsStyle.fill);
+  static final navNutritionActive = PhosphorIcons.forkKnife(
+    PhosphorIconsStyle.fill,
+  );
   static final navScrapbook = PhosphorIcons.books();
-  static final navScrapbookActive = PhosphorIcons.books(PhosphorIconsStyle.fill);
+  static final navScrapbookActive = PhosphorIcons.books(
+    PhosphorIconsStyle.fill,
+  );
   static final navConnections = PhosphorIcons.graph();
-  static final navConnectionsActive = PhosphorIcons.graph(PhosphorIconsStyle.fill);
+  static final navConnectionsActive = PhosphorIcons.graph(
+    PhosphorIconsStyle.fill,
+  );
   static final navAnalytics = PhosphorIcons.chartScatter();
-  static final navAnalyticsActive = PhosphorIcons.chartScatter(PhosphorIconsStyle.fill);
+  static final navAnalyticsActive = PhosphorIcons.chartScatter(
+    PhosphorIconsStyle.fill,
+  );
   static final navAvailability = PhosphorIcons.calendarCheck();
-  static final navAvailabilityActive = PhosphorIcons.calendarCheck(PhosphorIconsStyle.fill);
+  static final navAvailabilityActive = PhosphorIcons.calendarCheck(
+    PhosphorIconsStyle.fill,
+  );
   static final navIntroductions = PhosphorIcons.cards();
-  static final navIntroductionsActive = PhosphorIcons.cards(PhosphorIconsStyle.fill);
+  static final navIntroductionsActive = PhosphorIcons.cards(
+    PhosphorIconsStyle.fill,
+  );
   static final navAstro = PhosphorIcons.planet();
   static final navAstroActive = PhosphorIcons.planet(PhosphorIconsStyle.fill);
   static final navGames = PhosphorIcons.gameController();
-  static final navGamesActive = PhosphorIcons.gameController(PhosphorIconsStyle.fill);
+  static final navGamesActive = PhosphorIcons.gameController(
+    PhosphorIconsStyle.fill,
+  );
   static final navCozy = PhosphorIcons.coffee();
   static final navCozyActive = PhosphorIcons.coffee(PhosphorIconsStyle.fill);
+  static final navExperiences = PhosphorIcons.sparkle();
+  static final navExperiencesActive = PhosphorIcons.sparkle(
+    PhosphorIconsStyle.fill,
+  );
   static final navHealth = PhosphorIcons.firstAid();
-  static final navHealthActive = PhosphorIcons.firstAid(PhosphorIconsStyle.fill);
+  static final navHealthActive = PhosphorIcons.firstAid(
+    PhosphorIconsStyle.fill,
+  );
   static final navSocial = PhosphorIcons.usersFour();
-  static final navSocialActive = PhosphorIcons.usersFour(PhosphorIconsStyle.fill);
+  static final navSocialActive = PhosphorIcons.usersFour(
+    PhosphorIconsStyle.fill,
+  );
   static final navSubsystems = PhosphorIcons.treeStructure();
-  static final navSubsystemsActive = PhosphorIcons.treeStructure(PhosphorIconsStyle.fill);
+  static final navSubsystemsActive = PhosphorIcons.treeStructure(
+    PhosphorIconsStyle.fill,
+  );
   static final whatsNew = PhosphorIcons.megaphone();
   static final privateLock = PhosphorIcons.lockSimple();
   static final privateEyeSlash = PhosphorIcons.eyeSlash();
@@ -104,15 +168,23 @@ abstract final class AppIcons {
   static final patterns = PhosphorIcons.chartScatter();
   static final dashboardCustomize = PhosphorIcons.slidersHorizontal();
   static final navInsights = PhosphorIcons.sparkle();
-  static final navInsightsActive = PhosphorIcons.sparkle(PhosphorIconsStyle.fill);
+  static final navInsightsActive = PhosphorIcons.sparkle(
+    PhosphorIconsStyle.fill,
+  );
   static final navNotes = PhosphorIcons.notepad();
   static final navNotesActive = PhosphorIcons.notepad(PhosphorIconsStyle.fill);
   static final navStatistics = PhosphorIcons.chartBar();
-  static final navStatisticsActive = PhosphorIcons.chartBar(PhosphorIconsStyle.fill);
+  static final navStatisticsActive = PhosphorIcons.chartBar(
+    PhosphorIconsStyle.fill,
+  );
   static final navTimeline = PhosphorIcons.columns();
-  static final navTimelineActive = PhosphorIcons.columns(PhosphorIconsStyle.fill);
+  static final navTimelineActive = PhosphorIcons.columns(
+    PhosphorIconsStyle.fill,
+  );
   static final navSleep = PhosphorIcons.moonStars();
-  static final navSleepActive = PhosphorIcons.moonStars(PhosphorIconsStyle.fill);
+  static final navSleepActive = PhosphorIcons.moonStars(
+    PhosphorIconsStyle.fill,
+  );
   // Boards nav tab — PhosphorIcons.chats() (multiple chat bubbles) represents
   // a message board surface. No dedicated board/forum/feed duotone icon exists
   // in the current icon set; chats() is semantically correct for this surface.
@@ -143,7 +215,9 @@ abstract final class AppIcons {
   static final checkCircleOutline = PhosphorIcons.checkCircle();
   static final checkCircleOutlineRounded = PhosphorIcons.checkCircle();
   static final checkBoxOutlined = PhosphorIcons.checkSquare();
-  static final radioButtonChecked = PhosphorIcons.radioButton(PhosphorIconsStyle.fill);
+  static final radioButtonChecked = PhosphorIcons.radioButton(
+    PhosphorIconsStyle.fill,
+  );
   static final radioButtonUnchecked = PhosphorIcons.circle();
   static final delete = PhosphorIcons.trash();
   static final deleteOutline = PhosphorIcons.trash();
@@ -406,7 +480,9 @@ abstract final class AppIcons {
 
   static final poll = PhosphorIcons.chartBarHorizontal(PhosphorIconsStyle.fill);
   static final pollOutlined = PhosphorIcons.chartBarHorizontal();
-  static final howToVote = PhosphorIcons.checkSquareOffset(PhosphorIconsStyle.fill);
+  static final howToVote = PhosphorIcons.checkSquareOffset(
+    PhosphorIconsStyle.fill,
+  );
   static final howToVoteOutlined = PhosphorIcons.checkSquareOffset();
   static final barChart = PhosphorIcons.chartBar(PhosphorIconsStyle.fill);
   static final barChartOutlined = PhosphorIcons.chartBar();
@@ -414,46 +490,102 @@ abstract final class AppIcons {
   // ── Feature display (duotone) ─────────────────────────────────────────
   // Use with PhosphorIcon() widget for the two-layer rendering.
 
-  static final duotoneFronting = PhosphorIcons.handWaving(PhosphorIconsStyle.duotone);
-  static final duotoneChat = PhosphorIcons.chatCircle(PhosphorIconsStyle.duotone);
-  static final duotoneSleep = PhosphorIcons.moonStars(PhosphorIconsStyle.duotone);
-  static final duotoneHabits = PhosphorIcons.checkCircle(PhosphorIconsStyle.duotone);
-  static final duotoneMembers = PhosphorIcons.usersThree(PhosphorIconsStyle.duotone);
+  static final duotoneFronting = PhosphorIcons.handWaving(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneChat = PhosphorIcons.chatCircle(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneSleep = PhosphorIcons.moonStars(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneHabits = PhosphorIcons.checkCircle(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneMembers = PhosphorIcons.usersThree(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneNotes = PhosphorIcons.notepad(PhosphorIconsStyle.duotone);
-  static final duotonePolls = PhosphorIcons.chartBarHorizontal(PhosphorIconsStyle.duotone);
-  static final duotoneReminders = PhosphorIcons.alarm(PhosphorIconsStyle.duotone);
-  static final duotoneGroups = PhosphorIcons.circlesThree(PhosphorIconsStyle.duotone);
-  static final duotoneCustomFields = PhosphorIcons.notePencil(PhosphorIconsStyle.duotone);
-  static final duotoneTheme = PhosphorIcons.swatches(PhosphorIconsStyle.duotone);
-  static final duotoneEncryption = PhosphorIcons.shieldCheck(PhosphorIconsStyle.duotone);
-  static final duotoneSync = PhosphorIcons.arrowsClockwise(PhosphorIconsStyle.duotone);
-  static final duotoneOpenSource = PhosphorIcons.code(PhosphorIconsStyle.duotone);
-  static final duotoneDevices = PhosphorIcons.devices(PhosphorIconsStyle.duotone);
-  static final duotoneStatistics = PhosphorIcons.chartBar(PhosphorIconsStyle.duotone);
+  static final duotonePolls = PhosphorIcons.chartBarHorizontal(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneReminders = PhosphorIcons.alarm(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneGroups = PhosphorIcons.circlesThree(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneCustomFields = PhosphorIcons.notePencil(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneTheme = PhosphorIcons.swatches(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneEncryption = PhosphorIcons.shieldCheck(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneSync = PhosphorIcons.arrowsClockwise(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneOpenSource = PhosphorIcons.code(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneDevices = PhosphorIcons.devices(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneStatistics = PhosphorIcons.chartBar(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneSettings = PhosphorIcons.gear(PhosphorIconsStyle.duotone);
   static final duotonePerson = PhosphorIcons.user(PhosphorIconsStyle.duotone);
-  static final duotoneSearch = PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.duotone);
-  static final duotoneImport = PhosphorIcons.fileArrowUp(PhosphorIconsStyle.duotone);
-  static final duotoneExport = PhosphorIcons.fileArrowDown(PhosphorIconsStyle.duotone);
+  static final duotoneSearch = PhosphorIcons.magnifyingGlass(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneImport = PhosphorIcons.fileArrowUp(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneExport = PhosphorIcons.fileArrowDown(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneData = PhosphorIcons.database(PhosphorIconsStyle.duotone);
   static final duotoneKey = PhosphorIcons.key(PhosphorIconsStyle.duotone);
   static final duotoneLock = PhosphorIcons.lock(PhosphorIconsStyle.duotone);
   static final duotoneCloud = PhosphorIcons.cloud(PhosphorIconsStyle.duotone);
-  static final duotoneCloudCheck = PhosphorIcons.cloudCheck(PhosphorIconsStyle.duotone);
-  static final duotoneCloudOff = PhosphorIcons.cloudSlash(PhosphorIconsStyle.duotone);
-  static final duotoneNotifications = PhosphorIcons.bell(PhosphorIconsStyle.duotone);
-  static final duotoneCalendar = PhosphorIcons.calendarBlank(PhosphorIconsStyle.duotone);
+  static final duotoneCloudCheck = PhosphorIcons.cloudCheck(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneCloudOff = PhosphorIcons.cloudSlash(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneNotifications = PhosphorIcons.bell(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneCalendar = PhosphorIcons.calendarBlank(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneFolder = PhosphorIcons.folder(PhosphorIconsStyle.duotone);
   static final duotoneInfo = PhosphorIcons.info(PhosphorIconsStyle.duotone);
-  static final duotoneWarning = PhosphorIcons.warning(PhosphorIconsStyle.duotone);
-  static final duotoneSuccess = PhosphorIcons.checkCircle(PhosphorIconsStyle.duotone);
-  static final duotoneError = PhosphorIcons.warningCircle(PhosphorIconsStyle.duotone);
+  static final duotoneWarning = PhosphorIcons.warning(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneSuccess = PhosphorIcons.checkCircle(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneError = PhosphorIcons.warningCircle(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneStar = PhosphorIcons.star(PhosphorIconsStyle.duotone);
   static final duotoneFlame = PhosphorIcons.flame(PhosphorIconsStyle.duotone);
   static final duotoneTrophy = PhosphorIcons.trophy(PhosphorIconsStyle.duotone);
   static final duotoneHome = PhosphorIcons.house(PhosphorIconsStyle.duotone);
-  static final duotoneSharing = PhosphorIcons.shareNetwork(PhosphorIconsStyle.duotone);
-  static final duotonePluralKit = PhosphorIcons.plugs(PhosphorIconsStyle.duotone);
-  static final duotoneMigration = PhosphorIcons.arrowsLeftRight(PhosphorIconsStyle.duotone);
+  static final duotoneSharing = PhosphorIcons.shareNetwork(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotonePluralKit = PhosphorIcons.plugs(
+    PhosphorIconsStyle.duotone,
+  );
+  static final duotoneMigration = PhosphorIcons.arrowsLeftRight(
+    PhosphorIconsStyle.duotone,
+  );
   static final duotoneQrCode = PhosphorIcons.qrCode(PhosphorIconsStyle.duotone);
 }

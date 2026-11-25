@@ -40,8 +40,8 @@ class PinLockService {
   PinLockService({
     LocalAuthentication? localAuth,
     KeychainDegradedStateService? degradedState,
-  })  : _localAuth = localAuth ?? LocalAuthentication(),
-        _degradedState = degradedState ?? KeychainDegradedStateService();
+  }) : _localAuth = localAuth ?? LocalAuthentication(),
+       _degradedState = degradedState ?? KeychainDegradedStateService();
 
   final LocalAuthentication _localAuth;
   final KeychainDegradedStateService _degradedState;

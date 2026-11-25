@@ -24,6 +24,11 @@ abstract final class DashboardWidgetId {
   static const frontingRoles = 'fronting_roles';
   static const health = 'health_today';
   static const companion = 'companion';
+  // Experiences modules.
+  static const memoryOfDay = 'memory_of_day';
+  static const wrapped = 'wrapped';
+  static const passportStamps = 'passport_stamps';
+  static const habitat = 'habitat';
 
   /// Cards whose size can be switched between compact and full.
   static const resizable = {health, companion};
@@ -34,6 +39,10 @@ abstract final class DashboardWidgetId {
     now,
     health,
     companion,
+    memoryOfDay,
+    wrapped,
+    passportStamps,
+    habitat,
     quickActions,
     howWeFeel,
     insight,
@@ -55,6 +64,8 @@ abstract final class DashboardWidgetId {
     now,
     health,
     companion,
+    memoryOfDay,
+    wrapped,
     quickActions,
     howWeFeel,
     insight,

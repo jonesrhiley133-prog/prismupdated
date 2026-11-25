@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
+import 'package:prism_plurality/features/experiences/experiences_hub.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
 import 'package:prism_plurality/features/online_games/online_screens.dart';
 import 'package:prism_plurality/features/account/account_screens.dart';
@@ -245,6 +246,9 @@ final _healthNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'health');
 final _astroNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'astro');
 final _gamesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'games');
 final _cozyNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cozy');
+final _experiencesNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'experiences',
+);
 final _introductionsNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'introductions',
 );
@@ -492,7 +496,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           key: state.pageKey,
           fullscreenDialog: true,
           child: const WhosThereScreen(),
-          transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: ScaleTransition(scale: Tween(begin: 1.04, end: 1.0).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)), child: child)),
+          transitionsBuilder: (context, animation, _, child) => FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween(begin: 1.04, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              ),
+              child: child,
+            ),
+          ),
         ),
       ),
       GoRoute(
@@ -1789,7 +1801,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'alter/:id',
                     builder: (context, state) => AstroAlterScreen(
-                      key: ValueKey('${state.pathParameters['id']}|${state.uri.query}'),
+                      key: ValueKey(
+                        '${state.pathParameters['id']}|${state.uri.query}',
+                      ),
                       memberId: state.pathParameters['id']!,
                       section: state.uri.queryParameters['section'],
                     ),
@@ -1804,7 +1818,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.games,
-                builder: (context, state) => GamesHubScreen(key: ValueKey(state.uri.query), tab: state.uri.queryParameters['tab']),
+                builder: (context, state) => GamesHubScreen(
+                  key: ValueKey(state.uri.query),
+                  tab: state.uri.queryParameters['tab'],
+                ),
                 routes: [
                   GoRoute(
                     path: 'play/:id',
@@ -1818,7 +1835,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: 'night/:id',
-                    builder: (context, state) => GameNightScreen(nightId: state.pathParameters['id']!),
+                    builder: (context, state) =>
+                        GameNightScreen(nightId: state.pathParameters['id']!),
                   ),
                 ],
               ),
@@ -1830,13 +1848,27 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.cozy,
-                builder: (context, state) => CozyHubScreen(key: ValueKey(state.uri.query), tab: state.uri.queryParameters['tab']),
+                builder: (context, state) => CozyHubScreen(
+                  key: ValueKey(state.uri.query),
+                  tab: state.uri.queryParameters['tab'],
+                ),
                 routes: [
                   GoRoute(
                     path: 'room/:id',
-                    builder: (context, state) => CozyRoomScreen(roomId: state.pathParameters['id']!),
+                    builder: (context, state) =>
+                        CozyRoomScreen(roomId: state.pathParameters['id']!),
                   ),
                 ],
+              ),
+            ],
+          ),
+          // Branch 43: Experiences (companions, passports, Wrapped)
+          StatefulShellBranch(
+            navigatorKey: _experiencesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.experiences,
+                builder: (context, state) => const ExperiencesHubScreen(),
               ),
             ],
           ),

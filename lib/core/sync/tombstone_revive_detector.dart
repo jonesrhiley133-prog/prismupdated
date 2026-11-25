@@ -92,7 +92,10 @@ class TombstoneRevivedRowsDetector {
       if (row.isDeleted) continue;
       final pkUuid = row.pluralkitUuid;
       if (pkUuid == null || pkUuid.isEmpty) continue;
-      final entityId = deriveGroupIncarnationEntityId(pkUuid, row.syncGeneration);
+      final entityId = deriveGroupIncarnationEntityId(
+        pkUuid,
+        row.syncGeneration,
+      );
       if (await gate.isTombstoned(_groupTable, entityId)) {
         diverged.add(entityId);
       }
@@ -200,8 +203,7 @@ class TombstoneRevivedRowsReport {
   final TombstoneRevivedTableResult sentinelMember;
 
   /// Total diverged rows across all surfaces.
-  int get totalDiverged =>
-      groups.count + entries.count + sentinelMember.count;
+  int get totalDiverged => groups.count + entries.count + sentinelMember.count;
 
   bool get hasDivergence => totalDiverged > 0;
 

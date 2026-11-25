@@ -754,7 +754,8 @@ Future<void> _releaseDeletedPkIdentityHoldersForMemberApply(
           .get();
   for (final holder in deletedHolders) {
     final holderUuid = _nonEmptySyncString(holder.pluralkitUuid);
-    final staleShortIdConflict = normalizedPkUuid != null &&
+    final staleShortIdConflict =
+        normalizedPkUuid != null &&
         holderUuid != null &&
         holderUuid != normalizedPkUuid;
     await (db.update(db.members)..where((t) => t.id.equals(holder.id))).write(
@@ -948,10 +949,11 @@ Future<MemberGroupRow?> _memberGroupRowByPkGroupUuid(
   // a deleted UUID row must still block an unrelated canonical-id fallback.
   final activeRows = preferIndexedActive
       ? await (db.select(db.memberGroups)..where(
-          (t) =>
-              t.pluralkitUuid.equals(pkGroupUuid) &
-              t.isDeleted.equalsExp(const Constant(false)),
-        )).get()
+              (t) =>
+                  t.pluralkitUuid.equals(pkGroupUuid) &
+                  t.isDeleted.equalsExp(const Constant(false)),
+            ))
+            .get()
       : <MemberGroupRow>[];
   final rows = activeRows.isNotEmpty
       ? activeRows
@@ -2147,9 +2149,11 @@ Future<String?> _resolveMemberIdentityAliasHolder(
   for (final holder in holders) {
     if (!holder.createdAt.isAfter(alias.createdAt)) return holder.id;
   }
-  final fallback = await (db.select(db.members)
-        ..where((t) => t.id.equals(alias.targetRowId) & t.isDeleted.equals(false)))
-      .getSingleOrNull();
+  final fallback =
+      await (db.select(db.members)..where(
+            (t) => t.id.equals(alias.targetRowId) & t.isDeleted.equals(false),
+          ))
+          .getSingleOrNull();
   return fallback?.id;
 }
 
@@ -2215,9 +2219,11 @@ Future<String?> _resolveFrontingIdentityAliasHolder(
   for (final holder in holders) {
     if (!holder.startTime.isAfter(alias.createdAt)) return holder.id;
   }
-  final fallback = await (db.select(db.frontingSessions)
-        ..where((t) => t.id.equals(alias.targetRowId) & t.isDeleted.equals(false)))
-      .getSingleOrNull();
+  final fallback =
+      await (db.select(db.frontingSessions)..where(
+            (t) => t.id.equals(alias.targetRowId) & t.isDeleted.equals(false),
+          ))
+          .getSingleOrNull();
   return fallback?.id;
 }
 
@@ -2588,15 +2594,13 @@ DriftSyncEntity _membersEntity(
         final identityRows = <Member>[];
         for (final row in activeIdentityRows) {
           final rowUuid = _nonEmptySyncString(row.pluralkitUuid);
-          final staleShortIdConflict = normalizedIncomingUuid != null &&
+          final staleShortIdConflict =
+              normalizedIncomingUuid != null &&
               rowUuid != null &&
               rowUuid != normalizedIncomingUuid;
           if (staleShortIdConflict) {
-            await (db.update(
-              db.members,
-            )..where((t) => t.id.equals(row.id))).write(
-              const MembersCompanion(pluralkitId: Value(null)),
-            );
+            await (db.update(db.members)..where((t) => t.id.equals(row.id)))
+                .write(const MembersCompanion(pluralkitId: Value(null)));
             continue;
           }
           identityRows.add(row);
@@ -2623,11 +2627,14 @@ DriftSyncEntity _membersEntity(
           //    update it directly (mirrors the tombstone existing==null guard);
           //  - identity-verified holder: the resolver matches only a row still
           //    holding the alias's identity, never the target_row_id fallback.
-          final incomingIsIdentityFree = normalizedIncomingUuid == null &&
+          final incomingIsIdentityFree =
+              normalizedIncomingUuid == null &&
               _nonEmptySyncString(nextPkId) == null;
           if (incomingIsIdentityFree) {
-            final aliasHolderId =
-                await _resolveRedirectedMemberHolderForApply(db, id);
+            final aliasHolderId = await _resolveRedirectedMemberHolderForApply(
+              db,
+              id,
+            );
             if (aliasHolderId != null && aliasHolderId != id) {
               final existingAtId = await (db.select(
                 db.members,
@@ -2690,11 +2697,9 @@ DriftSyncEntity _membersEntity(
               'AND w.member_id = ? AND w.id != fronting_sessions.id)',
               [id, targetId],
             );
-            await (db.update(
-              db.frontingSessions,
-            )..where((t) => t.memberId.equals(id))).write(
-              FrontingSessionsCompanion(memberId: Value(targetId)),
-            );
+            await (db.update(db.frontingSessions)
+                  ..where((t) => t.memberId.equals(id)))
+                .write(FrontingSessionsCompanion(memberId: Value(targetId)));
           }
         }
       }
@@ -2860,9 +2865,7 @@ DriftSyncEntity _membersEntity(
       if (holderId != null &&
           holderId != id &&
           holderId != unknownSentinelMemberId) {
-        await (db.delete(
-          db.members,
-        )..where((t) => t.id.equals(holderId))).go();
+        await (db.delete(db.members)..where((t) => t.id.equals(holderId))).go();
         // The holder was found by re-resolving the alias identity, not
         // necessarily by its recorded target_row_id. Purge EVERY alias of this
         // identity (not just target == holderId): a sibling alias
@@ -3077,10 +3080,8 @@ DriftSyncEntity _frontingSessionsEntity(
           // tombstone it (fall through to the companion write). NO alias ->
           // keep the existing early-return exactly. Redirects that predate this
           // machinery recorded no alias — delete again on the surviving device.
-          tombstoneAlias = await db.pkIdentitySyncAliasesDao.getByLegacyEntityId(
-            'fronting_sessions',
-            id,
-          );
+          tombstoneAlias = await db.pkIdentitySyncAliasesDao
+              .getByLegacyEntityId('fronting_sessions', id);
           final holderId = await _resolveFrontingIdentityAliasHolder(db, id);
           if (holderId == null || holderId == id) return;
           targetId = holderId;
@@ -4834,7 +4835,9 @@ DriftSyncEntity _locationSessionsEntity(
       );
     },
     hardDelete: (String id) async {
-      await (db.delete(db.locationSessions)..where((t) => t.id.equals(id))).go();
+      await (db.delete(
+        db.locationSessions,
+      )..where((t) => t.id.equals(id))).go();
     },
     readRow: (String id) async {
       final row = await (db.select(
@@ -4862,8 +4865,7 @@ DriftSyncEntity _jobsEntity(
 ) {
   return DriftSyncEntity(
     tableName: 'jobs',
-    toSyncFields: (dynamic row) =>
-        JobMapper.syncFieldsFromRow(row as JobRow),
+    toSyncFields: (dynamic row) => JobMapper.syncFieldsFromRow(row as JobRow),
     applyFields: (String id, Map<String, dynamic> fields) async {
       final f = _FieldContext(
         entityType: 'jobs',
@@ -4884,12 +4886,7 @@ DriftSyncEntity _jobsEntity(
         modifiedAt: f.dateTimeField('modified_at'),
         isDeleted: f.boolField('is_deleted'),
       );
-      await _insertOrUpdateById(
-        db,
-        db.jobs,
-        companion,
-        (t) => t.id.equals(id),
-      );
+      await _insertOrUpdateById(db, db.jobs, companion, (t) => t.id.equals(id));
     },
     hardDelete: (String id) async {
       await (db.delete(db.jobs)..where((t) => t.id.equals(id))).go();
@@ -6265,7 +6262,6 @@ DriftSyncEntity _memberBoardPostsEntity(
     },
   );
 }
-
 
 DriftSyncEntity _pluralPortUnsupportedEntity(
   AppDatabase db,

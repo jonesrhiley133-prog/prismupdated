@@ -277,7 +277,8 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
       variables: [Variable.withString(id)],
       readsFrom: {members},
     ).watchSingleOrNull().map((row) {
-      if (row == null || row.read<bool>('profile_header_visible') == false) return null;
+      if (row == null || row.read<bool>('profile_header_visible') == false)
+        return null;
       final prism = row.read<Uint8List?>('profile_header_image_data');
       final pk = row.read<Uint8List?>('pk_banner_image_data');
       // Source 0 = PluralKit, 1 = Prism (MemberProfileHeaderSource order).

@@ -17,8 +17,7 @@ class ChatTimestampConverter extends TypeConverter<DateTime, int> {
 class ChatMessages extends Table {
   TextColumn get id => text()();
   TextColumn get content => text()();
-  IntColumn get timestamp =>
-      integer().map(const ChatTimestampConverter())();
+  IntColumn get timestamp => integer().map(const ChatTimestampConverter())();
   BoolColumn get isSystemMessage =>
       boolean().withDefault(const Constant(false))();
   DateTimeColumn get editedAt => dateTime().nullable()();

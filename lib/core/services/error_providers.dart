@@ -51,5 +51,5 @@ class ErrorHistoryNotifier extends Notifier<List<AppError>> {
 
 final errorHistoryProvider =
     NotifierProvider<ErrorHistoryNotifier, List<AppError>>(
-  ErrorHistoryNotifier.new,
-);
+      ErrorHistoryNotifier.new,
+    );

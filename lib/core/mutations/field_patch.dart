@@ -23,10 +23,7 @@ sealed class FieldPatch<T> {
   }
 
   Value<T?> toDriftValue() {
-    return when(
-      absent: () => const Value.absent(),
-      value: Value.new,
-    );
+    return when(absent: () => const Value.absent(), value: Value.new);
   }
 
   R when<R>({

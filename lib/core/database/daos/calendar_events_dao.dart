@@ -23,9 +23,8 @@ class CalendarEventsDao extends DatabaseAccessor<AppDatabase>
             ..orderBy([(e) => OrderingTerm.asc(e.startAt)]))
           .get();
 
-  Future<CalendarEventRow?> getById(String id) => (select(
-    calendarEvents,
-  )..where((e) => e.id.equals(id))).getSingleOrNull();
+  Future<CalendarEventRow?> getById(String id) =>
+      (select(calendarEvents)..where((e) => e.id.equals(id))).getSingleOrNull();
 
   Future<int> create(CalendarEventsCompanion companion) =>
       into(calendarEvents).insert(companion);

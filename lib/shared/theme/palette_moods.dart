@@ -65,15 +65,17 @@ abstract final class PaletteMoods {
     PaletteMood.content => DynamicSchemeVariant.content,
     PaletteMood.rainbow => DynamicSchemeVariant.rainbow,
     PaletteMood.fruitSalad => DynamicSchemeVariant.fruitSalad,
-    PaletteMood.neon || PaletteMood.sunset || PaletteMood.candy =>
-      DynamicSchemeVariant.vibrant,
+    PaletteMood.neon ||
+    PaletteMood.sunset ||
+    PaletteMood.candy => DynamicSchemeVariant.vibrant,
     PaletteMood.jewel => DynamicSchemeVariant.fidelity,
     PaletteMood.earthy => DynamicSchemeVariant.neutral,
     _ => DynamicSchemeVariant.tonalSpot,
   };
 
   /// True for moods that place their own accents (beyond a Material variant).
-  static bool isPrismMood(PaletteMood mood) => mood.index >= PaletteMood.pastel.index;
+  static bool isPrismMood(PaletteMood mood) =>
+      mood.index >= PaletteMood.pastel.index;
 
   /// Moods whose surfaces carry more of the accent colour.
   static bool isColourful(PaletteMood mood) => switch (mood) {
@@ -147,8 +149,7 @@ abstract final class PaletteMoods {
     final h = hct.hue;
     // Grey seeds still get a colour to build harmonies from.
     final c = hct.chroma < 8 ? 36.0 : hct.chroma;
-    _Accent a(double hue, double chroma) =>
-        (hue: _wrap(hue), chroma: chroma);
+    _Accent a(double hue, double chroma) => (hue: _wrap(hue), chroma: chroma);
     double toward(double from, double to, double amount) {
       final d = ((to - from + 540) % 360) - 180;
       return from + d * amount;

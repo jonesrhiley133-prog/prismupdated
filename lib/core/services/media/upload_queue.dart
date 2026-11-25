@@ -284,7 +284,9 @@ class UploadQueue {
   void _emitProgress(String mediaId, UploadState state, {String? error}) {
     final controller = _progressControllers[mediaId];
     if (controller == null || controller.isClosed) return;
-    controller.add(UploadProgress(mediaId: mediaId, state: state, error: error));
+    controller.add(
+      UploadProgress(mediaId: mediaId, state: state, error: error),
+    );
     // Free the controller once the upload reaches a terminal state. The queue is
     // a long-lived singleton (dispose ~never runs in normal use), so without
     // this the map would grow one controller per distinct media id ever streamed

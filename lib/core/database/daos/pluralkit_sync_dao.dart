@@ -17,17 +17,17 @@ class PluralKitSyncDao extends DatabaseAccessor<AppDatabase>
       const PluralKitSyncStateCompanion(id: Value(_configId)),
       mode: InsertMode.insertOrIgnore,
     );
-    return (select(pluralKitSyncState)
-          ..where((s) => s.id.equals(_configId)))
-        .getSingle();
+    return (select(
+      pluralKitSyncState,
+    )..where((s) => s.id.equals(_configId))).getSingle();
   }
 
   Stream<PluralKitSyncStateData> watchSyncState() async* {
     // Ensure the row exists before the watch query runs.
     await getSyncState();
-    yield* (select(pluralKitSyncState)
-          ..where((s) => s.id.equals(_configId)))
-        .watchSingle();
+    yield* (select(
+      pluralKitSyncState,
+    )..where((s) => s.id.equals(_configId))).watchSingle();
   }
 
   Future<void> upsertSyncState(PluralKitSyncStateCompanion state) =>
@@ -51,7 +51,8 @@ class PluralKitSyncDao extends DatabaseAccessor<AppDatabase>
       final current = await getSyncState();
       final currentTs = current.switchCursorTimestamp;
       final currentId = current.switchCursorId;
-      final isNewer = currentTs == null ||
+      final isNewer =
+          currentTs == null ||
           timestamp.isAfter(currentTs) ||
           (timestamp.isAtSameMomentAs(currentTs) &&
               (currentId == null || switchId.compareTo(currentId) > 0));
