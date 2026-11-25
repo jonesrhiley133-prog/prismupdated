@@ -210,6 +210,12 @@ class ExperiencesHubScreen extends ConsumerWidget {
                         : '${wraps.length} recap${wraps.length == 1 ? '' : 's'}',
                     onTap: () => context.push(AppRoutePaths.wrapped),
                   ),
+                  _Tile(
+                    emoji: '🏳️‍🌈',
+                    title: 'Flag Studio',
+                    subtitle: 'Design flags for your system and identities',
+                    onTap: () => context.push(AppRoutePaths.flags),
+                  ),
                 ];
                 if (cols == 1)
                   return Column(

@@ -379,7 +379,7 @@ final List<PrismFeature> prismFeatures = [
     id: 'experiences',
     name: ('Experiences', 'Experiencias'),
     description: (
-      'Virtual companions, habitats and photo mode; passports with stamps; and Wrapped recaps of what you played, made and celebrated.',
+      'Virtual companions, habitats and photo mode; wallets with ID cards and passports; Flag Studio; and Wrapped recaps of what you played, made and celebrated.',
       'Compañeros virtuales, hábitats y modo foto; pasaportes con sellos; y resúmenes Wrapped de lo que jugaste, creaste y celebraste.',
     ),
     category: FeatureCategory.social,
@@ -408,6 +408,7 @@ final List<PrismFeature> prismFeatures = [
         TrackerKind.wallet,
         TrackerKind.walletCard,
         TrackerKind.walletIdentity,
+        TrackerKind.flag,
       ],
     ),
   ),

@@ -187,6 +187,9 @@ abstract final class TrackerKind {
   static const walletCard = 'wallet.card';
   static const walletIdentity = 'wallet.identity';
 
+  // Flag Studio.
+  static const flag = 'flag.design';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

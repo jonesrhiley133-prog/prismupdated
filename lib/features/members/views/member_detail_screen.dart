@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:prism_plurality/features/wallets/wallet_screens.dart' show PrimaryIdCardTile;
+import 'package:prism_plurality/features/flags/flag_screens.dart'
+    show FlagStrip;
+import 'package:prism_plurality/features/wallets/wallet_screens.dart'
+    show PrimaryIdCardTile;
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/shared/theme/palette_moods.dart';
@@ -17,7 +20,8 @@ import 'package:prism_plurality/features/intro_cards/intro_cards_screen.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
-import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroProfileModule;
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
+    show AstroProfileModule;
 import 'package:intl/intl.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -323,6 +327,7 @@ class _MemberDetailBody extends ConsumerWidget {
       MemberStatusPanel(memberId: member.id),
       MemberIntroCardTile(memberId: member.id),
       PrimaryIdCardTile(memberId: member.id),
+      FlagStrip(owner: member.id),
       MemberRelationshipsSection(memberId: member.id),
       RelatedRecordsSection(self: RecordRef(RecordRef.member, member.id)),
       const SizedBox(height: 24),
@@ -551,7 +556,9 @@ class _MemberProfileTheme extends StatelessWidget {
     }
     final accent = accentColor;
     if (accent == null) {
-      return identical(base, baseTheme) ? child : Theme(data: base, child: child);
+      return identical(base, baseTheme)
+          ? child
+          : Theme(data: base, child: child);
     }
 
     // The alter's colour becomes the accent; the active appearance preset
@@ -580,14 +587,19 @@ class _AstroSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!AstroProfileModule.visible(ref, member.id)) return const SizedBox.shrink();
+    if (!AstroProfileModule.visible(ref, member.id))
+      return const SizedBox.shrink();
     final theme = Theme.of(context);
     return _SectionCard(
       icon: AppIcons.navAstro,
       title: tr(context, 'Astrology', 'Astrología'),
       theme: theme,
       child: PrismSurface(
-        child: AstroProfileModule(member: member, accent: theme.colorScheme.primary, showTitle: false),
+        child: AstroProfileModule(
+          member: member,
+          accent: theme.colorScheme.primary,
+          showTitle: false,
+        ),
       ),
     );
   }
