@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
+import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
 import 'package:prism_plurality/features/online_games/online_screens.dart';
 import 'package:prism_plurality/features/account/account_screens.dart';
@@ -528,6 +529,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.passports,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const PassportLibraryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.wrapped,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WrappedHomeScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.onlineGames,

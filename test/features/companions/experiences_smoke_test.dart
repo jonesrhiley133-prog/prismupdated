@@ -14,6 +14,7 @@ import 'package:prism_plurality/features/passport/passport_book.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
+import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
 import 'package:prism_plurality/l10n/app_localizations.dart';
 import 'package:prism_plurality/shared/theme/app_theme.dart';
 
@@ -33,6 +34,14 @@ final seed = [
   rec('pg2', TrackerKind.passportPage, title: 'Timeline', parent: 'p1', fields: {'type': 'timeline'}, order: 1),
   rec('s1', TrackerKind.passportStamp, title: 'Beach day', parent: 'p1', fields: {'category': 'places', 'design': {'shape': 'ticket', 'text': 'Beach'}}),
   rec('e1', TrackerKind.passportElement, parent: 'pg1', fields: {'type': 'stamp', 'stamp': 's1'}),
+  rec('w1', TrackerKind.wrapSnapshot, title: 'November 2026', fields: {
+    'period': 'monthly', 'from': '2026-11-01T00:00:00.000', 'to': '2026-12-01T00:00:00.000', 'scope': {'type': 'system', 'ids': []}, 'style': {'style': 'celestial'},
+    'cards': [
+      {'id': 'intro', 'kind': 'intro', 'title': 'November 2026', 'headline': '5 moments'},
+      {'id': 'games', 'kind': 'games', 'title': 'Games you played', 'headline': '3 game sessions', 'items': [['Chess', '2 times', '🎮']]},
+      {'id': 'closing', 'kind': 'closing', 'title': 'Thanks for being here'},
+    ],
+  }),
 ];
 
 Widget app(Widget home) => ProviderScope(
@@ -75,6 +84,25 @@ void main() {
     expect(t.takeException(), isNull);
     expect(find.text('Summer'), findsWidgets);
     await t.pumpWidget(app(const PassportBookScreen(passportId: 'p1')));
+    await settle(t);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('wrapped archive, studio, player and export open', (t) async {
+    for (final screen in const <Widget>[WrappedHomeScreen(), WrapStudioScreen(snapshotId: 'w1'), WrapExportScreen(snapshotId: 'w1'), WrapCreateScreen(), WrapAttributionScreen(snapshotId: 'w1'), WrapSettingsScreen()]) {
+      await t.pumpWidget(app(screen));
+      await settle(t);
+      expect(t.takeException(), isNull, reason: '$screen');
+      if (screen is WrapExportScreen) expect(find.text('SHARE 3 OF 3 CARDS'), findsOneWidget);
+    }
+    await t.pumpWidget(app(const WrappedHomeScreen()));
+    await settle(t);
+    expect(find.text('November 2026'), findsWidgets);
+    await t.tap(find.text('November 2026').first);
+    await settle(t);
+    expect(t.takeException(), isNull);
+    await t.tapAt(const Offset(700, 400));
     await settle(t);
     expect(t.takeException(), isNull);
     await t.pumpWidget(const SizedBox());
