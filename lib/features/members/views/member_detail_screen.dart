@@ -232,7 +232,7 @@ class _MemberDetailBody extends ConsumerWidget {
           ).select((p) => p?.lookStr('pageMode', 'app')),
         ),
       ),
-      child: screen,
+      child: AlterAccentScope(accent: memberAccent, child: screen),
     );
   }
 
@@ -1231,4 +1231,44 @@ class _MoreMenuButton extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Tells picture backgrounds which alter's accent to follow while this
+/// profile is on screen, and lets go when it leaves.
+class AlterAccentScope extends StatefulWidget {
+  const AlterAccentScope({
+    super.key,
+    required this.accent,
+    required this.child,
+  });
+  final Color? accent;
+  final Widget child;
+  @override
+  State<AlterAccentScope> createState() => _AlterAccentScopeState();
+}
+
+class _AlterAccentScopeState extends State<AlterAccentScope> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) viewedAlterAccent.value = widget.accent;
+    });
+  }
+
+  @override
+  void didUpdateWidget(AlterAccentScope old) {
+    super.didUpdateWidget(old);
+    if (old.accent != widget.accent) viewedAlterAccent.value = widget.accent;
+  }
+
+  @override
+  void dispose() {
+    if (viewedAlterAccent.value == widget.accent)
+      viewedAlterAccent.value = null;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

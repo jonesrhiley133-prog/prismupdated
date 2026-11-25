@@ -1,3 +1,4 @@
+import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
@@ -1004,6 +1005,148 @@ class BackgroundEditor extends ConsumerWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                ],
+                if (s.kind == BgKind.builtin || s.kind == BgKind.image) ...[
+                  const Divider(height: 24),
+                  Text(
+                    Localizations.localeOf(context).languageCode == 'es'
+                        ? 'Adaptación de color'
+                        : 'Colour adaptation',
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    Localizations.localeOf(context).languageCode == 'es'
+                        ? 'Cambia el tono de la imagen y conserva su textura y sombras. «Acento del alter» sigue al alter cuyo perfil estás viendo.'
+                        : 'Shifts the picture\'s hue while keeping its texture and shading. "Alter accent" follows the alter whose profile you\'re viewing.',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final (k, en, es) in const [
+                        ('accent', 'Alter accent', 'Acento del alter'),
+                        ('system', 'System accent', 'Acento del sistema'),
+                        ('theme', 'App theme', 'Tema'),
+                        ('original', 'Original colours', 'Colores originales'),
+                        ('custom', 'Custom colour', 'Color propio'),
+                        ('gradient', 'Custom gradient', 'Degradado propio'),
+                        ('none', 'No adaptation', 'Sin adaptación'),
+                      ])
+                        PrismChip(
+                          label:
+                              Localizations.localeOf(context).languageCode ==
+                                  'es'
+                              ? es
+                              : en,
+                          selected: s.effectiveTint == k,
+                          onTap: () => onChanged(s.copyWith(tintMode: k)),
+                        ),
+                    ],
+                  ),
+                  if (s.effectiveTint == 'custom' ||
+                      s.effectiveTint == 'gradient') ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        for (final (i, c) in [
+                          s.tintColor,
+                          if (s.effectiveTint == 'gradient') s.tintColor2,
+                        ].indexed)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: GestureDetector(
+                              onTap: () async {
+                                final picked = await showPrismColorPicker(
+                                  context: context,
+                                  initial: Color(c),
+                                );
+                                if (picked != null)
+                                  onChanged(
+                                    i == 0
+                                        ? s.copyWith(
+                                            tintColor: picked.toARGB32(),
+                                          )
+                                        : s.copyWith(
+                                            tintColor2: picked.toARGB32(),
+                                          ),
+                                  );
+                              },
+                              child: Semantics(
+                                button: true,
+                                label: 'Tint colour ${i + 1}',
+                                child: CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Color(c),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                  if (s.effectiveTint != 'original' &&
+                      s.effectiveTint != 'none')
+                    LabeledSlider(
+                      label:
+                          Localizations.localeOf(context).languageCode == 'es'
+                          ? 'Intensidad del tono'
+                          : 'Tint intensity',
+                      value: s.tintStrength,
+                      min: 0,
+                      max: 1,
+                      format: (v) => '${(v * 100).round()}%',
+                      onChanged: (v) => onChanged(s.copyWith(tintStrength: v)),
+                    ),
+                  if (s.effectiveTint != 'original' &&
+                      s.effectiveTint != 'none')
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: SizedBox(
+                        height: 90,
+                        child: Row(
+                          children: [
+                            for (final c in const [
+                              Color(0xFFB57EDC),
+                              Color(0xFFE5383B),
+                              Color(0xFF4E8A3E),
+                            ])
+                              Expanded(
+                                child: Builder(
+                                  builder: (context) {
+                                    final t = backgroundTint(
+                                      s,
+                                      theme,
+                                      s.effectiveTint == 'accent' ? c : null,
+                                    );
+                                    return Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        LookBackground(
+                                          spec: s.copyWith(
+                                            tintMode: 'original',
+                                          ),
+                                          dir: dir,
+                                        ),
+                                        DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            color: t?.$1 ?? (t?.$2 == null ? const Color(0x00000000) : null),
+                                            gradient: t?.$2,
+                                            backgroundBlendMode:
+                                                BlendMode.color,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
                 if (hasImageControls || s.kind == BgKind.gradient) ...[
                   const Divider(height: 24),

@@ -905,13 +905,72 @@ class _LookBackgroundState extends State<LookBackground> {
                 color:
                     backgroundBaseColor(spec) ?? theme.scaffoldBackgroundColor,
               )
-            : RawImage(
-                image: img,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.low,
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  RawImage(
+                    image: img,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                  ),
+                  // Colour adaptation keeps the picture's light and shade
+                  // and only changes its hue (blend mode "color"), and it
+                  // animates between alters without re-drawing the image.
+                  ValueListenableBuilder<Color?>(
+                    valueListenable: viewedAlterAccent,
+                    builder: (context, accent, _) {
+                      final t = backgroundTint(spec, theme, accent);
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 450),
+                        curve: Curves.easeOut,
+                        decoration: BoxDecoration(
+                          color: t?.$1 ?? (t?.$2 == null ? const Color(0x00000000) : null),
+                          gradient: t?.$2,
+                          backgroundBlendMode: BlendMode.color,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
       ),
     );
+  }
+}
+
+/// The accent of the alter whose profile is on screen (null elsewhere).
+final viewedAlterAccent = ValueNotifier<Color?>(null);
+
+/// The colour (or gradient) a picture background is tinted with, already
+/// faded by the tint strength; null for no tint.
+(Color?, Gradient?)? backgroundTint(
+  BgSpec spec,
+  ThemeData theme,
+  Color? accent,
+) {
+  final a = spec.tintStrength.clamp(0.0, 1.0);
+  if (a == 0) return null;
+  Color fade(Color c) => c.withValues(alpha: a);
+  switch (spec.effectiveTint) {
+    case 'accent':
+      return accent == null ? null : (fade(accent), null);
+    case 'system':
+      return (fade(theme.colorScheme.primary), null);
+    case 'theme':
+      return (fade(theme.colorScheme.secondary), null);
+    case 'custom':
+      return (fade(Color(spec.tintColor)), null);
+    case 'gradient':
+      return (
+        null,
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [fade(Color(spec.tintColor)), fade(Color(spec.tintColor2))],
+        ),
+      );
+    default:
+      return null;
   }
 }
 

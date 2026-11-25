@@ -6,8 +6,10 @@ enum GradientKind { linear, radial, diagonal }
 
 enum BgOverlay { none, scrim, vignette, glow }
 
-double _d(Object? v, double d, double lo, double hi) => (v is num ? v.toDouble() : d).clamp(lo, hi).toDouble();
-T _e<T extends Enum>(List<T> values, Object? name, T d) => values.firstWhere((x) => x.name == name, orElse: () => d);
+double _d(Object? v, double d, double lo, double hi) =>
+    (v is num ? v.toDouble() : d).clamp(lo, hi).toDouble();
+T _e<T extends Enum>(List<T> values, Object? name, T d) =>
+    values.firstWhere((x) => x.name == name, orElse: () => d);
 int? _i(Object? v) => v is int ? v : null;
 
 /// A page background: colour, gradient, picture or built-in artwork, plus
@@ -31,6 +33,10 @@ class BgSpec {
     this.overlay = BgOverlay.none,
     this.overlayColor = 0xFF000000,
     this.overlayStrength = 0.3,
+    this.tintMode,
+    this.tintStrength = 0.55,
+    this.tintColor = 0xFFB57EDC,
+    this.tintColor2 = 0xFF5BCEFA,
   });
 
   final BgKind kind;
@@ -58,6 +64,17 @@ class BgSpec {
   final int overlayColor;
   final double overlayStrength;
 
+  /// Colour adaptation for picture backgrounds: accent (the alter whose
+  /// profile is open), system, theme, original, custom, gradient, none.
+  /// Unset: built-in backgrounds follow the alter's accent, photos keep
+  /// their own colours.
+  final String? tintMode;
+  final double tintStrength;
+  final int tintColor, tintColor2;
+
+  String get effectiveTint =>
+      tintMode ?? (kind == BgKind.builtin ? 'accent' : 'original');
+
   bool get isCustom => kind != BgKind.theme;
 
   BgSpec copyWith({
@@ -78,6 +95,10 @@ class BgSpec {
     BgOverlay? overlay,
     int? overlayColor,
     double? overlayStrength,
+    String? tintMode,
+    double? tintStrength,
+    int? tintColor,
+    int? tintColor2,
   }) => BgSpec(
     kind: kind ?? this.kind,
     color: color ?? this.color,
@@ -95,6 +116,10 @@ class BgSpec {
     overlay: overlay ?? this.overlay,
     overlayColor: overlayColor ?? this.overlayColor,
     overlayStrength: overlayStrength ?? this.overlayStrength,
+    tintMode: tintMode ?? this.tintMode,
+    tintStrength: tintStrength ?? this.tintStrength,
+    tintColor: tintColor ?? this.tintColor,
+    tintColor2: tintColor2 ?? this.tintColor2,
   );
 
   Map<String, Object?> toJson() => {
@@ -114,6 +139,10 @@ class BgSpec {
     'overlay': overlay.name,
     'overlayColor': overlayColor,
     'overlayStrength': overlayStrength,
+    'tintMode': ?tintMode,
+    'tintStrength': tintStrength,
+    'tintColor': tintColor,
+    'tintColor2': tintColor2,
   };
 
   static BgSpec fromJson(Object? j) {
@@ -126,7 +155,9 @@ class BgSpec {
     return BgSpec(
       kind: _e(BgKind.values, j['kind'], BgKind.theme),
       color: _i(j['color']) ?? 0xFF1E1A24,
-      colors: colors.length >= 2 ? colors.take(5).toList() : const [0xFF5C6BC0, 0xFFEC407A],
+      colors: colors.length >= 2
+          ? colors.take(5).toList()
+          : const [0xFF5C6BC0, 0xFFEC407A],
       gradient: _e(GradientKind.values, j['gradient'], GradientKind.linear),
       angle: _d(j['angle'], 135, 0, 360),
       intensity: _d(j['intensity'], 1, 0, 1),
@@ -140,6 +171,21 @@ class BgSpec {
       overlay: _e(BgOverlay.values, j['overlay'], BgOverlay.none),
       overlayColor: _i(j['overlayColor']) ?? 0xFF000000,
       overlayStrength: _d(j['overlayStrength'], 0.3, 0, 1),
+      tintMode:
+          const [
+            'accent',
+            'system',
+            'theme',
+            'original',
+            'custom',
+            'gradient',
+            'none',
+          ].contains(j['tintMode'])
+          ? j['tintMode'] as String
+          : null,
+      tintStrength: _d(j['tintStrength'], 0.55, 0, 1),
+      tintColor: _i(j['tintColor']) ?? 0xFFB57EDC,
+      tintColor2: _i(j['tintColor2']) ?? 0xFF5BCEFA,
     );
   }
 }
@@ -157,7 +203,18 @@ abstract final class LookElement {
   static const badge = 'badge';
   static const text = 'text';
 
-  static const all = [button, card, nav, header, input, dialog, divider, icon, badge, text];
+  static const all = [
+    button,
+    card,
+    nav,
+    header,
+    input,
+    dialog,
+    divider,
+    icon,
+    badge,
+    text,
+  ];
 }
 
 /// Colour roles every theme can set. Together they recolour the whole app:
@@ -181,14 +238,40 @@ abstract final class LookColor {
   static const progress = 'progress';
   static const link = 'link';
 
-  static const all = [accent, secondary, highlight, background, surface, raised, text, mutedText, outline, error, success, warning, chip, toggle, progress, link];
+  static const all = [
+    accent,
+    secondary,
+    highlight,
+    background,
+    surface,
+    raised,
+    text,
+    mutedText,
+    outline,
+    error,
+    success,
+    warning,
+    chip,
+    toggle,
+    progress,
+    link,
+  ];
 }
 
 /// Style overrides for one kind of element. Null means "leave as the
 /// theme has it".
 @immutable
 class ElementStyle {
-  const ElementStyle({this.color, this.color2, this.opacity, this.radius, this.borderWidth, this.borderColor, this.shadow, this.padding});
+  const ElementStyle({
+    this.color,
+    this.color2,
+    this.opacity,
+    this.radius,
+    this.borderWidth,
+    this.borderColor,
+    this.shadow,
+    this.padding,
+  });
 
   final int? color;
 
@@ -206,7 +289,14 @@ class ElementStyle {
   final double? padding;
 
   bool get isEmpty =>
-      color == null && color2 == null && opacity == null && radius == null && borderWidth == null && borderColor == null && shadow == null && padding == null;
+      color == null &&
+      color2 == null &&
+      opacity == null &&
+      radius == null &&
+      borderWidth == null &&
+      borderColor == null &&
+      shadow == null &&
+      padding == null;
 
   /// Returns a copy with [key] set to [value] (null clears it).
   ElementStyle set(String key, Object? value) {
@@ -227,7 +317,8 @@ class ElementStyle {
 
   static ElementStyle fromJson(Object? j) {
     if (j is! Map) return const ElementStyle();
-    double? d(String k, double lo, double hi) => j[k] is num ? (j[k] as num).toDouble().clamp(lo, hi).toDouble() : null;
+    double? d(String k, double lo, double hi) =>
+        j[k] is num ? (j[k] as num).toDouble().clamp(lo, hi).toDouble() : null;
     return ElementStyle(
       color: _i(j['color']),
       color2: _i(j['color2']),
@@ -274,10 +365,15 @@ class PrismLook {
 
   ElementStyle element(String key) => elements[key] ?? const ElementStyle();
 
-  BgSpec backgroundFor(String? page) => (page == null ? null : pageBackgrounds[page]) ?? background;
+  BgSpec backgroundFor(String? page) =>
+      (page == null ? null : pageBackgrounds[page]) ?? background;
 
   /// True when the look changes nothing (the plain Prism theme).
-  bool get isPlain => !background.isCustom && pageBackgrounds.isEmpty && colors.isEmpty && elements.values.every((e) => e.isEmpty);
+  bool get isPlain =>
+      !background.isCustom &&
+      pageBackgrounds.isEmpty &&
+      colors.isEmpty &&
+      elements.values.every((e) => e.isEmpty);
 
   int? color(String role) => colors[role];
 
@@ -326,7 +422,9 @@ class PrismLook {
     'dark': dark,
     'colors': colors,
     'background': background.toJson(),
-    'pageBackgrounds': {for (final e in pageBackgrounds.entries) e.key: e.value.toJson()},
+    'pageBackgrounds': {
+      for (final e in pageBackgrounds.entries) e.key: e.value.toJson(),
+    },
     'elements': {for (final e in elements.entries) e.key: e.value.toJson()},
   };
 
@@ -334,12 +432,17 @@ class PrismLook {
     if (j is! Map || j['name'] is! String) return null;
     return PrismLook(
       id: j['id'] is String ? j['id'] as String : 'imported',
-      name: (j['name'] as String).trim().isEmpty ? 'Theme' : (j['name'] as String).trim(),
+      name: (j['name'] as String).trim().isEmpty
+          ? 'Theme'
+          : (j['name'] as String).trim(),
       dark: j['dark'] is bool ? j['dark'] as bool : null,
       colors: {
         if (j['colors'] is Map)
           for (final e in (j['colors'] as Map).entries)
-            if (e.key is String && LookColor.all.contains(e.key) && e.value is int) e.key as String: e.value as int,
+            if (e.key is String &&
+                LookColor.all.contains(e.key) &&
+                e.value is int)
+              e.key as String: e.value as int,
       },
       background: BgSpec.fromJson(j['background']),
       pageBackgrounds: {
@@ -350,7 +453,8 @@ class PrismLook {
       elements: {
         if (j['elements'] is Map)
           for (final e in (j['elements'] as Map).entries)
-            if (e.key is String && LookElement.all.contains(e.key)) e.key as String: ElementStyle.fromJson(e.value),
+            if (e.key is String && LookElement.all.contains(e.key))
+              e.key as String: ElementStyle.fromJson(e.value),
       },
     );
   }
@@ -368,11 +472,36 @@ const builtInLooks = <PrismLook>[
     name: 'Aurora glass',
     builtIn: true,
     dark: true,
-    colors: {'accent': 0xFFB388FF, 'secondary': 0xFF18FFFF, 'background': 0xFF151226, 'surface': 0xFF1D1933, 'raised': 0xFF29234A, 'text': 0xFFF3F0FF, 'mutedText': 0xFFBDB6E0, 'outline': 0x55FFFFFF},
-    background: BgSpec(kind: BgKind.builtin, builtin: 'aurora', overlay: BgOverlay.scrim, overlayStrength: 0.25),
+    colors: {
+      'accent': 0xFFB388FF,
+      'secondary': 0xFF18FFFF,
+      'background': 0xFF151226,
+      'surface': 0xFF1D1933,
+      'raised': 0xFF29234A,
+      'text': 0xFFF3F0FF,
+      'mutedText': 0xFFBDB6E0,
+      'outline': 0x55FFFFFF,
+    },
+    background: BgSpec(
+      kind: BgKind.builtin,
+      builtin: 'aurora',
+      overlay: BgOverlay.scrim,
+      overlayStrength: 0.25,
+    ),
     elements: {
-      'card': ElementStyle(color: 0xFFFFFFFF, opacity: 0.10, radius: 22, borderWidth: 1, borderColor: 0x33FFFFFF),
-      'nav': ElementStyle(color: 0xFF151226, opacity: 0.72, borderWidth: 1, borderColor: 0x33FFFFFF),
+      'card': ElementStyle(
+        color: 0xFFFFFFFF,
+        opacity: 0.10,
+        radius: 22,
+        borderWidth: 1,
+        borderColor: 0x33FFFFFF,
+      ),
+      'nav': ElementStyle(
+        color: 0xFF151226,
+        opacity: 0.72,
+        borderWidth: 1,
+        borderColor: 0x33FFFFFF,
+      ),
       'header': ElementStyle(color: 0xFF151226, opacity: 0.35),
       'input': ElementStyle(color: 0xFFFFFFFF, opacity: 0.10, radius: 16),
       'button': ElementStyle(color: 0xFF7C4DFF, color2: 0xFF18FFFF, radius: 22),
@@ -386,10 +515,28 @@ const builtInLooks = <PrismLook>[
     name: 'Sunrise',
     builtIn: true,
     dark: false,
-    colors: {'accent': 0xFFE8613C, 'secondary': 0xFF8E5BA8, 'background': 0xFFFFF3EA, 'surface': 0xFFFFFFFF, 'raised': 0xFFFFE9DC, 'text': 0xFF3A2320, 'mutedText': 0xFF7A5A55, 'outline': 0xFFE9C8BD},
-    background: BgSpec(kind: BgKind.gradient, colors: [0xFFFFE9D6, 0xFFFFC7C2, 0xFFE3D4FF], gradient: GradientKind.diagonal),
+    colors: {
+      'accent': 0xFFE8613C,
+      'secondary': 0xFF8E5BA8,
+      'background': 0xFFFFF3EA,
+      'surface': 0xFFFFFFFF,
+      'raised': 0xFFFFE9DC,
+      'text': 0xFF3A2320,
+      'mutedText': 0xFF7A5A55,
+      'outline': 0xFFE9C8BD,
+    },
+    background: BgSpec(
+      kind: BgKind.gradient,
+      colors: [0xFFFFE9D6, 0xFFFFC7C2, 0xFFE3D4FF],
+      gradient: GradientKind.diagonal,
+    ),
     elements: {
-      'card': ElementStyle(color: 0xFFFFFFFF, opacity: 0.72, radius: 20, shadow: 0.25),
+      'card': ElementStyle(
+        color: 0xFFFFFFFF,
+        opacity: 0.72,
+        radius: 20,
+        shadow: 0.25,
+      ),
       'button': ElementStyle(color: 0xFFFF7A59, color2: 0xFFFF4F8B, radius: 20),
       'nav': ElementStyle(color: 0xFFFFFFFF, opacity: 0.85, shadow: 0.3),
       'input': ElementStyle(color: 0xFFFFFFFF, opacity: 0.8, radius: 14),
@@ -402,14 +549,42 @@ const builtInLooks = <PrismLook>[
     name: 'Midnight neon',
     builtIn: true,
     dark: true,
-    colors: {'accent': 0xFF00E5FF, 'secondary': 0xFFFF4081, 'background': 0xFF000000, 'surface': 0xFF0B0B10, 'raised': 0xFF15151E, 'text': 0xFFEFFFFF, 'mutedText': 0xFF8FA7B0, 'outline': 0xFF1F2A33},
+    colors: {
+      'accent': 0xFF00E5FF,
+      'secondary': 0xFFFF4081,
+      'background': 0xFF000000,
+      'surface': 0xFF0B0B10,
+      'raised': 0xFF15151E,
+      'text': 0xFFEFFFFF,
+      'mutedText': 0xFF8FA7B0,
+      'outline': 0xFF1F2A33,
+    },
     background: BgSpec(kind: BgKind.color, color: 0xFF000000),
     elements: {
-      'card': ElementStyle(color: 0xFF0B0B10, radius: 14, borderWidth: 1, borderColor: 0xFF2A2A3A),
+      'card': ElementStyle(
+        color: 0xFF0B0B10,
+        radius: 14,
+        borderWidth: 1,
+        borderColor: 0xFF2A2A3A,
+      ),
       'button': ElementStyle(color: 0xFF00E5FF, radius: 10),
-      'nav': ElementStyle(color: 0xFF000000, borderWidth: 1, borderColor: 0xFF00E5FF),
-      'input': ElementStyle(color: 0xFF0B0B10, radius: 10, borderWidth: 1, borderColor: 0xFF2A2A3A),
-      'dialog': ElementStyle(color: 0xFF0B0B10, radius: 16, borderWidth: 1, borderColor: 0xFF00E5FF),
+      'nav': ElementStyle(
+        color: 0xFF000000,
+        borderWidth: 1,
+        borderColor: 0xFF00E5FF,
+      ),
+      'input': ElementStyle(
+        color: 0xFF0B0B10,
+        radius: 10,
+        borderWidth: 1,
+        borderColor: 0xFF2A2A3A,
+      ),
+      'dialog': ElementStyle(
+        color: 0xFF0B0B10,
+        radius: 16,
+        borderWidth: 1,
+        borderColor: 0xFF00E5FF,
+      ),
       'divider': ElementStyle(color: 0xFF2A2A3A),
       'icon': ElementStyle(color: 0xFF00E5FF),
       'text': ElementStyle(color: 0xFFF2F2F7),
@@ -420,7 +595,16 @@ const builtInLooks = <PrismLook>[
     name: 'Forest',
     builtIn: true,
     dark: true,
-    colors: {'accent': 0xFF8BC34A, 'secondary': 0xFFE3C26B, 'background': 0xFF0F1F17, 'surface': 0xFF16291E, 'raised': 0xFF1E3628, 'text': 0xFFEAF4E4, 'mutedText': 0xFFA7C2A0, 'outline': 0xFF2E4A39},
+    colors: {
+      'accent': 0xFF8BC34A,
+      'secondary': 0xFFE3C26B,
+      'background': 0xFF0F1F17,
+      'surface': 0xFF16291E,
+      'raised': 0xFF1E3628,
+      'text': 0xFFEAF4E4,
+      'mutedText': 0xFFA7C2A0,
+      'outline': 0xFF2E4A39,
+    },
     background: BgSpec(kind: BgKind.builtin, builtin: 'forest'),
     elements: {
       'card': ElementStyle(color: 0xFF12261D, opacity: 0.82, radius: 18),
@@ -436,7 +620,16 @@ const builtInLooks = <PrismLook>[
     name: 'Ocean',
     builtIn: true,
     dark: true,
-    colors: {'accent': 0xFF4FC3F7, 'secondary': 0xFF80CBC4, 'background': 0xFF06182B, 'surface': 0xFF0C2440, 'raised': 0xFF123154, 'text': 0xFFE6F4FF, 'mutedText': 0xFF9CB8D0, 'outline': 0xFF1E4266},
+    colors: {
+      'accent': 0xFF4FC3F7,
+      'secondary': 0xFF80CBC4,
+      'background': 0xFF06182B,
+      'surface': 0xFF0C2440,
+      'raised': 0xFF123154,
+      'text': 0xFFE6F4FF,
+      'mutedText': 0xFF9CB8D0,
+      'outline': 0xFF1E4266,
+    },
     background: BgSpec(kind: BgKind.builtin, builtin: 'ocean'),
     elements: {
       'card': ElementStyle(color: 0xFF0E2A3F, opacity: 0.78, radius: 24),
@@ -451,13 +644,36 @@ const builtInLooks = <PrismLook>[
     name: 'Paper',
     builtIn: true,
     dark: false,
-    colors: {'accent': 0xFF8D6E63, 'secondary': 0xFF5E7D6A, 'background': 0xFFFAF6EE, 'surface': 0xFFFFFDF8, 'raised': 0xFFF2EBDD, 'text': 0xFF33291F, 'mutedText': 0xFF7B6C5C, 'outline': 0xFFE0D4C0},
+    colors: {
+      'accent': 0xFF8D6E63,
+      'secondary': 0xFF5E7D6A,
+      'background': 0xFFFAF6EE,
+      'surface': 0xFFFFFDF8,
+      'raised': 0xFFF2EBDD,
+      'text': 0xFF33291F,
+      'mutedText': 0xFF7B6C5C,
+      'outline': 0xFFE0D4C0,
+    },
     background: BgSpec(kind: BgKind.color, color: 0xFFFAF6EE),
     elements: {
-      'card': ElementStyle(color: 0xFFFFFFFF, radius: 4, borderWidth: 1, borderColor: 0xFFD9D0C0),
+      'card': ElementStyle(
+        color: 0xFFFFFFFF,
+        radius: 4,
+        borderWidth: 1,
+        borderColor: 0xFFD9D0C0,
+      ),
       'button': ElementStyle(color: 0xFF2F3E46, radius: 4),
-      'nav': ElementStyle(color: 0xFFFFFFFF, borderWidth: 1, borderColor: 0xFFD9D0C0),
-      'input': ElementStyle(color: 0xFFFFFFFF, radius: 4, borderWidth: 1, borderColor: 0xFFBDB29E),
+      'nav': ElementStyle(
+        color: 0xFFFFFFFF,
+        borderWidth: 1,
+        borderColor: 0xFFD9D0C0,
+      ),
+      'input': ElementStyle(
+        color: 0xFFFFFFFF,
+        radius: 4,
+        borderWidth: 1,
+        borderColor: 0xFFBDB29E,
+      ),
       'dialog': ElementStyle(color: 0xFFFFFFFF, radius: 6),
       'divider': ElementStyle(color: 0xFFD9D0C0),
       'text': ElementStyle(color: 0xFF22262A),
@@ -469,10 +685,30 @@ const builtInLooks = <PrismLook>[
     name: 'Dusk',
     builtIn: true,
     dark: true,
-    colors: {'accent': 0xFFFF8A65, 'secondary': 0xFFBA68C8, 'background': 0xFF1E1528, 'surface': 0xFF281C36, 'raised': 0xFF332446, 'text': 0xFFF8ECF4, 'mutedText': 0xFFC9AFC4, 'outline': 0xFF4A3660},
-    background: BgSpec(kind: BgKind.builtin, builtin: 'dusk', overlay: BgOverlay.vignette, overlayStrength: 0.35),
+    colors: {
+      'accent': 0xFFFF8A65,
+      'secondary': 0xFFBA68C8,
+      'background': 0xFF1E1528,
+      'surface': 0xFF281C36,
+      'raised': 0xFF332446,
+      'text': 0xFFF8ECF4,
+      'mutedText': 0xFFC9AFC4,
+      'outline': 0xFF4A3660,
+    },
+    background: BgSpec(
+      kind: BgKind.builtin,
+      builtin: 'dusk',
+      overlay: BgOverlay.vignette,
+      overlayStrength: 0.35,
+    ),
     elements: {
-      'card': ElementStyle(color: 0xFF2B1B3D, opacity: 0.7, radius: 20, borderWidth: 1, borderColor: 0x22FFFFFF),
+      'card': ElementStyle(
+        color: 0xFF2B1B3D,
+        opacity: 0.7,
+        radius: 20,
+        borderWidth: 1,
+        borderColor: 0x22FFFFFF,
+      ),
       'button': ElementStyle(color: 0xFFFFB199, color2: 0xFFFF6FA5, radius: 20),
       'nav': ElementStyle(color: 0xFF1B1029, opacity: 0.85),
       'icon': ElementStyle(color: 0xFFFFC6B3),
@@ -483,10 +719,39 @@ const builtInLooks = <PrismLook>[
 
 /// Pages that can have their own background or theme.
 const lookPages = [
-  'home', 'members', 'chat', 'boards', 'stories', 'journal', 'notes', 'mood', 'calendar', 'sleep', 'cycle',
-  'fitness', 'school', 'finance', 'relationships', 'subsystems', 'headspace', 'achievements', 'dictionary',
-  'polls', 'habits', 'music', 'statistics', 'nutrition', 'scrapbook', 'connections', 'analytics',
-  'availability', 'introductions', 'social', 'locations', 'reminders', 'settings',
+  'home',
+  'members',
+  'chat',
+  'boards',
+  'stories',
+  'journal',
+  'notes',
+  'mood',
+  'calendar',
+  'sleep',
+  'cycle',
+  'fitness',
+  'school',
+  'finance',
+  'relationships',
+  'subsystems',
+  'headspace',
+  'achievements',
+  'dictionary',
+  'polls',
+  'habits',
+  'music',
+  'statistics',
+  'nutrition',
+  'scrapbook',
+  'connections',
+  'analytics',
+  'availability',
+  'introductions',
+  'social',
+  'locations',
+  'reminders',
+  'settings',
 ];
 
 /// Everything the appearance system remembers.
@@ -531,9 +796,11 @@ class AppearanceState {
 
   List<PrismLook> get all => [...builtInLooks, ...looks];
 
-  PrismLook look(String id) => all.firstWhere((l) => l.id == id, orElse: () => plainLook);
+  PrismLook look(String id) =>
+      all.firstWhere((l) => l.id == id, orElse: () => plainLook);
 
-  PrismLook active({required bool dark}) => look(auto ? (dark ? darkId : lightId) : activeId);
+  PrismLook active({required bool dark}) =>
+      look(auto ? (dark ? darkId : lightId) : activeId);
 
   PrismLook? pageLook(String? page) {
     final id = page == null ? null : pageLooks[page];
@@ -553,8 +820,12 @@ class AppearanceState {
     Object? customSecondary = _keep,
     Object? customTertiary = _keep,
   }) => AppearanceState(
-    customSecondary: customSecondary == _keep ? this.customSecondary : customSecondary as int?,
-    customTertiary: customTertiary == _keep ? this.customTertiary : customTertiary as int?,
+    customSecondary: customSecondary == _keep
+        ? this.customSecondary
+        : customSecondary as int?,
+    customTertiary: customTertiary == _keep
+        ? this.customTertiary
+        : customTertiary as int?,
     showMemberBanners: showMemberBanners ?? this.showMemberBanners,
     bannerPositions: bannerPositions ?? this.bannerPositions,
     looks: looks ?? this.looks,
@@ -575,7 +846,10 @@ class AppearanceState {
     'pageLooks': pageLooks,
     'modifiedAt': modifiedAt,
     'showMemberBanners': showMemberBanners,
-    'bannerPositions': {for (final e in bannerPositions.entries) e.key: [e.value.x, e.value.y, e.value.zoom]},
+    'bannerPositions': {
+      for (final e in bannerPositions.entries)
+        e.key: [e.value.x, e.value.y, e.value.zoom],
+    },
     'customSecondary': ?customSecondary,
     'customTertiary': ?customTertiary,
   };
@@ -595,20 +869,37 @@ class AppearanceState {
       pageLooks: {
         if (j['pageLooks'] is Map)
           for (final e in (j['pageLooks'] as Map).entries)
-            if (e.key is String && e.value is String) e.key as String: e.value as String,
+            if (e.key is String && e.value is String)
+              e.key as String: e.value as String,
       },
       modifiedAt: j['modifiedAt'] is int ? j['modifiedAt'] as int : 0,
       showMemberBanners: j['showMemberBanners'] == true,
-      customSecondary: j['customSecondary'] is int ? j['customSecondary'] as int : null,
-      customTertiary: j['customTertiary'] is int ? j['customTertiary'] as int : null,
+      customSecondary: j['customSecondary'] is int
+          ? j['customSecondary'] as int
+          : null,
+      customTertiary: j['customTertiary'] is int
+          ? j['customTertiary'] as int
+          : null,
       bannerPositions: {
         if (j['bannerPositions'] is Map)
           for (final e in (j['bannerPositions'] as Map).entries)
-            if (e.key is String && e.value is List && (e.value as List).length == 3 && (e.value as List).every((v) => v is num))
+            if (e.key is String &&
+                e.value is List &&
+                (e.value as List).length == 3 &&
+                (e.value as List).every((v) => v is num))
               e.key as String: (
-                x: ((e.value as List)[0] as num).toDouble().clamp(-1, 1).toDouble(),
-                y: ((e.value as List)[1] as num).toDouble().clamp(-1, 1).toDouble(),
-                zoom: ((e.value as List)[2] as num).toDouble().clamp(1, 3).toDouble(),
+                x: ((e.value as List)[0] as num)
+                    .toDouble()
+                    .clamp(-1, 1)
+                    .toDouble(),
+                y: ((e.value as List)[1] as num)
+                    .toDouble()
+                    .clamp(-1, 1)
+                    .toDouble(),
+                zoom: ((e.value as List)[2] as num)
+                    .toDouble()
+                    .clamp(1, 3)
+                    .toDouble(),
               ),
       },
     );
