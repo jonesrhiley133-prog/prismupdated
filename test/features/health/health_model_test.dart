@@ -186,6 +186,21 @@ void main() {
       expect((blade.regionId, blade.side), ('shoulder_blade', BodySide.right));
     });
 
+    test('side views use real regions on the right side', () {
+      for (final side in [BodySide.right, BodySide.left]) {
+        final sh = sheetFor(BodyView.side, side: side);
+        expect(sh.shapes, isNotEmpty);
+        for (final r in sh.shapes) {
+          expect(regionById.containsKey(r.regionId), isTrue, reason: r.regionId);
+          expect(r.side, side);
+        }
+      }
+      // The right side's face points to the viewer's right, the left's to the left.
+      final nose = (BodySide s) => sheetFor(BodyView.side, side: s).shapes.firstWhere((r) => r.regionId == 'nose').path.getBounds().center.dx;
+      expect(nose(BodySide.right), greaterThan(100));
+      expect(nose(BodySide.left), lessThan(100));
+    });
+
     test('legs take up about half the figure', () {
       final front = sheetFor(BodyView.front);
       final b = front.outline.getBounds();

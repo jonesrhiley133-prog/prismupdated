@@ -26,7 +26,12 @@ enum HealthVisibility { private, system }
 /// Who an entry describes and who created it. Kept separate on purpose: an
 /// alter may log something on behalf of another.
 class Attribution {
-  const Attribution({this.scope = HealthScope.members, this.subjects = const [], this.author, this.visibility = HealthVisibility.private});
+  const Attribution({
+    this.scope = HealthScope.members,
+    this.subjects = const [],
+    this.author,
+    this.visibility = HealthVisibility.private,
+  });
 
   final HealthScope scope;
   final List<String> subjects;
@@ -36,18 +41,31 @@ class Attribution {
   static Attribution of(TrackerRecord r) {
     final f = r.fields;
     return Attribution(
-      scope: HealthScope.values.where((s) => s.name == f['scope']).firstOrNull ?? (r.memberId == null ? HealthScope.system : HealthScope.members),
+      scope:
+          HealthScope.values.where((s) => s.name == f['scope']).firstOrNull ??
+          (r.memberId == null ? HealthScope.system : HealthScope.members),
       subjects: [
         for (final s in (f['subjects'] as List?) ?? [?r.memberId])
           if (s is String) s,
       ],
       author: f['author'] as String?,
-      visibility: f['visibility'] == 'system' ? HealthVisibility.system : HealthVisibility.private,
+      visibility: f['visibility'] == 'system'
+          ? HealthVisibility.system
+          : HealthVisibility.private,
     );
   }
 
-  Attribution copyWith({HealthScope? scope, List<String>? subjects, String? author, HealthVisibility? visibility}) =>
-      Attribution(scope: scope ?? this.scope, subjects: subjects ?? this.subjects, author: author ?? this.author, visibility: visibility ?? this.visibility);
+  Attribution copyWith({
+    HealthScope? scope,
+    List<String>? subjects,
+    String? author,
+    HealthVisibility? visibility,
+  }) => Attribution(
+    scope: scope ?? this.scope,
+    subjects: subjects ?? this.subjects,
+    author: author ?? this.author,
+    visibility: visibility ?? this.visibility,
+  );
 
   Map<String, Object?> toFields() => {
     'scope': scope.name,
@@ -57,7 +75,9 @@ class Attribution {
   };
 
   /// The tracker `memberId` column: the alter, when exactly one.
-  String? get memberId => scope == HealthScope.members && subjects.length == 1 ? subjects.first : null;
+  String? get memberId => scope == HealthScope.members && subjects.length == 1
+      ? subjects.first
+      : null;
 
   bool get valid => scope != HealthScope.members || subjects.isNotEmpty;
 
@@ -71,24 +91,50 @@ class Attribution {
     return author == viewer || subjects.contains(viewer);
   }
 
-  bool isAbout(String memberId) => scope == HealthScope.members && subjects.contains(memberId);
+  bool isAbout(String memberId) =>
+      scope == HealthScope.members && subjects.contains(memberId);
 }
 
 /// The alter whose view of Health is shown: whoever is fronting. Changes as
 /// the front changes, so lists, drafts and links re-check access.
-final healthViewerProvider = Provider<String?>((ref) => ref.watch(currentFronterProvider).value?.id);
+final healthViewerProvider = Provider<String?>(
+  (ref) => ref.watch(currentFronterProvider).value?.id,
+);
 
-const healthKinds = {TrackerKind.healthCheckin, TrackerKind.healthSpot, TrackerKind.healthFollowup, TrackerKind.healthEpisode};
+const healthKinds = {
+  TrackerKind.healthCheckin,
+  TrackerKind.healthSpot,
+  TrackerKind.healthFollowup,
+  TrackerKind.healthEpisode,
+};
 
 /// Every Health record (unfiltered). Only for access-checked consumers.
-final _allHealthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((ref) {
-  return ref.watch(trackerRecordsProvider).whenData((all) => [for (final r in all) if (healthKinds.contains(r.kind)) r]);
+final _allHealthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((
+  ref,
+) {
+  return ref
+      .watch(trackerRecordsProvider)
+      .whenData(
+        (all) => [
+          for (final r in all)
+            if (healthKinds.contains(r.kind)) r,
+        ],
+      );
 });
 
 /// Health records the current viewer may see.
-final visibleHealthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((ref) {
+final visibleHealthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((
+  ref,
+) {
   final viewer = ref.watch(healthViewerProvider);
-  return ref.watch(_allHealthRecordsProvider).whenData((rs) => [for (final r in rs) if (Attribution.of(r).visibleTo(viewer)) r]);
+  return ref
+      .watch(_allHealthRecordsProvider)
+      .whenData(
+        (rs) => [
+          for (final r in rs)
+            if (Attribution.of(r).visibleTo(viewer)) r,
+        ],
+      );
 });
 
 /// How many records exist that the current viewer can't see (shown as a
@@ -96,7 +142,13 @@ final visibleHealthRecordsProvider = Provider<AsyncValue<List<TrackerRecord>>>((
 final hiddenHealthCountProvider = Provider<int>((ref) {
   final viewer = ref.watch(healthViewerProvider);
   final all = ref.watch(_allHealthRecordsProvider).value ?? const [];
-  return all.where((r) => r.kind == TrackerKind.healthCheckin && !Attribution.of(r).visibleTo(viewer)).length;
+  return all
+      .where(
+        (r) =>
+            r.kind == TrackerKind.healthCheckin &&
+            !Attribution.of(r).visibleTo(viewer),
+      )
+      .length;
 });
 
 /// One record by id, only if the viewer may open it. Distinguishes "gone"
@@ -107,7 +159,9 @@ enum HealthLookup { found, hidden, missing }
   final all = ref.read(_allHealthRecordsProvider).value ?? const [];
   final r = all.where((x) => x.id == id).firstOrNull;
   if (r == null) return (HealthLookup.missing, null);
-  return Attribution.of(r).visibleTo(ref.read(healthViewerProvider)) ? (HealthLookup.found, r) : (HealthLookup.hidden, null);
+  return Attribution.of(r).visibleTo(ref.read(healthViewerProvider))
+      ? (HealthLookup.found, r)
+      : (HealthLookup.hidden, null);
 }
 
 // ---------------------------------------------------------------------------
@@ -259,22 +313,41 @@ class HealthSymptom {
     'impact': impact,
     'spotIds': spotIds,
     'notes': _blank(notes),
-    'temp': tempValue == null ? null : {'value': tempValue, 'unit': tempUnit, 'source': 'self'},
+    'temp': tempValue == null
+        ? null
+        : {'value': tempValue, 'unit': tempUnit, 'source': 'self'},
   }..removeWhere((k, v) => v == null || (v is List && v.isEmpty));
 
   static HealthSymptom fromJson(Map<String, dynamic> j) {
     final temp = j['temp'] is Map ? j['temp'] as Map : null;
-    List<String> list(String k) => [for (final x in (j[k] as List?) ?? const []) if (x is String) x];
+    List<String> list(String k) => [
+      for (final x in (j[k] as List?) ?? const [])
+        if (x is String) x,
+    ];
     return HealthSymptom(
       id: j['id'] as String?,
       termId: j['termId'] as String?,
       label: (j['label'] as String?) ?? '',
-      category: SymptomCategory.values.where((c) => c.name == j['category']).firstOrNull ?? SymptomCategory.other,
+      category:
+          SymptomCategory.values
+              .where((c) => c.name == j['category'])
+              .firstOrNull ??
+          SymptomCategory.other,
       onset: DateTime.tryParse('${j['onset'] ?? ''}')?.toLocal(),
-      onsetPrecision: TimePrecision.values.where((p) => p.name == j['onsetPrecision']).firstOrNull ?? TimePrecision.exact,
+      onsetPrecision:
+          TimePrecision.values
+              .where((p) => p.name == j['onsetPrecision'])
+              .firstOrNull ??
+          TimePrecision.exact,
       end: DateTime.tryParse('${j['end'] ?? ''}')?.toLocal(),
-      endPrecision: TimePrecision.values.where((p) => p.name == j['endPrecision']).firstOrNull ?? TimePrecision.exact,
-      severity: Severity.values.where((s) => s.name == j['severity']).firstOrNull,
+      endPrecision:
+          TimePrecision.values
+              .where((p) => p.name == j['endPrecision'])
+              .firstOrNull ??
+          TimePrecision.exact,
+      severity: Severity.values
+          .where((s) => s.name == j['severity'])
+          .firstOrNull,
       score: (j['score'] as num?)?.toInt(),
       course: list('course'),
       triggers: j['triggers'] as String?,
@@ -301,8 +374,14 @@ extension HealthCheckinX on TrackerRecord {
 
   /// When it happened (falls back to when it was written down).
   DateTime get happenedAt => (occurredAt ?? createdAt).toLocal();
-  bool get backdated => occurredAt != null && createdAt.difference(occurredAt!).inMinutes.abs() > 15;
-  TimePrecision get timePrecision => TimePrecision.values.where((p) => p.name == fields['timePrecision']).firstOrNull ?? TimePrecision.exact;
+  bool get backdated =>
+      occurredAt != null &&
+      createdAt.difference(occurredAt!).inMinutes.abs() > 15;
+  TimePrecision get timePrecision =>
+      TimePrecision.values
+          .where((p) => p.name == fields['timePrecision'])
+          .firstOrNull ??
+      TimePrecision.exact;
   String? get episodeId => str('episodeId');
 }
 
@@ -316,10 +395,18 @@ String followStatusLabel(FollowStatus s, bool es) => switch (s) {
 };
 
 /// The most recent follow-up status for a check-in (null: none yet).
-FollowStatus? latestStatus(TrackerRecord checkin, List<TrackerRecord> followups) {
-  final mine = [for (final f in followups) if (f.parentId == checkin.id) f]..sort((a, b) => a.happenedAt.compareTo(b.happenedAt));
+FollowStatus? latestStatus(
+  TrackerRecord checkin,
+  List<TrackerRecord> followups,
+) {
+  final mine = [
+    for (final f in followups)
+      if (f.parentId == checkin.id) f,
+  ]..sort((a, b) => a.happenedAt.compareTo(b.happenedAt));
   if (mine.isEmpty) return null;
-  return FollowStatus.values.where((s) => s.name == mine.last.str('status')).firstOrNull;
+  return FollowStatus.values
+      .where((s) => s.name == mine.last.str('status'))
+      .firstOrNull;
 }
 
 // ---------------------------------------------------------------------------
@@ -336,14 +423,24 @@ String episodeStateLabel(EpisodeState s, bool es) => switch (s) {
 };
 
 extension HealthEpisodeX on TrackerRecord {
-  EpisodeState get episodeState => EpisodeState.values.where((s) => s.name == fields['state']).firstOrNull ?? EpisodeState.open;
+  EpisodeState get episodeState =>
+      EpisodeState.values.where((s) => s.name == fields['state']).firstOrNull ??
+      EpisodeState.open;
   bool get episodeActive => episodeState != EpisodeState.resolved;
 
   /// State changes recorded by the user, oldest first.
   List<({EpisodeState state, DateTime at, String? note})> get episodeLog => [
     for (final e in (fields['log'] as List?) ?? const [])
       if (e is Map && DateTime.tryParse('${e['at']}') != null)
-        (state: EpisodeState.values.where((s) => s.name == e['state']).firstOrNull ?? EpisodeState.open, at: DateTime.parse('${e['at']}').toLocal(), note: e['note'] as String?),
+        (
+          state:
+              EpisodeState.values
+                  .where((s) => s.name == e['state'])
+                  .firstOrNull ??
+              EpisodeState.open,
+          at: DateTime.parse('${e['at']}').toLocal(),
+          note: e['note'] as String?,
+        ),
   ];
 }
 
@@ -403,9 +500,13 @@ class BodySpot {
   bool get hasPoint => x != null && y != null;
 
   String placeLabel(bool es) {
-    if (regionId == customLocation) return customLabel?.isNotEmpty == true ? customLabel! : (es ? 'Ubicación personalizada' : 'Custom location');
+    if (regionId == customLocation)
+      return customLabel?.isNotEmpty == true
+          ? customLabel!
+          : (es ? 'Ubicación personalizada' : 'Custom location');
     final r = regionById[regionId];
-    if (r == null) return es ? 'Ubicación sin especificar' : 'Location unspecified';
+    if (r == null)
+      return es ? 'Ubicación sin especificar' : 'Location unspecified';
     return r.label(es, side);
   }
 
@@ -416,7 +517,9 @@ class BodySpot {
     'x': x,
     'y': y,
     'customLabel': customLabel,
-    'descriptors': [for (final d in descriptors) {'id': d.id, 'label': d.label}],
+    'descriptors': [
+      for (final d in descriptors) {'id': d.id, 'label': d.label},
+    ],
     'intensity': intensity,
     'notes': _blank(notes),
     'spreads': [for (final s in spreads) s.toJson()],
@@ -435,11 +538,18 @@ class BodySpot {
       customLabel: f['customLabel'] as String?,
       descriptors: [
         for (final d in (f['descriptors'] as List?) ?? const [])
-          if (d is Map && d['id'] is String) (id: d['id'] as String, label: (d['label'] as String?) ?? d['id'] as String),
+          if (d is Map && d['id'] is String)
+            (
+              id: d['id'] as String,
+              label: (d['label'] as String?) ?? d['id'] as String,
+            ),
       ],
       intensity: (f['intensity'] as num?)?.toInt(),
       notes: f['notes'] as String?,
-      spreads: [for (final s in (f['spreads'] as List?) ?? const []) if (s is Map) SpreadPoint.fromJson(s.cast<String, dynamic>())],
+      spreads: [
+        for (final s in (f['spreads'] as List?) ?? const [])
+          if (s is Map) SpreadPoint.fromJson(s.cast<String, dynamic>()),
+      ],
       at: r.happenedAt,
       checkinId: f['checkinId'] as String?,
       record: r,
@@ -465,7 +575,9 @@ class BodySpot {
     view: view ?? this.view,
     x: x == _keep ? this.x : x as double?,
     y: y == _keep ? this.y : y as double?,
-    customLabel: customLabel == _keep ? this.customLabel : customLabel as String?,
+    customLabel: customLabel == _keep
+        ? this.customLabel
+        : customLabel as String?,
     descriptors: descriptors ?? this.descriptors,
     intensity: intensity == _keep ? this.intensity : intensity as int?,
     notes: notes == _keep ? this.notes : notes as String?,
@@ -480,7 +592,14 @@ class BodySpot {
 
 /// A place a sensation spread to (the user's observation).
 class SpreadPoint {
-  const SpreadPoint({required this.regionId, this.side = BodySide.center, this.view = BodyView.front, this.x, this.y, this.stops = false});
+  const SpreadPoint({
+    required this.regionId,
+    this.side = BodySide.center,
+    this.view = BodyView.front,
+    this.x,
+    this.y,
+    this.stops = false,
+  });
   final String regionId;
   final BodySide side;
   final BodyView view;
@@ -490,7 +609,14 @@ class SpreadPoint {
   /// Where it stops.
   final bool stops;
 
-  Map<String, Object?> toJson() => {'region': regionId, 'side': side.name, 'view': view.name, 'x': x, 'y': y, 'stops': stops}..removeWhere((k, v) => v == null);
+  Map<String, Object?> toJson() => {
+    'region': regionId,
+    'side': side.name,
+    'view': view.name,
+    'x': x,
+    'y': y,
+    'stops': stops,
+  }..removeWhere((k, v) => v == null);
   static SpreadPoint fromJson(Map<String, dynamic> j) => SpreadPoint(
     regionId: (j['region'] as String?) ?? hardToLocate,
     side: BodySideText.parse(j['side'] as String?),
@@ -519,17 +645,24 @@ List<BodySpot> legacySpotsFrom(List<MoodEntry> moods, Set<String> replaced) {
       final mapped = legacyMoodRegions[region];
       final descriptor = sensation == null || sensation.isEmpty
           ? null
-          : (id: legacyMoodSensations[sensation] ?? 'legacy:$sensation', label: legacy.bodySensations[sensation] ?? sensation);
-      out.add(BodySpot(
-        id: id,
-        regionId: mapped ?? (region.isEmpty ? hardToLocate : customLocation),
-        customLabel: mapped == null && region.isNotEmpty ? legacy.bodyRegionLabel(region) : null,
-        descriptors: [?descriptor],
-        at: m.recordedAt.toLocal(),
-        legacyMood: m,
-        legacyText: raw,
-        notes: m.note,
-      ));
+          : (
+              id: legacyMoodSensations[sensation] ?? 'legacy:$sensation',
+              label: legacy.bodySensations[sensation] ?? sensation,
+            );
+      out.add(
+        BodySpot(
+          id: id,
+          regionId: mapped ?? (region.isEmpty ? hardToLocate : customLocation),
+          customLabel: mapped == null && region.isNotEmpty
+              ? legacy.bodyRegionLabel(region)
+              : null,
+          descriptors: [?descriptor],
+          at: m.recordedAt.toLocal(),
+          legacyMood: m,
+          legacyText: raw,
+          notes: m.note,
+        ),
+      );
     }
   }
   return out;
@@ -539,15 +672,22 @@ String legacySpotId(String moodId, int index) => 'mood:$moodId:$index';
 
 /// Attribution for a Mood entry's carried-over sensations. They were
 /// visible to everyone in Mood, so they stay visible to everyone here.
-Attribution legacyAttribution(MoodEntry m) =>
-    Attribution(scope: m.memberId == null ? HealthScope.system : HealthScope.members, subjects: [?m.memberId], author: m.memberId, visibility: HealthVisibility.system);
+Attribution legacyAttribution(MoodEntry m) => Attribution(
+  scope: m.memberId == null ? HealthScope.system : HealthScope.members,
+  subjects: [?m.memberId],
+  author: m.memberId,
+  visibility: HealthVisibility.system,
+);
 
 /// All Body Map spots the viewer may see, newest first, including those
 /// still stored on Mood check-ins.
 final bodySpotsProvider = Provider<List<BodySpot>>((ref) {
   final records = ref.watch(visibleHealthRecordsProvider).value ?? const [];
   final all = ref.watch(_allHealthRecordsProvider).value ?? const [];
-  final replaced = {for (final r in all) if (r.kind == TrackerKind.healthSpot) ?r.str('legacyRef')};
+  final replaced = {
+    for (final r in all)
+      if (r.kind == TrackerKind.healthSpot) ?r.str('legacyRef'),
+  };
   final moods = ref.watch(moodEntriesProvider).value ?? const <MoodEntry>[];
   final viewer = ref.watch(healthViewerProvider);
   final spots = [
@@ -570,17 +710,32 @@ class HealthVocab {
 
   List<Descriptor> descriptorsFor(String regionId) => [
     for (final r in records)
-      if (r.str('type') == 'descriptor' && r.str('region') == regionId && !r.flag('retired')) Descriptor('custom:${r.id}', r.title, r.title),
+      if (r.str('type') == 'descriptor' &&
+          r.str('region') == regionId &&
+          !r.flag('retired'))
+        Descriptor('custom:${r.id}', r.title, r.title),
   ];
 
   List<SymptomTerm> get symptoms => [
     for (final r in records)
       if (r.str('type') == 'symptom' && !r.flag('retired'))
-        SymptomTerm('custom:${r.id}', SymptomCategory.values.where((c) => c.name == r.str('category')).firstOrNull ?? SymptomCategory.other, r.title, r.title),
+        SymptomTerm(
+          'custom:${r.id}',
+          SymptomCategory.values
+                  .where((c) => c.name == r.str('category'))
+                  .firstOrNull ??
+              SymptomCategory.other,
+          r.title,
+          r.title,
+        ),
   ];
 }
 
-final healthVocabProvider = Provider<HealthVocab>((ref) => HealthVocab(ref.watch(trackerKindProvider(TrackerKind.healthVocab)).value ?? const []));
+final healthVocabProvider = Provider<HealthVocab>(
+  (ref) => HealthVocab(
+    ref.watch(trackerKindProvider(TrackerKind.healthVocab)).value ?? const [],
+  ),
+);
 
 // ---------------------------------------------------------------------------
 // Saving
@@ -595,7 +750,9 @@ class HealthStore {
 
   Future<TrackerRecord?> _byClientId(String kind, String clientId) async {
     final all = await ref.read(trackerRecordRepositoryProvider).getAll();
-    return all.where((r) => r.kind == kind && r.str('clientId') == clientId).firstOrNull;
+    return all
+        .where((r) => r.kind == kind && r.str('clientId') == clientId)
+        .firstOrNull;
   }
 
   Future<TrackerRecord> _upsert({
@@ -613,13 +770,31 @@ class HealthStore {
     final prior = existing ?? await _byClientId(kind, clientId);
     final all = {...who.toFields(), ...fields, 'clientId': clientId};
     if (prior != null) {
-      final next = prior.copyWith(title: title, body: body, parentId: parentId ?? prior.parentId, occurredAt: occurredAt ?? prior.occurredAt, endedAt: endedAt, memberId: who.memberId, isPrivate: true);
+      final next = prior.copyWith(
+        title: title,
+        body: body,
+        parentId: parentId ?? prior.parentId,
+        occurredAt: occurredAt ?? prior.occurredAt,
+        endedAt: endedAt,
+        memberId: who.memberId,
+        isPrivate: true,
+      );
       final cleared = {for (final k in prior.fields.keys) k: null};
       final merged = next.withFields({...cleared, ...all});
       await _t.save(merged);
       return merged;
     }
-    return _t.create(kind: kind, title: title, body: body, parentId: parentId, occurredAt: occurredAt, endedAt: endedAt, memberId: who.memberId, isPrivate: true, fields: all);
+    return _t.create(
+      kind: kind,
+      title: title,
+      body: body,
+      parentId: parentId,
+      occurredAt: occurredAt,
+      endedAt: endedAt,
+      memberId: who.memberId,
+      isPrivate: true,
+      fields: all,
+    );
   }
 
   Future<TrackerRecord> saveCheckin({
@@ -639,33 +814,70 @@ class HealthStore {
     title: symptoms.map((s) => s.label).where((l) => l.isNotEmpty).join(', '),
     body: _blank(quickText),
     occurredAt: happenedAt,
-    fields: {'symptoms': [for (final s in symptoms) s.toJson()], 'timePrecision': precision.name, 'episodeId': episodeId},
+    fields: {
+      'symptoms': [for (final s in symptoms) s.toJson()],
+      'timePrecision': precision.name,
+      'episodeId': episodeId,
+    },
   );
 
-  Future<TrackerRecord> saveSpot({required String clientId, TrackerRecord? existing, required Attribution who, required BodySpot spot, String? legacyRef}) => _upsert(
+  Future<TrackerRecord> saveSpot({
+    required String clientId,
+    TrackerRecord? existing,
+    required Attribution who,
+    required BodySpot spot,
+    String? legacyRef,
+  }) => _upsert(
     kind: TrackerKind.healthSpot,
     clientId: clientId,
     existing: existing,
     who: who,
     title: spot.placeLabel(false),
     occurredAt: spot.at ?? DateTime.now(),
-    fields: {...spot.toFields(), 'legacyRef': legacyRef ?? existing?.str('legacyRef')},
+    fields: {
+      ...spot.toFields(),
+      'legacyRef': legacyRef ?? existing?.str('legacyRef'),
+    },
   );
 
-  Future<TrackerRecord> addFollowup({required String clientId, required TrackerRecord checkin, required FollowStatus status, String? note, Severity? severity, DateTime? at}) => _upsert(
+  Future<TrackerRecord> addFollowup({
+    required String clientId,
+    required TrackerRecord checkin,
+    required FollowStatus status,
+    String? note,
+    Severity? severity,
+    DateTime? at,
+  }) => _upsert(
     kind: TrackerKind.healthFollowup,
     clientId: clientId,
-    who: Attribution.of(checkin).copyWith(author: ref.read(healthViewerProvider)),
+    who: Attribution.of(
+      checkin,
+    ).copyWith(author: ref.read(healthViewerProvider)),
     parentId: checkin.id,
     body: _blank(note),
     occurredAt: at ?? DateTime.now(),
     fields: {'status': status.name, 'severity': severity?.name},
   );
 
-  Future<TrackerRecord> saveEpisode({required String clientId, TrackerRecord? existing, required Attribution who, required String title, required DateTime start, bool approxStart = false, DateTime? end, required EpisodeState state, String? note}) async {
+  Future<TrackerRecord> saveEpisode({
+    required String clientId,
+    TrackerRecord? existing,
+    required Attribution who,
+    required String title,
+    required DateTime start,
+    bool approxStart = false,
+    DateTime? end,
+    required EpisodeState state,
+    String? note,
+  }) async {
     final log = [
       ...?(existing?.fields['log'] as List?),
-      if (existing == null || existing.episodeState != state) {'state': state.name, 'at': DateTime.now().toUtc().toIso8601String(), 'note': _blank(note)},
+      if (existing == null || existing.episodeState != state)
+        {
+          'state': state.name,
+          'at': DateTime.now().toUtc().toIso8601String(),
+          'note': _blank(note),
+        },
     ];
     return _upsert(
       kind: TrackerKind.healthEpisode,
@@ -680,14 +892,35 @@ class HealthStore {
   }
 
   /// Adds or removes a check-in from an episode without touching anything else.
-  Future<void> setEpisode(TrackerRecord checkin, String? episodeId) => _t.save(checkin.withFields({'episodeId': episodeId}));
+  Future<void> setEpisode(TrackerRecord checkin, String? episodeId) =>
+      _t.save(checkin.withFields({'episodeId': episodeId}));
 
-  Future<void> delete(TrackerRecord r) => _t.delete(r.id, children: r.kind == TrackerKind.healthCheckin);
+  Future<void> delete(TrackerRecord r) =>
+      _t.delete(r.id, children: r.kind == TrackerKind.healthCheckin);
 
-  Future<TrackerRecord> addCustomTerm({required String type, required String label, String? regionId, SymptomCategory? category}) async {
-    final existing = ref.read(healthVocabProvider).records.where((r) => r.str('type') == type && r.title.toLowerCase() == label.trim().toLowerCase() && r.str('region') == regionId).firstOrNull;
+  Future<TrackerRecord> addCustomTerm({
+    required String type,
+    required String label,
+    String? regionId,
+    SymptomCategory? category,
+  }) async {
+    final existing = ref
+        .read(healthVocabProvider)
+        .records
+        .where(
+          (r) =>
+              r.str('type') == type &&
+              r.title.toLowerCase() == label.trim().toLowerCase() &&
+              r.str('region') == regionId,
+        )
+        .firstOrNull;
     if (existing != null) return existing;
-    return _t.create(kind: TrackerKind.healthVocab, title: label.trim(), isPrivate: true, fields: {'type': type, 'region': regionId, 'category': category?.name});
+    return _t.create(
+      kind: TrackerKind.healthVocab,
+      title: label.trim(),
+      isPrivate: true,
+      fields: {'type': type, 'region': regionId, 'category': category?.name},
+    );
   }
 }
 
@@ -700,11 +933,14 @@ final healthStoreProvider = Provider<HealthStore>(HealthStore.new);
 /// Unsaved check-ins are kept per alter (the one who was writing), so a
 /// switch doesn't show one alter's half-written entry to another.
 class HealthDrafts {
-  static String _key(String? author) => 'prism.health.draft.${author ?? 'system'}';
+  static String _key(String? author) =>
+      'prism.health.draft.${author ?? 'system'}';
 
   static Future<Map<String, dynamic>?> load(String? author) async {
     try {
-      final raw = (await SharedPreferences.getInstance()).getString(_key(author));
+      final raw = (await SharedPreferences.getInstance()).getString(
+        _key(author),
+      );
       if (raw == null) return null;
       final v = jsonDecode(raw);
       return v is Map<String, dynamic> ? v : null;
@@ -715,7 +951,10 @@ class HealthDrafts {
 
   static Future<void> save(String? author, Map<String, dynamic> draft) async {
     try {
-      await (await SharedPreferences.getInstance()).setString(_key(author), jsonEncode(draft));
+      await (await SharedPreferences.getInstance()).setString(
+        _key(author),
+        jsonEncode(draft),
+      );
     } catch (_) {}
   }
 
@@ -726,7 +965,9 @@ class HealthDrafts {
   }
 }
 
-final healthDraftProvider = FutureProvider<Map<String, dynamic>?>((ref) => HealthDrafts.load(ref.watch(healthViewerProvider)));
+final healthDraftProvider = FutureProvider<Map<String, dynamic>?>(
+  (ref) => HealthDrafts.load(ref.watch(healthViewerProvider)),
+);
 
 // ---------------------------------------------------------------------------
 // Period comparison
@@ -734,7 +975,11 @@ final healthDraftProvider = FutureProvider<Map<String, dynamic>?>((ref) => Healt
 
 /// Days that have at least one logged symptom in [start, end). Days without
 /// a log are unknown, not symptom-free.
-int daysWithLoggedSymptom(Iterable<TrackerRecord> checkins, DateTime start, DateTime end) {
+int daysWithLoggedSymptom(
+  Iterable<TrackerRecord> checkins,
+  DateTime start,
+  DateTime end,
+) {
   final days = <DateTime>{};
   for (final c in checkins) {
     final t = c.happenedAt;

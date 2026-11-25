@@ -20,12 +20,16 @@ extension BodySideText on BodySide {
 }
 
 /// The drawings the map can show.
-enum BodyView { front, back, face, handPalm, handBack, footTop, footSole }
+enum BodyView { front, back, face, handPalm, handBack, footTop, footSole, side }
 
 extension BodyViewText on BodyView {
   static BodyView parse(String? s) =>
       BodyView.values.where((v) => v.name == s).firstOrNull ?? BodyView.front;
-  bool get isZoom => this != BodyView.front && this != BodyView.back;
+  bool get isZoom =>
+      this != BodyView.front && this != BodyView.back && this != BodyView.side;
+
+  /// The full front/back figures (marker anchors and side tags apply).
+  bool get isFigure => this == BodyView.front || this == BodyView.back;
 }
 
 /// Descriptor groups: which region-specific sensation words apply.
@@ -1435,6 +1439,18 @@ BodySheet sheetFor(BodyView view, {BodySide side = BodySide.right}) {
         side,
         mirror,
       );
+    case BodyView.side:
+      // The right side faces the viewer's right; the left is its mirror.
+      final (outline, parts, details) = _sideParts();
+      return _zoomSheet(
+        view,
+        const Size(200, 460),
+        outline,
+        parts,
+        details,
+        side == BodySide.center ? BodySide.right : side,
+        side == BodySide.left,
+      );
     case BodyView.footTop:
     case BodyView.footSole:
       // Top: the left foot has its big toe on the viewer's left. Sole
@@ -1452,6 +1468,105 @@ BodySheet sheetFor(BodyView view, {BodySide side = BodySide.right}) {
         mirror,
       );
   }
+}
+
+/// A natural profile figure (body's right side, facing the viewer's right)
+/// with the same proportions as the front and back views.
+(Path, List<(String, Path)>, List<Path>) _sideParts() {
+  final head = Path()
+    ..moveTo(100, 8)
+    ..cubicTo(88, 8, 80, 18, 80, 31)
+    ..cubicTo(80, 42, 86, 52, 96, 56)
+    ..lineTo(108, 58)
+    ..cubicTo(114, 58, 117, 52, 117, 47)
+    ..lineTo(119, 45)
+    ..cubicTo(120, 43, 118, 41, 119, 39)
+    ..lineTo(123, 37)
+    ..cubicTo(121, 33, 119, 30, 119, 26)
+    ..cubicTo(119, 15, 111, 8, 100, 8)
+    ..close();
+  final body = Path()
+    ..moveTo(96, 54)
+    ..cubicTo(95, 64, 92, 70, 90, 76) // back of neck
+    ..cubicTo(86, 92, 86, 110, 88, 126) // upper back
+    ..cubicTo(90, 140, 92, 150, 90, 164) // lumbar curve
+    ..cubicTo(88, 180, 83, 196, 85, 210) // buttock
+    ..cubicTo(87, 226, 90, 240, 90, 256) // back of thigh
+    ..cubicTo(91, 282, 92, 300, 93, 318)
+    ..cubicTo(92, 330, 90, 340, 90, 352) // back of knee
+    ..cubicTo(87, 372, 90, 398, 94, 422) // calf to heel
+    ..cubicTo(95, 434, 92, 446, 96, 450) // heel
+    ..lineTo(124, 450)
+    ..cubicTo(127, 448, 125, 442, 118, 440) // toes and top of foot
+    ..cubicTo(110, 436, 106, 430, 106, 422) // front of ankle
+    ..cubicTo(106, 400, 108, 370, 108, 350) // shin
+    ..cubicTo(108, 338, 110, 328, 110, 318) // knee
+    ..cubicTo(111, 290, 112, 250, 110, 222) // front of thigh
+    ..cubicTo(110, 212, 112, 204, 113, 196) // groin
+    ..cubicTo(116, 180, 116, 166, 114, 154) // belly
+    ..cubicTo(114, 140, 118, 128, 118, 116) // chest
+    ..cubicTo(118, 100, 114, 86, 108, 78)
+    ..cubicTo(106, 72, 105, 64, 106, 56) // front of neck
+    ..close();
+  final arm = Path()
+    ..moveTo(94, 84)
+    ..cubicTo(95, 78, 108, 78, 109, 86) // shoulder cap
+    ..cubicTo(110, 104, 108, 126, 108, 146) // front of upper arm
+    ..cubicTo(108, 166, 111, 186, 112, 200) // forearm
+    ..cubicTo(114, 210, 115, 222, 112, 232) // hand
+    ..cubicTo(110, 238, 104, 238, 103, 230)
+    ..cubicTo(102, 222, 102, 212, 103, 202)
+    ..cubicTo(101, 186, 97, 166, 97, 148) // back of forearm/elbow
+    ..cubicTo(96, 126, 93, 104, 94, 84)
+    ..close();
+  final outline = _union([head, body, arm]);
+  final parts = <(String, Path)>[
+    ('scalp', _rr(84, 9, 114, 19, 6)),
+    ('back_of_head', _ell(86, 33, 6, 13)),
+    ('forehead', _ell(114, 22, 5, 6)),
+    ('temple', _ell(105, 26, 5, 5)),
+    ('ear', _ell(96, 35, 5, 7)),
+    ('eye', _ell(113, 32, 3, 2.5)),
+    ('nose', _ell(121, 37, 3, 4)),
+    ('cheek', _ell(110, 42, 5, 5)),
+    ('jaw', _ell(104, 51, 7, 5)),
+    ('lips', _ell(116, 48, 2.5, 3)),
+    ('neck_back', _rr(90, 58, 99, 78, 4)),
+    ('throat', _rr(101, 60, 108, 78, 4)),
+    ('upper_back', _rr(86, 82, 95, 124, 4)),
+    ('chest', _rr(108, 86, 119, 124, 6)),
+    ('ribs', _rr(95, 120, 114, 150, 6)),
+    ('lower_back', _rr(87, 150, 95, 180, 4)),
+    ('abdomen_mid', _rr(104, 150, 116, 184, 6)),
+    ('flank', _rr(95, 150, 104, 190, 4)),
+    ('hip', _ell(99, 202, 9, 10)),
+    ('buttock', _rr(83, 194, 94, 228, 8)),
+    ('pelvis', _rr(105, 188, 114, 214, 6)),
+    ('shoulder_front', _ell(102, 88, 8, 8)),
+    ('upper_arm_front', _rr(97, 96, 109, 142, 6)),
+    ('elbow_back', _ell(100, 150, 5, 6)),
+    ('forearm_front', _rr(99, 158, 111, 198, 5)),
+    ('wrist_front', _ell(107, 204, 5, 4)),
+    ('palm', _ell(108, 220, 6, 13)),
+    ('thigh_back', _rr(88, 226, 98, 312, 6)),
+    ('thigh_front', _rr(99, 222, 111, 312, 6)),
+    ('knee', _ell(106, 326, 5, 9)),
+    ('knee_back', _ell(92, 334, 4, 8)),
+    ('calf', _rr(88, 352, 98, 420, 6)),
+    ('shin', _rr(99, 350, 108, 420, 4)),
+    ('ankle', _ell(100, 428, 8, 5)),
+    ('heel', _ell(96, 444, 5, 5)),
+    ('foot_top', _ell(115, 442, 9, 5)),
+  ];
+  final details = [
+    Path()
+      ..moveTo(92, 334)
+      ..quadraticBezierTo(98, 330, 104, 334),
+    Path()
+      ..moveTo(117, 116)
+      ..quadraticBezierTo(112, 124, 108, 122),
+  ];
+  return (outline, parts, details);
 }
 
 BodySheet _zoomSheet(

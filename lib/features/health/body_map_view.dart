@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prism_plurality/features/health/body_atlas.dart';
 import 'package:prism_plurality/features/health/health_model.dart';
@@ -7,7 +8,9 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 bool _es(BuildContext c) => Localizations.localeOf(c).languageCode == 'es';
 
 String bodyViewLabel(BodyView v, bool es, [BodySide side = BodySide.right]) {
-  final s = side == BodySide.left ? (es ? 'izquierda' : 'Left') : (es ? 'derecha' : 'Right');
+  final s = side == BodySide.left
+      ? (es ? 'izquierda' : 'Left')
+      : (es ? 'derecha' : 'Right');
   return switch (v) {
     BodyView.front => es ? 'Delante' : 'Front',
     BodyView.back => es ? 'Detrás' : 'Back',
@@ -16,12 +19,19 @@ String bodyViewLabel(BodyView v, bool es, [BodySide side = BodySide.right]) {
     BodyView.handBack => es ? 'Dorso de la mano $s' : '$s back of hand',
     BodyView.footTop => es ? 'Pie $s · arriba' : '$s foot · top',
     BodyView.footSole => es ? 'Pie $s · planta' : '$s foot · sole',
+    BodyView.side => es ? 'Lado $s' : '$s side',
   };
 }
 
 /// What the user picked on the map or in the region list.
 class BodyPick {
-  const BodyPick({required this.regionId, required this.side, required this.view, this.x, this.y});
+  const BodyPick({
+    required this.regionId,
+    required this.side,
+    required this.view,
+    this.x,
+    this.y,
+  });
   final String regionId;
   final BodySide side;
   final BodyView view;
@@ -33,7 +43,16 @@ class BodyPick {
 
 /// A marker to draw: a numbered spot, or a whole highlighted region.
 class MapMarker {
-  const MapMarker({required this.id, required this.number, required this.regionId, required this.side, required this.view, this.x, this.y, this.spreads = const []});
+  const MapMarker({
+    required this.id,
+    required this.number,
+    required this.regionId,
+    required this.side,
+    required this.view,
+    this.x,
+    this.y,
+    this.spreads = const [],
+  });
   final String id;
   final int number;
   final String regionId;
@@ -45,7 +64,16 @@ class MapMarker {
 
   static List<MapMarker> fromSpots(List<BodySpot> spots) => [
     for (final (i, s) in spots.indexed)
-      MapMarker(id: s.id, number: i + 1, regionId: s.regionId, side: s.side, view: s.view, x: s.x, y: s.y, spreads: s.spreads),
+      MapMarker(
+        id: s.id,
+        number: i + 1,
+        regionId: s.regionId,
+        side: s.side,
+        view: s.view,
+        x: s.x,
+        y: s.y,
+        spreads: s.spreads,
+      ),
   ];
 }
 
@@ -80,6 +108,23 @@ class BodyMapCanvas extends StatefulWidget {
 class _BodyMapCanvasState extends State<BodyMapCanvas> {
   RegionShape? _hover;
 
+  void _onTheme() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadBodyMapTheme();
+    bodyMapTheme.addListener(_onTheme);
+  }
+
+  @override
+  void dispose() {
+    bodyMapTheme.removeListener(_onTheme);
+    super.dispose();
+  }
+
   BodySheet get _sheet => sheetFor(widget.view, side: widget.side);
 
   Future<void> _tap(Offset local, Size box) async {
@@ -98,7 +143,10 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
     final primary = hit.primary;
     if (primary == null) return;
     if (primary.zoomTo != null && widget.onZoom != null) {
-      widget.onZoom!(primary.zoomTo!, primary.side == BodySide.center ? BodySide.right : primary.side);
+      widget.onZoom!(
+        primary.zoomTo!,
+        primary.side == BodySide.center ? BodySide.right : primary.side,
+      );
       return;
     }
     var chosen = primary;
@@ -108,15 +156,27 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
       chosen = pick;
     }
     HapticFeedback.selectionClick();
-    widget.onPick?.call(BodyPick(regionId: chosen.regionId, side: chosen.side, view: widget.view, x: p.dx / sheet.size.width, y: p.dy / sheet.size.height));
+    widget.onPick?.call(
+      BodyPick(
+        regionId: chosen.regionId,
+        side: chosen.side,
+        view: widget.view,
+        x: p.dx / sheet.size.width,
+        y: p.dy / sheet.size.height,
+      ),
+    );
   }
 
   Offset? _markerCenter(MapMarker m, BodySheet sheet) {
     if (m.view == widget.view && m.x != null && m.y != null) {
-      if (widget.view.isZoom && m.side != widget.side && regionById[m.regionId]?.sided == true) return null;
+      if (!widget.view.isFigure &&
+          m.side != widget.side &&
+          regionById[m.regionId]?.sided == true)
+        return null;
       return Offset(m.x! * sheet.size.width, m.y! * sheet.size.height);
     }
-    if (!widget.view.isZoom) return figureAnchor(m.regionId, m.side, widget.view);
+    if (widget.view.isFigure)
+      return figureAnchor(m.regionId, m.side, widget.view);
     return null;
   }
 
@@ -125,7 +185,7 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
     final sheet = _sheet;
     final theme = Theme.of(context);
     final es = _es(context);
-    final leftSide = widget.view.isZoom ? null : viewerLeftSide(widget.view);
+    final leftSide = widget.view.isFigure ? viewerLeftSide(widget.view) : null;
     return LayoutBuilder(
       builder: (context, c) {
         final aspect = sheet.size.width / sheet.size.height;
@@ -146,7 +206,9 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
               onHover: (e) {
                 final p = e.localPosition / (size.width / sheet.size.width);
                 final hit = hitTestSheet(sheet, p, slop: 0).primary;
-                if (hit?.regionId != _hover?.regionId || hit?.side != _hover?.side) setState(() => _hover = hit);
+                if (hit?.regionId != _hover?.regionId ||
+                    hit?.side != _hover?.side)
+                  setState(() => _hover = hit);
               },
               onExit: (_) => setState(() => _hover = null),
               child: GestureDetector(
@@ -169,13 +231,28 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
                             hover: _hover,
                             colors: theme.colorScheme,
                             markerCenter: (m) => _markerCenter(m, sheet),
-                            labelStyle: theme.textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w800, fontSize: 9.5),
+                            labelStyle: theme.textTheme.labelSmall!.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 9.5,
+                            ),
                           ),
                         ),
                       ),
                       if (leftSide != null) ...[
-                        Positioned(left: 0, top: 0, child: _SideTag(side: leftSide)),
-                        Positioned(right: 0, top: 0, child: _SideTag(side: leftSide == BodySide.right ? BodySide.left : BodySide.right)),
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          child: _SideTag(side: leftSide),
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: _SideTag(
+                            side: leftSide == BodySide.right
+                                ? BodySide.left
+                                : BodySide.right,
+                          ),
+                        ),
                       ],
                       if (_hover != null)
                         Positioned(
@@ -185,14 +262,28 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
                           child: IgnorePointer(
                             child: Center(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
                                 decoration: BoxDecoration(
                                   color: theme.colorScheme.inverseSurface,
-                                  borderRadius: BorderRadius.circular(PrismTokens.radiusSmall),
+                                  borderRadius: BorderRadius.circular(
+                                    PrismTokens.radiusSmall,
+                                  ),
                                 ),
                                 child: Text(
-                                  _hover!.zoomTo != null ? (es ? 'Ampliar' : 'Zoom in') : (regionById[_hover!.regionId]?.label(es, _hover!.side) ?? ''),
-                                  style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onInverseSurface, fontWeight: FontWeight.w700),
+                                  _hover!.zoomTo != null
+                                      ? (es ? 'Ampliar' : 'Zoom in')
+                                      : (regionById[_hover!.regionId]?.label(
+                                              es,
+                                              _hover!.side,
+                                            ) ??
+                                            ''),
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: theme.colorScheme.onInverseSurface,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
@@ -231,12 +322,23 @@ class _SideTag extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: theme.colorScheme.outlineVariant),
             ),
-            child: Text(left ? (es ? 'I' : 'L') : (es ? 'D' : 'R'), style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.onSurfaceVariant)),
+            child: Text(
+              left ? (es ? 'I' : 'L') : (es ? 'D' : 'R'),
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
           const SizedBox(height: 2),
           Text(
-            left ? (es ? 'Su izquierda' : 'Body’s left') : (es ? 'Su derecha' : 'Body’s right'),
-            style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontSize: 10),
+            left
+                ? (es ? 'Su izquierda' : 'Body’s left')
+                : (es ? 'Su derecha' : 'Body’s right'),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontSize: 10,
+            ),
           ),
         ],
       ),
@@ -267,45 +369,88 @@ class _BodyPainter extends CustomPainter {
   final Offset? Function(MapMarker) markerCenter;
   final TextStyle labelStyle;
 
+  /// The Body Map look when this painter was made.
+  final String themeKey = bodyMapTheme.value;
+
   @override
   void paint(Canvas canvas, Size size) {
     final k = size.width / sheet.size.width;
     canvas.save();
     canvas.scale(k);
-    final ink = colors.onSurface;
-    // Body fill and outline: a quiet, neutral figure.
-    canvas.drawPath(sheet.outline, Paint()..color = Color.alphaBlend(colors.primary.withValues(alpha: 0.05), colors.surfaceContainerHigh));
+    final style = bodyMapTheme.value;
+    final contrast = style == 'contrast';
+    final ink = contrast
+        ? (colors.brightness == Brightness.dark ? Colors.white : Colors.black)
+        : colors.onSurface;
+    // Body fill: a quiet neutral figure by default, or a chosen skin tone.
+    final skin = switch (style) {
+      'light' => const Color(0xFFF3D5C0),
+      'medium' => const Color(0xFFDDAA86),
+      'tan' => const Color(0xFFC08560),
+      'deep' => const Color(0xFF8A5A3C),
+      'outline' => Colors.transparent,
+      'contrast' =>
+        colors.brightness == Brightness.dark ? Colors.black : Colors.white,
+      _ => Color.alphaBlend(
+        colors.primary.withValues(alpha: 0.05),
+        colors.surfaceContainerHigh,
+      ),
+    };
+    canvas.drawPath(sheet.outline, Paint()..color = skin);
     canvas.save();
     canvas.clipPath(sheet.outline);
     // Highlighted regions: whole-area spots and the hovered region.
     for (final m in markers) {
       if (m.x != null) continue;
       for (final s in sheet.shapes) {
-        if (s.regionId == m.regionId && (s.side == m.side || s.side == BodySide.center || m.side == BodySide.center)) {
-          canvas.drawPath(s.path, Paint()..color = colors.primary.withValues(alpha: m.id == focusedId ? 0.34 : 0.2));
+        if (s.regionId == m.regionId &&
+            (s.side == m.side ||
+                s.side == BodySide.center ||
+                m.side == BodySide.center)) {
+          canvas.drawPath(
+            s.path,
+            Paint()
+              ..color = colors.primary.withValues(
+                alpha: m.id == focusedId ? 0.34 : 0.2,
+              ),
+          );
         }
       }
     }
     if (hover != null) {
-      canvas.drawPath(hover!.path, Paint()..color = colors.primary.withValues(alpha: 0.12));
-      canvas.drawPath(hover!.path, Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1 / k * 1.2
-        ..color = colors.primary.withValues(alpha: 0.6));
+      canvas.drawPath(
+        hover!.path,
+        Paint()..color = colors.primary.withValues(alpha: 0.12),
+      );
+      canvas.drawPath(
+        hover!.path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1 / k * 1.2
+          ..color = colors.primary.withValues(alpha: 0.6),
+      );
     }
     for (final d in sheet.details) {
-      canvas.drawPath(d, Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.7
-        ..strokeCap = StrokeCap.round
-        ..color = ink.withValues(alpha: 0.18));
+      canvas.drawPath(
+        d,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.7
+          ..strokeCap = StrokeCap.round
+          ..color = ink.withValues(alpha: 0.18),
+      );
     }
     canvas.restore();
-    canvas.drawPath(sheet.outline, Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.3
-      ..strokeJoin = StrokeJoin.round
-      ..color = ink.withValues(alpha: 0.42));
+    canvas.drawPath(
+      sheet.outline,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = contrast || style == 'outline' ? 2 : 1.3
+        ..strokeJoin = StrokeJoin.round
+        ..color = ink.withValues(
+          alpha: contrast ? 1 : (style == 'outline' ? 0.7 : 0.42),
+        ),
+    );
 
     // Spread lines.
     for (final m in markers) {
@@ -313,14 +458,33 @@ class _BodyPainter extends CustomPainter {
       if (from == null) continue;
       var prev = from;
       for (final s in m.spreads) {
-        final to = (s.view == view && s.x != null && s.y != null) ? Offset(s.x! * sheet.size.width, s.y! * sheet.size.height) : (!view.isZoom ? figureAnchor(s.regionId, s.side, view) : null);
+        final to = (s.view == view && s.x != null && s.y != null)
+            ? Offset(s.x! * sheet.size.width, s.y! * sheet.size.height)
+            : (view.isFigure ? figureAnchor(s.regionId, s.side, view) : null);
         if (to == null) continue;
-        _dashed(canvas, prev, to, Paint()
-          ..color = colors.primary.withValues(alpha: 0.7)
-          ..strokeWidth = 1.2
-          ..strokeCap = StrokeCap.round);
-        canvas.drawCircle(to, s.stops ? 3.2 : 2.2, Paint()..color = colors.primary);
-        if (s.stops) canvas.drawCircle(to, 5, Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = colors.primary);
+        _dashed(
+          canvas,
+          prev,
+          to,
+          Paint()
+            ..color = colors.primary.withValues(alpha: 0.7)
+            ..strokeWidth = 1.2
+            ..strokeCap = StrokeCap.round,
+        );
+        canvas.drawCircle(
+          to,
+          s.stops ? 3.2 : 2.2,
+          Paint()..color = colors.primary,
+        );
+        if (s.stops)
+          canvas.drawCircle(
+            to,
+            5,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1
+              ..color = colors.primary,
+          );
         prev = to;
       }
     }
@@ -331,11 +495,29 @@ class _BodyPainter extends CustomPainter {
       final exact = m.view == view;
       final r = exact ? 7.0 : 4.5;
       final focused = m.id == focusedId;
-      if (focused) canvas.drawCircle(c, r + 4, Paint()..color = colors.primary.withValues(alpha: 0.25));
+      if (focused)
+        canvas.drawCircle(
+          c,
+          r + 4,
+          Paint()..color = colors.primary.withValues(alpha: 0.25),
+        );
       canvas.drawCircle(c, r, Paint()..color = colors.primary);
-      canvas.drawCircle(c, r, Paint()..style = PaintingStyle.stroke..strokeWidth = 1.4..color = colors.surface);
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.4
+          ..color = colors.surface,
+      );
       if (exact) {
-        final tp = TextPainter(text: TextSpan(text: '${m.number}', style: labelStyle.copyWith(color: colors.onPrimary)), textDirection: TextDirection.ltr)..layout();
+        final tp = TextPainter(
+          text: TextSpan(
+            text: '${m.number}',
+            style: labelStyle.copyWith(color: colors.onPrimary),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
         tp.paint(canvas, c - Offset(tp.width / 2, tp.height / 2));
       }
     }
@@ -352,21 +534,35 @@ class _BodyPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_BodyPainter o) => o.sheet != sheet || o.markers != markers || o.focusedId != focusedId || o.hover != hover || o.colors != colors || o.side != side;
+  bool shouldRepaint(_BodyPainter o) =>
+      o.themeKey != themeKey ||
+      o.sheet != sheet ||
+      o.markers != markers ||
+      o.focusedId != focusedId ||
+      o.hover != hover ||
+      o.colors != colors ||
+      o.side != side;
 }
 
-Future<RegionShape?> _disambiguate(BuildContext context, List<RegionShape> options) {
+Future<RegionShape?> _disambiguate(
+  BuildContext context,
+  List<RegionShape> options,
+) {
   final es = _es(context);
   return PrismSheet.show<RegionShape>(
     context: context,
     title: es ? '¿Qué zona?' : 'Which area?',
-    subtitle: es ? 'Tocaste cerca de varias zonas.' : 'Your tap landed between areas.',
+    subtitle: es
+        ? 'Tocaste cerca de varias zonas.'
+        : 'Your tap landed between areas.',
     builder: (ctx) => Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         for (final o in options)
           PrismListRow(
-            title: Text(regionById[o.regionId]?.label(es, o.side) ?? o.regionId),
+            title: Text(
+              regionById[o.regionId]?.label(es, o.side) ?? o.regionId,
+            ),
             leading: Icon(PhosphorIcons.mapPin()),
             onTap: () => Navigator.of(ctx).pop(o),
           ),
@@ -418,10 +614,14 @@ class BodyMapPanelState extends State<BodyMapPanel> {
   });
 
   Future<void> _findRegion() async {
-    final pick = await showRegionList(context, allowSpecial: widget.allowSpecial);
+    final pick = await showRegionList(
+      context,
+      allowSpecial: widget.allowSpecial,
+    );
     if (pick == null || !mounted) return;
     final v = pick.view;
-    if (v != _view && (regionById[pick.regionId]?.anchor != null)) show(v, pick.side);
+    if (v != _view && (regionById[pick.regionId]?.anchor != null))
+      show(v, pick.side);
     widget.onPick?.call(pick);
   }
 
@@ -446,11 +646,25 @@ class BodyMapPanelState extends State<BodyMapPanel> {
               Expanded(
                 child: PrismSegmentedControl<BodyView>(
                   segments: [
-                    PrismSegment(value: BodyView.front, label: es ? 'Delante' : 'Front'),
-                    PrismSegment(value: BodyView.back, label: es ? 'Detrás' : 'Back'),
+                    PrismSegment(
+                      value: BodyView.front,
+                      label: es ? 'Delante' : 'Front',
+                    ),
+                    PrismSegment(
+                      value: BodyView.back,
+                      label: es ? 'Detrás' : 'Back',
+                    ),
+                    PrismSegment(
+                      value: BodyView.side,
+                      label: es ? 'Lado' : 'Side',
+                    ),
                   ],
                   selected: _view,
-                  onChanged: (v) => setState(() => _view = _figure = v),
+                  onChanged: (v) => setState(() {
+                    _view = _figure = v;
+                    if (v == BodyView.side && _side == BodySide.center)
+                      _side = BodySide.right;
+                  }),
                 ),
               ),
             if (zoom) ...[
@@ -458,7 +672,9 @@ class BodyMapPanelState extends State<BodyMapPanel> {
               Expanded(
                 child: Text(
                   bodyViewLabel(_view, es, _side),
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -472,18 +688,69 @@ class BodyMapPanelState extends State<BodyMapPanel> {
             ),
           ],
         ),
+        if (_view == BodyView.side) ...[
+          const SizedBox(height: 8),
+          PrismSegmentedControl<BodySide>(
+            segments: [
+              PrismSegment(
+                value: BodySide.left,
+                label: es ? 'Lado izquierdo' : 'Left side',
+              ),
+              PrismSegment(
+                value: BodySide.right,
+                label: es ? 'Lado derecho' : 'Right side',
+              ),
+            ],
+            selected: _side == BodySide.left ? BodySide.left : BodySide.right,
+            onChanged: (v) => setState(() => _side = v),
+          ),
+        ],
         const SizedBox(height: 10),
         SizedBox(
           height: 34,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: PrismPopupMenu<String>(
+                  icon: PhosphorIcons.palette(),
+                  tooltip: es ? 'Aspecto del cuerpo' : 'Body colours',
+                  onSelected: (v) => setBodyMapTheme(v),
+                  items: [
+                    for (final e in bodyMapThemes.entries)
+                      PrismMenuItem(
+                        value: e.key,
+                        label: es ? e.value.$2 : e.value.$1,
+                        icon: bodyMapTheme.value == e.key
+                            ? Icons.check
+                            : Icons.circle_outlined,
+                      ),
+                  ],
+                ),
+              ),
               for (final (v, s, label) in [
                 (BodyView.face, BodySide.right, es ? 'Cara' : 'Face'),
-                (BodyView.handPalm, BodySide.left, es ? 'Mano izq.' : 'Left hand'),
-                (BodyView.handPalm, BodySide.right, es ? 'Mano der.' : 'Right hand'),
-                (BodyView.footTop, BodySide.left, es ? 'Pie izq.' : 'Left foot'),
-                (BodyView.footTop, BodySide.right, es ? 'Pie der.' : 'Right foot'),
+                (
+                  BodyView.handPalm,
+                  BodySide.left,
+                  es ? 'Mano izq.' : 'Left hand',
+                ),
+                (
+                  BodyView.handPalm,
+                  BodySide.right,
+                  es ? 'Mano der.' : 'Right hand',
+                ),
+                (
+                  BodyView.footTop,
+                  BodySide.left,
+                  es ? 'Pie izq.' : 'Left foot',
+                ),
+                (
+                  BodyView.footTop,
+                  BodySide.right,
+                  es ? 'Pie der.' : 'Right foot',
+                ),
               ])
                 Padding(
                   padding: const EdgeInsets.only(right: 6),
@@ -500,8 +767,26 @@ class BodyMapPanelState extends State<BodyMapPanel> {
           const SizedBox(height: 8),
           PrismSegmentedControl<BodyView>(
             segments: _view == BodyView.handPalm || _view == BodyView.handBack
-                ? [PrismSegment(value: BodyView.handPalm, label: es ? 'Palma' : 'Palm'), PrismSegment(value: BodyView.handBack, label: es ? 'Dorso' : 'Back of hand')]
-                : [PrismSegment(value: BodyView.footTop, label: es ? 'Arriba' : 'Top'), PrismSegment(value: BodyView.footSole, label: es ? 'Planta' : 'Sole')],
+                ? [
+                    PrismSegment(
+                      value: BodyView.handPalm,
+                      label: es ? 'Palma' : 'Palm',
+                    ),
+                    PrismSegment(
+                      value: BodyView.handBack,
+                      label: es ? 'Dorso' : 'Back of hand',
+                    ),
+                  ]
+                : [
+                    PrismSegment(
+                      value: BodyView.footTop,
+                      label: es ? 'Arriba' : 'Top',
+                    ),
+                    PrismSegment(
+                      value: BodyView.footSole,
+                      label: es ? 'Planta' : 'Sole',
+                    ),
+                  ],
             selected: _view,
             onChanged: (v) => setState(() => _view = v),
           ),
@@ -519,7 +804,13 @@ class BodyMapPanelState extends State<BodyMapPanel> {
         ),
         if (zoom && _view == BodyView.face) ...[
           const SizedBox(height: 10),
-          Text(es ? 'Dentro de la boca' : 'Inside the mouth', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
+          Text(
+            es ? 'Dentro de la boca' : 'Inside the mouth',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,
@@ -529,7 +820,13 @@ class BodyMapPanelState extends State<BodyMapPanel> {
                 PrismChip(
                   label: regionById[id]!.label(es),
                   selected: widget.markers.any((m) => m.regionId == id),
-                  onTap: () => widget.onPick?.call(BodyPick(regionId: id, side: BodySide.center, view: BodyView.face)),
+                  onTap: () => widget.onPick?.call(
+                    BodyPick(
+                      regionId: id,
+                      side: BodySide.center,
+                      view: BodyView.face,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -549,17 +846,23 @@ class BodyMapPanelState extends State<BodyMapPanel> {
   /// Keep palm/back (or top/sole) when switching sides.
   BodyView _keepFace(BodyView v) {
     final hand = v == BodyView.handPalm || v == BodyView.handBack;
-    if (hand && (_view == BodyView.handPalm || _view == BodyView.handBack)) return _view;
-    if (!hand && (_view == BodyView.footTop || _view == BodyView.footSole)) return _view;
+    if (hand && (_view == BodyView.handPalm || _view == BodyView.handBack))
+      return _view;
+    if (!hand && (_view == BodyView.footTop || _view == BodyView.footSole))
+      return _view;
     return v;
   }
 }
 
 /// Searchable list of every region — the same choices as the map, usable
 /// with a keyboard or screen reader.
-Future<BodyPick?> showRegionList(BuildContext context, {bool allowSpecial = true}) => PrismSheet.showFullScreen<BodyPick>(
+Future<BodyPick?> showRegionList(
+  BuildContext context, {
+  bool allowSpecial = true,
+}) => PrismSheet.showFullScreen<BodyPick>(
   context: context,
-  builder: (ctx, scroll) => _RegionList(scroll: scroll, allowSpecial: allowSpecial),
+  builder: (ctx, scroll) =>
+      _RegionList(scroll: scroll, allowSpecial: allowSpecial),
 );
 
 class _RegionList extends StatefulWidget {
@@ -580,14 +883,23 @@ class _RegionListState extends State<_RegionList> {
   }
 
   void _pick(BodyRegion r, BodySide side) {
-    Navigator.of(context).pop(BodyPick(regionId: r.id, side: side, view: preferredViewFor(r.id)));
+    Navigator.of(
+      context,
+    ).pop(BodyPick(regionId: r.id, side: side, view: preferredViewFor(r.id)));
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final es = _es(context);
-    final results = searchRegions(_q.text, es).where((r) => widget.allowSpecial || r.section != RegionSection.general || r.anchor != null).toList();
+    final results = searchRegions(_q.text, es)
+        .where(
+          (r) =>
+              widget.allowSpecial ||
+              r.section != RegionSection.general ||
+              r.anchor != null,
+        )
+        .toList();
     final bySection = <RegionSection, List<BodyRegion>>{};
     for (final r in results) {
       bySection.putIfAbsent(r.section, () => []).add(r);
@@ -601,27 +913,52 @@ class _RegionListState extends State<_RegionList> {
             child: PrismTextField(
               controller: _q,
               autofocus: true,
-              hintText: es ? 'Buscar (p. ej. muñeca, omóplato, meñique)' : 'Search (e.g. wrist, shoulder blade, pinky)',
+              hintText: es
+                  ? 'Buscar (p. ej. muñeca, omóplato, meñique)'
+                  : 'Search (e.g. wrist, shoulder blade, pinky)',
               prefixIcon: Icon(AppIcons.search),
               onChanged: (_) => setState(() {}),
             ),
           ),
           Expanded(
             child: results.isEmpty
-                ? Center(child: Text(es ? 'Sin resultados. Prueba otra palabra o usa “Ubicación personalizada”.' : 'No matches. Try another word, or use “Custom location”.', textAlign: TextAlign.center))
+                ? Center(
+                    child: Text(
+                      es
+                          ? 'Sin resultados. Prueba otra palabra o usa “Ubicación personalizada”.'
+                          : 'No matches. Try another word, or use “Custom location”.',
+                      textAlign: TextAlign.center,
+                    ),
+                  )
                 : ListView(
                     controller: widget.scroll,
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.viewInsetsOf(context).bottom + 24),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      0,
+                      16,
+                      MediaQuery.viewInsetsOf(context).bottom + 24,
+                    ),
                     children: [
                       for (final e in bySection.entries) ...[
-                        PrismSectionHeader(title: regionSectionLabel(e.key, es).toUpperCase()),
+                        PrismSectionHeader(
+                          title: regionSectionLabel(e.key, es).toUpperCase(),
+                        ),
                         PrismSurface(
                           padding: EdgeInsets.zero,
                           child: Column(
                             children: [
                               for (final (i, r) in e.value.indexed) ...[
-                                if (i > 0) Divider(height: 1, indent: 16, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
-                                _RegionRow(region: r, onPick: (side) => _pick(r, side)),
+                                if (i > 0)
+                                  Divider(
+                                    height: 1,
+                                    indent: 16,
+                                    color: theme.colorScheme.outlineVariant
+                                        .withValues(alpha: 0.4),
+                                  ),
+                                _RegionRow(
+                                  region: r,
+                                  onPick: (side) => _pick(r, side),
+                                ),
                               ],
                             ],
                           ),
@@ -646,18 +983,25 @@ class _RegionRow extends StatelessWidget {
     final theme = Theme.of(context);
     final es = _es(context);
     if (!region.sided) {
-      return PrismListRow(title: Text(region.label(es)), onTap: () => onPick(BodySide.center));
+      return PrismListRow(
+        title: Text(region.label(es)),
+        onTap: () => onPick(BodySide.center),
+      );
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
       child: Row(
         children: [
-          Expanded(child: Text(region.label(es), style: theme.textTheme.bodyLarge)),
+          Expanded(
+            child: Text(region.label(es), style: theme.textTheme.bodyLarge),
+          ),
           for (final side in [BodySide.left, BodySide.right])
             Padding(
               padding: const EdgeInsets.only(left: 6),
               child: PrismButton(
-                label: side == BodySide.left ? (es ? 'Izquierda' : 'Left') : (es ? 'Derecha' : 'Right'),
+                label: side == BodySide.left
+                    ? (es ? 'Izquierda' : 'Left')
+                    : (es ? 'Derecha' : 'Right'),
                 density: PrismControlDensity.compact,
                 semanticLabel: region.label(es, side),
                 onPressed: () => onPick(side),
@@ -667,4 +1011,36 @@ class _RegionRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Body Map looks (device setting).
+const bodyMapThemes = <String, (String, String)>{
+  'soft': ('Soft (follows theme)', 'Suave (según el tema)'),
+  'light': ('Light skin tone', 'Tono de piel claro'),
+  'medium': ('Medium skin tone', 'Tono de piel medio'),
+  'tan': ('Tan skin tone', 'Tono de piel bronceado'),
+  'deep': ('Deep skin tone', 'Tono de piel oscuro'),
+  'outline': ('Outline only', 'Solo contorno'),
+  'contrast': ('High contrast', 'Alto contraste'),
+};
+
+final bodyMapTheme = ValueNotifier<String>('soft');
+bool _bodyThemeLoaded = false;
+
+Future<void> loadBodyMapTheme() async {
+  if (_bodyThemeLoaded) return;
+  _bodyThemeLoaded = true;
+  try {
+    final v = (await SharedPreferences.getInstance()).getString(
+      'bodymap.theme',
+    );
+    if (v != null && bodyMapThemes.containsKey(v)) bodyMapTheme.value = v;
+  } catch (_) {}
+}
+
+Future<void> setBodyMapTheme(String v) async {
+  bodyMapTheme.value = v;
+  try {
+    await (await SharedPreferences.getInstance()).setString('bodymap.theme', v);
+  } catch (_) {}
 }

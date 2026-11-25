@@ -16,7 +16,13 @@ bool healthEs(BuildContext c) => Localizations.localeOf(c).languageCode == 'es';
 /// A structured intake-form label: small caps, quiet, with an optional
 /// "optional" hint so forms read like a calm medical form.
 class HealthFormLabel extends StatelessWidget {
-  const HealthFormLabel(this.text, {super.key, this.optional = false, this.trailing, this.top = 18});
+  const HealthFormLabel(
+    this.text, {
+    super.key,
+    this.optional = false,
+    this.trailing,
+    this.top = 18,
+  });
   final String text;
   final bool optional;
   final Widget? trailing;
@@ -36,8 +42,23 @@ class HealthFormLabel extends StatelessWidget {
             child: Text.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: text.toUpperCase(), style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.1, color: theme.colorScheme.onSurfaceVariant)),
-                  if (optional) TextSpan(text: '  ${es ? 'opcional' : 'optional'}', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7))),
+                  TextSpan(
+                    text: text.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.1,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (optional)
+                    TextSpan(
+                      text: '  ${es ? 'opcional' : 'optional'}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -60,8 +81,15 @@ class SeverityTag extends StatelessWidget {
     final theme = Theme.of(context);
     final es = healthEs(context);
     final c = severityColor(theme, severity);
-    final text = score == null ? severityLabel(severity, es) : '${severityLabel(severity, es)} · $score/10';
-    return _Tag(text: text, color: c, icon: severity == Severity.unsure ? PhosphorIcons.question() : null, level: severity.index);
+    final text = score == null
+        ? severityLabel(severity, es)
+        : '${severityLabel(severity, es)} · $score/10';
+    return _Tag(
+      text: text,
+      color: c,
+      icon: severity == Severity.unsure ? PhosphorIcons.question() : null,
+      level: severity.index,
+    );
   }
 }
 
@@ -69,13 +97,22 @@ class SeverityTag extends StatelessWidget {
 Color severityColor(ThemeData theme, Severity s) => switch (s) {
   Severity.unsure => theme.colorScheme.onSurfaceVariant,
   Severity.mild => theme.colorScheme.primary,
-  Severity.moderate => Color.lerp(theme.colorScheme.primary, theme.colorScheme.error, 0.5)!,
+  Severity.moderate => Color.lerp(
+    theme.colorScheme.primary,
+    theme.colorScheme.error,
+    0.5,
+  )!,
   Severity.severe || Severity.verySevere => theme.colorScheme.error,
 };
 
 /// Status of a check-in or episode as a labelled tag.
 class StatusTag extends StatelessWidget {
-  const StatusTag({super.key, required this.text, required this.active, this.icon});
+  const StatusTag({
+    super.key,
+    required this.text,
+    required this.active,
+    this.icon,
+  });
   final String text;
   final bool active;
   final IconData? icon;
@@ -83,7 +120,17 @@ class StatusTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return _Tag(text: text, color: active ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant, icon: icon ?? (active ? PhosphorIcons.circle(PhosphorIconsStyle.fill) : PhosphorIcons.checkCircle()));
+    return _Tag(
+      text: text,
+      color: active
+          ? theme.colorScheme.primary
+          : theme.colorScheme.onSurfaceVariant,
+      icon:
+          icon ??
+          (active
+              ? PhosphorIcons.circle(PhosphorIconsStyle.fill)
+              : PhosphorIcons.checkCircle()),
+    );
   }
 }
 
@@ -115,14 +162,23 @@ class _Tag extends StatelessWidget {
                 width: 3,
                 height: 4.0 + i * 2,
                 margin: const EdgeInsets.only(right: 1.5),
-                decoration: BoxDecoration(color: i <= level! ? color : color.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(1)),
+                decoration: BoxDecoration(
+                  color: i <= level! ? color : color.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(1),
+                ),
               ),
             const SizedBox(width: 4),
           ] else if (icon != null) ...[
             Icon(icon, size: 11, color: color),
             const SizedBox(width: 4),
           ],
-          Text(text, style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w700)),
+          Text(
+            text,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -131,7 +187,11 @@ class _Tag extends StatelessWidget {
 
 /// Labelled severity choices (no colours without words).
 class SeverityPicker extends StatelessWidget {
-  const SeverityPicker({super.key, required this.value, required this.onChanged});
+  const SeverityPicker({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
   final Severity? value;
   final ValueChanged<Severity?> onChanged;
 
@@ -142,7 +202,13 @@ class SeverityPicker extends StatelessWidget {
       spacing: 6,
       runSpacing: 6,
       children: [
-        for (final s in [Severity.mild, Severity.moderate, Severity.severe, Severity.verySevere, Severity.unsure])
+        for (final s in [
+          Severity.mild,
+          Severity.moderate,
+          Severity.severe,
+          Severity.verySevere,
+          Severity.unsure,
+        ])
           PrismChip(
             label: severityLabel(s, es),
             selected: value == s,
@@ -156,7 +222,11 @@ class SeverityPicker extends StatelessWidget {
 
 /// Optional 0–10 rating with words, starting unrated.
 class IntensityRating extends StatelessWidget {
-  const IntensityRating({super.key, required this.value, required this.onChanged});
+  const IntensityRating({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
   final int? value;
   final ValueChanged<int?> onChanged;
 
@@ -176,14 +246,24 @@ class IntensityRating extends StatelessWidget {
     if (v == null) {
       return Align(
         alignment: Alignment.centerLeft,
-        child: PrismButton(label: es ? 'Añadir puntuación 0–10' : 'Add a 0–10 rating', icon: PhosphorIcons.sliders(), density: PrismControlDensity.compact, onPressed: () => onChanged(5)),
+        child: PrismButton(
+          label: es ? 'Añadir puntuación 0–10' : 'Add a 0–10 rating',
+          icon: PhosphorIcons.sliders(),
+          density: PrismControlDensity.compact,
+          onPressed: () => onChanged(5),
+        ),
       );
     }
     return Row(
       children: [
         SizedBox(
           width: 98,
-          child: Text('$v/10 · ${words(v, es)}', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+          child: Text(
+            '$v/10 · ${words(v, es)}',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
         Expanded(
           child: Slider(
@@ -191,11 +271,16 @@ class IntensityRating extends StatelessWidget {
             max: 10,
             divisions: 10,
             label: '$v',
-            semanticFormatterCallback: (d) => '${d.round()} of 10, ${words(d.round(), es)}',
+            semanticFormatterCallback: (d) =>
+                '${d.round()} of 10, ${words(d.round(), es)}',
             onChanged: (d) => onChanged(d.round()),
           ),
         ),
-        PrismInlineIconButton(icon: PhosphorIcons.x(), onPressed: () => onChanged(null), tooltip: es ? 'Quitar puntuación' : 'Remove rating'),
+        PrismInlineIconButton(
+          icon: PhosphorIcons.x(),
+          onPressed: () => onChanged(null),
+          tooltip: es ? 'Quitar puntuación' : 'Remove rating',
+        ),
       ],
     );
   }
@@ -203,7 +288,15 @@ class IntensityRating extends StatelessWidget {
 
 /// A time that may be exact, approximate or unknown.
 class PreciseTimeField extends StatelessWidget {
-  const PreciseTimeField({super.key, required this.label, required this.value, required this.precision, required this.onChanged, this.allowUnknown = true, this.emptyLabel});
+  const PreciseTimeField({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.precision,
+    required this.onChanged,
+    this.allowUnknown = true,
+    this.emptyLabel,
+  });
   final String label;
   final DateTime? value;
   final TimePrecision precision;
@@ -220,20 +313,53 @@ class PreciseTimeField extends StatelessWidget {
         if (value == null || precision == TimePrecision.unknown)
           Row(
             children: [
-              Expanded(child: Text(precision == TimePrecision.unknown ? (es ? 'No lo sé' : 'Not sure') : (emptyLabel ?? (es ? 'Sin indicar' : 'Not set')), style: Theme.of(context).textTheme.bodyMedium)),
-              PrismButton(label: es ? 'Poner hora' : 'Set time', density: PrismControlDensity.compact, icon: PhosphorIcons.clock(), onPressed: () => onChanged(value ?? DateTime.now(), TimePrecision.exact)),
+              Expanded(
+                child: Text(
+                  precision == TimePrecision.unknown
+                      ? (es ? 'No lo sé' : 'Not sure')
+                      : (emptyLabel ?? (es ? 'Sin indicar' : 'Not set')),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              PrismButton(
+                label: es ? 'Poner hora' : 'Set time',
+                density: PrismControlDensity.compact,
+                icon: PhosphorIcons.clock(),
+                onPressed: () =>
+                    onChanged(value ?? DateTime.now(), TimePrecision.exact),
+              ),
             ],
           )
         else
-          PrismDateTimePills(label: label, dateTime: value, lastDate: DateTime.now().add(const Duration(days: 1)), onChanged: (d) => onChanged(d, precision)),
+          PrismDateTimePills(
+            label: label,
+            dateTime: value,
+            lastDate: DateTime.now().add(const Duration(days: 1)),
+            onChanged: (d) => onChanged(d, precision),
+          ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
           runSpacing: 6,
           children: [
-            PrismChip(label: es ? 'Exacta' : 'Exact', selected: value != null && precision == TimePrecision.exact, onTap: () => onChanged(value ?? DateTime.now(), TimePrecision.exact)),
-            PrismChip(label: es ? 'Aproximada' : 'Approximate', selected: value != null && precision == TimePrecision.approx, onTap: () => onChanged(value ?? DateTime.now(), TimePrecision.approx)),
-            if (allowUnknown) PrismChip(label: es ? 'No lo sé' : 'Unsure', selected: precision == TimePrecision.unknown, onTap: () => onChanged(null, TimePrecision.unknown)),
+            PrismChip(
+              label: es ? 'Exacta' : 'Exact',
+              selected: value != null && precision == TimePrecision.exact,
+              onTap: () =>
+                  onChanged(value ?? DateTime.now(), TimePrecision.exact),
+            ),
+            PrismChip(
+              label: es ? 'Aproximada' : 'Approximate',
+              selected: value != null && precision == TimePrecision.approx,
+              onTap: () =>
+                  onChanged(value ?? DateTime.now(), TimePrecision.approx),
+            ),
+            if (allowUnknown)
+              PrismChip(
+                label: es ? 'No lo sé' : 'Unsure',
+                selected: precision == TimePrecision.unknown,
+                onTap: () => onChanged(null, TimePrecision.unknown),
+              ),
           ],
         ),
       ],
@@ -244,7 +370,11 @@ class PreciseTimeField extends StatelessWidget {
 /// "Who is this about?" — one alter, several, the whole system or unsure —
 /// plus who is writing it and who may see it.
 class AttributionPicker extends ConsumerWidget {
-  const AttributionPicker({super.key, required this.value, required this.onChanged});
+  const AttributionPicker({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
   final Attribution value;
   final ValueChanged<Attribution> onChanged;
 
@@ -252,11 +382,16 @@ class AttributionPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final es = healthEs(context);
-    final members = ref.watch(userVisibleMembersProvider).value ?? const <Member>[];
+    final members =
+        ref.watch(userVisibleMembersProvider).value ?? const <Member>[];
     final byId = {for (final m in members) m.id: m};
     final viewer = ref.watch(healthViewerProvider);
     final author = value.author == null ? null : byId[value.author!];
-    final ordered = [?byId[viewer], for (final m in members) if (m.id != viewer) m];
+    final ordered = [
+      ?byId[viewer],
+      for (final m in members)
+        if (m.id != viewer) m,
+    ];
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -267,27 +402,66 @@ class AttributionPicker extends ConsumerWidget {
           children: [
             for (final m in ordered)
               PrismChip(
-                label: m.id == viewer ? (es ? '${memberLabel(m, preferDisplayName: prefer)} (al frente)' : '${memberLabel(m, preferDisplayName: prefer)} (fronting)') : memberLabel(m, preferDisplayName: prefer),
-                selected: value.scope == HealthScope.members && value.subjects.contains(m.id),
+                label: m.id == viewer
+                    ? (es
+                          ? '${memberLabel(m, preferDisplayName: prefer)} (al frente)'
+                          : '${memberLabel(m, preferDisplayName: prefer)} (fronting)')
+                    : memberLabel(m, preferDisplayName: prefer),
+                selected:
+                    value.scope == HealthScope.members &&
+                    value.subjects.contains(m.id),
                 onTap: () {
-                  final next = value.scope == HealthScope.members ? [...value.subjects] : <String>[];
+                  final next = value.scope == HealthScope.members
+                      ? [...value.subjects]
+                      : <String>[];
                   next.contains(m.id) ? next.remove(m.id) : next.add(m.id);
-                  onChanged(value.copyWith(scope: next.isEmpty ? HealthScope.unsure : HealthScope.members, subjects: next));
+                  onChanged(
+                    value.copyWith(
+                      scope: next.isEmpty
+                          ? HealthScope.unsure
+                          : HealthScope.members,
+                      subjects: next,
+                    ),
+                  );
                 },
               ),
-            PrismChip(label: context.l10n.trackerWholeSystem, selected: value.scope == HealthScope.system, onTap: () => onChanged(value.copyWith(scope: HealthScope.system, subjects: const []))),
-            PrismChip(label: es ? 'No estoy seguro' : 'Unsure', selected: value.scope == HealthScope.unsure, onTap: () => onChanged(value.copyWith(scope: HealthScope.unsure, subjects: const []))),
+            PrismChip(
+              label: context.l10n.trackerWholeSystem,
+              selected: value.scope == HealthScope.system,
+              onTap: () => onChanged(
+                value.copyWith(scope: HealthScope.system, subjects: const []),
+              ),
+            ),
+            PrismChip(
+              label: es ? 'No estoy seguro' : 'Unsure',
+              selected: value.scope == HealthScope.unsure,
+              onTap: () => onChanged(
+                value.copyWith(scope: HealthScope.unsure, subjects: const []),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Icon(PhosphorIcons.pencilSimpleLine(), size: 14, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              PhosphorIcons.pencilSimpleLine(),
+              size: 14,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                author == null ? (es ? 'Registrado sin alter al frente' : 'Logged with no one marked as fronting') : (es ? 'Registrado por ${author.effectiveName(preferDisplayName: prefer)}' : 'Logged by ${author.effectiveName(preferDisplayName: prefer)}'),
-                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                author == null
+                    ? (es
+                          ? 'Registrado sin alter al frente'
+                          : 'Logged with no one marked as fronting')
+                    : (es
+                          ? 'Registrado por ${author.effectiveName(preferDisplayName: prefer)}'
+                          : 'Logged by ${author.effectiveName(preferDisplayName: prefer)}'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -296,9 +470,17 @@ class AttributionPicker extends ConsumerWidget {
           const SizedBox(height: 4),
           PrismSwitchRow(
             title: es ? 'Solo para estos alters' : 'Only for these alters',
-            subtitle: es ? 'Otros alters al frente no lo verán en Salud, búsquedas ni exportaciones.' : 'Other alters who front won’t see it in Health, search or exports.',
+            subtitle: es
+                ? 'Otros alters al frente no lo verán en Salud, búsquedas ni exportaciones.'
+                : 'Other alters who front won’t see it in Health, search or exports.',
             value: value.visibility == HealthVisibility.private,
-            onChanged: (v) => onChanged(value.copyWith(visibility: v ? HealthVisibility.private : HealthVisibility.system)),
+            onChanged: (v) => onChanged(
+              value.copyWith(
+                visibility: v
+                    ? HealthVisibility.private
+                    : HealthVisibility.system,
+              ),
+            ),
           ),
         ],
       ],
@@ -307,23 +489,39 @@ class AttributionPicker extends ConsumerWidget {
 }
 
 /// "Mira", "Mira & Rowan", "Whole system", "Unsure who".
-String attributionText(Attribution a, Map<String, Member> members, bool es, {bool preferDisplayName = false}) {
+String attributionText(
+  Attribution a,
+  Map<String, Member> members,
+  bool es, {
+  bool preferDisplayName = false,
+}) {
   switch (a.scope) {
     case HealthScope.system:
       return es ? 'Todo el sistema' : 'Whole system';
     case HealthScope.unsure:
       return es ? 'No se sabe quién' : 'Unsure who';
     case HealthScope.members:
-      final names = [for (final id in a.subjects) members[id]?.effectiveName(preferDisplayName: preferDisplayName) ?? 'Alter'];
+      final names = [
+        for (final id in a.subjects)
+          members[id]?.effectiveName(preferDisplayName: preferDisplayName) ??
+              'Alter',
+      ];
       if (names.length <= 2) return names.join(es ? ' y ' : ' & ');
-      return es ? '${names.first} y ${names.length - 1} más' : '${names.first} & ${names.length - 1} more';
+      return es
+          ? '${names.first} y ${names.length - 1} más'
+          : '${names.first} & ${names.length - 1} more';
   }
 }
 
 /// Descriptor chips for one region: region-specific words first, a search
 /// box, and a way to type (and keep) a custom word.
 class DescriptorPicker extends ConsumerStatefulWidget {
-  const DescriptorPicker({super.key, required this.regionId, required this.selected, required this.onChanged});
+  const DescriptorPicker({
+    super.key,
+    required this.regionId,
+    required this.selected,
+    required this.onChanged,
+  });
   final String regionId;
   final List<DescriptorRef> selected;
   final ValueChanged<List<DescriptorRef>> onChanged;
@@ -352,8 +550,17 @@ class _DescriptorPickerState extends ConsumerState<DescriptorPicker> {
   Future<void> _addCustom(bool es) async {
     final text = _q.text.trim();
     if (text.isEmpty) return;
-    final r = await ref.read(healthStoreProvider).addCustomTerm(type: 'descriptor', label: text, regionId: widget.regionId);
-    widget.onChanged([...widget.selected, (id: 'custom:${r.id}', label: r.title)]);
+    final r = await ref
+        .read(healthStoreProvider)
+        .addCustomTerm(
+          type: 'descriptor',
+          label: text,
+          regionId: widget.regionId,
+        );
+    widget.onChanged([
+      ...widget.selected,
+      (id: 'custom:${r.id}', label: r.title),
+    ]);
     _q.clear();
     setState(() {});
   }
@@ -361,21 +568,33 @@ class _DescriptorPickerState extends ConsumerState<DescriptorPicker> {
   @override
   Widget build(BuildContext context) {
     final es = healthEs(context);
-    final custom = ref.watch(healthVocabProvider).descriptorsFor(widget.regionId);
+    final custom = ref
+        .watch(healthVocabProvider)
+        .descriptorsFor(widget.regionId);
     final q = _q.text.trim();
     final found = [...custom, ...searchDescriptors(widget.regionId, q, es)];
-    final specific = regionDescriptors[regionById[widget.regionId]?.group]?.length ?? 0;
-    final shown = q.isNotEmpty || _all ? found : found.take(custom.length + specific + 10).toList();
+    final specific =
+        regionDescriptors[regionById[widget.regionId]?.group]?.length ?? 0;
+    final shown = q.isNotEmpty || _all
+        ? found
+        : found.take(custom.length + specific + 10).toList();
     final selectedIds = {for (final s in widget.selected) s.id};
     // Keep chosen words visible even if filtered out (e.g. renamed custom).
-    final extra = [for (final s in widget.selected) if (!shown.any((d) => d.id == s.id)) Descriptor(s.id, s.label, s.label)];
-    final exact = found.any((d) => d.label(es).toLowerCase() == q.toLowerCase());
+    final extra = [
+      for (final s in widget.selected)
+        if (!shown.any((d) => d.id == s.id)) Descriptor(s.id, s.label, s.label),
+    ];
+    final exact = found.any(
+      (d) => d.label(es).toLowerCase() == q.toLowerCase(),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         PrismTextField(
           controller: _q,
-          hintText: es ? 'Buscar o escribir una palabra propia' : 'Search, or type your own word',
+          hintText: es
+              ? 'Buscar o escribir una palabra propia'
+              : 'Search, or type your own word',
           prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
           textInputAction: TextInputAction.done,
           onChanged: (_) => setState(() {}),
@@ -386,7 +605,12 @@ class _DescriptorPickerState extends ConsumerState<DescriptorPicker> {
           spacing: 6,
           runSpacing: 6,
           children: [
-            for (final d in [...extra, ...shown]) PrismChip(label: d.label(es), selected: selectedIds.contains(d.id), onTap: () => _toggle(d, es)),
+            for (final d in [...extra, ...shown])
+              PrismChip(
+                label: d.label(es),
+                selected: selectedIds.contains(d.id),
+                onTap: () => _toggle(d, es),
+              ),
             if (q.isNotEmpty && !exact)
               PrismChip(
                 label: es ? 'Añadir “$q”' : 'Add “$q”',
@@ -399,7 +623,13 @@ class _DescriptorPickerState extends ConsumerState<DescriptorPicker> {
         if (q.isEmpty && !_all && found.length > shown.length)
           Align(
             alignment: Alignment.centerLeft,
-            child: PrismButton(label: es ? 'Ver todas (${found.length})' : 'Show all (${found.length})', density: PrismControlDensity.compact, onPressed: () => setState(() => _all = true)),
+            child: PrismButton(
+              label: es
+                  ? 'Ver todas (${found.length})'
+                  : 'Show all (${found.length})',
+              density: PrismControlDensity.compact,
+              onPressed: () => setState(() => _all = true),
+            ),
           ),
       ],
     );
@@ -415,14 +645,23 @@ String dayHeading(BuildContext context, DateTime d) {
   final diff = today.difference(day).inDays;
   if (diff == 0) return es ? 'Hoy' : 'Today';
   if (diff == 1) return es ? 'Ayer' : 'Yesterday';
-  return DateFormat(day.year == now.year ? 'EEEE d MMMM' : 'EEEE d MMMM y', context.dateLocale).format(day);
+  return DateFormat(
+    day.year == now.year ? 'EEEE d MMMM' : 'EEEE d MMMM y',
+    context.dateLocale,
+  ).format(day);
 }
 
-String clockTime(BuildContext context, DateTime t) => DateFormat.jm(context.dateLocale).format(t);
+String clockTime(BuildContext context, DateTime t) =>
+    DateFormat.jm(context.dateLocale).format(t);
 
 /// Sheet header with a close button and a save check (Prism's editor bar).
 class HealthSheetBar extends StatelessWidget {
-  const HealthSheetBar({super.key, required this.title, required this.canSave, required this.onSave});
+  const HealthSheetBar({
+    super.key,
+    required this.title,
+    required this.canSave,
+    required this.onSave,
+  });
   final String title;
   final bool canSave;
   final VoidCallback onSave;
@@ -445,7 +684,13 @@ class HealthSheetBar extends StatelessWidget {
 }
 
 /// Asks for a short piece of text in a small sheet.
-Future<String?> askHealthText(BuildContext context, {required String title, String? hint, String? initial, String? action}) {
+Future<String?> askHealthText(
+  BuildContext context, {
+  required String title,
+  String? hint,
+  String? initial,
+  String? action,
+}) {
   final c = TextEditingController(text: initial);
   final es = healthEs(context);
   return PrismSheet.show<String>(
@@ -457,9 +702,20 @@ Future<String?> askHealthText(BuildContext context, {required String title, Stri
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PrismTextField(controller: c, autofocus: true, hintText: hint, textCapitalization: TextCapitalization.sentences, onSubmitted: (v) => Navigator.of(ctx).pop(v.trim())),
+          PrismTextField(
+            controller: c,
+            autofocus: true,
+            hintText: hint,
+            textCapitalization: TextCapitalization.sentences,
+            onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
+          ),
           const SizedBox(height: 14),
-          PrismButton(label: action ?? (es ? 'Añadir' : 'Add'), tone: PrismButtonTone.filled, expanded: true, onPressed: () => Navigator.of(ctx).pop(c.text.trim())),
+          PrismButton(
+            label: action ?? (es ? 'Añadir' : 'Add'),
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            onPressed: () => Navigator.of(ctx).pop(c.text.trim()),
+          ),
         ],
       ),
     ),
