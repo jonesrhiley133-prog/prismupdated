@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -61,7 +62,7 @@ class _VideoTileState extends ConsumerState<VideoTile> {
     if (path == null) {
       return Container(
         height: 120,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: theme.colorScheme.surfaceContainerHighest),
+        decoration: BoxDecoration(borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHighest),
         alignment: Alignment.center,
         padding: const EdgeInsets.all(12),
         child: Text(l10n.socVideoElsewhere, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
@@ -79,14 +80,14 @@ class _VideoTileState extends ConsumerState<VideoTile> {
       child: GestureDetector(
         onTap: () => setState(() => c.value.isPlaying ? c.pause() : c.play()),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(widget.fill ? 0 : 14),
+          borderRadius: prismCorners(context, widget.fill ? 0 : 14),
           child: Stack(
             alignment: Alignment.center,
             children: [
               if (widget.fill) SizedBox.expand(child: FittedBox(fit: BoxFit.cover, child: SizedBox(width: c.value.size.width, height: c.value.size.height, child: VideoPlayer(c)))) else video,
               if (!c.value.isPlaying && !widget.autoplay)
-                const DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
+                DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.black45, borderRadius: prismRound(context)),
                   child: Padding(padding: EdgeInsets.all(10), child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 40)),
                 ),
             ],

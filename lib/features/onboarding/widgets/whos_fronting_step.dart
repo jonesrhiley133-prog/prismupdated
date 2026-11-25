@@ -343,7 +343,7 @@ class _LargeSystemSearchTrigger extends ConsumerWidget {
       color: Colors.transparent,
       child: InkWell(
         key: const Key('onboardingFrontingSearchTrigger'),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: prismCorners(context, 20),
         onTap: onTap,
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -351,7 +351,7 @@ class _LargeSystemSearchTrigger extends ConsumerWidget {
             color: theme.colorScheme.surfaceContainerHighest.withValues(
               alpha: 0.6,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: prismCorners(context, 20),
           ),
           child: Row(
             children: [

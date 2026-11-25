@@ -28,7 +28,7 @@ Future<void> showPlacement(BuildContext context, PlacementReading r, Color accen
               width: 52,
               height: 52,
               alignment: Alignment.center,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: accent.withValues(alpha: 0.14), border: Border.all(color: accent.withValues(alpha: 0.4))),
+              decoration: BoxDecoration(borderRadius: prismRound(context), color: accent.withValues(alpha: 0.14), border: Border.all(color: accent.withValues(alpha: 0.4))),
               child: AstroGlyph(r.glyph, size: 26, color: accent),
             ),
             const SizedBox(width: 14),
@@ -296,10 +296,10 @@ class _BalanceBar extends StatelessWidget {
             child: Container(
               height: 8,
               alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(4)),
+              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 4)),
               child: FractionallySizedBox(
                 widthFactor: max == 0 ? 0 : (value / max).clamp(0.0, 1.0),
-                child: Container(decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4))),
+                child: Container(decoration: BoxDecoration(color: color, borderRadius: prismCorners(context, 4))),
               ),
             ),
           ),

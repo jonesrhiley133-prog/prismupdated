@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -35,7 +36,7 @@ class PinNumpadCell extends StatelessWidget {
         height: 72,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           color: theme.colorScheme.primary.withValues(alpha: 0.08),
         ),
         child: label != null

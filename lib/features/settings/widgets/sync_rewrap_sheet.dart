@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -553,7 +554,7 @@ class _SyncRewrapSheetState extends ConsumerState<SyncRewrapSheet>
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: filled
                           ? accentColor
                           : accentColor.withValues(alpha: 0.15),

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,7 @@ class _ProgressBar extends StatelessWidget {
     return Semantics(
       value: '${(value * 100).round()}%',
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: prismCorners(context, 4),
         child: Container(
           height: 6,
           color: scheme.surfaceContainerHighest,
@@ -103,7 +104,7 @@ class _AppUpdateCardState extends ConsumerState<AppUpdateCard> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: prismCorners(context, 16),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

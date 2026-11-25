@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -178,7 +179,7 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
                                 return Container(
                                   margin: const EdgeInsets.all(3),
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
+                                    borderRadius: prismRound(context),
                                     color: flow > 0
                                         ? _flowColors[flow].withValues(
                                             alpha: inMonth ? 0.9 : 0.35,
@@ -225,7 +226,7 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
                                             color: flow >= 3
                                                 ? Colors.white
                                                 : theme.colorScheme.primary,
-                                            shape: BoxShape.circle,
+                                            borderRadius: prismRound(context),
                                           ),
                                         ),
                                     ],
@@ -248,7 +249,7 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
                                     height: 10,
                                     decoration: BoxDecoration(
                                       color: _flowColors[f],
-                                      shape: BoxShape.circle,
+                                      borderRadius: prismRound(context),
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -265,7 +266,7 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
+                                    borderRadius: prismRound(context),
                                     border: Border.all(color: _flowColors[3]),
                                   ),
                                 ),

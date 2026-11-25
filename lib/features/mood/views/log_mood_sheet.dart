@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -371,14 +372,14 @@ class _MoodSelector extends StatelessWidget {
               selected: level == value,
               label: MoodLevel.label(context, level),
               child: InkWell(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: prismCorners(context, 16),
                 onTap: () => onChanged(level),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 160),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: prismCorners(context, 16),
                     color: level == value
                         ? MoodLevel.color(level).withValues(alpha: 0.22)
                         : Colors.transparent,
@@ -490,7 +491,7 @@ class _ScalePicker extends StatelessWidget {
               child: Tooltip(
                 message: scaleLabel(context, i),
                 child: InkWell(
-                  customBorder: const CircleBorder(),
+                  customBorder: prismCircleBorder(context),
                   // Tapping the selected value again clears it.
                   onTap: () => onChanged(value == i ? null : i),
                   child: Container(
@@ -498,7 +499,7 @@ class _ScalePicker extends StatelessWidget {
                     height: 30,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: value != null && i <= value!
                           ? theme.colorScheme.primary.withValues(
                               alpha: 0.18 + 0.14 * i,

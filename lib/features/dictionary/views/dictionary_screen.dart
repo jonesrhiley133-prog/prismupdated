@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -311,7 +312,7 @@ class _TermTile extends StatelessWidget {
                         collection!.integer(DictField.color) ??
                             trackerPalette.first,
                       ),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                     ),
                   ),
                 ],
@@ -606,7 +607,7 @@ class _CollectionsSheetState extends ConsumerState<_CollectionsSheet> {
                           cols[i].integer(DictField.color) ??
                               trackerPalette.first,
                         ),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                       ),
                     ),
                   ),

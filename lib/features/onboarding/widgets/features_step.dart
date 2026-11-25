@@ -173,7 +173,7 @@ class _FeatureToggle extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: primary.withValues(alpha: 0.15),
             ),
             child: Center(child: PhosphorIcon(icon, size: 22, color: primary)),

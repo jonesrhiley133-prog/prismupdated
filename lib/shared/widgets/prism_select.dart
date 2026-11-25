@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -225,7 +226,7 @@ class _SelectField<T> extends StatelessWidget {
     final border = inputTheme.border;
     final borderRadius = border is OutlineInputBorder
         ? border.borderRadius
-        : BorderRadius.circular(999);
+        : prismCorners(context, 999);
     final disabledColor = theme.disabledColor;
     final hintStyle = theme.textTheme.bodyLarge?.copyWith(
       color: enabled
@@ -306,7 +307,7 @@ class _SelectField<T> extends StatelessWidget {
     final enabledBorder = inputTheme.enabledBorder;
     final borderRadius = border is OutlineInputBorder
         ? border.borderRadius
-        : BorderRadius.circular(999);
+        : prismCorners(context, 999);
     final borderColor = enabledBorder is OutlineInputBorder
         ? enabledBorder.borderSide.color
         : theme.colorScheme.outline.withValues(alpha: 0.28);

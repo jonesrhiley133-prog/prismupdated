@@ -352,7 +352,7 @@ class _GifBubbleState extends State<GifBubble> with WidgetsBindingObserver {
                 height: 44,
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                 ),
                 child: Icon(
                   AppIcons.playCircle,

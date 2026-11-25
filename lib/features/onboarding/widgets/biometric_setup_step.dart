@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/features/settings/providers/pin_lock_providers.dart';
@@ -75,7 +76,7 @@ class _BiometricSetupStepState extends ConsumerState<BiometricSetupStep> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: primary.withValues(alpha: 0.12),
             ),
             child: Icon(_platformIcon, size: 40, color: primary),

@@ -67,7 +67,7 @@ Future<T?> showDetailSideSheet<T>(
             elevation: 20,
             shadowColor: colors.shadow.withValues(alpha: isDark ? 0.48 : 0.20),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radius),
+              borderRadius: prismCorners(context, radius),
               side: BorderSide(
                 color: colors.outlineVariant.withValues(
                   alpha: isDark ? 0.58 : 0.64,

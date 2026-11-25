@@ -499,7 +499,7 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
               onTap: onTap == null ? null : () => onTap(i),
               child: Container(
                 alignment: Alignment.center,
-                decoration: BoxDecoration(color: gameplayColors[v[i]].$1, borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: gameplayColors[v[i]].$1, borderRadius: prismCorners(context, 6)),
                 child: Text(gameplayColors[v[i]].$3, style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 14)),
               ),
             ),

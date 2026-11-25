@@ -196,7 +196,7 @@ class _HabitatEditorScreenState extends ConsumerState<HabitatEditorScreen> {
                                           color: theme.colorScheme.primary,
                                           width: 2,
                                         ),
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: prismCorners(context, 8),
                                       )
                                     : null,
                                 child: Text(
@@ -300,7 +300,7 @@ class _HabitatEditorScreenState extends ConsumerState<HabitatEditorScreen> {
                       button: true,
                       label: 'Add ${e.key}',
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: prismCorners(context, 10),
                         onTap: () {
                           final id = DateTime.now().microsecondsSinceEpoch
                               .toString();

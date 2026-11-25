@@ -1218,7 +1218,7 @@ class _PreflightPinViewState extends ConsumerState<_PreflightPinView>
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: filled
                           ? accentColor
                           : accentColor.withValues(alpha: 0.15),
@@ -1833,7 +1833,7 @@ class _InitiatorPinViewState extends State<_InitiatorPinView> {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   color: filled
                       ? theme.colorScheme.primary
                       : theme.colorScheme.primary.withValues(alpha: 0.2),

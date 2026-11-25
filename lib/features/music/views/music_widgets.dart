@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,7 +28,7 @@ class TrackArt extends ConsumerWidget {
       child: Icon(Icons.music_note_rounded, size: size * 0.5, color: theme.colorScheme.primary),
     );
     return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       child: path == null
           ? placeholder
           : Image.file(
@@ -115,7 +116,7 @@ class PlayerButton extends StatelessWidget {
       excludeSemantics: true,
       child: Material(
         color: filled ? fg : (active ? fg.withValues(alpha: 0.16) : Colors.transparent),
-        shape: const CircleBorder(),
+        shape: prismCircleBorder(context),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onPressed,

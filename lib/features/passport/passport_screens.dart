@@ -423,7 +423,7 @@ class _Bookshelf extends ConsumerWidget {
                                 margin: const EdgeInsets.only(right: 6),
                                 decoration: BoxDecoration(
                                   color: Color(p.cover.primary),
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: prismCorners(context, 4),
                                   border: Border.all(
                                     color: Color(
                                       p.cover.secondary,
@@ -474,7 +474,7 @@ class _Bookshelf extends ConsumerWidget {
                     height: 10,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(3),
+                      borderRadius: prismCorners(context, 3),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -816,7 +816,7 @@ class _PassportEditorScreenState extends ConsumerState<PassportEditorScreen> {
             height: 28,
             decoration: BoxDecoration(
               color: c,
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               border: Border.all(color: theme.colorScheme.outlineVariant),
             ),
           ),

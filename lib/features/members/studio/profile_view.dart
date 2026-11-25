@@ -107,7 +107,7 @@ class StudioProfileView extends ConsumerWidget {
           final content = _Body(member: member, cfg: cfg, layout: layout, wide: wide, accent: accent, preview: preview, showHeader: showHeader, inline: inline);
           if (bgMode == 'none') return content;
           return ClipRRect(
-            borderRadius: BorderRadius.circular(preview ? 20 : 24),
+            borderRadius: prismCorners(context, preview ? 20 : 24),
             child: Stack(
               children: [
                 Positioned.fill(
@@ -261,7 +261,7 @@ class _Body extends ConsumerWidget {
                       child: Row(
                         children: [
                           SizedBox(width: 110, child: Text(n, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                          Expanded(child: Row(children: [for (var i = 1; i <= 5; i++) Expanded(child: Container(height: 7, margin: const EdgeInsets.only(right: 3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: i <= l ? accent : accent.withValues(alpha: 0.15))))])),
+                          Expanded(child: Row(children: [for (var i = 1; i <= 5; i++) Expanded(child: Container(height: 7, margin: const EdgeInsets.only(right: 3), decoration: BoxDecoration(borderRadius: prismCorners(context, 4), color: i <= l ? accent : accent.withValues(alpha: 0.15))))])),
                         ],
                       ),
                     ),
@@ -280,7 +280,7 @@ class _Body extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 6,
             crossAxisSpacing: 6,
-            children: [for (final m in ids) ClipRRect(borderRadius: BorderRadius.circular(10), child: PrismMediaView(id: m))],
+            children: [for (final m in ids) ClipRRect(borderRadius: prismCorners(context, 10), child: PrismMediaView(id: m))],
           ),
         ]);
       case 'relationships':
@@ -364,7 +364,7 @@ class _Body extends ConsumerWidget {
                 onTap: '${t['url'] ?? ''}'.isEmpty ? null : () => launchUrl(Uri.parse('${t['url']}'), mode: LaunchMode.externalApplication),
                 child: Row(
                   children: [
-                    Container(width: 34, height: 34, decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: accent.withValues(alpha: 0.18)), child: Icon(PhosphorIcons.musicNotes(), size: 17, color: accent)),
+                    Container(width: 34, height: 34, decoration: BoxDecoration(borderRadius: prismCorners(context, 8), color: accent.withValues(alpha: 0.18)), child: Icon(PhosphorIcons.musicNotes(), size: 17, color: accent)),
                     const SizedBox(width: 10),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('${t['title'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w600)), if ('${t['artist'] ?? ''}'.isNotEmpty) Text('${t['artist']}', style: theme.textTheme.bodySmall)])),
                   ],
@@ -438,7 +438,7 @@ class _Card extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHigh.withValues(alpha: cfg.lookStr('bgMode', 'none') == 'none' ? 1 : 0.55),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         border: switch (border) {
           'none' => null,
           'double' => Border.all(color: accent.withValues(alpha: 0.6), width: 2.5),
@@ -491,7 +491,7 @@ class RolePill extends StatelessWidget {
       opacity: role.visible ? 1 : 0.45,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: prismCorners(context, 999),
           color: solid ? c : (role.style == 'outline' ? Colors.transparent : c.withValues(alpha: 0.16)),
           border: Border.all(color: c.withValues(alpha: role.style == 'soft' ? 0.35 : 0.9), width: role.style == 'outline' ? 1.5 : 1),
           boxShadow: role.style == 'glow' ? [BoxShadow(color: c.withValues(alpha: 0.55), blurRadius: 12, spreadRadius: -2)] : null,
@@ -509,7 +509,7 @@ class RolePill extends StatelessWidget {
                   Text(role.name, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: solid ? on : Theme.of(context).colorScheme.onSurface)),
                   if (onDelete != null) ...[
                     const SizedBox(width: 2),
-                    InkWell(customBorder: const CircleBorder(), onTap: onDelete, child: Padding(padding: const EdgeInsets.all(3), child: Icon(PhosphorIcons.x(), size: 13, color: solid ? on : null))),
+                    InkWell(customBorder: prismCircleBorder(context), onTap: onDelete, child: Padding(padding: const EdgeInsets.all(3), child: Icon(PhosphorIcons.x(), size: 13, color: solid ? on : null))),
                   ],
                 ],
               ),
@@ -582,7 +582,7 @@ class StudioHeader extends ConsumerWidget {
                 top: 0,
                 height: height,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: prismCorners(context, 20),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -623,7 +623,7 @@ class StudioHeader extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(999), color: accent.withValues(alpha: 0.14)),
+              decoration: BoxDecoration(borderRadius: prismCorners(context, 999), color: accent.withValues(alpha: 0.14)),
               child: Text('💬 ${cfg.str('status')}', style: theme.textTheme.bodySmall),
             ),
           ),

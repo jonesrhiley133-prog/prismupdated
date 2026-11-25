@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -675,7 +676,7 @@ class _ColorRow extends StatelessWidget {
                     height: 28,
                     decoration: BoxDecoration(
                       color: Color(c),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         width: value == c ? 3 : 1,
                         color: theme.colorScheme.outline,
@@ -751,7 +752,7 @@ class _Preview extends ConsumerWidget {
       if (settings.iconSource == FnIconSource.avatar &&
           primary?.avatarImageData != null &&
           settings.memberStyles[primary!.id]?.emoji == null) {
-        icon = ClipOval(
+        icon = PrismClipRound(
           child: Image.memory(
             primary.avatarImageData!,
             width: 40,
@@ -779,7 +780,7 @@ class _Preview extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: settings.colorized ? accent.withValues(alpha: 0.85) : bg,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Column(
@@ -901,7 +902,7 @@ class CircleAvatarLike extends StatelessWidget {
     width: 40,
     height: 40,
     alignment: Alignment.center,
-    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
     child: child,
   );
 }

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -232,7 +233,7 @@ class ActiveWorkCard extends ConsumerWidget {
                 height: compact ? 36 : 44,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: prismCorners(context, 12),
                 ),
                 child: Icon(AppIcons.navWork, color: color),
               ),
@@ -305,7 +306,7 @@ class _JobTile extends ConsumerWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -454,7 +455,7 @@ class _StatsCard extends StatelessWidget {
                                             .withValues(
                                               alpha: d == today ? 1 : 0.6,
                                             ),
-                                        borderRadius: BorderRadius.circular(3),
+                                        borderRadius: prismCorners(context, 3),
                                       ),
                                     ),
                                   ),

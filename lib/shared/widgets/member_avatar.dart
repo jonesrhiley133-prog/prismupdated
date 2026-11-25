@@ -162,7 +162,7 @@ class MemberAvatar extends ConsumerWidget {
           height: size,
           child: effectiveShape == MemberAvatarShape.square
               ? image
-              : ClipOval(child: image),
+              : PrismClipRound(child: image),
         );
       } else if (effectiveShape == MemberAvatarShape.square) {
         child = TintedGlassSurface(
@@ -184,7 +184,7 @@ class MemberAvatar extends ConsumerWidget {
           borderColor: accentBorderColor,
           borderWidth: 1,
           showHighlight: false,
-          child: ClipOval(child: image),
+          child: PrismClipRound(child: image),
         );
       }
     } else {
@@ -204,7 +204,7 @@ class MemberAvatar extends ConsumerWidget {
           shape: isSquare ? BoxShape.rectangle : shapes.avatarShape(),
           borderRadius: isSquare
               ? BorderRadius.zero
-              : shapes.avatarBorderRadius(),
+              : shapes.avatarBorderRadius(size),
           border: Border.all(
             color: color.withValues(alpha: isDark ? 0.42 : 0.30),
             width: 2,

@@ -147,7 +147,7 @@ class PostCard extends ConsumerWidget {
             if (post.body.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(post.body)),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: theme.colorScheme.outlineVariant)),
+              decoration: BoxDecoration(borderRadius: prismCorners(context, 14), border: Border.all(color: theme.colorScheme.outlineVariant)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -231,7 +231,7 @@ class _Action extends StatelessWidget {
     button: true,
     label: '$semantic ${label.isEmpty ? '' : label}',
     child: InkWell(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: prismCorners(context, 10),
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -277,7 +277,7 @@ class _Content extends StatelessWidget {
             padding: const EdgeInsets.only(top: 8),
             child: Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHigh, borderRadius: prismCorners(context, 12)),
               child: Row(children: [Icon(PhosphorIcons.link(), size: 16), const SizedBox(width: 8), Expanded(child: Text(link!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: theme.colorScheme.primary)))]),
             ),
           ),
@@ -285,14 +285,14 @@ class _Content extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: media.length == 1
-                ? ClipRRect(borderRadius: BorderRadius.circular(14), child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 360), child: SocialImage(id: media.first, width: double.infinity)))
+                ? ClipRRect(borderRadius: prismCorners(context, 14), child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 360), child: SocialImage(id: media.first, width: double.infinity)))
                 : GridView.count(
                     crossAxisCount: media.length == 2 ? 2 : 3,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 4,
                     crossAxisSpacing: 4,
-                    children: [for (final m in media.take(9)) ClipRRect(borderRadius: BorderRadius.circular(10), child: SocialImage(id: m))],
+                    children: [for (final m in media.take(9)) ClipRRect(borderRadius: prismCorners(context, 10), child: SocialImage(id: m))],
                   ),
           ),
       ],
@@ -312,7 +312,7 @@ class MilestoneCard extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer.withValues(alpha: 0.6), borderRadius: prismCorners(context, 16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -422,7 +422,7 @@ class _ComposerState extends ConsumerState<_Composer> {
                   runSpacing: 6,
                   children: [
                     for (final m in _media)
-                      GestureDetector(onLongPress: () => setState(() => _media.remove(m)), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 72, height: 72, child: SocialImage(id: m)))),
+                      GestureDetector(onLongPress: () => setState(() => _media.remove(m)), child: ClipRRect(borderRadius: prismCorners(context, 10), child: SizedBox(width: 72, height: 72, child: SocialImage(id: m)))),
                     if (widget.editing == null)
                       PrismButton(
                         label: tr(context, 'Add images', 'Añadir imágenes'),

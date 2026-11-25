@@ -69,7 +69,7 @@ class _RelSettings extends ConsumerWidget {
                 for (final c in s.customCategories)
                   PrismListRow(
                     dense: true,
-                    leading: Container(width: 14, height: 14, decoration: BoxDecoration(color: Color(c.color), shape: BoxShape.circle)),
+                    leading: Container(width: 14, height: 14, decoration: BoxDecoration(color: Color(c.color), borderRadius: prismRound(context))),
                     title: Text(c.name),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,

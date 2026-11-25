@@ -145,7 +145,7 @@ class PrismTextField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: errorColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: prismCorners(context, 999),
         ),
         child: Text(
           errorText!,

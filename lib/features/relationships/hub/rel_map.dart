@@ -264,7 +264,7 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
         height: 200,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainer, borderRadius: BorderRadius.circular(PrismTokens.radiusMedium), border: Border.all(color: theme.colorScheme.outlineVariant)),
+        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainer, borderRadius: prismCorners(context, PrismTokens.radiusMedium), border: Border.all(color: theme.colorScheme.outlineVariant)),
         child: Text(
           widget.view == RelMapView.individual ? tr(context, 'Choose an alter to see their connections.', 'Elige un alter para ver sus conexiones.') : tr(context, 'Nothing to show for this view yet.', 'Aún no hay nada que mostrar en esta vista.'),
           textAlign: TextAlign.center,
@@ -279,10 +279,10 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     final neighbours = _selNode == null ? const <String>{} : {for (final e in edges) if (e.a == _selNode || e.b == _selNode) ...[e.a, e.b]};
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+      borderRadius: prismCorners(context, PrismTokens.radiusMedium),
       child: Container(
         height: widget.height,
-        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerLow, border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: BorderRadius.circular(PrismTokens.radiusMedium)),
+        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerLow, border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: prismCorners(context, PrismTokens.radiusMedium)),
         child: LayoutBuilder(
           builder: (context, box) {
             _viewport = Size(box.maxWidth, box.maxHeight);
@@ -426,7 +426,7 @@ class _Node extends ConsumerWidget {
     final role = ref.watch(memberProfileProvider(member.id))?.roles.where((r) => r.visible).firstOrNull?.name;
     final avatar = showAvatar
         ? MemberAvatar(avatarImageData: member.avatarImageData, memberName: name, emoji: member.emoji, customColorEnabled: member.customColorEnabled, customColorHex: member.customColorHex, size: 40)
-        : CircleAvatar(radius: 20, backgroundColor: theme.colorScheme.primaryContainer, child: Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.w700)));
+        : PrismCircleAvatar(radius: 20, backgroundColor: theme.colorScheme.primaryContainer, child: Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.w700)));
     return Semantics(
       button: true,
       label: [name, if (member.pronouns != null) member.pronouns!, ?role, if (fronting) tr(context, 'fronting', 'al frente')].join(', '),
@@ -448,16 +448,16 @@ class _Node extends ConsumerWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.surface, border: Border.all(color: selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant, width: selected ? 2.5 : 1)),
+                      decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.surface, border: Border.all(color: selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant, width: selected ? 2.5 : 1)),
                       child: avatar,
                     ),
-                    if (fronting) Positioned(right: 0, bottom: 0, child: Container(width: 11, height: 11, decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.tertiary, border: Border.all(color: theme.colorScheme.surface, width: 2)))),
+                    if (fronting) Positioned(right: 0, bottom: 0, child: Container(width: 11, height: 11, decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.tertiary, border: Border.all(color: theme.colorScheme.surface, width: 2)))),
                   ],
                 ),
                 const SizedBox(height: 3),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.85), borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.85), borderRadius: prismCorners(context, 6)),
                   child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                 ),
                 if (role != null) Text(role, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(fontSize: 9.5, color: theme.colorScheme.onSurfaceVariant)),
@@ -560,7 +560,7 @@ class _MapControls extends StatelessWidget {
     final theme = Theme.of(context);
     Widget b(IconData icon, String tip, VoidCallback f, {bool on = false}) => PrismTopBarAction(icon: icon, tooltip: tip, onPressed: f, tint: on ? theme.colorScheme.primary : null);
     return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.92), borderRadius: BorderRadius.circular(12), border: Border.all(color: theme.colorScheme.outlineVariant)),
+      decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.92), borderRadius: prismCorners(context, 12), border: Border.all(color: theme.colorScheme.outlineVariant)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -583,7 +583,7 @@ class _Badge extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: prismCorners(context, 10)),
       child: Text(text, style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onPrimaryContainer)),
     );
   }
@@ -608,7 +608,7 @@ class _InfoBar extends ConsumerWidget {
     final n = node, e = edge;
     return Material(
       color: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: BorderSide(color: theme.colorScheme.outlineVariant)),
+      shape: RoundedRectangleBorder(borderRadius: prismCorners(context, 14), side: BorderSide(color: theme.colorScheme.outlineVariant)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
         child: Row(

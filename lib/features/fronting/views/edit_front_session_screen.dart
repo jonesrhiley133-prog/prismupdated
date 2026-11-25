@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -452,7 +453,7 @@ class _FronterPickerRow extends StatelessWidget {
     final member = selectedMember;
     return InkWell(
       onTap: onPickerOpen,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: prismCorners(context, 12),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -318,7 +319,7 @@ class _BorderColorRow extends StatelessWidget {
               height: 28,
               decoration: BoxDecoration(
                 color: swatch,
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 border: Border.all(color: theme.colorScheme.outlineVariant),
               ),
             ),

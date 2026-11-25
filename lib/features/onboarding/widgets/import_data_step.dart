@@ -244,7 +244,7 @@ class _SourceCardState extends State<_SourceCard> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: primary.withValues(alpha: 0.15),
                     ),
                     child: Icon(widget.icon, color: primary, size: 24),
@@ -2516,7 +2516,7 @@ class _InstructionRow extends StatelessWidget {
             width: 22,
             height: 22,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: primary.withValues(alpha: 0.3),
             ),
             child: Center(

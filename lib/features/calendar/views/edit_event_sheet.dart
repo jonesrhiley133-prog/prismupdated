@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -687,14 +688,14 @@ class _Swatch extends StatelessWidget {
       selected: selected,
       label: label,
       child: InkWell(
-        customBorder: const CircleBorder(),
+        customBorder: prismCircleBorder(context),
         onTap: onTap,
         child: Container(
           width: 32,
           height: 32,
           decoration: BoxDecoration(
             color: color,
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             border: Border.all(
               color: selected
                   ? Theme.of(context).colorScheme.onSurface

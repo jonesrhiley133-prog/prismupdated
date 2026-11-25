@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -1856,7 +1857,7 @@ class _AddEditMemberSheetState extends ConsumerState<AddEditMemberSheet>
                         onTap: _openNameStyleColorPicker,
                         child: Container(
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: prismRound(context),
                             color:
                                 _previewNameStyleColor() ??
                                 theme.colorScheme.surfaceContainerHighest,
@@ -1932,7 +1933,7 @@ class _AddEditMemberSheetState extends ConsumerState<AddEditMemberSheet>
                         onTap: _openCustomColorPicker,
                         child: Container(
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: prismRound(context),
                             color:
                                 _previewColor() ??
                                 theme.colorScheme.surfaceContainerHighest,
@@ -2690,14 +2691,14 @@ class _BirthdayField extends StatelessWidget {
         Builder(
           builder: (anchorContext) => InkWell(
             onTap: () => onPick(anchorContext),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: prismCorners(context, 12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest.withValues(
                   alpha: 0.5,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
               ),
               child: Row(
                 children: [
@@ -3027,7 +3028,7 @@ class _CreatedAtField extends StatelessWidget {
           child: Builder(
             builder: (anchorContext) => InkWell(
               onTap: () => onPick(anchorContext),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: prismCorners(context, 12),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -3037,7 +3038,7 @@ class _CreatedAtField extends StatelessWidget {
                   color: theme.colorScheme.surfaceContainerHighest.withValues(
                     alpha: 0.5,
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: prismCorners(context, 12),
                 ),
                 child: Row(
                   children: [

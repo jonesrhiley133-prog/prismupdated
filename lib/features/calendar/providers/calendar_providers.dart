@@ -17,7 +17,11 @@ class CalendarOverlays {
     this.mood = true,
     this.reminders = false,
     this.habits = true,
+    this.companions = true,
   });
+
+  /// Companion birthdays and adoption anniversaries.
+  final bool companions;
 
   /// Scheduled habits in the day view.
   final bool habits;
@@ -26,13 +30,19 @@ class CalendarOverlays {
   final bool mood;
   final bool reminders;
 
-  CalendarOverlays copyWith({bool? birthdays, bool? mood, bool? reminders, bool? habits}) =>
-      CalendarOverlays(
-        birthdays: birthdays ?? this.birthdays,
-        mood: mood ?? this.mood,
-        reminders: reminders ?? this.reminders,
-        habits: habits ?? this.habits,
-      );
+  CalendarOverlays copyWith({
+    bool? birthdays,
+    bool? mood,
+    bool? reminders,
+    bool? habits,
+    bool? companions,
+  }) => CalendarOverlays(
+    companions: companions ?? this.companions,
+    birthdays: birthdays ?? this.birthdays,
+    mood: mood ?? this.mood,
+    reminders: reminders ?? this.reminders,
+    habits: habits ?? this.habits,
+  );
 }
 
 class CalendarOverlaysNotifier extends Notifier<CalendarOverlays> {

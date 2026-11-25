@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,11 +74,11 @@ class StorySlideView extends StatelessWidget {
                     width: 80 * s.scale * scale,
                     height: 80 * s.scale * scale,
                     child: switch (s.kind) {
-                      'gif' => ClipRRect(borderRadius: BorderRadius.circular(8), child: SocialImage(id: s.content, fit: BoxFit.contain)),
+                      'gif' => ClipRRect(borderRadius: prismCorners(context, 8), child: SocialImage(id: s.content, fit: BoxFit.contain)),
                       'text' => FittedBox(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: prismCorners(context, 8)),
                           child: Text(s.content, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700)),
                         ),
                       ),
@@ -308,7 +309,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen> with Sing
                       child: AspectRatio(
                         aspectRatio: 9 / 16,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: prismCorners(context, 12),
                           child: Semantics(
                             label: [l10n.stoSlideOf(_index + 1, frames.length), if (slide.text.isNotEmpty) slide.text, if (slide.caption.isNotEmpty) slide.caption].join('. '),
                             child: StorySlideView(
@@ -364,7 +365,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen> with Sing
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 2),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(2),
+                                      borderRadius: prismCorners(context, 2),
                                       child: SizedBox(
                                         height: 3,
                                         child: i == _index
@@ -419,7 +420,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen> with Sing
                                     onTap: () => ref.read(musicControllerProvider.notifier).playTracks([track.id], name: alterName(d, story.author, context)),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(14)),
+                                      decoration: BoxDecoration(color: Colors.black45, borderRadius: prismCorners(context, 14)),
                                       child: Text('♪ ${track.title}${track.artist.isEmpty ? '' : ' · ${track.artist}'}', style: const TextStyle(color: Colors.white, fontSize: 12)),
                                     ),
                                   ),
@@ -444,7 +445,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen> with Sing
                                   onTap: () => _viewers(story),
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+                                    decoration: BoxDecoration(color: Colors.black54, borderRadius: prismCorners(context, 20)),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -480,8 +481,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen> with Sing
                                       filled: true,
                                       fillColor: Colors.black38,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: Colors.white54)),
-                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: Colors.white54)),
+                                      border: OutlineInputBorder(borderRadius: prismCorners(context, 24), borderSide: const BorderSide(color: Colors.white54)),
+                                      enabledBorder: OutlineInputBorder(borderRadius: prismCorners(context, 24), borderSide: const BorderSide(color: Colors.white54)),
                                     ),
                                   ),
                                 ),

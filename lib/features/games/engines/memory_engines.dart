@@ -208,7 +208,7 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                           : up
                           ? scheme.surfaceContainerHighest
                           : scheme.primary.withValues(alpha: 0.55),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       border: Border.all(color: scheme.outlineVariant),
                     ),
                     child: up
@@ -690,7 +690,7 @@ class _PatternMemoryGameState extends State<PatternMemoryGame> {
                       color: lit
                           ? scheme.primary
                           : scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: prismCorners(context, 10),
                     ),
                   ),
                 ),

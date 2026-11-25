@@ -227,7 +227,7 @@ class _CardTable extends StatelessWidget {
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: prismCorners(context, 24),
                 gradient: RadialGradient(
                   center: const Alignment(0, -0.35),
                   radius: 1.25,
@@ -776,7 +776,7 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
                     width: 44,
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: prismCorners(context, 8),
                       gradient: LinearGradient(
                         colors: [Color(t.bg1), Color(t.bg2)],
                         begin: Alignment.topCenter,
@@ -844,7 +844,7 @@ class _CardEditorState extends ConsumerState<_CardEditor> {
                   margin: const EdgeInsets.only(right: 8, top: 6),
                   decoration: BoxDecoration(
                     color: Color(_colors![key]!),
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -1077,7 +1077,7 @@ Future<void> showTemplateManager(BuildContext context) => PrismSheet.show(
                 width: 28,
                 height: 44,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: prismCorners(context, 6),
                   gradient: LinearGradient(
                     colors: [Color(t.bg1), Color(t.bg2)],
                   ),
@@ -1169,7 +1169,7 @@ class _TemplateEditorState extends ConsumerState<_TemplateEditor> {
               margin: const EdgeInsets.only(right: 8, top: 6),
               decoration: BoxDecoration(
                 color: Color(v),
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outline,
                 ),

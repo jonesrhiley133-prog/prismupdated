@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -635,7 +636,7 @@ class _SubsystemEditorState extends ConsumerState<SubsystemEditorSheet> {
                     height: 28,
                     decoration: BoxDecoration(
                       color: Color(c),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         width: _color == c ? 3 : 0,
                         color: theme.colorScheme.onSurface,

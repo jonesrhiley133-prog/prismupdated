@@ -37,7 +37,7 @@ class AuthorLine extends ConsumerWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        if (anonymous) CircleAvatar(radius: 14, child: Text('?', style: theme.textTheme.labelLarge)) else AlterDot(memberId, size: 28),
+        if (anonymous) PrismCircleAvatar(radius: 14, child: Text('?', style: theme.textTheme.labelLarge)) else AlterDot(memberId, size: 28),
         const SizedBox(width: 8),
         Expanded(
           child: Text.rich(
@@ -82,13 +82,13 @@ class ReactionBar extends ConsumerWidget {
             selected: map[e]?.contains(me) ?? false,
             label: '$e ${map[e]?.length ?? 0}',
             child: InkWell(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
               onTap: () => ref.read(cozyActionsProvider).react(record, e, me),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: (map[e]?.contains(me) ?? false) ? theme.colorScheme.primary.withValues(alpha: 0.16) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: prismCorners(context, 14),
                 ),
                 child: Text('$e${(map[e]?.isNotEmpty ?? false) ? ' ${map[e]!.length}' : ''}', style: const TextStyle(fontSize: 13)),
               ),

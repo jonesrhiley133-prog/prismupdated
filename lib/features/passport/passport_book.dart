@@ -277,7 +277,7 @@ class _IntroPage extends ConsumerWidget {
         child: AspectRatio(
           aspectRatio: 3 / 4,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
             child: PaperBackground(
               color: passport.paper,
               texture: passport.texture,
@@ -956,7 +956,7 @@ class _PageEditorScreenState extends ConsumerState<PageEditorScreen> {
                       height: 26,
                       decoration: BoxDecoration(
                         color: Color(page.background ?? p.paper),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant,
                         ),
@@ -1239,7 +1239,7 @@ class _StampDesignerScreenState extends ConsumerState<StampDesignerScreen> {
         height: 26,
         decoration: BoxDecoration(
           color: Color(value),
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
       ),
@@ -1274,7 +1274,7 @@ class _StampDesignerScreenState extends ConsumerState<StampDesignerScreen> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFBF7EF),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: prismCorners(context, 16),
                 ),
                 child: StampView(
                   design: _d,

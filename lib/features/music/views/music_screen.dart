@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -428,7 +429,7 @@ class _MenuRow extends StatelessWidget {
     return Semantics(
       button: true,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),

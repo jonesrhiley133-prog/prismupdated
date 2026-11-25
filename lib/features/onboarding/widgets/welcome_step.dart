@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:prism_plurality/shared/theme/app_colors.dart';
@@ -78,7 +79,7 @@ class _FeatureRow extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: AppColors.prismPurple.withValues(alpha: 0.15),
           ),
           child: Center(

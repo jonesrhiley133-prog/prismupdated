@@ -611,7 +611,7 @@ class _NumberBadge extends StatelessWidget {
       height: 28,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: active
             ? theme.colorScheme.primary
             : theme.colorScheme.primary.withValues(alpha: 0.14),

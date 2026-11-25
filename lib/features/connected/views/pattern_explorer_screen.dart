@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -252,7 +253,7 @@ class _PatternExplorerScreenState extends ConsumerState<PatternExplorerScreen> {
                 const SizedBox(height: 6),
                 if (g.averageMood != null)
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: prismCorners(context, 4),
                     child: SizedBox(
                       height: 6,
                       child: Row(

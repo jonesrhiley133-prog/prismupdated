@@ -95,7 +95,7 @@ class PhotoSceneView extends ConsumerWidget {
                                     color: Colors.white,
                                     width: 2,
                                   ),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: prismCorners(context, 12),
                                 )
                               : null,
                           child: CompanionFigure(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -415,7 +416,7 @@ class _FriendTile extends StatelessWidget {
         child: Icon(AppIcons.delete, color: Colors.red.withValues(alpha: 0.8)),
       ),
       child: PrismListRow(
-        leading: CircleAvatar(
+        leading: PrismCircleAvatar(
           backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
           foregroundColor: theme.colorScheme.onSurface,
           child: Text(

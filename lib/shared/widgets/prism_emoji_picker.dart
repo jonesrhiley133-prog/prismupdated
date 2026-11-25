@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
@@ -175,10 +176,10 @@ class PrismIconPicker extends StatelessWidget {
               label: label,
               child: Material(
                 color: Colors.transparent,
-                shape: const CircleBorder(),
+                shape: prismCircleBorder(context),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  customBorder: const CircleBorder(),
+                  customBorder: prismCircleBorder(context),
                   onTap: () => _openPicker(context),
                   child: TintedGlassSurface.circle(
                     size: size,
@@ -203,11 +204,11 @@ class PrismIconPicker extends StatelessWidget {
                   label: clearLabel,
                   child: Material(
                     color: theme.colorScheme.surfaceContainerHighest,
-                    shape: const CircleBorder(),
+                    shape: prismCircleBorder(context),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
                       onTap: onCleared,
-                      customBorder: const CircleBorder(),
+                      customBorder: prismCircleBorder(context),
                       child: SizedBox(
                         width: 28,
                         height: 28,
@@ -597,7 +598,7 @@ class _IconSearchPanelState extends State<_IconSearchPanel> {
                 alpha: theme.brightness == Brightness.dark ? 0.4 : 0.72,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -675,7 +676,7 @@ class _IconResultTile extends StatelessWidget {
                   alpha: theme.brightness == Brightness.dark ? 0.26 : 0.5,
                 ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: prismCorners(context, 8),
             side: BorderSide(
               color: selected
                   ? colorScheme.primary.withValues(alpha: 0.72)

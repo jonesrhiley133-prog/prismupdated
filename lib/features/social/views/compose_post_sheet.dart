@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -260,7 +261,7 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                   Container(
                     margin: const EdgeInsets.only(top: 4, bottom: 4),
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: theme.colorScheme.outlineVariant)),
+                    decoration: BoxDecoration(borderRadius: prismCorners(context, 12), border: Border.all(color: theme.colorScheme.outlineVariant)),
                     child: Row(
                       children: [
                         AlterAvatar(memberId: widget.quote!.author, size: 24),
@@ -357,7 +358,7 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                               padding: const EdgeInsets.only(right: 6),
                               child: Stack(
                                 children: [
-                                  ClipRRect(borderRadius: BorderRadius.circular(10), child: SocialImage(id: id, width: 96, height: 96)),
+                                  ClipRRect(borderRadius: prismCorners(context, 10), child: SocialImage(id: id, width: 96, height: 96)),
                                   Positioned(
                                     right: 0,
                                     top: 0,
@@ -367,7 +368,7 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                                       excludeSemantics: true,
                                       child: InkResponse(
                                         onTap: () => setState(() => _images = [..._images]..remove(id)),
-                                        child: const CircleAvatar(radius: 12, backgroundColor: Colors.black54, child: Icon(Icons.close, size: 14, color: Colors.white)),
+                                        child: const PrismCircleAvatar(radius: 12, backgroundColor: Colors.black54, child: Icon(Icons.close, size: 14, color: Colors.white)),
                                       ),
                                     ),
                                   ),

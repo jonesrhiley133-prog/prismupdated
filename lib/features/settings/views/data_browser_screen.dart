@@ -487,7 +487,7 @@ class _MessagesForConversationState extends State<_MessagesForConversation> {
           _loadMessages();
         }
       },
-      leading: CircleAvatar(
+      leading: PrismCircleAvatar(
         backgroundColor: theme.colorScheme.primaryContainer,
         radius: 16,
         child: Text(
@@ -607,7 +607,7 @@ class _ExpandableRecord extends StatelessWidget {
 
     return PrismExpandableSection(
       margin: margin,
-      leading: CircleAvatar(
+      leading: PrismCircleAvatar(
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
         radius: 16,
         child: Icon(

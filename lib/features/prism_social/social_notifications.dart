@@ -106,7 +106,7 @@ class NotificationsSection extends ConsumerWidget {
                   clipBehavior: Clip.none,
                   children: [
                     n.actor == null ? const SizedBox(width: 40, height: 40) : SocialAvatar(actor: n.actor!, size: 40, showAlterBadge: false),
-                    Positioned(right: -4, bottom: -4, child: Container(padding: const EdgeInsets.all(3), decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primary), child: Icon(_icon(n.type), size: 12, color: theme.colorScheme.onPrimary))),
+                    Positioned(right: -4, bottom: -4, child: Container(padding: const EdgeInsets.all(3), decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primary), child: Icon(_icon(n.type), size: 12, color: theme.colorScheme.onPrimary))),
                   ],
                 ),
                 const SizedBox(width: 12),

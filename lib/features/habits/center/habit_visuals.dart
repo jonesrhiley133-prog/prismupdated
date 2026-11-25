@@ -52,7 +52,7 @@ class HabitIconBadge extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: c.withValues(alpha: 0.16),
         border: Border.all(color: c.withValues(alpha: 0.35)),
       ),
@@ -128,7 +128,7 @@ class HabitCard extends StatelessWidget {
       padding: margin,
       child: Material(
         color: Color.alphaBlend(a.withValues(alpha: 0.06), s.surfaceContainerLow.withValues(alpha: 0.85)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: BorderSide(color: a.withValues(alpha: 0.22))),
+        shape: RoundedRectangleBorder(borderRadius: prismCorners(context, 22), side: BorderSide(color: a.withValues(alpha: 0.22))),
         clipBehavior: Clip.antiAlias,
         child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
       ),
@@ -192,7 +192,7 @@ class HabitActionTile extends StatelessWidget {
     final s = Theme.of(context).colorScheme;
     return Material(
       color: active ? s.primary.withValues(alpha: 0.18) : s.surfaceContainerHigh.withValues(alpha: 0.7),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: s.primary.withValues(alpha: active ? 0.6 : 0.18))),
+      shape: RoundedRectangleBorder(borderRadius: prismCorners(context, 20), side: BorderSide(color: s.primary.withValues(alpha: active ? 0.6 : 0.18))),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

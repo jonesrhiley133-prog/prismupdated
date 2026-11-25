@@ -94,7 +94,7 @@ class GroupMemberAvatar extends ConsumerWidget {
               child: _buildLayout(context, visible, size, terms),
             ),
           )
-        : ClipOval(
+        : PrismClipRound(
             child: SizedBox.square(
               dimension: size,
               child: _buildLayout(context, visible, size, terms),
@@ -275,7 +275,7 @@ class GroupMemberAvatar extends ConsumerWidget {
           PrismShapes.of(context).cornerStyle == CornerStyle.angular;
       return angular
           ? ClipRRect(borderRadius: BorderRadius.zero, child: image)
-          : ClipOval(child: image);
+          : PrismClipRound(child: image);
     }
     return _miniEmoji(member.emoji, itemSize);
   }

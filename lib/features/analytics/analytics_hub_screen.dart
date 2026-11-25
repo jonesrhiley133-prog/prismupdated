@@ -37,7 +37,7 @@ class AnalyticsHubScreen extends StatelessWidget {
                   Container(
                     width: 48,
                     height: 48,
-                    decoration: BoxDecoration(color: color.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(14)),
+                    decoration: BoxDecoration(color: color.withValues(alpha: 0.16), borderRadius: prismCorners(context, 14)),
                     child: Icon(icon, color: color),
                   ),
                   const SizedBox(width: 12),

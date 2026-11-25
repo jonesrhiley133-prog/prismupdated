@@ -79,7 +79,7 @@ class _LinkRow extends ConsumerWidget {
       onLongPress: () => _edit(context, ref),
       child: Row(
         children: [
-          CircleAvatar(
+          PrismCircleAvatar(
             radius: 16,
             backgroundColor: m.color.withValues(alpha: 0.18),
             child: Icon(m.icon, size: 16, color: m.color),

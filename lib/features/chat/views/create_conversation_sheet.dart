@@ -234,7 +234,7 @@ class _CreateConversationSheetState
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: primaryColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: prismCorners(context, 22),
             ),
             child: Text(frontingLabel, style: labelStyle),
           );

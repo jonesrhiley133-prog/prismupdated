@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
@@ -393,7 +394,7 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: Colors.blue.withValues(alpha: 0.15),
           ),
           child: Icon(AppIcons.uploadOutlined, size: 40, color: Colors.blue),
@@ -489,7 +490,7 @@ class _DataExportSheetState extends ConsumerState<DataExportSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(

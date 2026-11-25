@@ -252,7 +252,7 @@ class DrawingBoard extends StatelessWidget {
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
         child: LayoutBuilder(
           builder: (context, box) {
             Offset norm(Offset p) => Offset(
@@ -353,7 +353,7 @@ class DrawingToolbar extends StatelessWidget {
                       height: 30,
                       decoration: BoxDecoration(
                         color: c,
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(
                           color: !controller.eraser && controller.color == c
                               ? scheme.primary
@@ -537,7 +537,7 @@ class StickerLayer extends StatelessWidget {
                             border: selected == i
                                 ? Border.all(color: scheme.primary, width: 2)
                                 : null,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: prismCorners(context, 8),
                           ),
                           child: FittedBox(child: Text(s.emoji)),
                         ),
@@ -628,7 +628,7 @@ class StickerTray extends StatelessWidget {
           button: true,
           label: tr(context, 'Add $e', 'Añadir $e'),
           child: InkWell(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
             onTap: () => onPick(e),
             child: Padding(
               padding: const EdgeInsets.all(6),

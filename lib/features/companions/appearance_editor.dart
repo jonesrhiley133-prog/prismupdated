@@ -356,7 +356,7 @@ class _AppearanceEditorScreenState
                       height: 32,
                       decoration: BoxDecoration(
                         color: Color(s),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(
                           color: current.toARGB32() == s
                               ? theme.colorScheme.primary
@@ -382,7 +382,7 @@ class _AppearanceEditorScreenState
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         color: theme.colorScheme.outlineVariant,
                       ),
@@ -531,7 +531,7 @@ class _AppearanceEditorScreenState
               height: 210,
               margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: prismCorners(context, 20),
                 color: Color.lerp(
                   _look.primaryOf(species),
                   theme.colorScheme.surface,

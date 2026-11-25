@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/astro/views/astro_integrations.dart';
@@ -339,7 +340,7 @@ class _MonthView extends StatelessWidget {
                             margin: const EdgeInsets.all(1.5),
                             padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: prismCorners(context, 8),
                               color: isSelected
                                   ? theme.colorScheme.primary.withValues(
                                       alpha: 0.12,
@@ -364,7 +365,7 @@ class _MonthView extends StatelessWidget {
                                       decoration: isToday
                                           ? BoxDecoration(
                                               color: theme.colorScheme.primary,
-                                              shape: BoxShape.circle,
+                                              borderRadius: prismRound(context),
                                             )
                                           : null,
                                       child: Text(
@@ -386,7 +387,7 @@ class _MonthView extends StatelessWidget {
                                         height: 7,
                                         decoration: BoxDecoration(
                                           color: MoodLevel.color(mood),
-                                          shape: BoxShape.circle,
+                                          borderRadius: prismRound(context),
                                         ),
                                       ),
                                   ],
@@ -427,8 +428,10 @@ class _MonthView extends StatelessWidget {
                                                           ? 0.85
                                                           : 0.35,
                                                     ),
-                                                borderRadius:
-                                                    BorderRadius.circular(3),
+                                                borderRadius: prismCorners(
+                                                  context,
+                                                  3,
+                                                ),
                                               ),
                                               child: Text(
                                                 o.event.title,
@@ -554,7 +557,9 @@ class _DayPanel extends ConsumerWidget {
           _OverlayRow(
             icon: AppIcons.cake,
             color: Colors.pinkAccent,
-            text: b.age == null
+            text: b.adoption
+                ? '${b.name(preferDisplayName: prefer)}\'s adoption day · ${b.age} year${b.age == 1 ? '' : 's'} together'
+                : b.age == null
                 ? l10n.calendarBirthdayOf(b.name(preferDisplayName: prefer))
                 : l10n.calendarBirthdayTurning(
                     b.name(preferDisplayName: prefer),
@@ -623,12 +628,12 @@ class _OverlayRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
           ),
           child: Row(
             children: [
@@ -714,7 +719,7 @@ class _WeekView extends StatelessWidget {
                           decoration: isSameDay(d, today)
                               ? BoxDecoration(
                                   color: theme.colorScheme.primary,
-                                  shape: BoxShape.circle,
+                                  borderRadius: prismRound(context),
                                 )
                               : null,
                           child: Text(
@@ -734,7 +739,7 @@ class _WeekView extends StatelessWidget {
                             margin: const EdgeInsets.only(top: 2),
                             decoration: BoxDecoration(
                               color: MoodLevel.color(m),
-                              shape: BoxShape.circle,
+                              borderRadius: prismRound(context),
                             ),
                           )
                         else
@@ -757,7 +762,7 @@ class _WeekView extends StatelessWidget {
               ),
             for (final b in data.birthdaysOn(d))
               _LaneItem(
-                '🎂 ${b.name(preferDisplayName: false)}',
+                '${b.emoji} ${b.name(preferDisplayName: false)}',
                 Colors.pinkAccent,
                 null,
               ),
@@ -830,7 +835,7 @@ class _AllDayLane extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: item.color.withValues(alpha: 0.85),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: prismCorners(context, 4),
                         ),
                         child: Text(
                           item.label,
@@ -952,7 +957,7 @@ class _DayView extends ConsumerWidget {
               ),
             for (final b in data.birthdaysOn(d))
               _LaneItem(
-                '🎂 ${b.name(preferDisplayName: prefer)}'
+                '${b.emoji} ${b.name(preferDisplayName: prefer)}'
                 '${b.age == null ? '' : ' (${b.age})'}',
                 Colors.pinkAccent,
                 null,
@@ -1141,6 +1146,17 @@ class _FilterSheet extends ConsumerWidget {
             icon: AppIcons.cake,
             value: overlays.birthdays,
             onChanged: (v) => notifier.set(overlays.copyWith(birthdays: v)),
+          ),
+          PrismSwitchRow(
+            title: Localizations.localeOf(context).languageCode == 'es'
+                ? 'Días de compañeros'
+                : 'Companion days',
+            subtitle: Localizations.localeOf(context).languageCode == 'es'
+                ? 'Cumpleaños y aniversarios de adopción'
+                : 'Birthdays and adoption anniversaries',
+            icon: Icons.pets_outlined,
+            value: overlays.companions,
+            onChanged: (v) => notifier.set(overlays.copyWith(companions: v)),
           ),
           PrismSwitchRow(
             title: l10n.calendarShowMood,

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -825,7 +826,7 @@ class _FloatingEndSessionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final pillRadius = BorderRadius.circular(PrismTokens.radiusPill);
+    final pillRadius = prismCorners(context, PrismTokens.radiusPill);
     final label = watchFrontingTerms(context, ref).endCurrentAction;
 
     return Semantics(

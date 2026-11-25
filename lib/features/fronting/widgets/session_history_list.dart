@@ -242,7 +242,7 @@ class CurrentFrontingSessionChip extends ConsumerWidget {
         key: ValueKey(chipKey),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: GlassSurface(
-          borderRadius: BorderRadius.circular(PrismTokens.radiusXLarge),
+          borderRadius: prismCorners(context, PrismTokens.radiusXLarge),
           tint: tint,
           sigma: PrismTokens.glassBlurStrong,
           padding: EdgeInsets.zero,
@@ -300,7 +300,7 @@ class _CurrentSleepPresenceRow extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GlassSurface(
-        borderRadius: BorderRadius.circular(PrismTokens.radiusXLarge),
+        borderRadius: prismCorners(context, PrismTokens.radiusXLarge),
         tint: sleepColor,
         sigma: PrismTokens.glassBlurStrong,
         padding: EdgeInsets.zero,
@@ -473,7 +473,7 @@ class _HistoryLoadingSkeleton extends StatelessWidget {
     final theme = Theme.of(context);
     final radius = PrismShapes.of(context).radius(PrismTokens.radiusMedium);
     final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       side: BorderSide(
         color: theme.colorScheme.outlineVariant.withValues(
           alpha: theme.brightness == Brightness.dark ? 0.35 : 0.28,
@@ -1269,7 +1269,7 @@ class _PerMemberSessionTile extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: Icon(
@@ -1635,7 +1635,7 @@ class _PeriodTile extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: Icon(
@@ -2002,7 +2002,7 @@ class _OverflowRosterChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
       ),
       child: Text(label, style: textStyle.copyWith(color: foregroundColor)),
     );
@@ -2057,7 +2057,7 @@ class _BriefVisitorChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
       ),
       child: Text(
         '+$name briefly',
@@ -2081,7 +2081,7 @@ class _BriefVisitorOverflowChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
       ),
       child: Text(
         '+$count more',
@@ -2192,7 +2192,7 @@ class _InlineSleepTile extends ConsumerWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     color: AppColors.sleep(
                       theme.brightness,
                     ).withValues(alpha: 0.2),

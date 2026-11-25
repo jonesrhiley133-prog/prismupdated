@@ -43,7 +43,7 @@ class TarotCardTile extends StatelessWidget {
           width: width,
           height: h,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(width * 0.1),
+            borderRadius: prismCorners(context, width * 0.1),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -52,7 +52,7 @@ class TarotCardTile extends StatelessWidget {
             border: Border.all(color: color.withValues(alpha: 0.55), width: 1.4),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(width * 0.1),
+            borderRadius: prismCorners(context, width * 0.1),
             child: Stack(
               children: [
                 Positioned.fill(child: StarField(count: 18, seed: c.id.hashCode, color: color)),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -594,7 +595,7 @@ class _CapturePinScreenState extends State<_CapturePinScreen>
                         width: 16,
                         height: 16,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                           color: filled
                               ? accentColor
                               : accentColor.withValues(alpha: 0.15),

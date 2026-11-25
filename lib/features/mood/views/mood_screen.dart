@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
@@ -285,7 +286,7 @@ class _QuickCheckIn extends StatelessWidget {
                 Tooltip(
                   message: MoodLevel.label(context, level),
                   child: InkWell(
-                    customBorder: const CircleBorder(),
+                    customBorder: prismCircleBorder(context),
                     onTap: () => showLogMoodSheet(context, initialMood: level),
                     child: Padding(
                       padding: const EdgeInsets.all(4),
@@ -521,7 +522,7 @@ class _DistributionBars extends StatelessWidget {
                         8 + 80 * (summary.moodDistribution[level] ?? 0) / max,
                     decoration: BoxDecoration(
                       color: MoodLevel.color(level),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: prismCorners(context, 6),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -553,7 +554,7 @@ class _ScaleBar extends StatelessWidget {
           ),
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: prismCorners(context, 6),
               child: LinearProgressIndicator(
                 value: (value - 1) / 4,
                 minHeight: 10,
@@ -601,7 +602,7 @@ class _RankedBars extends StatelessWidget {
                         height: 10,
                         decoration: BoxDecoration(
                           color: color ?? theme.colorScheme.primary,
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: prismCorners(context, 6),
                         ),
                       ),
                     ),
@@ -775,7 +776,7 @@ class _MoodCalendarState extends State<_MoodCalendar> {
                               : MoodLevel.color(
                                   avg,
                                 ).withValues(alpha: inMonth ? 0.55 : 0.2),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: prismCorners(context, 10),
                           border: isSelected
                               ? Border.all(
                                   color: theme.colorScheme.primary,
@@ -816,7 +817,7 @@ class _MoodCalendarState extends State<_MoodCalendar> {
                             height: 10,
                             decoration: BoxDecoration(
                               color: MoodLevel.color(level),
-                              shape: BoxShape.circle,
+                              borderRadius: prismRound(context),
                             ),
                           ),
                           const SizedBox(width: 3),
@@ -937,7 +938,7 @@ class MoodEntryTile extends ConsumerWidget {
           padding: const EdgeInsets.only(right: 20),
           decoration: BoxDecoration(
             color: theme.colorScheme.error,
-            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            borderRadius: prismCorners(context, PrismTokens.radiusMedium),
           ),
           child: Icon(AppIcons.delete, color: theme.colorScheme.onError),
         ),
@@ -1032,7 +1033,7 @@ class _TinyTag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: c.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: prismCorners(context, 20),
       ),
       child: Text(label, style: theme.textTheme.labelSmall),
     );

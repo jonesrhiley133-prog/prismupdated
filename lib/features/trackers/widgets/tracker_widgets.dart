@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -117,7 +118,7 @@ class _PrivateRevealState extends State<PrivateReveal> {
       button: true,
       label: context.l10n.trackerPrivateReveal,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: prismCorners(context, 8),
         onTap: () => setState(() => _revealed = true),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -164,7 +165,7 @@ class TagWrap extends StatelessWidget {
       children: [
         for (final t in tags)
           InkWell(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
             onTap: onTap == null ? null : () => onTap!(t),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -172,7 +173,7 @@ class TagWrap extends StatelessWidget {
                 color: theme.colorScheme.secondaryContainer.withValues(
                   alpha: 0.6,
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: prismCorners(context, 10),
               ),
               child: Text(
                 '#$t',
@@ -288,7 +289,7 @@ class TrackerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(height),
+      borderRadius: prismCorners(context, height),
       child: Container(
         height: height,
         color: scheme.surfaceContainerHighest,

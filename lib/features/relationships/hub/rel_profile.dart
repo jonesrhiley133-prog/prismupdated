@@ -152,7 +152,7 @@ class _Header extends ConsumerWidget {
           onTap: m == null ? null : () => context.push(AppRoutePaths.member(m.id)),
           child: Column(
             children: [
-              if (m != null) relAvatar(ref, m, 56) else CircleAvatar(radius: 28, child: Icon(PhosphorIcons.user())),
+              if (m != null) relAvatar(ref, m, 56) else PrismCircleAvatar(radius: 28, child: Icon(PhosphorIcons.user())),
               const SizedBox(height: 6),
               Text(m?.effectiveName(preferDisplayName: prefer) ?? fallback ?? '—', textAlign: TextAlign.center, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
               if ((m?.pronouns ?? '').isNotEmpty) Text(m!.pronouns!, style: theme.textTheme.bodySmall),
@@ -223,11 +223,11 @@ class RelLabelPill extends StatelessWidget {
     final c = relColor(settings, styleOf(label, settings));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(999), border: Border.all(color: c.withValues(alpha: 0.5))),
+      decoration: BoxDecoration(color: c.withValues(alpha: 0.16), borderRadius: prismCorners(context, 999), border: Border.all(color: c.withValues(alpha: 0.5))),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 8, height: 8, decoration: BoxDecoration(color: c, shape: BoxShape.circle)),
+          Container(width: 8, height: 8, decoration: BoxDecoration(color: c, borderRadius: prismRound(context))),
           const SizedBox(width: 6),
           Text(labelText(context, label, settings), style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)),
         ],
@@ -267,7 +267,7 @@ class _Overview extends StatelessWidget {
                       child: Row(
                         children: [
                           SizedBox(width: 150, child: Text(relDynamicLabel(context, k))),
-                          Expanded(child: Row(children: [for (var i = 1; i <= 5; i++) Expanded(child: Container(height: 8, margin: const EdgeInsets.only(right: 3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: i <= v ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.15))))])),
+                          Expanded(child: Row(children: [for (var i = 1; i <= 5; i++) Expanded(child: Container(height: 8, margin: const EdgeInsets.only(right: 3), decoration: BoxDecoration(borderRadius: prismCorners(context, 4), color: i <= v ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.15))))])),
                           const SizedBox(width: 8),
                           Text('$v/5', style: theme.textTheme.bodySmall),
                         ],
@@ -481,7 +481,7 @@ class _Timeline extends ConsumerWidget {
                   width: 24,
                   child: Column(
                     children: [
-                      Container(width: 12, height: 12, margin: const EdgeInsets.only(top: 6), decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primary)),
+                      Container(width: 12, height: 12, margin: const EdgeInsets.only(top: 6), decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primary)),
                       if (i < events.length - 1) Expanded(child: Container(width: 2, color: theme.colorScheme.outlineVariant)),
                     ],
                   ),
@@ -501,7 +501,7 @@ class _Timeline extends ConsumerWidget {
                           if (e.strings('media').isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: 6),
-                              child: Wrap(spacing: 6, children: [for (final m in e.strings('media').take(4)) ClipRRect(borderRadius: BorderRadius.circular(8), child: SizedBox(width: 56, height: 56, child: PrismMediaView(id: m)))]),
+                              child: Wrap(spacing: 6, children: [for (final m in e.strings('media').take(4)) ClipRRect(borderRadius: prismCorners(context, 8), child: SizedBox(width: 56, height: 56, child: PrismMediaView(id: m)))]),
                             ),
                         ],
                       ),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -216,7 +217,7 @@ class AlterBlogScreen extends ConsumerWidget {
             if (ids.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(context.l10n.socNobodyYet)),
             for (final id in ids)
               InkWell(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 onTap: () {
                   Navigator.of(sheet).pop();
                   openAlterBlog(context, id);
@@ -243,7 +244,7 @@ class _Stat extends StatelessWidget {
     button: onTap != null,
     child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: prismCorners(context, 8),
       child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(label, style: Theme.of(context).textTheme.labelLarge)),
     ),
   );
@@ -296,8 +297,8 @@ class HighlightsRow extends ConsumerWidget {
                                 width: 60,
                                 height: 60,
                                 padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
-                                child: ClipOval(child: _HighlightCover(h: h, d: d)),
+                                decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
+                                child: PrismClipRound(child: _HighlightCover(h: h, d: d)),
                               ),
                               const SizedBox(height: 4),
                               Text(h.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall),
@@ -321,7 +322,7 @@ class HighlightsRow extends ConsumerWidget {
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
+                              decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
                               child: const Icon(Icons.add_rounded),
                             ),
                             const SizedBox(height: 4),
@@ -400,7 +401,7 @@ Future<void> newHighlight(BuildContext context, WidgetRef ref, String memberId) 
                             label: MaterialLocalizations.of(context).formatMediumDate(s.postedAt),
                             child: Stack(
                               children: [
-                                SizedBox(width: 72, height: 120, child: ClipRRect(borderRadius: BorderRadius.circular(10), child: StorySlideView(slide: s.slides.first, mini: true))),
+                                SizedBox(width: 72, height: 120, child: ClipRRect(borderRadius: prismCorners(context, 10), child: StorySlideView(slide: s.slides.first, mini: true))),
                                 if (picked.contains(s.id)) const Positioned(right: 4, top: 4, child: Icon(Icons.check_circle_rounded, color: Colors.white)),
                               ],
                             ),
@@ -628,7 +629,7 @@ class BannerPositioner extends StatelessWidget {
     if (bytes == null) {
       return Container(
         height: height,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: theme.colorScheme.surfaceContainerHighest),
+        decoration: BoxDecoration(borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHighest),
         alignment: Alignment.center,
         child: Text(l10n.socNoBanner, style: theme.textTheme.bodySmall),
       );
@@ -642,7 +643,7 @@ class BannerPositioner extends StatelessWidget {
         builder: (context, box) => GestureDetector(
           onPanUpdate: (dd) => onChanged((x - dd.delta.dx / box.maxWidth * 2).clamp(-1, 1), (y - dd.delta.dy / height * 2).clamp(-1, 1)),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: prismCorners(context, 14),
             child: Stack(
               children: [
                 Image.memory(bytes!, height: height, width: double.infinity, fit: BoxFit.cover, alignment: Alignment(x, y), gaplessPlayback: true),
@@ -650,7 +651,7 @@ class BannerPositioner extends StatelessWidget {
                   right: 8,
                   bottom: 8,
                   child: DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: prismCorners(context, 12)),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.open_with_rounded, size: 14, color: Colors.white), const SizedBox(width: 4), Text(l10n.socDragToPosition, style: const TextStyle(color: Colors.white, fontSize: 11))]),

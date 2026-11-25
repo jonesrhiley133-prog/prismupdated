@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -829,7 +830,7 @@ class _FrontingTerminologyPickerState
             color: theme.colorScheme.surfaceContainerHighest.withValues(
               alpha: 0.5,
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: prismCorners(context, 8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1176,7 +1177,7 @@ class _SystemTerminologyPickerState
             color: theme.colorScheme.surfaceContainerHighest.withValues(
               alpha: 0.5,
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: prismCorners(context, 8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

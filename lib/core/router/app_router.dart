@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1914,7 +1915,7 @@ class _QuickA11yPage extends StatelessWidget {
     child: ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 460, maxHeight: 640),
       child: Material(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: prismCorners(context, 24),
         clipBehavior: Clip.antiAlias,
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
         child: Stack(

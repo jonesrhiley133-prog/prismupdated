@@ -233,7 +233,7 @@ class AlterGamesProfile extends ConsumerWidget {
                       child: Container(
                         width: 92,
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(14)),
+                        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 14)),
                         child: Column(
                           children: [
                             Text(a.emoji, style: const TextStyle(fontSize: 24)),

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -314,7 +315,7 @@ class _DeviceTile extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               color: statusColor,
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
             ),
           ),
           title: Row(

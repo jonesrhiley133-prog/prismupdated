@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/domain/models/member_group.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -93,7 +94,7 @@ class _GroupAvatarPickerState extends State<GroupAvatarPicker> {
                 height: cameraBadgeSize,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: theme.colorScheme.surface,
                     width: 2,
@@ -113,7 +114,7 @@ class _GroupAvatarPickerState extends State<GroupAvatarPicker> {
               top: -4,
               child: Material(
                 color: theme.colorScheme.surfaceContainerHighest,
-                shape: const CircleBorder(),
+                shape: prismCircleBorder(context),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: widget.onRemoveImage,

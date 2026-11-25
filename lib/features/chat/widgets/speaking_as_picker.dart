@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -156,13 +157,13 @@ class SpeakingAsPicker extends ConsumerWidget {
         message: context.l10n.search,
         child: InkWell(
           key: const Key('speakingAsSearchChip'),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: prismCorners(context, 20),
           onTap: () => _openSearchSheet(context, ref, members, termPlural),
           child: Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               border: Border.all(
                 color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
               ),
@@ -202,7 +203,7 @@ class SpeakingAsPicker extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: InkWell(
           key: const Key('speakingAsSearchTrigger'),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: prismCorners(context, 24),
           onTap: () => _openSearchSheet(context, ref, members, termPlural),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),

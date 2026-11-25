@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -230,7 +231,7 @@ class SleepLogScreen extends ConsumerWidget {
                                                     theme.colorScheme.outline,
                                                 },
                                                 borderRadius:
-                                                    BorderRadius.circular(3),
+                                                    prismCorners(context, 3),
                                               ),
                                             ),
                                           ),

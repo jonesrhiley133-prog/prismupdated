@@ -336,7 +336,7 @@ class _HabitRow extends ConsumerWidget {
                             margin: const EdgeInsets.only(right: 3),
                             decoration: BoxDecoration(
                               color: i < view.todayProgress ? color : theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(2),
+                              borderRadius: prismCorners(context, 2),
                             ),
                           ),
                         ),
@@ -367,7 +367,7 @@ class _QuickButton extends ConsumerWidget {
       message: tr(context, 'Log one more', 'Registrar uno más'),
       child: Material(
         color: met ? color : color.withValues(alpha: 0.14),
-        shape: CircleBorder(side: BorderSide(color: color.withValues(alpha: 0.7), width: 1.4)),
+        shape: prismCircleBorder(context, side: BorderSide(color: color.withValues(alpha: 0.7), width: 1.4)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () async {

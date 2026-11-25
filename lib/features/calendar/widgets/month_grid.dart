@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/widgets/clamped_body.dart';
@@ -56,70 +57,76 @@ class MonthGrid extends StatelessWidget {
     final today = DateTime.now();
     final weekdayFormat = DateFormat.E(context.dateLocale);
 
-    return CompactCalendar(child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            for (var i = 0; i < 7; i++)
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Text(
-                    weekdayFormat.format(
-                      DateTime(start.year, start.month, start.day + i),
-                    ),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        for (var week = 0; week < 6; week++)
+    return CompactCalendar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
           Row(
             children: [
-              for (var d = 0; d < 7; d++)
+              for (var i = 0; i < 7; i++)
                 Expanded(
-                  child: AspectRatio(
-                    // Wide web windows: near-square cells keep the month compact.
-                    aspectRatio: PrismTokens.desktopWebContentWidth != null && cellAspectRatio < 1.2 ? 1.2 : cellAspectRatio,
-                    child: Builder(
-                      builder: (context) {
-                        final day = DateTime(
-                          start.year,
-                          start.month,
-                          start.day + week * 7 + d,
-                        );
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          onTap: onDaySelected == null
-                              ? null
-                              : () => onDaySelected!(day),
-                          onLongPress: onDayLongPressed == null
-                              ? null
-                              : () => onDayLongPressed!(day),
-                          child: dayBuilder(
-                            context,
-                            day,
-                            inMonth: day.month == month.month,
-                            isToday: isSameDay(day, today),
-                            isSelected:
-                                selectedDay != null &&
-                                isSameDay(day, selectedDay!),
-                          ),
-                        );
-                      },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
+                      weekdayFormat.format(
+                        DateTime(start.year, start.month, start.day + i),
+                      ),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
             ],
           ),
-      ],
-    ));
+          for (var week = 0; week < 6; week++)
+            Row(
+              children: [
+                for (var d = 0; d < 7; d++)
+                  Expanded(
+                    child: AspectRatio(
+                      // Wide web windows: near-square cells keep the month compact.
+                      aspectRatio:
+                          PrismTokens.desktopWebContentWidth != null &&
+                              cellAspectRatio < 1.2
+                          ? 1.2
+                          : cellAspectRatio,
+                      child: Builder(
+                        builder: (context) {
+                          final day = DateTime(
+                            start.year,
+                            start.month,
+                            start.day + week * 7 + d,
+                          );
+                          return InkWell(
+                            borderRadius: prismCorners(context, 10),
+                            onTap: onDaySelected == null
+                                ? null
+                                : () => onDaySelected!(day),
+                            onLongPress: onDayLongPressed == null
+                                ? null
+                                : () => onDayLongPressed!(day),
+                            child: dayBuilder(
+                              context,
+                              day,
+                              inMonth: day.month == month.month,
+                              isToday: isSameDay(day, today),
+                              isSelected:
+                                  selectedDay != null &&
+                                  isSameDay(day, selectedDay!),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
   }
 }
 
@@ -152,7 +159,7 @@ class MonthHeader extends StatelessWidget {
         ),
         Expanded(
           child: InkWell(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: prismCorners(context, 8),
             onTap: onTitleTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),

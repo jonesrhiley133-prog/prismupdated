@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -91,7 +92,7 @@ class _Bar extends ConsumerWidget {
       child: Material(
         color: base,
         elevation: 6,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -215,7 +216,7 @@ class _BubbleState extends ConsumerState<_Bubble> {
           },
           child: Material(
             elevation: 6,
-            shape: CircleBorder(side: BorderSide(color: theme.colorScheme.primary, width: 2)),
+            shape: prismCircleBorder(context, side: BorderSide(color: theme.colorScheme.primary, width: 2)),
             clipBehavior: Clip.antiAlias,
             child: SizedBox(
               width: size,

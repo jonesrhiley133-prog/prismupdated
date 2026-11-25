@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -133,7 +134,7 @@ class _WidgetStudioScreenState extends ConsumerState<WidgetStudioScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: prismCorners(context, 16),
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -665,7 +666,7 @@ class _ColorRow extends StatelessWidget {
                     height: 28,
                     decoration: BoxDecoration(
                       color: Color(c),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(width: value == c ? 3 : 1, color: theme.colorScheme.outline),
                     ),
                   ),

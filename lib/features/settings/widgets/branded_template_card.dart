@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -101,7 +102,7 @@ class BrandedTemplateCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: c.bg,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: prismCorners(context, 20),
           border: Border.all(color: c.border),
         ),
         child: Column(
@@ -201,7 +202,7 @@ class _Kicker extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: palette.kickerBg,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: prismCorners(context, 999),
       ),
       child: Text(
         label.toUpperCase(),
@@ -228,7 +229,7 @@ class _TypeChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: palette.chipBg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: prismCorners(context, 8),
       ),
       child: Text(
         label,
@@ -258,7 +259,7 @@ class _MarkChip extends StatelessWidget {
     return PrismLogoTile(
       size: size,
       logoSize: imageSize,
-      borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: prismCorners(context, borderRadius),
     );
   }
 }
@@ -320,7 +321,7 @@ class _QrBox extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: prismCorners(context, 12),
         ),
         child: QrImageView(
           data: code,
@@ -402,7 +403,7 @@ class _NoQrNote extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
       decoration: BoxDecoration(
         color: palette.chipBg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

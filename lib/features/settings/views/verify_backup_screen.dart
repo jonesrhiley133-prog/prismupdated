@@ -818,7 +818,7 @@ class _VerifyPinViewState extends ConsumerState<_VerifyPinView>
                       width: 14,
                       height: 14,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         color: filled
                             ? accentColor
                             : accentColor.withValues(alpha: 0.15),

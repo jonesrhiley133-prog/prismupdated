@@ -106,7 +106,7 @@ class TermFlags extends ConsumerWidget {
                 button: true,
                 label: tr(context, '$label. Open', '$label. Abrir'),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: prismCorners(context, 10),
                   onTap: () => _open(context, ref, f, label),
                   child: SizedBox(
                     width: 132,
@@ -114,7 +114,7 @@ class TermFlags extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: prismCorners(context, 8),
                             child: ColoredBox(
                               color: theme.colorScheme.surfaceContainerHighest,
                               child: Center(child: Image.network(f.url, fit: BoxFit.contain, cacheWidth: 264, errorBuilder: (_, _, _) => Icon(PhosphorIcons.flag(), color: theme.colorScheme.onSurfaceVariant))),

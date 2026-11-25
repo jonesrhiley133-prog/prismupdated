@@ -694,7 +694,7 @@ class _ChronoRow extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     color: theme.colorScheme.primary.withValues(alpha: 0.12),
                   ),
                   child: Icon(icon, size: 14, color: theme.colorScheme.primary),

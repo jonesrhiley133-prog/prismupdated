@@ -129,7 +129,7 @@ class _CardFace extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -199,7 +199,7 @@ class _Front extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   border: Border.all(color: Color(template.border), width: 1.5),
-                  borderRadius: BorderRadius.circular(c.maxWidth),
+                  borderRadius: prismCorners(context, c.maxWidth),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: art != null

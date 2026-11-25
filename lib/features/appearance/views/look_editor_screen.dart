@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
@@ -597,7 +598,7 @@ class _LookEditorScreenState extends ConsumerState<LookEditorScreen> {
                   width: 34,
                   height: 34,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: prismCorners(context, 8),
                     child: LookBackground(
                       spec: _draft.backgroundFor(page),
                       dir: LookTheme.of(context)?.backgroundDir,
@@ -681,7 +682,7 @@ class LookSample extends StatelessWidget {
     return Semantics(
       label: l10n.apPreview,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         child: SizedBox(
           height: 210,
           child: Stack(
@@ -757,7 +758,7 @@ class LookSample extends StatelessWidget {
                             color:
                                 look?.fill(LookElement.nav) ??
                                 theme.colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(
+                            borderRadius: prismCorners(context, 
                               look?.style(LookElement.nav).radius ?? 15,
                             ),
                             border: look?.border(LookElement.nav),
@@ -936,7 +937,7 @@ class BackgroundEditor extends ConsumerWidget {
                                   width: 76,
                                   height: 100,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: prismCorners(context, 12),
                                     border: Border.all(
                                       width: s.builtin == e.key ? 3 : 1,
                                       color: s.builtin == e.key
@@ -945,7 +946,7 @@ class BackgroundEditor extends ConsumerWidget {
                                     ),
                                   ),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: prismCorners(context, 10),
                                     child: LookBackground(
                                       spec: BgSpec(
                                         kind: BgKind.builtin,
@@ -968,7 +969,7 @@ class BackgroundEditor extends ConsumerWidget {
                 if (s.kind == BgKind.image) ...[
                   if (s.image != null)
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       child: SizedBox(
                         height: 140,
                         child: LookBackground(spec: s, dir: dir),
@@ -1077,7 +1078,7 @@ class BackgroundEditor extends ConsumerWidget {
                               child: Semantics(
                                 button: true,
                                 label: 'Tint colour ${i + 1}',
-                                child: CircleAvatar(
+                                child: PrismCircleAvatar(
                                   radius: 16,
                                   backgroundColor: Color(c),
                                 ),
@@ -1103,7 +1104,7 @@ class BackgroundEditor extends ConsumerWidget {
                   if (s.effectiveTint != 'original' &&
                       s.effectiveTint != 'none')
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       child: SizedBox(
                         height: 90,
                         child: Row(

@@ -164,7 +164,7 @@ class _Tag extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 1.5),
                 decoration: BoxDecoration(
                   color: i <= level! ? color : color.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(1),
+                  borderRadius: prismCorners(context, 1),
                 ),
               ),
             const SizedBox(width: 4),

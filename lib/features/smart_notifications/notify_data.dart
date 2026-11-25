@@ -12,7 +12,8 @@ enum BirthdaySource {
   alters('Alters'),
   system('System birthday'),
   contacts('Contacts'),
-  calendar('Calendar birthday events');
+  calendar('Calendar birthday events'),
+  companions('Companion birthdays & adoption days');
 
   const BirthdaySource(this.label);
   final String label;
@@ -274,11 +275,20 @@ class PlannedNotification {
 /// A birthday to remind about.
 @immutable
 class BirthdayItem {
-  const BirthdayItem(this.key, this.name, this.date, this.source);
+  const BirthdayItem(
+    this.key,
+    this.name,
+    this.date,
+    this.source, {
+    this.adoption = false,
+  });
   final String key;
   final String name;
   final DateTime date;
   final BirthdaySource source;
+
+  /// A companion's adoption anniversary rather than a birthday.
+  final bool adoption;
 }
 
 /// Moves [t] out of quiet hours to the moment they end.
@@ -331,10 +341,19 @@ List<PlannedNotification> planCalendarNotifications({
           if (!when.isAfter(now) || when.isAfter(horizon)) continue;
           final hasYear = !isBirthdayYearHidden(b.date) && b.date.year > 1900;
           final age = hasYear ? year - b.date.year : null;
-          final title = off == 0
+          if (b.adoption && (age == null || age < 1)) continue;
+          final title = b.adoption
+              ? (off == 0
+                    ? '🐾 Happy adoption day, ${b.name}!'
+                    : '🐾 ${b.name}\'s adoption day is ${off == 1 ? 'tomorrow' : 'in $off days'}')
+              : off == 0
               ? '🎂 Happy birthday, ${b.name}!'
               : '🎂 ${b.name}\'s birthday is ${off == 1 ? 'tomorrow' : 'in $off days'}';
-          final body = off == 0
+          final body = b.adoption
+              ? (off == 0
+                    ? '${age!} year${age == 1 ? '' : 's'} together today.'
+                    : 'Coming up on ${_monthDay(day)} — $age year${age == 1 ? '' : 's'} together.')
+              : off == 0
               ? (age != null && age > 0
                     ? '${b.name} turns $age today.'
                     : 'Today is ${b.name}\'s birthday.')

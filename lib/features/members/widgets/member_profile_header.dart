@@ -312,7 +312,7 @@ class _MemberHeaderAvatar extends ConsumerWidget {
                 height: badgeSize,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: theme.colorScheme.surface,
                     width: 2,
@@ -332,7 +332,7 @@ class _MemberHeaderAvatar extends ConsumerWidget {
             top: -4,
             child: Material(
               color: theme.colorScheme.surfaceContainerHighest,
-              shape: const CircleBorder(),
+              shape: prismCircleBorder(context),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: onRemove,

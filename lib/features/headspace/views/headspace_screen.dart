@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -506,7 +507,7 @@ class _HeadspaceMapScreenState extends ConsumerState<HeadspaceMapScreen> {
                                             height: 28,
                                             decoration: BoxDecoration(
                                               color: theme.colorScheme.surface,
-                                              shape: BoxShape.circle,
+                                              borderRadius: prismRound(context),
                                               border: Border.all(
                                                 color:
                                                     theme.colorScheme.outline,
@@ -588,7 +589,7 @@ class _HeadspaceMapScreenState extends ConsumerState<HeadspaceMapScreen> {
                                                   : BoxShape.rectangle,
                                               borderRadius: shape == 'circle'
                                                   ? null
-                                                  : BorderRadius.circular(
+                                                  : prismCorners(context, 
                                                       shape == 'rect' ? 4 : 18,
                                                     ),
                                             ),
@@ -801,7 +802,7 @@ class _AreaEditorState extends ConsumerState<_AreaEditor> {
                     height: 28,
                     decoration: BoxDecoration(
                       color: Color(c),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(width: _color == c ? 3 : 0),
                     ),
                   ),

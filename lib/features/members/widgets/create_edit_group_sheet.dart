@@ -491,7 +491,7 @@ class _CreateEditGroupSheetState extends ConsumerState<CreateEditGroupSheet> {
                                       onTap: _openColorPicker,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
+                                          borderRadius: prismRound(context),
                                           color:
                                               _previewColor() ??
                                               theme

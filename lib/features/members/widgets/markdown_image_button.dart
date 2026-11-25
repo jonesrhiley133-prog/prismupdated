@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -317,7 +318,7 @@ class MarkdownImageButtonState extends ConsumerState<MarkdownImageButton> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 160),
                   child: Image.memory(imageBytes, fit: BoxFit.contain),

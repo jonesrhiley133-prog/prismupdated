@@ -173,7 +173,7 @@ class SubOrb extends StatelessWidget {
     height: size,
     alignment: Alignment.center,
     decoration: BoxDecoration(
-      shape: BoxShape.circle,
+      borderRadius: prismRound(context),
       color: color.withValues(alpha: 0.22),
       border: Border.all(color: color.withValues(alpha: 0.5)),
     ),

@@ -92,7 +92,7 @@ class GlassSurface extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final effectiveBorderRadius = shape == BoxShape.circle
-        ? BorderRadius.circular((width ?? 40) / 2)
+        ? prismCorners(context, (width ?? 40) / 2)
         : (borderRadius ??
               BorderRadius.circular(
                 PrismShapes.of(context).radius(PrismTokens.radiusMedium),

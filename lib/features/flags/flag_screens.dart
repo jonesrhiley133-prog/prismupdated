@@ -518,7 +518,7 @@ class _FlagEditorScreenState extends ConsumerState<FlagEditorScreen> {
                     child: Semantics(
                       button: true,
                       label: 'Tool colour',
-                      child: CircleAvatar(
+                      child: PrismCircleAvatar(
                         radius: 14,
                         backgroundColor: Color(_brushColor),
                       ),
@@ -759,7 +759,7 @@ class _FlagEditorScreenState extends ConsumerState<FlagEditorScreen> {
                   height: 30,
                   decoration: BoxDecoration(
                     color: Color(c),
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     border: Border.all(
                       color: _stripe == i
                           ? theme.colorScheme.primary
@@ -1088,7 +1088,7 @@ class _FlagEditorScreenState extends ConsumerState<FlagEditorScreen> {
         height: 28,
         decoration: BoxDecoration(
           color: Color(c),
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           border: Border.all(color: Colors.black26),
         ),
       ),
@@ -1477,7 +1477,7 @@ class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
                         height: 28,
                         decoration: BoxDecoration(
                           color: Color(c),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: prismCorners(context, 6),
                           border: Border.all(color: Colors.black26),
                         ),
                       ),
@@ -1540,7 +1540,7 @@ class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
                 WavingFlag(design: f.design, width: 170),
                 Column(
                   children: [
-                    ClipOval(
+                    PrismClipRound(
                       child: SizedBox(
                         width: 64,
                         height: 64,
@@ -1563,7 +1563,7 @@ class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: prismCorners(context, 8),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
@@ -1579,7 +1579,7 @@ class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
                 Column(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: prismCorners(context, 8),
                       child: SizedBox(
                         width: 220,
                         height: 50,

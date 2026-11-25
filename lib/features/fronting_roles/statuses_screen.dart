@@ -508,7 +508,7 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
                     height: 30,
                     decoration: BoxDecoration(
                       color: Color(c),
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         width: _color == c ? 3 : 1,
                         color: _color == c

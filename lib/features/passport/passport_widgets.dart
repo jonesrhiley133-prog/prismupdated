@@ -490,7 +490,7 @@ class PassportPageView extends ConsumerWidget {
     return AspectRatio(
       aspectRatio: 3 / 4,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
         child: PaperBackground(
           color: page.background ?? passport.paper,
           texture: passport.texture,
@@ -676,7 +676,7 @@ class PassportPageView extends ConsumerWidget {
                                                   width: 2,
                                                 ),
                                                 borderRadius:
-                                                    BorderRadius.circular(8),
+                                                    prismCorners(context, 8),
                                               )
                                             : null,
                                         child: element(e),
@@ -718,7 +718,7 @@ class PassportPageView extends ConsumerWidget {
                                     ).colorScheme.primary,
                                     width: 2,
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: prismCorners(context, 8),
                                 )
                               : null,
                           child: element(e),
@@ -903,7 +903,7 @@ class _Attachments extends ConsumerWidget {
               ),
               decoration: BoxDecoration(
                 border: Border.all(color: ink.withValues(alpha: 0.4)),
-                borderRadius: BorderRadius.circular(unit * 0.02),
+                borderRadius: prismCorners(context, unit * 0.02),
               ),
               child: Text(
                 catalog[k] == null

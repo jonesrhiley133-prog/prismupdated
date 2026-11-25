@@ -352,7 +352,7 @@ class _BroadcastMentionRow extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: primary.withValues(alpha: 0.14),
                     ),
                     child: Icon(AppIcons.group, size: 18, color: primary),

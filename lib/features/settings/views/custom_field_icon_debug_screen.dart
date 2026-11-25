@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/domain/models/custom_field.dart';
@@ -381,7 +382,7 @@ class _ListRowTitle extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: prismCorners(context, 8),
       ),
       child: PrismListRow(
         dense: true,
@@ -408,7 +409,7 @@ class _SampleBadge extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
       ),
       alignment: Alignment.center,
       child: emoji != null
@@ -469,7 +470,7 @@ class _LegendChip extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: prismCorners(context, 999),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

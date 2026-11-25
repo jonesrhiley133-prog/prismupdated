@@ -257,7 +257,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
       Column(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: prismCorners(context, 6),
             child: Row(
               children: [
                 for (final c in CoCertainty.values)
@@ -363,7 +363,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: a == b ? theme.colorScheme.surfaceContainerHighest : theme.colorScheme.primary.withValues(alpha: 0.08 + f * 0.8),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: prismCorners(context, 6),
                           ),
                           child: Text(d == null ? '' : fmtDuration(d), style: theme.textTheme.labelSmall?.copyWith(fontSize: 9, color: f > 0.5 ? theme.colorScheme.onPrimary : null)),
                         ),
@@ -414,7 +414,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
                 ),
                 barGroups: [
                   for (var i = 0; i < all.length; i++)
-                    BarChartGroupData(x: i, barRods: [BarChartRodData(toY: (st.byMonth[all[i]]?.inMinutes ?? 0) / 60, color: theme.colorScheme.primary, width: math.max(3, 220 / all.length), borderRadius: BorderRadius.circular(3))]),
+                    BarChartGroupData(x: i, barRods: [BarChartRodData(toY: (st.byMonth[all[i]]?.inMinutes ?? 0) / 60, color: theme.colorScheme.primary, width: math.max(3, 220 / all.length), borderRadius: prismCorners(context, 3))]),
                 ],
               ),
             ),
@@ -460,7 +460,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: v == null ? null : theme.colorScheme.primary.withValues(alpha: 0.15 + f * 0.75),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: prismCorners(context, 8),
                         border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
                       ),
                       child: Text('$d', style: theme.textTheme.labelSmall?.copyWith(color: f > 0.5 ? theme.colorScheme.onPrimary : null)),
@@ -486,7 +486,7 @@ class _CoFrontingScreenState extends ConsumerState<CoFrontingScreen> {
             PrismListRow(
               dense: true,
               padding: EdgeInsets.zero,
-              leading: Container(width: 10, height: 10, decoration: BoxDecoration(color: _certColor(p.certainty), shape: BoxShape.circle)),
+              leading: Container(width: 10, height: 10, decoration: BoxDecoration(color: _certColor(p.certainty), borderRadius: prismRound(context))),
               title: Text(p.members.map(name).join(' + ')),
               subtitle: Text('${fmt.format(p.start)} · ${fmtDuration(p.duration)}${p.ongoing ? tr(context, ' · ongoing', ' · en curso') : ''} · ${_certLabel(p.certainty)}'),
             ),

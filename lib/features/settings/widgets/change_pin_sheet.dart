@@ -1,5 +1,6 @@
 import 'dart:typed_data' as typed_data;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -845,7 +846,7 @@ class _PinDots extends StatelessWidget {
             width: 14,
             height: 14,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: filled ? color : color.withValues(alpha: 0.15),
             ),
           ),

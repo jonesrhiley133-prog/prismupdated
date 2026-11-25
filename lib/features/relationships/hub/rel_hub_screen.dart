@@ -381,7 +381,7 @@ class _UndoBar extends ConsumerWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
-      decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 12)),
       child: Row(
         children: [
           Expanded(child: Text(tr(context, 'Relationship deleted.', 'Relación eliminada.'), style: TextStyle(color: theme.colorScheme.onSecondaryContainer))),
@@ -489,7 +489,7 @@ class RelCard extends ConsumerWidget {
                 child: Stack(
                   children: [
                     if (a != null) Positioned(left: 0, child: relAvatar(ref, a, 34)),
-                    Positioned(left: 20, child: b != null ? relAvatar(ref, b, 34) : CircleAvatar(radius: 17, child: Icon(PhosphorIcons.user(), size: 16))),
+                    Positioned(left: 20, child: b != null ? relAvatar(ref, b, 34) : PrismCircleAvatar(radius: 17, child: Icon(PhosphorIcons.user(), size: 16))),
                   ],
                 ),
               ),

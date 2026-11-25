@@ -3092,7 +3092,7 @@ class _WebSidebar extends ConsumerWidget {
                 children: [
                   // The app icon chosen in Settings › Appearance.
                   if (ref.watch(appIconProvider).value == 'custom' && ref.watch(customAppIconProvider).value != null)
-                    ClipRRect(borderRadius: BorderRadius.circular(9), child: Image.memory(ref.watch(customAppIconProvider).value!, width: 34, height: 34, filterQuality: FilterQuality.medium))
+                    ClipRRect(borderRadius: prismCorners(context, 9), child: Image.memory(ref.watch(customAppIconProvider).value!, width: 34, height: 34, filterQuality: FilterQuality.medium))
                   else
                     Image.asset('assets/app_icons/${ref.watch(appIconProvider).value ?? 'classic'}.png', width: 34, height: 34, filterQuality: FilterQuality.medium, errorBuilder: (_, _, _) => Image.asset('assets/app_icons/classic.png', width: 34, height: 34)),
                   if (!collapsed) ...[
@@ -3188,7 +3188,7 @@ class _WebSearchButtonState extends State<_WebSearchButton> {
                       Expanded(child: Text(widget.label, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant))),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: colors.outlineVariant)),
+                        decoration: BoxDecoration(borderRadius: prismCorners(context, 6), border: Border.all(color: colors.outlineVariant)),
                         child: Text(isMac ? '⌘K' : 'Ctrl K', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
                       ),
                     ],
@@ -3214,7 +3214,7 @@ class _WebCollapseButton extends StatelessWidget {
         button: true,
         label: label,
         child: InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: prismCorners(context, 10),
           onTap: onTap,
           child: SizedBox(
             height: 36,
@@ -3351,9 +3351,9 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
                       for (final (n, i) in results.indexed)
                         Material(
                           color: n == _sel ? colors.secondaryContainer : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: prismCorners(context, 10),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: prismCorners(context, 10),
                             onTap: () => go(i),
                             onHover: (h) {
                               if (h) setState(() => _sel = n);

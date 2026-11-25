@@ -354,7 +354,7 @@ class _PassportExportScreenState extends ConsumerState<PassportExportScreen> {
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: Color(p.paper),
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: prismCorners(context, 18),
                     ),
                     child: Column(
                       children: [

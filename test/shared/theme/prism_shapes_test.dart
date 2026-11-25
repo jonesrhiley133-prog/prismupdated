@@ -37,11 +37,16 @@ void main() {
     test('circleOrSquareBorder returns zero-radius rect when angular', () {
       final border = PrismShapes.angular.circleOrSquareBorder();
       expect(border, isA<RoundedRectangleBorder>());
-      expect((border as RoundedRectangleBorder).borderRadius, BorderRadius.zero);
+      expect(
+        (border as RoundedRectangleBorder).borderRadius,
+        BorderRadius.zero,
+      );
     });
 
     test('copyWith overrides cornerStyle', () {
-      final copy = PrismShapes.rounded.copyWith(cornerStyle: CornerStyle.angular);
+      final copy = PrismShapes.rounded.copyWith(
+        cornerStyle: CornerStyle.angular,
+      );
       expect(copy.cornerStyle, CornerStyle.angular);
     });
 
@@ -64,10 +69,13 @@ void main() {
       expect(result, PrismShapes.rounded);
     });
 
-    test('Theme.of retrieval via PrismShapes.of works and falls back when missing', () {
-      // Widget test: pump a MaterialApp with and without the extension.
-      // Use testWidgets for this case. Separate from the `test()` group is fine.
-    });
+    test(
+      'Theme.of retrieval via PrismShapes.of works and falls back when missing',
+      () {
+        // Widget test: pump a MaterialApp with and without the extension.
+        // Use testWidgets for this case. Separate from the `test()` group is fine.
+      },
+    );
   });
 
   testWidgets('PrismShapes.of returns attached extension', (tester) async {
@@ -86,7 +94,9 @@ void main() {
     expect(resolved.cornerStyle, CornerStyle.angular);
   });
 
-  testWidgets('PrismShapes.of falls back to rounded when extension missing', (tester) async {
+  testWidgets('PrismShapes.of falls back to rounded when extension missing', (
+    tester,
+  ) async {
     late PrismShapes resolved;
     await tester.pumpWidget(
       MaterialApp(

@@ -744,7 +744,7 @@ class _BingoGameState extends State<BingoGame> {
                       color: on
                           ? scheme.primary.withValues(alpha: 0.25)
                           : scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: prismCorners(context, 8),
                       border: Border.all(
                         color: on ? scheme.primary : scheme.outlineVariant,
                       ),
@@ -906,7 +906,7 @@ class _RhythmGameState extends State<RhythmGame> {
                   width: 16,
                   height: 16,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     color: _pulse == i
                         ? scheme.primary
                         : (i < _taps.length
@@ -927,9 +927,9 @@ class _RhythmGameState extends State<RhythmGame> {
               label: tr(context, 'Tap pad', 'Pad para tocar'),
               child: Material(
                 color: scheme.primary.withValues(alpha: 0.2),
-                shape: const CircleBorder(),
+                shape: prismCircleBorder(context),
                 child: InkWell(
-                  customBorder: const CircleBorder(),
+                  customBorder: prismCircleBorder(context),
                   onTapDown: (_) => _tap(),
                   child: Center(
                     child: Icon(
@@ -1053,7 +1053,7 @@ class _MapExplorerGameState extends State<MapExplorerGame> {
                               color: scheme.secondaryContainer.withValues(
                                 alpha: 0.5,
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: prismCorners(context, 12),
                             ),
                           ),
                         ),

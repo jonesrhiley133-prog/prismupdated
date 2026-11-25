@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/features/dreams/dream_journal.dart';
@@ -316,7 +317,7 @@ class _EntryCard extends ConsumerWidget {
                               cat.integer(JournalField.color) ??
                                   trackerPalette.first,
                             ),
-                            shape: BoxShape.circle,
+                            borderRadius: prismRound(context),
                           ),
                         ),
                         const SizedBox(width: 6),

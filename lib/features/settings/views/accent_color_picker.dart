@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
@@ -225,7 +226,7 @@ class _ColorCircle extends StatelessWidget {
                 color: isCustom && color == null
                     ? theme.colorScheme.surfaceContainerHighest
                     : color,
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 border: Border.all(
                   color: isSelected
                       ? theme.colorScheme.primary

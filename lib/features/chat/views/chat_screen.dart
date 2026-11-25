@@ -1020,7 +1020,7 @@ class _ChatMemberSelectorTrigger extends StatelessWidget {
               width: hitSize,
               height: hitSize,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 color: theme.colorScheme.surfaceContainerHighest.withValues(
                   alpha: enabled ? 1 : 0.55,
                 ),
@@ -1042,7 +1042,7 @@ class _ChatMemberSelectorTrigger extends StatelessWidget {
                 height: pipSize,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
                     width: 0.5,

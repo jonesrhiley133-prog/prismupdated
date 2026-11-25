@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -269,7 +270,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
                               width: 16,
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.primary,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: prismCorners(context, 4),
                               ),
                             ),
                           ),

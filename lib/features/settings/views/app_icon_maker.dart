@@ -83,7 +83,7 @@ class _MakerState extends ConsumerState<_Maker> {
             image: true,
             label: tr(context, 'Icon preview', 'Vista previa del icono'),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(44),
+              borderRadius: prismCorners(context, 44),
               child: SizedBox(
                 width: 180,
                 height: 180,
@@ -123,13 +123,13 @@ class _MakerState extends ConsumerState<_Maker> {
                   selected: _spec.symbol == e.key,
                   label: e.key,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: prismCorners(context, 12),
                     onTap: () => _update(_spec.copyWith(symbol: e.key)),
                     child: Container(
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: prismCorners(context, 12),
                         color: _spec.symbol == e.key ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.surfaceContainerHigh,
                         border: Border.all(color: _spec.symbol == e.key ? theme.colorScheme.primary : Colors.transparent, width: 2),
                       ),

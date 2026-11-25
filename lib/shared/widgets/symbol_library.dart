@@ -808,7 +808,7 @@ class _SymbolLibrarySheetState extends State<_SymbolLibrarySheet> {
                   child: Semantics(
                     button: true,
                     label: 'Symbol colour',
-                    child: CircleAvatar(
+                    child: PrismCircleAvatar(
                       radius: 14,
                       backgroundColor: Color(_color ?? 0xFF333333),
                     ),
@@ -853,7 +853,7 @@ class _SymbolLibrarySheetState extends State<_SymbolLibrarySheet> {
                       label:
                           'Symbol $s${_p.favorites.contains(s) ? ', favourite' : ''}',
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: prismCorners(context, 8),
                         onTap: () => _pick(s),
                         onLongPress: () => showModalBottomSheet<void>(
                           context: context,
@@ -899,7 +899,7 @@ class _SymbolLibrarySheetState extends State<_SymbolLibrarySheet> {
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHighest
                                 .withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: prismCorners(context, 8),
                           ),
                           child: Text(
                             s,

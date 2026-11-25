@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -210,7 +211,7 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
     final preview = AspectRatio(
       aspectRatio: 9 / 16,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         child: LayoutBuilder(
           builder: (context, box) => StorySlideView(
             slide: _slide,
@@ -276,8 +277,8 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
                           : null,
                       child: Container(
                         width: 44,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(width: i == _current ? 3 : 1, color: i == _current ? theme.colorScheme.primary : theme.colorScheme.outlineVariant)),
-                        child: ClipRRect(borderRadius: BorderRadius.circular(6), child: StorySlideView(slide: _slides[i], mini: true)),
+                        decoration: BoxDecoration(borderRadius: prismCorners(context, 8), border: Border.all(width: i == _current ? 3 : 1, color: i == _current ? theme.colorScheme.primary : theme.colorScheme.outlineVariant)),
+                        child: ClipRRect(borderRadius: prismCorners(context, 6), child: StorySlideView(slide: _slides[i], mini: true)),
                       ),
                     ),
                   ),
@@ -297,7 +298,7 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
                     },
                     child: Container(
                       width: 44,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: theme.colorScheme.outlineVariant)),
+                      decoration: BoxDecoration(borderRadius: prismCorners(context, 8), border: Border.all(color: theme.colorScheme.outlineVariant)),
                       child: const Icon(Icons.add_rounded),
                     ),
                   ),

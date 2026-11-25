@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/domain/models/member.dart';
@@ -572,7 +573,7 @@ class _MemberSearchSheetState extends ConsumerState<MemberSearchSheet> {
     return Container(
       width: 20,
       height: 20,
-      decoration: BoxDecoration(color: colors.fill, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: colors.fill, borderRadius: prismRound(context)),
       alignment: Alignment.center,
       child: emoji != null && emoji.isNotEmpty
           ? Text(emoji, style: const TextStyle(fontSize: 11, height: 1))

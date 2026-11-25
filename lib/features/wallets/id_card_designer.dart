@@ -617,7 +617,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
             child: Semantics(
               button: true,
               label: 'Layer colour',
-              child: CircleAvatar(radius: 14, backgroundColor: Color(l.color)),
+              child: PrismCircleAvatar(radius: 14, backgroundColor: Color(l.color)),
             ),
           ),
           if (textual) ...[
@@ -859,7 +859,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                                 set(() {});
                               }
                             },
-                            child: CircleAvatar(
+                            child: PrismCircleAvatar(
                               radius: 18,
                               backgroundColor: Color(
                                 isFirst ? _face.bg1 : _face.bg2,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -416,7 +417,7 @@ class _UnavailableMemberChip extends StatelessWidget {
             ? const BoxDecoration()
             : BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: prismCorners(context, 999),
                 border: Border.all(
                   color: theme.colorScheme.outline.withValues(alpha: 0.4),
                 ),

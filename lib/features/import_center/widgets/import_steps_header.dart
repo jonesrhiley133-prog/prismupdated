@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -44,7 +45,7 @@ class ImportStepsHeader extends StatelessWidget {
                       color: i <= current.index
                           ? theme.colorScheme.primary
                           : theme.colorScheme.outline.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: prismCorners(context, 2),
                     ),
                   ),
                   const SizedBox(height: 4),

@@ -329,7 +329,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: prismCorners(context, 16),
                     ),
                     child: Text(d.emoji, style: const TextStyle(fontSize: 30)),
                   ),
@@ -765,7 +765,7 @@ class _Meta extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: prismCorners(context, 20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

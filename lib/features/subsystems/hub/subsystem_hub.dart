@@ -270,7 +270,7 @@ class _Core extends StatelessWidget {
       height: 92,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: theme.colorScheme.surfaceContainerHigh,
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
@@ -314,7 +314,7 @@ class _FloatingCard extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(6, 10, 6, 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            borderRadius: prismCorners(context, PrismTokens.radiusMedium),
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
             border: Border.all(
               color: Theme.of(context).colorScheme.outlineVariant,
@@ -468,7 +468,7 @@ class _SubsystemRow extends ConsumerWidget {
                               left: i * 16.0,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
+                                  borderRadius: prismRound(context),
                                   border: Border.all(
                                     color: context.sp.bg,
                                     width: 1.5,

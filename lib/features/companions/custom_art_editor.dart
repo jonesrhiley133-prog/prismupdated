@@ -38,9 +38,9 @@ class FittedArt extends StatelessWidget {
       ),
     );
     img = switch (fit.crop) {
-      'circle' => ClipOval(child: img),
+      'circle' => PrismClipRound(child: img),
       'rounded' => ClipRRect(
-        borderRadius: BorderRadius.circular(size * 0.18),
+        borderRadius: prismCorners(context, size * 0.18),
         child: img,
       ),
       _ => ClipRect(child: img),
@@ -52,12 +52,12 @@ class FittedArt extends StatelessWidget {
         ),
       ),
       'circle' => BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: Color(fit.bgColor),
       ),
       'color' => BoxDecoration(
         color: Color(fit.bgColor),
-        borderRadius: BorderRadius.circular(size * 0.12),
+        borderRadius: prismCorners(context, size * 0.12),
       ),
       _ => null,
     };
@@ -156,7 +156,7 @@ class _CustomArtEditorState extends State<CustomArtEditor> {
                 height: size,
                 decoration: BoxDecoration(
                   border: Border.all(color: theme.colorScheme.outlineVariant),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: prismCorners(context, 12),
                 ),
                 child: GestureDetector(
                   onPanUpdate: (d) => setState(() {
@@ -341,7 +341,7 @@ class _CustomArtEditorState extends State<CustomArtEditor> {
                                   () => _f = _f.copyWith(bgColor: c.toARGB32()),
                                 );
                             },
-                            child: CircleAvatar(
+                            child: PrismCircleAvatar(
                               radius: 14,
                               backgroundColor: Color(_f.bgColor),
                             ),

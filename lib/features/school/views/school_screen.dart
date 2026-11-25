@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -362,7 +363,7 @@ class _SchoolScreenState extends ConsumerState<SchoolScreen> {
                       height: 48,
                       decoration: BoxDecoration(
                         color: classColor(c),
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: prismCorners(context, 3),
                       ),
                     ),
                     const SizedBox(width: 12),

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -162,7 +163,7 @@ class _LaunchMarkState extends ConsumerState<LaunchMark> with SingleTickerProvid
             child: Container(
               width: markSize * 1.15,
               height: markSize * 1.15,
-              decoration: BoxDecoration(gradient: PrismLogoTile.gradient, borderRadius: BorderRadius.circular(markSize * 0.28)),
+              decoration: BoxDecoration(gradient: PrismLogoTile.gradient, borderRadius: prismCorners(context, markSize * 0.28)),
               child: CustomPaint(painter: PrismMarkPainter(t: t, color: Colors.white, accent: Colors.white, style: style, logo: LaunchLogo.filled)),
             ),
           );
@@ -195,7 +196,7 @@ class _LaunchMarkState extends ConsumerState<LaunchMark> with SingleTickerProvid
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (avatar != null && avatar.isNotEmpty) ...[
-                          ClipOval(child: Image.memory(avatar, width: 44, height: 44, fit: BoxFit.cover, gaplessPlayback: true, cacheWidth: 132)),
+                          PrismClipRound(child: Image.memory(avatar, width: 44, height: 44, fit: BoxFit.cover, gaplessPlayback: true, cacheWidth: 132)),
                           const SizedBox(height: 10),
                         ],
                         if (greeting.isNotEmpty)

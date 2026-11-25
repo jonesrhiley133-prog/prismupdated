@@ -298,7 +298,7 @@ class _SystemInfoScreenState extends ConsumerState<SystemInfoScreen> {
                           }
                         : null,
                     child: avatarData != null
-                        ? CircleAvatar(
+                        ? PrismCircleAvatar(
                             radius: 56,
                             backgroundImage: MemoryImage(avatarData),
                           )
@@ -307,7 +307,7 @@ class _SystemInfoScreenState extends ConsumerState<SystemInfoScreen> {
                             members: members,
                             hideOverflowCount: hideMemberCounts,
                           )
-                        : CircleAvatar(
+                        : PrismCircleAvatar(
                             radius: 56,
                             backgroundColor:
                                 theme.colorScheme.surfaceContainerHighest,

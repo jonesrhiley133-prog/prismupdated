@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -80,13 +81,13 @@ class AlterAvatar extends ConsumerWidget {
       avatar = Container(
         padding: EdgeInsets.all(size * 0.06),
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context, size * 1.22),
           gradient: ring! ? const SweepGradient(colors: [Color(0xFFFF6FA5), Color(0xFFFFB199), Color(0xFF7C4DFF), Color(0xFF18FFFF), Color(0xFFFF6FA5)]) : null,
           color: ring! ? null : theme.colorScheme.outlineVariant,
         ),
         child: Container(
           padding: EdgeInsets.all(size * 0.05),
-          decoration: BoxDecoration(shape: BoxShape.circle, color: theme.scaffoldBackgroundColor),
+          decoration: BoxDecoration(borderRadius: prismRound(context, size * 1.1), color: theme.scaffoldBackgroundColor),
           child: avatar,
         ),
       );
@@ -119,9 +120,9 @@ class ActorChip extends ConsumerWidget {
       excludeSemantics: true,
       child: Material(
         color: theme.colorScheme.primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: prismCorners(context, 24),
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: prismCorners(context, 24),
           onTap: () async {
             final id = await pickAlter(context, ref, title: l10n.socActAs);
             if (id != null) ref.read(socialActorProvider.notifier).set(id);
@@ -241,13 +242,13 @@ class ReactionBar extends ConsumerWidget {
             label: l10n.socReactionCount(e.key, e.value),
             excludeSemantics: true,
             child: InkWell(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: prismCorners(context, 16),
               onTap: actor == null ? null : () => toggle(e.key),
               onLongPress: () => showReactors(context, ref, targetId, e.key),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: dense ? 6 : 8, vertical: dense ? 2 : 4),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: prismCorners(context, 16),
                   color: r.mine.contains(e.key) ? theme.colorScheme.primary.withValues(alpha: 0.18) : theme.colorScheme.surfaceContainerHighest,
                   border: Border.all(color: r.mine.contains(e.key) ? theme.colorScheme.primary : Colors.transparent),
                 ),
@@ -260,7 +261,7 @@ class ReactionBar extends ConsumerWidget {
           label: l10n.socAddReaction,
           excludeSemantics: true,
           child: InkWell(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: prismCorners(context, 16),
             onTap: actor == null
                 ? null
                 : () async {

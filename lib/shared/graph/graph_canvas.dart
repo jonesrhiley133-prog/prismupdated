@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A node on a [GraphCanvas]. Positions are in world units around
@@ -454,7 +455,7 @@ class _NodeWidget extends StatelessWidget {
     final OutlinedBorder shape = switch (node.shape) {
       GraphNodeShape.circle => const CircleBorder(),
       GraphNodeShape.rounded => RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(s * 0.28),
+        borderRadius: prismCorners(context, s * 0.28),
       ),
       GraphNodeShape.diamond => const StarBorder.polygon(sides: 4),
       GraphNodeShape.hexagon => const StarBorder.polygon(sides: 6),
@@ -498,7 +499,7 @@ class _NodeWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface.withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: prismCorners(context, 6),
               ),
               child: Column(
                 children: [

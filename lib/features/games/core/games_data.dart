@@ -165,7 +165,7 @@ class AlterDot extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = ref.watch(gameMembersProvider).where((x) => x.id == memberId).firstOrNull;
     if (m == null) {
-      return CircleAvatar(
+      return PrismCircleAvatar(
         radius: size / 2,
         child: Icon(PhosphorIcons.users(), size: size * 0.55),
       );

@@ -662,7 +662,7 @@ class PaletteDots extends StatelessWidget {
                 height: size,
                 decoration: BoxDecoration(
                   color: colors[i],
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: Theme.of(
                       context,
@@ -829,7 +829,7 @@ class _PreviewMemberRow extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.18),
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
             ),
             child: Text(emoji, style: const TextStyle(fontSize: 21)),
           ),
@@ -1046,7 +1046,7 @@ class _AutoSwatch extends StatelessWidget {
           height: 22,
           decoration: BoxDecoration(
             color: color,
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
         ),

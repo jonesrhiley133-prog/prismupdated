@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,7 @@ class AppearanceStudioScreen extends ConsumerWidget {
           return Semantics(
             button: true,
             child: InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: prismCorners(context, 12),
               onTap: () async {
                 Navigator.of(sheet).pop();
                 await onTap();
@@ -436,11 +437,11 @@ class _PresetCard extends StatelessWidget {
         onLongPress: onLongPress,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: prismCorners(context, 18),
             border: Border.all(width: active ? 3 : 1, color: active ? theme.colorScheme.primary : theme.colorScheme.outlineVariant),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: prismCorners(context, 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -462,7 +463,7 @@ class _PresetCard extends StatelessWidget {
                               height: 34,
                               decoration: BoxDecoration(
                                 color: card.color == null ? styled.cardColor : Color(card.color!).withValues(alpha: card.opacity ?? 1),
-                                borderRadius: BorderRadius.circular((card.radius ?? 14) / 2),
+                                borderRadius: prismCorners(context, (card.radius ?? 14) / 2),
                                 border: card.borderWidth == null || card.borderWidth == 0 ? null : Border.all(color: Color(card.borderColor ?? 0x33888888)),
                               ),
                             ),
@@ -477,7 +478,7 @@ class _PresetCard extends StatelessWidget {
                                   gradient: button.color2 == null || button.color == null
                                       ? null
                                       : LinearGradient(colors: [Color(button.color!), Color(button.color2!)]),
-                                  borderRadius: BorderRadius.circular((button.radius ?? 18) / 2),
+                                  borderRadius: prismCorners(context, (button.radius ?? 18) / 2),
                                 ),
                               ),
                             ),

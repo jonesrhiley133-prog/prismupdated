@@ -342,7 +342,7 @@ class _Stat extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: prismCorners(context, 10),
     ),
     child: Text(
       '$value $label',

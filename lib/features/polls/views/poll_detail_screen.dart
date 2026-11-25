@@ -739,7 +739,7 @@ class _VotingAsChipRowState extends ConsumerState<_VotingAsChipRow> {
                     height: 14,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         color: Theme.of(context).colorScheme.surface,
                         width: 1.5,
@@ -884,7 +884,7 @@ class _OptionTile extends ConsumerWidget {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: Color(
                         int.parse('FF${option.colorHex}', radix: 16),
                       ),

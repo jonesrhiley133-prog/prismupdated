@@ -213,13 +213,13 @@ class _JournalFormState extends ConsumerState<_JournalForm> {
                 selected: _mood == i,
                 label: '${tr(context, 'Mood', 'Ánimo')} $i',
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: prismCorners(context, 24),
                   onTap: () => setState(() => _mood = i),
                   child: Container(
                     width: 52,
                     height: 52,
                     alignment: Alignment.center,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: _mood == i ? theme.colorScheme.primary.withValues(alpha: 0.18) : null, border: Border.all(color: _mood == i ? theme.colorScheme.primary : theme.colorScheme.outlineVariant)),
+                    decoration: BoxDecoration(borderRadius: prismRound(context), color: _mood == i ? theme.colorScheme.primary.withValues(alpha: 0.18) : null, border: Border.all(color: _mood == i ? theme.colorScheme.primary : theme.colorScheme.outlineVariant)),
                     child: Text(_moodFaces[i - 1], style: const TextStyle(fontSize: 24)),
                   ),
                 ),

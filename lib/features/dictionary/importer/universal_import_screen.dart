@@ -67,7 +67,7 @@ class _ImportJobBannerState extends ConsumerState<ImportJobBanner> {
             ),
             if (job.status == ImportJobStatus.fetching || job.status == ImportJobStatus.listing) ...[
               const SizedBox(height: 6),
-              ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: job.total == 0 || job.status == ImportJobStatus.listing ? null : job.done / job.total, minHeight: 4)),
+              ClipRRect(borderRadius: prismCorners(context, 4), child: LinearProgressIndicator(value: job.total == 0 || job.status == ImportJobStatus.listing ? null : job.done / job.total, minHeight: 4)),
             ],
           ],
         ),
@@ -474,14 +474,14 @@ class _UniversalImportScreenState extends ConsumerState<UniversalImportScreen> {
                   for (final f in it.a.flags)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: Tooltip(message: f.label, child: ClipRRect(borderRadius: BorderRadius.circular(6), child: Image.network(f.url, height: 70, cacheHeight: 140, fit: BoxFit.contain, errorBuilder: (_, _, _) => const SizedBox(width: 70)))),
+                      child: Tooltip(message: f.label, child: ClipRRect(borderRadius: prismCorners(context, 6), child: Image.network(f.url, height: 70, cacheHeight: 140, fit: BoxFit.contain, errorBuilder: (_, _, _) => const SizedBox(width: 70)))),
                     ),
                 ],
               ),
             ),
           ] else if (it.a.images.isNotEmpty) ...[
             const SizedBox(height: 8),
-            SizedBox(height: 90, child: ListView(scrollDirection: Axis.horizontal, children: [for (final u in it.a.images.take(6)) Padding(padding: const EdgeInsets.only(right: 6), child: ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(u, height: 90, cacheHeight: 180, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox.shrink())))])),
+            SizedBox(height: 90, child: ListView(scrollDirection: Axis.horizontal, children: [for (final u in it.a.images.take(6)) Padding(padding: const EdgeInsets.only(right: 6), child: ClipRRect(borderRadius: prismCorners(context, 8), child: Image.network(u, height: 90, cacheHeight: 180, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox.shrink())))])),
           ],
           if (it.a.references.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -542,7 +542,7 @@ class _JobCard extends StatelessWidget {
             Text(importStatusText(context, job), style: theme.textTheme.bodySmall),
             if (s == ImportJobStatus.fetching || s == ImportJobStatus.listing || s == ImportJobStatus.paused || s == ImportJobStatus.error) ...[
               const SizedBox(height: 6),
-              ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: job.total == 0 || s == ImportJobStatus.listing ? null : job.done / job.total, minHeight: 6)),
+              ClipRRect(borderRadius: prismCorners(context, 4), child: LinearProgressIndicator(value: job.total == 0 || s == ImportJobStatus.listing ? null : job.done / job.total, minHeight: 6)),
             ],
             if (running)
               Padding(
@@ -630,9 +630,9 @@ class _ItemRow extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Material(
         color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: prismCorners(context, 14),
           onTap: onEdit,
           child: Row(
             children: [
@@ -684,9 +684,9 @@ class _RoundButton extends StatelessWidget {
       label: label,
       child: Material(
         color: theme.colorScheme.primaryContainer,
-        shape: const CircleBorder(),
+        shape: prismCircleBorder(context),
         elevation: 3,
-        child: InkWell(customBorder: const CircleBorder(), onTap: onTap, child: Padding(padding: const EdgeInsets.all(12), child: Icon(icon, color: theme.colorScheme.onPrimaryContainer))),
+        child: InkWell(customBorder: prismCircleBorder(context), onTap: onTap, child: Padding(padding: const EdgeInsets.all(12), child: Icon(icon, color: theme.colorScheme.onPrimaryContainer))),
       ),
     );
   }

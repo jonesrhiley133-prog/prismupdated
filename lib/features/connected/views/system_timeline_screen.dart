@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -324,7 +325,7 @@ class _TimelineRow extends ConsumerWidget {
                   color: theme.colorScheme.primary.withValues(
                     alpha: item.isStart ? 0.18 : 0.08,
                   ),
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                 ),
                 child: Icon(
                   timelineKindIcon(item.kind),
@@ -345,7 +346,7 @@ class _TimelineRow extends ConsumerWidget {
           Expanded(
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: prismCorners(context, 8),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 14),
                 child: Column(

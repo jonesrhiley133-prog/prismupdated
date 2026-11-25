@@ -357,7 +357,7 @@ class DreamCard extends ConsumerWidget {
             if (media.isNotEmpty && !dream.isPrivate) ...[
               const SizedBox(width: 10),
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: prismCorners(context, 10),
                 child: SizedBox(
                   width: 64,
                   height: 64,
@@ -446,7 +446,7 @@ class _DreamCalendar extends StatelessWidget {
               for (var i = 0; i < lead; i++) const SizedBox.shrink(),
               for (var d = 1; d <= days; d++)
                 InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: prismCorners(context, 10),
                   onTap: byDay[d] == null
                       ? () => showDreamEditor(
                           context,
@@ -468,7 +468,7 @@ class _DreamCalendar extends StatelessWidget {
                   child: Container(
                     margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: prismCorners(context, 10),
                       color: byDay[d] == null
                           ? null
                           : const Color(0xFF7E6BD6).withValues(
@@ -678,7 +678,7 @@ class _DreamInsights extends StatelessWidget {
                         toY: perMonth[i].toDouble(),
                         color: const Color(0xFF7E6BD6),
                         width: 12,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: prismCorners(context, 4),
                       ),
                     ],
                   ),
@@ -837,7 +837,7 @@ class _DreamDetail extends ConsumerWidget {
                         m.startsWith('audio:')
                             ? AudioClip(id: m)
                             : ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: prismCorners(context, 12),
                                 child: SizedBox(
                                   width: 150,
                                   height: 150,

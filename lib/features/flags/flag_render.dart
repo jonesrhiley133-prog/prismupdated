@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/features/flags/flag_model.dart';
@@ -439,7 +440,7 @@ class _WavingFlagState extends State<WavingFlag>
               width: 4,
               decoration: BoxDecoration(
                 color: const Color(0xFF8C8C8C),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: prismCorners(context, 2),
               ),
             ),
           ),

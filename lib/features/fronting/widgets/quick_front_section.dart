@@ -221,7 +221,7 @@ class _QuickFrontLoadingPlaceholderState
                           height: 10,
                           decoration: BoxDecoration(
                             color: color,
-                            borderRadius: BorderRadius.circular(radius),
+                            borderRadius: prismCorners(context, radius),
                           ),
                         ),
                       ],

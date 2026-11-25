@@ -146,12 +146,12 @@ class _DayCell extends StatelessWidget {
       selected: selected,
       label: '$day, ${phaseName(phase, astroEs(context))}',
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: prismCorners(context, 10),
         onTap: onTap,
         child: Container(
           margin: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
             color: selected ? accent.withValues(alpha: 0.18) : null,
             border: today ? Border.all(color: accent, width: 1.4) : null,
           ),

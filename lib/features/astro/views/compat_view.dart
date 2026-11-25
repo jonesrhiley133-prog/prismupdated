@@ -138,7 +138,7 @@ class _CompatResult extends StatelessWidget {
                       Expanded(child: Text(e.key.label.of(es))),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: prismCorners(context, 12)),
                         child: Text('${e.value.$1.emoji} ${e.value.$1.label.of(es)}', style: theme.textTheme.labelSmall),
                       ),
                     ],

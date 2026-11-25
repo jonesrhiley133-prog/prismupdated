@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -156,7 +157,7 @@ class _TimeGridState extends State<TimeGrid> {
                               height: 8,
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.error,
-                                shape: BoxShape.circle,
+                                borderRadius: prismRound(context),
                               ),
                             ),
                             Expanded(
@@ -218,7 +219,7 @@ class _TimeGridState extends State<TimeGrid> {
               height: height - 2,
               child: Material(
                 color: color.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: prismCorners(context, 6),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () => showEventDetailSheet(context, o),

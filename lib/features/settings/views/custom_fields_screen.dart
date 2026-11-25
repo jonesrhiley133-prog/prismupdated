@@ -576,7 +576,7 @@ class _FieldRowState extends ConsumerState<_FieldRow> {
                   return Semantics(
                     button: true,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       onTap: () => Navigator.of(ctx).pop(group),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

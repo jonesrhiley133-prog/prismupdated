@@ -147,7 +147,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
         label: '${nameOf(m)}${role == null ? '' : ', ${role.name}'}',
         excludeSemantics: true,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: prismCorners(context, 20),
           onTap: _busy ? null : () => _choose(m),
           child: SizedBox(
             width: width,
@@ -162,7 +162,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
                         duration: const Duration(milliseconds: 180),
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                           border: Border.all(
                             width: 3,
                             color: picked >= 0
@@ -189,7 +189,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               color: scheme.surface,
-                              shape: BoxShape.circle,
+                              borderRadius: prismRound(context),
                             ),
                             child: Text(
                               role.emoji,
@@ -201,7 +201,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
                         Positioned(
                           left: -2,
                           top: -2,
-                          child: CircleAvatar(
+                          child: PrismCircleAvatar(
                             radius: 11,
                             backgroundColor: scheme.primary,
                             child: Text(

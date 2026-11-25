@@ -547,7 +547,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             logoSize: 28,
             borderRadius: cornerStyle == CornerStyle.angular
                 ? BorderRadius.zero
-                : BorderRadius.circular(10),
+                : prismCorners(context, 10),
           ),
         ),
       ),
@@ -609,7 +609,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     Padding(
                       padding: const EdgeInsets.only(right: 20),
                       child: avatarData != null
-                          ? CircleAvatar(
+                          ? PrismCircleAvatar(
                               radius: members.length > 1 ? 58 : 40,
                               backgroundImage: MemoryImage(avatarData),
                             )
@@ -618,7 +618,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               members: members,
                               hideOverflowCount: hideMemberCounts,
                             )
-                          : CircleAvatar(
+                          : PrismCircleAvatar(
                               radius: 40,
                               backgroundColor:
                                   theme.colorScheme.surfaceContainerHighest,
@@ -823,7 +823,7 @@ class _AvatarCluster extends StatelessWidget {
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   color: theme.colorScheme.surfaceContainerHighest,
                 ),
                 child: Center(

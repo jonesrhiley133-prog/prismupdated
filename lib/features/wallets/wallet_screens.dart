@@ -118,7 +118,7 @@ class _WalletsHomeScreenState extends ConsumerState<WalletsHomeScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: Color(w.color),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: prismCorners(context, 8),
                         ),
                         alignment: Alignment.center,
                         child: Text(
@@ -233,7 +233,7 @@ Future<String?> newWallet(
                 child: Semantics(
                   button: true,
                   label: 'Wallet colour',
-                  child: CircleAvatar(
+                  child: PrismCircleAvatar(
                     radius: 14,
                     backgroundColor: Color(color),
                   ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -714,7 +715,7 @@ class _CoFronterRow extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: Icon(
@@ -963,7 +964,7 @@ class _BriefVisitorRow extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: Icon(
@@ -1153,7 +1154,7 @@ class _AlwaysPresentRow extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: Icon(

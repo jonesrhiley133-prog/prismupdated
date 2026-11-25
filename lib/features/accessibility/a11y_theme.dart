@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/semantics.dart';
@@ -304,7 +305,7 @@ class _FocusRingState extends State<_FocusRing> {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: prismCorners(context, 10),
                   border: Border.all(color: color, width: 3),
                   boxShadow: [BoxShadow(color: _on(color), spreadRadius: 1)],
                 ),

@@ -242,7 +242,7 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: Colors.green.withValues(alpha: 0.15),
           ),
           child: Icon(AppIcons.downloadOutlined, size: 40, color: Colors.green),
@@ -282,7 +282,7 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(

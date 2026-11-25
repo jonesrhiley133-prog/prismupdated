@@ -370,7 +370,7 @@ class _WakeUpSleepSheetState extends ConsumerState<WakeUpSleepSheet> {
                                     height: 64,
                                     decoration: isSelected
                                         ? BoxDecoration(
-                                            shape: BoxShape.circle,
+                                            borderRadius: prismRound(context),
                                             border: Border.all(
                                               color: accentColor,
                                               width: 3,

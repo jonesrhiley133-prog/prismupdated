@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/features/appearance/models/look.dart';
 
 /// Carries the active appearance preset through the widget tree so Prism's
@@ -188,8 +189,13 @@ ThemeData applyLook(
     lightBase: lightBase,
     darkBase: darkBase,
   );
+  // A custom card corner radius in the Look editor sets how round the
+  // whole app is (16 = Prism's normal corners, 0 = square).
+  final cardRadius = look.element(LookElement.card).radius;
   List<ThemeExtension<dynamic>> exts(ThemeData t) => [
-    ...t.extensions.values.where((e) => e is! LookTheme),
+    ...t.extensions.values.where((e) => e is! LookTheme && (cardRadius == null || e is! PrismShapes)),
+    if (cardRadius != null)
+      (t.extension<PrismShapes>() ?? PrismShapes.rounded).copyWith(roundnessScale: (cardRadius / 16).clamp(0.0, 1.0)),
     ext,
   ];
   if (look.isPlain) return base.copyWith(extensions: exts(base));

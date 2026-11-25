@@ -678,7 +678,7 @@ class _ScrapBookScreenState extends ConsumerState<ScrapBookScreen> {
                       margin: const EdgeInsets.only(top: 6),
                       decoration: BoxDecoration(
                         color: Color(theme.$6),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                       ),
                     ),
                     Expanded(
@@ -760,7 +760,7 @@ class _ScrapBookScreenState extends ConsumerState<ScrapBookScreen> {
           _pc = PageController(initialPage: idx, viewportFraction: 0.9);
         }),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: prismCorners(context, 8),
           child: PrismMediaView(id: items[i].$1),
         ),
       ),
@@ -1244,7 +1244,7 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         children: [
           for (final (icon, label, onTap) in tools)
             InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: prismCorners(context, 12),
               onTap: onTap,
               child: SizedBox(
                 width: 72,
@@ -1380,7 +1380,7 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         children: [
           for (final (icon, label, onTap) in actions)
             InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: prismCorners(context, 12),
               onTap: onTap,
               child: SizedBox(
                 width: 72,
@@ -1765,7 +1765,7 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
                       height: 58,
                       decoration: BoxDecoration(
                         color: Color(t.$4),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: prismCorners(context, 6),
                         border: Border.all(
                           color: _theme == t.$1
                               ? Theme.of(context).colorScheme.primary
@@ -1802,7 +1802,7 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
           children: [
             if (_cover != null)
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: prismCorners(context, 8),
                 child: SizedBox(
                   width: 60,
                   height: 60,

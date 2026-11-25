@@ -102,7 +102,7 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
           final W = c.maxWidth, H = c.maxHeight;
           final sorted = [...widget.elements]..sort((a, b) => a.z.compareTo(b.z));
           return ClipRRect(
-            borderRadius: BorderRadius.circular(W * 0.02),
+            borderRadius: prismCorners(context, W * 0.02),
             child: GestureDetector(
               onTap: _editable ? () => widget.onSelect?.call(null) : null,
               child: CustomPaint(
@@ -206,7 +206,7 @@ class _Handle extends StatelessWidget {
     child: Container(
       width: 28,
       height: 28,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: prismRound(context)),
       child: Icon(icon, size: 14, color: Theme.of(context).colorScheme.onPrimary),
     ),
   );
@@ -266,10 +266,10 @@ class ScrapElementView extends StatelessWidget {
         decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 6 * scale, offset: Offset(0, 3 * scale))]),
         child: content,
       ),
-      ScrapFrame.round => ClipOval(child: content),
+      ScrapFrame.round => PrismClipRound(child: content),
       ScrapFrame.shadow => DecoratedBox(
         decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10 * scale, offset: Offset(0, 4 * scale))]),
-        child: ClipRRect(borderRadius: BorderRadius.circular(6 * scale), child: content),
+        child: ClipRRect(borderRadius: prismCorners(context, 6 * scale), child: content),
       ),
       ScrapFrame.border => Container(
         padding: EdgeInsets.all(3 * scale),
@@ -449,7 +449,7 @@ class _DrawingPadState extends State<DrawingPad> {
                 IconButton(
                   tooltip: '${w.round()}',
                   isSelected: _width == w,
-                  icon: Container(width: w + 4, height: w + 4, decoration: BoxDecoration(color: _color, shape: BoxShape.circle)),
+                  icon: Container(width: w + 4, height: w + 4, decoration: BoxDecoration(color: _color, borderRadius: prismRound(context))),
                   onPressed: () => setState(() => _width = w),
                 ),
               IconButton(tooltip: tr(context, 'Undo', 'Deshacer'), icon: Icon(PhosphorIcons.arrowCounterClockwise()), onPressed: _strokes.isEmpty ? null : () => setState(_strokes.removeLast)),
@@ -463,7 +463,7 @@ class _DrawingPadState extends State<DrawingPad> {
                 builder: (context, c) {
                   _size = c.biggest;
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: prismCorners(context, 12),
                     child: GestureDetector(
                       onPanStart: (d) => setState(() => _strokes.add(([d.localPosition], _color, _width))),
                       onPanUpdate: (d) => setState(() => _strokes.last.$1.add(d.localPosition)),

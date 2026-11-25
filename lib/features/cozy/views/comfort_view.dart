@@ -162,7 +162,7 @@ class _BreatheState extends State<_Breathe> {
                 width: 220 * target,
                 height: 220 * target,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   gradient: RadialGradient(
                     colors: [
                       scheme.primary.withValues(alpha: 0.55),
@@ -401,7 +401,7 @@ class _GroundingState extends State<_Grounding> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         color: k < _ticks
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(
@@ -554,7 +554,7 @@ class _MessageJarState extends ConsumerState<_MessageJar> {
                 color: Theme.of(
                   context,
                 ).colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: prismCorners(context, 14),
               ),
               child: Column(
                 children: [
@@ -702,7 +702,7 @@ class _BubblePopState extends State<_BubblePop> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         color: _popped.contains(i)
                             ? scheme.surfaceContainerHighest.withValues(
                                 alpha: 0.4,

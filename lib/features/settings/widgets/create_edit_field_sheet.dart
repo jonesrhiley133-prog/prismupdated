@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -1462,7 +1463,7 @@ class _ChoiceOptionRow extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   color: swatchColor ?? theme.colorScheme.primary,
                   border: Border.all(
                     color: theme.colorScheme.outline.withValues(alpha: 0.3),
@@ -1736,7 +1737,7 @@ class _EmojiPickerButton extends StatelessWidget {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: prismCorners(context, 8),
           color: isSelected
               ? theme.colorScheme.primaryContainer
               : Colors.transparent,
@@ -1776,7 +1777,7 @@ class _CustomEmojiButton extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: prismCorners(context, 8),
             color: isSelected
                 ? theme.colorScheme.primaryContainer
                 : Colors.transparent,
@@ -2172,7 +2173,7 @@ class _SliderModeCard extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: prismCorners(context, 12),
           color: isSelected
               ? theme.colorScheme.primaryContainer
               : theme.colorScheme.surfaceContainerHighest,
@@ -2262,7 +2263,7 @@ class _GradientPresetChip extends StatelessWidget {
                 width: 80,
                 height: 24,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: prismCorners(context, 12),
                   gradient: leftColor == rightColor && centerColor == null
                       ? null
                       : () {
@@ -2451,7 +2452,7 @@ class _GradientSwatchRow extends StatelessWidget {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: prismRound(context),
                             border: Border.all(
                               color: theme.colorScheme.outline.withValues(
                                 alpha: 0.5,
@@ -2506,7 +2507,7 @@ class _GradientSwatchRow extends StatelessWidget {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
+                                  borderRadius: prismRound(context),
                                   color: color,
                                   border: Border.all(
                                     color: theme.colorScheme.outline.withValues(
@@ -2531,7 +2532,7 @@ class _GradientSwatchRow extends StatelessWidget {
                                   width: 22,
                                   height: 22,
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
+                                    borderRadius: prismRound(context),
                                     color: theme.colorScheme.surface,
                                     border: Border.all(
                                       color: theme.colorScheme.outline
@@ -2616,11 +2617,11 @@ class _CustomGradientChip extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: prismCorners(context, 20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: prismCorners(context, 20),
           border: Border.all(
             color: isSelected
                 ? theme.colorScheme.primary
@@ -2636,7 +2637,7 @@ class _CustomGradientChip extends StatelessWidget {
               height: 12,
               decoration: BoxDecoration(
                 gradient: gradient,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: prismCorners(context, 6),
                 border: Border.all(
                   color: theme.colorScheme.outline.withValues(alpha: 0.3),
                 ),
@@ -2666,7 +2667,7 @@ class _DuplicateWarningChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: errorColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: prismCorners(context, 999),
       ),
       child: Text(
         label,

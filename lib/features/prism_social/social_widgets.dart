@@ -67,12 +67,12 @@ class SocialAvatar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final p = ref.watch(socialProfileByIdProvider(actor.profileId));
-    Widget circle(Widget child) => ClipOval(child: SizedBox(width: size, height: size, child: child));
+    Widget circle(Widget child) => PrismClipRound(child: SizedBox(width: size, height: size, child: child));
     Widget initials(String n) => Container(
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primaryContainer),
+      decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primaryContainer),
       child: Text(n.isEmpty ? '?' : n.characters.first.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w700, color: theme.colorScheme.onPrimaryContainer, fontSize: size * 0.4)),
     );
     Widget main;
@@ -95,7 +95,7 @@ class SocialAvatar extends ConsumerWidget {
             right: -2,
             bottom: -2,
             child: Container(
-              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: theme.colorScheme.surface, width: 2)),
+              decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.surface, width: 2)),
               child: SocialAvatar(actor: SocialActor(actor.profileId), size: size * 0.42, showAlterBadge: false),
             ),
           ),
@@ -121,7 +121,7 @@ class SocialBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       child: SizedBox(
         height: height,
         width: double.infinity,
@@ -158,7 +158,7 @@ class PresenceDot extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(color: presence == 'offline' ? theme.colorScheme.surface : color, shape: BoxShape.circle, border: Border.all(color: presence == 'offline' ? color : theme.colorScheme.surface, width: 2)),
+        decoration: BoxDecoration(color: presence == 'offline' ? theme.colorScheme.surface : color, borderRadius: prismRound(context), border: Border.all(color: presence == 'offline' ? color : theme.colorScheme.surface, width: 2)),
         child: presence == 'dnd' ? Center(child: Container(width: size * 0.5, height: 2, color: theme.colorScheme.surface)) : null,
       ),
     );
@@ -202,7 +202,7 @@ class IdentityLabel extends ConsumerWidget {
               const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 6)),
                 child: Text(tr(context, 'alter', 'alter'), style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSecondaryContainer)),
               ),
             ],
@@ -272,7 +272,7 @@ class ActingChip extends ConsumerWidget {
       button: true,
       label: tr(context, 'Acting as ${identityNames(ref, a).primary}. Change', 'Actuando como ${identityNames(ref, a).primary}. Cambiar'),
       child: InkWell(
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: prismCorners(context, 999),
         onTap: () => showActingSwitcher(context, ref),
         child: Padding(padding: const EdgeInsets.all(4), child: SocialAvatar(actor: a, size: 30)),
       ),

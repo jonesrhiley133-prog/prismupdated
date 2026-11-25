@@ -227,11 +227,11 @@ class OptionTile extends StatelessWidget {
               ? scheme.primary.withValues(alpha: 0.12)
               : scheme.surfaceContainerHigh,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            borderRadius: prismCorners(context, PrismTokens.radiusMedium),
             side: BorderSide(color: border, width: state == null && !selected ? 1 : 1.6),
           ),
           child: InkWell(
-            borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+            borderRadius: prismCorners(context, PrismTokens.radiusMedium),
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
@@ -272,11 +272,11 @@ class GameProgress extends StatelessWidget {
             child: Container(
               height: 6,
               alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(3)),
+              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 3)),
               child: FractionallySizedBox(
                 widthFactor: total == 0 ? 0 : (current / total).clamp(0.0, 1.0),
                 child: Container(
-                  decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(3)),
+                  decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: prismCorners(context, 3)),
                 ),
               ),
             ),

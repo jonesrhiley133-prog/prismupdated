@@ -460,7 +460,7 @@ class _ColoringGameState extends State<ColoringGame> {
                       }
                     },
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       child: CustomPaint(
                         size: size,
                         painter: _ColoringPainter(
@@ -495,7 +495,7 @@ class _ColoringGameState extends State<ColoringGame> {
                     height: 30,
                     decoration: BoxDecoration(
                       color: c,
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       border: Border.all(
                         color: _color == c
                             ? Theme.of(context).colorScheme.primary
@@ -618,7 +618,7 @@ class _PixelArtGameState extends State<PixelArtGame> {
                     height: 28,
                     decoration: BoxDecoration(
                       color: c,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: prismCorners(context, 6),
                       border: Border.all(
                         color: !_erase && _color == c
                             ? scheme.primary
@@ -770,7 +770,7 @@ class _StickerSceneGameState extends State<StickerSceneGame> {
           AspectRatio(
             aspectRatio: 1,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -836,7 +836,7 @@ class _StickerSceneGameState extends State<StickerSceneGame> {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         gradient: LinearGradient(
                           colors: [
                             widget.config.backgrounds[i].$1,
@@ -1137,7 +1137,7 @@ class _MoodPaletteGameState extends State<MoodPaletteGame> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: _swatches[i].toColor(),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: prismCorners(context, 10),
                         border: Border.all(
                           color: _sel == i
                               ? Theme.of(context).colorScheme.primary
@@ -1310,7 +1310,7 @@ class _StarConnectGameState extends State<StarConnectGame> {
           AspectRatio(
             aspectRatio: 1,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
               child: LayoutBuilder(
                 builder: (context, box) {
                   final w = box.maxWidth;
@@ -1498,7 +1498,7 @@ class _CloudsGameState extends State<CloudsGame> {
           AspectRatio(
             aspectRatio: 1.5,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
               child: TweenAnimationBuilder<double>(
                 key: ValueKey(_cloudSeed),
                 tween: Tween(begin: -0.04, end: 0.04),
@@ -1674,7 +1674,7 @@ class _PostcardGameState extends ConsumerState<PostcardGame> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 gradient: LinearGradient(colors: [a, b]),
                 boxShadow: const [
                   BoxShadow(
@@ -1762,7 +1762,7 @@ class _PostcardGameState extends ConsumerState<PostcardGame> {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       gradient: LinearGradient(
                         colors: [backs[i].$1, backs[i].$2],
                       ),
@@ -1887,7 +1887,7 @@ class _OutfitGameState extends State<OutfitGame> {
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               color: scheme.secondaryContainer.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
             ),
             child: Column(
               children: [
@@ -2080,7 +2080,7 @@ class _ComicGameState extends State<ComicGame> {
                                 : const Color(0xFF3B3B58),
                             width: _sel == i ? 3 : 2,
                           ),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: prismCorners(context, 6),
                         ),
                         child: Column(
                           children: [
@@ -2094,7 +2094,7 @@ class _ComicGameState extends State<ComicGame> {
                                   border: Border.all(
                                     color: const Color(0xFF3B3B58),
                                   ),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: prismCorners(context, 10),
                                 ),
                                 child: Text(
                                   '${_panels[i]['say']}',

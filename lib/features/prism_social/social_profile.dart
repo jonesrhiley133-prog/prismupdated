@@ -150,7 +150,7 @@ class _ProfileBody extends ConsumerWidget {
                 bottom: 0,
                 child: Center(
                   child: Container(
-                    decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: theme.colorScheme.surface, width: 4)),
+                    decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.surface, width: 4)),
                     child: Stack(clipBehavior: Clip.none, children: [SocialAvatar(actor: SocialActor(p.id), size: avatarSize), Positioned(right: 2, bottom: 2, child: PresenceDot(presence: presence, size: 16))]),
                   ),
                 ),
@@ -285,7 +285,7 @@ class _ProfileBody extends ConsumerWidget {
                               button: true,
                               label: tr(context, '${alterDisplayName(ref, a)}, alter of ${p.systemName}', '${alterDisplayName(ref, a)}, alter de ${p.systemName}'),
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(radius),
+                                borderRadius: prismCorners(context, radius),
                                 onTap: preview ? null : () => context.push(alterRoute(a.id)),
                                 child: SizedBox(
                                   width: 72,
@@ -354,7 +354,7 @@ class SocialAlterScreen extends ConsumerWidget {
                       child: Stack(
                         children: [
                           SocialBanner(mediaId: a.banner ?? p.banner, height: 140),
-                          Positioned(left: 16, bottom: 0, child: Container(decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: themed.colorScheme.surface, width: 4)), child: SocialAvatar(actor: a.actor, size: 84))),
+                          Positioned(left: 16, bottom: 0, child: Container(decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: themed.colorScheme.surface, width: 4)), child: SocialAvatar(actor: a.actor, size: 84))),
                         ],
                       ),
                     ),
@@ -581,7 +581,7 @@ class _ProfileEditorState extends ConsumerState<_ProfileEditor> {
         heading(tr(context, 'Live preview', 'Vista previa')),
         Container(
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(((_theme['radius'] as num?) ?? 18).toDouble()), border: Border.all(color: theme.colorScheme.outlineVariant)),
+          decoration: BoxDecoration(borderRadius: prismCorners(context, ((_theme['radius'] as num?) ?? 18).toDouble()), border: Border.all(color: theme.colorScheme.outlineVariant)),
           child: Theme(data: previewTheme, child: ColoredBox(color: previewTheme.colorScheme.surface, child: _ProfileBody(p: _preview, me: me, preview: true))),
         ),
       ],

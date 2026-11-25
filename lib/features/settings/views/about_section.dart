@@ -57,7 +57,7 @@ class AboutSection extends ConsumerWidget {
           borderRadius:
               PrismShapes.of(context).cornerStyle == CornerStyle.angular
               ? BorderRadius.zero
-              : BorderRadius.circular(18),
+              : prismCorners(context, 18),
         ),
         const SizedBox(height: 12),
         Text(

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -59,7 +60,7 @@ class ColorChoiceRow extends StatelessWidget {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Color(c),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(width: value == c ? 3 : 1, color: theme.colorScheme.outline),
                       ),
                     ),
@@ -69,7 +70,7 @@ class ColorChoiceRow extends StatelessWidget {
                 Container(
                   width: 30,
                   height: 30,
-                  decoration: BoxDecoration(color: Color(value!), shape: BoxShape.circle, border: Border.all(width: 3, color: theme.colorScheme.outline)),
+                  decoration: BoxDecoration(color: Color(value!), borderRadius: prismRound(context), border: Border.all(width: 3, color: theme.colorScheme.outline)),
                 ),
               PrismButton(
                 label: l10n.fnColorCustom,

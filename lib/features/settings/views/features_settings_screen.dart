@@ -62,7 +62,7 @@ class _FeaturesSettingsScreenState extends ConsumerState<FeaturesSettingsScreen>
                 if (hl != null && !(states[hl.id] ?? true)) ...[
                   Container(
                     padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
-                    decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(14)),
+                    decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 14)),
                     child: Row(
                       children: [
                         Expanded(child: Text(tr(context, '${fName(context, hl)} is turned off.', '${fName(context, hl)} está desactivado.'), style: TextStyle(color: theme.colorScheme.onSecondaryContainer))),
@@ -312,7 +312,7 @@ class _FeatureRow extends ConsumerWidget {
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: on ? 0.14 : 0.06), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: on ? 0.14 : 0.06), borderRadius: prismCorners(context, 10)),
                 child: Icon(f.icon, size: 20, color: on ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
               ),
               const SizedBox(width: 12),

@@ -95,7 +95,7 @@ class CompanionAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: Color.lerp(
           companion.look.primaryOf(companion.species),
           theme.colorScheme.surface,
@@ -205,7 +205,7 @@ class _HabitatSceneState extends State<HabitatScene>
     final env = habitatEnvById(widget.env);
     final time = resolveTimeOfDay(widget.time);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.borderRadius),
+      borderRadius: prismCorners(context, widget.borderRadius),
       child: Semantics(
         label:
             '${env.name}${widget.weather == 'clear' ? '' : ', ${widget.weather}'}',

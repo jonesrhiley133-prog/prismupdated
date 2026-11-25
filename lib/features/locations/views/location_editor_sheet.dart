@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -143,7 +144,7 @@ class _LocationEditorSheetState extends ConsumerState<LocationEditorSheet> {
                           button: true,
                           label: l10n.locationsChooseIcon,
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: prismCorners(context, 16),
                             onTap: () async {
                               final picked = await PrismEmojiPicker.showPicker(
                                 context,
@@ -161,7 +162,7 @@ class _LocationEditorSheetState extends ConsumerState<LocationEditorSheet> {
                                     (parseHexColor(_color) ??
                                             theme.colorScheme.primary)
                                         .withValues(alpha: 0.18),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: prismCorners(context, 16),
                               ),
                               child: Text(
                                 _emoji ?? '📍',
@@ -187,13 +188,13 @@ class _LocationEditorSheetState extends ConsumerState<LocationEditorSheet> {
                       children: [
                         for (final hex in [null, ...calendarColorSwatches])
                           InkWell(
-                            customBorder: const CircleBorder(),
+                            customBorder: prismCircleBorder(context),
                             onTap: () => setState(() => _color = hex),
                             child: Container(
                               width: 30,
                               height: 30,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                                borderRadius: prismRound(context),
                                 color:
                                     parseHexColor(hex) ??
                                     theme.colorScheme.primary,

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -141,7 +142,7 @@ class PostCard extends ConsumerWidget {
                 onTap: () => callbacks.openPost(quoted.id),
                 child: Container(
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: theme.colorScheme.outlineVariant)),
+                  decoration: BoxDecoration(borderRadius: prismCorners(context, 14), border: Border.all(color: theme.colorScheme.outlineVariant)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [header(quoted, small: true), const SizedBox(height: 6), _Body(post: quoted, callbacks: callbacks, compact: true)],
@@ -261,7 +262,7 @@ class _Action extends StatelessWidget {
       label: label,
       excludeSemantics: true,
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -305,11 +306,11 @@ class _BodyState extends ConsumerState<_Body> {
         hint: l10n.socTapToShow,
         excludeSemantics: true,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: prismCorners(context, 12),
           onTap: () => setState(() => _revealed = true),
           child: Container(
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: theme.colorScheme.errorContainer.withValues(alpha: 0.5)),
+            decoration: BoxDecoration(borderRadius: prismCorners(context, 12), color: theme.colorScheme.errorContainer.withValues(alpha: 0.5)),
             child: Row(
               children: [
                 const Icon(Icons.warning_amber_rounded),
@@ -330,7 +331,7 @@ class _BodyState extends ConsumerState<_Body> {
           Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: theme.colorScheme.primary.withValues(alpha: 0.10)),
+            decoration: BoxDecoration(borderRadius: prismCorners(context, 14), color: theme.colorScheme.primary.withValues(alpha: 0.10)),
             child: Row(
               children: [
                 Icon(Icons.help_outline_rounded, color: theme.colorScheme.primary),
@@ -364,7 +365,7 @@ class _Gallery extends StatelessWidget {
     void open(int i) => Navigator.of(context).push(MaterialPageRoute<void>(fullscreenDialog: true, builder: (_) => ImageGalleryScreen(ids: ids, initial: i)));
     if (ids.length == 1) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
         child: GestureDetector(
           onTap: () => open(0),
           child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 420), child: SocialImage(id: ids.first, fit: BoxFit.cover, width: double.infinity)),
@@ -382,7 +383,7 @@ class _Gallery extends StatelessWidget {
             for (var i = 0; i < ids.length; i++)
               GestureDetector(
                 onTap: () => open(i),
-                child: ClipRRect(borderRadius: BorderRadius.circular(10), child: SocialImage(id: ids[i], width: size, height: size)),
+                child: ClipRRect(borderRadius: prismCorners(context, 10), child: SocialImage(id: ids[i], width: size, height: size)),
               ),
           ],
         );
@@ -446,17 +447,17 @@ class _Poll extends ConsumerWidget {
               label: showResults ? l10n.socPollOptionResult(post.pollOptions[i], total == 0 ? 0 : (r.counts[i] * 100 / total).round()) : post.pollOptions[i],
               excludeSemantics: true,
               child: InkWell(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 onTap: closed || actor == null ? null : () => ref.read(socialActionsProvider).vote(actor: actor, post: post, option: i),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: prismCorners(context, 12),
                   child: Stack(
                     children: [
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(color: r.mine.contains(i) ? theme.colorScheme.primary : theme.colorScheme.outlineVariant),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: prismCorners(context, 12),
                           ),
                         ),
                       ),
@@ -527,7 +528,7 @@ class MenuRow extends StatelessWidget {
     return Semantics(
       button: true,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

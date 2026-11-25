@@ -150,7 +150,7 @@ class WrapCardView extends ConsumerWidget {
     return AspectRatio(
       aspectRatio: ratio ?? style.ratio,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -296,7 +296,7 @@ class WrapCardView extends ConsumerWidget {
                   padding: EdgeInsets.all(u * 0.035),
                   decoration: BoxDecoration(
                     color: th.ink.withValues(alpha: 0.07),
-                    borderRadius: BorderRadius.circular(u * 0.04),
+                    borderRadius: prismCorners(context, u * 0.04),
                   ),
                   child: Row(
                     children: [
@@ -344,7 +344,7 @@ class WrapCardView extends ConsumerWidget {
                         height: u * (0.18 + 0.1 * n / max),
                         decoration: BoxDecoration(
                           color: Color(int.tryParse(c) ?? 0xFF888888),
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                           border: Border.all(
                             color: th.ink.withValues(alpha: 0.2),
                             width: 2,
@@ -380,7 +380,7 @@ class WrapCardView extends ConsumerWidget {
                               ),
                           decoration: BoxDecoration(
                             color: th.accent,
-                            borderRadius: BorderRadius.circular(u * 0.025),
+                            borderRadius: prismCorners(context, u * 0.025),
                           ),
                         ),
                       ),
@@ -413,7 +413,7 @@ class WrapCardView extends ConsumerWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: prismCorners(context, 4),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x22000000),
@@ -654,7 +654,7 @@ class WrapCardView extends ConsumerWidget {
                   height: u * 0.75,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(u * 0.06),
+                    borderRadius: prismCorners(context, u * 0.06),
                     border: Border.all(
                       color: th.ink.withValues(alpha: 0.3),
                       width: 3,
@@ -667,7 +667,7 @@ class WrapCardView extends ConsumerWidget {
                         height: u * 0.08,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(u * 0.02),
+                          borderRadius: prismCorners(context, u * 0.02),
                         ),
                       ),
                       SizedBox(height: u * 0.02),
@@ -679,7 +679,7 @@ class WrapCardView extends ConsumerWidget {
                             color: Theme.of(
                               context,
                             ).colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(u * 0.02),
+                            borderRadius: prismCorners(context, u * 0.02),
                           ),
                         ),
                       const Spacer(),
@@ -693,7 +693,7 @@ class WrapCardView extends ConsumerWidget {
                               height: u * 0.06,
                               decoration: BoxDecoration(
                                 color: Color(int.tryParse(c) ?? 0),
-                                shape: BoxShape.circle,
+                                borderRadius: prismRound(context),
                               ),
                             ),
                         ],
@@ -737,7 +737,7 @@ class WrapCardView extends ConsumerWidget {
                         padding: EdgeInsets.symmetric(vertical: u * 0.015),
                         decoration: BoxDecoration(
                           color: th.accent,
-                          borderRadius: BorderRadius.circular(u * 0.02),
+                          borderRadius: prismCorners(context, u * 0.02),
                         ),
                         child: Text(
                           mask.text(value),
@@ -835,7 +835,7 @@ class _VinylState extends State<_Vinyl> with SingleTickerProviderStateMixin {
       width: widget.size,
       height: widget.size,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         gradient: SweepGradient(
           colors: [
             const Color(0xFF111111),
@@ -850,7 +850,7 @@ class _VinylState extends State<_Vinyl> with SingleTickerProviderStateMixin {
       child: Container(
         width: widget.size * 0.34,
         height: widget.size * 0.34,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: widget.color),
+        decoration: BoxDecoration(borderRadius: prismRound(context), color: widget.color),
         alignment: Alignment.center,
         child: Container(
           width: widget.size * 0.05,

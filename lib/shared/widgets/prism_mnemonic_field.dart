@@ -884,7 +884,7 @@ class _WordSlotInput extends StatelessWidget {
         : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4);
 
     final baseBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       borderSide: BorderSide(
         color:
             borderColor ??
@@ -892,7 +892,7 @@ class _WordSlotInput extends StatelessWidget {
       ),
     );
     final focusedBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       borderSide: BorderSide(
         color: borderColor ?? theme.colorScheme.primary,
         width: 1.4,

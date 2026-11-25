@@ -497,7 +497,7 @@ class _GridBoard extends StatelessWidget {
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: discs ? theme.colorScheme.primaryContainer : null,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: prismCorners(context, 14),
             ),
             child: GridView.count(
               crossAxisCount: cols,
@@ -512,7 +512,7 @@ class _GridBoard extends StatelessWidget {
                         ? '${room.nameOf(board[i])}'
                         : 'Empty',
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(discs ? 100 : 10),
+                      borderRadius: prismCorners(context, discs ? 100 : 10),
                       onTap:
                           room.myTurn &&
                               board.length > i &&
@@ -525,7 +525,7 @@ class _GridBoard extends StatelessWidget {
                           shape: discs ? BoxShape.circle : BoxShape.rectangle,
                           borderRadius: discs
                               ? null
-                              : BorderRadius.circular(10),
+                              : prismCorners(context, 10),
                           color: discs
                               ? (board.length > i && board[i] >= 0
                                     ? colors[board[i] % 2]
@@ -603,9 +603,9 @@ class _RpsBoard extends StatelessWidget {
                   color: mine == c
                       ? theme.colorScheme.primaryContainer
                       : theme.colorScheme.surfaceContainerHighest,
-                  shape: const CircleBorder(),
+                  shape: prismCircleBorder(context),
                   child: InkWell(
-                    customBorder: const CircleBorder(),
+                    customBorder: prismCircleBorder(context),
                     onTap: room.status == 'playing' && mine == null
                         ? () => onPick(c)
                         : null,

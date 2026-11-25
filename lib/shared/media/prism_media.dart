@@ -208,9 +208,9 @@ class _AudioClipState extends State<AudioClip> {
     final theme = Theme.of(context);
     return Material(
       color: theme.colorScheme.secondaryContainer,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: prismCorners(context, 24),
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: prismCorners(context, 24),
         onTap: _missing ? null : _toggle,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -296,7 +296,7 @@ class MediaAttachRow extends ConsumerWidget {
                     child: Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: prismCorners(context, 10),
                           child: SizedBox(
                             width: id.startsWith('audio:') ? 140 : 88,
                             height: 88,

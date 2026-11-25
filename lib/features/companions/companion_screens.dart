@@ -460,7 +460,7 @@ class _FeaturedStage extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: prismCorners(context, 12),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,7 +501,7 @@ class _CompanionCard extends StatelessWidget {
       label:
           '${companion.name}, ${companion.species.name}${companion.isEgg ? ', still an egg' : ''}. $owners',
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: prismCorners(context, 18),
         onTap: () => pushPage<void>(
           context,
           CompanionProfileScreen(companionId: companion.id),
@@ -510,7 +510,7 @@ class _CompanionCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
           decoration: BoxDecoration(
             color: tint,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: prismCorners(context, 18),
           ),
           child: Column(
             children: [
@@ -566,7 +566,7 @@ class MemoryTile extends ConsumerWidget {
     return PrismListRow(
       leading: memory.scene != null
           ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: prismCorners(context, 8),
               child: SizedBox(
                 width: 52,
                 height: 52,
@@ -774,7 +774,7 @@ class _CompanionProfileScreenState
                       fit: StackFit.expand,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: prismCorners(context, 20),
                           child: SocialImage(
                             id: c.bannerMedia!,
                             fit: BoxFit.cover,
@@ -834,7 +834,7 @@ class _CompanionProfileScreenState
                                   color: theme.colorScheme.surface.withValues(
                                     alpha: 0.92,
                                   ),
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: prismCorners(context, 14),
                                 ),
                                 child: Text(
                                   _bubble!,
@@ -1045,7 +1045,7 @@ class _CompanionProfileScreenState
                                   width: 92,
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: prismCorners(context, 14),
                                     border: Border.all(
                                       color: c.outfitId == o.r.id
                                           ? theme.colorScheme.primary
@@ -1111,7 +1111,7 @@ class _CompanionProfileScreenState
                               PhotoViewerScreen(memoryId: p.id),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: prismCorners(context, 10),
                               child: PhotoSceneView(
                                 scene: p.scene!,
                                 animate: false,
@@ -1396,9 +1396,9 @@ class _ActionButton extends StatelessWidget {
       label: label,
       child: Material(
         color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: prismCorners(context, 14),
           onTap: onTap,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48, minWidth: 48),

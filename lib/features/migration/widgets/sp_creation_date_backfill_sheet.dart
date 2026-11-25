@@ -369,7 +369,7 @@ class _IconCircle extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: theme.colorScheme.primary.withValues(alpha: 0.15),
       ),
       child: Icon(icon, size: 40, color: theme.colorScheme.primary),

@@ -98,14 +98,14 @@ class _NutriTabBar extends StatelessWidget {
                 selected: tab == t,
                 button: true,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: prismCorners(context, 22),
                   onTap: () => onTab(t),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
                       color: tab == t ? color : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: prismCorners(context, 22),
                       boxShadow: tab == t ? [BoxShadow(color: color.withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 3))] : null,
                     ),
                     child: Row(
@@ -259,9 +259,9 @@ class ActionChipLike extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: color.withValues(alpha: 0.14),
-    borderRadius: BorderRadius.circular(18),
+    borderRadius: prismCorners(context, 18),
     child: InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: prismCorners(context, 18),
       onTap: onTap,
       onLongPress: onLongPress,
       child: Padding(
@@ -553,7 +553,7 @@ class _Card extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: prismCorners(context, 22),
         border: Border.all(color: color.withValues(alpha: 0.35)),
         boxShadow: [BoxShadow(color: color.withValues(alpha: 0.08), blurRadius: 18, offset: const Offset(0, 6))],
       ),
@@ -565,7 +565,7 @@ class _Card extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: prismRound(context)),
                 child: Icon(icon, size: 16, color: color),
               ),
               const SizedBox(width: 8),
@@ -685,7 +685,7 @@ class _WaterViewState extends ConsumerState<_WaterView> {
                         toY: values[i].toDouble(),
                         width: _range <= 7 ? 18 : (_range <= 30 ? 6 : 2),
                         color: s.goalMl != null && values[i] >= s.goalMl! ? context.nutri.basil : context.nutri.water,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: prismCorners(context, 4),
                       ),
                     ],
                   ),

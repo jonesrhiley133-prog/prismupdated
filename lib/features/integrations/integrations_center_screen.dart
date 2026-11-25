@@ -358,7 +358,7 @@ class _Row extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.13),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: prismCorners(context, 8),
         ),
         child: Text(
           label,

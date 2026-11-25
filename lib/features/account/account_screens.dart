@@ -159,7 +159,7 @@ class AccountScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            CircleAvatar(
+            PrismCircleAvatar(
               radius: 24,
               child: Text(a.username.characters.first.toUpperCase()),
             ),
@@ -1227,7 +1227,7 @@ class AccountAuthScreen extends ConsumerWidget {
                     children: [
                       for (final x in saved)
                         PrismListRow(
-                          leading: CircleAvatar(
+                          leading: PrismCircleAvatar(
                             child: Text(
                               x.username.characters.first.toUpperCase(),
                             ),

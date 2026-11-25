@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -87,7 +88,7 @@ class StoriesScreen extends ConsumerWidget {
                                     width: w,
                                     height: w * 16 / 9,
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(14),
+                                      borderRadius: prismCorners(context, 14),
                                       child: Stack(
                                         fit: StackFit.expand,
                                         children: [
@@ -96,7 +97,7 @@ class StoriesScreen extends ConsumerWidget {
                                             decoration: BoxDecoration(
                                               gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black38, Colors.transparent, Colors.black54]),
                                               border: authors[i].unseen ? Border.all(color: theme.colorScheme.primary, width: 3) : null,
-                                              borderRadius: BorderRadius.circular(14),
+                                              borderRadius: prismCorners(context, 14),
                                             ),
                                           ),
                                           Positioned(left: 8, top: 8, child: AlterAvatar(memberId: authors[i].id, size: 30, ring: authors[i].unseen)),
@@ -139,7 +140,7 @@ class StoriesScreen extends ConsumerWidget {
                               child: SizedBox(
                                 width: 66,
                                 height: 116,
-                                child: ClipRRect(borderRadius: BorderRadius.circular(8), child: StorySlideView(slide: s.slides.first, mini: true)),
+                                child: ClipRRect(borderRadius: prismCorners(context, 8), child: StorySlideView(slide: s.slides.first, mini: true)),
                               ),
                             ),
                           ),

@@ -142,7 +142,7 @@ class AstroHero extends StatelessWidget {
       tone: PrismSurfaceTone.strong,
       accentColor: a,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(PrismTokens.radiusMedium),
+        borderRadius: prismCorners(context, PrismTokens.radiusMedium),
         child: Stack(
           children: [
             Positioned.fill(
@@ -260,20 +260,20 @@ class EnergyBar extends StatelessWidget {
                 builder: (context, box) => Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(height: 8, decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(4))),
+                    Container(height: 8, decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 4))),
                     Container(
                       height: 8,
                       width: box.maxWidth * value / 100,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(colors: [c.withValues(alpha: 0.55), c]),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: prismCorners(context, 4),
                       ),
                     ),
                     if (compare != null)
                       Positioned(
                         left: (box.maxWidth * compare! / 100 - 2).clamp(0, box.maxWidth - 4),
                         top: -3,
-                        child: Container(width: 4, height: 14, decoration: BoxDecoration(color: theme.colorScheme.tertiary, borderRadius: BorderRadius.circular(2))),
+                        child: Container(width: 4, height: 14, decoration: BoxDecoration(color: theme.colorScheme.tertiary, borderRadius: prismCorners(context, 2))),
                       ),
                   ],
                 ),
@@ -351,7 +351,7 @@ class SignChip extends StatelessWidget {
     final c = color ?? theme.colorScheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20), border: Border.all(color: c.withValues(alpha: 0.25))),
+      decoration: BoxDecoration(color: c.withValues(alpha: 0.12), borderRadius: prismCorners(context, 20), border: Border.all(color: c.withValues(alpha: 0.25))),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

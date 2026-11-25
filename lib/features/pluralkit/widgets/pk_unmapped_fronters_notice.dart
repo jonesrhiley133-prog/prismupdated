@@ -433,7 +433,7 @@ class _PkRefAvatar extends StatelessWidget {
     final color = theme.colorScheme.primary;
     final initial = pkRef.label.trim();
 
-    return CircleAvatar(
+    return PrismCircleAvatar(
       radius: 20,
       backgroundColor: color.withValues(alpha: 0.18),
       child: Text(

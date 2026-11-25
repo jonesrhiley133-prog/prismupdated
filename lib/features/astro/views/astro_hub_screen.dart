@@ -177,7 +177,7 @@ class _RetroChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: theme.colorScheme.tertiary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: prismCorners(context, 20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -463,7 +463,7 @@ class _CountPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: prismCorners(context, 20),
       ),
       child: Text('$label · $count', style: theme.textTheme.labelMedium),
     );
@@ -520,7 +520,7 @@ class _Constellation extends StatelessWidget {
                   message:
                       '${e.key.name} · ${signs[e.key.sunSign!].name.of(astroEs(context))}',
                   child: InkWell(
-                    customBorder: const CircleBorder(),
+                    customBorder: prismCircleBorder(context),
                     onTap: () =>
                         context.push(AppRoutePaths.astroAlter(e.key.member.id)),
                     child: AstroAvatar(e.key, size: avatar),

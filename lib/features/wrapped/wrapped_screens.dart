@@ -853,7 +853,7 @@ class _WrapPlayerScreenState extends ConsumerState<WrapPlayerScreen>
                           height: 3,
                           margin: const EdgeInsets.symmetric(horizontal: 2),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: prismCorners(context, 2),
                             color: Colors.white24,
                           ),
                           alignment: Alignment.centerLeft,
@@ -863,7 +863,7 @@ class _WrapPlayerScreenState extends ConsumerState<WrapPlayerScreen>
                                 : (k == _i ? _progress.value : 0),
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2),
+                                borderRadius: prismCorners(context, 2),
                                 color: Colors.white,
                               ),
                             ),
@@ -1320,7 +1320,7 @@ class _WrapStudioScreenState extends ConsumerState<WrapStudioScreen> {
                     if (c != null)
                       await _style(s, st.copyWith(accent: c.toARGB32()));
                   },
-                  child: CircleAvatar(
+                  child: PrismCircleAvatar(
                     radius: 16,
                     backgroundColor: st.accent == null
                         ? theme.colorScheme.primary

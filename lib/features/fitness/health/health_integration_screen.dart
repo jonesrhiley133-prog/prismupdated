@@ -356,14 +356,14 @@ class _ProviderCard extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
-                decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.12), borderRadius: prismCorners(context, 12)),
                 child: Icon(PhosphorIcons.heartbeat(), color: theme.colorScheme.primary),
               ),
               const SizedBox(width: 12),
               Expanded(child: Text(name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: color.withValues(alpha: 0.35))),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: prismCorners(context, 8), border: Border.all(color: color.withValues(alpha: 0.35))),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

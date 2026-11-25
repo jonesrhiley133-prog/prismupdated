@@ -28,7 +28,7 @@ class ColorChoiceRow extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                   color: Color(c),
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: value == c ? theme.colorScheme.onSurface : Colors.transparent,
                     width: 3,
@@ -60,13 +60,13 @@ class IconChoiceGrid extends StatelessWidget {
       children: [
         for (final k in shown)
           InkWell(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: prismCorners(context, 10),
             onTap: () => onChanged(k),
             child: Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: prismCorners(context, 10),
                 color: value == k
                     ? (color ?? theme.colorScheme.primary).withValues(alpha: 0.2)
                     : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),

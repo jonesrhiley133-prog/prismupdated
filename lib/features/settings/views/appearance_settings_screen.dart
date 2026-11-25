@@ -598,7 +598,7 @@ class _IconTile extends StatelessWidget {
       selected: selected,
       label: tr(context, '$label app icon', 'Icono $label'),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         onTap: enabled ? onTap : null,
         child: SizedBox(
           width: 76,
@@ -607,7 +607,7 @@ class _IconTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: prismCorners(context, 18),
                   border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5),
                 ),
                 child: Opacity(
@@ -639,7 +639,7 @@ class _CustomIconTile extends ConsumerWidget {
       selected: selected,
       label: tr(context, 'Custom app icon. Design your own', 'Icono personalizado. Diseña el tuyo'),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         onTap: enabled ? () => showAppIconMaker(context) : null,
         child: SizedBox(
           width: 76,
@@ -647,16 +647,16 @@ class _CustomIconTile extends ConsumerWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5)),
+                decoration: BoxDecoration(borderRadius: prismCorners(context, 18), border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5)),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: prismCorners(context, 14),
                   child: SizedBox(
                     width: 60,
                     height: 60,
                     child: png != null
                         ? Image.memory(png, fit: BoxFit.cover)
                         : DecoratedBox(
-                            decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: BorderRadius.circular(14), color: theme.colorScheme.surfaceContainerHigh),
+                            decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHigh),
                             child: Icon(Icons.brush_outlined, color: theme.colorScheme.onSurfaceVariant),
                           ),
                   ),

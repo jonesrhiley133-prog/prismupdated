@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -252,7 +253,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                                     width: 10,
                                     decoration: BoxDecoration(
                                       color: financeTypeColor(theme, type),
-                                      borderRadius: BorderRadius.circular(3),
+                                      borderRadius: prismCorners(context, 3),
                                     ),
                                   ),
                                 ),
@@ -516,7 +517,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: prismRound(context),
                     color: type == TxnType.transfer
                         ? theme.colorScheme.outline
                         : financeCategoryColor(

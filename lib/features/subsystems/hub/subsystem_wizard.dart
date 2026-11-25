@@ -217,7 +217,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                           height: 4,
                           margin: EdgeInsets.only(right: i == 3 ? 0 : 6),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: prismCorners(context, 4),
                             color: i <= _step
                                 ? context.sp.primary
                                 : context.sp.line,
@@ -400,7 +400,7 @@ class _SubsystemWizardState extends ConsumerState<SubsystemWizard> {
                 height: 42,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   color: _emoji == e
                       ? Color(_color).withValues(alpha: 0.25)
                       : context.sp.panel,

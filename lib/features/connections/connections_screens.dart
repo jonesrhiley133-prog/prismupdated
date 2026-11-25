@@ -97,7 +97,7 @@ class ConnectionsScreen extends ConsumerWidget {
                         Container(
                           width: 54,
                           height: 54,
-                          decoration: BoxDecoration(color: Color(m.integer('color') ?? 0xFF8E7CC3).withValues(alpha: 0.18), borderRadius: BorderRadius.circular(14)),
+                          decoration: BoxDecoration(color: Color(m.integer('color') ?? 0xFF8E7CC3).withValues(alpha: 0.18), borderRadius: prismCorners(context, 14)),
                           child: Icon(PhosphorIcons.graph(), color: Color(m.integer('color') ?? 0xFF8E7CC3)),
                         ),
                         const SizedBox(width: 12),

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:collection/collection.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
@@ -65,7 +66,7 @@ class EventDetailSheet extends ConsumerWidget {
                 margin: const EdgeInsets.only(right: 12, top: 2),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: prismCorners(context, 3),
                 ),
               ),
               Expanded(

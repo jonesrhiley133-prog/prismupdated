@@ -154,7 +154,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(color: gold.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20), border: Border.all(color: gold.withValues(alpha: 0.5))),
+                decoration: BoxDecoration(color: gold.withValues(alpha: 0.12), borderRadius: prismCorners(context, 20), border: Border.all(color: gold.withValues(alpha: 0.5))),
                 child: Text('${pill.$1} ${pill.$2}', style: theme.textTheme.labelLarge?.copyWith(color: gold)),
               ),
             ],
@@ -322,7 +322,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                   child: Column(
                     children: [
                       Expanded(child: Container(width: 2, color: i == 0 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
-                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
+                      Container(width: 12, height: 12, decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: prismRound(context))),
                       Expanded(child: Container(width: 2, color: i == todays.length - 1 ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.5))),
                     ],
                   ),
@@ -366,7 +366,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                         if (c.rating != null)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(color: habitGold(context).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+                            decoration: BoxDecoration(color: habitGold(context).withValues(alpha: 0.1), borderRadius: prismCorners(context, 14)),
                             child: StarRow(value: c.rating, size: 14),
                           ),
                         Icon(AppIcons.chevronRight, size: 18),
@@ -433,7 +433,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                         BarChartRodData(
                           toY: values[i],
                           width: 26,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: prismCorners(context, 8),
                           gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [color.withValues(alpha: 0.55), color]),
                           backDrawRodData: BackgroundBarChartRodData(show: days[i].isAfter(today), toY: maxY, color: theme.colorScheme.onSurface.withValues(alpha: 0.04)),
                         ),
@@ -660,7 +660,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                                         };
                                   return Tooltip(
                                     message: '${DateFormat.yMMMd(context.dateLocale).format(day)} · ${fmtNum(view.progressOn(day))}/${view.meta.target}',
-                                    child: Container(width: 14, height: 14, margin: const EdgeInsets.all(1.5), decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(4))),
+                                    child: Container(width: 14, height: 14, margin: const EdgeInsets.all(1.5), decoration: BoxDecoration(color: c, borderRadius: prismCorners(context, 4))),
                                   );
                                 }(),
                             ],
@@ -784,7 +784,7 @@ class _HabitDashboardScreenState extends ConsumerState<HabitDashboardScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: prismCorners(context, 16),
                     color: done ? gold.withValues(alpha: 0.14) : theme.colorScheme.surfaceContainerHigh,
                     border: Border.all(color: done ? gold.withValues(alpha: 0.6) : Colors.transparent),
                   ),

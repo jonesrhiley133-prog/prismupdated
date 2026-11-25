@@ -82,7 +82,7 @@ class CalendarAstroForDay extends ConsumerWidget {
     if (events.isEmpty && personal.isEmpty && readings.isEmpty) return const SizedBox.shrink();
     Widget row(String glyph, String text, {VoidCallback? onTap, bool emoji = false}) => InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: prismCorners(context, 8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(

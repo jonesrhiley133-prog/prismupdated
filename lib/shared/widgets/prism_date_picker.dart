@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/cupertino.dart' show CupertinoLocalizations;
 import 'package:flutter/material.dart';
 
@@ -231,7 +232,7 @@ class _AnchoredDatePickerRoute extends StatelessWidget {
                       shadowColor: theme.colorScheme.shadow.withValues(
                         alpha: 0.18,
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: prismCorners(context, 16),
                       clipBehavior: Clip.antiAlias,
                       child: child,
                     ),
@@ -531,7 +532,7 @@ class _MonthButton extends StatelessWidget {
       style: FilledButton.styleFrom(
         backgroundColor: selected ? colors.primaryContainer : null,
         foregroundColor: selected ? colors.onPrimaryContainer : null,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: prismCorners(context, 12)),
       ),
       child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
     );

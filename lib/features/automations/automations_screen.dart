@@ -196,7 +196,7 @@ class _RulesList extends ConsumerWidget {
                     color: theme.colorScheme.primary.withValues(
                       alpha: r.enabled ? 0.15 : 0.05,
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: prismCorners(context, 12),
                   ),
                   child: Icon(
                     triggerIcon(r.triggerType),
@@ -673,7 +673,7 @@ class _BuilderState extends ConsumerState<_Builder> {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         border: Border.all(color: color.withValues(alpha: 0.5)),
         color: color.withValues(alpha: 0.06),
       ),
@@ -1341,7 +1341,7 @@ class _ConditionEditor extends ConsumerWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1625,7 +1625,7 @@ class _ActionEditorState extends ConsumerState<_ActionEditor> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

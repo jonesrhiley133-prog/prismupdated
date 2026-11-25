@@ -80,7 +80,7 @@ class LetterTiles extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: colors?[i] ?? scheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(size * 0.22),
+                    borderRadius: prismCorners(context, size * 0.22),
                     border: Border.all(color: scheme.outlineVariant),
                   ),
                   child: Text(
@@ -145,9 +145,9 @@ class GameKeyboard extends StatelessWidget {
                   : st == null
                   ? scheme.tertiary
                   : scheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: prismCorners(context, 8),
               child: InkWell(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: prismCorners(context, 8),
                 onTap: onTap,
                 child: SizedBox(
                   height: 46,
@@ -950,7 +950,7 @@ class Chip2 extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: c.withValues(alpha: 0.13),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
       ),
       child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
@@ -1238,7 +1238,7 @@ class _CategoryGameState extends State<CategoryGame> {
                                 : theme.colorScheme.tertiary.withValues(
                                     alpha: 0.14,
                                   )),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: prismCorners(context, 8),
                     ),
                     child: Column(
                       children: [
@@ -1567,7 +1567,7 @@ class _WordSearchGameState extends State<WordSearchGame> {
                           margin: const EdgeInsets.all(1.5),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: prismCorners(context, 6),
                             color: _start == (r, c)
                                 ? scheme.tertiary.withValues(alpha: 0.35)
                                 : foundCells.contains((r, c))
@@ -1784,7 +1784,7 @@ class _MiniCrosswordGameState extends State<MiniCrosswordGame> {
                                         ? scheme.error.withValues(alpha: 0.2)
                                         : scheme.surfaceContainerHighest),
                               border: Border.all(color: scheme.outline),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: prismCorners(context, 4),
                             ),
                             child: Stack(
                               children: [

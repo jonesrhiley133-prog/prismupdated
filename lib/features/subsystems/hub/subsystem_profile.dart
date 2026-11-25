@@ -1171,7 +1171,7 @@ class _Fronting extends ConsumerWidget {
                 ),
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: prismCorners(context, 6),
                     child: LinearProgressIndicator(
                       value: total.inSeconds == 0
                           ? 0
@@ -2489,7 +2489,7 @@ class _Settings extends ConsumerWidget {
                             child: Semantics(
                               button: true,
                               label: '${names[i]} colour',
-                              child: CircleAvatar(
+                              child: PrismCircleAvatar(
                                 radius: 18,
                                 backgroundColor: Color(pal[i]),
                               ),
@@ -2529,7 +2529,7 @@ class _Settings extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: prismCorners(context, 8),
                   child: SizedBox(
                     height: 18,
                     child: Row(

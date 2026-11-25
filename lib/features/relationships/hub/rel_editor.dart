@@ -232,7 +232,7 @@ class _RelEditorState extends ConsumerState<RelEditor> {
       },
       child: Row(
         children: [
-          if (alters[id] != null) relAvatar(ref, alters[id]!, 32) else CircleAvatar(radius: 16, child: Icon(PhosphorIcons.user(), size: 16)),
+          if (alters[id] != null) relAvatar(ref, alters[id]!, 32) else PrismCircleAvatar(radius: 16, child: Icon(PhosphorIcons.user(), size: 16)),
           const SizedBox(width: 10),
           Expanded(child: Text(nm(id), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600))),
           Icon(PhosphorIcons.caretDown(), size: 16),
@@ -285,7 +285,7 @@ class _RelEditorState extends ConsumerState<RelEditor> {
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 12)),
                   child: Text(
                     tr(context, 'These two already have a relationship (${existing.labels.map((l) => labelText(context, l, settings)).join(', ')}). The labels you pick will be added to it — nothing is replaced.', 'Estos dos ya tienen una relación (${existing.labels.map((l) => labelText(context, l, settings)).join(', ')}). Las etiquetas que elijas se añadirán: no se reemplaza nada.'),
                     style: TextStyle(color: theme.colorScheme.onSecondaryContainer),

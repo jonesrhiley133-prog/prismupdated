@@ -390,7 +390,7 @@ class _SetupView extends ConsumerWidget {
                   Align(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         boxShadow: [
                           BoxShadow(
                             color: accent.withValues(alpha: 0.18),
@@ -1499,7 +1499,7 @@ class _StatusCard extends StatelessWidget {
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         boxShadow: [
                           BoxShadow(
                             color: statusColor.withValues(alpha: 0.16),

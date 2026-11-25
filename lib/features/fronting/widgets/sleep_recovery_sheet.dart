@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -127,7 +128,7 @@ class _SleepRecoverySheetState extends ConsumerState<SleepRecoverySheet> {
               height: 48,
               decoration: BoxDecoration(
                 color: sleepColor.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
               ),
               child: Icon(AppIcons.history, color: sleepColor),
             ),
@@ -166,7 +167,7 @@ class _SleepRecoverySheetState extends ConsumerState<SleepRecoverySheet> {
                 color: theme.colorScheme.surfaceContainerHighest.withValues(
                   alpha: 0.4,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: prismCorners(context, 12),
                 clipBehavior: Clip.antiAlias,
                 child: ListView.separated(
                   shrinkWrap: true,

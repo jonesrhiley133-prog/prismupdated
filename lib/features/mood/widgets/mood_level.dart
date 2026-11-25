@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
@@ -69,7 +70,7 @@ class MoodFace extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.22),
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           border: Border.all(color: color.withValues(alpha: 0.7), width: 1.5),
         ),
         child: Text(

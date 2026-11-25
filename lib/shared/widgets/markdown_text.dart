@@ -251,7 +251,7 @@ class MarkdownText extends StatelessWidget {
       blockquote: present(base.blockquote).copyWith(color: mutedFg),
       blockquoteDecoration: BoxDecoration(
         color: mutedSurface,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: prismCorners(context, radius),
         border: Border(
           left: BorderSide(color: theme.colorScheme.primary, width: 3),
         ),
@@ -266,7 +266,7 @@ class MarkdownText extends StatelessWidget {
       ).copyWith(backgroundColor: mutedSurface),
       codeblockDecoration: BoxDecoration(
         color: mutedSurface,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: prismCorners(context, radius),
       ),
     );
 

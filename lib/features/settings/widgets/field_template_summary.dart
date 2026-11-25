@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/domain/custom_fields/field_template.dart';
@@ -235,7 +236,7 @@ class _SwatchRow extends StatelessWidget {
             margin: const EdgeInsets.only(right: 4),
             decoration: BoxDecoration(
               color: color,
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               border: Border.all(
                 color: theme.colorScheme.outline.withValues(alpha: 0.3),
               ),
@@ -263,7 +264,7 @@ class _NewerVersionBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: AppColors.warning.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: prismCorners(context, 6),
       ),
       child: Text(
         context.l10n.fieldTemplatePreviewUnknownBadge,

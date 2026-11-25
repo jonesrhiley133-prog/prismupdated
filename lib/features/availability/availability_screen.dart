@@ -321,7 +321,7 @@ class _TimelineBar extends StatelessWidget {
                     color: theme.colorScheme.surfaceContainerHighest.withValues(
                       alpha: 0.6,
                     ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: prismCorners(context, 6),
                   ),
                 ),
               ),
@@ -339,7 +339,7 @@ class _TimelineBar extends StatelessWidget {
                         color: Color(
                           cats[b.category]?.color ?? 0xFF8C8C8C,
                         ).withValues(alpha: b.isOverride ? 1 : 0.75),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: prismCorners(context, 4),
                         border: b.isOverride
                             ? Border.all(
                                 color: theme.colorScheme.onSurface,
@@ -619,7 +619,7 @@ class _Categories extends ConsumerWidget {
       children: [
         for (final c in cats)
           PrismListRow(
-            leading: CircleAvatar(
+            leading: PrismCircleAvatar(
               backgroundColor: Color(c.color),
               child: Icon(c.iconData, color: Colors.white, size: 18),
             ),

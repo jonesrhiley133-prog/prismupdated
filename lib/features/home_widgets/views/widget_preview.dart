@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/features/home_widgets/models/widget_config.dart';
@@ -86,7 +87,7 @@ class WidgetPreview extends StatelessWidget {
     };
     final maxButtons = switch (size) { 'small' => model['buttonsSmall'] as int? ?? 2, 'medium' => 3, _ => 5 };
     final bg = _decode(s.bgImage);
-    final radius = BorderRadius.circular(s.radius);
+    final radius = prismCorners(context, s.radius);
     final angle = s.gradientAngle * math.pi / 180;
 
     Widget avatar(Map<String, Object?> node, double d) {
@@ -99,7 +100,7 @@ class WidgetPreview extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(r),
+            borderRadius: prismCorners(context, r),
             child: Image.memory(bytes, width: d, height: d, fit: BoxFit.cover, gaplessPlayback: true),
           ),
         );
@@ -198,7 +199,7 @@ class WidgetPreview extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(top: 3),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(2),
+                              borderRadius: prismCorners(context, 2),
                               child: SizedBox(
                                 height: 4,
                                 child: Stack(
@@ -255,7 +256,7 @@ class WidgetPreview extends StatelessWidget {
                   child: Container(
                     margin: EdgeInsets.only(left: i == 0 ? 0 : 6),
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                    decoration: BoxDecoration(color: accent.withValues(alpha: 0.22), borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: accent.withValues(alpha: 0.22), borderRadius: prismCorners(context, 12)),
                     alignment: Alignment.center,
                     child: Text(
                       small && '${shownButtons[i]['emoji'] ?? ''}'.isNotEmpty

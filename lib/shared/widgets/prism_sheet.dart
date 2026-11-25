@@ -601,7 +601,7 @@ class _SheetChromeState extends State<_SheetChrome> {
               height: 4,
               decoration: BoxDecoration(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: prismCorners(context, 2),
               ),
             ),
           ),

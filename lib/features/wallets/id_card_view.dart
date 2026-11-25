@@ -102,7 +102,7 @@ class CardFaceView extends StatelessWidget {
       width: width,
       height: h,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(width * 0.045),
+        borderRadius: prismCorners(context, width * 0.045),
         child: Stack(
           children: [
             Positioned.fill(
@@ -179,12 +179,12 @@ class CardFaceView extends StatelessWidget {
         child = DecoratedBox(
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(lh * 0.1),
+            borderRadius: prismCorners(context, lh * 0.1),
           ),
         );
       case 'circle':
         child = DecoratedBox(
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
         );
       case 'line':
         child = Center(
@@ -194,7 +194,7 @@ class CardFaceView extends StatelessWidget {
         child = Container(
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(lw * 0.08),
+            borderRadius: prismCorners(context, lw * 0.08),
             border: Border.all(color: color, width: 1.5),
           ),
           clipBehavior: Clip.antiAlias,

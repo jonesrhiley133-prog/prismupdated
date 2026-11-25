@@ -79,7 +79,7 @@ class _MessagesSectionState extends ConsumerState<MessagesSection> {
                     ],
                   ),
                 ),
-                if (unread) Container(margin: const EdgeInsets.only(left: 8), width: 10, height: 10, decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primary)),
+                if (unread) Container(margin: const EdgeInsets.only(left: 8), width: 10, height: 10, decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primary)),
                 if (blocked.contains(other.profileId)) Padding(padding: const EdgeInsets.only(left: 6), child: Icon(PhosphorIcons.prohibit(), size: 16, color: theme.colorScheme.error)),
               ],
             ),
@@ -377,7 +377,7 @@ class _SocialConversationScreenState extends ConsumerState<SocialConversationScr
               Container(
                 padding: const EdgeInsets.fromLTRB(12, 6, 4, 6),
                 margin: const EdgeInsets.only(bottom: 4),
-                decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 12)),
                 child: Row(
                   children: [
                     Icon(_editing != null ? PhosphorIcons.pencilSimple() : PhosphorIcons.arrowBendUpLeft(), size: 16),
@@ -400,7 +400,7 @@ class _SocialConversationScreenState extends ConsumerState<SocialConversationScr
                 height: 64,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  children: [for (final m in _media) Padding(padding: const EdgeInsets.only(right: 6), child: GestureDetector(onTap: () => setState(() => _media.remove(m)), child: ClipRRect(borderRadius: BorderRadius.circular(8), child: SizedBox(width: 60, height: 60, child: SocialImage(id: m)))))],
+                  children: [for (final m in _media) Padding(padding: const EdgeInsets.only(right: 6), child: GestureDetector(onTap: () => setState(() => _media.remove(m)), child: ClipRRect(borderRadius: prismCorners(context, 8), child: SizedBox(width: 60, height: 60, child: SocialImage(id: m)))))],
                 ),
               ),
             Row(
@@ -500,7 +500,7 @@ class _Bubble extends ConsumerWidget {
                       button: true,
                       label: tr(ctx, 'React $e', 'Reaccionar $e'),
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: prismCorners(context, 999),
                         onTap: () => Navigator.of(ctx).pop('react:$e'),
                         child: Padding(padding: const EdgeInsets.all(10), child: Text(e, style: const TextStyle(fontSize: 26))),
                       ),
@@ -540,7 +540,7 @@ class _Bubble extends ConsumerWidget {
     final bubble = Container(
       constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16).copyWith(bottomRight: mine ? const Radius.circular(4) : null, bottomLeft: mine ? null : const Radius.circular(4))),
+      decoration: BoxDecoration(color: bg, borderRadius: prismCorners(context, 16).copyWith(bottomRight: mine ? const Radius.circular(4) : null, bottomLeft: mine ? null : const Radius.circular(4))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -555,7 +555,7 @@ class _Bubble extends ConsumerWidget {
           if (m.deleted)
             Text(tr(context, 'Message deleted', 'Mensaje eliminado'), style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic, color: fg.withValues(alpha: 0.7)))
           else ...[
-            for (final id in m.media) Padding(padding: const EdgeInsets.only(bottom: 4), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 220), child: SocialImage(id: id)))),
+            for (final id in m.media) Padding(padding: const EdgeInsets.only(bottom: 4), child: ClipRRect(borderRadius: prismCorners(context, 10), child: ConstrainedBox(constraints: const BoxConstraints(maxHeight: 220), child: SocialImage(id: id)))),
             if (m.body.isNotEmpty) Text(m.body, style: theme.textTheme.bodyMedium?.copyWith(color: fg)),
           ],
           const SizedBox(height: 2),
@@ -606,11 +606,11 @@ class _Bubble extends ConsumerWidget {
                       button: true,
                       label: '${e.key} ${e.value.length}',
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: prismCorners(context, 999),
                         onTap: () => onAction('react:${e.key}'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(999), color: e.value.contains(me.key) ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest),
+                          decoration: BoxDecoration(borderRadius: prismCorners(context, 999), color: e.value.contains(me.key) ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest),
                           child: Text('${e.key} ${e.value.length}', style: theme.textTheme.labelSmall),
                         ),
                       ),

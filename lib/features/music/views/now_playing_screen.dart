@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
@@ -423,7 +424,7 @@ class _LookSheet extends ConsumerWidget {
                       height: 30,
                       decoration: BoxDecoration(
                         color: Color(s),
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(width: look.color == s ? 3 : 1, color: theme.colorScheme.outline),
                       ),
                     ),

@@ -268,7 +268,7 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: theme.colorScheme.inverseSurface,
-                                  borderRadius: BorderRadius.circular(
+                                  borderRadius: prismCorners(context, 
                                     PrismTokens.radiusSmall,
                                   ),
                                 ),
@@ -319,7 +319,7 @@ class _SideTag extends StatelessWidget {
             height: 26,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               border: Border.all(color: theme.colorScheme.outlineVariant),
             ),
             child: Text(

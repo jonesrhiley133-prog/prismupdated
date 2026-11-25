@@ -59,14 +59,14 @@ Widget _box(
     child: Material(
       color: color ?? scheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: prismCorners(context, radius),
         side: BorderSide(
           color: selected ? scheme.primary : scheme.outlineVariant,
           width: selected ? 2 : 0.6,
         ),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: prismCorners(context, radius),
         onTap: onTap,
         child: Center(child: child),
       ),
@@ -1079,7 +1079,7 @@ class _MergeGameState extends State<MergeGame> {
                             scheme.primary,
                             level.clamp(0, 1),
                           ),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: prismCorners(context, 10),
                   ),
                   child: v == 0
                       ? null
@@ -1632,7 +1632,7 @@ class _TileMatchGameState extends State<TileMatchGame> {
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: scheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: prismCorners(context, 12),
             ),
             child: Row(
               children: [
@@ -2062,7 +2062,7 @@ class _SpotDifferenceGameState extends State<SpotDifferenceGame> {
               color: _found.contains(i)
                   ? scheme.primary.withValues(alpha: 0.25)
                   : scheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: prismCorners(context, 6),
               border: _found.contains(i)
                   ? Border.all(color: scheme.primary, width: 2)
                   : null,
@@ -2266,7 +2266,7 @@ class _ConnectDotsGameState extends State<ConnectDotsGame> {
                               height: 26,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                                borderRadius: prismRound(context),
                                 color: i < _next
                                     ? scheme.primary
                                     : scheme.surfaceContainerHighest,

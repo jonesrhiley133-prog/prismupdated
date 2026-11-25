@@ -64,7 +64,7 @@ class PlateRing extends ConsumerWidget {
             children: [
               for (final c in cats)
                 InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: prismCorners(context, 10),
                   onTap: () => showMealEditor(context, category: c.id, memberId: member),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
@@ -173,7 +173,7 @@ class MealTile extends ConsumerWidget {
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: prismCorners(context, 12),
             child: SizedBox(
               width: 48,
               height: 48,
@@ -241,7 +241,7 @@ class _FoodChip extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: prismCorners(context, 16),
         onTap: () => logFood(context, ref, food, member),
         onLongPress: () => showMealEditor(context, food: food),
         child: SizedBox(
@@ -249,7 +249,7 @@ class _FoodChip extends ConsumerWidget {
           child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: prismCorners(context, 16),
                 child: SizedBox(
                   width: 60,
                   height: 60,
@@ -401,7 +401,7 @@ class _MealCalendar extends StatelessWidget {
             for (var d = 1; d <= days; d++)
               InkWell(
                 onTap: () => onDay(DateTime(month.year, month.month, d)),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: prismCorners(context, 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -410,7 +410,7 @@ class _MealCalendar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         for (var k = 0; k < math.min(counts[d] ?? 0, 4); k++)
-                          Container(width: 5, height: 5, margin: const EdgeInsets.all(1), decoration: BoxDecoration(color: context.nutri.tomato, shape: BoxShape.circle)),
+                          Container(width: 5, height: 5, margin: const EdgeInsets.all(1), decoration: BoxDecoration(color: context.nutri.tomato, borderRadius: prismRound(context))),
                       ],
                     ),
                   ],
@@ -468,7 +468,7 @@ Future<void> showMealDetail(BuildContext context, String id) => PrismSheet.showF
                               padding: const EdgeInsets.only(right: 8),
                               child: id.startsWith('audio:')
                                   ? Center(child: AudioClip(id: id))
-                                  : ClipRRect(borderRadius: BorderRadius.circular(16), child: SizedBox(width: 200, child: PrismMediaView(id: id))),
+                                  : ClipRRect(borderRadius: prismCorners(context, 16), child: SizedBox(width: 200, child: PrismMediaView(id: id))),
                             ),
                         ],
                       ),
@@ -860,7 +860,7 @@ class _PantryViewState extends ConsumerState<PantryView> {
           PrismListRow(
             leading: f.strings('media').isEmpty
                 ? Icon(f.flag('favorite') ? PhosphorIcons.heart(PhosphorIconsStyle.fill) : PhosphorIcons.bowlFood(), color: context.nutri.basil)
-                : ClipRRect(borderRadius: BorderRadius.circular(8), child: SizedBox(width: 40, height: 40, child: PrismMediaView(id: f.strings('media').first))),
+                : ClipRRect(borderRadius: prismCorners(context, 8), child: SizedBox(width: 40, height: 40, child: PrismMediaView(id: f.strings('media').first))),
             title: Text(f.title),
             subtitle: Text([
               if (f.strings('ingredients').isNotEmpty) f.strings('ingredients').take(4).join(', '),
@@ -1097,7 +1097,7 @@ class _NutritionInsightsViewState extends ConsumerState<NutritionInsightsView> {
               ),
               barGroups: [
                 for (var h = 0; h < 24; h++)
-                  BarChartGroupData(x: h, barRods: [BarChartRodData(toY: hourCounts[h].toDouble(), color: context.nutri.saffron, width: 6, borderRadius: BorderRadius.circular(2))]),
+                  BarChartGroupData(x: h, barRods: [BarChartRodData(toY: hourCounts[h].toDouble(), color: context.nutri.saffron, width: 6, borderRadius: prismCorners(context, 2))]),
               ],
             ),
           ),

@@ -21,7 +21,7 @@ Future<Color?> showPrismColorPicker({
               height: 56,
               decoration: BoxDecoration(
                 color: Color(value),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: prismCorners(context, 14),
               ),
             ),
             HsvSliders(value: value, onChanged: (v) => set(() => value = v)),

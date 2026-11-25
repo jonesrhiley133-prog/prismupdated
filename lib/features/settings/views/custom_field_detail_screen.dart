@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -409,7 +410,7 @@ class _CustomFieldDetailBodyState
                   return Semantics(
                     button: true,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: prismCorners(context, 12),
                       onTap: () => Navigator.of(ctx).pop(group),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -1027,7 +1028,7 @@ class _ColorValue extends StatelessWidget {
             width: 16,
             height: 16,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: prismRound(context),
               color: color,
               border: Border.all(
                 color: theme.colorScheme.outline.withValues(alpha: 0.3),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -296,7 +297,7 @@ class _SystemManagementScreenState
 
                           return PrismListRow(
                             key: ValueKey(member.id),
-                            leading: CircleAvatar(child: Text(member.emoji)),
+                            leading: PrismCircleAvatar(child: Text(member.emoji)),
                             title: Text(
                               member.effectiveName(preferDisplayName: prefer),
                             ),

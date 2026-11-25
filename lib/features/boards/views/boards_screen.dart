@@ -385,7 +385,7 @@ class _UnreadDot extends StatelessWidget {
     return Container(
       width: 7,
       height: 7,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
     );
   }
 }
@@ -765,7 +765,7 @@ class _BoardsMemberFilterButton extends ConsumerWidget {
               width: avatarSize,
               height: avatarSize,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 color: theme.colorScheme.surfaceContainerHighest,
               ),
               child: Icon(
@@ -784,7 +784,7 @@ class _BoardsMemberFilterButton extends ConsumerWidget {
               height: 14,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 border: Border.all(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
                   width: 0.5,

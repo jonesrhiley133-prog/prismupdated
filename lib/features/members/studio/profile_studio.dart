@@ -1601,7 +1601,7 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
                 (c) => c.set('gallery', c.list('gallery')..remove(g)),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: prismCorners(context, 10),
                 child: SizedBox(
                   width: 72,
                   height: 72,
@@ -1970,7 +1970,7 @@ class _DraftBanner extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
       decoration: BoxDecoration(
         color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: prismCorners(context, 14),
       ),
       child: Row(
         children: [

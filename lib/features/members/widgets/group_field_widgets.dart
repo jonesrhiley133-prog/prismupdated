@@ -2,6 +2,7 @@
 // so screen readers announce the boundary even when the visible title is
 // hidden or empty. Child fields keep their own Semantics from each renderer.
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -401,7 +402,7 @@ class _GroupPageLeadingIcon extends StatelessWidget {
       dimension: 32,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           color: color.withValues(alpha: 0.12),
         ),
         child: Center(

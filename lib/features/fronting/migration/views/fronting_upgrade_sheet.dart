@@ -24,6 +24,7 @@ library;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -672,7 +673,7 @@ class _FrontingUpgradeSheetState extends ConsumerState<FrontingUpgradeSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(
@@ -728,7 +729,7 @@ class _FrontingUpgradeSheetState extends ConsumerState<FrontingUpgradeSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(
@@ -772,7 +773,7 @@ class _FrontingUpgradeSheetState extends ConsumerState<FrontingUpgradeSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(
@@ -855,7 +856,7 @@ class _FrontingUpgradeSheetState extends ConsumerState<FrontingUpgradeSheet> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: theme.colorScheme.primary.withValues(alpha: 0.15),
           ),
           child: Icon(
@@ -1386,7 +1387,7 @@ class _ModeCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: prismCorners(context, 12),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -1395,7 +1396,7 @@ class _ModeCard extends StatelessWidget {
                 : theme.colorScheme.surfaceContainerHighest.withValues(
                     alpha: 0.4,
                   ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: prismCorners(context, 12),
             border: Border.all(
               color: recommended
                   ? accent.withValues(alpha: 0.4)
@@ -1429,7 +1430,7 @@ class _ModeCard extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: accent,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: prismCorners(context, 8),
                             ),
                             child: Text(
                               recommendedLabel!,

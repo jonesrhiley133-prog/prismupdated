@@ -11,15 +11,29 @@ import 'package:prism_plurality/features/mood/utils/mood_stats.dart';
 
 /// A member's birthday falling on a given day.
 class BirthdayOnDay {
-  const BirthdayOnDay({this.member, this.contact, this.age})
-    : assert(member != null || contact != null);
+  const BirthdayOnDay({
+    this.member,
+    this.contact,
+    this.age,
+    this.companion,
+    this.adoption = false,
+  }) : assert(member != null || contact != null || companion != null);
   final Member? member;
   final Contact? contact;
+
+  /// A companion's name, for companion birthdays and adoption days.
+  final String? companion;
+
+  /// A companion's adoption anniversary (age = years together).
+  final bool adoption;
+
+  String get emoji => adoption ? '🐾' : '🎂';
 
   /// Display name of whoever's birthday it is.
   String name({required bool preferDisplayName}) =>
       member?.effectiveName(preferDisplayName: preferDisplayName) ??
-      contact!.displayName;
+      contact?.displayName ??
+      companion!;
 
   /// Age turned on that day, when the birth year is known.
   final int? age;
@@ -39,6 +53,7 @@ class CalendarData {
     required List<CalendarEvent> events,
     required this.members,
     this.contacts = const [],
+    this.companions = const [],
     required this.moodEntries,
     required this.reminders,
     required this.overlays,
@@ -53,6 +68,9 @@ class CalendarData {
   final List<CalendarEvent> events;
   final List<Member> members;
   final List<Contact> contacts;
+
+  /// (name, birthday 'YYYY-MM-DD' or null, adoption date).
+  final List<(String, String?, DateTime)> companions;
   final List<MoodEntry> moodEntries;
   final List<Reminder> reminders;
   final CalendarOverlays overlays;
@@ -97,6 +115,32 @@ class CalendarData {
       final b = BirthdayDate.fromStorage(c.birthday);
       if (b == null || b.nextOccurrence(d) != d) continue;
       out.add(BirthdayOnDay(contact: c, age: b.ageOn(d)));
+    }
+    if (overlays.companions) {
+      bool same(DateTime x) =>
+          (x.month == d.month && x.day == d.day) ||
+          (x.month == 2 &&
+              x.day == 29 &&
+              d.month == 2 &&
+              d.day == 28 &&
+              DateTime(d.year, 2, 29).month != 2);
+      for (final (name, bday, adopted) in companions) {
+        final b = parseBirthday(bday);
+        if (b != null && same(b)) {
+          final known = !isBirthdayYearHidden(b) && b.year < d.year;
+          out.add(
+            BirthdayOnDay(companion: name, age: known ? d.year - b.year : null),
+          );
+        }
+        if (same(adopted) && adopted.year < d.year)
+          out.add(
+            BirthdayOnDay(
+              companion: name,
+              adoption: true,
+              age: d.year - adopted.year,
+            ),
+          );
+      }
     }
     return out;
   }

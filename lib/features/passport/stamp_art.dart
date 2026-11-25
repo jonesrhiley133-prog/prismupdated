@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// How a stamp looks. Plain JSON so templates and instances can share it.
@@ -240,7 +241,7 @@ class StampView extends StatelessWidget {
               dimension: s,
               child: custom
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(s * 0.08),
+                      borderRadius: prismCorners(context, s * 0.08),
                       child: imageWidget,
                     )
                   : CustomPaint(

@@ -550,7 +550,7 @@ class _MoodCorrelationScreenState extends ConsumerState<MoodCorrelationScreen> {
                 ),
                 barGroups: [
                   for (var w = 1; w <= 7; w++)
-                    BarChartGroupData(x: w, barRods: [BarChartRodData(toY: p[w]?.$1 ?? 0, width: 18, color: theme.colorScheme.primary.withValues(alpha: (p[w]?.$2 ?? 0) >= 3 ? 1 : 0.35), borderRadius: BorderRadius.circular(4))]),
+                    BarChartGroupData(x: w, barRods: [BarChartRodData(toY: p[w]?.$1 ?? 0, width: 18, color: theme.colorScheme.primary.withValues(alpha: (p[w]?.$2 ?? 0) >= 3 ? 1 : 0.35), borderRadius: prismCorners(context, 4))]),
                 ],
               ),
             ),
@@ -621,7 +621,7 @@ class _CorrRow extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: FractionallySizedBox(
                       widthFactor: c.r < 0 ? c.r.abs().clamp(0.04, 1).toDouble() : 0,
-                      child: Container(height: 8, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4))),
+                      child: Container(height: 8, decoration: BoxDecoration(color: color, borderRadius: prismCorners(context, 4))),
                     ),
                   ),
                 ),
@@ -631,7 +631,7 @@ class _CorrRow extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: FractionallySizedBox(
                       widthFactor: c.r >= 0 ? c.r.clamp(0.04, 1).toDouble() : 0,
-                      child: Container(height: 8, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4))),
+                      child: Container(height: 8, decoration: BoxDecoration(color: color, borderRadius: prismCorners(context, 4))),
                     ),
                   ),
                 ),
@@ -653,7 +653,7 @@ class _CorrRow extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(color: confColor.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: confColor.withValues(alpha: 0.18), borderRadius: prismCorners(context, 8)),
             child: Text(
               switch (c.confidence) {
                 Confidence.high => tr(context, 'High', 'Alta'),

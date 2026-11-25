@@ -479,7 +479,7 @@ class _MonthView extends StatelessWidget {
                     for (final b in month.retrogrades)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(color: theme.colorScheme.tertiary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(color: theme.colorScheme.tertiary.withValues(alpha: 0.12), borderRadius: prismCorners(context, 20)),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -529,7 +530,7 @@ class _ComposePostSheetBodyState extends ConsumerState<_ComposePostSheetBody> {
                           button: true,
                           child: InkWell(
                             onTap: _pickMember,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: prismCorners(context, 8),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Row(
@@ -810,7 +811,7 @@ class _AuthorSelectorButton extends StatelessWidget {
         dimension: PrismTokens.topBarActionSize,
         child: Material(
           color: Colors.transparent,
-          shape: const CircleBorder(),
+          shape: prismCircleBorder(context),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -828,7 +829,7 @@ class _AuthorSelectorButton extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant.withValues(
                             alpha: 0.4,

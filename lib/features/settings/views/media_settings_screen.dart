@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1144,7 +1145,7 @@ class _LibraryImageCardState extends ConsumerState<_LibraryImageCard> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: prismCorners(context, 12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1494,7 +1495,7 @@ class _MediaThumbnail extends ConsumerWidget {
           );
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: prismCorners(context, 8),
           child: imageAsync.when(
             loading: () => Container(
               color: theme.colorScheme.surfaceContainerHighest,
@@ -1612,7 +1613,7 @@ class _AddToLibraryDialogState extends State<_AddToLibraryDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: prismCorners(context, 12),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 160),
             child: Image.memory(widget.imageBytes, fit: BoxFit.contain),

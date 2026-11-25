@@ -13,6 +13,7 @@ import 'package:prism_plurality/features/astro/content/zodiac.dart';
 import 'package:prism_plurality/features/astro/data/astro_model.dart';
 import 'package:prism_plurality/features/astro/engine/events.dart';
 import 'package:prism_plurality/features/calendar/providers/calendar_providers.dart';
+import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/contacts/providers/contact_providers.dart';
 import 'package:prism_plurality/features/fronting_roles/roles_data.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -32,8 +33,25 @@ List<BirthdayItem> collectBirthdays({
   required List<Contact> contacts,
   required List<CalendarEvent> events,
   required bool preferDisplayName,
+  List<Companion> companions = const [],
 }) {
   final out = <BirthdayItem>[];
+  for (final c in companions) {
+    if (c.isEgg) continue;
+    final d = parseAnyBirthday(c.birthday);
+    if (d != null)
+      out.add(BirthdayItem('cb:${c.id}', c.name, d, BirthdaySource.companions));
+    final a = c.adoptedAt;
+    out.add(
+      BirthdayItem(
+        'ca:${c.id}',
+        c.name,
+        DateTime(a.year, a.month, a.day),
+        BirthdaySource.companions,
+        adoption: true,
+      ),
+    );
+  }
   for (final m in members) {
     final d = parseAnyBirthday(m.birthday);
     if (d != null)
@@ -232,6 +250,9 @@ final plannedNotificationsProvider = Provider<List<PlannedNotification>>((ref) {
     contacts: ref.watch(contactsProvider).value ?? const [],
     events: ref.watch(calendarEventsProvider).value ?? const [],
     preferDisplayName: ref.watch(memberNamePreferDisplayProvider),
+    companions: settings.birthdaySources.contains(BirthdaySource.companions)
+        ? ref.watch(companionsProvider)
+        : const [],
   );
   final primaryId = (settings.horoscopeDaily || settings.horoscopeWeekly)
       ? ref.watch(primaryFronterIdProvider)

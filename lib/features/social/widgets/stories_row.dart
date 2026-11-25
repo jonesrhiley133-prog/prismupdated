@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,7 +67,7 @@ class StoriesRow extends ConsumerWidget {
                         child: GestureDetector(
                           onTap: () => openStoryComposer(context, viewer),
                           child: Container(
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: theme.colorScheme.primary, border: Border.all(color: theme.scaffoldBackgroundColor, width: 2)),
+                            decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primary, border: Border.all(color: theme.scaffoldBackgroundColor, width: 2)),
                             child: Icon(Icons.add_rounded, size: 18, color: theme.colorScheme.onPrimary),
                           ),
                         ),

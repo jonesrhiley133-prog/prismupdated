@@ -172,7 +172,7 @@ class _LetterView extends ConsumerWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(color: bg, borderRadius: prismCorners(context, 14)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

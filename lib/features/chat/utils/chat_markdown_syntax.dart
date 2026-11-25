@@ -313,7 +313,7 @@ MarkdownStyleSheet chatStylesheet(BuildContext context, TextStyle bodyStyle) {
     blockquote: flat.copyWith(color: mutedFg),
     blockquoteDecoration: BoxDecoration(
       color: mutedBg,
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: prismCorners(context, radius),
       border: Border(
         left: BorderSide(color: theme.colorScheme.primary, width: 3),
       ),

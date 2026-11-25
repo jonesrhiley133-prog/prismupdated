@@ -26,7 +26,7 @@ class StatusDot extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: Color(status.color),
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         border: Border.all(color: Theme.of(context).colorScheme.surface, width: 2),
       ),
       child: Icon(status.icon, size: size * 0.55, color: Colors.white),
@@ -337,7 +337,7 @@ class _CustomStatusEditorState extends ConsumerState<_CustomStatusEditor> {
       },
       children: [
         Center(
-          child: CircleAvatar(radius: 32, backgroundColor: Color(_color), child: Icon(iconForKey(_icon), color: Colors.white, size: 28)),
+          child: PrismCircleAvatar(radius: 32, backgroundColor: Color(_color), child: Icon(iconForKey(_icon), color: Colors.white, size: 28)),
         ),
         const SizedBox(height: 12),
         PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), onChanged: (_) => setState(() {})),

@@ -345,7 +345,7 @@ class _SegmentBadge extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: theme.colorScheme.primary,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: prismCorners(context, 999),
         ),
         child: inner,
       ),

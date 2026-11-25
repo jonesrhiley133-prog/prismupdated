@@ -84,7 +84,7 @@ class TimeOfDayChart extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: _colorFor(bucket.name),
                           // Intentionally circular even in angular mode — progress indicator convention.
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                         ),
                       ),
                       const SizedBox(width: 4),

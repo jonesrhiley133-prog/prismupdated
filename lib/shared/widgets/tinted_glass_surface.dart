@@ -70,8 +70,7 @@ class TintedGlassSurface extends ConsumerWidget {
     final mode = VisualEffectsModeX.of(context, ref);
     final isAccessible = mode.highContrast;
     final shapes = PrismShapes.of(context);
-    final effectiveShape =
-        shape == BoxShape.circle && shapes.cornerStyle == CornerStyle.angular
+    final effectiveShape = shape == BoxShape.circle && shapes.roundness < 0.999
         ? BoxShape.rectangle
         : shape;
 
@@ -134,7 +133,7 @@ class TintedGlassSurface extends ConsumerWidget {
     final effectiveBorderRadius = effectiveShape == BoxShape.circle
         ? null
         : shape == BoxShape.circle
-        ? BorderRadius.zero
+        ? shapes.roundFor(width ?? height)
         : (borderRadius ??
               BorderRadius.circular(shapes.radius(PrismTokens.radiusMedium)));
 

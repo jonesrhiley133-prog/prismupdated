@@ -183,7 +183,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
                           height: 4,
                           margin: const EdgeInsets.symmetric(horizontal: 2),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: prismCorners(context, 2),
                             color: i <= _step
                                 ? theme.colorScheme.primary
                                 : theme.colorScheme.outlineVariant,
@@ -301,7 +301,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
                             width: 76,
                             margin: const EdgeInsets.only(right: 8),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: prismCorners(context, 14),
                               border: Border.all(
                                 color: _egg == e.key
                                     ? theme.colorScheme.primary
@@ -415,11 +415,11 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
                       selected: _species.id == s.id && _custom == null,
                       label: '${s.name}. ${s.blurb}',
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: prismCorners(context, 16),
                         onTap: () => _pickSpecies(s),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: prismCorners(context, 16),
                             color: Color.lerp(
                               s.primary,
                               theme.colorScheme.surface,
@@ -486,7 +486,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: prismCorners(context, 16),
                           border: Border.all(
                             color: _palette == i
                                 ? theme.colorScheme.primary

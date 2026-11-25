@@ -1729,7 +1729,7 @@ class _Node extends StatelessWidget {
         width: 16,
         height: 16,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           color: c.withValues(alpha: 0.14),
         ),
         child: Icon(PhosphorIcons.personSimple(), size: 10, color: c),
@@ -1739,7 +1739,7 @@ class _Node extends StatelessWidget {
       width: 12,
       height: 12,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: prismRound(context),
         color: followup ? theme.colorScheme.surface : c,
         border: Border.all(
           color: followup ? theme.colorScheme.onSurfaceVariant : c,
@@ -1940,7 +1940,7 @@ class _SpotRow extends StatelessWidget {
                 height: 24,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   color: selected
                       ? theme.colorScheme.primary
                       : theme.colorScheme.primary.withValues(alpha: 0.14),

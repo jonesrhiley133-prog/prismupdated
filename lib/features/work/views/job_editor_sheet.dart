@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -186,13 +187,13 @@ class _JobEditorSheetState extends ConsumerState<JobEditorSheet> {
                     children: [
                       for (final hex in [null, ...calendarColorSwatches])
                         InkWell(
-                          customBorder: const CircleBorder(),
+                          customBorder: prismCircleBorder(context),
                           onTap: () => setState(() => _color = hex),
                           child: Container(
                             width: 30,
                             height: 30,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                              borderRadius: prismRound(context),
                               color:
                                   parseHexColor(hex) ??
                                   theme.colorScheme.primary,

@@ -101,7 +101,7 @@ class _DeleteGroupSheetState extends ConsumerState<DeleteGroupSheet> {
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: prismCorners(context, 2),
                 ),
               ),
             ),

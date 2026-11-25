@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -168,7 +169,7 @@ class SpoilerPill extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: hiddenFill,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: prismCorners(context, 4),
                     border: Border.all(color: hiddenOutline),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 2),

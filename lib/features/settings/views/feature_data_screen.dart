@@ -177,7 +177,7 @@ class _FeatureDataScreenState extends ConsumerState<FeatureDataScreen> {
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
-                      decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(12)),
+                      decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 12)),
                       child: Row(
                         children: [
                           Expanded(child: Text(tr(context, 'Reset done.', 'Restablecido.'), style: TextStyle(color: theme.colorScheme.onSecondaryContainer))),

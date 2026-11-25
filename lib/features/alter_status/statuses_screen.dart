@@ -286,7 +286,7 @@ class _CustomList extends ConsumerWidget {
       children: [
         for (final t in types)
           PrismListRow(
-            leading: CircleAvatar(
+            leading: PrismCircleAvatar(
               backgroundColor: Color(t.color),
               child: Icon(iconForKey(t.iconKey), color: Colors.white, size: 18),
             ),

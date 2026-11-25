@@ -213,17 +213,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   if (!isCompleteStep && !isFullScreenStep) ...[
                     const SizedBox(height: 8),
                     if (step == OnboardingStep.welcome)
-                      const PrismLogoTile(
+                      PrismLogoTile(
                         size: 56,
                         logoSize: 56,
-                        shape: BoxShape.circle,
+                        borderRadius: prismRound(context),
                       )
                     else
                       Container(
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                           color: primary.withValues(alpha: 0.15),
                         ),
                         child: Center(
@@ -585,7 +585,7 @@ class _CircleButtonState extends State<_CircleButton> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: prismRound(context),
             color: _pressed ? pressedBg : normalBg,
           ),
           child: Icon(widget.icon, color: iconColor, size: 22),

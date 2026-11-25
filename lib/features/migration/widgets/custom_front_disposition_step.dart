@@ -167,7 +167,7 @@ class _CfCard extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 4),
                 decoration: BoxDecoration(
                   color: _swatchColor(theme),
-                  shape: BoxShape.circle,
+                  borderRadius: prismRound(context),
                   border: Border.all(
                     color: theme.colorScheme.outlineVariant,
                     width: 0.5,
@@ -249,7 +249,7 @@ class _OptionRow extends StatelessWidget {
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                borderRadius: prismRound(context),
                 border: Border.all(
                   color: selected ? primary : outline,
                   width: 2,
@@ -262,7 +262,7 @@ class _OptionRow extends StatelessWidget {
                         height: 8,
                         decoration: BoxDecoration(
                           color: primary,
-                          shape: BoxShape.circle,
+                          borderRadius: prismRound(context),
                         ),
                       ),
                     )

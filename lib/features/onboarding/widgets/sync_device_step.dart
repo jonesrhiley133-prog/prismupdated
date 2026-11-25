@@ -772,7 +772,7 @@ class _PairingPinCaptureState extends State<_PairingPinCapture>
                     height: 16,
                     decoration: BoxDecoration(
                       // Intentionally circular even in angular mode — progress indicator convention.
-                      shape: BoxShape.circle,
+                      borderRadius: prismRound(context),
                       color: filled ? fg : fg.withValues(alpha: 0.2),
                     ),
                   ),
@@ -847,7 +847,7 @@ class _NumpadButton extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           // Intentionally circular even in angular mode — progress indicator convention.
-          shape: BoxShape.circle,
+          borderRadius: prismRound(context),
           color: buttonBg,
         ),
         child: label != null

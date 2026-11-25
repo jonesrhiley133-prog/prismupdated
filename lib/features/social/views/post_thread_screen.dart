@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -289,7 +290,7 @@ class _Link extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     button: true,
     child: InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: prismCorners(context, 8),
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
