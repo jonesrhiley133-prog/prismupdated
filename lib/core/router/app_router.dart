@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/wallets/wallet_screens.dart';
 import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
@@ -542,6 +543,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutePaths.passports,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const PassportLibraryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutePaths.wallets,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WalletsHomeScreen(),
       ),
       GoRoute(
         path: AppRoutePaths.wrapped,

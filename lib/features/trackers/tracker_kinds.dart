@@ -182,6 +182,11 @@ abstract final class TrackerKind {
   static const voiceSettings = 'voice.settings';
   static const voiceTrack = 'voice.track';
 
+  // Wallets & ID cards.
+  static const wallet = 'wallet.wallet';
+  static const walletCard = 'wallet.card';
+  static const walletIdentity = 'wallet.identity';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

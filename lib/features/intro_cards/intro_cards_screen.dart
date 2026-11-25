@@ -54,7 +54,7 @@ class _IntroCardsScreenState extends ConsumerState<IntroCardsScreen> {
     final shown = [
       for (final e in cards.entries)
         if (members.containsKey(e.key) &&
-            (_showHidden || e.value.flag('enabled')) &&
+            (_showHidden || (e.value.flag('enabled') && !e.value.flag('walletOnly'))) &&
             (q.isEmpty || members[e.key]!.name.toLowerCase().contains(q) || (e.value.str('arcana')?.toLowerCase().contains(q) ?? false)))
           e,
     ];

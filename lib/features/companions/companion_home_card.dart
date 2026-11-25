@@ -59,9 +59,9 @@ class CompanionHomeCard extends ConsumerWidget {
               onPressed: () => context.push(AppRoutePaths.companions),
             ),
             IconButton(
-              tooltip: 'Passports',
-              icon: const Icon(Icons.approval_outlined),
-              onPressed: () => context.push(AppRoutePaths.passports),
+              tooltip: 'Wallets',
+              icon: const Icon(Icons.wallet_outlined),
+              onPressed: () => context.push(AppRoutePaths.wallets),
             ),
           ],
         ),

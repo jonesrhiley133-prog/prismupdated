@@ -139,6 +139,7 @@ abstract final class AppRoutePaths {
   static const companions = '/companions';
   static const passports = '/passports';
   static const wrapped = '/wrapped';
+  static const wallets = '/wallets';
   static const experiences = '/experiences';
   static const onlineGames = '/games-online';
   static const timeline = '/timeline';

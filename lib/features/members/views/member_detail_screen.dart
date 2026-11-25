@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/features/wallets/wallet_screens.dart' show PrimaryIdCardTile;
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/shared/theme/palette_moods.dart';
@@ -321,6 +322,7 @@ class _MemberDetailBody extends ConsumerWidget {
       ),
       MemberStatusPanel(memberId: member.id),
       MemberIntroCardTile(memberId: member.id),
+      PrimaryIdCardTile(memberId: member.id),
       MemberRelationshipsSection(memberId: member.id),
       RelatedRecordsSection(self: RecordRef(RecordRef.member, member.id)),
       const SizedBox(height: 24),

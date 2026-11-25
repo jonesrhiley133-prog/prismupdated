@@ -195,12 +195,12 @@ class ExperiencesHubScreen extends ConsumerWidget {
                     onTap: () => context.push(AppRoutePaths.companions),
                   ),
                   _Tile(
-                    emoji: '📔',
-                    title: 'Passports',
+                    emoji: '👛',
+                    title: 'Wallets',
                     subtitle: passports.isEmpty
-                        ? 'Collect stamps for moments'
-                        : '${passports.length} passport${passports.length == 1 ? '' : 's'} · ${stamps.length} stamps',
-                    onTap: () => context.push(AppRoutePaths.passports),
+                        ? 'ID cards, intro cards and passports'
+                        : 'ID cards and ${passports.length} passport${passports.length == 1 ? '' : 's'} · ${stamps.length} stamps',
+                    onTap: () => context.push(AppRoutePaths.wallets),
                   ),
                   _Tile(
                     emoji: '🎁',
