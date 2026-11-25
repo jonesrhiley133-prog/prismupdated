@@ -129,6 +129,7 @@ abstract final class AppRoutePaths {
   static const settingsSystemInfo = '/settings/system-info';
   static const settingsPalette = '/settings/appearance/palette';
   static const settingsLaunch = '/settings/appearance/launch';
+  static const settingsVoice = '/settings/appearance/voice';
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';

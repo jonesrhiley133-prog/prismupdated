@@ -94,6 +94,15 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                   onPressed: () => context.push(AppRoutePaths.settingsLaunch),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: Localizations.localeOf(context).languageCode == 'es' ? 'Personalidad y voz' : 'Personality & voice',
+                  icon: Icons.record_voice_over_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.settingsVoice),
+                ),
+              ),
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(

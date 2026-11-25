@@ -178,6 +178,10 @@ abstract final class TrackerKind {
   static const wrapSnapshot = 'wrap.snapshot';
   static const wrapSettings = 'wrap.settings';
 
+  // Personality & dialogue.
+  static const voiceSettings = 'voice.settings';
+  static const voiceTrack = 'voice.track';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

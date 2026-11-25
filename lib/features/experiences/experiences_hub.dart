@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
+import 'package:prism_plurality/features/voice/voice_engine.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
@@ -153,20 +154,27 @@ class ExperiencesHubScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(shown.name, style: theme.textTheme.titleMedium),
-                          Text(
-                            shown.status.isNotEmpty
-                                ? shown.status
-                                : companionFlavor(
+                          (shown.status.isNotEmpty
+                              ? Text(
+                                  shown.status,
+                                  style: theme.textTheme.bodySmall,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : VoiceText(
+                                  VoiceContext.companionHello,
+                                  fallback: companionFlavor(
                                     shown,
                                     'pet',
                                     rnd: math.Random(
                                       DateTime.now().day + shown.id.hashCode,
                                     ),
                                   ),
-                            style: theme.textTheme.bodySmall,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                                  feature: 'companions',
+                                  vars: {'name': shown.name},
+                                  style: theme.textTheme.bodySmall,
+                                  maxLines: 2,
+                                )),
                         ],
                       ),
                     ),

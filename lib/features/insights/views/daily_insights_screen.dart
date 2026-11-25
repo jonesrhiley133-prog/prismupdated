@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show astroInsight;
+import 'package:prism_plurality/features/voice/voice_engine.dart';
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
+    show astroInsight;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -135,10 +137,19 @@ class _DailyInsightsScreenState extends ConsumerState<DailyInsightsScreen> {
     return [
       _Opening(summary: t, isToday: isToday),
       const SizedBox(height: 12),
-      if (isToday ? astroInsight(ref, Localizations.localeOf(context).languageCode == 'es') : null case final line?) ...[
+      if (isToday
+              ? astroInsight(
+                  ref,
+                  Localizations.localeOf(context).languageCode == 'es',
+                )
+              : null
+          case final line?) ...[
         PrismSurface(
           onTap: () => context.push(AppRoutePaths.astro),
-          child: Text(line, style: theme.textTheme.bodyMedium?.copyWith(height: 1.45)),
+          child: Text(
+            line,
+            style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+          ),
         ),
         const SizedBox(height: 12),
       ],
@@ -250,18 +261,24 @@ class _Opening extends StatelessWidget {
     final theme = Theme.of(context);
     final m = summary.averageMood;
     final String text;
+    final VoiceContext? vc;
     if (summary.isEmpty) {
       text = isToday
           ? l10n.insightsOpeningEmptyToday
           : l10n.insightsOpeningEmptyPast;
+      vc = isToday ? VoiceContext.insightEmpty : null;
     } else if (m == null) {
       text = l10n.insightsOpeningNoMood;
+      vc = null;
     } else if (m >= 4) {
       text = l10n.insightsOpeningGood;
+      vc = VoiceContext.insightGood;
     } else if (m >= 3) {
       text = l10n.insightsOpeningSteady;
+      vc = VoiceContext.insightSteady;
     } else {
       text = l10n.insightsOpeningHard;
+      vc = VoiceContext.insightHard;
     }
     return PrismSurface(
       tone: PrismSurfaceTone.strong,
@@ -276,7 +293,15 @@ class _Opening extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(text, style: theme.textTheme.bodyLarge),
+                if (vc == null)
+                  Text(text, style: theme.textTheme.bodyLarge)
+                else
+                  VoiceText(
+                    vc,
+                    fallback: text,
+                    feature: 'insights',
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 if (summary.checkIns == 0 && isToday) ...[
                   const SizedBox(height: 10),
                   PrismButton(

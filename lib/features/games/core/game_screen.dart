@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:prism_plurality/features/voice/voice_engine.dart';
 import 'package:prism_plurality/features/games/core/game_catalog.dart';
 import 'package:prism_plurality/features/games/core/game_kit.dart';
 import 'package:prism_plurality/features/games/core/games_data.dart';
@@ -21,8 +22,14 @@ class _LazyGameState extends State<LazyGame> {
   @override
   Widget build(BuildContext context) => FutureBuilder<void>(
     future: _f,
-    builder: (context, s) =>
-        s.connectionState == ConnectionState.done ? (s.hasError ? Center(child: Text('${s.error}')) : widget.builder(context)) : const Padding(padding: EdgeInsets.all(40), child: PrismLoadingState()),
+    builder: (context, s) => s.connectionState == ConnectionState.done
+        ? (s.hasError
+              ? Center(child: Text('${s.error}'))
+              : widget.builder(context))
+        : const Padding(
+            padding: EdgeInsets.all(40),
+            child: PrismLoadingState(),
+          ),
   );
 }
 
@@ -30,7 +37,17 @@ enum _Stage { setup, play, handoff, results }
 
 /// Hosts any game: setup → play (with pass & play turns) → results.
 class GameScreen extends ConsumerStatefulWidget {
-  const GameScreen({super.key, required this.gameId, this.challengeId, this.players, this.seed, this.custom, this.customTitle, this.onComplete, this.nightId});
+  const GameScreen({
+    super.key,
+    required this.gameId,
+    this.challengeId,
+    this.players,
+    this.seed,
+    this.custom,
+    this.customTitle,
+    this.onComplete,
+    this.nightId,
+  });
   final String gameId;
   final String? challengeId;
   final List<String>? players;
@@ -61,7 +78,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   int _round = 0;
 
   GameDef? get def => gameById(widget.gameId);
-  GameChallenge? get challenge => widget.challengeId == null ? null : ref.read(gameChallengesProvider).where((c) => c.r.id == widget.challengeId).firstOrNull;
+  GameChallenge? get challenge => widget.challengeId == null
+      ? null
+      : ref
+            .read(gameChallengesProvider)
+            .where((c) => c.r.id == widget.challengeId)
+            .firstOrNull;
 
   @override
   void initState() {
@@ -69,8 +91,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final c = challenge;
     final fronter = ref.read(gamePlayerDefaultProvider);
     _players = widget.players ?? (fronter == null ? <String>[] : [fronter]);
-    if (c != null && c.to.isNotEmpty && widget.players == null) _players = [c.to.first];
-    _seed = widget.seed ?? c?.seed ?? (def?.tags.contains('daily') == true ? dailySeed() : math.Random().nextInt(1 << 30));
+    if (c != null && c.to.isNotEmpty && widget.players == null)
+      _players = [c.to.first];
+    _seed =
+        widget.seed ??
+        c?.seed ??
+        (def?.tags.contains('daily') == true
+            ? dailySeed()
+            : math.Random().nextInt(1 << 30));
   }
 
   @override
@@ -89,7 +117,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _queueSave(Map<String, Object?> state) {
-    if (def?.saves != true || widget.challengeId != null || widget.custom != null) return;
+    if (def?.saves != true ||
+        widget.challengeId != null ||
+        widget.custom != null)
+      return;
     _pending = state;
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 700), _flushSave);
@@ -99,7 +130,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final s = _pending;
     if (s == null) return;
     _pending = null;
-    ref.read(gamesActionsProvider).writeSave(widget.gameId, _current, s, seed: _seed);
+    ref
+        .read(gamesActionsProvider)
+        .writeSave(widget.gameId, _current, s, seed: _seed);
   }
 
   Future<void> _finish(GameOutcome o) async {
@@ -107,10 +140,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     _debounce?.cancel();
     _pending = null;
     final who = _current;
-    if (d.saves) await ref.read(gamesActionsProvider).clearSave(widget.gameId, who);
+    if (d.saves)
+      await ref.read(gamesActionsProvider).clearSave(widget.gameId, who);
     await ref
         .read(gamesActionsProvider)
-        .recordResult(gameId: widget.gameId, memberId: who, score: o.score, max: o.max, summary: o.summary, memorable: o.memorable, challengeId: widget.challengeId, nightId: widget.nightId);
+        .recordResult(
+          gameId: widget.gameId,
+          memberId: who,
+          score: o.score,
+          max: o.max,
+          summary: o.summary,
+          memorable: o.memorable,
+          challengeId: widget.challengeId,
+          nightId: widget.nightId,
+        );
     if (!mounted) return;
     setState(() {
       if (who != null) {
@@ -124,7 +167,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       } else {
         _stage = _Stage.results;
         if (widget.onComplete != null) {
-          widget.onComplete!({..._outcomes, if (_lastAnon != null) '': _lastAnon!});
+          widget.onComplete!({
+            ..._outcomes,
+            if (_lastAnon != null) '': _lastAnon!,
+          });
         }
       }
     });
@@ -156,11 +202,16 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     if (d == null) {
       return PrismPageScaffold(
         topBar: const PrismTopBar(title: 'Games'),
-        body: EmptyState(icon: Icon(PhosphorIcons.question()), title: tr(context, 'Game not found', 'Juego no encontrado'), subtitle: widget.gameId),
+        body: EmptyState(
+          icon: Icon(PhosphorIcons.question()),
+          title: tr(context, 'Game not found', 'Juego no encontrado'),
+          subtitle: widget.gameId,
+        ),
       );
     }
     final names = ref.watch(gameNamesProvider);
-    final favs = ref.watch(gameProfilesProvider)[_current ?? '']?.favorites ?? const [];
+    final favs =
+        ref.watch(gameProfilesProvider)[_current ?? '']?.favorites ?? const [];
     final title = widget.customTitle ?? trp(context, d.name);
     return PopScope(
       canPop: _stage != _Stage.play,
@@ -173,11 +224,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       child: PrismPageScaffold(
         topBar: PrismTopBar(
           title: title,
-          subtitle: _stage == _Stage.play && _current != null ? names[_current] : trp(context, d.category.label),
+          subtitle: _stage == _Stage.play && _current != null
+              ? names[_current]
+              : trp(context, d.category.label),
           leading: _stage == _Stage.play
               ? PrismTopBarAction(
                   icon: PhosphorIcons.pause(),
-                  tooltip: d.saves ? tr(context, 'Pause & save', 'Pausar y guardar') : tr(context, 'Stop', 'Parar'),
+                  tooltip: d.saves
+                      ? tr(context, 'Pause & save', 'Pausar y guardar')
+                      : tr(context, 'Stop', 'Parar'),
                   onPressed: () {
                     _flushSave();
                     setState(() => _stage = _Stage.setup);
@@ -185,11 +240,18 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 )
               : null,
           actions: [
-            PrismTopBarAction(icon: PhosphorIcons.question(), tooltip: tr(context, 'How to play', 'Cómo se juega'), onPressed: () => _showHowTo(context, d)),
             PrismTopBarAction(
-              icon: favs.contains(d.id) ? PhosphorIcons.heart(PhosphorIconsStyle.fill) : PhosphorIcons.heart(),
+              icon: PhosphorIcons.question(),
+              tooltip: tr(context, 'How to play', 'Cómo se juega'),
+              onPressed: () => _showHowTo(context, d),
+            ),
+            PrismTopBarAction(
+              icon: favs.contains(d.id)
+                  ? PhosphorIcons.heart(PhosphorIconsStyle.fill)
+                  : PhosphorIcons.heart(),
               tooltip: tr(context, 'Favourite', 'Favorito'),
-              onPressed: () => ref.read(gamesActionsProvider).toggleFavorite(d.id, _current),
+              onPressed: () =>
+                  ref.read(gamesActionsProvider).toggleFavorite(d.id, _current),
             ),
           ],
         ),
@@ -197,14 +259,30 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         bodyPadding: EdgeInsets.zero,
         body: ClampedBody(
           child: ListView(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 32 + NavBarInset.of(context)),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              8,
+              16,
+              32 + NavBarInset.of(context),
+            ),
             children: [
               switch (_stage) {
                 _Stage.setup => _setup(context, d),
                 _Stage.play => KeyedSubtree(
                   key: ValueKey('$_round/$_turn'),
                   child: d.build(
-                    GameSession(def: d, player: _current, players: _players, names: names, seed: _seed, saved: _restored, timer: _timer, custom: widget.custom, save: _queueSave, finish: _finish),
+                    GameSession(
+                      def: d,
+                      player: _current,
+                      players: _players,
+                      names: names,
+                      seed: _seed,
+                      saved: _restored,
+                      timer: _timer,
+                      custom: widget.custom,
+                      save: _queueSave,
+                      finish: _finish,
+                    ),
                   ),
                 ),
                 _Stage.handoff => _handoff(context, names),
@@ -228,7 +306,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   Widget _setup(BuildContext context, GameDef d) {
     final theme = Theme.of(context);
-    final save = d.saves && widget.challengeId == null && widget.custom == null ? ref.watch(gameSavesProvider).where((r) => r.title == d.id && r.memberId == _current).firstOrNull : null;
+    final save = d.saves && widget.challengeId == null && widget.custom == null
+        ? ref
+              .watch(gameSavesProvider)
+              .where((r) => r.title == d.id && r.memberId == _current)
+              .firstOrNull
+        : null;
     final c = challenge;
     final names = ref.watch(gameNamesProvider);
     return Column(
@@ -244,11 +327,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     width: 56,
                     height: 56,
                     alignment: Alignment.center,
-                    decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Text(d.emoji, style: const TextStyle(fontSize: 30)),
                   ),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(trp(context, d.desc), style: theme.textTheme.bodyMedium?.copyWith(height: 1.4))),
+                  Expanded(
+                    child: Text(
+                      trp(context, d.desc),
+                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -258,11 +349,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 children: [
                   _Meta(PhosphorIcons.clock(), '~${d.minutes} min'),
                   _Meta(PhosphorIcons.users(), playersLabel(context, d)),
-                  _Meta(PhosphorIcons.gauge(), difficultyLabel(context, d.difficulty)),
+                  _Meta(
+                    PhosphorIcons.gauge(),
+                    difficultyLabel(context, d.difficulty),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(trp(context, d.howTo), style: theme.textTheme.bodySmall?.copyWith(height: 1.45, color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                trp(context, d.howTo),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  height: 1.45,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
@@ -276,11 +376,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             ),
           ),
         ],
-        PrismSectionHeader(title: d.maxPlayers > 1 ? tr(context, 'WHO\'S PLAYING', 'QUIÉN JUEGA') : tr(context, 'PLAYING AS', 'JUEGA')),
+        PrismSectionHeader(
+          title: d.maxPlayers > 1
+              ? tr(context, 'WHO\'S PLAYING', 'QUIÉN JUEGA')
+              : tr(context, 'PLAYING AS', 'JUEGA'),
+        ),
         AlterChips(
           ids: _players,
           onTap: () async {
-            final p = await pickAlters(context, ref, selected: _players, max: d.maxPlayers);
+            final p = await pickAlters(
+              context,
+              ref,
+              selected: _players,
+              max: d.maxPlayers,
+            );
             if (p != null) setState(() => _players = p);
           },
         ),
@@ -293,14 +402,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 'Pass & play: each alter gets the same puzzle in turn, then you compare. You can stop between turns.',
                 'Por turnos: cada alter juega el mismo reto y luego comparáis. Podéis parar entre turnos.',
               ),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         if (d.timerOption)
           PrismSwitchRow(
             padding: const EdgeInsets.symmetric(vertical: 10),
             title: tr(context, 'Use a timer', 'Usar temporizador'),
-            subtitle: tr(context, 'Optional — every game can be played untimed.', 'Opcional: todos los juegos se pueden jugar sin tiempo.'),
+            subtitle: tr(
+              context,
+              'Optional — every game can be played untimed.',
+              'Opcional: todos los juegos se pueden jugar sin tiempo.',
+            ),
             value: _timer,
             onChanged: (v) => setState(() => _timer = v),
           ),
@@ -310,17 +425,28 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             tone: PrismButtonTone.filled,
             expanded: true,
             icon: PhosphorIcons.play(),
-            label: tr(context, 'Continue where you left off', 'Continuar donde lo dejaste'),
+            label: tr(
+              context,
+              'Continue where you left off',
+              'Continuar donde lo dejaste',
+            ),
             onPressed: () => _start(resume: true),
           ),
           const SizedBox(height: 8),
-          PrismButton(expanded: true, icon: PhosphorIcons.arrowCounterClockwise(), label: tr(context, 'Start over', 'Empezar de nuevo'), onPressed: () => _start()),
+          PrismButton(
+            expanded: true,
+            icon: PhosphorIcons.arrowCounterClockwise(),
+            label: tr(context, 'Start over', 'Empezar de nuevo'),
+            onPressed: () => _start(),
+          ),
         ] else
           PrismButton(
             tone: PrismButtonTone.filled,
             expanded: true,
             icon: PhosphorIcons.play(),
-            label: c != null ? tr(context, 'Accept challenge', 'Aceptar reto') : tr(context, 'Play', 'Jugar'),
+            label: c != null
+                ? tr(context, 'Accept challenge', 'Aceptar reto')
+                : tr(context, 'Play', 'Jugar'),
             onPressed: () => _start(),
           ),
       ],
@@ -335,19 +461,47 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         children: [
           AlterDot(next, size: 72),
           const SizedBox(height: 16),
-          Text(tr(context, 'Pass to ${names[next]}', 'Pasa a ${names[next]}'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+          Text(
+            tr(context, 'Pass to ${names[next]}', 'Pasa a ${names[next]}'),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 8),
           Text(
-            tr(context, 'Same puzzle, their turn. Results are saved — they can play now or later.', 'Mismo reto, su turno. Los resultados se guardan: puede jugar ahora o más tarde.'),
+            tr(
+              context,
+              'Same puzzle, their turn. Results are saved — they can play now or later.',
+              'Mismo reto, su turno. Los resultados se guardan: puede jugar ahora o más tarde.',
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          PrismButton(tone: PrismButtonTone.filled, label: tr(context, 'Start ${names[next]}\'s turn', 'Empezar turno de ${names[next]}'), onPressed: () => setState(() => _stage = _Stage.play)),
+          PrismButton(
+            tone: PrismButtonTone.filled,
+            label: tr(
+              context,
+              'Start ${names[next]}\'s turn',
+              'Empezar turno de ${names[next]}',
+            ),
+            onPressed: () => setState(() => _stage = _Stage.play),
+          ),
           const SizedBox(height: 8),
           PrismButton(
-            label: tr(context, 'Later — leave it as a challenge', 'Más tarde: dejarlo como reto'),
+            label: tr(
+              context,
+              'Later — leave it as a challenge',
+              'Más tarde: dejarlo como reto',
+            ),
             onPressed: () async {
-              await ref.read(gamesActionsProvider).createChallenge(gameId: widget.gameId, from: _players.first, to: _players.sublist(_turn), seed: _seed);
+              await ref
+                  .read(gamesActionsProvider)
+                  .createChallenge(
+                    gameId: widget.gameId,
+                    from: _players.first,
+                    to: _players.sublist(_turn),
+                    seed: _seed,
+                  );
               if (mounted) setState(() => _stage = _Stage.results);
             },
           ),
@@ -358,19 +512,33 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   Widget _results(BuildContext context, GameDef d, Map<String, String> names) {
     final theme = Theme.of(context);
-    final entries = [..._outcomes.entries.map((e) => (e.key, e.value)), if (_lastAnon != null) ('', _lastAnon!)];
+    final entries = [
+      ..._outcomes.entries.map((e) => (e.key, e.value)),
+      if (_lastAnon != null) ('', _lastAnon!),
+    ];
     final scored = entries.where((e) => e.$2.scored).toList();
     // Earlier results for the same challenge (async play).
     final chResults = widget.challengeId == null
         ? const <GameResult>[]
         : [
             for (final r in ref.watch(gameResultsProvider))
-              if (r.challengeId == widget.challengeId || (r.r.id == challenge?.r.id)) r,
+              if (r.challengeId == widget.challengeId ||
+                  (r.r.id == challenge?.r.id))
+                r,
           ];
     final c = challenge;
     final fromResult = c == null
         ? null
-        : ref.watch(gameResultsProvider).where((r) => r.gameId == c.gameId && r.memberId == c.from && r.challengeId == null && r.when.isBefore(c.when.add(const Duration(minutes: 5)))).firstOrNull;
+        : ref
+              .watch(gameResultsProvider)
+              .where(
+                (r) =>
+                    r.gameId == c.gameId &&
+                    r.memberId == c.from &&
+                    r.challengeId == null &&
+                    r.when.isBefore(c.when.add(const Duration(minutes: 5))),
+              )
+              .firstOrNull;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -379,28 +547,80 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             children: [
               Text('🎉', style: const TextStyle(fontSize: 40)),
               const SizedBox(height: 6),
-              Text(tr(context, 'Nicely done!', '¡Bien hecho!'), style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              VoiceText(
+                VoiceContext.gameFinish,
+                fallback: tr(context, 'Nicely done!', '¡Bien hecho!'),
+                feature: 'games',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 10),
               for (final (id, o) in entries)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      if (id.isNotEmpty) ...[AlterDot(id, size: 26), const SizedBox(width: 8)],
-                      Expanded(child: Text(id.isEmpty ? (o.summary.isEmpty ? tr(context, 'Finished', 'Terminado') : o.summary) : '${names[id]}${o.summary.isEmpty ? '' : ' — ${o.summary}'}')),
-                      if (o.scored) Text('${o.score}${o.max == null ? '' : ' / ${o.max}'}', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                      if (id.isNotEmpty) ...[
+                        AlterDot(id, size: 26),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: Text(
+                          id.isEmpty
+                              ? (o.summary.isEmpty
+                                    ? tr(context, 'Finished', 'Terminado')
+                                    : o.summary)
+                              : '${names[id]}${o.summary.isEmpty ? '' : ' — ${o.summary}'}',
+                        ),
+                      ),
+                      if (o.scored)
+                        Text(
+                          '${o.score}${o.max == null ? '' : ' / ${o.max}'}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                     ],
                   ),
                 ),
               if (scored.length > 1) ...[
                 const SizedBox(height: 6),
-                Text(() {
-                  final best = scored.reduce((a, b) => (a.$2.score ?? 0) >= (b.$2.score ?? 0) ? a : b);
-                  final tie = scored.where((e) => e.$2.score == best.$2.score).length > 1;
-                  return tie
-                      ? tr(context, 'A tie — well played, everyone!', '¡Empate! Bien jugado, todos.')
-                      : tr(context, '${names[best.$1]} scored highest this time.', '${names[best.$1]} sacó la puntuación más alta esta vez.');
-                }(), style: theme.textTheme.bodySmall),
+                Builder(
+                  builder: (context) {
+                    final best = scored.reduce(
+                      (a, b) => (a.$2.score ?? 0) >= (b.$2.score ?? 0) ? a : b,
+                    );
+                    final tie =
+                        scored
+                            .where((e) => e.$2.score == best.$2.score)
+                            .length >
+                        1;
+                    return tie
+                        ? VoiceText(
+                            VoiceContext.gameTie,
+                            fallback: tr(
+                              context,
+                              'A tie — well played, everyone!',
+                              '¡Empate! Bien jugado, todos.',
+                            ),
+                            feature: 'games',
+                            style: theme.textTheme.bodySmall,
+                          )
+                        : VoiceText(
+                            VoiceContext.gameWin,
+                            fallback: tr(
+                              context,
+                              '${names[best.$1]} scored highest this time.',
+                              '${names[best.$1]} sacó la puntuación más alta esta vez.',
+                            ),
+                            feature: 'games',
+                            vars: {'name': names[best.$1] ?? ''},
+                            style: theme.textTheme.bodySmall,
+                          );
+                  },
+                ),
               ],
               if (fromResult != null && fromResult.score != null)
                 Padding(
@@ -417,7 +637,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               if (chResults.length > 1)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text(tr(context, '${chResults.length} alters have played this challenge.', '${chResults.length} alters han jugado este reto.'), style: theme.textTheme.bodySmall),
+                  child: Text(
+                    tr(
+                      context,
+                      '${chResults.length} alters have played this challenge.',
+                      '${chResults.length} alters han jugado este reto.',
+                    ),
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ),
               for (final (_, o) in entries)
                 if (o.memorable != null && o.memorable!.isNotEmpty)
@@ -426,7 +653,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     child: Text(
                       '"${o.memorable}"',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontStyle: FontStyle.italic, height: 1.4),
+                      style: const TextStyle(
+                        fontStyle: FontStyle.italic,
+                        height: 1.4,
+                      ),
                     ),
                   ),
             ],
@@ -449,7 +679,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             PrismButton(
               expanded: true,
               icon: PhosphorIcons.paperPlaneTilt(),
-              label: tr(context, 'Challenge another alter with this one', 'Retar a otro alter con este'),
+              label: tr(
+                context,
+                'Challenge another alter with this one',
+                'Retar a otro alter con este',
+              ),
               onPressed: () => _challenge(context),
             ),
           ],
@@ -473,7 +707,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     occurredAt: DateTime.now(),
                     tags: const ['games'],
                   );
-              if (context.mounted) PrismToast.show(context, message: tr(context, 'Saved to Journal', 'Guardado en el diario'));
+              if (context.mounted)
+                PrismToast.show(
+                  context,
+                  message: tr(
+                    context,
+                    'Saved to Journal',
+                    'Guardado en el diario',
+                  ),
+                );
             },
           ),
         ],
@@ -482,10 +724,33 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   Future<void> _challenge(BuildContext context) async {
-    final to = await pickAlters(context, ref, title: tr(context, 'Who should take the challenge?', '¿Quién acepta el reto?'));
+    final to = await pickAlters(
+      context,
+      ref,
+      title: tr(
+        context,
+        'Who should take the challenge?',
+        '¿Quién acepta el reto?',
+      ),
+    );
     if (to == null || to.isEmpty || !context.mounted) return;
-    await ref.read(gamesActionsProvider).createChallenge(gameId: widget.gameId, from: _players.isEmpty ? null : _players.first, to: to, seed: _seed);
-    if (context.mounted) PrismToast.show(context, message: tr(context, 'Challenge left for them — they can play whenever they like.', 'Reto enviado: pueden jugarlo cuando quieran.'));
+    await ref
+        .read(gamesActionsProvider)
+        .createChallenge(
+          gameId: widget.gameId,
+          from: _players.isEmpty ? null : _players.first,
+          to: to,
+          seed: _seed,
+        );
+    if (context.mounted)
+      PrismToast.show(
+        context,
+        message: tr(
+          context,
+          'Challenge left for them — they can play whenever they like.',
+          'Reto enviado: pueden jugarlo cuando quieran.',
+        ),
+      );
   }
 }
 
@@ -498,7 +763,10 @@ class _Meta extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
