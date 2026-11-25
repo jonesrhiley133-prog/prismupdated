@@ -166,6 +166,14 @@ abstract final class TrackerKind {
   static const companionSpecies = 'comp.species';
   static const companionSettings = 'comp.settings';
 
+  // Prism Passport
+  static const passport = 'pass.passport';
+  static const passportPage = 'pass.page';
+  static const passportElement = 'pass.element';
+  static const passportStamp = 'pass.stamp';
+  static const passportStampTemplate = 'pass.template';
+  static const passportSettings = 'pass.settings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');
