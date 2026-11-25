@@ -154,7 +154,6 @@ class AccountScreen extends ConsumerWidget {
     AccountsState all,
   ) {
     final theme = Theme.of(context);
-    final actions = ref.read(accountActionsProvider);
     return [
       PrismSurface(
         padding: const EdgeInsets.all(16),
@@ -287,16 +286,7 @@ class AccountScreen extends ConsumerWidget {
         icon: Icons.logout,
         tone: PrismButtonTone.outlined,
         expanded: true,
-        onPressed: () async {
-          final ok = await PrismDialog.confirm(
-            context: context,
-            title: 'Sign out?',
-            message:
-                'Your data stays on this device. Backups stay in your account.',
-            confirmLabel: 'Sign out',
-          );
-          if (ok) await actions.signOut(a);
-        },
+        onPressed: () => signOutFlow(context, ref, a),
       ),
       const SizedBox(height: 8),
       PrismButton(
@@ -1121,6 +1111,207 @@ class _DevicesScreen extends ConsumerWidget {
                       ),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Signs out after a warning when the latest changes aren't backed up, then
+/// shows the sign-in screen. Data on this device is never deleted.
+Future<void> signOutFlow(
+  BuildContext context,
+  WidgetRef ref,
+  SavedAccount a,
+) async {
+  final stale =
+      a.backupKey != null &&
+      (a.lastBackupAt == null ||
+          DateTime.now().difference(a.lastBackupAt!) >
+              const Duration(hours: 24));
+  final pick = await PrismDialog.show<String>(
+    context: context,
+    title: 'Sign out of ${a.username}?',
+    message: stale
+        ? 'There\'s no backup from this device in the last day, so recent changes aren\'t in your account yet. Your data stays on this device either way.'
+        : 'Your data stays on this device. Backups stay in your account.',
+    builder: (_) => const SizedBox.shrink(),
+    actions: [
+      PrismButton(
+        label: 'Cancel',
+        onPressed: () =>
+            Navigator.of(context, rootNavigator: true).pop('cancel'),
+      ),
+      if (stale)
+        PrismButton(
+          label: 'Back up, then sign out',
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: true).pop('backup'),
+        ),
+      PrismButton(
+        label: 'Sign out',
+        tone: PrismButtonTone.filled,
+        onPressed: () => Navigator.of(context, rootNavigator: true).pop('out'),
+      ),
+    ],
+  );
+  if (pick == null || pick == 'cancel' || !context.mounted) return;
+  final actions = ref.read(accountActionsProvider);
+  if (pick == 'backup') {
+    try {
+      await actions.backUpNow(a, label: 'Before signing out');
+    } catch (e) {
+      if (context.mounted)
+        PrismToast.show(
+          context,
+          message: 'Backup failed: $e — still signed in.',
+        );
+      return;
+    }
+  }
+  await actions.signOut(a);
+  if (!context.mounted) return;
+  await Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+    MaterialPageRoute<void>(
+      builder: (_) => const AccountAuthScreen(signedOut: true),
+    ),
+    (r) => r.isFirst,
+  );
+}
+
+/// Where you land after signing out (or when choosing an account): saved
+/// accounts, sign in, create one, or carry on without an account. Only
+/// sign-in methods Prism actually supports are shown.
+class AccountAuthScreen extends ConsumerWidget {
+  const AccountAuthScreen({super.key, this.signedOut = false});
+  final bool signedOut;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final saved =
+        ref.watch(accountsProvider).value?.accounts ?? const <SavedAccount>[];
+    return PrismPageScaffold(
+      body: SafeArea(
+        child: ClampedBody(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
+            children: [
+              Icon(
+                Icons.account_circle_outlined,
+                size: 56,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                signedOut ? 'You\'re signed out' : 'Choose an account',
+                style: theme.textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Everything on this device is still here. Sign in to back up and restore, or keep going without an account.',
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              if (saved.isNotEmpty) ...[
+                Text('Saved accounts', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 6),
+                PrismSurface(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Column(
+                    children: [
+                      for (final x in saved)
+                        PrismListRow(
+                          leading: CircleAvatar(
+                            child: Text(
+                              x.username.characters.first.toUpperCase(),
+                            ),
+                          ),
+                          title: Text(x.username),
+                          subtitle: Text(
+                            Uri.tryParse(x.server)?.host ?? x.server,
+                          ),
+                          showChevron: true,
+                          onTap: () async {
+                            await ref
+                                .read(accountsProvider.notifier)
+                                .activate(x.key);
+                            if (context.mounted)
+                              await Navigator.of(context).pushReplacement(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const AccountScreen(),
+                                ),
+                              );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              PrismButton(
+                label: 'Sign in',
+                icon: Icons.login,
+                tone: PrismButtonTone.filled,
+                expanded: true,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const _AuthScreen(create: false),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              PrismButton(
+                label: 'Create an account',
+                icon: Icons.person_add_alt,
+                expanded: true,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const _AuthScreen(create: true),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              PrismButton(
+                label: 'Continue without an account',
+                icon: Icons.offline_bolt_outlined,
+                expanded: true,
+                onPressed: () => Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).popUntil((r) => r.isFirst),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: PrismButton(
+                  label: 'Forgot your password?',
+                  density: PrismControlDensity.compact,
+                  onPressed: () => PrismDialog.show<void>(
+                    context: context,
+                    title: 'Forgot your password?',
+                    message:
+                        'Prism never sees your password, so it can\'t reset it — that\'s what keeps backups private. If you saved your recovery key, you can still restore a downloaded backup with it, and create a new account. Without the password or the key, backups in the old account can\'t be opened.',
+                    builder: (_) => const SizedBox.shrink(),
+                    actions: [
+                      PrismButton(
+                        label: 'OK',
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Google, Microsoft and Facebook sign-in aren\'t available: Prism accounts are end-to-end encrypted with your own password.',
+                style: theme.textTheme.bodySmall,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
