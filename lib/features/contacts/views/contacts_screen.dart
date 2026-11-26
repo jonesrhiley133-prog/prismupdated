@@ -171,7 +171,7 @@ class _BirthdayRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: PrismSurface(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        onTap: () => showContactEditor(context, editing: item.contact),
+        onTap: () => context.push(AppRoutePaths.contact(item.contact.id)),
         child: Row(
           children: [
             Icon(AppIcons.cake, color: Colors.pinkAccent, size: 20),
@@ -219,7 +219,7 @@ class _ContactRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: PrismSurface(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        onTap: () => showContactEditor(context, editing: contact),
+        onTap: () => context.push(AppRoutePaths.contact(contact.id)),
         child: Row(
           children: [
             Container(

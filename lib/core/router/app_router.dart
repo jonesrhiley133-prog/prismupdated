@@ -1,3 +1,4 @@
+import 'package:prism_plurality/features/contacts/views/contact_profile_screen.dart';
 import 'package:prism_plurality/shared/fonts/font_prefs.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -1561,6 +1562,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.contacts,
                 builder: (context, state) => const ContactsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => ContactProfileScreen(
+                      contactId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -188,6 +188,9 @@ abstract final class TrackerKind {
   static const walletIdentity = 'wallet.identity';
   static const walletTemplate = 'wallet.template';
 
+  // Contact profiles: everything beyond the basic contact record.
+  static const contactProfile = 'contact.profile';
+
   // Flag Studio.
   static const flag = 'flag.design';
 

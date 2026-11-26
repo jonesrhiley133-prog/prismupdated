@@ -25,6 +25,7 @@ abstract final class AppRoutePaths {
   static const insights = '/insights';
   static const cycle = '/cycle';
   static const contacts = '/contacts';
+  static String contact(String id) => '/contacts/$id';
   static const journal = '/journal';
   static const dictionary = '/dictionary';
   static const achievements = '/achievements';
