@@ -31,6 +31,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
   bool _loaded = false;
   double get _aspect => _front.aspect > 0 ? _front.aspect : _cardAspect;
   double _cardAspect = idCardRatio;
+  bool _shine = false;
   bool _onBack = false;
   bool _snap = true;
   bool _grid = false;
@@ -173,6 +174,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
           collection: _front.tpl.isEmpty ? null : _front.tpl.split('.').first,
           layout: _front.tpl.isEmpty ? null : _front.tpl.split('.').last,
           aspect: _aspect,
+          extra: {'shine': _shine},
         );
     if (mounted) {
       setState(() => _dirty = false);
@@ -194,6 +196,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
       _values = {...card.values};
       _title = card.r.title;
       _cardAspect = card.aspect;
+      _shine = card.shine;
       _loaded = true;
     }
     final theme = Theme.of(context);
@@ -417,6 +420,20 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                     icon: Icons.aspect_ratio,
                     density: PrismControlDensity.compact,
                     onPressed: _cardShape,
+                  ),
+                  PrismButton(
+                    label: 'Save as template',
+                    icon: Icons.bookmark_add_outlined,
+                    density: PrismControlDensity.compact,
+                    onPressed: _saveAsTemplate,
+                  ),
+                  PrismChip(
+                    label: 'Shine',
+                    selected: _shine,
+                    onTap: () => setState(() {
+                      _shine = !_shine;
+                      _dirty = true;
+                    }),
                   ),
                   PrismButton(
                     label: 'Template',
@@ -869,6 +886,11 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
             const SizedBox(height: 8),
             Expanded(
               child: IdTemplateGallery(
+                custom: ref.read(savedIdTemplatesProvider),
+                onDeleteCustom: (t) async {
+                  await ref.read(walletActionsProvider).deleteTemplate(t);
+                  if (ctx.mounted) Navigator.of(ctx).pop();
+                },
                 type: card.type,
                 selected: _front.tpl,
                 fields: {
@@ -887,7 +909,45 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
     );
     if (pick == null) return;
     final parts = pick.split('.');
+    if (parts.first == 'my') {
+      final t = ref
+          .read(savedIdTemplatesProvider)
+          .where((x) => x.id == parts.last)
+          .firstOrNull;
+      if (t != null) _applySaved(t);
+      return;
+    }
     _applyTemplate(card, parts.first, parts.last);
+  }
+
+  Future<void> _saveAsTemplate() async {
+    final name = await promptText(context, 'Name this template', initial: '');
+    if (name == null || name.trim().isEmpty) return;
+    await ref
+        .read(walletActionsProvider)
+        .saveTemplate(
+          name: name,
+          front: _front.copyWith(aspect: _aspect),
+          back: _back.copyWith(aspect: _aspect),
+        );
+    if (mounted) {
+      PrismToast.show(
+        context,
+        message: 'Saved to My templates — use it on any card',
+      );
+    }
+  }
+
+  /// Applies one of the person's own templates. Their field details stay.
+  void _applySaved(SavedIdTemplate t) {
+    setState(() {
+      _push();
+      final ar = t.front.aspect > 0 ? t.front.aspect : idCardRatio;
+      _front = t.front.copyWith(aspect: ar);
+      _back = t.back.copyWith(aspect: ar);
+      _sel = null;
+    });
+    PrismToast.show(context, message: '${t.name} applied — undo to go back');
   }
 
   /// Applies a template without losing anything the user made: their own
@@ -1070,90 +1130,163 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
     Widget? photo,
   ) async {
     final key = GlobalKey();
+    // Private by default: these stay off an exported image unless chosen.
+    final hidden = <String>{
+      'birthday',
+      'age',
+      'notes',
+      'boundaries',
+      'custom1',
+      'custom2',
+      'custom3',
+      'signature',
+    };
+    var hidePhoto = false;
     await PrismSheet.show<void>(
       context: context,
       title: 'Export card',
-      builder: (ctx) => SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            RepaintBoundary(
-              key: key,
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, set) {
+          final shown = {
+            for (final e in values.entries)
+              e.key: hidden.contains(e.key) ? '' : e.value,
+          };
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                RepaintBoundary(
+                  key: key,
+                  child: Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CardFaceView(
+                          face: _front,
+                          values: shown,
+                          photo: hidePhoto ? null : photo,
+                          width: 300,
+                          ratio: _aspect,
+                        ),
+                        const SizedBox(height: 10),
+                        CardFaceView(
+                          face: _back,
+                          values: shown,
+                          photo: hidePhoto ? null : photo,
+                          width: 300,
+                          ratio: _aspect,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          fictionalIdNotice,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF555555),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Keep private (tap to show or hide)',
+                    style: Theme.of(ctx).textTheme.titleSmall,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
                   children: [
-                    CardFaceView(
-                      face: _front,
-                      values: values,
-                      photo: photo,
-                      width: 300,
-                      ratio: _aspect,
-                    ),
-                    const SizedBox(height: 10),
-                    CardFaceView(
-                      face: _back,
-                      values: values,
-                      photo: photo,
-                      width: 300,
-                      ratio: _aspect,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      fictionalIdNotice,
-                      style: TextStyle(fontSize: 10, color: Color(0xFF555555)),
+                    for (final f in const [
+                      'birthday',
+                      'age',
+                      'notes',
+                      'boundaries',
+                      'custom1',
+                      'custom2',
+                      'custom3',
+                      'signature',
+                      'number',
+                      'pronouns',
+                      'role',
+                      'status',
+                    ])
+                      PrismChip(
+                        label:
+                            '${hidden.contains(f) ? 'Hidden' : 'Shown'}: ${idFields[f] ?? f}',
+                        selected: hidden.contains(f),
+                        onTap: () => set(
+                          () => hidden.contains(f)
+                              ? hidden.remove(f)
+                              : hidden.add(f),
+                        ),
+                      ),
+                    PrismChip(
+                      label: '${hidePhoto ? 'Hidden' : 'Shown'}: Photo',
+                      selected: hidePhoto,
+                      onTap: () => set(() => hidePhoto = !hidePhoto),
                     ),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Exports always include the “Personal / Fictional ID” notice.',
-              style: Theme.of(ctx).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                PrismButton(
-                  label: 'Save image',
-                  icon: Icons.image_outlined,
-                  onPressed: () async {
-                    final b = await captureBoundary(key);
-                    if (b == null) return;
-                    final ok = await saveImageBytes(
-                      ref,
-                      b,
-                      'prism-card-${card.number}',
-                    );
-                    if (ctx.mounted)
-                      PrismToast.show(ctx, message: ok ? 'Saved' : 'Not saved');
-                  },
+                const SizedBox(height: 8),
+                Text(
+                  'Exports always include the “Personal / Fictional ID” notice. Hidden details are left out of the image itself.',
+                  style: Theme.of(ctx).textTheme.bodySmall,
                 ),
-                PrismButton(
-                  label: 'Save PDF',
-                  icon: Icons.picture_as_pdf_outlined,
-                  onPressed: () async {
-                    final b = await captureBoundary(key);
-                    if (b == null) return;
-                    final ok = await savePdfBytes(
-                      ref,
-                      await imagesToPdf([
-                        b,
-                      ], title: '${card.title} — $fictionalIdNotice'),
-                      'prism-card-${card.number}',
-                    );
-                    if (ctx.mounted)
-                      PrismToast.show(ctx, message: ok ? 'Saved' : 'Not saved');
-                  },
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    PrismButton(
+                      label: 'Save image',
+                      icon: Icons.image_outlined,
+                      onPressed: () async {
+                        final b = await captureBoundary(key);
+                        if (b == null) return;
+                        final ok = await saveImageBytes(
+                          ref,
+                          b,
+                          'prism-card-${card.number}',
+                        );
+                        if (ctx.mounted)
+                          PrismToast.show(
+                            ctx,
+                            message: ok ? 'Saved' : 'Not saved',
+                          );
+                      },
+                    ),
+                    PrismButton(
+                      label: 'Save PDF',
+                      icon: Icons.picture_as_pdf_outlined,
+                      onPressed: () async {
+                        final b = await captureBoundary(key);
+                        if (b == null) return;
+                        final ok = await savePdfBytes(
+                          ref,
+                          await imagesToPdf([
+                            b,
+                          ], title: '${card.title} — $fictionalIdNotice'),
+                          'prism-card-${card.number}',
+                        );
+                        if (ctx.mounted)
+                          PrismToast.show(
+                            ctx,
+                            message: ok ? 'Saved' : 'Not saved',
+                          );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

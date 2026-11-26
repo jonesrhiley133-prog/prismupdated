@@ -712,6 +712,25 @@ String _uid() =>
   return (front, back);
 }
 
+/// A design the person saved to reuse on other cards.
+class SavedIdTemplate {
+  SavedIdTemplate(this.r);
+  final TrackerRecord r;
+  String get id => r.id;
+  String get name => r.title;
+  CardFace get front => CardFace.fromJson(r.fields['front']);
+  CardFace get back => CardFace.fromJson(r.fields['back']);
+}
+
+final savedIdTemplatesProvider = Provider<List<SavedIdTemplate>>(
+  (ref) => [
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.walletTemplate)).value ??
+            const <TrackerRecord>[])
+      SavedIdTemplate(r),
+  ]..sort((a, b) => b.r.createdAt.compareTo(a.r.createdAt)),
+);
+
 /// An ID card record.
 class IdCard {
   IdCard(this.r);
@@ -723,6 +742,9 @@ class IdCard {
   String? get memberId => r.memberId;
   String get collection => '${r.fields['collection'] ?? 'classic'}';
   String get layout => '${r.fields['layout'] ?? 'badge'}';
+
+  /// Optional animated shine across the card.
+  bool get shine => r.fields['shine'] == true;
 
   /// Width ÷ height of the card. Landscape by default; templates and the
   /// designer can make it portrait, square or any custom shape.
@@ -1025,6 +1047,7 @@ class WalletActions {
     String? collection,
     String? layout,
     double? aspect,
+    Map<String, Object?>? extra,
   }) => _t.save(
     c.r.copyWith(title: title ?? c.r.title).withFields({
       ...c.r.fields,
@@ -1034,8 +1057,26 @@ class WalletActions {
       'collection': ?collection,
       'layout': ?layout,
       'aspect': ?aspect,
+      ...?extra,
     }),
   );
+
+  /// Saves this design as one of the person's own reusable templates. Any
+  /// card, for any alter, can use it later.
+  Future<TrackerRecord> saveTemplate({
+    required String name,
+    required CardFace front,
+    required CardFace back,
+  }) => _t.create(
+    kind: TrackerKind.walletTemplate,
+    title: name.trim().isEmpty ? 'My template' : name.trim(),
+    fields: {
+      'front': front.copyWith(tpl: '').toJson(),
+      'back': back.copyWith(tpl: '').toJson(),
+    },
+  );
+
+  Future<void> deleteTemplate(SavedIdTemplate t) => _t.delete(t.r.id);
 
   Future<TrackerRecord> duplicateCard(IdCard c) => _t.create(
     kind: TrackerKind.walletCard,

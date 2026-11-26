@@ -47,7 +47,13 @@ class IdTemplateGallery extends StatefulWidget {
       'role',
     },
     this.shrinkWrap = false,
+    this.custom = const [],
+    this.onDeleteCustom,
   });
+
+  /// The person's own saved templates (shown first, as "My templates").
+  final List<SavedIdTemplate> custom;
+  final ValueChanged<SavedIdTemplate>? onDeleteCustom;
   final String type;
   final String selected;
   final Set<String> fields;
@@ -61,8 +67,10 @@ class IdTemplateGallery extends StatefulWidget {
 class _IdTemplateGalleryState extends State<IdTemplateGallery> {
   String? _cat;
   static const _classic = 'Classic collections';
+  static const _mine = 'My templates';
 
   List<(String id, String name, String cat)> get _items => [
+    for (final c in widget.custom) ('my.${c.id}', c.name, _mine),
     for (final t in idTemplates) (t.id, t.name, t.category),
     for (final c in templateCollections)
       for (final l in templateLayouts.entries)
@@ -71,7 +79,11 @@ class _IdTemplateGalleryState extends State<IdTemplateGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final cats = [...idTemplateCategories, _classic];
+    final cats = [
+      if (widget.custom.isNotEmpty) _mine,
+      ...idTemplateCategories,
+      _classic,
+    ];
     final items = _items.where((e) => _cat == null || e.$3 == _cat).toList();
     return Column(
       mainAxisSize: widget.shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
@@ -118,13 +130,20 @@ class _IdTemplateGalleryState extends State<IdTemplateGallery> {
               itemBuilder: (context, i) {
                 final (id, name, _) = items[i];
                 final parts = id.split('.');
-                final (front, _) = buildAnyTemplate(
-                  parts.first,
-                  parts.last,
-                  type: widget.type,
-                  fields: widget.fields,
-                );
-                final aspect = idTemplateAspect(parts.first, parts.last);
+                final mine = parts.first == 'my'
+                    ? widget.custom.where((c) => c.id == parts.last).firstOrNull
+                    : null;
+                final front = mine != null
+                    ? mine.front
+                    : buildAnyTemplate(
+                        parts.first,
+                        parts.last,
+                        type: widget.type,
+                        fields: widget.fields,
+                      ).$1;
+                final aspect = mine != null
+                    ? (mine.front.aspect > 0 ? mine.front.aspect : idCardRatio)
+                    : idTemplateAspect(parts.first, parts.last);
                 final sel = widget.selected == id;
                 return Semantics(
                   button: true,
@@ -169,11 +188,28 @@ class _IdTemplateGalleryState extends State<IdTemplateGallery> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.labelMedium,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                              ),
+                              if (mine != null && widget.onDeleteCustom != null)
+                                InkWell(
+                                  onTap: () => widget.onDeleteCustom!(mine),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(Icons.delete_outline, size: 16),
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),

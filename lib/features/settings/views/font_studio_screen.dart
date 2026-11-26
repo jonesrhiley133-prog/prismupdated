@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/shared/fonts/font_browser.dart';
-import 'package:prism_plurality/shared/fonts/font_catalog.dart';
 import 'package:prism_plurality/shared/fonts/font_prefs.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';

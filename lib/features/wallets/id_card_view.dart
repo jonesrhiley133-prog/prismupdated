@@ -317,6 +317,8 @@ class _IdCardViewState extends ConsumerState<IdCardView>
             fit: BoxFit.cover,
             gaplessPlayback: true,
           );
+    final shine =
+        widget.card.shine && !MediaQuery.of(context).disableAnimations;
     return Semantics(
       button: widget.flippable,
       label:
@@ -331,41 +333,97 @@ class _IdCardViewState extends ConsumerState<IdCardView>
                   _c.value < 0.5 ? _c.forward() : _c.reverse();
                 }
               },
-        child: AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) {
-            final a = _c.value * math.pi;
-            final back = _c.value >= 0.5;
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.0012)
-                ..rotateY(a),
-              child: back
-                  ? Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationY(math.pi),
-                      child: CardFaceView(
-                        face: widget.card.back,
-                        values: values,
-                        photo: photo,
-                        width: widget.width,
-                        ratio: widget.card.aspect,
-                      ),
-                    )
-                  : CardFaceView(
-                      face: widget.card.front,
-                      values: values,
-                      photo: photo,
-                      width: widget.width,
-                      ratio: widget.card.aspect,
-                    ),
-            );
-          },
+        child: Stack(
+          children: [
+            AnimatedBuilder(
+              animation: _c,
+              builder: (context, _) {
+                final a = _c.value * math.pi;
+                final back = _c.value >= 0.5;
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.0012)
+                    ..rotateY(a),
+                  child: back
+                      ? Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(math.pi),
+                          child: CardFaceView(
+                            face: widget.card.back,
+                            values: values,
+                            photo: photo,
+                            width: widget.width,
+                            ratio: widget.card.aspect,
+                          ),
+                        )
+                      : CardFaceView(
+                          face: widget.card.front,
+                          values: values,
+                          photo: photo,
+                          width: widget.width,
+                          ratio: widget.card.aspect,
+                        ),
+                );
+              },
+            ),
+            if (shine)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: _Shine(radius: widget.width * 0.045),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
+}
+
+/// A slow highlight that sweeps across a card.
+class _Shine extends StatefulWidget {
+  const _Shine({required this.radius});
+  final double radius;
+  @override
+  State<_Shine> createState() => _ShineState();
+}
+
+class _ShineState extends State<_Shine> with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 5),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: prismCorners(context, widget.radius),
+    child: AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) {
+        // Sweep for the first 40% of the loop, then rest.
+        final t = (_c.value / 0.4).clamp(0.0, 1.0);
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment(-2 + t * 4, -1),
+              end: Alignment(-1 + t * 4, 1),
+              colors: const [
+                Color(0x00FFFFFF),
+                Color(0x40FFFFFF),
+                Color(0x00FFFFFF),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 class _PatternPainter extends CustomPainter {

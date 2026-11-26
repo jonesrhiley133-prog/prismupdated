@@ -186,6 +186,7 @@ abstract final class TrackerKind {
   static const wallet = 'wallet.wallet';
   static const walletCard = 'wallet.card';
   static const walletIdentity = 'wallet.identity';
+  static const walletTemplate = 'wallet.template';
 
   // Flag Studio.
   static const flag = 'flag.design';

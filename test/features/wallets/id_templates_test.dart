@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/wallets/id_card_view.dart';
 import 'package:prism_plurality/features/wallets/id_shapes.dart';
 import 'package:prism_plurality/features/wallets/id_template_gallery.dart';
@@ -18,6 +20,7 @@ String _signature(CardFace f) => [
 ].join('|');
 
 void main() {
+  savedTemplateTests();
   test('at least 60 templates, all with unique ids and names', () {
     expect(idTemplates.length, greaterThanOrEqualTo(60));
     expect(idTemplates.map((t) => t.id).toSet().length, idTemplates.length);
@@ -339,5 +342,65 @@ void main() {
         File(out).writeAsBytesSync(data!.buffer.asUint8List());
       });
     }
+  });
+}
+
+void savedTemplateTests() {
+  TrackerRecord rec(String id, Map<String, Object?> fields) {
+    final now = DateTime(2026, 11, 20);
+    return TrackerRecord(
+      id: id,
+      kind: TrackerKind.walletTemplate,
+      title: 'Mine',
+      createdAt: now,
+      modifiedAt: now,
+    ).withFields(fields);
+  }
+
+  test(
+    'a saved template keeps its design, shape and layers but not the template id',
+    () {
+      final (f, b) = buildIdTemplate(idTemplates[5], type: 'member');
+      final saved = SavedIdTemplate(
+        rec('s1', {
+          'front': f.copyWith(tpl: '').toJson(),
+          'back': b.copyWith(tpl: '').toJson(),
+        }),
+      );
+      expect(saved.name, 'Mine');
+      expect(saved.front.layers.length, f.layers.length);
+      expect(saved.front.aspect, f.aspect);
+      expect(saved.front.tpl, '');
+    },
+  );
+
+  test('card shine and shape come from the saved card', () {
+    final now = DateTime(2026, 11, 20);
+    final r =
+        TrackerRecord(
+          id: 'c',
+          kind: TrackerKind.walletCard,
+          title: 'x',
+          createdAt: now,
+          modifiedAt: now,
+        ).withFields({
+          'shine': true,
+          'front': CardFace(aspect: 0.64).toJson(),
+          'back': const CardFace().toJson(),
+        });
+    final card = IdCard(r);
+    expect(card.shine, isTrue);
+    expect(card.aspect, 0.64);
+    final plain = IdCard(
+      TrackerRecord(
+        id: 'd',
+        kind: TrackerKind.walletCard,
+        title: 'x',
+        createdAt: now,
+        modifiedAt: now,
+      ),
+    );
+    expect(plain.shine, isFalse);
+    expect(plain.aspect, closeTo(1.585, 1e-9));
   });
 }
