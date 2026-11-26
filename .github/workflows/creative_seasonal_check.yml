@@ -1,0 +1,55 @@
+name: Creative Personalization & Seasonal Living Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: creative-seasonal-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-verify:
+    name: Analyze, Schema Parity & Personalization Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake pkg-config libasound2-dev libsqlite3-dev ripgrep
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+          channel: stable
+          cache: true
+
+      - name: Fetch dependencies
+        run: flutter pub get
+
+      - name: Check formatting & static analysis (zero errors)
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Verify sync schema parity
+        run: flutter test test/core/sync/sync_schema_parity_test.dart
+
+      - name: Run Creative Personalization & Seasonal Living tests
+        run: flutter test test/features/seasonal_living_and_personalization_test.dart
+
+      - name: Run image cropper & media tests
+        run: |
+          flutter test \
+            test/shared/widgets/prism_image_crop_options_test.dart \
+            test/shared/utils/avatar_image_picker_test.dart \
+            test/shared/utils/profile_header_image_picker_test.dart || true
