@@ -1,3 +1,7 @@
+import 'package:prism_plurality/features/seasonal/decor_presets_screen.dart';
+import 'package:prism_plurality/features/seasonal/decoration_studio_screen.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_hub_screen.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_prefs_screen.dart';
 import 'package:prism_plurality/features/contacts/views/contact_profile_screen.dart';
 import 'package:prism_plurality/shared/fonts/font_prefs.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
@@ -995,6 +999,42 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'fonts',
                         builder: (context, state) => const FontStudioScreen(),
+                      ),
+                      GoRoute(
+                        path: 'seasonal',
+                        builder: (context, state) => const SeasonalHubScreen(),
+                        routes: [
+                          GoRoute(
+                            path: 'collections',
+                            builder: (context, state) =>
+                                const SeasonalCollectionsScreen(),
+                            routes: [
+                              GoRoute(
+                                path: ':id',
+                                builder: (context, state) =>
+                                    SeasonalCollectionScreen(
+                                      collectionId: state.pathParameters['id']!,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          GoRoute(
+                            path: 'preferences',
+                            builder: (context, state) =>
+                                const SeasonalPrefsScreen(),
+                          ),
+                          GoRoute(
+                            path: 'studio',
+                            builder: (context, state) => DecorationStudioScreen(
+                              seed: state.extra as String?,
+                            ),
+                          ),
+                          GoRoute(
+                            path: 'presets',
+                            builder: (context, state) =>
+                                const DecorPresetsScreen(),
+                          ),
+                        ],
                       ),
                     ],
                   ),

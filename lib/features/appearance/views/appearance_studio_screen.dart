@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:file_picker/file_picker.dart';
@@ -87,7 +88,24 @@ class AppearanceStudioScreen extends ConsumerWidget {
     PrismLook look,
   ) async {
     final l10n = context.l10n;
-    final text = ref.read(appearanceProvider.notifier).export(look);
+    var text = ref.read(appearanceProvider.notifier).export(look);
+    // Decorations can travel with a theme, but only if you say so.
+    final seasonal = ref.read(seasonalPrefsProvider);
+    final presets = ref.read(decorPresetsProvider);
+    final active = presets
+        .where((p) => p.id == seasonal.activePresetId)
+        .firstOrNull;
+    if (active != null) {
+      final include = await PrismDialog.confirm(
+        context: context,
+        title: 'Include your decorations?',
+        message:
+            'Add your arrangement "${active.name}" to this theme so whoever imports it can keep it as a preset. Pictures you imported stay on your device.',
+        confirmLabel: 'Include',
+        cancelLabel: 'Theme only',
+      );
+      if (include) text = attachDecorToThemeExport(text, active);
+    }
     try {
       final dir = await getTemporaryDirectory();
       final safe = look.name.replaceAll(RegExp(r'[^A-Za-z0-9 _-]'), '').trim();
@@ -147,6 +165,19 @@ class AppearanceStudioScreen extends ConsumerWidget {
       PrismToast.error(context, message: l10n.apImportInvalid);
     } else {
       PrismToast.success(context, message: l10n.apImported(look.name));
+      // A bundled arrangement is added as a preset only; it never applies
+      // itself and never touches the theme that was just imported.
+      final decor = extractDecorFromThemeImport(text);
+      if (decor != null) {
+        await ref.read(decorPresetActionsProvider).create(decor);
+        if (context.mounted) {
+          PrismToast.show(
+            context,
+            message:
+                'Its decorations were saved in My arrangements. They are not turned on.',
+          );
+        }
+      }
     }
   }
 

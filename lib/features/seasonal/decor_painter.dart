@@ -1462,3 +1462,58 @@ class DecorPainter extends CustomPainter {
       old.t != t ||
       !identical(old.layersToDraw, layersToDraw);
 }
+
+/// Roughly where an item is on screen, for hit-testing and selection
+/// handles in the Decoration Studio. In screen coordinates.
+Rect decorItemBounds(DecorItem item, Size size, DecorScene scene) {
+  final painter = DecorPainter(scene: scene, t: 0, layersToDraw: const {});
+  final frame = painter.frameFor(item.anchor, size);
+  if (frame == null) return Rect.zero;
+  final tw = item.tweakFor(scene.device);
+  final w = frame.width * item.w * tw.scale;
+  final cx = frame.left + frame.width * (item.x + tw.dx);
+  final cy = frame.top + frame.height * (item.y + tw.dy);
+  switch (item.kind) {
+    case DecoKind.garland:
+    case DecoKind.fairyLights:
+      return Rect.fromLTWH(cx - w / 2, cy - 4, w, math.max(36, w * 0.09));
+    case DecoKind.ribbon:
+      return Rect.fromLTWH(cx - w / 2, cy - 16, w, 32);
+    case DecoKind.bow:
+    case DecoKind.wreath:
+    case DecoKind.illustration:
+    case DecoKind.furniture:
+    case DecoKind.sticker:
+    case DecoKind.flower:
+    case DecoKind.interactive:
+    case DecoKind.candle:
+      return Rect.fromCenter(
+        center: Offset(cx, cy),
+        width: math.max(w, 28),
+        height: math.max(w, 28),
+      );
+    case DecoKind.lantern:
+      return Rect.fromLTWH(cx - w / 2, cy, w, w * 1.8);
+    case DecoKind.ornament:
+      return Rect.fromLTWH(
+        cx - w / 2,
+        cy,
+        w,
+        math.max(18.0, frame.height * 0.22) + w,
+      );
+    case DecoKind.window:
+      return Rect.fromCenter(
+        center: Offset(cx, cy),
+        width: w,
+        height: w * 1.25,
+      );
+    case DecoKind.foliage:
+      return Rect.fromLTWH(cx - w / 2, cy - w, w, w);
+    case DecoKind.corner:
+      final left = item.flipX ? cx - w : cx;
+      return Rect.fromLTWH(left, cy, w, w);
+    case DecoKind.border:
+    case DecoKind.particles:
+      return frame;
+  }
+}

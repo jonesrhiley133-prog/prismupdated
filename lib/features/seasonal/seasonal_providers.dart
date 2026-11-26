@@ -12,16 +12,29 @@ import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 
 /// The current date, refreshed so a look can change at midnight without the
 /// app being restarted.
-final seasonalClockProvider = StreamProvider<DateTime>((ref) async* {
-  yield DateTime.now();
-  while (true) {
+final seasonalClockProvider = StreamProvider<DateTime>((ref) {
+  final controller = StreamController<DateTime>();
+  Timer? timer;
+  void schedule() {
     final now = DateTime.now();
     final nextMidnight = DateTime(now.year, now.month, now.day + 1);
-    await Future<void>.delayed(
+    timer = Timer(
       nextMidnight.difference(now) + const Duration(seconds: 2),
+      () {
+        if (controller.isClosed) return;
+        controller.add(DateTime.now());
+        schedule();
+      },
     );
-    yield DateTime.now();
   }
+
+  controller.add(DateTime.now());
+  schedule();
+  ref.onDispose(() {
+    timer?.cancel();
+    controller.close();
+  });
+  return controller.stream;
 });
 
 TrackerRecord? _first(AsyncValue<List<TrackerRecord>> v) =>
@@ -276,3 +289,32 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
   }
   return items;
 });
+
+// ── Theme sharing ──────────────────────────────────────────────────────
+
+/// Adds a decoration arrangement to an exported theme, so sharing a theme
+/// can optionally carry the decorations too.
+String attachDecorToThemeExport(String themeJson, DecorPreset preset) {
+  try {
+    final o = jsonDecode(themeJson);
+    if (o is! Map) return themeJson;
+    final bundle = exportPreset(preset);
+    return const JsonEncoder.withIndent(
+      '  ',
+    ).convert({...o, 'decor': jsonDecode(bundle.json)});
+  } catch (_) {
+    return themeJson;
+  }
+}
+
+/// The decorations bundled in a shared theme, if any. Importing these only
+/// ever adds a preset; it never changes the base theme or applies itself.
+DecorPreset? extractDecorFromThemeImport(String text) {
+  try {
+    final o = jsonDecode(text);
+    if (o is! Map || o['decor'] == null) return null;
+    return importPreset(jsonEncode(o['decor']));
+  } catch (_) {
+    return null;
+  }
+}
