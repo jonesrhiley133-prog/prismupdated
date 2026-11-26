@@ -1,3 +1,5 @@
+import 'package:prism_plurality/shared/fonts/font_prefs.dart';
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
 import 'package:prism_plurality/features/experiences/experiences_hub.dart';
+import 'package:prism_plurality/features/settings/views/font_studio_screen.dart';
 import 'package:prism_plurality/features/voice/voice_settings_screen.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
 import 'package:prism_plurality/features/online_games/online_screens.dart';
@@ -698,7 +701,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutePaths.homeWidgets,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const HomeWidgetsScreen(),
+        builder: (context, state) => const FontSurfaceScope(
+          surface: FontSurface.widget,
+          child: HomeWidgetsScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutePaths.widgetStudioRoute,
@@ -895,9 +901,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                       ),
                       GoRoute(
                         path: ':id',
-                        builder: (context, state) => MemberDetailScreen(
-                          memberId: state.pathParameters['id']!,
-                          branch: MemberNavigationBranch.settings,
+                        builder: (context, state) => FontSurfaceScope(
+                          surface: FontSurface.profile,
+                          child: MemberDetailScreen(
+                            memberId: state.pathParameters['id']!,
+                            branch: MemberNavigationBranch.settings,
+                          ),
                         ),
                         routes: [
                           GoRoute(
@@ -981,6 +990,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'voice',
                         builder: (context, state) =>
                             const VoiceSettingsScreen(),
+                      ),
+                      GoRoute(
+                        path: 'fonts',
+                        builder: (context, state) => const FontStudioScreen(),
                       ),
                     ],
                   ),
@@ -1238,9 +1251,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                   GoRoute(
                     path: ':id',
-                    builder: (context, state) => MemberDetailScreen(
-                      memberId: state.pathParameters['id']!,
-                      branch: MemberNavigationBranch.members,
+                    builder: (context, state) => FontSurfaceScope(
+                      surface: FontSurface.profile,
+                      child: MemberDetailScreen(
+                        memberId: state.pathParameters['id']!,
+                        branch: MemberNavigationBranch.members,
+                      ),
                     ),
                     routes: [
                       GoRoute(
@@ -1416,10 +1432,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       GoRoute(
                         path: 'member/:memberId',
-                        builder: (context, state) => MemberDetailScreen(
-                          memberId: state.pathParameters['memberId']!,
-                          branch: MemberNavigationBranch.groups,
-                          groupId: state.pathParameters['id']!,
+                        builder: (context, state) => FontSurfaceScope(
+                          surface: FontSurface.profile,
+                          child: MemberDetailScreen(
+                            memberId: state.pathParameters['memberId']!,
+                            branch: MemberNavigationBranch.groups,
+                            groupId: state.pathParameters['id']!,
+                          ),
                         ),
                         routes: [
                           GoRoute(
@@ -1551,7 +1570,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutePaths.journal,
-                builder: (context, state) => const JournalScreen(),
+                builder: (context, state) => const FontSurfaceScope(
+                  surface: FontSurface.journal,
+                  child: JournalScreen(),
+                ),
               ),
             ],
           ),

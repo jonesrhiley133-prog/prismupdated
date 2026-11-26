@@ -1,3 +1,5 @@
+import 'package:prism_plurality/shared/fonts/font_browser.dart';
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/features/experiences/export_kit.dart';
@@ -649,6 +651,25 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                 selected: l.font == f,
                 onTap: () => _updateLayer(l.copyWith(font: f)),
               ),
+            PrismChip(
+              label:
+                  PrismFonts.isCatalog(l.font) || PrismFonts.isImported(l.font)
+                  ? (PrismFonts.isCatalog(l.font)
+                        ? PrismFonts.familyOf(l.font)
+                        : 'Imported')
+                  : 'More fonts…',
+              selected:
+                  PrismFonts.isCatalog(l.font) || PrismFonts.isImported(l.font),
+              onTap: () async {
+                final pick = await showPrismFontBrowser(
+                  context,
+                  current: l.font,
+                  allowDefault: false,
+                );
+                if (pick?.key != null)
+                  _updateLayer(l.copyWith(font: pick!.key));
+              },
+            ),
           ],
         ],
       ),

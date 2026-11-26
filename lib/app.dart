@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/shared/fonts/font_prefs.dart';
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/features/account/account_core.dart';
 import 'package:prism_plurality/features/smart_notifications/notify_service.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
@@ -763,6 +765,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         : AppColors.prismPurple;
 
     final fontFamily = ref.watch(fontFamilySettingProvider);
+    final fontPrefs = ref.watch(fontPrefsProvider);
+    ref.watch(fontLoadTickProvider);
+    warmFontPrefs(fontPrefs);
     final useDisplayFont = ref.watch(displayFontInAppBarProvider);
     final rawFontScale = ref.watch(fontScaleSettingProvider);
     final letterSpacing =
@@ -872,6 +877,10 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             lightTheme = AppTheme.withLetterSpacing(lightTheme, letterSpacing);
             darkTheme = AppTheme.withLetterSpacing(darkTheme, letterSpacing);
           }
+
+          // The font library: whole-app, heading and body choices.
+          lightTheme = PrismFonts.applyTheme(lightTheme, fontPrefs);
+          darkTheme = PrismFonts.applyTheme(darkTheme, fontPrefs);
 
           // Light, GPU-friendly page transitions on Android (the zoom
           // transition renders whole pages into offscreen layers).

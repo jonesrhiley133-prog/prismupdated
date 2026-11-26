@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:intl/intl.dart' show DateFormat;
 
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/wallets/wallet_data.dart';
@@ -70,7 +71,7 @@ TextStyle _font(String f, TextStyle base) => switch (f) {
     fontFamilyFallback: const ['Brush Script MT', 'cursive'],
     fontStyle: FontStyle.italic,
   ),
-  _ => base,
+  _ => PrismFonts.style(f, base),
 };
 
 /// Draws one face of a card at [width].

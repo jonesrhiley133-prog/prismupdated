@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:prism_plurality/shared/fonts/font_prefs.dart';
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/core/diagnostics/freeze_watchdog.dart';
 import 'dart:math' as math;
 import 'dart:ui';
@@ -1479,27 +1481,30 @@ class _AppShellState extends ConsumerState<AppShell>
                       right: kFloatingNavBarSideMargin,
                       bottom: navBarBottom,
                       child: RepaintBoundary(
-                        child: _FloatingNavBar(
-                          key: _navBarKey,
-                          primaryTabs: mobileLayout.primaryTabs,
-                          primaryLabels: mobilePrimaryLabels,
-                          overflowTabs: mobileLayout.overflowTabs,
-                          overflowLabels: mobileOverflowLabels,
-                          overflowColumns: mobileLayout.spec.overflowColumns,
-                          overflowRows: mobileLayout.spec.overflowRows,
-                          rowHeight: mobileLayout.rowHeight,
-                          overflowRowHeight: mobileLayout.overflowRowHeight,
-                          labelVisibility: labelVisibility,
-                          labelStyleMode: labelStyleMode,
-                          currentIndex: safeCurrentIndex,
-                          accentColor: accentColor,
-                          onTap: (index) => onTabSelected(
-                            mobileLayout.allTabs[index],
-                            useHaptics: true,
+                        child: FontSurfaceScope(
+                          surface: FontSurface.navigation,
+                          child: _FloatingNavBar(
+                            key: _navBarKey,
+                            primaryTabs: mobileLayout.primaryTabs,
+                            primaryLabels: mobilePrimaryLabels,
+                            overflowTabs: mobileLayout.overflowTabs,
+                            overflowLabels: mobileOverflowLabels,
+                            overflowColumns: mobileLayout.spec.overflowColumns,
+                            overflowRows: mobileLayout.spec.overflowRows,
+                            rowHeight: mobileLayout.rowHeight,
+                            overflowRowHeight: mobileLayout.overflowRowHeight,
+                            labelVisibility: labelVisibility,
+                            labelStyleMode: labelStyleMode,
+                            currentIndex: safeCurrentIndex,
+                            accentColor: accentColor,
+                            onTap: (index) => onTabSelected(
+                              mobileLayout.allTabs[index],
+                              useHaptics: true,
+                            ),
+                            onExpandedChanged: (expanded) {
+                              setState(() => _navExpanded = expanded);
+                            },
                           ),
-                          onExpandedChanged: (expanded) {
-                            setState(() => _navExpanded = expanded);
-                          },
                         ),
                       ),
                     ),

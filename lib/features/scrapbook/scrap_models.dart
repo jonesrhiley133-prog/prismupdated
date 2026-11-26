@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:uuid/uuid.dart';
 
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 const _uuid = Uuid();
@@ -233,7 +234,7 @@ TextStyle scrapFont(String? f, TextStyle base) => switch (f) {
     fontFamily: 'Courier New',
     fontFamilyFallback: const ['Menlo', 'monospace'],
   ),
-  _ => base,
+  _ => PrismFonts.style(f, base),
 };
 
 /// Starting layouts for new pages.

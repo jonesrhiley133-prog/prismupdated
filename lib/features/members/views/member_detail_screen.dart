@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:prism_plurality/shared/fonts/font_prefs.dart';
+import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/features/flags/flag_screens.dart'
     show FlagStrip;
 import 'package:prism_plurality/features/wallets/wallet_screens.dart'
@@ -261,14 +263,17 @@ class _MemberDetailBody extends ConsumerWidget {
       ],
       if (member.bio != null && member.bio!.isNotEmpty) ...[
         const SizedBox(height: 12),
-        PrismMarkdownText(
-          data: member.bio!,
-          // Global switch is the master off; per-member flag is the override.
-          enabled: bioMarkdownEnabled && member.markdownEnabled,
-          baseStyle: theme.textTheme.bodyLarge,
-          memberId: member.id,
-          // raw-name-ok: markdown mention rendering uses the canonical handle.
-          memberName: member.name,
+        FontSurfaceScope(
+          surface: FontSurface.bio,
+          child: PrismMarkdownText(
+            data: member.bio!,
+            // Global switch is the master off; per-member flag is the override.
+            enabled: bioMarkdownEnabled && member.markdownEnabled,
+            baseStyle: theme.textTheme.bodyLarge,
+            memberId: member.id,
+            // raw-name-ok: markdown mention rendering uses the canonical handle.
+            memberName: member.name,
+          ),
         ),
       ],
       StudioProfileSection(member: member),

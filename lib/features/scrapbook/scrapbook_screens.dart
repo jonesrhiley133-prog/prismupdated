@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/fonts/font_browser.dart';
 import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:go_router/go_router.dart';
@@ -1427,9 +1428,14 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         (
           PhosphorIcons.textAa(),
           tr(context, 'Font', 'Fuente'),
-          () {
-            final i = scrapFonts.indexWhere((f) => f.$1 == e.font);
-            setState(() => e.font = scrapFonts[(i + 1) % scrapFonts.length].$1);
+          () async {
+            final pick = await showPrismFontBrowser(
+              context,
+              current: e.font,
+              allowDefault: false,
+            );
+            if (pick?.key == null) return;
+            setState(() => e.font = pick!.key);
             _changed();
           },
         ),
