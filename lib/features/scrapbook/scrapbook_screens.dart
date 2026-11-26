@@ -1035,7 +1035,37 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
     String? id;
     if (type == ScrapType.photo)
       id = await PrismMedia.pickImage(ref, owner: currentFronterId(ref));
-    if (type == ScrapType.video) id = await PrismMedia.pickVideo(ref);
+    if (type == ScrapType.video) {
+      final res = await PrismMedia.pickVideoResult(ref);
+      if (res.error != null && mounted) {
+        PrismToast.error(
+          context,
+          message: switch (res.error) {
+            'tooLarge' => tr(
+              context,
+              'That video is too large (200 MB max).',
+              'Ese vídeo es demasiado grande (máx. 200 MB).',
+            ),
+            'format' => tr(
+              context,
+              'That video format isn\'t supported.',
+              'Ese formato de vídeo no es compatible.',
+            ),
+            'unsupported' => tr(
+              context,
+              'Videos can\'t be stored on this device.',
+              'No se pueden guardar vídeos en este dispositivo.',
+            ),
+            _ => tr(
+              context,
+              'Couldn\'t add that video.',
+              'No se pudo añadir ese vídeo.',
+            ),
+          },
+        );
+      }
+      id = res.id;
+    }
     if (type == ScrapType.audio && mounted)
       id = await PrismMedia.recordAudio(context);
     if (id == null) return;
@@ -1063,6 +1093,80 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
       ),
     );
   }
+
+  /// Per-video playback options. They live on the element itself, so editing
+  /// one video never changes another.
+  Future<void> _videoOptions(ScrapElement e) => PrismSheet.show<void>(
+    context: context,
+    title: tr(context, 'Video options', 'Opciones de vídeo'),
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, set) {
+        void upd(VoidCallback f) {
+          setState(f);
+          set(() {});
+          _changed();
+        }
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PrismSwitchRow(
+              title: tr(ctx, 'Loop', 'Repetir'),
+              value: e.opt('loop', false),
+              onChanged: (v) => upd(() => e.setOpt('loop', v ? true : null)),
+            ),
+            PrismSwitchRow(
+              title: tr(ctx, 'Autoplay when visible', 'Reproducir al verse'),
+              subtitle: tr(
+                ctx,
+                'Plays only while this page is on screen.',
+                'Solo se reproduce mientras la página está en pantalla.',
+              ),
+              value: e.opt('auto', false),
+              onChanged: (v) => upd(() => e.setOpt('auto', v ? true : null)),
+            ),
+            const SizedBox(height: 8),
+            Text(tr(ctx, 'Volume', 'Volumen')),
+            Slider(
+              value: e.opt('vol', 1.0).clamp(0.0, 1.0),
+              onChanged: (v) => set(() => e.setOpt('vol', v)),
+              onChangeEnd: (_) => upd(() {}),
+            ),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              children: [
+                PrismButton(
+                  icon: PhosphorIcons.image(),
+                  label: tr(ctx, 'Custom thumbnail', 'Miniatura propia'),
+                  tone: PrismButtonTone.outlined,
+                  onPressed: () async {
+                    final id = await PrismMedia.pickImage(ref);
+                    if (id != null) upd(() => e.setOpt('thumb', id));
+                  },
+                ),
+                if (e.opts['thumb'] != null)
+                  PrismButton(
+                    label: tr(ctx, 'Remove thumbnail', 'Quitar miniatura'),
+                    tone: PrismButtonTone.outlined,
+                    onPressed: () => upd(() => e.setOpt('thumb', null)),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(tr(ctx, 'Opacity', 'Opacidad')),
+            Slider(
+              value: e.opacity.clamp(0.1, 1.0),
+              min: 0.1,
+              onChanged: (v) => set(() => e.opacity = v),
+              onChangeEnd: (_) => upd(() {}),
+            ),
+          ],
+        );
+      },
+    ),
+  );
 
   Future<void> _editText(ScrapElement e) async {
     final v = await promptText(
@@ -1286,6 +1390,12 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
             setState(() => e.media = id);
             _changed();
           },
+        ),
+      if (e.type == ScrapType.video)
+        (
+          PhosphorIcons.sliders(),
+          tr(context, 'Video', 'Vídeo'),
+          () => _videoOptions(e),
         ),
       if (e.type == ScrapType.photo ||
           e.type == ScrapType.drawing ||

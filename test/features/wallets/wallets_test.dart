@@ -23,6 +23,7 @@ TrackerRecord rec(String id, String kind, {String title = '', String? member, Ma
 }
 
 void main() {
+  templateSelectionTests();
   final (front, back) = buildTemplate('celestial', 'banner', type: 'guild');
   final seed = [
     rec('k1', TrackerKind.walletCard, title: 'Guild card', fields: {'type': 'guild', 'front': front.toJson(), 'back': back.toJson(), 'number': 'PRM-1234-5678', 'values': {'name': 'Rowan'}}),
@@ -82,5 +83,31 @@ void main() {
     await t.pump(const Duration(milliseconds: 300));
     expect(find.text('Guild card · on profile'), findsOneWidget);
     await t.pumpWidget(const SizedBox());
+  });
+}
+
+void templateSelectionTests() {
+  test('every template has a unique id carried on both faces', () {
+    final ids = <String>{};
+    for (final c in templateCollections) {
+      for (final l in templateLayouts.keys) {
+        final (f, b) = buildTemplate(c.id, l, type: 'member');
+        expect(f.tpl, '${c.id}.$l');
+        expect(b.tpl, f.tpl);
+        expect(ids.add(f.tpl), isTrue, reason: 'duplicate ${f.tpl}');
+      }
+    }
+  });
+
+  test('template id survives save and reload', () {
+    final (f, _) = buildTemplate('holo', 'banner', type: 'member');
+    expect(CardFace.fromJson(f.toJson()).tpl, 'holo.banner');
+  });
+
+  test('generated layers are tagged so user layers can be told apart', () {
+    final (f, b) = buildTemplate('retro', 'centered', type: 'member');
+    for (final l in [...f.layers, ...b.layers]) {
+      expect(l.id.startsWith('t'), isTrue);
+    }
   });
 }

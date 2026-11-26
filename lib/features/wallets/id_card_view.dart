@@ -184,7 +184,10 @@ class CardFaceView extends StatelessWidget {
         );
       case 'circle':
         child = DecoratedBox(
-          decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: prismRound(context),
+          ),
         );
       case 'line':
         child = Center(

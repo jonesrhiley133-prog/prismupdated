@@ -11,7 +11,8 @@ import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:prism_plurality/features/social/services/social_media.dart';
-import 'package:prism_plurality/features/social/widgets/social_widgets.dart' show SocialImage;
+import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
+    show SocialImage;
 import 'package:prism_plurality/features/social/widgets/video_tile.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -23,32 +24,51 @@ abstract final class PrismMedia {
 
   static Future<Directory?> _audioDir() async {
     if (kIsWeb) return null;
-    final dir = Directory(p.join((await getApplicationSupportDirectory()).path, 'prism_audio'));
+    final dir = Directory(
+      p.join((await getApplicationSupportDirectory()).path, 'prism_audio'),
+    );
     await dir.create(recursive: true);
     return dir;
   }
 
   /// Returns a media id, or null if cancelled / unreadable.
-  static Future<String?> pickImage(WidgetRef ref, {bool camera = false, String? owner}) async {
-    final x = await ImagePicker().pickImage(source: camera ? ImageSource.camera : ImageSource.gallery);
+  static Future<String?> pickImage(
+    WidgetRef ref, {
+    bool camera = false,
+    String? owner,
+  }) async {
+    final x = await ImagePicker().pickImage(
+      source: camera ? ImageSource.camera : ImageSource.gallery,
+    );
     if (x == null) return null;
-    return ref.read(socialMediaStoreProvider).addImage(await x.readAsBytes(), owner: owner);
+    return ref
+        .read(socialMediaStoreProvider)
+        .addImage(await x.readAsBytes(), owner: owner);
   }
 
   static Future<List<String>> pickImages(WidgetRef ref, {String? owner}) async {
     final xs = await ImagePicker().pickMultiImage();
     final out = <String>[];
     for (final x in xs) {
-      final id = await ref.read(socialMediaStoreProvider).addImage(await x.readAsBytes(), owner: owner);
+      final id = await ref
+          .read(socialMediaStoreProvider)
+          .addImage(await x.readAsBytes(), owner: owner);
       if (id != null) out.add(id);
     }
     return out;
   }
 
-  static Future<String?> pickVideo(WidgetRef ref) async {
+  static Future<String?> pickVideo(WidgetRef ref) async =>
+      (await pickVideoResult(ref)).id;
+
+  /// Like [pickVideo] but reports why a video was rejected, so callers can
+  /// tell the user instead of silently doing nothing.
+  static Future<({String? id, String? error})> pickVideoResult(
+    WidgetRef ref,
+  ) async {
     final x = await ImagePicker().pickVideo(source: ImageSource.gallery);
-    if (x == null) return null;
-    return (await ref.read(socialMediaStoreProvider).addVideo(x.path)).id;
+    if (x == null) return (id: null, error: null);
+    return ref.read(socialMediaStoreProvider).addVideo(x.path);
   }
 
   /// Picks an audio file; returns `audio:<file>`.
@@ -73,7 +93,11 @@ abstract final class PrismMedia {
 
   /// Records a voice clip in a small sheet; returns `audio:<file>`.
   static Future<String?> recordAudio(BuildContext context) =>
-      PrismSheet.show<String>(context: context, title: tr(context, 'Record audio', 'Grabar audio'), builder: (ctx) => const _Recorder());
+      PrismSheet.show<String>(
+        context: context,
+        title: tr(context, 'Record audio', 'Grabar audio'),
+        builder: (ctx) => const _Recorder(),
+      );
 }
 
 class _Recorder extends StatefulWidget {
@@ -99,14 +123,26 @@ class _RecorderState extends State<_Recorder> {
 
   Future<void> _start() async {
     if (!await _rec.hasPermission()) {
-      setState(() => _error = tr(context, 'Microphone permission is needed.', 'Se necesita permiso de micrófono.'));
+      setState(
+        () => _error = tr(
+          context,
+          'Microphone permission is needed.',
+          'Se necesita permiso de micrófono.',
+        ),
+      );
       return;
     }
     final dir = await PrismMedia._audioDir();
     if (dir == null) return;
     _path = p.join(dir.path, '${PrismMedia._uuid.v4()}.m4a');
-    await _rec.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: _path!);
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() => _elapsed += const Duration(seconds: 1)));
+    await _rec.start(
+      const RecordConfig(encoder: AudioEncoder.aacLc),
+      path: _path!,
+    );
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => setState(() => _elapsed += const Duration(seconds: 1)),
+    );
     setState(() => _recording = true);
   }
 
@@ -133,10 +169,13 @@ class _RecorderState extends State<_Recorder> {
             '${_elapsed.inMinutes}:${(_elapsed.inSeconds % 60).toString().padLeft(2, '0')}',
             style: theme.textTheme.displaySmall,
           ),
-          if (_error != null) Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
+          if (_error != null)
+            Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
           const SizedBox(height: 16),
           PrismButton(
-            label: _recording ? tr(context, 'Stop and save', 'Detener y guardar') : tr(context, 'Start recording', 'Empezar a grabar'),
+            label: _recording
+                ? tr(context, 'Stop and save', 'Detener y guardar')
+                : tr(context, 'Start recording', 'Empezar a grabar'),
             icon: _recording ? PhosphorIcons.stop() : AppIcons.microphone,
             tone: PrismButtonTone.filled,
             onPressed: _recording ? _stop : _start,
@@ -149,7 +188,13 @@ class _RecorderState extends State<_Recorder> {
 
 /// Shows a stored image or video by id.
 class PrismMediaView extends StatelessWidget {
-  const PrismMediaView({super.key, required this.id, this.fit = BoxFit.cover, this.height, this.width});
+  const PrismMediaView({
+    super.key,
+    required this.id,
+    this.fit = BoxFit.cover,
+    this.height,
+    this.width,
+  });
   final String id;
   final BoxFit fit;
   final double? height;
@@ -217,10 +262,21 @@ class _AudioClipState extends State<AudioClip> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(_missing ? PhosphorIcons.speakerSlash() : (_playing ? PhosphorIcons.pause() : PhosphorIcons.play()), size: 18),
+              Icon(
+                _missing
+                    ? PhosphorIcons.speakerSlash()
+                    : (_playing ? PhosphorIcons.pause() : PhosphorIcons.play()),
+                size: 18,
+              ),
               const SizedBox(width: 6),
               Text(
-                _missing ? tr(context, 'Audio on another device', 'Audio en otro dispositivo') : (widget.label ?? tr(context, 'Audio', 'Audio')),
+                _missing
+                    ? tr(
+                        context,
+                        'Audio on another device',
+                        'Audio en otro dispositivo',
+                      )
+                    : (widget.label ?? tr(context, 'Audio', 'Audio')),
                 style: theme.textTheme.labelMedium,
               ),
             ],
@@ -233,7 +289,14 @@ class _AudioClipState extends State<AudioClip> {
 
 /// Row of buttons to attach media, plus thumbnails with remove buttons.
 class MediaAttachRow extends ConsumerWidget {
-  const MediaAttachRow({super.key, required this.ids, required this.onChanged, this.allowVideo = true, this.allowAudio = true, this.owner});
+  const MediaAttachRow({
+    super.key,
+    required this.ids,
+    required this.onChanged,
+    this.allowVideo = true,
+    this.allowAudio = true,
+    this.owner,
+  });
   final List<String> ids;
   final ValueChanged<List<String>> onChanged;
   final bool allowVideo;
@@ -252,14 +315,21 @@ class MediaAttachRow extends ConsumerWidget {
             PrismButton(
               label: tr(context, 'Photos', 'Fotos'),
               icon: AppIcons.imageOutlined,
-              onPressed: () async => onChanged([...ids, ...await PrismMedia.pickImages(ref, owner: owner)]),
+              onPressed: () async => onChanged([
+                ...ids,
+                ...await PrismMedia.pickImages(ref, owner: owner),
+              ]),
             ),
             if (!kIsWeb)
               PrismButton(
                 label: tr(context, 'Camera', 'Cámara'),
                 icon: AppIcons.cameraAlt,
                 onPressed: () async {
-                  final id = await PrismMedia.pickImage(ref, camera: true, owner: owner);
+                  final id = await PrismMedia.pickImage(
+                    ref,
+                    camera: true,
+                    owner: owner,
+                  );
                   if (id != null) onChanged([...ids, id]);
                 },
               ),
@@ -300,7 +370,9 @@ class MediaAttachRow extends ConsumerWidget {
                           child: SizedBox(
                             width: id.startsWith('audio:') ? 140 : 88,
                             height: 88,
-                            child: id.startsWith('audio:') ? Center(child: AudioClip(id: id)) : PrismMediaView(id: id),
+                            child: id.startsWith('audio:')
+                                ? Center(child: AudioClip(id: id))
+                                : PrismMediaView(id: id),
                           ),
                         ),
                         Positioned(

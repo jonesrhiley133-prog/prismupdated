@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/features/scrapbook/scrap_video.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
@@ -37,28 +38,55 @@ class ScrapBackground extends CustomPainter {
         for (double y = step * 2; y < size.height; y += step) {
           canvas.drawLine(Offset(step, y), Offset(size.width - step, y), p);
         }
-        canvas.drawLine(Offset(step * 2.4, 0), Offset(step * 2.4, size.height), Paint()..color = const Color(0x55E74C3C));
+        canvas.drawLine(
+          Offset(step * 2.4, 0),
+          Offset(step * 2.4, size.height),
+          Paint()..color = const Color(0x55E74C3C),
+        );
       case 'paper':
         final rnd = math.Random(3);
         for (var i = 0; i < 300; i++) {
-          canvas.drawCircle(Offset(rnd.nextDouble() * size.width, rnd.nextDouble() * size.height), 0.6, p);
+          canvas.drawCircle(
+            Offset(
+              rnd.nextDouble() * size.width,
+              rnd.nextDouble() * size.height,
+            ),
+            0.6,
+            p,
+          );
         }
       case 'kraft':
         final rnd = math.Random(9);
         final k = Paint()..color = const Color(0x22000000);
         for (var i = 0; i < 500; i++) {
-          canvas.drawRect(Rect.fromLTWH(rnd.nextDouble() * size.width, rnd.nextDouble() * size.height, 1.5, 0.6), k);
+          canvas.drawRect(
+            Rect.fromLTWH(
+              rnd.nextDouble() * size.width,
+              rnd.nextDouble() * size.height,
+              1.5,
+              0.6,
+            ),
+            k,
+          );
         }
       case 'stars':
         final rnd = math.Random(5);
         for (var i = 0; i < 40; i++) {
-          canvas.drawCircle(Offset(rnd.nextDouble() * size.width, rnd.nextDouble() * size.height), rnd.nextDouble() * 1.8 + 0.4, Paint()..color = ink.withValues(alpha: 0.3));
+          canvas.drawCircle(
+            Offset(
+              rnd.nextDouble() * size.width,
+              rnd.nextDouble() * size.height,
+            ),
+            rnd.nextDouble() * 1.8 + 0.4,
+            Paint()..color = ink.withValues(alpha: 0.3),
+          );
         }
     }
   }
 
   @override
-  bool shouldRepaint(ScrapBackground old) => old.color != color || old.pattern != pattern || old.ink != ink;
+  bool shouldRepaint(ScrapBackground old) =>
+      old.color != color || old.pattern != pattern || old.ink != ink;
 }
 
 /// A page rendered at any size; editable when [onChanged] is given.
@@ -94,19 +122,28 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    final ink = ThemeData.estimateBrightnessForColor(widget.background) == Brightness.dark ? Colors.white : Colors.black;
+    final ink =
+        ThemeData.estimateBrightnessForColor(widget.background) ==
+            Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return AspectRatio(
       aspectRatio: scrapPageAspect,
       child: LayoutBuilder(
         builder: (context, c) {
           final W = c.maxWidth, H = c.maxHeight;
-          final sorted = [...widget.elements]..sort((a, b) => a.z.compareTo(b.z));
+          final sorted = [...widget.elements]
+            ..sort((a, b) => a.z.compareTo(b.z));
           return ClipRRect(
             borderRadius: prismCorners(context, W * 0.02),
             child: GestureDetector(
               onTap: _editable ? () => widget.onSelect?.call(null) : null,
               child: CustomPaint(
-                painter: ScrapBackground(widget.background, widget.pattern, ink),
+                painter: ScrapBackground(
+                  widget.background,
+                  widget.pattern,
+                  ink,
+                ),
                 child: Stack(
                   children: [
                     for (final e in sorted)
@@ -119,8 +156,12 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
                           angle: e.rot,
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
-                            onTap: _editable ? () => widget.onSelect?.call(e.id) : null,
-                            onDoubleTap: _editable ? () => widget.onEditElement?.call(e) : null,
+                            onTap: _editable
+                                ? () => widget.onSelect?.call(e.id)
+                                : null,
+                            onDoubleTap: _editable
+                                ? () => widget.onEditElement?.call(e)
+                                : null,
                             onScaleStart: !_editable
                                 ? null
                                 : (d) {
@@ -132,24 +173,46 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
                             onScaleUpdate: !_editable
                                 ? null
                                 : (d) => setState(() {
-                                    e.x = (e.x + d.focalPointDelta.dx / W).clamp(-e.w * 0.8, 1 - e.w * 0.2);
-                                    e.y = (e.y + d.focalPointDelta.dy / H).clamp(-e.h * 0.8, 1 - e.h * 0.2);
+                                    e.x = (e.x + d.focalPointDelta.dx / W)
+                                        .clamp(-e.w * 0.8, 1 - e.w * 0.2);
+                                    e.y = (e.y + d.focalPointDelta.dy / H)
+                                        .clamp(-e.h * 0.8, 1 - e.h * 0.2);
                                     if (d.pointerCount > 1) {
                                       e.rot = _startRot + d.rotation;
-                                      e.w = (_startW * d.scale).clamp(0.05, 1.5);
-                                      e.h = (_startH * d.scale).clamp(0.03, 1.5);
+                                      e.w = (_startW * d.scale).clamp(
+                                        0.05,
+                                        1.5,
+                                      );
+                                      e.h = (_startH * d.scale).clamp(
+                                        0.03,
+                                        1.5,
+                                      );
                                     }
                                   }),
-                            onScaleEnd: !_editable ? null : (_) => widget.onChanged!(),
+                            onScaleEnd: !_editable
+                                ? null
+                                : (_) => widget.onChanged!(),
                             child: Stack(
                               clipBehavior: Clip.none,
                               children: [
-                                Positioned.fill(child: ScrapElementView(element: e, pageWidth: W)),
+                                Positioned.fill(
+                                  child: ScrapElementView(
+                                    element: e,
+                                    pageWidth: W,
+                                  ),
+                                ),
                                 if (_editable && widget.selectedId == e.id) ...[
                                   Positioned.fill(
                                     child: IgnorePointer(
                                       child: DecoratedBox(
-                                        decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2)),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                            width: 2,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -160,8 +223,14 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
                                     child: _Handle(
                                       icon: PhosphorIcons.arrowsOutSimple(),
                                       onDrag: (dd) => setState(() {
-                                        e.w = (e.w + dd.dx / W).clamp(0.05, 1.5);
-                                        e.h = (e.h + dd.dy / H).clamp(0.03, 1.5);
+                                        e.w = (e.w + dd.dx / W).clamp(
+                                          0.05,
+                                          1.5,
+                                        );
+                                        e.h = (e.h + dd.dy / H).clamp(
+                                          0.03,
+                                          1.5,
+                                        );
                                       }),
                                       onEnd: widget.onChanged!,
                                     ),
@@ -172,7 +241,8 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
                                     top: -14,
                                     child: _Handle(
                                       icon: PhosphorIcons.arrowClockwise(),
-                                      onDrag: (dd) => setState(() => e.rot += dd.dx / 60),
+                                      onDrag: (dd) =>
+                                          setState(() => e.rot += dd.dx / 60),
                                       onEnd: widget.onChanged!,
                                     ),
                                   ),
@@ -194,7 +264,11 @@ class _ScrapPageCanvasState extends State<ScrapPageCanvas> {
 }
 
 class _Handle extends StatelessWidget {
-  const _Handle({required this.icon, required this.onDrag, required this.onEnd});
+  const _Handle({
+    required this.icon,
+    required this.onDrag,
+    required this.onEnd,
+  });
   final IconData icon;
   final ValueChanged<Offset> onDrag;
   final VoidCallback onEnd;
@@ -206,15 +280,26 @@ class _Handle extends StatelessWidget {
     child: Container(
       width: 28,
       height: 28,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: prismRound(context)),
-      child: Icon(icon, size: 14, color: Theme.of(context).colorScheme.onPrimary),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: prismRound(context),
+      ),
+      child: Icon(
+        icon,
+        size: 14,
+        color: Theme.of(context).colorScheme.onPrimary,
+      ),
     ),
   );
 }
 
 /// Draws a single element.
 class ScrapElementView extends StatelessWidget {
-  const ScrapElementView({super.key, required this.element, required this.pageWidth});
+  const ScrapElementView({
+    super.key,
+    required this.element,
+    required this.pageWidth,
+  });
   final ScrapElement element;
   final double pageWidth;
 
@@ -222,21 +307,50 @@ class ScrapElementView extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = element;
     final scale = pageWidth / 360;
-    final base = Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14 * scale * e.size, color: e.color == null ? Colors.black87 : Color(e.color!));
+    final base = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontSize: 14 * scale * e.size,
+      color: e.color == null ? Colors.black87 : Color(e.color!),
+    );
     Widget mediaOrPlaceholder() => e.media == null
         ? ColoredBox(
             color: Colors.black.withValues(alpha: 0.06),
-            child: Center(child: Icon(PhosphorIcons.imageSquare(), color: Colors.black26, size: 28 * scale)),
+            child: Center(
+              child: Icon(
+                PhosphorIcons.imageSquare(),
+                color: Colors.black26,
+                size: 28 * scale,
+              ),
+            ),
           )
-        : (e.media!.startsWith('audio:') ? Center(child: AudioClip(id: e.media!)) : PrismMediaView(id: e.media!));
+        : (e.media!.startsWith('audio:')
+              ? Center(child: AudioClip(id: e.media!))
+              : PrismMediaView(id: e.media!));
     final content = switch (e.type) {
-      ScrapType.photo || ScrapType.video || ScrapType.drawing => mediaOrPlaceholder(),
-      ScrapType.audio => Center(child: e.media == null ? Icon(PhosphorIcons.microphone()) : AudioClip(id: e.media!, label: e.text)),
+      ScrapType.video =>
+        e.media == null
+            ? mediaOrPlaceholder()
+            : ScrapVideoView(key: ValueKey('vid-${e.id}'), element: e),
+      ScrapType.photo || ScrapType.drawing => mediaOrPlaceholder(),
+      ScrapType.audio => Center(
+        child: e.media == null
+            ? Icon(PhosphorIcons.microphone())
+            : AudioClip(id: e.media!, label: e.text),
+      ),
       ScrapType.text => Align(
         alignment: Alignment.topLeft,
         child: Text(
-          (e.text?.isEmpty ?? true) ? tr(context, 'Double-tap to write…', 'Doble toque para escribir…') : e.text!,
-          style: scrapFont(e.font, base).copyWith(color: (e.text?.isEmpty ?? true) ? base.color!.withValues(alpha: 0.4) : null),
+          (e.text?.isEmpty ?? true)
+              ? tr(
+                  context,
+                  'Double-tap to write…',
+                  'Doble toque para escribir…',
+                )
+              : e.text!,
+          style: scrapFont(e.font, base).copyWith(
+            color: (e.text?.isEmpty ?? true)
+                ? base.color!.withValues(alpha: 0.4)
+                : null,
+          ),
           overflow: TextOverflow.fade,
         ),
       ),
@@ -244,11 +358,20 @@ class ScrapElementView extends StatelessWidget {
         padding: EdgeInsets.all(8 * scale),
         decoration: BoxDecoration(
           color: Color(e.color ?? 0xFFFFF3A3),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 6 * scale, offset: Offset(2 * scale, 3 * scale))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 6 * scale,
+              offset: Offset(2 * scale, 3 * scale),
+            ),
+          ],
         ),
         child: Text(
           (e.text?.isEmpty ?? true) ? tr(context, 'Note…', 'Nota…') : e.text!,
-          style: scrapFont(e.font ?? 'hand', base.copyWith(color: Colors.black87)),
+          style: scrapFont(
+            e.font ?? 'hand',
+            base.copyWith(color: Colors.black87),
+          ),
           overflow: TextOverflow.fade,
         ),
       ),
@@ -257,23 +380,53 @@ class ScrapElementView extends StatelessWidget {
         opacity: 0.75,
         child: CustomPaint(painter: _TapePainter(Color(e.color ?? 0xFFF8B6C9))),
       ),
-      ScrapType.shape => CustomPaint(painter: _ShapePainter(e.text ?? 'heart', Color(e.color ?? 0xFFE74C3C))),
+      ScrapType.shape => CustomPaint(
+        painter: _ShapePainter(e.text ?? 'heart', Color(e.color ?? 0xFFE74C3C)),
+      ),
     };
-    return switch (e.frame) {
+    final framed = switch (e.frame) {
       ScrapFrame.none => content,
       ScrapFrame.polaroid => Container(
-        padding: EdgeInsets.fromLTRB(6 * scale, 6 * scale, 6 * scale, 22 * scale),
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 6 * scale, offset: Offset(0, 3 * scale))]),
+        padding: EdgeInsets.fromLTRB(
+          6 * scale,
+          6 * scale,
+          6 * scale,
+          22 * scale,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 6 * scale,
+              offset: Offset(0, 3 * scale),
+            ),
+          ],
+        ),
         child: content,
       ),
       ScrapFrame.round => PrismClipRound(child: content),
       ScrapFrame.shadow => DecoratedBox(
-        decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10 * scale, offset: Offset(0, 4 * scale))]),
-        child: ClipRRect(borderRadius: prismCorners(context, 6 * scale), child: content),
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 10 * scale,
+              offset: Offset(0, 4 * scale),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: prismCorners(context, 6 * scale),
+          child: content,
+        ),
       ),
       ScrapFrame.border => Container(
         padding: EdgeInsets.all(3 * scale),
-        decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Colors.black26)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.black26),
+        ),
         child: content,
       ),
       ScrapFrame.tape => Stack(
@@ -287,13 +440,25 @@ class ScrapElementView extends StatelessWidget {
             child: Center(
               child: Transform.rotate(
                 angle: -0.08,
-                child: SizedBox(width: 60 * scale, height: 18 * scale, child: Opacity(opacity: 0.8, child: CustomPaint(painter: _TapePainter(const Color(0xFFF7E3A1))))),
+                child: SizedBox(
+                  width: 60 * scale,
+                  height: 18 * scale,
+                  child: Opacity(
+                    opacity: 0.8,
+                    child: CustomPaint(
+                      painter: _TapePainter(const Color(0xFFF7E3A1)),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
         ],
       ),
     };
+    return e.opacity < 1
+        ? Opacity(opacity: e.opacity.clamp(0.0, 1.0), child: framed)
+        : framed;
   }
 }
 
@@ -315,9 +480,15 @@ class _TapePainter extends CustomPainter {
     }
     path.close();
     canvas.drawPath(path, Paint()..color = color);
-    final stripe = Paint()..color = Colors.white.withValues(alpha: 0.25)..strokeWidth = 3;
+    final stripe = Paint()
+      ..color = Colors.white.withValues(alpha: 0.25)
+      ..strokeWidth = 3;
     for (double x = -size.height; x < size.width; x += 10) {
-      canvas.drawLine(Offset(x, size.height), Offset(x + size.height, 0), stripe);
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        stripe,
+      );
     }
   }
 
@@ -368,17 +539,19 @@ class _ShapePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ShapePainter old) => old.shape != shape || old.color != color;
+  bool shouldRepaint(_ShapePainter old) =>
+      old.shape != shape || old.color != color;
 }
 
 /// Finger drawing pad; returns PNG bytes.
 class DrawingPad extends StatefulWidget {
   const DrawingPad({super.key});
 
-  static Future<List<int>?> show(BuildContext context) => PrismSheet.showFullScreen<List<int>>(
-    context: context,
-    builder: (ctx, scroll) => const DrawingPad(),
-  );
+  static Future<List<int>?> show(BuildContext context) =>
+      PrismSheet.showFullScreen<List<int>>(
+        context: context,
+        builder: (ctx, scroll) => const DrawingPad(),
+      );
 
   @override
   State<DrawingPad> createState() => _DrawingPadState();
@@ -394,12 +567,18 @@ class _DrawingPadState extends State<DrawingPad> {
     final rec = ui.PictureRecorder();
     final canvas = Canvas(rec);
     _paint(canvas, _strokes);
-    final img = await rec.endRecording().toImage(_size.width.ceil(), _size.height.ceil());
+    final img = await rec.endRecording().toImage(
+      _size.width.ceil(),
+      _size.height.ceil(),
+    );
     final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
     if (mounted) Navigator.of(context).pop(bytes?.buffer.asUint8List());
   }
 
-  static void _paint(Canvas canvas, List<(List<Offset>, Color, double)> strokes) {
+  static void _paint(
+    Canvas canvas,
+    List<(List<Offset>, Color, double)> strokes,
+  ) {
     for (final (pts, color, w) in strokes) {
       final p = Paint()
         ..color = color
@@ -426,7 +605,11 @@ class _DrawingPadState extends State<DrawingPad> {
         children: [
           PrismSheetTopBar(
             title: tr(context, 'Draw', 'Dibujar'),
-            trailing: IconButton(tooltip: tr(context, 'Done', 'Listo'), icon: Icon(AppIcons.check), onPressed: _strokes.isEmpty ? null : _done),
+            trailing: IconButton(
+              tooltip: tr(context, 'Done', 'Listo'),
+              icon: Icon(AppIcons.check),
+              onPressed: _strokes.isEmpty ? null : _done,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -435,7 +618,17 @@ class _DrawingPadState extends State<DrawingPad> {
                 Expanded(
                   child: ColorChoiceRow(
                     value: _color.toARGB32(),
-                    colors: const [0xFF000000, 0xFFFFFFFF, 0xFFE74C3C, 0xFFF39C12, 0xFFF1C40F, 0xFF2ECC71, 0xFF3498DB, 0xFF9B59B6, 0xFFEB459E],
+                    colors: const [
+                      0xFF000000,
+                      0xFFFFFFFF,
+                      0xFFE74C3C,
+                      0xFFF39C12,
+                      0xFFF1C40F,
+                      0xFF2ECC71,
+                      0xFF3498DB,
+                      0xFF9B59B6,
+                      0xFFEB459E,
+                    ],
                     onChanged: (c) => setState(() => _color = Color(c)),
                   ),
                 ),
@@ -449,11 +642,28 @@ class _DrawingPadState extends State<DrawingPad> {
                 IconButton(
                   tooltip: '${w.round()}',
                   isSelected: _width == w,
-                  icon: Container(width: w + 4, height: w + 4, decoration: BoxDecoration(color: _color, borderRadius: prismRound(context))),
+                  icon: Container(
+                    width: w + 4,
+                    height: w + 4,
+                    decoration: BoxDecoration(
+                      color: _color,
+                      borderRadius: prismRound(context),
+                    ),
+                  ),
                   onPressed: () => setState(() => _width = w),
                 ),
-              IconButton(tooltip: tr(context, 'Undo', 'Deshacer'), icon: Icon(PhosphorIcons.arrowCounterClockwise()), onPressed: _strokes.isEmpty ? null : () => setState(_strokes.removeLast)),
-              IconButton(tooltip: tr(context, 'Clear', 'Borrar'), icon: Icon(AppIcons.deleteOutline), onPressed: () => setState(_strokes.clear)),
+              IconButton(
+                tooltip: tr(context, 'Undo', 'Deshacer'),
+                icon: Icon(PhosphorIcons.arrowCounterClockwise()),
+                onPressed: _strokes.isEmpty
+                    ? null
+                    : () => setState(_strokes.removeLast),
+              ),
+              IconButton(
+                tooltip: tr(context, 'Clear', 'Borrar'),
+                icon: Icon(AppIcons.deleteOutline),
+                onPressed: () => setState(_strokes.clear),
+              ),
             ],
           ),
           Expanded(
@@ -465,11 +675,18 @@ class _DrawingPadState extends State<DrawingPad> {
                   return ClipRRect(
                     borderRadius: prismCorners(context, 12),
                     child: GestureDetector(
-                      onPanStart: (d) => setState(() => _strokes.add(([d.localPosition], _color, _width))),
-                      onPanUpdate: (d) => setState(() => _strokes.last.$1.add(d.localPosition)),
+                      onPanStart: (d) => setState(
+                        () => _strokes.add(([d.localPosition], _color, _width)),
+                      ),
+                      onPanUpdate: (d) =>
+                          setState(() => _strokes.last.$1.add(d.localPosition)),
                       child: CustomPaint(
                         painter: _StrokesPainter(_strokes),
-                        child: Container(color: Colors.white.withValues(alpha: 0.02), width: double.infinity, height: double.infinity),
+                        child: Container(
+                          color: Colors.white.withValues(alpha: 0.02),
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
                       ),
                     ),
                   );
@@ -489,7 +706,10 @@ class _StrokesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFFFDFBF6));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFFDFBF6),
+    );
     _DrawingPadState._paint(canvas, strokes);
   }
 
