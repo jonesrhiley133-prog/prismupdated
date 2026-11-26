@@ -5,10 +5,7 @@ import 'package:prism_plurality/features/onboarding/widgets/live_count_card.dart
 import 'package:prism_plurality/features/onboarding/widgets/onboarding_data_ready_view.dart';
 import 'package:prism_plurality/l10n/app_localizations.dart';
 
-Widget _wrap(
-  Widget child, {
-  bool disableAnimations = false,
-}) {
+Widget _wrap(Widget child, {bool disableAnimations = false}) {
   return MaterialApp(
     localizationsDelegates: const [
       AppLocalizations.delegate,
@@ -26,9 +23,7 @@ Widget _wrap(
 
 void main() {
   testWidgets('empty counts → SizedBox.shrink', (tester) async {
-    await tester.pumpWidget(
-      _wrap(const LiveCountCard(counts: {})),
-    );
+    await tester.pumpWidget(_wrap(const LiveCountCard(counts: {})));
     expect(find.byType(SizedBox), findsWidgets);
     expect(find.byType(OnboardingCountRow), findsNothing);
     expect(find.byType(Card), findsNothing);
@@ -37,23 +32,23 @@ void main() {
   testWidgets('all-zero counts → SizedBox.shrink', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const LiveCountCard(
-          counts: {'members': 0, 'fronting_sessions': 0},
-        ),
+        const LiveCountCard(counts: {'members': 0, 'fronting_sessions': 0}),
       ),
     );
     expect(find.byType(OnboardingCountRow), findsNothing);
   });
 
-  testWidgets('first non-zero entry → OnboardingCountRow renders', (tester) async {
-    await tester.pumpWidget(
-      _wrap(const LiveCountCard(counts: {'members': 3})),
-    );
+  testWidgets('first non-zero entry → OnboardingCountRow renders', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const LiveCountCard(counts: {'members': 3})));
     await tester.pumpAndSettle();
     expect(find.byType(OnboardingCountRow), findsAtLeastNWidgets(1));
   });
 
-  testWidgets('6 non-zero entries → only 4 OnboardingCountRow widgets', (tester) async {
+  testWidgets('6 non-zero entries → only 4 OnboardingCountRow widgets', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(
         const LiveCountCard(
@@ -93,7 +88,9 @@ void main() {
     countsNotifier.dispose();
   });
 
-  testWidgets('jump <50 → no TweenAnimationBuilder<int> for that row', (tester) async {
+  testWidgets('jump <50 → no TweenAnimationBuilder<int> for that row', (
+    tester,
+  ) async {
     final countsNotifier = ValueNotifier<Map<String, int>>({'members': 10});
 
     await tester.pumpWidget(
@@ -114,7 +111,9 @@ void main() {
     countsNotifier.dispose();
   });
 
-  testWidgets('all counts go zero after mount → card frame stays visible', (tester) async {
+  testWidgets('all counts go zero after mount → card frame stays visible', (
+    tester,
+  ) async {
     final countsNotifier = ValueNotifier<Map<String, int>>({'members': 5});
 
     await tester.pumpWidget(
@@ -138,9 +137,7 @@ void main() {
   });
 
   testWidgets('members row uses neutral "Members" label', (tester) async {
-    await tester.pumpWidget(
-      _wrap(const LiveCountCard(counts: {'members': 3})),
-    );
+    await tester.pumpWidget(_wrap(const LiveCountCard(counts: {'members': 3})));
     await tester.pumpAndSettle();
     expect(find.textContaining('Members'), findsOneWidget);
   });
@@ -157,9 +154,7 @@ void main() {
   });
 
   testWidgets('ExcludeSemantics wraps card content', (tester) async {
-    await tester.pumpWidget(
-      _wrap(const LiveCountCard(counts: {'members': 3})),
-    );
+    await tester.pumpWidget(_wrap(const LiveCountCard(counts: {'members': 3})));
     await tester.pumpAndSettle();
     expect(find.byType(ExcludeSemantics), findsAtLeastNWidgets(1));
   });

@@ -132,8 +132,12 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal:
-                              (actions == null || actions!.length <= 1 || trailing != null ? 1 : actions!.length) *
-                                  (PrismTokens.topBarActionSize + 8),
+                              (actions == null ||
+                                      actions!.length <= 1 ||
+                                      trailing != null
+                                  ? 1
+                                  : actions!.length) *
+                              (PrismTokens.topBarActionSize + 8),
                         ),
                         child: titleBlock,
                       ),

@@ -144,6 +144,7 @@ Future<Uint8List?> _defaultCropImage(
       doneButtonTitle: doneButtonTitle,
       cancelButtonTitle: cancelButtonTitle,
       aspectRatio: 1,
+      circlePreview: true,
     ),
   );
   if (croppedBitmap == null) return null;

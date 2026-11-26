@@ -99,11 +99,32 @@ class IntegrationsCenterScreen extends ConsumerWidget {
                 ),
                 _Row(
                   icon: Icons.cloud_outlined,
-                  title: tr(context, 'Prism account & cloud backup', 'Cuenta de Prism y copia en la nube'),
-                  state: account != null ? (account.backupKey == null ? _State.attention : _State.connected) : _State.off,
+                  title: tr(
+                    context,
+                    'Prism account & cloud backup',
+                    'Cuenta de Prism y copia en la nube',
+                  ),
+                  state: account != null
+                      ? (account.backupKey == null
+                            ? _State.attention
+                            : _State.connected)
+                      : _State.off,
                   detail: account != null
-                      ? [account.username, account.lastBackupAt == null ? tr(context, 'no backup yet', 'sin copia aún') : tr(context, 'last backup ${fmt.format(account.lastBackupAt!.toLocal())}', 'última copia ${fmt.format(account.lastBackupAt!.toLocal())}')].join(' · ')
-                      : tr(context, 'Optional. End-to-end encrypted backups you can restore anywhere.', 'Opcional. Copias cifradas de extremo a extremo.'),
+                      ? [
+                          account.username,
+                          account.lastBackupAt == null
+                              ? tr(context, 'no backup yet', 'sin copia aún')
+                              : tr(
+                                  context,
+                                  'last backup ${fmt.format(account.lastBackupAt!.toLocal())}',
+                                  'última copia ${fmt.format(account.lastBackupAt!.toLocal())}',
+                                ),
+                        ].join(' · ')
+                      : tr(
+                          context,
+                          'Optional. End-to-end encrypted backups you can restore anywhere.',
+                          'Opcional. Copias cifradas de extremo a extremo.',
+                        ),
                   onTap: () => context.push(AppRoutePaths.account),
                 ),
                 _Row(

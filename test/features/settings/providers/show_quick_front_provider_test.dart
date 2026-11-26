@@ -18,8 +18,7 @@ void main() {
     test('returns true when systemSettingsProvider is loading', () {
       final container = ProviderContainer(
         overrides: [
-          systemSettingsProvider
-              .overrideWithValue(const AsyncValue.loading()),
+          systemSettingsProvider.overrideWithValue(const AsyncValue.loading()),
         ],
       );
       addTearDown(container.dispose);

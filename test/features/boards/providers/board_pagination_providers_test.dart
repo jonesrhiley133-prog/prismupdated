@@ -100,11 +100,9 @@ class _FakeRepo implements MemberBoardPostsRepository {
   );
 
   @override
-  Future<MemberBoardPost?> getPostById(String id) async =>
-      _posts.cast<MemberBoardPost?>().firstWhere(
-        (p) => p?.id == id,
-        orElse: () => null,
-      );
+  Future<MemberBoardPost?> getPostById(String id) async => _posts
+      .cast<MemberBoardPost?>()
+      .firstWhere((p) => p?.id == id, orElse: () => null);
 
   @override
   Future<void> createPost(MemberBoardPost post) async {}
@@ -500,9 +498,7 @@ void main() {
         transitions.clear();
 
         for (var page = 2; page <= 3; page++) {
-          container
-              .read(memberBoardLimitProvider('alice').notifier)
-              .loadMore();
+          container.read(memberBoardLimitProvider('alice').notifier).loadMore();
           await _waitForCount(
             () => container.read(memberBoardFeedProvider('alice')),
             boardPostsPageSize * page,

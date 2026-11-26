@@ -9,7 +9,8 @@ import 'package:prism_plurality/features/games/core/games_data.dart';
 import 'package:prism_plurality/features/games/views/custom_games_view.dart';
 import 'package:prism_plurality/features/games/views/game_night_view.dart';
 import 'package:prism_plurality/features/games/views/games_profile_view.dart';
-import 'package:prism_plurality/features/settings/views/feature_data_screen.dart' show FeatureDataAction;
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart'
+    show FeatureDataAction;
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 enum GamesTab { play, challenges, nights, create, me }
@@ -22,7 +23,9 @@ class GamesHubScreen extends ConsumerStatefulWidget {
 }
 
 class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
-  late GamesTab _tab = GamesTab.values.where((t) => t.name == widget.tab).firstOrNull ?? GamesTab.play;
+  late GamesTab _tab =
+      GamesTab.values.where((t) => t.name == widget.tab).firstOrNull ??
+      GamesTab.play;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +34,16 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Games', 'Juegos'),
         actions: [
-          PrismTopBarAction(icon: PhosphorIcons.globe(), tooltip: tr(context, 'Play online', 'Jugar en línea'), onPressed: () => context.push(AppRoutePaths.onlineGames)),
-          PrismTopBarAction(icon: PhosphorIcons.shuffle(), tooltip: tr(context, 'Random game', 'Juego al azar'), onPressed: () => openRandomGame(context)),
+          PrismTopBarAction(
+            icon: PhosphorIcons.globe(),
+            tooltip: tr(context, 'Play online', 'Jugar en línea'),
+            onPressed: () => context.push(AppRoutePaths.onlineGames),
+          ),
+          PrismTopBarAction(
+            icon: PhosphorIcons.shuffle(),
+            tooltip: tr(context, 'Random game', 'Juego al azar'),
+            onPressed: () => openRandomGame(context),
+          ),
           const FeatureDataAction(featureId: 'games'),
         ],
       ),
@@ -44,11 +55,28 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
           children: [
             PrismSegmentedControl<GamesTab>(
               segments: [
-                PrismSegment(value: GamesTab.play, label: tr(context, 'Play', 'Jugar')),
-                PrismSegment(value: GamesTab.challenges, label: waiting == 0 ? tr(context, 'Challenges', 'Retos') : '${tr(context, 'Challenges', 'Retos')} · $waiting'),
-                PrismSegment(value: GamesTab.nights, label: tr(context, 'Game Night', 'Noche de juegos')),
-                PrismSegment(value: GamesTab.create, label: tr(context, 'Create', 'Crear')),
-                PrismSegment(value: GamesTab.me, label: tr(context, 'Profiles', 'Perfiles')),
+                PrismSegment(
+                  value: GamesTab.play,
+                  label: tr(context, 'Play', 'Jugar'),
+                ),
+                PrismSegment(
+                  value: GamesTab.challenges,
+                  label: waiting == 0
+                      ? tr(context, 'Challenges', 'Retos')
+                      : '${tr(context, 'Challenges', 'Retos')} · $waiting',
+                ),
+                PrismSegment(
+                  value: GamesTab.nights,
+                  label: tr(context, 'Game Night', 'Noche de juegos'),
+                ),
+                PrismSegment(
+                  value: GamesTab.create,
+                  label: tr(context, 'Create', 'Crear'),
+                ),
+                PrismSegment(
+                  value: GamesTab.me,
+                  label: tr(context, 'Profiles', 'Perfiles'),
+                ),
               ],
               selected: _tab,
               onChanged: (t) => setState(() => _tab = t),
@@ -58,17 +86,36 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
               PrismSurface(
                 onTap: () => context.push(AppRoutePaths.onlineGames),
                 padding: const EdgeInsets.all(14),
-                child: Row(children: [
-                  const Text('🌐', style: TextStyle(fontSize: 28)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(tr(context, 'Play online with friends', 'Juega en línea con amigos'), style: Theme.of(context).textTheme.titleSmall),
-                      Text(tr(context, 'Tic-tac-toe, Four in a Row, Rock Paper Scissors and Word Chain — share a room code.', 'Tres en raya, Cuatro en línea, Piedra papel tijera y Cadena de palabras — comparte un código.'), style: Theme.of(context).textTheme.bodySmall),
-                    ]),
-                  ),
-                  const Icon(Icons.chevron_right),
-                ]),
+                child: Row(
+                  children: [
+                    const Text('🌐', style: TextStyle(fontSize: 28)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tr(
+                              context,
+                              'Play online with friends',
+                              'Juega en línea con amigos',
+                            ),
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Text(
+                            tr(
+                              context,
+                              'Tic-tac-toe, Four in a Row, Rock Paper Scissors and Word Chain — share a room code.',
+                              'Tres en raya, Cuatro en línea, Piedra papel tijera y Cadena de palabras — comparte un código.',
+                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
               ),
               const SizedBox(height: 14),
             ],
@@ -89,7 +136,20 @@ class _GamesHubScreenState extends ConsumerState<GamesHubScreen> {
   }
 }
 
-void openGame(BuildContext context, String id, {String? challenge, String? custom, String? night}) => context.push(AppRoutePaths.gamePlay(id, challenge: challenge, custom: custom, night: night));
+void openGame(
+  BuildContext context,
+  String id, {
+  String? challenge,
+  String? custom,
+  String? night,
+}) => context.push(
+  AppRoutePaths.gamePlay(
+    id,
+    challenge: challenge,
+    custom: custom,
+    night: night,
+  ),
+);
 
 void openRandomGame(BuildContext context, {bool Function(GameDef)? where}) {
   final pool = gameCatalog.where(where ?? (_) => true).toList();
@@ -102,7 +162,14 @@ final openChallengesProvider = Provider<List<GameChallenge>>((ref) {
   final results = ref.watch(gameResultsProvider);
   return [
     for (final c in ref.watch(gameChallengesProvider))
-      if (c.to.isEmpty ? !results.any((r) => r.challengeId == c.r.id) : c.to.any((m) => !results.any((r) => r.challengeId == c.r.id && r.memberId == m))) c,
+      if (c.to.isEmpty
+          ? !results.any((r) => r.challengeId == c.r.id)
+          : c.to.any(
+              (m) => !results.any(
+                (r) => r.challengeId == c.r.id && r.memberId == m,
+              ),
+            ))
+        c,
   ]..sort((a, b) => b.when.compareTo(a.when));
 });
 
@@ -140,7 +207,12 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
     super.dispose();
   }
 
-  bool get _filtering => _search.text.trim().isNotEmpty || _cat != null || _tag != null || _multi || _sort != _Sort.featured;
+  bool get _filtering =>
+      _search.text.trim().isNotEmpty ||
+      _cat != null ||
+      _tag != null ||
+      _multi ||
+      _sort != _Sort.featured;
 
   @override
   Widget build(BuildContext context) {
@@ -157,15 +229,23 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
       if (_tag != null && !g.tags.contains(_tag)) return false;
       if (_multi && !g.multiplayer) return false;
       if (q.isEmpty) return true;
-      return '${g.name.$1} ${g.name.$2} ${g.desc.$1} ${g.number}'.toLowerCase().contains(q);
+      return '${g.name.$1} ${g.name.$2} ${g.desc.$1} ${g.number}'
+          .toLowerCase()
+          .contains(q);
     }).toList();
     switch (_sort) {
       case _Sort.az:
-        list.sort((a, b) => trp(context, a.name).compareTo(trp(context, b.name)));
+        list.sort(
+          (a, b) => trp(context, a.name).compareTo(trp(context, b.name)),
+        );
       case _Sort.shortest:
         list.sort((a, b) => a.minutes.compareTo(b.minutes));
       case _Sort.recent:
-        list.sort((a, b) => (lastPlayed[b.id] ?? DateTime(1970)).compareTo(lastPlayed[a.id] ?? DateTime(1970)));
+        list.sort(
+          (a, b) => (lastPlayed[b.id] ?? DateTime(1970)).compareTo(
+            lastPlayed[a.id] ?? DateTime(1970),
+          ),
+        );
       case _Sort.featured:
         break;
     }
@@ -173,7 +253,12 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        PrismTextField(controller: _search, hintText: tr(context, 'Search 120 games', 'Buscar entre 120 juegos'), prefixIcon: Icon(PhosphorIcons.magnifyingGlass()), onChanged: (_) => setState(() {})),
+        PrismTextField(
+          controller: _search,
+          hintText: tr(context, 'Search 120 games', 'Buscar entre 120 juegos'),
+          prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+          onChanged: (_) => setState(() {}),
+        ),
         const SizedBox(height: 10),
         SizedBox(
           height: 40,
@@ -183,7 +268,11 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
               for (final c in GameCategory.values)
                 Padding(
                   padding: const EdgeInsets.only(right: 6),
-                  child: PrismChip(label: '${c.emoji} ${trp(context, c.label)}', selected: _cat == c, onTap: () => setState(() => _cat = _cat == c ? null : c)),
+                  child: PrismChip(
+                    label: '${c.emoji} ${trp(context, c.label)}',
+                    selected: _cat == c,
+                    onTap: () => setState(() => _cat = _cat == c ? null : c),
+                  ),
                 ),
             ],
           ),
@@ -197,11 +286,20 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
               for (final e in _tags.entries)
                 Padding(
                   padding: const EdgeInsets.only(right: 6),
-                  child: PrismChip(label: trp(context, e.value), selected: _tag == e.key, onTap: () => setState(() => _tag = _tag == e.key ? null : e.key)),
+                  child: PrismChip(
+                    label: trp(context, e.value),
+                    selected: _tag == e.key,
+                    onTap: () =>
+                        setState(() => _tag = _tag == e.key ? null : e.key),
+                  ),
                 ),
               Padding(
                 padding: const EdgeInsets.only(right: 6),
-                child: PrismChip(label: tr(context, '👥 Multiplayer', '👥 Multijugador'), selected: _multi, onTap: () => setState(() => _multi = !_multi)),
+                child: PrismChip(
+                  label: tr(context, '👥 Multiplayer', '👥 Multijugador'),
+                  selected: _multi,
+                  onTap: () => setState(() => _multi = !_multi),
+                ),
               ),
             ],
           ),
@@ -209,7 +307,10 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
         const SizedBox(height: 6),
         Row(
           children: [
-            Text(tr(context, 'Sort', 'Ordenar'), style: theme.textTheme.labelMedium),
+            Text(
+              tr(context, 'Sort', 'Ordenar'),
+              style: theme.textTheme.labelMedium,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: SingleChildScrollView(
@@ -220,11 +321,18 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
                       (_Sort.featured, tr(context, 'Featured', 'Destacados')),
                       (_Sort.az, 'A–Z'),
                       (_Sort.shortest, tr(context, 'Shortest', 'Más cortos')),
-                      (_Sort.recent, tr(context, 'Recently played', 'Jugados hace poco')),
+                      (
+                        _Sort.recent,
+                        tr(context, 'Recently played', 'Jugados hace poco'),
+                      ),
                     ])
                       Padding(
                         padding: const EdgeInsets.only(right: 6),
-                        child: PrismChip(label: l, selected: _sort == s, onTap: () => setState(() => _sort = s)),
+                        child: PrismChip(
+                          label: l,
+                          selected: _sort == s,
+                          onTap: () => setState(() => _sort = s),
+                        ),
                       ),
                   ],
                 ),
@@ -234,12 +342,18 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
         ),
         const SizedBox(height: 8),
         if (_filtering) ...[
-          PrismSectionHeader(title: tr(context, '${list.length} GAMES', '${list.length} JUEGOS')),
+          PrismSectionHeader(
+            title: tr(context, '${list.length} GAMES', '${list.length} JUEGOS'),
+          ),
           if (list.isEmpty)
             EmptyState(
               icon: Icon(PhosphorIcons.gameController()),
               title: tr(context, 'No games match', 'Ningún juego coincide'),
-              subtitle: tr(context, 'Try another word or clear a filter.', 'Prueba otra palabra o quita un filtro.'),
+              subtitle: tr(
+                context,
+                'Try another word or clear a filter.',
+                'Prueba otra palabra o quita un filtro.',
+              ),
             )
           else
             GameGrid(games: list),
@@ -249,7 +363,10 @@ class _PlayTabState extends ConsumerState<_PlayTab> {
               child: PrismButton(
                 icon: PhosphorIcons.shuffle(),
                 label: tr(context, 'Random from these', 'Uno al azar de estos'),
-                onPressed: () => openGame(context, list[math.Random().nextInt(list.length)].id),
+                onPressed: () => openGame(
+                  context,
+                  list[math.Random().nextInt(list.length)].id,
+                ),
               ),
             ),
         ] else
@@ -270,7 +387,12 @@ class _Featured extends ConsumerWidget {
     final open = ref.watch(openChallengesProvider);
 
     final continuing = [
-      for (final s in [...saves]..sort((a, b) => (b.occurredAt ?? b.createdAt).compareTo(a.occurredAt ?? a.createdAt)))
+      for (final s
+          in [...saves]..sort(
+            (a, b) => (b.occurredAt ?? b.createdAt).compareTo(
+              a.occurredAt ?? a.createdAt,
+            ),
+          ))
         if (gameById(s.title) != null) gameById(s.title)!,
     ].toSet().toList();
     final recent = <GameDef>[];
@@ -279,7 +401,10 @@ class _Featured extends ConsumerWidget {
       if (g != null && !recent.contains(g)) recent.add(g);
       if (recent.length >= 10) break;
     }
-    final favIds = {...?profiles[fronter ?? '']?.favorites, ...?profiles['']?.favorites};
+    final favIds = {
+      ...?profiles[fronter ?? '']?.favorites,
+      ...?profiles['']?.favorites,
+    };
     final favs = [for (final id in favIds) ?gameById(id)];
     // Recommended: categories played most, games not yet played.
     final catCount = <GameCategory, int>{};
@@ -288,10 +413,19 @@ class _Featured extends ConsumerWidget {
       if (g != null) catCount[g.category] = (catCount[g.category] ?? 0) + 1;
     }
     final played = {for (final r in results) r.gameId};
-    final cats = [...GameCategory.values]..sort((a, b) => (catCount[b] ?? 0).compareTo(catCount[a] ?? 0));
+    final cats = [...GameCategory.values]
+      ..sort((a, b) => (catCount[b] ?? 0).compareTo(catCount[a] ?? 0));
     final rng = math.Random(dailySeed());
-    final recommended = [for (final c in cats.take(3)) ...(gameCatalog.where((g) => g.category == c && !played.contains(g.id)).toList()..shuffle(rng)).take(2)];
-    final quick = gameCatalog.where((g) => g.tags.contains('quick')).toList()..shuffle(rng);
+    final recommended = [
+      for (final c in cats.take(3))
+        ...(gameCatalog
+                .where((g) => g.category == c && !played.contains(g.id))
+                .toList()
+              ..shuffle(rng))
+            .take(2),
+    ];
+    final quick = gameCatalog.where((g) => g.tags.contains('quick')).toList()
+      ..shuffle(rng);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -315,16 +449,34 @@ class _Featured extends ConsumerWidget {
               ],
             ),
           ),
-        if (continuing.isNotEmpty) ...[PrismSectionHeader(title: tr(context, 'CONTINUE PLAYING', 'CONTINUAR')), GameRow(games: continuing)],
+        if (continuing.isNotEmpty) ...[
+          PrismSectionHeader(
+            title: tr(context, 'CONTINUE PLAYING', 'CONTINUAR'),
+          ),
+          GameRow(games: continuing),
+        ],
         PrismSectionHeader(title: tr(context, 'TODAY', 'HOY')),
         GameRow(games: dailyGames()),
-        if (favs.isNotEmpty) ...[PrismSectionHeader(title: tr(context, 'FAVOURITES', 'FAVORITOS')), GameRow(games: favs)],
-        if (recent.isNotEmpty) ...[PrismSectionHeader(title: tr(context, 'RECENTLY PLAYED', 'JUGADOS HACE POCO')), GameRow(games: recent)],
+        if (favs.isNotEmpty) ...[
+          PrismSectionHeader(title: tr(context, 'FAVOURITES', 'FAVORITOS')),
+          GameRow(games: favs),
+        ],
+        if (recent.isNotEmpty) ...[
+          PrismSectionHeader(
+            title: tr(context, 'RECENTLY PLAYED', 'JUGADOS HACE POCO'),
+          ),
+          GameRow(games: recent),
+        ],
         PrismSectionHeader(title: tr(context, 'RECOMMENDED', 'RECOMENDADOS')),
         GameRow(games: recommended),
         PrismSectionHeader(title: tr(context, 'QUICK PLAY', 'PARTIDA RÁPIDA')),
         GameRow(games: quick.take(10).toList()),
-        for (final c in GameCategory.values) ...[PrismSectionHeader(title: '${c.emoji} ${trp(context, c.label).toUpperCase()}'), GameRow(games: gameCatalog.where((g) => g.category == c).toList())],
+        for (final c in GameCategory.values) ...[
+          PrismSectionHeader(
+            title: '${c.emoji} ${trp(context, c.label).toUpperCase()}',
+          ),
+          GameRow(games: gameCatalog.where((g) => g.category == c).toList()),
+        ],
       ],
     );
   }
@@ -341,7 +493,8 @@ class GameRow extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       itemCount: games.length,
       separatorBuilder: (_, _) => const SizedBox(width: 10),
-      itemBuilder: (context, i) => SizedBox(width: 132, child: GameCard(def: games[i])),
+      itemBuilder: (context, i) =>
+          SizedBox(width: 132, child: GameCard(def: games[i])),
     ),
   );
 }
@@ -358,7 +511,12 @@ class GameGrid extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: games.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisSpacing: 10, crossAxisSpacing: 10, mainAxisExtent: 150),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: cols,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          mainAxisExtent: 150,
+        ),
         itemBuilder: (context, i) => GameCard(def: games[i]),
       );
     },
@@ -386,7 +544,12 @@ class GameCard extends StatelessWidget {
               children: [
                 Text(def.emoji, style: const TextStyle(fontSize: 28)),
                 const Spacer(),
-                if (def.multiplayer) Icon(PhosphorIcons.users(), size: 14, color: theme.colorScheme.onSurfaceVariant),
+                if (def.multiplayer)
+                  Icon(
+                    PhosphorIcons.users(),
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
               ],
             ),
             const SizedBox(height: 6),
@@ -394,10 +557,18 @@ class GameCard extends StatelessWidget {
               trp(context, def.name),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, height: 1.15),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                height: 1.15,
+              ),
             ),
             const Spacer(),
-            Text('~${def.minutes} min · ${difficultyLabel(context, def.difficulty)}', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              '~${def.minutes} min · ${difficultyLabel(context, def.difficulty)}',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
@@ -417,14 +588,20 @@ class _ChallengesTab extends ConsumerWidget {
     final all = ref.watch(gameChallengesProvider);
     final names = ref.watch(gameNamesProvider);
     final results = ref.watch(gameResultsProvider);
-    final done = all.where((c) => !open.contains(c)).toList()..sort((a, b) => b.when.compareTo(a.when));
+    final done = all.where((c) => !open.contains(c)).toList()
+      ..sort((a, b) => b.when.compareTo(a.when));
     final theme = Theme.of(context);
 
     Widget tile(GameChallenge c, {required bool isOpen}) {
       final g = gameById(c.gameId);
       final played = [
         for (final r in results)
-          if (r.challengeId == c.r.id || (r.gameId == c.gameId && r.memberId == c.from && r.challengeId == null && (r.when.difference(c.when).inMinutes.abs() < 5))) r,
+          if (r.challengeId == c.r.id ||
+              (r.gameId == c.gameId &&
+                  r.memberId == c.from &&
+                  r.challengeId == null &&
+                  (r.when.difference(c.when).inMinutes.abs() < 5)))
+            r,
       ];
       return PrismListRow(
         leading: Text(g?.emoji ?? '🎲', style: const TextStyle(fontSize: 26)),
@@ -433,7 +610,13 @@ class _ChallengesTab extends ConsumerWidget {
           [
             '${names[c.from] ?? tr(context, 'Someone', 'Alguien')} → ${c.to.isEmpty ? tr(context, 'anyone', 'cualquiera') : c.to.map((m) => names[m] ?? '?').join(', ')}',
             if (c.message.isNotEmpty) '"${c.message}"',
-            if (played.isNotEmpty) played.map((r) => '${names[r.memberId] ?? '?'}: ${r.score ?? '✓'}${r.max == null ? '' : '/${r.max}'}').join(' · '),
+            if (played.isNotEmpty)
+              played
+                  .map(
+                    (r) =>
+                        '${names[r.memberId] ?? '?'}: ${r.score ?? '✓'}${r.max == null ? '' : '/${r.max}'}',
+                  )
+                  .join(' · '),
           ].join('\n'),
         ),
         trailing: Row(
@@ -446,7 +629,11 @@ class _ChallengesTab extends ConsumerWidget {
                 label: tr(context, 'Play', 'Jugar'),
                 onPressed: () => openGame(context, c.gameId, challenge: c.r.id),
               ),
-            PrismIconButton(icon: PhosphorIcons.trash(), tooltip: tr(context, 'Remove', 'Quitar'), onPressed: () => ref.read(gamesActionsProvider).delete(c.r)),
+            PrismIconButton(
+              icon: PhosphorIcons.trash(),
+              tooltip: tr(context, 'Remove', 'Quitar'),
+              onPressed: () => ref.read(gamesActionsProvider).delete(c.r),
+            ),
           ],
         ),
       );
@@ -461,27 +648,41 @@ class _ChallengesTab extends ConsumerWidget {
             'Challenges let alters play the same puzzle at different times. Finish a game and choose "Challenge another alter", or start one here.',
             'Los retos permiten jugar el mismo puzle en momentos distintos. Al terminar un juego elige "Retar a otro alter", o empieza uno aquí.',
           ),
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 10),
-        PrismButton(icon: PhosphorIcons.plus(), label: tr(context, 'New challenge', 'Nuevo reto'), onPressed: () => _newChallenge(context, ref)),
+        PrismButton(
+          icon: PhosphorIcons.plus(),
+          label: tr(context, 'New challenge', 'Nuevo reto'),
+          onPressed: () => _newChallenge(context, ref),
+        ),
         PrismSectionHeader(title: tr(context, 'WAITING', 'PENDIENTES')),
         if (open.isEmpty)
           EmptyState(
             icon: Icon(PhosphorIcons.paperPlaneTilt()),
             title: tr(context, 'No open challenges', 'No hay retos pendientes'),
-            subtitle: tr(context, 'Nothing to catch up on — no pressure.', 'Nada pendiente, sin presión.'),
+            subtitle: tr(
+              context,
+              'Nothing to catch up on — no pressure.',
+              'Nada pendiente, sin presión.',
+            ),
           )
         else
           PrismSurface(
             padding: EdgeInsets.zero,
-            child: Column(children: [for (final c in open) tile(c, isOpen: true)]),
+            child: Column(
+              children: [for (final c in open) tile(c, isOpen: true)],
+            ),
           ),
         if (done.isNotEmpty) ...[
           PrismSectionHeader(title: tr(context, 'COMPLETED', 'COMPLETADOS')),
           PrismSurface(
             padding: EdgeInsets.zero,
-            child: Column(children: [for (final c in done.take(20)) tile(c, isOpen: false)]),
+            child: Column(
+              children: [for (final c in done.take(20)) tile(c, isOpen: false)],
+            ),
           ),
         ],
       ],
@@ -489,20 +690,52 @@ class _ChallengesTab extends ConsumerWidget {
   }
 
   Future<void> _newChallenge(BuildContext context, WidgetRef ref) async {
-    final g = await pickGame(context, where: (g) => g.seeded && g.style == PlayStyle.turns);
+    final g = await pickGame(
+      context,
+      where: (g) => g.seeded && g.style == PlayStyle.turns,
+    );
     if (g == null || !context.mounted) return;
-    final from = await pickAlters(context, ref, max: 1, title: tr(context, 'Who is sending it?', '¿Quién lo envía?'), selected: [?ref.read(gamePlayerDefaultProvider)]);
+    final from = await pickAlters(
+      context,
+      ref,
+      max: 1,
+      title: tr(context, 'Who is sending it?', '¿Quién lo envía?'),
+      selected: [?ref.read(gamePlayerDefaultProvider)],
+    );
     if (from == null || !context.mounted) return;
-    final to = await pickAlters(context, ref, title: tr(context, 'Who should take it?', '¿Quién lo acepta?'));
+    final to = await pickAlters(
+      context,
+      ref,
+      title: tr(context, 'Who should take it?', '¿Quién lo acepta?'),
+    );
     if (to == null || to.isEmpty || !context.mounted) return;
-    final msg = await promptText(context, title: tr(context, 'Add a note (optional)', 'Añade una nota (opcional)'));
-    await ref.read(gamesActionsProvider).createChallenge(gameId: g.id, from: from.firstOrNull, to: to, seed: math.Random().nextInt(1 << 30), message: msg ?? '');
-    if (context.mounted) PrismToast.show(context, message: tr(context, 'Challenge sent', 'Reto enviado'));
+    final msg = await promptText(
+      context,
+      title: tr(context, 'Add a note (optional)', 'Añade una nota (opcional)'),
+    );
+    await ref
+        .read(gamesActionsProvider)
+        .createChallenge(
+          gameId: g.id,
+          from: from.firstOrNull,
+          to: to,
+          seed: math.Random().nextInt(1 << 30),
+          message: msg ?? '',
+        );
+    if (context.mounted)
+      PrismToast.show(
+        context,
+        message: tr(context, 'Challenge sent', 'Reto enviado'),
+      );
   }
 }
 
 /// A searchable game picker sheet.
-Future<GameDef?> pickGame(BuildContext context, {bool Function(GameDef)? where, String? title}) {
+Future<GameDef?> pickGame(
+  BuildContext context, {
+  bool Function(GameDef)? where,
+  String? title,
+}) {
   return PrismSheet.show<GameDef>(
     context: context,
     title: title ?? tr(context, 'Choose a game', 'Elige un juego'),
@@ -528,13 +761,24 @@ class _GamePickerState extends State<_GamePicker> {
   @override
   Widget build(BuildContext context) {
     final q = _q.text.trim().toLowerCase();
-    final list = gameCatalog.where((g) => (widget.where?.call(g) ?? true) && (q.isEmpty || '${g.name.$1} ${g.name.$2}'.toLowerCase().contains(q))).toList();
+    final list = gameCatalog
+        .where(
+          (g) =>
+              (widget.where?.call(g) ?? true) &&
+              (q.isEmpty ||
+                  '${g.name.$1} ${g.name.$2}'.toLowerCase().contains(q)),
+        )
+        .toList();
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          PrismTextField(controller: _q, hintText: tr(context, 'Search', 'Buscar'), onChanged: (_) => setState(() {})),
+          PrismTextField(
+            controller: _q,
+            hintText: tr(context, 'Search', 'Buscar'),
+            onChanged: (_) => setState(() {}),
+          ),
           const SizedBox(height: 8),
           SizedBox(
             height: math.min(420, MediaQuery.sizeOf(context).height * 0.55),
@@ -542,7 +786,10 @@ class _GamePickerState extends State<_GamePicker> {
               children: [
                 for (final g in list)
                   PrismListRow(
-                    leading: Text(g.emoji, style: const TextStyle(fontSize: 22)),
+                    leading: Text(
+                      g.emoji,
+                      style: const TextStyle(fontSize: 22),
+                    ),
                     title: Text(trp(context, g.name)),
                     subtitle: Text(trp(context, g.category.label)),
                     onTap: () => Navigator.of(context).pop(g),
@@ -557,7 +804,13 @@ class _GamePickerState extends State<_GamePicker> {
 }
 
 /// Simple one-field text prompt.
-Future<String?> promptText(BuildContext context, {required String title, String initial = '', String? hint, int maxLines = 2}) {
+Future<String?> promptText(
+  BuildContext context, {
+  required String title,
+  String initial = '',
+  String? hint,
+  int maxLines = 2,
+}) {
   final ctl = TextEditingController(text: initial);
   return PrismSheet.show<String>(
     context: context,
@@ -568,9 +821,18 @@ Future<String?> promptText(BuildContext context, {required String title, String 
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PrismTextField(controller: ctl, hintText: hint, maxLines: maxLines, autofocus: true),
+          PrismTextField(
+            controller: ctl,
+            hintText: hint,
+            maxLines: maxLines,
+            autofocus: true,
+          ),
           const SizedBox(height: 12),
-          PrismButton(tone: PrismButtonTone.filled, label: tr(ctx, 'Done', 'Hecho'), onPressed: () => Navigator.of(ctx).pop(ctl.text.trim())),
+          PrismButton(
+            tone: PrismButtonTone.filled,
+            label: tr(ctx, 'Done', 'Hecho'),
+            onPressed: () => Navigator.of(ctx).pop(ctl.text.trim()),
+          ),
         ],
       ),
     ),

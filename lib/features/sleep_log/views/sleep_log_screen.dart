@@ -230,8 +230,10 @@ class SleepLogScreen extends ConsumerWidget {
                                                   _ =>
                                                     theme.colorScheme.outline,
                                                 },
-                                                borderRadius:
-                                                    prismCorners(context, 3),
+                                                borderRadius: prismCorners(
+                                                  context,
+                                                  3,
+                                                ),
                                               ),
                                             ),
                                           ),

@@ -4,7 +4,18 @@
 /// A "Custom" entry alongside this palette lets users pick anything from the
 /// system emoji keyboard.
 const List<String> kScaleEmojiPalette = [
-  '⭐', '❤️', '🔥', '⚡', '🌙', '☀️',
-  '💧', '🌱', '🎯', '🍕', '🎵', '✨',
-  '🟩', '⬜',
+  '⭐',
+  '❤️',
+  '🔥',
+  '⚡',
+  '🌙',
+  '☀️',
+  '💧',
+  '🌱',
+  '🎯',
+  '🍕',
+  '🎵',
+  '✨',
+  '🟩',
+  '⬜',
 ];

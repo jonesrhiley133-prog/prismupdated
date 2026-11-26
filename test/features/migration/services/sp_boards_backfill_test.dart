@@ -125,28 +125,24 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Deterministic ID', () {
-    test(
-      'same input tuple produces identical UUID v5 across runs',
-      () {
-        final bodyHash =
-            sha256.convert(utf8.encode(_fixtureBody)).toString();
+    test('same input tuple produces identical UUID v5 across runs', () {
+      final bodyHash = sha256.convert(utf8.encode(_fixtureBody)).toString();
 
-        final id1 = SpBoardsBackfillService.computeDeterministicId(
-          targetMemberId: _fixtureTargetMemberId,
-          authorId: _fixtureAuthorId,
-          writtenAt: _fixtureWrittenAt,
-          bodyHash: bodyHash,
-        );
-        final id2 = SpBoardsBackfillService.computeDeterministicId(
-          targetMemberId: _fixtureTargetMemberId,
-          authorId: _fixtureAuthorId,
-          writtenAt: _fixtureWrittenAt,
-          bodyHash: bodyHash,
-        );
+      final id1 = SpBoardsBackfillService.computeDeterministicId(
+        targetMemberId: _fixtureTargetMemberId,
+        authorId: _fixtureAuthorId,
+        writtenAt: _fixtureWrittenAt,
+        bodyHash: bodyHash,
+      );
+      final id2 = SpBoardsBackfillService.computeDeterministicId(
+        targetMemberId: _fixtureTargetMemberId,
+        authorId: _fixtureAuthorId,
+        writtenAt: _fixtureWrittenAt,
+        bodyHash: bodyHash,
+      );
 
-        expect(id1, equals(id2));
-      },
-    );
+      expect(id1, equals(id2));
+    });
 
     test(
       'computed ID matches the pre-computed fixture value (namespace stability)',
@@ -158,26 +154,23 @@ void main() {
       },
     );
 
-    test(
-      'different bodies produce different IDs',
-      () {
-        final hash1 = sha256.convert(utf8.encode('body A')).toString();
-        final hash2 = sha256.convert(utf8.encode('body B')).toString();
-        final id1 = SpBoardsBackfillService.computeDeterministicId(
-          targetMemberId: 'target',
-          authorId: 'author',
-          writtenAt: DateTime.utc(2024, 1, 1),
-          bodyHash: hash1,
-        );
-        final id2 = SpBoardsBackfillService.computeDeterministicId(
-          targetMemberId: 'target',
-          authorId: 'author',
-          writtenAt: DateTime.utc(2024, 1, 1),
-          bodyHash: hash2,
-        );
-        expect(id1, isNot(equals(id2)));
-      },
-    );
+    test('different bodies produce different IDs', () {
+      final hash1 = sha256.convert(utf8.encode('body A')).toString();
+      final hash2 = sha256.convert(utf8.encode('body B')).toString();
+      final id1 = SpBoardsBackfillService.computeDeterministicId(
+        targetMemberId: 'target',
+        authorId: 'author',
+        writtenAt: DateTime.utc(2024, 1, 1),
+        bodyHash: hash1,
+      );
+      final id2 = SpBoardsBackfillService.computeDeterministicId(
+        targetMemberId: 'target',
+        authorId: 'author',
+        writtenAt: DateTime.utc(2024, 1, 1),
+        bodyHash: hash2,
+      );
+      expect(id1, isNot(equals(id2)));
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -221,59 +214,56 @@ void main() {
       },
     );
 
-    test(
-      'converted post has correct audience, target and author',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('converted post has correct audience, target and author', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        const memberA = 'author-001';
-        const memberB = 'target-001';
-        final writtenAt = DateTime.utc(2024, 5, 20, 9, 0);
-        final sentinel = writtenAt.add(const Duration(days: 1));
+      const memberA = 'author-001';
+      const memberB = 'target-001';
+      final writtenAt = DateTime.utc(2024, 5, 20, 9, 0);
+      final sentinel = writtenAt.add(const Duration(days: 1));
 
-        // Pre-set sentinel so it is past the message timestamp
-        await settingsRepo.updateSpBoardsBackfilledAt(
-          sentinel.subtract(const Duration(hours: 1)),
-        );
+      // Pre-set sentinel so it is past the message timestamp
+      await settingsRepo.updateSpBoardsBackfilledAt(
+        sentinel.subtract(const Duration(hours: 1)),
+      );
 
-        // Set the settings sentinel back to null so service runs
-        settingsRepo.settings = settingsRepo.settings.copyWith(
-          spBoardsBackfilledAt: null,
-        );
+      // Set the settings sentinel back to null so service runs
+      settingsRepo.settings = settingsRepo.settings.copyWith(
+        spBoardsBackfilledAt: null,
+      );
 
-        await _insertBoardConversation(
-          db,
-          convId: 'conv-x',
-          participantIds: [memberA, memberB],
-          lastActivityAt: sentinel.subtract(const Duration(hours: 1)),
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-x',
-          convId: 'conv-x',
-          content: 'Test body',
-          timestamp: writtenAt,
-          authorId: memberA,
-        );
+      await _insertBoardConversation(
+        db,
+        convId: 'conv-x',
+        participantIds: [memberA, memberB],
+        lastActivityAt: sentinel.subtract(const Duration(hours: 1)),
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-x',
+        convId: 'conv-x',
+        content: 'Test body',
+        timestamp: writtenAt,
+        authorId: memberA,
+      );
 
-        await service.run();
+      await service.run();
 
-        // The post is private (audience = 'private'), not public.
-        final privatePosts = await (db.memberBoardPostsDao
-            .watchInboxPaginated([memberB])
-            .first
-            .timeout(const Duration(seconds: 5)));
+      // The post is private (audience = 'private'), not public.
+      final privatePosts = await (db.memberBoardPostsDao
+          .watchInboxPaginated([memberB])
+          .first
+          .timeout(const Duration(seconds: 5)));
 
-        expect(privatePosts, hasLength(1));
-        expect(privatePosts.first.audience, 'private');
-        expect(privatePosts.first.authorId, memberA);
-        expect(privatePosts.first.targetMemberId, memberB);
+      expect(privatePosts, hasLength(1));
+      expect(privatePosts.first.audience, 'private');
+      expect(privatePosts.first.authorId, memberA);
+      expect(privatePosts.first.targetMemberId, memberB);
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -281,57 +271,54 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Backfill idempotency', () {
-    test(
-      'running twice does not duplicate posts',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('running twice does not duplicate posts', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        const memberA = 'idem-a';
-        const memberB = 'idem-b';
+      const memberA = 'idem-a';
+      const memberB = 'idem-b';
 
-        await _insertBoardConversation(
-          db,
-          convId: 'conv-idem',
-          participantIds: [memberA, memberB],
-          lastActivityAt: DateTime.utc(2024, 1, 5),
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-idem-1',
-          convId: 'conv-idem',
-          content: 'First message',
-          timestamp: DateTime.utc(2024, 1, 1),
-          authorId: memberA,
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-idem-2',
-          convId: 'conv-idem',
-          content: 'Second message',
-          timestamp: DateTime.utc(2024, 1, 2),
-          authorId: memberA,
-        );
+      await _insertBoardConversation(
+        db,
+        convId: 'conv-idem',
+        participantIds: [memberA, memberB],
+        lastActivityAt: DateTime.utc(2024, 1, 5),
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-idem-1',
+        convId: 'conv-idem',
+        content: 'First message',
+        timestamp: DateTime.utc(2024, 1, 1),
+        authorId: memberA,
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-idem-2',
+        convId: 'conv-idem',
+        content: 'Second message',
+        timestamp: DateTime.utc(2024, 1, 2),
+        authorId: memberA,
+      );
 
-        final result1 = await service.run();
-        expect(result1.postsConverted, 2);
+      final result1 = await service.run();
+      expect(result1.postsConverted, 2);
 
-        // Reset sentinel so the service does not abort as a "peer" run.
-        settingsRepo.settings = settingsRepo.settings.copyWith(
-          spBoardsBackfilledAt: null,
-        );
+      // Reset sentinel so the service does not abort as a "peer" run.
+      settingsRepo.settings = settingsRepo.settings.copyWith(
+        spBoardsBackfilledAt: null,
+      );
 
-        final result2 = await service.run();
-        // All posts already exist — zero new insertions.
-        expect(result2.postsConverted, 0);
+      final result2 = await service.run();
+      // All posts already exist — zero new insertions.
+      expect(result2.postsConverted, 0);
 
-        // Total post count stays at 2.
-        expect(await _postCount(db), 2);
+      // Total post count stays at 2.
+      expect(await _postCount(db), 2);
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -451,9 +438,11 @@ void main() {
         // Read back the actual stored writtenAt (Drift stores as unix seconds
         // so the value may differ from what we passed in). We use the actual
         // stored value to compute the tuple match.
-        final posts = await db.customSelect(
-          'SELECT target_member_id, author_id, written_at FROM member_board_posts',
-        ).get();
+        final posts = await db
+            .customSelect(
+              'SELECT target_member_id, author_id, written_at FROM member_board_posts',
+            )
+            .get();
         expect(posts, hasLength(1));
 
         // Obtain the writtenAt stored by the service. Drift reads datetime as
@@ -628,9 +617,9 @@ void main() {
           await service.run();
 
           // Collect all inserted post IDs.
-          final posts = await db.customSelect(
-            'SELECT id FROM member_board_posts ORDER BY id',
-          ).get();
+          final posts = await db
+              .customSelect('SELECT id FROM member_board_posts ORDER BY id')
+              .get();
           final ids = posts.map((r) => r.read<String>('id')).toList();
 
           await db.close();
@@ -717,8 +706,10 @@ void main() {
 
         // Whether it ran or aborted, the result must have abortedByPeer or
         // postsConverted ≥ 0 (no exception).
-        expect(resultB.postsConverted + (resultB.abortedByPeer ? 0 : 0),
-            greaterThanOrEqualTo(0));
+        expect(
+          resultB.postsConverted + (resultB.abortedByPeer ? 0 : 0),
+          greaterThanOrEqualTo(0),
+        );
 
         // spBoardsBackfilledAt must be set after the run.
         expect(settingsRepoB.settings.spBoardsBackfilledAt, isNotNull);
@@ -748,9 +739,9 @@ void main() {
         // This conversation's lastActivityAt will be in the future relative
         // to the sentinel time the service writes (DateTime.now()).
         // We use a far-future timestamp to guarantee it is past the sentinel.
-        final futureActivity = DateTime.now()
-            .toUtc()
-            .add(const Duration(hours: 48));
+        final futureActivity = DateTime.now().toUtc().add(
+          const Duration(hours: 48),
+        );
 
         await _insertBoardConversation(
           db,
@@ -872,8 +863,8 @@ void main() {
 
         // Simulate what the caller (F's backfill trigger) does on success:
         await settingsRepo.updateBoardsEnabled(true);
-        final currentOverflow =
-            settingsRepo.settings.navBarOverflowItems.toList();
+        final currentOverflow = settingsRepo.settings.navBarOverflowItems
+            .toList();
         if (!currentOverflow.contains('boards')) {
           currentOverflow.add('boards');
           await settingsRepo.updateNavBarOverflowItems(currentOverflow);
@@ -889,24 +880,21 @@ void main() {
       },
     );
 
-    test(
-      'boardsEnabled remains false when no posts are converted',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('boardsEnabled remains false when no posts are converted', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        // No candidate conversations — nothing to convert.
-        final result = await service.run();
+      // No candidate conversations — nothing to convert.
+      final result = await service.run();
 
-        expect(result.postsConverted, 0);
+      expect(result.postsConverted, 0);
 
-        // Caller would NOT enable boards when postsConverted == 0.
-        expect(settingsRepo.settings.boardsEnabled, isFalse);
+      // Caller would NOT enable boards when postsConverted == 0.
+      expect(settingsRepo.settings.boardsEnabled, isFalse);
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -914,75 +902,69 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Non-candidate conversation filtering', () {
-    test(
-      'non-DM conversation with 📝 emoji is not converted',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('non-DM conversation with 📝 emoji is not converted', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        // A group conversation (is_direct_message = 0) should not be picked up.
-        await db.conversationsDao.insertConversation(
-          ConversationsCompanion(
-            id: const Value('conv-group'),
-            createdAt: Value(DateTime(2024, 1, 1).toUtc()),
-            lastActivityAt: Value(DateTime.utc(2024, 1, 10)),
-            emoji: const Value('\u{1F4DD}'),
-            isDirectMessage: const Value(false),
-            participantIds: Value(jsonEncode(['m-x', 'm-y', 'm-z'])),
-          ),
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-group',
-          convId: 'conv-group',
-          content: 'Group message',
-          timestamp: DateTime.utc(2024, 1, 5),
-          authorId: 'm-x',
-        );
+      // A group conversation (is_direct_message = 0) should not be picked up.
+      await db.conversationsDao.insertConversation(
+        ConversationsCompanion(
+          id: const Value('conv-group'),
+          createdAt: Value(DateTime(2024, 1, 1).toUtc()),
+          lastActivityAt: Value(DateTime.utc(2024, 1, 10)),
+          emoji: const Value('\u{1F4DD}'),
+          isDirectMessage: const Value(false),
+          participantIds: Value(jsonEncode(['m-x', 'm-y', 'm-z'])),
+        ),
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-group',
+        convId: 'conv-group',
+        content: 'Group message',
+        timestamp: DateTime.utc(2024, 1, 5),
+        authorId: 'm-x',
+      );
 
-        final result = await service.run();
-        expect(result.postsConverted, 0);
-        expect(await _postCount(db), 0);
+      final result = await service.run();
+      expect(result.postsConverted, 0);
+      expect(await _postCount(db), 0);
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
 
-    test(
-      'DM conversation without 📝 emoji is not converted',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('DM conversation without 📝 emoji is not converted', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        // A regular chat DM (different emoji) should not be touched.
-        await db.conversationsDao.insertConversation(
-          ConversationsCompanion(
-            id: const Value('conv-chat-dm'),
-            createdAt: Value(DateTime(2024, 1, 1).toUtc()),
-            lastActivityAt: Value(DateTime.utc(2024, 1, 10)),
-            emoji: const Value('💬'),
-            isDirectMessage: const Value(true),
-            participantIds: Value(jsonEncode(['m-a', 'm-b'])),
-          ),
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-chat-dm',
-          convId: 'conv-chat-dm',
-          content: 'Chat DM',
-          timestamp: DateTime.utc(2024, 1, 5),
-          authorId: 'm-a',
-        );
+      // A regular chat DM (different emoji) should not be touched.
+      await db.conversationsDao.insertConversation(
+        ConversationsCompanion(
+          id: const Value('conv-chat-dm'),
+          createdAt: Value(DateTime(2024, 1, 1).toUtc()),
+          lastActivityAt: Value(DateTime.utc(2024, 1, 10)),
+          emoji: const Value('💬'),
+          isDirectMessage: const Value(true),
+          participantIds: Value(jsonEncode(['m-a', 'm-b'])),
+        ),
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-chat-dm',
+        convId: 'conv-chat-dm',
+        content: 'Chat DM',
+        timestamp: DateTime.utc(2024, 1, 5),
+        authorId: 'm-a',
+      );
 
-        final result = await service.run();
-        expect(result.postsConverted, 0);
-        expect(await _postCount(db), 0);
+      final result = await service.run();
+      expect(result.postsConverted, 0);
+      expect(await _postCount(db), 0);
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -1017,9 +999,9 @@ void main() {
 
         await service.run();
 
-        final rows = await db.customSelect(
-          'SELECT title, body FROM member_board_posts',
-        ).get();
+        final rows = await db
+            .customSelect('SELECT title, body FROM member_board_posts')
+            .get();
         expect(rows, hasLength(1));
         expect(rows.first.read<String?>('title'), 'My Title');
         expect(rows.first.read<String>('body'), 'The actual body text.');
@@ -1028,42 +1010,39 @@ void main() {
       },
     );
 
-    test(
-      'body without bold prefix is stored as-is with null title',
-      () async {
-        final db = _makeDb();
-        final settingsRepo = FakeSystemSettingsRepository();
-        final service = _makeService(db, settingsRepo);
+    test('body without bold prefix is stored as-is with null title', () async {
+      final db = _makeDb();
+      final settingsRepo = FakeSystemSettingsRepository();
+      final service = _makeService(db, settingsRepo);
 
-        const memberA = 'notitle-a';
-        const memberB = 'notitle-b';
+      const memberA = 'notitle-a';
+      const memberB = 'notitle-b';
 
-        await _insertBoardConversation(
-          db,
-          convId: 'conv-notitle',
-          participantIds: [memberA, memberB],
-          lastActivityAt: DateTime.utc(2024, 6, 1),
-        );
-        await _insertChatMessage(
-          db,
-          msgId: 'msg-notitle',
-          convId: 'conv-notitle',
-          content: 'Just plain body text.',
-          timestamp: DateTime.utc(2024, 6, 1),
-          authorId: memberA,
-        );
+      await _insertBoardConversation(
+        db,
+        convId: 'conv-notitle',
+        participantIds: [memberA, memberB],
+        lastActivityAt: DateTime.utc(2024, 6, 1),
+      );
+      await _insertChatMessage(
+        db,
+        msgId: 'msg-notitle',
+        convId: 'conv-notitle',
+        content: 'Just plain body text.',
+        timestamp: DateTime.utc(2024, 6, 1),
+        authorId: memberA,
+      );
 
-        await service.run();
+      await service.run();
 
-        final rows = await db.customSelect(
-          'SELECT title, body FROM member_board_posts',
-        ).get();
-        expect(rows, hasLength(1));
-        expect(rows.first.read<String?>('title'), isNull);
-        expect(rows.first.read<String>('body'), 'Just plain body text.');
+      final rows = await db
+          .customSelect('SELECT title, body FROM member_board_posts')
+          .get();
+      expect(rows, hasLength(1));
+      expect(rows.first.read<String?>('title'), isNull);
+      expect(rows.first.read<String>('body'), 'Just plain body text.');
 
-        await db.close();
-      },
-    );
+      await db.close();
+    });
   });
 }

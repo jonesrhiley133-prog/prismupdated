@@ -111,31 +111,28 @@ void main() {
     // who logs a front immediately after app start would silently skip
     // the re-anchor. The helper now reads the repo directly, so this
     // test deliberately does NOT prime the AsyncNotifier first.
-    test(
-      're-anchors on the very first call without priming the notifier '
-      '(AsyncNotifier first-load race)',
-      () async {
-        final prefRepo = FakeAppPreferenceRepository()
-          ..seed(frontingReminderSuppressMinutesPreference, 5);
-        final fakeNotif = _FakeFrontingNotificationService();
-        final container = _buildContainer(
-          fakeNotif: fakeNotif,
-          prefRepo: prefRepo,
-          remindersEnabled: true,
-          reminderIntervalMinutes: 30,
-        );
-        addTearDown(container.dispose);
+    test('re-anchors on the very first call without priming the notifier '
+        '(AsyncNotifier first-load race)', () async {
+      final prefRepo = FakeAppPreferenceRepository()
+        ..seed(frontingReminderSuppressMinutesPreference, 5);
+      final fakeNotif = _FakeFrontingNotificationService();
+      final container = _buildContainer(
+        fakeNotif: fakeNotif,
+        prefRepo: prefRepo,
+        remindersEnabled: true,
+        reminderIntervalMinutes: 30,
+      );
+      addTearDown(container.dispose);
 
-        // No prior read of frontingReminderSuppressMinutesProvider.
-        await container
-            .read(frontingNotifierProvider.notifier)
-            .startFronting(['m1']);
-        await _settleReanchor();
+      // No prior read of frontingReminderSuppressMinutesProvider.
+      await container.read(frontingNotifierProvider.notifier).startFronting([
+        'm1',
+      ]);
+      await _settleReanchor();
 
-        expect(fakeNotif.scheduleCalls, hasLength(1));
-        expect(fakeNotif.scheduleCalls.single, const Duration(minutes: 30));
-      },
-    );
+      expect(fakeNotif.scheduleCalls, hasLength(1));
+      expect(fakeNotif.scheduleCalls.single, const Duration(minutes: 30));
+    });
 
     test('does NOT re-anchor when suppress == 0', () async {
       final prefRepo = FakeAppPreferenceRepository()
@@ -149,9 +146,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container
-          .read(frontingNotifierProvider.notifier)
-          .startFronting(['m1']);
+      await container.read(frontingNotifierProvider.notifier).startFronting([
+        'm1',
+      ]);
       await _settleReanchor();
 
       expect(fakeNotif.scheduleCalls, isEmpty);
@@ -169,9 +166,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container
-          .read(frontingNotifierProvider.notifier)
-          .startFronting(['m1']);
+      await container.read(frontingNotifierProvider.notifier).startFronting([
+        'm1',
+      ]);
       await _settleReanchor();
 
       expect(fakeNotif.scheduleCalls, isEmpty);
@@ -189,9 +186,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container
-          .read(frontingNotifierProvider.notifier)
-          .startFronting(['m1']);
+      await container.read(frontingNotifierProvider.notifier).startFronting([
+        'm1',
+      ]);
       await _settleReanchor();
 
       expect(fakeNotif.scheduleCalls, hasLength(1));

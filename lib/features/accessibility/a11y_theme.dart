@@ -18,18 +18,21 @@ class A11yTheme extends ThemeExtension<A11yTheme> {
   final double touchScale;
   final bool strongFocus;
 
-  static A11yTheme of(BuildContext context) => Theme.of(context).extension<A11yTheme>() ?? const A11yTheme();
+  static A11yTheme of(BuildContext context) =>
+      Theme.of(context).extension<A11yTheme>() ?? const A11yTheme();
 
   @override
   A11yTheme copyWith() => this;
 
   @override
-  A11yTheme lerp(ThemeExtension<A11yTheme>? other, double t) => other is A11yTheme && t >= 0.5 ? other : this;
+  A11yTheme lerp(ThemeExtension<A11yTheme>? other, double t) =>
+      other is A11yTheme && t >= 0.5 ? other : this;
 }
 
 /// Palettes that stay distinguishable with each type of colour vision
 /// (based on the Okabe–Ito and Tol sets).
-({Color primary, Color secondary, Color tertiary, Color error})? colorVisionPalette(ColorVision v, {required bool dark}) => switch (v) {
+({Color primary, Color secondary, Color tertiary, Color error})?
+colorVisionPalette(ColorVision v, {required bool dark}) => switch (v) {
   ColorVision.standard => null,
   ColorVision.protanopia || ColorVision.deuteranopia => (
     primary: dark ? const Color(0xFF56B4E9) : const Color(0xFF0072B2),
@@ -51,19 +54,33 @@ class A11yTheme extends ThemeExtension<A11yTheme> {
   ),
 };
 
-Color _on(Color c) => ThemeData.estimateBrightnessForColor(c) == Brightness.dark ? Colors.white : Colors.black;
+Color _on(Color c) => ThemeData.estimateBrightnessForColor(c) == Brightness.dark
+    ? Colors.white
+    : Colors.black;
 
 class _NoTransitions extends PageTransitionsBuilder {
   const _NoTransitions();
 
   @override
-  Widget buildTransitions<T>(PageRoute<T> route, BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) => child;
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => child;
 }
 
 /// Applies accessibility settings on top of a theme.
 ThemeData applyAccessibility(ThemeData base, A11ySettings a) {
   final ext = A11yTheme(touchScale: a.touchScale, strongFocus: a.strongFocus);
-  if (a.isDefault) return base.copyWith(extensions: [...base.extensions.values.where((e) => e is! A11yTheme), ext]);
+  if (a.isDefault)
+    return base.copyWith(
+      extensions: [
+        ...base.extensions.values.where((e) => e is! A11yTheme),
+        ext,
+      ],
+    );
   final dark = base.brightness == Brightness.dark;
   var scheme = base.colorScheme;
   var t = base;
@@ -84,7 +101,9 @@ ThemeData applyAccessibility(ThemeData base, A11ySettings a) {
 
   final c = a.highContrast ? 1.0 : a.contrast;
   if (c > 0) {
-    final strong = a.highContrast ? (dark ? Colors.white : Colors.black) : scheme.onSurface;
+    final strong = a.highContrast
+        ? (dark ? Colors.white : Colors.black)
+        : scheme.onSurface;
     scheme = scheme.copyWith(
       onSurface: strong,
       onSurfaceVariant: Color.lerp(scheme.onSurfaceVariant, strong, c),
@@ -95,12 +114,20 @@ ThemeData applyAccessibility(ThemeData base, A11ySettings a) {
   }
 
   var text = t.textTheme;
-  if (c > 0) text = text.apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface);
+  if (c > 0)
+    text = text.apply(
+      bodyColor: scheme.onSurface,
+      displayColor: scheme.onSurface,
+    );
   if (a.lineHeight != 1 || a.wordSpacing != 0 || a.boldText) {
     TextStyle? adj(TextStyle? s) => s?.copyWith(
       height: a.lineHeight == 1 ? null : (s.height ?? 1.25) * a.lineHeight,
       wordSpacing: a.wordSpacing == 0 ? null : a.wordSpacing,
-      fontWeight: a.boldText && (s.fontWeight ?? FontWeight.w400).value < FontWeight.w600.value ? FontWeight.w600 : null,
+      fontWeight:
+          a.boldText &&
+              (s.fontWeight ?? FontWeight.w400).value < FontWeight.w600.value
+          ? FontWeight.w600
+          : null,
     );
     text = text.copyWith(
       displayLarge: adj(text.displayLarge),
@@ -125,12 +152,23 @@ ThemeData applyAccessibility(ThemeData base, A11ySettings a) {
     colorScheme: scheme,
     textTheme: text,
     iconTheme: a.largeIcons ? t.iconTheme.copyWith(size: 28) : null,
-    materialTapTargetSize: a.touchScale > 1 ? MaterialTapTargetSize.padded : null,
-    visualDensity: a.touchScale > 1 ? VisualDensity(horizontal: (a.touchScale - 1) * 4, vertical: (a.touchScale - 1) * 4) : null,
+    materialTapTargetSize: a.touchScale > 1
+        ? MaterialTapTargetSize.padded
+        : null,
+    visualDensity: a.touchScale > 1
+        ? VisualDensity(
+            horizontal: (a.touchScale - 1) * 4,
+            vertical: (a.touchScale - 1) * 4,
+          )
+        : null,
     focusColor: a.strongFocus ? scheme.primary.withValues(alpha: 0.32) : null,
     splashFactory: a.reduceMotion ? NoSplash.splashFactory : null,
     pageTransitionsTheme: a.reduceMotion
-        ? PageTransitionsTheme(builders: {for (final p in TargetPlatform.values) p: const _NoTransitions()})
+        ? PageTransitionsTheme(
+            builders: {
+              for (final p in TargetPlatform.values) p: const _NoTransitions(),
+            },
+          )
         : null,
     extensions: [...t.extensions.values.where((e) => e is! A11yTheme), ext],
   );
@@ -174,10 +212,15 @@ class _A11yScopeState extends ConsumerState<A11yScope> {
 
     result = Shortcuts(
       shortcuts: const {
-        SingleActivator(LogicalKeyboardKey.keyA, alt: true, shift: true): _A11yIntent('panel'),
-        SingleActivator(LogicalKeyboardKey.mediaPlayPause): _A11yIntent('toggle'),
+        SingleActivator(LogicalKeyboardKey.keyA, alt: true, shift: true):
+            _A11yIntent('panel'),
+        SingleActivator(LogicalKeyboardKey.mediaPlayPause): _A11yIntent(
+          'toggle',
+        ),
         SingleActivator(LogicalKeyboardKey.mediaTrackNext): _A11yIntent('next'),
-        SingleActivator(LogicalKeyboardKey.mediaTrackPrevious): _A11yIntent('previous'),
+        SingleActivator(LogicalKeyboardKey.mediaTrackPrevious): _A11yIntent(
+          'previous',
+        ),
       },
       child: Actions(
         actions: {
@@ -220,7 +263,11 @@ class _A11yScopeState extends ConsumerState<A11yScope> {
       );
       result = FittedBox(
         fit: BoxFit.fill,
-        child: SizedBox(width: mq.size.width / s, height: mq.size.height / s, child: MediaQuery(data: data, child: result)),
+        child: SizedBox(
+          width: mq.size.width / s,
+          height: mq.size.height / s,
+          child: MediaQuery(data: data, child: result),
+        ),
       );
     } else {
       result = MediaQuery(data: data, child: result);
@@ -228,10 +275,26 @@ class _A11yScopeState extends ConsumerState<A11yScope> {
     if (a.colorVision == ColorVision.monochrome) {
       result = ColorFiltered(
         colorFilter: const ColorFilter.matrix([
-          0.2126, 0.7152, 0.0722, 0, 0,
-          0.2126, 0.7152, 0.0722, 0, 0,
-          0.2126, 0.7152, 0.0722, 0, 0,
-          0, 0, 0, 1, 0,
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
         ]),
         child: result,
       );
@@ -276,15 +339,21 @@ class _FocusRingState extends State<_FocusRing> {
       final node = FocusManager.instance.primaryFocus;
       final host = _key.currentContext?.findRenderObject();
       // Only while navigating by keyboard, and only for real controls.
-      if (FocusManager.instance.highlightMode == FocusHighlightMode.traditional &&
+      if (FocusManager.instance.highlightMode ==
+              FocusHighlightMode.traditional &&
           node != null &&
           node.context != null &&
           node is! FocusScopeNode &&
           host is RenderBox) {
         final box = node.context!.findRenderObject();
         if (box is RenderBox && box.attached && box.hasSize) {
-          final r = MatrixUtils.transformRect(box.getTransformTo(host), Offset.zero & box.size);
-          if (r.width < host.size.width * 0.98 || r.height < host.size.height * 0.9) next = r;
+          final r = MatrixUtils.transformRect(
+            box.getTransformTo(host),
+            Offset.zero & box.size,
+          );
+          if (r.width < host.size.width * 0.98 ||
+              r.height < host.size.height * 0.9)
+            next = r;
         }
       }
       if (next != _rect) setState(() => _rect = next);
@@ -321,6 +390,7 @@ class _FocusRingState extends State<_FocusRing> {
 void announceForA11y(String message) {
   try {
     final view = ui.PlatformDispatcher.instance.views.firstOrNull;
-    if (view != null) SemanticsService.sendAnnouncement(view, message, TextDirection.ltr);
+    if (view != null)
+      SemanticsService.sendAnnouncement(view, message, TextDirection.ltr);
   } catch (_) {}
 }

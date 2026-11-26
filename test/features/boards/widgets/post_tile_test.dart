@@ -20,12 +20,12 @@ import 'package:prism_plurality/l10n/app_localizations.dart';
 final _now = DateTime(2026, 5, 1, 12);
 
 Member _member(String id, String name, {bool isAdmin = false}) => Member(
-      id: id,
-      name: name,
-      createdAt: _now,
-      isActive: true,
-      isAdmin: isAdmin,
-    );
+  id: id,
+  name: name,
+  createdAt: _now,
+  isActive: true,
+  isAdmin: isAdmin,
+);
 
 final _alice = _member('alice', 'Alice');
 final _bob = _member('bob', 'Bob');
@@ -39,19 +39,18 @@ MemberBoardPost _post({
   String? title,
   DateTime? editedAt,
   bool isDeleted = false,
-}) =>
-    MemberBoardPost(
-      id: id,
-      authorId: authorId,
-      targetMemberId: targetMemberId,
-      audience: audience,
-      body: body,
-      title: title,
-      createdAt: _now.subtract(const Duration(hours: 2)),
-      writtenAt: _now.subtract(const Duration(hours: 2)),
-      editedAt: editedAt,
-      isDeleted: isDeleted,
-    );
+}) => MemberBoardPost(
+  id: id,
+  authorId: authorId,
+  targetMemberId: targetMemberId,
+  audience: audience,
+  body: body,
+  title: title,
+  createdAt: _now.subtract(const Duration(hours: 2)),
+  writtenAt: _now.subtract(const Duration(hours: 2)),
+  editedAt: editedAt,
+  isDeleted: isDeleted,
+);
 
 // ---------------------------------------------------------------------------
 // Fake notifier
@@ -80,9 +79,9 @@ Widget _buildTile(
       memberByIdProvider.overrideWith(
         (ref, id) => Stream.value(
           allMembers.cast<Member?>().firstWhere(
-                (m) => m?.id == id,
-                orElse: () => null,
-              ),
+            (m) => m?.id == id,
+            orElse: () => null,
+          ),
         ),
       ),
       memberBoardPostNotifierProvider.overrideWith(_FakeBoardPostNotifier.new),
@@ -107,8 +106,9 @@ Widget _buildTile(
 
 void main() {
   group('PostTile — basic rendering', () {
-    testWidgets('public post with no recipient renders "to everyone" once',
-        (tester) async {
+    testWidgets('public post with no recipient renders "to everyone" once', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(audience: 'public', targetMemberId: null),
@@ -148,10 +148,7 @@ void main() {
 
     testWidgets('renders post body text', (tester) async {
       await tester.pumpWidget(
-        _buildTile(
-          _post(body: 'Hello headmates!'),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(body: 'Hello headmates!'), allMembers: [_alice]),
       );
       await tester.pump();
 
@@ -160,10 +157,7 @@ void main() {
 
     testWidgets('renders bold title when provided', (tester) async {
       await tester.pumpWidget(
-        _buildTile(
-          _post(title: 'Important notice'),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(title: 'Important notice'), allMembers: [_alice]),
       );
       await tester.pump();
 
@@ -189,12 +183,11 @@ void main() {
       expect(visible, contains('▮'));
     });
 
-    testWidgets('does not show title widget when title is null', (tester) async {
+    testWidgets('does not show title widget when title is null', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _buildTile(
-          _post(title: null),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(title: null), allMembers: [_alice]),
       );
       await tester.pump();
 
@@ -202,7 +195,9 @@ void main() {
       expect(find.text('(no title)'), findsNothing);
     });
 
-    testWidgets('shows "edited" suffix when editedAt is non-null', (tester) async {
+    testWidgets('shows "edited" suffix when editedAt is non-null', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(editedAt: _now.subtract(const Duration(minutes: 5))),
@@ -216,18 +211,16 @@ void main() {
 
     testWidgets('does not show "edited" when editedAt is null', (tester) async {
       await tester.pumpWidget(
-        _buildTile(
-          _post(editedAt: null),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(editedAt: null), allMembers: [_alice]),
       );
       await tester.pump();
 
       expect(find.text('edited'), findsNothing);
     });
 
-    testWidgets('shows audience pill when showAudiencePill = true',
-        (tester) async {
+    testWidgets('shows audience pill when showAudiencePill = true', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(audience: 'public'),
@@ -240,8 +233,9 @@ void main() {
       expect(find.text('public'), findsOneWidget);
     });
 
-    testWidgets('shows "private" pill for private post with showAudiencePill',
-        (tester) async {
+    testWidgets('shows "private" pill for private post with showAudiencePill', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(audience: 'private', targetMemberId: 'bob'),
@@ -255,22 +249,24 @@ void main() {
     });
 
     testWidgets(
-        'renders a terminology-neutral fallback when no author resolves',
-        (tester) async {
-      await tester.pumpWidget(
-        _buildTile(
-          // authorId = null → the fallback chain hits boardsTileRemovedMember.
-          _post(authorId: null),
-          allMembers: const [],
-        ),
-      );
-      await tester.pump();
+      'renders a terminology-neutral fallback when no author resolves',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildTile(
+            // authorId = null → the fallback chain hits boardsTileRemovedMember.
+            _post(authorId: null),
+            allMembers: const [],
+          ),
+        );
+        await tester.pump();
 
-      expect(find.text('Removed profile'), findsOneWidget);
-    });
+        expect(find.text('Removed profile'), findsOneWidget);
+      },
+    );
 
-    testWidgets('renders authorId string as fallback when member not loaded',
-        (tester) async {
+    testWidgets('renders authorId string as fallback when member not loaded', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(authorId: 'unknown-author'),
@@ -290,10 +286,7 @@ void main() {
     testWidgets('renders long body without overflow error', (tester) async {
       final longBody = List.generate(20, (i) => 'Word$i').join(' ');
       await tester.pumpWidget(
-        _buildTile(
-          _post(body: longBody),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(body: longBody), allMembers: [_alice]),
       );
       await tester.pump();
 
@@ -302,8 +295,9 @@ void main() {
   });
 
   group('PostTile — semantics', () {
-    testWidgets('semantics label contains plain-text body (no raw markdown)',
-        (tester) async {
+    testWidgets('semantics label contains plain-text body (no raw markdown)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(body: '**bold** and _italic_ text'),
@@ -326,8 +320,9 @@ void main() {
       );
     });
 
-    testWidgets('semantics label includes "edited" when post is edited',
-        (tester) async {
+    testWidgets('semantics label includes "edited" when post is edited', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(editedAt: _now.subtract(const Duration(minutes: 1))),
@@ -340,28 +335,21 @@ void main() {
       expect(find.text('edited'), findsOneWidget);
 
       // And in the composed Semantics label.
-      expect(
-        find.bySemanticsLabel(RegExp(r'\bedited\b')),
-        findsWidgets,
-      );
+      expect(find.bySemanticsLabel(RegExp(r'\bedited\b')), findsWidgets);
     });
 
     testWidgets('semantics label includes author name', (tester) async {
       await tester.pumpWidget(
-        _buildTile(
-          _post(authorId: 'alice'),
-          allMembers: [_alice],
-        ),
+        _buildTile(_post(authorId: 'alice'), allMembers: [_alice]),
       );
       await tester.pump();
 
-      expect(
-        find.bySemanticsLabel(RegExp(r'\bAlice\b')),
-        findsWidgets,
-      );
+      expect(find.bySemanticsLabel(RegExp(r'\bAlice\b')), findsWidgets);
     });
 
-    testWidgets('semantics label says "public" for public post', (tester) async {
+    testWidgets('semantics label says "public" for public post', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(audience: 'public', targetMemberId: null),
@@ -370,13 +358,12 @@ void main() {
       );
       await tester.pump();
 
-      expect(
-        find.bySemanticsLabel(RegExp(r'\bpublic\b')),
-        findsWidgets,
-      );
+      expect(find.bySemanticsLabel(RegExp(r'\bpublic\b')), findsWidgets);
     });
 
-    testWidgets('semantics label says "private" for private post', (tester) async {
+    testWidgets('semantics label says "private" for private post', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildTile(
           _post(audience: 'private', targetMemberId: 'bob'),
@@ -385,10 +372,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(
-        find.bySemanticsLabel(RegExp(r'\bprivate\b')),
-        findsWidgets,
-      );
+      expect(find.bySemanticsLabel(RegExp(r'\bprivate\b')), findsWidgets);
     });
   });
 

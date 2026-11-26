@@ -188,8 +188,12 @@ Color lerpHsl(Color a, Color b, double t) {
   final h = ((hA + (hB - hA) * t) % 360 + 360) % 360;
   final s = hslA.saturation + (hslB.saturation - hslA.saturation) * t;
   final l = hslA.lightness + (hslB.lightness - hslA.lightness) * t;
-  return HSLColor.fromAHSL(1.0, h, s.clamp(0.0, 1.0), l.clamp(0.0, 1.0))
-      .toColor();
+  return HSLColor.fromAHSL(
+    1.0,
+    h,
+    s.clamp(0.0, 1.0),
+    l.clamp(0.0, 1.0),
+  ).toColor();
 }
 
 /// N-color stop builder: generalizes gradient sampling to any number of colors.
@@ -207,7 +211,9 @@ List<Color> sliderGradientStopsFromList(List<Color> colors) {
   assert(colors.isNotEmpty, 'colors must not be empty');
   if (colors.length == 1) return [colors[0]];
   if (colors.length == 2) {
-    return [for (var i = 0; i <= 10; i++) lerpHsl(colors[0], colors[1], i / 10)];
+    return [
+      for (var i = 0; i <= 10; i++) lerpHsl(colors[0], colors[1], i / 10),
+    ];
   }
   if (colors.length == 3) {
     return [
@@ -237,8 +243,8 @@ List<Color> sliderGradientStopsFromList(List<Color> colors) {
 /// preserved so all existing callers compile unchanged.
 List<Color> sliderGradientStops(Color left, Color? center, Color right) =>
     center == null
-        ? sliderGradientStopsFromList([left, right])
-        : sliderGradientStopsFromList([left, center, right]);
+    ? sliderGradientStopsFromList([left, right])
+    : sliderGradientStopsFromList([left, center, right]);
 
 /// Evenly spaced stop positions matching a [sliderGradientStops] list.
 /// A single-stop list maps to `[0.0]` (dividing by `length - 1` would be NaN).

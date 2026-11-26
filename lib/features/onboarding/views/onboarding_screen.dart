@@ -153,186 +153,192 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 ),
               ),
             ),
-            if (!kIsWeb) Positioned.fill(
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: const AssetImage(
-                        'assets/textures/noise_64x64.png',
+            if (!kIsWeb)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: const AssetImage(
+                          'assets/textures/noise_64x64.png',
+                        ),
+                        repeat: ImageRepeat.repeat,
+                        opacity: isDark ? 0.06 : 0.03,
                       ),
-                      repeat: ImageRepeat.repeat,
-                      opacity: isDark ? 0.06 : 0.03,
                     ),
                   ),
                 ),
               ),
-            ),
             SafeArea(
               child: Center(
                 child: ConstrainedBox(
                   // Wide web windows: a readable centered column, not edge-to-edge.
-                  constraints: BoxConstraints(maxWidth: kIsWeb && MediaQuery.sizeOf(context).width >= 1024 ? 720 : double.infinity),
-                  child: Column(
-                children: [
-                  if (!isFullScreenStep && !isCompleteStep)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          if (hasExistingData && !importBusy)
-                            PrismInlineIconButton(
-                              onPressed: () {
-                                notifier.clearAppearancePreview();
-                                context.go(AppRoutePaths.home);
-                              },
-                              icon: AppIcons.close,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
-                              tooltip: context.l10n.onboardingCloseOnboarding,
-                            )
-                          else
-                            const SizedBox(width: 48),
-                          Expanded(
-                            child: _ProgressIndicator(
-                              steps: _progressSteps,
-                              currentStep: step,
-                              isDark: isDark,
-                              primary: primary,
-                            ),
-                          ),
-                          const SizedBox(width: 48),
-                        ],
-                      ),
-                    ),
-
-                  if (!isCompleteStep && !isFullScreenStep) ...[
-                    const SizedBox(height: 8),
-                    if (step == OnboardingStep.welcome)
-                      PrismLogoTile(
-                        size: 56,
-                        logoSize: 56,
-                        borderRadius: prismRound(context),
-                      )
-                    else
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          borderRadius: prismRound(context),
-                          color: primary.withValues(alpha: 0.15),
-                        ),
-                        child: Center(
-                          child: PhosphorIcon(
-                            step.icon,
-                            size: 28,
-                            color: primary,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        step.localizedTitle(
-                          context,
-                          frontingTerms: pendingFrontingTerms,
-                        ),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(
-                              fontSize: 28,
-                              color: colorScheme.onSurface,
-                            ),
-                      ),
-                    ),
-                    if (step.localizedSubtitle(
-                          context,
-                          frontingTerms: pendingFrontingTerms,
-                        )
-                        case final subtitle?) ...[
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(
-                          subtitle,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 15,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                  ],
-
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: _buildStepContent(onboarding),
-                    ),
+                  constraints: BoxConstraints(
+                    maxWidth: kIsWeb && MediaQuery.sizeOf(context).width >= 1024
+                        ? 720
+                        : double.infinity,
                   ),
+                  child: Column(
+                    children: [
+                      if (!isFullScreenStep && !isCompleteStep)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              if (hasExistingData && !importBusy)
+                                PrismInlineIconButton(
+                                  onPressed: () {
+                                    notifier.clearAppearancePreview();
+                                    context.go(AppRoutePaths.home);
+                                  },
+                                  icon: AppIcons.close,
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  tooltip:
+                                      context.l10n.onboardingCloseOnboarding,
+                                )
+                              else
+                                const SizedBox(width: 48),
+                              Expanded(
+                                child: _ProgressIndicator(
+                                  steps: _progressSteps,
+                                  currentStep: step,
+                                  isDark: isDark,
+                                  primary: primary,
+                                ),
+                              ),
+                              const SizedBox(width: 48),
+                            ],
+                          ),
+                        ),
 
-                  if (!isFullScreenStep && !isSelfManagedStep)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      child: Row(
-                        children: [
-                          if (!isFirstStep && !importBusy)
-                            _CircleButton(
-                              icon: AppIcons.arrowBack,
-                              onPressed: notifier.back,
+                      if (!isCompleteStep && !isFullScreenStep) ...[
+                        const SizedBox(height: 8),
+                        if (step == OnboardingStep.welcome)
+                          PrismLogoTile(
+                            size: 56,
+                            logoSize: 56,
+                            borderRadius: prismRound(context),
+                          )
+                        else
+                          Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              borderRadius: prismRound(context),
+                              color: primary.withValues(alpha: 0.15),
                             ),
-                          const Spacer(),
-                          _PillButton(
-                            label: isCompleteStep
-                                ? context.l10n.onboardingGetStarted
-                                : isFirstStep
-                                ? context.l10n.onboardingGetStarted
-                                : context.l10n.onboardingContinue,
-                            enabled:
-                                notifier.canProceed &&
-                                !_isCompleting &&
-                                !importBusy,
-                            isLoading: _isCompleting,
-                            primary: primary,
-                            onPressed: () {
-                              if (isCompleteStep) {
-                                _completeOnboarding();
-                                return;
-                              }
-                              // If an import sub-flow has registered a
-                              // pending action, run it instead of silently
-                              // skipping past the inline import UI.
-                              final pending = ref.read(
-                                onboardingPendingImportActionProvider,
-                              );
-                              if (pending != null) {
-                                pending();
-                                return;
-                              }
-                              // Empty is allowed but usually an accidental
-                              // skip — confirm first.
-                              if (step == OnboardingStep.addMembers) {
-                                _confirmThenAdvance();
-                                return;
-                              }
-                              notifier.next();
-                            },
+                            child: Center(
+                              child: PhosphorIcon(
+                                step.icon,
+                                size: 28,
+                                color: primary,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            step.localizedTitle(
+                              context,
+                              frontingTerms: pendingFrontingTerms,
+                            ),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineLarge
+                                ?.copyWith(
+                                  fontSize: 28,
+                                  color: colorScheme.onSurface,
+                                ),
+                          ),
+                        ),
+                        if (step.localizedSubtitle(
+                              context,
+                              frontingTerms: pendingFrontingTerms,
+                            )
+                            case final subtitle?) ...[
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Text(
+                              subtitle,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 15,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ),
                         ],
+                        const SizedBox(height: 20),
+                      ],
+
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: _buildStepContent(onboarding),
+                        ),
                       ),
-                    ),
-                ],
-              ),
+
+                      if (!isFullScreenStep && !isSelfManagedStep)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
+                          child: Row(
+                            children: [
+                              if (!isFirstStep && !importBusy)
+                                _CircleButton(
+                                  icon: AppIcons.arrowBack,
+                                  onPressed: notifier.back,
+                                ),
+                              const Spacer(),
+                              _PillButton(
+                                label: isCompleteStep
+                                    ? context.l10n.onboardingGetStarted
+                                    : isFirstStep
+                                    ? context.l10n.onboardingGetStarted
+                                    : context.l10n.onboardingContinue,
+                                enabled:
+                                    notifier.canProceed &&
+                                    !_isCompleting &&
+                                    !importBusy,
+                                isLoading: _isCompleting,
+                                primary: primary,
+                                onPressed: () {
+                                  if (isCompleteStep) {
+                                    _completeOnboarding();
+                                    return;
+                                  }
+                                  // If an import sub-flow has registered a
+                                  // pending action, run it instead of silently
+                                  // skipping past the inline import UI.
+                                  final pending = ref.read(
+                                    onboardingPendingImportActionProvider,
+                                  );
+                                  if (pending != null) {
+                                    pending();
+                                    return;
+                                  }
+                                  // Empty is allowed but usually an accidental
+                                  // skip — confirm first.
+                                  if (step == OnboardingStep.addMembers) {
+                                    _confirmThenAdvance();
+                                    return;
+                                  }
+                                  notifier.next();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -65,10 +65,7 @@ class _FakeMemberRepo implements MemberRepository {
   ) async => throw UnimplementedError();
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _byId[id];
     if (existing == null) return 0;
     _byId[id] = existing.copyWith(
@@ -132,7 +129,8 @@ class _FakeMemberRepo implements MemberRepository {
   }
 
   @override
-  Future<int> getCount() async => _byId.values.where((m) => !m.isDeleted).length;
+  Future<int> getCount() async =>
+      _byId.values.where((m) => !m.isDeleted).length;
 
   @override
   Future<List<domain.Member>> getMembersByIds(List<String> ids) async =>
@@ -145,8 +143,9 @@ class _FakeMemberRepo implements MemberRepository {
       );
 
   @override
-  Stream<List<domain.Member>> watchActiveMembers() =>
-      Stream.value(_byId.values.where((m) => m.isActive && !m.isDeleted).toList());
+  Stream<List<domain.Member>> watchActiveMembers() => Stream.value(
+    _byId.values.where((m) => m.isActive && !m.isDeleted).toList(),
+  );
 
   @override
   Stream<List<domain.Member>> watchAllMembers() =>
@@ -169,7 +168,7 @@ class _FakeMemberRepo implements MemberRepository {
   Future<void> clearCreatePushStartedAt(String id) async {}
   @override
   Future<({domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 // ---------------------------------------------------------------------------
@@ -202,7 +201,8 @@ class _FakeClient extends PluralKitClient {
   @override
   Future<PKMember> createMember(Map<String, dynamic> data) async {
     createCallCount++;
-    final result = onCreate?.call(data) ??
+    final result =
+        onCreate?.call(data) ??
         PKMember(
           id: 'abcde',
           uuid: 'uuid-$createCallCount',
@@ -295,12 +295,14 @@ void main() {
       syncDao: syncDao,
       bus: PkSyncEventBus(),
     );
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(memberRepo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
-      frontingMigrationWritesBlockedProvider.overrideWithValue(false),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        memberRepositoryProvider.overrideWithValue(memberRepo),
+        pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
+        frontingMigrationWritesBlockedProvider.overrideWithValue(false),
+      ],
+    );
   });
 
   tearDown(() async {
@@ -308,109 +310,122 @@ void main() {
     await db.close();
   });
 
-  test('happy path: state row goes pending → applied, identifiers land on member, no PK sync state mutation', () async {
-    final svc = container.read(pkOneShotPushServiceProvider);
-    final dao = container.read(pkMappingStateDaoProvider);
+  test(
+    'happy path: state row goes pending → applied, identifiers land on member, no PK sync state mutation',
+    () async {
+      final svc = container.read(pkOneShotPushServiceProvider);
+      final dao = container.read(pkMappingStateDaoProvider);
 
-    // Snapshot the pluralkit_sync_state row before pushing so we can prove
-    // the one-shot path does not mutate it.
-    final beforeSyncRow = await syncDao.getSyncState();
+      // Snapshot the pluralkit_sync_state row before pushing so we can prove
+      // the one-shot path does not mutate it.
+      final beforeSyncRow = await syncDao.getSyncState();
 
-    client.onCreate = (data) => const PKMember(
-          id: 'abcde',
-          uuid: 'uuid-alice',
-          name: 'Alice',
-        );
+      client.onCreate = (data) =>
+          const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
 
-    final result = await svc.pushSingleMember('m1');
+      final result = await svc.pushSingleMember('m1');
 
-    expect(result.id, 'abcde');
-    expect(result.uuid, 'uuid-alice');
-    expect(client.createCallCount, 1, reason: 'should have POSTed once');
+      expect(result.id, 'abcde');
+      expect(result.uuid, 'uuid-alice');
+      expect(client.createCallCount, 1, reason: 'should have POSTed once');
 
-    final stored = await memberRepo.getMemberById('m1');
-    expect(stored!.pluralkitId, 'abcde');
-    expect(stored.pluralkitUuid, 'uuid-alice');
-    // pluralkitSyncIgnored must NOT be touched (was false before, still false).
-    expect(stored.pluralkitSyncIgnored, isFalse);
+      final stored = await memberRepo.getMemberById('m1');
+      expect(stored!.pluralkitId, 'abcde');
+      expect(stored.pluralkitUuid, 'uuid-alice');
+      // pluralkitSyncIgnored must NOT be touched (was false before, still false).
+      expect(stored.pluralkitSyncIgnored, isFalse);
 
-    final stateRow = await dao.getById('one_shot_push:m1');
-    expect(stateRow, isNotNull);
-    expect(stateRow!.status, 'applied');
-    expect(stateRow.pkMemberId, 'abcde');
-    expect(stateRow.pkMemberUuid, 'uuid-alice');
-    expect(stateRow.decisionType, 'push');
-    expect(stateRow.localMemberId, 'm1');
+      final stateRow = await dao.getById('one_shot_push:m1');
+      expect(stateRow, isNotNull);
+      expect(stateRow!.status, 'applied');
+      expect(stateRow.pkMemberId, 'abcde');
+      expect(stateRow.pkMemberUuid, 'uuid-alice');
+      expect(stateRow.decisionType, 'push');
+      expect(stateRow.localMemberId, 'm1');
 
-    // No mutation of pluralkit_sync_state row.
-    final afterSyncRow = await syncDao.getSyncState();
-    expect(afterSyncRow.fieldSyncConfig, beforeSyncRow.fieldSyncConfig);
-    expect(afterSyncRow.isConnected, beforeSyncRow.isConnected);
-    expect(afterSyncRow.directionConfirmed, beforeSyncRow.directionConfirmed);
-    expect(afterSyncRow.mappingAcknowledged, beforeSyncRow.mappingAcknowledged);
-
-    expect(client.disposed, isTrue, reason: 'client must be disposed');
-  });
-
-  test('reuses prior pk_mapping_state row: no second POST, fetches existing PK member', () async {
-    final svc = container.read(pkOneShotPushServiceProvider);
-    final dao = container.read(pkMappingStateDaoProvider);
-
-    // Seed a prior pending state row with the PK UUID already populated —
-    // simulates a crash between the PK POST and the local writeback.
-    await dao.upsert(_priorStateRow('one_shot_push:m1', 'm1', 'abcde', 'uuid-alice'));
-
-    client.onGet = (ref) => PKMember(id: 'abcde', uuid: ref, name: 'Alice');
-
-    final result = await svc.pushSingleMember('m1');
-
-    expect(result.uuid, 'uuid-alice');
-    expect(client.createCallCount, 0, reason: 'must NOT POST again');
-    expect(client.getCallCount, 1, reason: 'must fetch existing PK member by uuid');
-
-    final stored = await memberRepo.getMemberById('m1');
-    expect(stored!.pluralkitId, 'abcde');
-    expect(stored.pluralkitUuid, 'uuid-alice');
-
-    final stateRow = await dao.getById('one_shot_push:m1');
-    expect(stateRow!.status, 'applied');
-  });
-
-  test('member soft-deleted mid-push: aborts local write, marks failed with "deleted" message, PK row orphaned', () async {
-    final dao = container.read(pkMappingStateDaoProvider);
-
-    // Configure createMember to simulate a successful POST, then mutate the
-    // local repo to mark the member as soft-deleted before _linkBackLocally
-    // re-reads. This models the user tapping delete during the in-flight push.
-    client.onCreate = (data) {
-      memberRepo.replace(
-        _member(id: 'm1', name: 'Alice', deleted: true),
+      // No mutation of pluralkit_sync_state row.
+      final afterSyncRow = await syncDao.getSyncState();
+      expect(afterSyncRow.fieldSyncConfig, beforeSyncRow.fieldSyncConfig);
+      expect(afterSyncRow.isConnected, beforeSyncRow.isConnected);
+      expect(afterSyncRow.directionConfirmed, beforeSyncRow.directionConfirmed);
+      expect(
+        afterSyncRow.mappingAcknowledged,
+        beforeSyncRow.mappingAcknowledged,
       );
-      return const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
-    };
 
-    final svc = container.read(pkOneShotPushServiceProvider);
-    final result = await svc.pushSingleMember('m1');
+      expect(client.disposed, isTrue, reason: 'client must be disposed');
+    },
+  );
 
-    // Service returns the PK member as created — POST succeeded; local
-    // writeback was aborted.
-    expect(result.uuid, 'uuid-alice');
-    expect(client.createCallCount, 1);
+  test(
+    'reuses prior pk_mapping_state row: no second POST, fetches existing PK member',
+    () async {
+      final svc = container.read(pkOneShotPushServiceProvider);
+      final dao = container.read(pkMappingStateDaoProvider);
 
-    final stored = await memberRepo.getMemberById('m1');
-    expect(stored!.isDeleted, isTrue);
-    expect(stored.pluralkitId, isNull, reason: 'local write must be skipped');
-    expect(stored.pluralkitUuid, isNull);
+      // Seed a prior pending state row with the PK UUID already populated —
+      // simulates a crash between the PK POST and the local writeback.
+      await dao.upsert(
+        _priorStateRow('one_shot_push:m1', 'm1', 'abcde', 'uuid-alice'),
+      );
 
-    final stateRow = await dao.getById('one_shot_push:m1');
-    expect(stateRow!.status, 'failed');
-    expect(stateRow.errorMessage, isNotNull);
-    expect(
-      stateRow.errorMessage!.toLowerCase(),
-      contains('deleted'),
-      reason: 'errorMessage should mention "deleted"',
-    );
-  });
+      client.onGet = (ref) => PKMember(id: 'abcde', uuid: ref, name: 'Alice');
+
+      final result = await svc.pushSingleMember('m1');
+
+      expect(result.uuid, 'uuid-alice');
+      expect(client.createCallCount, 0, reason: 'must NOT POST again');
+      expect(
+        client.getCallCount,
+        1,
+        reason: 'must fetch existing PK member by uuid',
+      );
+
+      final stored = await memberRepo.getMemberById('m1');
+      expect(stored!.pluralkitId, 'abcde');
+      expect(stored.pluralkitUuid, 'uuid-alice');
+
+      final stateRow = await dao.getById('one_shot_push:m1');
+      expect(stateRow!.status, 'applied');
+    },
+  );
+
+  test(
+    'member soft-deleted mid-push: aborts local write, marks failed with "deleted" message, PK row orphaned',
+    () async {
+      final dao = container.read(pkMappingStateDaoProvider);
+
+      // Configure createMember to simulate a successful POST, then mutate the
+      // local repo to mark the member as soft-deleted before _linkBackLocally
+      // re-reads. This models the user tapping delete during the in-flight push.
+      client.onCreate = (data) {
+        memberRepo.replace(_member(id: 'm1', name: 'Alice', deleted: true));
+        return const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
+      };
+
+      final svc = container.read(pkOneShotPushServiceProvider);
+      final result = await svc.pushSingleMember('m1');
+
+      // Service returns the PK member as created — POST succeeded; local
+      // writeback was aborted.
+      expect(result.uuid, 'uuid-alice');
+      expect(client.createCallCount, 1);
+
+      final stored = await memberRepo.getMemberById('m1');
+      expect(stored!.isDeleted, isTrue);
+      expect(stored.pluralkitId, isNull, reason: 'local write must be skipped');
+      expect(stored.pluralkitUuid, isNull);
+
+      final stateRow = await dao.getById('one_shot_push:m1');
+      expect(stateRow!.status, 'failed');
+      expect(stateRow.errorMessage, isNotNull);
+      expect(
+        stateRow.errorMessage!.toLowerCase(),
+        contains('deleted'),
+        reason: 'errorMessage should mention "deleted"',
+      );
+    },
+  );
 
   // PR 2 race: user excludes M between push send and writeback. Per the
   // plan (Part 1.7 site 8 + Part 4 "Post-push writeback race"), the PK
@@ -422,9 +437,7 @@ void main() {
     final dao = container.read(pkMappingStateDaoProvider);
 
     client.onCreate = (data) {
-      memberRepo.replace(
-        _member(id: 'm1', name: 'Alice', ignored: true),
-      );
+      memberRepo.replace(_member(id: 'm1', name: 'Alice', ignored: true));
       return const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
     };
 
@@ -446,41 +459,44 @@ void main() {
     expect(stateRow!.status, 'applied');
   });
 
-  test('concurrent push attempt for same member throws PkOneShotPushBusyException', () async {
-    final svc = container.read(pkOneShotPushServiceProvider);
+  test(
+    'concurrent push attempt for same member throws PkOneShotPushBusyException',
+    () async {
+      final svc = container.read(pkOneShotPushServiceProvider);
 
-    // Swap in a client whose createMember blocks until we signal the gate, so
-    // the first push stays in-flight while the second concurrent call runs.
-    final gate = Completer<PKMember>();
-    final blockingClient = _BlockingClient(gate);
-    syncSvc.client = blockingClient;
+      // Swap in a client whose createMember blocks until we signal the gate, so
+      // the first push stays in-flight while the second concurrent call runs.
+      final gate = Completer<PKMember>();
+      final blockingClient = _BlockingClient(gate);
+      syncSvc.client = blockingClient;
 
-    final first = svc.pushSingleMember('m1');
-    // Yield so the first call enters _inFlight before the second attempt.
-    await Future<void>.delayed(Duration.zero);
+      final first = svc.pushSingleMember('m1');
+      // Yield so the first call enters _inFlight before the second attempt.
+      await Future<void>.delayed(Duration.zero);
 
-    expect(
-      () => svc.pushSingleMember('m1'),
-      throwsA(isA<PkOneShotPushBusyException>()),
-    );
+      expect(
+        () => svc.pushSingleMember('m1'),
+        throwsA(isA<PkOneShotPushBusyException>()),
+      );
 
-    // Let the first push finish so the test tears down cleanly.
-    gate.complete(const PKMember(
-      id: 'abcde',
-      uuid: 'uuid-alice',
-      name: 'Alice',
-    ));
-    await first;
-  });
+      // Let the first push finish so the test tears down cleanly.
+      gate.complete(
+        const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice'),
+      );
+      await first;
+    },
+  );
 
   test('migration gate: throws PkSyncMigrationGatedException', () async {
     container.dispose();
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(memberRepo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
-      frontingMigrationWritesBlockedProvider.overrideWithValue(true),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        memberRepositoryProvider.overrideWithValue(memberRepo),
+        pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
+        frontingMigrationWritesBlockedProvider.overrideWithValue(true),
+      ],
+    );
 
     final svc = container.read(pkOneShotPushServiceProvider);
 
@@ -498,21 +514,24 @@ void main() {
     final beforeDirection = container.read(pkSyncDirectionProvider);
     final beforeMode = container.read(pkSyncModeProvider);
 
-    client.onCreate = (_) => const PKMember(
-          id: 'abcde',
-          uuid: 'uuid-alice',
-          name: 'Alice',
-        );
+    client.onCreate = (_) =>
+        const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
 
     await svc.pushSingleMember('m1');
 
     final afterDirection = container.read(pkSyncDirectionProvider);
     final afterMode = container.read(pkSyncModeProvider);
 
-    expect(afterDirection, beforeDirection,
-        reason: 'one-shot push must not touch sync direction');
-    expect(afterMode, beforeMode,
-        reason: 'one-shot push must not touch sync mode');
+    expect(
+      afterDirection,
+      beforeDirection,
+      reason: 'one-shot push must not touch sync direction',
+    );
+    expect(
+      afterMode,
+      beforeMode,
+      reason: 'one-shot push must not touch sync mode',
+    );
   });
 
   // PR 2 Part 1.7 site 8: _linkBackLocally writeback uses
@@ -524,8 +543,7 @@ void main() {
   // PkForeignMemberException, not hand back foreign data.
   // ─────────────────────────────────────────────────────────────────────
 
-  test('already-linked refresh rejects a foreign-system member (H12a)',
-      () async {
+  test('already-linked refresh rejects a foreign-system member (H12a)', () async {
     // Connected system id = pktchv in the sync row.
     await syncDao.upsertSyncState(
       const PluralKitSyncStateCompanion(
@@ -537,17 +555,23 @@ void main() {
     final linkedRepo = _FakeMemberRepo([
       _member(id: 'm1', name: 'Alice', pluralkitId: 'zzzzz'),
     ]);
-    final localContainer = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(linkedRepo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
-      frontingMigrationWritesBlockedProvider.overrideWithValue(false),
-    ]);
+    final localContainer = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        memberRepositoryProvider.overrideWithValue(linkedRepo),
+        pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
+        frontingMigrationWritesBlockedProvider.overrideWithValue(false),
+      ],
+    );
     addTearDown(localContainer.dispose);
 
     // The short-id GET resolves to a member owned by a DIFFERENT system.
-    client.onGet = (ref) =>
-        PKMember(id: ref, uuid: 'uuid-foreign', name: 'Stranger', system: 'venus');
+    client.onGet = (ref) => PKMember(
+      id: ref,
+      uuid: 'uuid-foreign',
+      name: 'Stranger',
+      system: 'venus',
+    );
 
     final svc = localContainer.read(pkOneShotPushServiceProvider);
     await expectLater(
@@ -557,59 +581,73 @@ void main() {
     expect(client.createCallCount, 0, reason: 'no POST on a foreign refresh');
   });
 
-  test('already-linked refresh proceeds when ownership matches (H12a)',
-      () async {
-    await syncDao.upsertSyncState(
-      const PluralKitSyncStateCompanion(
-        id: Value('pk_config'),
-        systemId: Value('pktchv'),
-      ),
-    );
-    final linkedRepo = _FakeMemberRepo([
-      _member(id: 'm1', name: 'Alice', pluralkitId: 'abcde'),
-    ]);
-    final localContainer = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(linkedRepo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
-      frontingMigrationWritesBlockedProvider.overrideWithValue(false),
-    ]);
-    addTearDown(localContainer.dispose);
+  test(
+    'already-linked refresh proceeds when ownership matches (H12a)',
+    () async {
+      await syncDao.upsertSyncState(
+        const PluralKitSyncStateCompanion(
+          id: Value('pk_config'),
+          systemId: Value('pktchv'),
+        ),
+      );
+      final linkedRepo = _FakeMemberRepo([
+        _member(id: 'm1', name: 'Alice', pluralkitId: 'abcde'),
+      ]);
+      final localContainer = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          memberRepositoryProvider.overrideWithValue(linkedRepo),
+          pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
+          frontingMigrationWritesBlockedProvider.overrideWithValue(false),
+        ],
+      );
+      addTearDown(localContainer.dispose);
 
-    client.onGet = (ref) =>
-        PKMember(id: ref, uuid: 'uuid-abcde', name: 'Alice', system: 'pktchv');
+      client.onGet = (ref) => PKMember(
+        id: ref,
+        uuid: 'uuid-abcde',
+        name: 'Alice',
+        system: 'pktchv',
+      );
 
-    final svc = localContainer.read(pkOneShotPushServiceProvider);
-    final result = await svc.pushSingleMember('m1');
-    expect(result.uuid, 'uuid-abcde');
-    expect(client.createCallCount, 0, reason: 'already linked → refresh only');
-  });
+      final svc = localContainer.read(pkOneShotPushServiceProvider);
+      final result = await svc.pushSingleMember('m1');
+      expect(result.uuid, 'uuid-abcde');
+      expect(
+        client.createCallCount,
+        0,
+        reason: 'already linked → refresh only',
+      );
+    },
+  );
 
   test('_linkBackLocally uses recordPluralKitIdentity (NOT '
       'applyPluralKitLink)', () async {
-    final recordingRepo = _RecordingMemberRepo(
-      [_member(id: 'm1', name: 'Alice')],
-    );
-    final localContainer = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(recordingRepo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
-      frontingMigrationWritesBlockedProvider.overrideWithValue(false),
+    final recordingRepo = _RecordingMemberRepo([
+      _member(id: 'm1', name: 'Alice'),
     ]);
+    final localContainer = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        memberRepositoryProvider.overrideWithValue(recordingRepo),
+        pluralKitSyncServiceProvider.overrideWithValue(syncSvc),
+        frontingMigrationWritesBlockedProvider.overrideWithValue(false),
+      ],
+    );
     addTearDown(localContainer.dispose);
 
-    client.onCreate = (_) => const PKMember(
-          id: 'abcde',
-          uuid: 'uuid-alice',
-          name: 'Alice',
-        );
+    client.onCreate = (_) =>
+        const PKMember(id: 'abcde', uuid: 'uuid-alice', name: 'Alice');
 
     final svc = localContainer.read(pkOneShotPushServiceProvider);
     await svc.pushSingleMember('m1');
 
     expect(recordingRepo.recordIdentityCalls, hasLength(1));
-    expect(recordingRepo.applyLinkCalls, isEmpty,
-        reason: 'writeback must not flip sync_ignored');
+    expect(
+      recordingRepo.applyLinkCalls,
+      isEmpty,
+      reason: 'writeback must not flip sync_ignored',
+    );
     final patch = recordingRepo.recordIdentityCalls.single.patch;
     expect(patch.keys.toSet(), {'pluralkit_uuid', 'pluralkit_id'});
     expect(patch['pluralkit_uuid'], 'uuid-alice');
@@ -664,10 +702,7 @@ class _RecordingMemberRepo extends _FakeMemberRepo {
   recordIdentityCalls = [];
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     applyLinkCalls.add((memberId: id, patch: Map.of(patch)));
     return super.applyPluralKitLink(id, patch);
   }

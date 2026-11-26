@@ -24,7 +24,10 @@ class _RecordingRepo extends DriftCustomFieldsRepository {
   }
 
   @override
-  Future<void> syncRecordDeleteMulti(String table, List<String> entityIds) async {
+  Future<void> syncRecordDeleteMulti(
+    String table,
+    List<String> entityIds,
+  ) async {
     for (final entityId in entityIds) {
       deletes.add((table: table, entityId: entityId));
     }
@@ -75,14 +78,12 @@ Future<void> _seedValue(
 /// Query ALL custom_fields rows without the isDeleted filter.
 Future<List<db.CustomFieldRow>> _allFieldsIncludingDeleted(
   db.AppDatabase database,
-) =>
-    database.select(database.customFields).get();
+) => database.select(database.customFields).get();
 
 /// Query ALL custom_field_values rows without the isDeleted filter.
 Future<List<db.CustomFieldValueRow>> _allValuesIncludingDeleted(
   db.AppDatabase database,
-) =>
-    database.select(database.customFieldValues).get();
+) => database.select(database.customFieldValues).get();
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -169,14 +170,14 @@ void main() {
         reason: 'value tombstones must precede all field tombstones',
       );
 
-      expect(
-        valueDeletes.map((d) => d.entityId).toSet(),
-        {'v1', 'v2', 'v3', 'v4', 'v5'},
-      );
-      expect(
-        fieldDeletes.map((d) => d.entityId).toSet(),
-        {'f1', 'f2', 'f3'},
-      );
+      expect(valueDeletes.map((d) => d.entityId).toSet(), {
+        'v1',
+        'v2',
+        'v3',
+        'v4',
+        'v5',
+      });
+      expect(fieldDeletes.map((d) => d.entityId).toSet(), {'f1', 'f2', 'f3'});
     },
   );
 
@@ -214,43 +215,34 @@ void main() {
     },
   );
 
-  test(
-    'deleteAllFields is a no-op on empty data',
-    () async {
-      await abstractRef(repo).deleteAllFields();
+  test('deleteAllFields is a no-op on empty data', () async {
+    await abstractRef(repo).deleteAllFields();
 
-      expect(repo.deletes, isEmpty);
-    },
-  );
+    expect(repo.deletes, isEmpty);
+  });
 
-  test(
-    'deleteAllFields handles post-members-reset state correctly',
-    () async {
-      await _seedField(database, id: 'f1');
-      await _seedField(database, id: 'f2');
-      await _seedValue(database, id: 'v1', fieldId: 'f1');
-      await _seedValue(database, id: 'v2', fieldId: 'f1');
-      await _seedValue(database, id: 'v3', fieldId: 'f2');
+  test('deleteAllFields handles post-members-reset state correctly', () async {
+    await _seedField(database, id: 'f1');
+    await _seedField(database, id: 'f2');
+    await _seedValue(database, id: 'v1', fieldId: 'f1');
+    await _seedValue(database, id: 'v2', fieldId: 'f1');
+    await _seedValue(database, id: 'v3', fieldId: 'f2');
 
-      // Hard-delete values (simulating _resetMembers behaviour).
-      await database.customStatement('DELETE FROM custom_field_values');
+    // Hard-delete values (simulating _resetMembers behaviour).
+    await database.customStatement('DELETE FROM custom_field_values');
 
-      await abstractRef(repo).deleteAllFields();
+    await abstractRef(repo).deleteAllFields();
 
-      final fieldDeletes = repo.deletes
-          .where((d) => d.table == 'custom_fields')
-          .toList();
-      final valueDeletes = repo.deletes
-          .where((d) => d.table == 'custom_field_values')
-          .toList();
+    final fieldDeletes = repo.deletes
+        .where((d) => d.table == 'custom_fields')
+        .toList();
+    final valueDeletes = repo.deletes
+        .where((d) => d.table == 'custom_field_values')
+        .toList();
 
-      expect(fieldDeletes, hasLength(2));
-      expect(valueDeletes, isEmpty);
+    expect(fieldDeletes, hasLength(2));
+    expect(valueDeletes, isEmpty);
 
-      expect(
-        fieldDeletes.map((d) => d.entityId).toSet(),
-        {'f1', 'f2'},
-      );
-    },
-  );
+    expect(fieldDeletes.map((d) => d.entityId).toSet(), {'f1', 'f2'});
+  });
 }

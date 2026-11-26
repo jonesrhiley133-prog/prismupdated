@@ -21,10 +21,7 @@ void main() {
     }
 
     test('stays put while settings are still loading', () async {
-      expect(
-        await resolve(hasCompleted: null, isOnboarding: true),
-        isNull,
-      );
+      expect(await resolve(hasCompleted: null, isOnboarding: true), isNull);
     });
 
     test('sends an unfinished device to onboarding', () async {
@@ -49,21 +46,18 @@ void main() {
       },
     );
 
-    test(
-      'a synced-in device with no members stays on onboarding (Device B '
-      'protection preserved)',
-      () async {
-        expect(
-          await resolve(
-            hasCompleted: true,
-            isOnboarding: true,
-            completedLocally: false,
-            memberCount: 0,
-          ),
-          isNull,
-        );
-      },
-    );
+    test('a synced-in device with no members stays on onboarding (Device B '
+        'protection preserved)', () async {
+      expect(
+        await resolve(
+          hasCompleted: true,
+          isOnboarding: true,
+          completedLocally: false,
+          memberCount: 0,
+        ),
+        isNull,
+      );
+    });
 
     test('a synced-in device with members lands on home', () async {
       expect(
@@ -78,30 +72,19 @@ void main() {
     });
 
     test('a completed device already off onboarding is left alone', () async {
-      expect(
-        await resolve(hasCompleted: true, isOnboarding: false),
-        isNull,
-      );
+      expect(await resolve(hasCompleted: true, isOnboarding: false), isNull);
     });
 
     test('paired recovery on the onboarding route routes to home', () async {
       expect(
-        await resolve(
-          hasCompleted: false,
-          isOnboarding: true,
-          recovers: true,
-        ),
+        await resolve(hasCompleted: false, isOnboarding: true, recovers: true),
         AppRoutePaths.home,
       );
     });
 
     test('paired recovery off the onboarding route stays put', () async {
       expect(
-        await resolve(
-          hasCompleted: false,
-          isOnboarding: false,
-          recovers: true,
-        ),
+        await resolve(hasCompleted: false, isOnboarding: false, recovers: true),
         isNull,
       );
     });

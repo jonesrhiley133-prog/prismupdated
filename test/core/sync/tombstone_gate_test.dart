@@ -60,57 +60,61 @@ void main() {
       expect(minted.entityId, 'gen0');
     });
 
-    test('skips tombstoned generations and returns the first live id', () async {
-      final fv = _FakeFieldVersions({
-        '$table|gen0|is_deleted': 'true',
-        '$table|gen1|is_deleted': 'true',
-        // gen2 has no field version -> live.
-      });
-      final gate = TombstoneGate(fv.read);
-      final minted = await gate.mintLiveEntityId(table, derive);
-      expect(minted.generation, 2);
-      expect(minted.entityId, 'gen2');
-    });
+    test(
+      'skips tombstoned generations and returns the first live id',
+      () async {
+        final fv = _FakeFieldVersions({
+          '$table|gen0|is_deleted': 'true',
+          '$table|gen1|is_deleted': 'true',
+          // gen2 has no field version -> live.
+        });
+        final gate = TombstoneGate(fv.read);
+        final minted = await gate.mintLiveEntityId(table, derive);
+        expect(minted.generation, 2);
+        expect(minted.entityId, 'gen2');
+      },
+    );
 
-    test('identical fv state mints identical ids (cross-device convergence)',
-        () async {
-      Map<String, String?> state() => {
-        '$table|gen0|is_deleted': 'true',
-        '$table|gen1|is_deleted': 'false', // explicit live -> NOT a tombstone
-      };
-      final gateA = TombstoneGate(_FakeFieldVersions(state()).read);
-      final gateB = TombstoneGate(_FakeFieldVersions(state()).read);
-      final a = await gateA.mintLiveEntityId(table, derive);
-      final b = await gateB.mintLiveEntityId(table, derive);
-      expect(a, b);
-      expect(a.generation, 1);
-      expect(a.entityId, 'gen1');
-    });
+    test(
+      'identical fv state mints identical ids (cross-device convergence)',
+      () async {
+        Map<String, String?> state() => {
+          '$table|gen0|is_deleted': 'true',
+          '$table|gen1|is_deleted': 'false', // explicit live -> NOT a tombstone
+        };
+        final gateA = TombstoneGate(_FakeFieldVersions(state()).read);
+        final gateB = TombstoneGate(_FakeFieldVersions(state()).read);
+        final a = await gateA.mintLiveEntityId(table, derive);
+        final b = await gateB.mintLiveEntityId(table, derive);
+        expect(a, b);
+        expect(a.generation, 1);
+        expect(a.entityId, 'gen1');
+      },
+    );
 
-    test('a stale device that has not seen a tombstone mints a lower gen',
-        () async {
-      // Device A sees gen0 tombstoned; device B has not imported it yet.
-      final gateA = TombstoneGate(
-        _FakeFieldVersions({'$table|gen0|is_deleted': 'true'}).read,
-      );
-      final gateB = TombstoneGate(_FakeFieldVersions({}).read);
-      final a = await gateA.mintLiveEntityId(table, derive);
-      final b = await gateB.mintLiveEntityId(table, derive);
-      expect(a.generation, 1);
-      expect(b.generation, 0);
-      // They re-converge once B imports the tombstone — pinned by the
-      // "identical fv state" case above. The receiver backstop keeps B's lower
-      // gen0 from resurrecting anything in the meantime (Rust merge.rs).
-    });
+    test(
+      'a stale device that has not seen a tombstone mints a lower gen',
+      () async {
+        // Device A sees gen0 tombstoned; device B has not imported it yet.
+        final gateA = TombstoneGate(
+          _FakeFieldVersions({'$table|gen0|is_deleted': 'true'}).read,
+        );
+        final gateB = TombstoneGate(_FakeFieldVersions({}).read);
+        final a = await gateA.mintLiveEntityId(table, derive);
+        final b = await gateB.mintLiveEntityId(table, derive);
+        expect(a.generation, 1);
+        expect(b.generation, 0);
+        // They re-converge once B imports the tombstone — pinned by the
+        // "identical fv state" case above. The receiver backstop keeps B's lower
+        // gen0 from resurrecting anything in the meantime (Rust merge.rs).
+      },
+    );
 
-    test('bounded loop throws rather than minting a known-burned id',
-        () async {
+    test('bounded loop throws rather than minting a known-burned id', () async {
       // Every generation is tombstoned; the loop must terminate by THROWING,
       // not by returning a burned id — emitting a create into a tombstoned id
       // is a silent fleet-wide no-op, the exact failure this layer prevents.
-      final gate = TombstoneGate(
-        (table, entityId, field) async => 'true',
-      );
+      final gate = TombstoneGate((table, entityId, field) async => 'true');
       await expectLater(
         () => gate.mintLiveEntityId(table, derive, maxGenerations: 4),
         throwsA(isA<TombstoneGateExhausted>()),

@@ -38,8 +38,10 @@ const widgetCatalog = <WidgetTypeInfo>[
   WidgetTypeInfo('stats', WidgetCategory.system, '📊'),
 ];
 
-WidgetTypeInfo widgetTypeInfo(String key) =>
-    widgetCatalog.firstWhere((w) => w.key == key, orElse: () => widgetCatalog.first);
+WidgetTypeInfo widgetTypeInfo(String key) => widgetCatalog.firstWhere(
+  (w) => w.key == key,
+  orElse: () => widgetCatalog.first,
+);
 
 String widgetTypeLabel(AppLocalizations l10n, String key) => switch (key) {
   'recent_fronters' => l10n.hwRecentFronters,
@@ -64,35 +66,44 @@ String widgetTypeLabel(AppLocalizations l10n, String key) => switch (key) {
   _ => l10n.hwStats,
 };
 
-String widgetTypeDescription(AppLocalizations l10n, String key) => switch (key) {
-  'recent_fronters' => l10n.hwDescRecentFronters,
-  'current_fronter' => l10n.hwDescCurrentFronter,
-  'quick_front' => l10n.hwDescQuickFront,
-  'events' => l10n.hwDescEvents,
-  'journal' => l10n.hwDescJournal,
-  'cycle' => l10n.hwDescCycle,
-  'mood' => l10n.hwDescMood,
-  'location' => l10n.hwDescLocation,
-  'sleep' => l10n.hwDescSleep,
-  'fitness' => l10n.hwDescFitness,
-  'todo' => l10n.hwDescTodo,
-  'school' => l10n.hwDescSchool,
-  'finance' => l10n.hwDescFinance,
-  'countdown' => l10n.hwDescCountdown,
-  'relationships' => l10n.hwDescRelationships,
-  'achievements' => l10n.hwDescAchievements,
-  'headspace' => l10n.hwDescHeadspace,
-  'notes' => l10n.hwDescNotes,
-  'subsystems' => l10n.hwDescSubsystems,
-  _ => l10n.hwDescStats,
-};
+String widgetTypeDescription(AppLocalizations l10n, String key) =>
+    switch (key) {
+      'recent_fronters' => l10n.hwDescRecentFronters,
+      'current_fronter' => l10n.hwDescCurrentFronter,
+      'quick_front' => l10n.hwDescQuickFront,
+      'events' => l10n.hwDescEvents,
+      'journal' => l10n.hwDescJournal,
+      'cycle' => l10n.hwDescCycle,
+      'mood' => l10n.hwDescMood,
+      'location' => l10n.hwDescLocation,
+      'sleep' => l10n.hwDescSleep,
+      'fitness' => l10n.hwDescFitness,
+      'todo' => l10n.hwDescTodo,
+      'school' => l10n.hwDescSchool,
+      'finance' => l10n.hwDescFinance,
+      'countdown' => l10n.hwDescCountdown,
+      'relationships' => l10n.hwDescRelationships,
+      'achievements' => l10n.hwDescAchievements,
+      'headspace' => l10n.hwDescHeadspace,
+      'notes' => l10n.hwDescNotes,
+      'subsystems' => l10n.hwDescSubsystems,
+      _ => l10n.hwDescStats,
+    };
 
-String widgetCategoryLabel(AppLocalizations l10n, WidgetCategory c) => switch (c) {
-  WidgetCategory.fronting => l10n.hwCatFronting,
-  WidgetCategory.wellness => l10n.hwCatWellness,
-  WidgetCategory.productivity => l10n.hwCatProductivity,
-  WidgetCategory.system => l10n.hwCatSystem,
-};
+String widgetCategoryLabel(AppLocalizations l10n, WidgetCategory c) =>
+    switch (c) {
+      WidgetCategory.fronting => l10n.hwCatFronting,
+      WidgetCategory.wellness => l10n.hwCatWellness,
+      WidgetCategory.productivity => l10n.hwCatProductivity,
+      WidgetCategory.system => l10n.hwCatSystem,
+    };
 
 /// Widgets whose content is personal enough to be masked by default.
-const sensitiveWidgetTypes = {'journal', 'finance', 'cycle', 'relationships', 'notes', 'mood'};
+const sensitiveWidgetTypes = {
+  'journal',
+  'finance',
+  'cycle',
+  'relationships',
+  'notes',
+  'mood',
+};

@@ -2,7 +2,13 @@ import 'package:prism_plurality/shared/icon_choices.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 class AvailCategory {
-  const AvailCategory({required this.id, required this.title, required this.color, required this.icon, this.record});
+  const AvailCategory({
+    required this.id,
+    required this.title,
+    required this.color,
+    required this.icon,
+    this.record,
+  });
   final String id;
   final String title;
   final int color;
@@ -13,7 +19,13 @@ class AvailCategory {
 
 const builtInAvailability = [
   ('available', 'Available', 'Disponible', 0xFF3BA55C, 'check'),
-  ('interested', 'Interested in fronting', 'Quiere estar al frente', 0xFF5865F2, 'sparkle'),
+  (
+    'interested',
+    'Interested in fronting',
+    'Quiere estar al frente',
+    0xFF5865F2,
+    'sparkle',
+  ),
   ('resting', 'Resting', 'Descansando', 0xFF9B59B6, 'bed'),
   ('unavailable', 'Unavailable', 'No disponible', 0xFFED4245, 'minus'),
   ('inactive', 'Inactive', 'Inactivo', 0xFF747F8D, 'moon'),
@@ -24,7 +36,9 @@ class AvailRule {
   AvailRule(this.record);
   final TrackerRecord record;
   String get memberId => record.memberId ?? '';
-  List<int> get weekdays => [for (final s in record.strings('days')) ?int.tryParse(s)];
+  List<int> get weekdays => [
+    for (final s in record.strings('days')) ?int.tryParse(s),
+  ];
   int get startMin => record.integer('start') ?? 9 * 60;
   int get endMin => record.integer('end') ?? 17 * 60;
   String get category => record.str('cat') ?? 'available';
@@ -36,20 +50,29 @@ class AvailRule {
   bool covers(DateTime t) {
     if (!weekdays.contains(t.weekday)) {
       // Overnight blocks spill into the next day.
-      if (endMin <= startMin && weekdays.contains(t.weekday == 1 ? 7 : t.weekday - 1)) {
+      if (endMin <= startMin &&
+          weekdays.contains(t.weekday == 1 ? 7 : t.weekday - 1)) {
         final m = t.hour * 60 + t.minute;
         return m < endMin && _valid(t);
       }
       return false;
     }
     final m = t.hour * 60 + t.minute;
-    final inside = endMin > startMin ? m >= startMin && m < endMin : m >= startMin;
+    final inside = endMin > startMin
+        ? m >= startMin && m < endMin
+        : m >= startMin;
     return inside && _valid(t);
   }
 
   bool _valid(DateTime t) =>
-      (validFrom == null || !t.isBefore(DateTime(validFrom!.year, validFrom!.month, validFrom!.day))) &&
-      (validUntil == null || t.isBefore(DateTime(validUntil!.year, validUntil!.month, validUntil!.day + 1)));
+      (validFrom == null ||
+          !t.isBefore(
+            DateTime(validFrom!.year, validFrom!.month, validFrom!.day),
+          )) &&
+      (validUntil == null ||
+          t.isBefore(
+            DateTime(validUntil!.year, validUntil!.month, validUntil!.day + 1),
+          ));
 }
 
 /// A one-off change for a date range.
@@ -66,7 +89,15 @@ class AvailOverride {
 
 /// A resolved block on a timeline.
 class AvailBlock {
-  const AvailBlock(this.memberId, this.start, this.end, this.category, {this.note, this.isOverride = false, this.record});
+  const AvailBlock(
+    this.memberId,
+    this.start,
+    this.end,
+    this.category, {
+    this.note,
+    this.isOverride = false,
+    this.record,
+  });
   final String memberId;
   final DateTime start;
   final DateTime end;
@@ -76,4 +107,5 @@ class AvailBlock {
   final TrackerRecord? record;
 }
 
-String fmtMinutes(int m) => '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
+String fmtMinutes(int m) =>
+    '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';

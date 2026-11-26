@@ -100,29 +100,30 @@ void main() {
       required HabitFrequency frequency,
       List<int>? weeklyDays,
       int? intervalDays,
-    }) =>
-        Habit(
-          id: 'h',
-          name: 'h',
-          createdAt: now.subtract(const Duration(days: 30)),
-          modifiedAt: now,
-          frequency: frequency,
-          weeklyDays: weeklyDays,
-          intervalDays: intervalDays,
-        );
+    }) => Habit(
+      id: 'h',
+      name: 'h',
+      createdAt: now.subtract(const Duration(days: 30)),
+      modifiedAt: now,
+      frequency: frequency,
+      weeklyDays: weeklyDays,
+      intervalDays: intervalDays,
+    );
 
     HabitCompletion completionAt(DateTime when) => HabitCompletion(
-          id: 'c-${when.millisecondsSinceEpoch}',
-          habitId: 'h',
-          completedAt: when,
-          createdAt: when,
-          modifiedAt: when,
-        );
+      id: 'c-${when.millisecondsSinceEpoch}',
+      habitId: 'h',
+      completedAt: when,
+      createdAt: when,
+      modifiedAt: when,
+    );
 
     test('daily — completed today returns true', () {
       final result = isHabitCompletedForCurrentPeriod(
         habit: buildHabit(frequency: HabitFrequency.daily),
-        todayCompletions: [completionAt(now.subtract(const Duration(hours: 2)))],
+        todayCompletions: [
+          completionAt(now.subtract(const Duration(hours: 2))),
+        ],
         allCompletions: const [],
         now: now,
       );

@@ -68,10 +68,7 @@ void main() {
       for (final n in nodes) {
         n.accept(visitor);
       }
-      expect(
-        visitor.spoilers.map((e) => e.textContent).toList(),
-        ['b', 'd'],
-      );
+      expect(visitor.spoilers.map((e) => e.textContent).toList(), ['b', 'd']);
     });
   });
 }

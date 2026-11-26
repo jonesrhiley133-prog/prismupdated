@@ -297,7 +297,9 @@ class _SystemManagementScreenState
 
                           return PrismListRow(
                             key: ValueKey(member.id),
-                            leading: PrismCircleAvatar(child: Text(member.emoji)),
+                            leading: PrismCircleAvatar(
+                              child: Text(member.emoji),
+                            ),
                             title: Text(
                               member.effectiveName(preferDisplayName: prefer),
                             ),

@@ -433,7 +433,12 @@ void main() {
           .whereType<Container>()
           .map((container) => container.decoration)
           .whereType<BoxDecoration>()
-          .firstWhere((decoration) => decoration.color != null && (decoration.shape == BoxShape.circle || decoration.borderRadius != null));
+          .firstWhere(
+            (decoration) =>
+                decoration.color != null &&
+                (decoration.shape == BoxShape.circle ||
+                    decoration.borderRadius != null),
+          );
       final icon = tester.widget<Icon>(find.byIcon(AppIcons.group));
 
       expect(

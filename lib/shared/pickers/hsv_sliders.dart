@@ -17,13 +17,19 @@ class HsvSliders extends StatelessWidget {
           GradientSlider(
             label: tr(context, 'Hue', 'Tono'),
             value: hsv.hue / 360,
-            colors: [for (var h = 0; h <= 360; h += 60) HSVColor.fromAHSV(1, h.toDouble(), 0.85, 0.95).toColor()],
+            colors: [
+              for (var h = 0; h <= 360; h += 60)
+                HSVColor.fromAHSV(1, h.toDouble(), 0.85, 0.95).toColor(),
+            ],
             onChanged: (v) => emit(hsv.withHue(v * 360)),
           ),
           GradientSlider(
             label: tr(context, 'Saturation', 'Saturación'),
             value: hsv.saturation,
-            colors: [hsv.withSaturation(0).toColor(), hsv.withSaturation(1).toColor()],
+            colors: [
+              hsv.withSaturation(0).toColor(),
+              hsv.withSaturation(1).toColor(),
+            ],
             onChanged: (v) => emit(hsv.withSaturation(v)),
           ),
           GradientSlider(
@@ -39,7 +45,13 @@ class HsvSliders extends StatelessWidget {
 }
 
 class GradientSlider extends StatelessWidget {
-  const GradientSlider({super.key, required this.label, required this.value, required this.colors, required this.onChanged});
+  const GradientSlider({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.colors,
+    required this.onChanged,
+  });
   final String label;
   final double value;
   final List<Color> colors;
@@ -50,7 +62,10 @@ class GradientSlider extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        SizedBox(width: 84, child: Text(label, style: theme.textTheme.bodySmall)),
+        SizedBox(
+          width: 84,
+          child: Text(label, style: theme.textTheme.bodySmall),
+        ),
         Expanded(
           child: Stack(
             alignment: Alignment.center,
@@ -59,7 +74,10 @@ class GradientSlider extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Container(
                   height: 10,
-                  decoration: BoxDecoration(borderRadius: prismCorners(context, 5), gradient: LinearGradient(colors: colors)),
+                  decoration: BoxDecoration(
+                    borderRadius: prismCorners(context, 5),
+                    gradient: LinearGradient(colors: colors),
+                  ),
                 ),
               ),
               SliderTheme(
@@ -68,9 +86,16 @@ class GradientSlider extends StatelessWidget {
                   activeTrackColor: Colors.transparent,
                   inactiveTrackColor: Colors.transparent,
                   thumbColor: Colors.white,
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 14,
+                  ),
                 ),
-                child: Slider(value: value.clamp(0.0, 1.0), onChanged: onChanged, semanticFormatterCallback: (v) => '$label ${(v * 100).round()}%'),
+                child: Slider(
+                  value: value.clamp(0.0, 1.0),
+                  onChanged: onChanged,
+                  semanticFormatterCallback: (v) =>
+                      '$label ${(v * 100).round()}%',
+                ),
               ),
             ],
           ),

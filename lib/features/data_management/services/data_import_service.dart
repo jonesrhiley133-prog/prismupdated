@@ -458,12 +458,19 @@ class DataImportService {
   /// Decrypts / reads an export without blocking the UI: a background
   /// isolate on native platforms, WebCrypto plus a fast scrypt on the web
   /// (where `compute` would run everything on the page's only thread).
-  static Future<({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})> resolveInBackground(Uint8List bytes, {String? password}) async {
+  static Future<
+    ({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})
+  >
+  resolveInBackground(Uint8List bytes, {String? password}) async {
     if (!kIsWeb || !ExportCrypto.isEncrypted(bytes)) {
-      return kIsWeb ? resolveBytes(bytes, password: password) : compute(resolveForCompute, (bytes: bytes, password: password));
+      return kIsWeb
+          ? resolveBytes(bytes, password: password)
+          : compute(resolveForCompute, (bytes: bytes, password: password));
     }
     if (password == null || password.isEmpty) {
-      throw const FormatException('This file is encrypted. Please provide a password.');
+      throw const FormatException(
+        'This file is encrypted. Please provide a password.',
+      );
     }
     final result = await ExportCrypto.decryptAsync(bytes, password);
     _validateMediaManifest(result.json, result.mediaBlobs);

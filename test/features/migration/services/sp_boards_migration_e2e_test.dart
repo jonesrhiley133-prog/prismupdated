@@ -41,7 +41,8 @@ import '../../../helpers/fake_repositories.dart';
 
 final String? _exportPath = Platform.environment['PRISM_SP_BOARDS_EXPORT'];
 
-SpExportData _loadExport() => SpParser.parse(File(_exportPath!).readAsStringSync());
+SpExportData _loadExport() =>
+    SpParser.parse(File(_exportPath!).readAsStringSync());
 
 AppDatabase _makeDb() => AppDatabase(NativeDatabase.memory());
 
@@ -50,11 +51,7 @@ SpBoardsBackfillService _makeBackfillService(
   FakeSystemSettingsRepository settingsRepo,
 ) {
   final dao = db.memberBoardPostsDao;
-  final repo = DriftMemberBoardPostsRepository(
-    dao,
-    db.membersDao,
-    null,
-  );
+  final repo = DriftMemberBoardPostsRepository(dao, db.membersDao, null);
   return SpBoardsBackfillService(
     db: db,
     boardPostsRepo: repo,
@@ -65,19 +62,23 @@ SpBoardsBackfillService _makeBackfillService(
 
 /// Return all non-deleted board posts ordered by body for stable comparisons.
 Future<List<Map<String, dynamic>>> _allPosts(AppDatabase db) async {
-  final rows = await db.customSelect(
-    'SELECT id, target_member_id, author_id, audience, title, body '
-    'FROM member_board_posts WHERE is_deleted = 0 ORDER BY body',
-  ).get();
+  final rows = await db
+      .customSelect(
+        'SELECT id, target_member_id, author_id, audience, title, body '
+        'FROM member_board_posts WHERE is_deleted = 0 ORDER BY body',
+      )
+      .get();
   return rows
-      .map((r) => {
-            'id': r.read<String>('id'),
-            'targetMemberId': r.read<String>('target_member_id'),
-            'authorId': r.readNullable<String>('author_id'),
-            'audience': r.read<String>('audience'),
-            'title': r.readNullable<String>('title'),
-            'body': r.read<String>('body'),
-          })
+      .map(
+        (r) => {
+          'id': r.read<String>('id'),
+          'targetMemberId': r.read<String>('target_member_id'),
+          'authorId': r.readNullable<String>('author_id'),
+          'audience': r.read<String>('audience'),
+          'title': r.readNullable<String>('title'),
+          'body': r.read<String>('body'),
+        },
+      )
       .toList();
 }
 
@@ -127,27 +128,26 @@ void main() {
 
     test('all board posts have audience=private', () {
       for (final post in mapped.boardPosts) {
-        expect(post.audience, equals('private'),
-            reason: 'post ${post.id}');
+        expect(post.audience, equals('private'), reason: 'post ${post.id}');
       }
     });
 
     test('all board posts have non-null targetMemberId', () {
       for (final post in mapped.boardPosts) {
-        expect(post.targetMemberId, isNotNull,
-            reason: 'post ${post.id}');
+        expect(post.targetMemberId, isNotNull, reason: 'post ${post.id}');
       }
     });
 
     test('all board posts have non-null authorId (all writtenBy resolve)', () {
       for (final post in mapped.boardPosts) {
-        expect(post.authorId, isNotNull,
-            reason: 'post ${post.id}');
+        expect(post.authorId, isNotNull, reason: 'post ${post.id}');
       }
     });
 
     test('no member-resolution warnings', () {
-      final warn = mapped.warnings.where((w) => w.contains('not found in member map')).toList();
+      final warn = mapped.warnings
+          .where((w) => w.contains('not found in member map'))
+          .toList();
       expect(warn, isEmpty);
     });
 
@@ -155,22 +155,37 @@ void main() {
       expect(mapped.boardLastReadAtUpdates, isEmpty);
     });
 
-    test('titles stored as separate field, body does not contain ** prefix', () {
-      for (final post in mapped.boardPosts) {
-        expect(post.title, isNotNull, reason: 'every message in this export has a title');
-        expect(post.body, isNot(startsWith('**')),
-            reason: 'new path must not prepend the title to body');
-      }
-    });
+    test(
+      'titles stored as separate field, body does not contain ** prefix',
+      () {
+        for (final post in mapped.boardPosts) {
+          expect(
+            post.title,
+            isNotNull,
+            reason: 'every message in this export has a title',
+          );
+          expect(
+            post.body,
+            isNot(startsWith('**')),
+            reason: 'new path must not prepend the title to body',
+          );
+        }
+      },
+    );
 
-    test('deterministic IDs are stable across two mapper runs with same member map', () {
-      final mapper2 = SpMapper(existingMappings: {'member': mapper.memberIdMap});
-      final mapped2 = mapper2.mapAll(data);
-      expect(
-        mapped2.boardPosts.map((p) => p.id).toSet(),
-        equals(mapped.boardPosts.map((p) => p.id).toSet()),
-      );
-    });
+    test(
+      'deterministic IDs are stable across two mapper runs with same member map',
+      () {
+        final mapper2 = SpMapper(
+          existingMappings: {'member': mapper.memberIdMap},
+        );
+        final mapped2 = mapper2.mapAll(data);
+        expect(
+          mapped2.boardPosts.map((p) => p.id).toSet(),
+          equals(mapped.boardPosts.map((p) => p.id).toSet()),
+        );
+      },
+    );
 
     test('all post IDs are distinct', () {
       final ids = mapped.boardPosts.map((p) => p.id).toSet();
@@ -207,11 +222,13 @@ void main() {
       // Insert minimal member rows.
       final now = DateTime.now().toUtc();
       for (final member in mapped.members) {
-        await db.membersDao.insertMember(MembersCompanion(
-          id: Value(member.id),
-          name: Value(member.name),
-          createdAt: Value(now),
-        ));
+        await db.membersDao.insertMember(
+          MembersCompanion(
+            id: Value(member.id),
+            name: Value(member.name),
+            createdAt: Value(now),
+          ),
+        );
       }
 
       // Simulate what pre-Batch-F _mapBoardMessages created:
@@ -240,10 +257,7 @@ void main() {
           final convId = uuid.v4();
           pairToConvId[pairKey] = convId;
 
-          final participants = <String>[
-            ?byId,
-            if (forId != byId) forId,
-          ];
+          final participants = <String>[?byId, if (forId != byId) forId];
 
           await db.conversationsDao.insertConversation(
             ConversationsCompanion(
@@ -271,37 +285,54 @@ void main() {
 
     tearDown(() async => db.close());
 
-    test('backfill converts all 5 messages and reports correct count', () async {
-      final result = await _makeBackfillService(db, settingsRepo).run();
-      expect(result.abortedByPeer, isFalse);
-      expect(result.postsConverted, equals(5));
-      expect(await _allPosts(db), hasLength(5));
-    });
+    test(
+      'backfill converts all 5 messages and reports correct count',
+      () async {
+        final result = await _makeBackfillService(db, settingsRepo).run();
+        expect(result.abortedByPeer, isFalse);
+        expect(result.postsConverted, equals(5));
+        expect(await _allPosts(db), hasLength(5));
+      },
+    );
 
     test('backfilled post IDs match new-path IDs exactly', () async {
       await _makeBackfillService(db, settingsRepo).run();
 
-      final backfilledIds = (await _allPosts(db)).map((p) => p['id'] as String).toSet();
+      final backfilledIds = (await _allPosts(
+        db,
+      )).map((p) => p['id'] as String).toSet();
       final newPathIds = mapped.boardPosts.map((p) => p.id).toSet();
 
-      expect(backfilledIds, equals(newPathIds),
-          reason: 'Both paths must produce identical deterministic UUID v5 IDs');
+      expect(
+        backfilledIds,
+        equals(newPathIds),
+        reason: 'Both paths must produce identical deterministic UUID v5 IDs',
+      );
     });
 
-    test('backfilled targetMemberId and authorId match new-path values', () async {
-      await _makeBackfillService(db, settingsRepo).run();
+    test(
+      'backfilled targetMemberId and authorId match new-path values',
+      () async {
+        await _makeBackfillService(db, settingsRepo).run();
 
-      final posts = await _allPosts(db);
-      final newPathById = {for (final p in mapped.boardPosts) p.id: p};
+        final posts = await _allPosts(db);
+        final newPathById = {for (final p in mapped.boardPosts) p.id: p};
 
-      for (final post in posts) {
-        final newPost = newPathById[post['id'] as String]!;
-        expect(post['targetMemberId'], equals(newPost.targetMemberId),
-            reason: 'targetMemberId mismatch for ${post["id"]}');
-        expect(post['authorId'], equals(newPost.authorId),
-            reason: 'authorId mismatch for ${post["id"]}');
-      }
-    });
+        for (final post in posts) {
+          final newPost = newPathById[post['id'] as String]!;
+          expect(
+            post['targetMemberId'],
+            equals(newPost.targetMemberId),
+            reason: 'targetMemberId mismatch for ${post["id"]}',
+          );
+          expect(
+            post['authorId'],
+            equals(newPost.authorId),
+            reason: 'authorId mismatch for ${post["id"]}',
+          );
+        }
+      },
+    );
 
     test('backfilled title and body match new-path values', () async {
       await _makeBackfillService(db, settingsRepo).run();
@@ -311,10 +342,16 @@ void main() {
 
       for (final post in posts) {
         final newPost = newPathById[post['id'] as String]!;
-        expect(post['title'], equals(newPost.title),
-            reason: 'title mismatch for ${post["id"]}');
-        expect(post['body'], equals(newPost.body),
-            reason: 'body mismatch for ${post["id"]}');
+        expect(
+          post['title'],
+          equals(newPost.title),
+          reason: 'title mismatch for ${post["id"]}',
+        );
+        expect(
+          post['body'],
+          equals(newPost.body),
+          reason: 'body mismatch for ${post["id"]}',
+        );
       }
     });
 
@@ -332,13 +369,16 @@ void main() {
       expect(await _allPosts(db), hasLength(5));
     });
 
-    test('backfill returns postsConverted > 0 so caller can enable boardsEnabled', () async {
-      // The backfill service itself does not call updateBoardsEnabled; it returns
-      // postsConverted > 0 as the signal. The startup trigger in
-      // prism_sync_providers.dart and SpImporter are the callers that act on it.
-      final result = await _makeBackfillService(db, settingsRepo).run();
-      expect(result.postsConverted, greaterThan(0));
-    });
+    test(
+      'backfill returns postsConverted > 0 so caller can enable boardsEnabled',
+      () async {
+        // The backfill service itself does not call updateBoardsEnabled; it returns
+        // postsConverted > 0 as the signal. The startup trigger in
+        // prism_sync_providers.dart and SpImporter are the callers that act on it.
+        final result = await _makeBackfillService(db, settingsRepo).run();
+        expect(result.postsConverted, greaterThan(0));
+      },
+    );
   });
 
   // ---------------------------------------------------------------------------
@@ -363,18 +403,25 @@ void main() {
       expect(await _allPosts(db), hasLength(5));
     });
 
-    test('all imported board posts have audience=private and non-null targetMemberId', () async {
-      await _runFullImport(db, settingsRepo);
-      final posts = await _allPosts(db);
-      for (final post in posts) {
-        expect(post['audience'], equals('private'));
-        expect(post['targetMemberId'], isNotNull);
-      }
-    });
+    test(
+      'all imported board posts have audience=private and non-null targetMemberId',
+      () async {
+        await _runFullImport(db, settingsRepo);
+        final posts = await _allPosts(db);
+        for (final post in posts) {
+          expect(post['audience'], equals('private'));
+          expect(post['targetMemberId'], isNotNull);
+        }
+      },
+    );
 
     test('re-import with clearExistingData produces same 5 posts', () async {
       // First import.
-      final result1 = await _runFullImport(db, settingsRepo, persistMappings: true);
+      final result1 = await _runFullImport(
+        db,
+        settingsRepo,
+        persistMappings: true,
+      );
       final ids1 = (await _allPosts(db)).map((p) => p['id'] as String).toSet();
       expect(result1.boardPostsImported, equals(5));
 
@@ -389,8 +436,11 @@ void main() {
       final ids2 = (await _allPosts(db)).map((p) => p['id'] as String).toSet();
 
       expect(result2.boardPostsImported, equals(5));
-      expect(ids2, equals(ids1),
-          reason: 'Re-import must produce identical deterministic IDs');
+      expect(
+        ids2,
+        equals(ids1),
+        reason: 'Re-import must produce identical deterministic IDs',
+      );
     });
   });
 }
@@ -409,10 +459,17 @@ Future<ImportResult> _runFullImport(
   final importer = SpImporter();
 
   final memberRepo = DriftMemberRepository(db.membersDao, null);
-  final sessionRepo = DriftFrontingSessionRepository(db.frontingSessionsDao, null);
+  final sessionRepo = DriftFrontingSessionRepository(
+    db.frontingSessionsDao,
+    null,
+  );
   final convRepo = DriftConversationRepository(db.conversationsDao, null);
   final pollRepo = DriftPollRepository(
-      db.pollsDao, db.pollOptionsDao, db.pollVotesDao, null);
+    db.pollsDao,
+    db.pollOptionsDao,
+    db.pollVotesDao,
+    null,
+  );
   final boardPostsRepo = DriftMemberBoardPostsRepository(
     db.memberBoardPostsDao,
     db.membersDao,
@@ -459,11 +516,11 @@ class _NullChatMessageRepo implements ChatMessageRepository {
     String conversationId, {
     int? limit,
     int? offset,
-  }) async =>
-      [];
+  }) async => [];
 
   @override
-  Future<domain.ChatMessage?> getLatestMessage(String conversationId) async => null;
+  Future<domain.ChatMessage?> getLatestMessage(String conversationId) async =>
+      null;
 
   @override
   Future<domain.ChatMessage?> getMessageById(String id) async => null;
@@ -473,13 +530,14 @@ class _NullChatMessageRepo implements ChatMessageRepository {
 
   @override
   Stream<List<domain.ChatMessage>> watchMessagesForConversation(
-          String conversationId) =>
-      const Stream.empty();
+    String conversationId,
+  ) => const Stream.empty();
 
   @override
   Stream<List<domain.ChatMessage>> watchRecentMessages(
-          String conversationId, {required int limit}) =>
-      const Stream.empty();
+    String conversationId, {
+    required int limit,
+  }) => const Stream.empty();
 
   @override
   Stream<domain.ChatMessage?> watchLatestMessage(String conversationId) =>
@@ -487,14 +545,17 @@ class _NullChatMessageRepo implements ChatMessageRepository {
 
   @override
   Future<
-      List<({
+    List<
+      ({
         String messageId,
         String conversationId,
         String snippet,
         DateTime timestamp,
-        String? authorId
-      })>> searchMessages(String query, {int limit = 20}) async =>
-      [];
+        String? authorId,
+      })
+    >
+  >
+  searchMessages(String query, {int limit = 20}) async => [];
 
   @override
   Stream<int> watchUnreadCount(String conversationId, DateTime since) =>
@@ -502,16 +563,19 @@ class _NullChatMessageRepo implements ChatMessageRepository {
 
   @override
   Stream<int> watchUnreadMentionCount(
-          String conversationId, DateTime since, String memberId) =>
-      const Stream.empty();
+    String conversationId,
+    DateTime since,
+    String memberId,
+  ) => const Stream.empty();
 
   @override
   Stream<Map<String, int>> watchAllUnreadCounts(
-          Map<String, DateTime> conversationSince) =>
-      const Stream.empty();
+    Map<String, DateTime> conversationSince,
+  ) => const Stream.empty();
 
   @override
   Stream<Set<String>> watchConversationsWithMentions(
-          Map<String, DateTime> conversationSince, String memberId) =>
-      const Stream.empty();
+    Map<String, DateTime> conversationSince,
+    String memberId,
+  ) => const Stream.empty();
 }

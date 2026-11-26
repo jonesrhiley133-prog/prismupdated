@@ -68,12 +68,20 @@ void main() {
     await db
         .into(db.members)
         .insert(
-          pkFixtureMember(id: 'member-a', name: 'Alice', pluralkitUuid: 'pk-member-a'),
+          pkFixtureMember(
+            id: 'member-a',
+            name: 'Alice',
+            pluralkitUuid: 'pk-member-a',
+          ),
         );
     await db
         .into(db.members)
         .insert(
-          pkFixtureMember(id: 'member-b', name: 'Bob', pluralkitUuid: 'pk-member-b'),
+          pkFixtureMember(
+            id: 'member-b',
+            name: 'Bob',
+            pluralkitUuid: 'pk-member-b',
+          ),
         );
 
     await db
@@ -107,7 +115,11 @@ void main() {
     await db
         .into(db.memberGroupEntries)
         .insert(
-          pkFixtureEntry(id: 'winner-entry-a', groupId: 'winner', memberId: 'member-a'),
+          pkFixtureEntry(
+            id: 'winner-entry-a',
+            groupId: 'winner',
+            memberId: 'member-a',
+          ),
         );
     await db
         .into(db.memberGroupEntries)
@@ -195,14 +207,22 @@ void main() {
     () async {
       await db
           .into(db.memberGroups)
-          .insert(pkFixtureGroup(id: 'winner', createdAt: DateTime(2024, 1, 1)));
+          .insert(
+            pkFixtureGroup(id: 'winner', createdAt: DateTime(2024, 1, 1)),
+          );
       await db
           .into(db.memberGroups)
-          .insert(pkFixtureGroup(id: 'loser-a', createdAt: DateTime(2024, 1, 2)));
+          .insert(
+            pkFixtureGroup(id: 'loser-a', createdAt: DateTime(2024, 1, 2)),
+          );
       await db
           .into(db.memberGroups)
-          .insert(pkFixtureGroup(id: 'loser-b', createdAt: DateTime(2024, 1, 3)));
-      await db.into(db.members).insert(pkFixtureMember(id: 'member-a', name: 'Alice'));
+          .insert(
+            pkFixtureGroup(id: 'loser-b', createdAt: DateTime(2024, 1, 3)),
+          );
+      await db
+          .into(db.members)
+          .insert(pkFixtureMember(id: 'member-a', name: 'Alice'));
 
       await db
           .into(db.memberGroupEntries)
@@ -269,7 +289,11 @@ void main() {
       await db
           .into(db.memberGroupEntries)
           .insert(
-            pkFixtureEntry(id: 'entry-c', groupId: 'group-b', memberId: 'member-c'),
+            pkFixtureEntry(
+              id: 'entry-c',
+              groupId: 'group-b',
+              memberId: 'member-c',
+            ),
           );
 
       final counts = await db.memberGroupsDao.activeEntryCountsByGroupId();
@@ -364,7 +388,9 @@ void main() {
   test('markGroupsSuppressedForReview is idempotent and queryable', () async {
     await db
         .into(db.memberGroups)
-        .insert(pkFixtureGroup(id: 'plain-group', createdAt: DateTime(2024, 1, 1)));
+        .insert(
+          pkFixtureGroup(id: 'plain-group', createdAt: DateTime(2024, 1, 1)),
+        );
 
     final firstPass = await db.memberGroupsDao.markGroupsSuppressedForReview(
       groupIds: const ['plain-group'],

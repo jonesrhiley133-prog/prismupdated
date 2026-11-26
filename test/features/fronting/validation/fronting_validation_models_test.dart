@@ -109,13 +109,16 @@ void main() {
     });
 
     test('all FrontingIssueType values exist', () {
-      expect(FrontingIssueType.values, containsAll([
-        FrontingIssueType.selfOverlap,
-        FrontingIssueType.duplicate,
-        FrontingIssueType.mergeableAdjacent,
-        FrontingIssueType.invalidRange,
-        FrontingIssueType.futureSession,
-      ]));
+      expect(
+        FrontingIssueType.values,
+        containsAll([
+          FrontingIssueType.selfOverlap,
+          FrontingIssueType.duplicate,
+          FrontingIssueType.mergeableAdjacent,
+          FrontingIssueType.invalidRange,
+          FrontingIssueType.futureSession,
+        ]),
+      );
     });
 
     test('overlap and gap issue types do NOT exist', () {
@@ -125,11 +128,14 @@ void main() {
     });
 
     test('all FrontingIssueSeverity values exist', () {
-      expect(FrontingIssueSeverity.values, containsAll([
-        FrontingIssueSeverity.info,
-        FrontingIssueSeverity.warning,
-        FrontingIssueSeverity.error,
-      ]));
+      expect(
+        FrontingIssueSeverity.values,
+        containsAll([
+          FrontingIssueSeverity.info,
+          FrontingIssueSeverity.warning,
+          FrontingIssueSeverity.error,
+        ]),
+      );
     });
   });
 

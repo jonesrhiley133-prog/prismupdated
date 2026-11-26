@@ -1024,10 +1024,7 @@ void main() {
       );
       final result = SpMapper().mapAll(data);
       expect(result.sessions, isEmpty);
-      expect(
-        result.warnings.any((w) => w.contains('no startTime')),
-        isTrue,
-      );
+      expect(result.warnings.any((w) => w.contains('no startTime')), isTrue);
     });
 
     test('keeps live=false with no endTime as an open-ended session', () {
@@ -1077,10 +1074,7 @@ void main() {
       );
       final result = SpMapper().mapAll(data);
       expect(result.sessions, hasLength(1));
-      expect(
-        result.sessions.single.endTime?.millisecondsSinceEpoch,
-        2000,
-      );
+      expect(result.sessions.single.endTime?.millisecondsSinceEpoch, 2000);
     });
 
     test('aggregates multiple missing-startTime drops into one warning', () {
@@ -1189,9 +1183,7 @@ void main() {
     test('chat message content rewrites mentions', () {
       final data = _makeExportData(
         members: [_memberA, _memberB],
-        channels: [
-          const SpChannel(id: 'ch1', name: 'general', memberIds: []),
-        ],
+        channels: [const SpChannel(id: 'ch1', name: 'general', memberIds: [])],
         messages: [
           SpMessage(
             id: 'msg1',
@@ -1205,10 +1197,7 @@ void main() {
 
       final result = SpMapper().mapAll(data);
       final b = result.members.firstWhere((m) => m.name == 'Bob');
-      expect(
-        result.messages.single.content,
-        'Yo ${mentionMatcher(b.id)} ping',
-      );
+      expect(result.messages.single.content, 'Yo ${mentionMatcher(b.id)} ping');
     });
 
     test('group description rewrites mentions', () {
@@ -1267,21 +1256,23 @@ void main() {
       isUtc: true,
     );
 
-    test('SP member with a valid ObjectId gets createdAt from the timestamp',
-        () {
-      final frozenNow = DateTime(2025, 1, 1);
-      final data = _makeExportData(
-        members: [const SpMember(id: validObjectId, name: 'Alice')],
-      );
+    test(
+      'SP member with a valid ObjectId gets createdAt from the timestamp',
+      () {
+        final frozenNow = DateTime(2025, 1, 1);
+        final data = _makeExportData(
+          members: [const SpMember(id: validObjectId, name: 'Alice')],
+        );
 
-      final mapper = SpMapper(now: () => frozenNow);
-      final result = mapper.mapAll(data);
+        final mapper = SpMapper(now: () => frozenNow);
+        final result = mapper.mapAll(data);
 
-      expect(result.members, hasLength(1));
-      // createdAt must reflect the ObjectId timestamp, not the frozen clock.
-      expect(result.members.first.createdAt, expectedCreatedAt);
-      expect(result.members.first.createdAt, isNot(equals(frozenNow)));
-    });
+        expect(result.members, hasLength(1));
+        // createdAt must reflect the ObjectId timestamp, not the frozen clock.
+        expect(result.members.first.createdAt, expectedCreatedAt);
+        expect(result.members.first.createdAt, isNot(equals(frozenNow)));
+      },
+    );
 
     test('SP member with empty/invalid id falls back to _now()', () {
       final frozenNow = DateTime(2025, 6, 15);
@@ -1310,50 +1301,68 @@ void main() {
       expect(result.members.first.createdAt, frozenNow);
     });
 
-    test('custom front (CF) always gets createdAt from _now(), not ObjectId',
-        () {
-      final frozenNow = DateTime(2025, 3, 20);
-      final data = _makeExportData(
-        customFronts: [
-          const SpCustomFront(id: validObjectId, name: 'Host'),
-        ],
-      );
+    test(
+      'custom front (CF) always gets createdAt from _now(), not ObjectId',
+      () {
+        final frozenNow = DateTime(2025, 3, 20);
+        final data = _makeExportData(
+          customFronts: [const SpCustomFront(id: validObjectId, name: 'Host')],
+        );
 
-      final mapper = SpMapper(now: () => frozenNow);
-      final result = mapper.mapAll(data);
+        final mapper = SpMapper(now: () => frozenNow);
+        final result = mapper.mapAll(data);
 
-      expect(result.members, hasLength(1));
-      // Custom fronts must use _now(), not the ObjectId timestamp.
-      expect(result.members.first.createdAt, frozenNow);
-      expect(result.members.first.createdAt, isNot(equals(expectedCreatedAt)));
-    });
+        expect(result.members, hasLength(1));
+        // Custom fronts must use _now(), not the ObjectId timestamp.
+        expect(result.members.first.createdAt, frozenNow);
+        expect(
+          result.members.first.createdAt,
+          isNot(equals(expectedCreatedAt)),
+        );
+      },
+    );
   });
 
   group('F18: deterministic SP member ids', () {
-    test('two independent imports of the same SP member converge on one id', () {
-      final data = _makeExportData(members: [_memberA]);
-      final r1 = SpMapper().mapAll(data);
-      final r2 = SpMapper().mapAll(data);
-      expect(r1.members.single.id, r2.members.single.id,
-          reason: 'fresh imports on two devices must mint the SAME local id so '
-              'they converge on one CRDT row');
-      expect(r1.members.single.id, deriveSpMemberId('sp-a'),
-          reason: 'derived from the SP _id, not a random uuid');
-    });
+    test(
+      'two independent imports of the same SP member converge on one id',
+      () {
+        final data = _makeExportData(members: [_memberA]);
+        final r1 = SpMapper().mapAll(data);
+        final r2 = SpMapper().mapAll(data);
+        expect(
+          r1.members.single.id,
+          r2.members.single.id,
+          reason:
+              'fresh imports on two devices must mint the SAME local id so '
+              'they converge on one CRDT row',
+        );
+        expect(
+          r1.members.single.id,
+          deriveSpMemberId('sp-a'),
+          reason: 'derived from the SP _id, not a random uuid',
+        );
+      },
+    );
 
-    test('an already-mapped SP member keeps its original id (sp_id_map reuse)',
-        () {
-      final data = _makeExportData(members: [_memberA]);
-      // A prior import assigned a random id, persisted in sp_id_map and seeded
-      // back as existingMappings — deterministic-id must NOT override it.
-      final mapper = SpMapper(
-        existingMappings: {
-          'member': {'sp-a': 'legacy-random-id'},
-        },
-      );
-      final result = mapper.mapAll(data);
-      expect(result.members.single.id, 'legacy-random-id',
-          reason: 'existing mapping wins; det-id only mints for unseen members');
-    });
+    test(
+      'an already-mapped SP member keeps its original id (sp_id_map reuse)',
+      () {
+        final data = _makeExportData(members: [_memberA]);
+        // A prior import assigned a random id, persisted in sp_id_map and seeded
+        // back as existingMappings — deterministic-id must NOT override it.
+        final mapper = SpMapper(
+          existingMappings: {
+            'member': {'sp-a': 'legacy-random-id'},
+          },
+        );
+        final result = mapper.mapAll(data);
+        expect(
+          result.members.single.id,
+          'legacy-random-id',
+          reason: 'existing mapping wins; det-id only mints for unseen members',
+        );
+      },
+    );
   });
 }

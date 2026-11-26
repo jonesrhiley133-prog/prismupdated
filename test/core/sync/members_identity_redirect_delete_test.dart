@@ -21,9 +21,9 @@ void main() {
     await db.close();
   });
 
-  dynamic entityFor(String table) =>
-      buildSyncAdapterWithCompletion(db).adapter.entities
-          .singleWhere((entity) => entity.tableName == table);
+  dynamic entityFor(String table) => buildSyncAdapterWithCompletion(
+    db,
+  ).adapter.entities.singleWhere((entity) => entity.tableName == table);
 
   Map<String, dynamic> memberFields({
     required String name,
@@ -303,7 +303,8 @@ void main() {
       expect(
         await db.pkIdentitySyncAliasesDao.getByLegacyEntityId('members', 'idA'),
         isNull,
-        reason: 'target-row purge drops the alias when holder idB is tombstoned',
+        reason:
+            'target-row purge drops the alias when holder idB is tombstoned',
       );
 
       await members.applyFields(
@@ -347,15 +348,30 @@ void main() {
       // Holder idC materializes first; idA and idB redirect onto it.
       await members.applyFields(
         'idC',
-        memberFields(name: 'Ada', pkUuid: 'U', pkId: 'abcde', createdAt: created),
+        memberFields(
+          name: 'Ada',
+          pkUuid: 'U',
+          pkId: 'abcde',
+          createdAt: created,
+        ),
       );
       await members.applyFields(
         'idA',
-        memberFields(name: 'Ada', pkUuid: 'U', pkId: 'abcde', createdAt: created),
+        memberFields(
+          name: 'Ada',
+          pkUuid: 'U',
+          pkId: 'abcde',
+          createdAt: created,
+        ),
       );
       await members.applyFields(
         'idB',
-        memberFields(name: 'Ada', pkUuid: 'U', pkId: 'abcde', createdAt: created),
+        memberFields(
+          name: 'Ada',
+          pkUuid: 'U',
+          pkId: 'abcde',
+          createdAt: created,
+        ),
       );
       expect(
         (await db.pkIdentitySyncAliasesDao.getByIdentity(
@@ -378,7 +394,8 @@ void main() {
       expect(
         await aliasCount('members'),
         0,
-        reason: 'identity-keyed purge drops the SIBLING idB alias too, not just '
+        reason:
+            'identity-keyed purge drops the SIBLING idB alias too, not just '
             'the resolved idA alias',
       );
 
@@ -426,31 +443,33 @@ void main() {
   }
 
   group('fronting_sessions redirect delete-symmetry', () {
-    test('redirect records an alias keyed on (pluralkit_uuid, member_id)',
-        () async {
-      final fronting = entityFor('fronting_sessions');
-      await fronting.applyFields(
-        'sessA',
-        frontingFields(memberId: 'm1', pkUuid: 'SW'),
-      );
-      await fronting.applyFields(
-        'sessB',
-        frontingFields(memberId: 'm1', pkUuid: 'SW'),
-      );
+    test(
+      'redirect records an alias keyed on (pluralkit_uuid, member_id)',
+      () async {
+        final fronting = entityFor('fronting_sessions');
+        await fronting.applyFields(
+          'sessA',
+          frontingFields(memberId: 'm1', pkUuid: 'SW'),
+        );
+        await fronting.applyFields(
+          'sessB',
+          frontingFields(memberId: 'm1', pkUuid: 'SW'),
+        );
 
-      final rows = await db.select(db.frontingSessions).get();
-      expect(rows, hasLength(1));
-      expect(rows.single.id, 'sessA');
+        final rows = await db.select(db.frontingSessions).get();
+        expect(rows, hasLength(1));
+        expect(rows.single.id, 'sessA');
 
-      final alias = await db.pkIdentitySyncAliasesDao.getByLegacyEntityId(
-        'fronting_sessions',
-        'sessB',
-      );
-      expect(alias, isNotNull);
-      expect(alias!.targetRowId, 'sessA');
-      expect(alias.pkUuid, 'SW');
-      expect(alias.memberId, 'm1');
-    });
+        final alias = await db.pkIdentitySyncAliasesDao.getByLegacyEntityId(
+          'fronting_sessions',
+          'sessB',
+        );
+        expect(alias, isNotNull);
+        expect(alias!.targetRowId, 'sessA');
+        expect(alias.pkUuid, 'SW');
+        expect(alias.memberId, 'm1');
+      },
+    );
 
     test('hardDelete of the redirected session id deletes the holder and '
         'purges the alias', () async {

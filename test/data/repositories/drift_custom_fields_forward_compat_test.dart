@@ -114,14 +114,20 @@ void main() {
         final raw = await repo.watchAllFields().first;
         expect(raw.map((f) => f.id), isNot(contains('G')));
         final rawC = raw.firstWhere((f) => f.id == 'C');
-        expect(rawC.parentFieldId, 'G',
-            reason: 'raw repo stream must preserve on-disk parent_field_id');
+        expect(
+          rawC.parentFieldId,
+          'G',
+          reason: 'raw repo stream must preserve on-disk parent_field_id',
+        );
 
         // Render-layer projection promotes the orphan.
         final projected = promoteOrphansForRender(raw);
         final projectedC = projected.firstWhere((f) => f.id == 'C');
-        expect(projectedC.parentFieldId, isNull,
-            reason: 'orphaned child must render at top level after projection');
+        expect(
+          projectedC.parentFieldId,
+          isNull,
+          reason: 'orphaned child must render at top level after projection',
+        );
       },
     );
 
@@ -138,21 +144,30 @@ void main() {
         // naturally if the parent arrives later.
         final raw = await repo.watchAllFields().first;
         final rawC = raw.firstWhere((f) => f.id == 'C');
-        expect(rawC.parentFieldId, 'never-exists',
-            reason: 'raw repo stream must preserve on-disk parent_field_id');
+        expect(
+          rawC.parentFieldId,
+          'never-exists',
+          reason: 'raw repo stream must preserve on-disk parent_field_id',
+        );
 
         // Render-layer projection promotes the orphan.
         final projected = promoteOrphansForRender(raw);
         final projectedC = projected.firstWhere((f) => f.id == 'C');
-        expect(projectedC.parentFieldId, isNull,
-            reason: 'child of never-existent parent must render at top level');
+        expect(
+          projectedC.parentFieldId,
+          isNull,
+          reason: 'child of never-existent parent must render at top level',
+        );
 
         // Storage must NOT have been mutated: the raw DB row should still
         // carry the original parent ref so re-attach is automatic.
         final rawRow = await database.customFieldsDao.getFieldById('C');
-        expect(rawRow?.parentFieldId, 'never-exists',
-            reason:
-                'in-memory promotion must NOT clear storage — sync re-attach depends on this');
+        expect(
+          rawRow?.parentFieldId,
+          'never-exists',
+          reason:
+              'in-memory promotion must NOT clear storage — sync re-attach depends on this',
+        );
       },
     );
   });
@@ -164,63 +179,83 @@ void main() {
   // config bytes for sync re-emit.
 
   group('unknown field_type_id forward compat', () {
-    test('mapper preserves unknown id and gracefully returns null config', () async {
-      // Insert a row directly via the DB — simulates sync delivering a row
-      // written by a future client that introduced 'future_type'.
-      await database.into(database.customFields).insert(
-        CustomFieldsCompanion.insert(
-          id: 'x',
-          name: 'Future Field',
-          fieldType: 99, // out-of-range int for v28 enum
-          fieldTypeId: const Value('future_type'),
-          typeConfigJson:
-              const Value('{"runtimeType":"future_type","whatever":42}'),
-          createdAt: DateTime.utc(2026, 5, 25),
-        ),
-      );
+    test(
+      'mapper preserves unknown id and gracefully returns null config',
+      () async {
+        // Insert a row directly via the DB — simulates sync delivering a row
+        // written by a future client that introduced 'future_type'.
+        await database
+            .into(database.customFields)
+            .insert(
+              CustomFieldsCompanion.insert(
+                id: 'x',
+                name: 'Future Field',
+                fieldType: 99, // out-of-range int for v28 enum
+                fieldTypeId: const Value('future_type'),
+                typeConfigJson: const Value(
+                  '{"runtimeType":"future_type","whatever":42}',
+                ),
+                createdAt: DateTime.utc(2026, 5, 25),
+              ),
+            );
 
-      // Read via the mapper (as repo would).
-      final row = await database.customFieldsDao.getFieldById('x');
-      expect(row, isNotNull);
-      final domain = CustomFieldMapper.toDomain(row!);
+        // Read via the mapper (as repo would).
+        final row = await database.customFieldsDao.getFieldById('x');
+        expect(row, isNotNull);
+        final domain = CustomFieldMapper.toDomain(row!);
 
-      // fieldTypeId must survive — used by future callers once they upgrade.
-      expect(domain.fieldTypeId, 'future_type',
-          reason: 'unknown fieldTypeId must round-trip through mapper');
+        // fieldTypeId must survive — used by future callers once they upgrade.
+        expect(
+          domain.fieldTypeId,
+          'future_type',
+          reason: 'unknown fieldTypeId must round-trip through mapper',
+        );
 
-      // typeConfig is null because the codec couldn't match the runtimeType.
-      // This is the graceful-degradation behaviour; no crash.
-      expect(domain.typeConfig, isNull,
+        // typeConfig is null because the codec couldn't match the runtimeType.
+        // This is the graceful-degradation behaviour; no crash.
+        expect(
+          domain.typeConfig,
+          isNull,
           reason:
-              'unknown runtimeType should degrade to null typeConfig, not throw');
+              'unknown runtimeType should degrade to null typeConfig, not throw',
+        );
 
-      // fieldType falls back to text (index 0) for the v28 enum, since 99 is
-      // out of range for the current enum.
-      expect(domain.fieldType, CustomFieldType.text,
+        // fieldType falls back to text (index 0) for the v28 enum, since 99 is
+        // out of range for the current enum.
+        expect(
+          domain.fieldType,
+          CustomFieldType.text,
           reason:
-              'out-of-range field_type int must fall back to CustomFieldType.text');
+              'out-of-range field_type int must fall back to CustomFieldType.text',
+        );
 
-      // Round-trip through toCompanion: fieldTypeId must survive.
-      final companion = CustomFieldMapper.toCompanion(domain);
-      expect(companion.fieldTypeId.value, 'future_type',
-          reason: 'fieldTypeId must survive toDomain → toCompanion round-trip');
-    });
+        // Round-trip through toCompanion: fieldTypeId must survive.
+        final companion = CustomFieldMapper.toCompanion(domain);
+        expect(
+          companion.fieldTypeId.value,
+          'future_type',
+          reason: 'fieldTypeId must survive toDomain → toCompanion round-trip',
+        );
+      },
+    );
 
     test(
       'field_type = 99 with NULL field_type_id falls back through legacy guard',
       () async {
         // v28 readers receiving a row with a new int and no field_type_id
         // (e.g., an extremely old pre-migration row) must not crash.
-        await database.into(database.customFields).insert(
-          CustomFieldsCompanion.insert(
-            id: 'y',
-            name: 'Old Future Field',
-            fieldType: 99,
-            // field_type_id intentionally null: simulate pre-v28 row with
-            // a new type int that wasn't backfilled.
-            createdAt: DateTime.utc(2026, 5, 25),
-          ),
-        );
+        await database
+            .into(database.customFields)
+            .insert(
+              CustomFieldsCompanion.insert(
+                id: 'y',
+                name: 'Old Future Field',
+                fieldType: 99,
+                // field_type_id intentionally null: simulate pre-v28 row with
+                // a new type int that wasn't backfilled.
+                createdAt: DateTime.utc(2026, 5, 25),
+              ),
+            );
 
         final row = await database.customFieldsDao.getFieldById('y');
         expect(row, isNotNull);
@@ -230,12 +265,17 @@ void main() {
         // falls back to 'text' as the fieldTypeId (via _legacyIntToId returning
         // null → default 'text') and CustomFieldType.text as fieldType.
         // This is the v27-reader-graceful-degradation path.
-        expect(domain.fieldType, CustomFieldType.text,
-            reason:
-                'out-of-range field_type with null id must fall back to text');
+        expect(
+          domain.fieldType,
+          CustomFieldType.text,
+          reason: 'out-of-range field_type with null id must fall back to text',
+        );
         // fieldTypeId should be 'text' (the default fallback).
-        expect(domain.fieldTypeId, isNotNull,
-            reason: 'fallback fieldTypeId must be non-null');
+        expect(
+          domain.fieldTypeId,
+          isNotNull,
+          reason: 'fallback fieldTypeId must be non-null',
+        );
         // No crash — that is the primary invariant.
       },
     );
@@ -259,33 +299,43 @@ void main() {
         // introduced a type this build will never know about.
         const rawJson = '{"runtimeType":"futureType","foo":1}';
 
-        await database.into(database.customFields).insert(
-          CustomFieldsCompanion.insert(
-            id: 'future1',
-            name: 'Future Field',
-            fieldType: 0,
-            fieldTypeId: const Value('futureType'),
-            typeConfigJson: const Value(rawJson),
-            createdAt: DateTime.utc(2026, 5, 25),
-          ),
-        );
+        await database
+            .into(database.customFields)
+            .insert(
+              CustomFieldsCompanion.insert(
+                id: 'future1',
+                name: 'Future Field',
+                fieldType: 0,
+                fieldTypeId: const Value('futureType'),
+                typeConfigJson: const Value(rawJson),
+                createdAt: DateTime.utc(2026, 5, 25),
+              ),
+            );
 
         final row = await database.customFieldsDao.getFieldById('future1');
         expect(row, isNotNull);
         final domain = CustomFieldMapper.toDomain(row!);
 
         // The codec throws for 'futureType' → caught → unknownTypeConfigRaw.
-        expect(domain.typeConfig, isNull,
-            reason:
-                'unknown runtimeType must degrade to null typeConfig, not throw');
-        expect(domain.unknownTypeConfigRaw, rawJson,
-            reason: 'unknown runtimeType raw bytes must be preserved verbatim');
+        expect(
+          domain.typeConfig,
+          isNull,
+          reason:
+              'unknown runtimeType must degrade to null typeConfig, not throw',
+        );
+        expect(
+          domain.unknownTypeConfigRaw,
+          rawJson,
+          reason: 'unknown runtimeType raw bytes must be preserved verbatim',
+        );
 
         // toCompanion must echo back the original raw bytes (no mutation).
         final companion = CustomFieldMapper.toCompanion(domain);
-        expect(companion.typeConfigJson.value, rawJson,
-            reason:
-                'toCompanion must re-emit unknownTypeConfigRaw byte-for-byte');
+        expect(
+          companion.typeConfigJson.value,
+          rawJson,
+          reason: 'toCompanion must re-emit unknownTypeConfigRaw byte-for-byte',
+        );
       },
     );
 
@@ -296,37 +346,56 @@ void main() {
         // the new TextConfig variant with hideTitleOnProfile = true.
         const rawJson = '{"runtimeType":"text","hideTitleOnProfile":true}';
 
-        await database.into(database.customFields).insert(
-          CustomFieldsCompanion.insert(
-            id: 'text1',
-            name: 'Pronouns',
-            fieldType: 0,
-            fieldTypeId: const Value('text'),
-            typeConfigJson: const Value(rawJson),
-            createdAt: DateTime.utc(2026, 5, 25),
-          ),
-        );
+        await database
+            .into(database.customFields)
+            .insert(
+              CustomFieldsCompanion.insert(
+                id: 'text1',
+                name: 'Pronouns',
+                fieldType: 0,
+                fieldTypeId: const Value('text'),
+                typeConfigJson: const Value(rawJson),
+                createdAt: DateTime.utc(2026, 5, 25),
+              ),
+            );
 
         final row = await database.customFieldsDao.getFieldById('text1');
         expect(row, isNotNull);
         final domain = CustomFieldMapper.toDomain(row!);
 
         // Must produce a typed TextConfig, NOT fall into unknownTypeConfigRaw.
-        expect(domain.unknownTypeConfigRaw, isNull,
-            reason: 'TextConfig is a known variant — must not land in unknownTypeConfigRaw');
-        expect(domain.typeConfig, isA<TextConfig>(),
-            reason: 'runtimeType "text" must decode to TextConfig');
+        expect(
+          domain.unknownTypeConfigRaw,
+          isNull,
+          reason:
+              'TextConfig is a known variant — must not land in unknownTypeConfigRaw',
+        );
+        expect(
+          domain.typeConfig,
+          isA<TextConfig>(),
+          reason: 'runtimeType "text" must decode to TextConfig',
+        );
         final textConfig = domain.typeConfig! as TextConfig;
-        expect(textConfig.hideTitleOnProfile, isTrue,
-            reason: 'hideTitleOnProfile:true must survive toDomain');
+        expect(
+          textConfig.hideTitleOnProfile,
+          isTrue,
+          reason: 'hideTitleOnProfile:true must survive toDomain',
+        );
 
         // Round-trip via toCompanion must preserve the flag.
         final companion = CustomFieldMapper.toCompanion(domain);
         final reEncoded = companion.typeConfigJson.value;
-        expect(reEncoded, isNotNull,
-            reason: 'toCompanion must produce non-null typeConfigJson for TextConfig');
-        expect(reEncoded, contains('"hideTitleOnProfile":true'),
-            reason: 'hideTitleOnProfile:true must survive toDomain → toCompanion');
+        expect(
+          reEncoded,
+          isNotNull,
+          reason:
+              'toCompanion must produce non-null typeConfigJson for TextConfig',
+        );
+        expect(
+          reEncoded,
+          contains('"hideTitleOnProfile":true'),
+          reason: 'hideTitleOnProfile:true must survive toDomain → toCompanion',
+        );
       },
     );
   });

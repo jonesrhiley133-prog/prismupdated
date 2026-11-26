@@ -1,5 +1,11 @@
 import 'package:cupertino_calendar_picker/cupertino_calendar_picker.dart';
-import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTheme, CupertinoThemeData, CupertinoTextThemeData;
+import 'package:flutter/cupertino.dart'
+    show
+        CupertinoDatePicker,
+        CupertinoDatePickerMode,
+        CupertinoTheme,
+        CupertinoThemeData,
+        CupertinoTextThemeData;
 import 'package:flutter/material.dart';
 
 /// Shows a time picker.
@@ -17,9 +23,18 @@ Future<TimeOfDay?> showPrismTimePicker({
   final anchor = anchorContext ?? context;
   final renderBox = anchor.findRenderObject() as RenderBox?;
   final use24 = MediaQuery.of(context).alwaysUse24HourFormat;
-  final small = renderBox != null && renderBox.hasSize && renderBox.size.height <= 120 && renderBox.size.width <= MediaQuery.sizeOf(context).width * 0.9;
+  final small =
+      renderBox != null &&
+      renderBox.hasSize &&
+      renderBox.size.height <= 120 &&
+      renderBox.size.width <= MediaQuery.sizeOf(context).width * 0.9;
   if (anchorContext != null && small) {
-    return showCupertinoTimePicker(context, widgetRenderBox: renderBox, initialTime: initialTime, use24hFormat: use24);
+    return showCupertinoTimePicker(
+      context,
+      widgetRenderBox: renderBox,
+      initialTime: initialTime,
+      use24hFormat: use24,
+    );
   }
   return showModalBottomSheet<TimeOfDay>(
     context: context,
@@ -47,7 +62,12 @@ class _TimeWheelSheetState extends State<_TimeWheelSheet> {
     final now = DateTime.now();
     final l10n = MaterialLocalizations.of(context);
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.viewPaddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        16 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -58,23 +78,42 @@ class _TimeWheelSheetState extends State<_TimeWheelSheet> {
                 brightness: theme.brightness,
                 primaryColor: theme.colorScheme.primary,
                 textTheme: CupertinoTextThemeData(
-                  dateTimePickerTextStyle: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
+                  dateTimePickerTextStyle: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.time,
                 use24hFormat: widget.use24,
-                initialDateTime: DateTime(now.year, now.month, now.day, widget.initialTime.hour, widget.initialTime.minute),
-                onDateTimeChanged: (d) => _value = TimeOfDay(hour: d.hour, minute: d.minute),
+                initialDateTime: DateTime(
+                  now.year,
+                  now.month,
+                  now.day,
+                  widget.initialTime.hour,
+                  widget.initialTime.minute,
+                ),
+                onDateTimeChanged: (d) =>
+                    _value = TimeOfDay(hour: d.hour, minute: d.minute),
               ),
             ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: OutlinedButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancelButtonLabel))),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.cancelButtonLabel),
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: FilledButton(onPressed: () => Navigator.of(context).pop(_value), child: Text(l10n.okButtonLabel))),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(_value),
+                  child: Text(l10n.okButtonLabel),
+                ),
+              ),
             ],
           ),
         ],

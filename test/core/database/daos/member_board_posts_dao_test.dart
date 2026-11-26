@@ -124,7 +124,12 @@ void main() {
     test('updates body and other mutable fields', () async {
       final writtenAt = DateTime.utc(2026, 1, 1);
       await dao.createPost(
-        _post(id: 'p1', audience: 'public', body: 'original', writtenAt: writtenAt),
+        _post(
+          id: 'p1',
+          audience: 'public',
+          body: 'original',
+          writtenAt: writtenAt,
+        ),
       );
       final editedAt = DateTime.utc(2026, 1, 2);
       await dao.updatePost(
@@ -171,9 +176,7 @@ void main() {
     });
 
     test('does not affect other rows', () async {
-      await dao.createPost(
-        _post(id: 'p1', audience: 'public', body: 'target'),
-      );
+      await dao.createPost(_post(id: 'p1', audience: 'public', body: 'target'));
       await dao.createPost(
         _post(id: 'p2', audience: 'public', body: 'bystander'),
       );
@@ -215,7 +218,12 @@ void main() {
         _post(id: 'pub', audience: 'public', body: 'public'),
       );
       await dao.createPost(
-        _post(id: 'priv', audience: 'private', body: 'private', targetMemberId: 'm1'),
+        _post(
+          id: 'priv',
+          audience: 'private',
+          body: 'private',
+          targetMemberId: 'm1',
+        ),
       );
       final rows = await dao.watchPublicPaginated().first;
       expect(rows.map((r) => r.id), ['pub']);
@@ -247,36 +255,36 @@ void main() {
       expect(rows.length, 2);
     });
 
-    test('keyset pagination: afterWrittenAt + afterId returns next page', () async {
-      final times = List.generate(
-        5,
-        (i) => DateTime.utc(2026, 1, i + 1),
-      );
-      for (var i = 0; i < 5; i++) {
-        await dao.createPost(
-          _post(
-            id: 'p$i',
-            audience: 'public',
-            body: 'post $i',
-            writtenAt: times[i],
-          ),
-        );
-      }
-      // First page: newest 2 (p4, p3)
-      final page1 = await dao.watchPublicPaginated(limit: 2).first;
-      expect(page1.map((r) => r.id).toList(), ['p4', 'p3']);
+    test(
+      'keyset pagination: afterWrittenAt + afterId returns next page',
+      () async {
+        final times = List.generate(5, (i) => DateTime.utc(2026, 1, i + 1));
+        for (var i = 0; i < 5; i++) {
+          await dao.createPost(
+            _post(
+              id: 'p$i',
+              audience: 'public',
+              body: 'post $i',
+              writtenAt: times[i],
+            ),
+          );
+        }
+        // First page: newest 2 (p4, p3)
+        final page1 = await dao.watchPublicPaginated(limit: 2).first;
+        expect(page1.map((r) => r.id).toList(), ['p4', 'p3']);
 
-      // Second page: starting after p3
-      final last = page1.last;
-      final page2 = await dao
-          .watchPublicPaginated(
-            afterWrittenAt: last.writtenAt,
-            afterId: last.id,
-            limit: 2,
-          )
-          .first;
-      expect(page2.map((r) => r.id).toList(), ['p2', 'p1']);
-    });
+        // Second page: starting after p3
+        final last = page1.last;
+        final page2 = await dao
+            .watchPublicPaginated(
+              afterWrittenAt: last.writtenAt,
+              afterId: last.id,
+              limit: 2,
+            )
+            .first;
+        expect(page2.map((r) => r.id).toList(), ['p2', 'p1']);
+      },
+    );
 
     test('keyset continuation for last page yields remaining rows', () async {
       for (var i = 0; i < 3; i++) {
@@ -323,10 +331,20 @@ void main() {
 
     test('returns private posts for matching targetMemberIds', () async {
       await dao.createPost(
-        _post(id: 'p1', audience: 'private', body: 'to m1', targetMemberId: 'm1'),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'to m1',
+          targetMemberId: 'm1',
+        ),
       );
       await dao.createPost(
-        _post(id: 'p2', audience: 'private', body: 'to m2', targetMemberId: 'm2'),
+        _post(
+          id: 'p2',
+          audience: 'private',
+          body: 'to m2',
+          targetMemberId: 'm2',
+        ),
       );
       final rows = await dao.watchInboxPaginated(['m1']).first;
       expect(rows.map((r) => r.id), ['p1']);
@@ -334,13 +352,28 @@ void main() {
 
     test('returns posts for multiple targetMemberIds', () async {
       await dao.createPost(
-        _post(id: 'p1', audience: 'private', body: 'to m1', targetMemberId: 'm1'),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'to m1',
+          targetMemberId: 'm1',
+        ),
       );
       await dao.createPost(
-        _post(id: 'p2', audience: 'private', body: 'to m2', targetMemberId: 'm2'),
+        _post(
+          id: 'p2',
+          audience: 'private',
+          body: 'to m2',
+          targetMemberId: 'm2',
+        ),
       );
       await dao.createPost(
-        _post(id: 'p3', audience: 'private', body: 'to m3', targetMemberId: 'm3'),
+        _post(
+          id: 'p3',
+          audience: 'private',
+          body: 'to m3',
+          targetMemberId: 'm3',
+        ),
       );
       final rows = await dao.watchInboxPaginated(['m1', 'm2']).first;
       expect(rows.map((r) => r.id).toSet(), {'p1', 'p2'});
@@ -348,10 +381,20 @@ void main() {
 
     test('excludes public posts from inbox', () async {
       await dao.createPost(
-        _post(id: 'pub', audience: 'public', body: 'public', targetMemberId: 'm1'),
+        _post(
+          id: 'pub',
+          audience: 'public',
+          body: 'public',
+          targetMemberId: 'm1',
+        ),
       );
       await dao.createPost(
-        _post(id: 'priv', audience: 'private', body: 'private', targetMemberId: 'm1'),
+        _post(
+          id: 'priv',
+          audience: 'private',
+          body: 'private',
+          targetMemberId: 'm1',
+        ),
       );
       final rows = await dao.watchInboxPaginated(['m1']).first;
       expect(rows.map((r) => r.id), ['priv']);
@@ -505,7 +548,9 @@ void main() {
           ),
         );
       }
-      final page1 = await dao.watchPublicForMemberPaginated('m1', limit: 2).first;
+      final page1 = await dao
+          .watchPublicForMemberPaginated('m1', limit: 2)
+          .first;
       expect(page1.map((r) => r.id).toList(), ['p3', 'p2']);
 
       final last = page1.last;
@@ -549,26 +594,37 @@ void main() {
       final before = DateTime.utc(2026, 1, 1);
       final after = DateTime.utc(2026, 1, 3);
       await dao.createPost(
-        _post(id: 'before', audience: 'private', body: 'old', targetMemberId: 'm1', writtenAt: before),
+        _post(
+          id: 'before',
+          audience: 'private',
+          body: 'old',
+          targetMemberId: 'm1',
+          writtenAt: before,
+        ),
       );
       await dao.createPost(
-        _post(id: 'after', audience: 'private', body: 'new', targetMemberId: 'm1', writtenAt: after),
+        _post(
+          id: 'after',
+          audience: 'private',
+          body: 'new',
+          targetMemberId: 'm1',
+          writtenAt: after,
+        ),
       );
-      final count = await dao.countUnreadForMembers(
-        ['m1'],
-        {'m1': lastRead},
-      );
+      final count = await dao.countUnreadForMembers(['m1'], {'m1': lastRead});
       expect(count, 1);
     });
 
     test('does not count public posts', () async {
       await dao.createPost(
-        _post(id: 'pub', audience: 'public', body: 'public', targetMemberId: 'm1'),
+        _post(
+          id: 'pub',
+          audience: 'public',
+          body: 'public',
+          targetMemberId: 'm1',
+        ),
       );
-      final count = await dao.countUnreadForMembers(
-        ['m1'],
-        {'m1': null},
-      );
+      final count = await dao.countUnreadForMembers(['m1'], {'m1': null});
       expect(count, 0);
     });
 
@@ -582,19 +638,26 @@ void main() {
           isDeleted: true,
         ),
       );
-      final count = await dao.countUnreadForMembers(
-        ['m1'],
-        {'m1': null},
-      );
+      final count = await dao.countUnreadForMembers(['m1'], {'m1': null});
       expect(count, 0);
     });
 
     test('sums across multiple members', () async {
       await dao.createPost(
-        _post(id: 'p1', audience: 'private', body: 'to m1', targetMemberId: 'm1'),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'to m1',
+          targetMemberId: 'm1',
+        ),
       );
       await dao.createPost(
-        _post(id: 'p2', audience: 'private', body: 'to m2', targetMemberId: 'm2'),
+        _post(
+          id: 'p2',
+          audience: 'private',
+          body: 'to m2',
+          targetMemberId: 'm2',
+        ),
       );
       final count = await dao.countUnreadForMembers(
         ['m1', 'm2'],
@@ -606,7 +669,13 @@ void main() {
     test('member with lastReadAt after all posts has 0 unread', () async {
       final t = DateTime.utc(2026, 1, 1);
       await dao.createPost(
-        _post(id: 'p1', audience: 'private', body: 'old', targetMemberId: 'm1', writtenAt: t),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'old',
+          targetMemberId: 'm1',
+          writtenAt: t,
+        ),
       );
       final count = await dao.countUnreadForMembers(
         ['m1'],
@@ -626,12 +695,8 @@ void main() {
     });
 
     test('returns total public count when lastViewedAt is null', () async {
-      await dao.createPost(
-        _post(id: 'p1', audience: 'public', body: 'a'),
-      );
-      await dao.createPost(
-        _post(id: 'p2', audience: 'public', body: 'b'),
-      );
+      await dao.createPost(_post(id: 'p1', audience: 'public', body: 'a'));
+      await dao.createPost(_post(id: 'p2', audience: 'public', body: 'b'));
       expect(await dao.countNewPublicSince(null), 2);
     });
 
@@ -664,7 +729,12 @@ void main() {
 
     test('does not count private posts', () async {
       await dao.createPost(
-        _post(id: 'p1', audience: 'private', body: 'private', targetMemberId: 'm1'),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'private',
+          targetMemberId: 'm1',
+        ),
       );
       expect(await dao.countNewPublicSince(null), 0);
     });
@@ -812,16 +882,19 @@ void main() {
       expect(row!.id, 'p1');
     });
 
-    test('emits null after soft delete then re-emits with is_deleted=true', () async {
-      await dao.createPost(
-        _post(id: 'p1', audience: 'public', body: 'alive'),
-      );
-      await dao.softDeletePost('p1');
-      final row = await dao.watchPostById('p1').first;
-      // Row still exists but is_deleted = true
-      expect(row, isNotNull);
-      expect(row!.isDeleted, isTrue);
-    });
+    test(
+      'emits null after soft delete then re-emits with is_deleted=true',
+      () async {
+        await dao.createPost(
+          _post(id: 'p1', audience: 'public', body: 'alive'),
+        );
+        await dao.softDeletePost('p1');
+        final row = await dao.watchPostById('p1').first;
+        // Row still exists but is_deleted = true
+        expect(row, isNotNull);
+        expect(row!.isDeleted, isTrue);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -835,37 +908,38 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('index DDL correctness', () {
-    test('v14→v15 migration index DDL is valid SQL for member_board_posts', () async {
-      // Create the three indexes manually (mirrors the migration block exactly)
-      await db.customStatement(
-        'CREATE INDEX IF NOT EXISTS idx_mbp_target_audience '
-        'ON member_board_posts(target_member_id, audience, written_at DESC, is_deleted)',
-      );
-      await db.customStatement(
-        'CREATE INDEX IF NOT EXISTS idx_mbp_audience '
-        'ON member_board_posts(audience, written_at DESC, is_deleted)',
-      );
-      await db.customStatement(
-        'CREATE INDEX IF NOT EXISTS idx_mbp_author '
-        'ON member_board_posts(author_id, written_at DESC, is_deleted)',
-      );
+    test(
+      'v14→v15 migration index DDL is valid SQL for member_board_posts',
+      () async {
+        // Create the three indexes manually (mirrors the migration block exactly)
+        await db.customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_mbp_target_audience '
+          'ON member_board_posts(target_member_id, audience, written_at DESC, is_deleted)',
+        );
+        await db.customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_mbp_audience '
+          'ON member_board_posts(audience, written_at DESC, is_deleted)',
+        );
+        await db.customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_mbp_author '
+          'ON member_board_posts(author_id, written_at DESC, is_deleted)',
+        );
 
-      // Verify all three now appear in the index list
-      final indexes = await db
-          .customSelect("PRAGMA index_list('member_board_posts')")
-          .get();
-      final names = indexes
-          .map((r) => r.read<String>('name'))
-          .toSet();
-      expect(
-        names,
-        containsAll({
-          'idx_mbp_target_audience',
-          'idx_mbp_audience',
-          'idx_mbp_author',
-        }),
-        reason: 'All three idx_mbp_* indexes must be creatable. Got: $names',
-      );
-    });
+        // Verify all three now appear in the index list
+        final indexes = await db
+            .customSelect("PRAGMA index_list('member_board_posts')")
+            .get();
+        final names = indexes.map((r) => r.read<String>('name')).toSet();
+        expect(
+          names,
+          containsAll({
+            'idx_mbp_target_audience',
+            'idx_mbp_audience',
+            'idx_mbp_author',
+          }),
+          reason: 'All three idx_mbp_* indexes must be creatable. Got: $names',
+        );
+      },
+    );
   });
 }

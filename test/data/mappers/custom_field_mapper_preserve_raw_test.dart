@@ -93,10 +93,7 @@ void main() {
 
   group('CustomFieldMapper.toDomain — negative enum guards', () {
     test('negative fieldType falls back to CustomFieldType.text', () {
-      final row = makeDbCustomField(
-        id: 'f-neg-type',
-        fieldType: -1,
-      );
+      final row = makeDbCustomField(id: 'f-neg-type', fieldType: -1);
 
       // Must not throw RangeError.
       late domain.CustomField model;
@@ -105,10 +102,7 @@ void main() {
     });
 
     test('large negative fieldType falls back to CustomFieldType.text', () {
-      final row = makeDbCustomField(
-        id: 'f-neg-type-big',
-        fieldType: -999,
-      );
+      final row = makeDbCustomField(id: 'f-neg-type-big', fieldType: -999);
 
       late domain.CustomField model;
       expect(() => model = CustomFieldMapper.toDomain(row), returnsNormally);
@@ -130,10 +124,7 @@ void main() {
     test('out-of-range positive fieldType still falls back (regression)', () {
       // Pre-existing behavior; covered to lock in the unchanged half of the
       // bounds check.
-      final row = makeDbCustomField(
-        id: 'f-pos-type-oor',
-        fieldType: 9999,
-      );
+      final row = makeDbCustomField(id: 'f-pos-type-oor', fieldType: 9999);
 
       late domain.CustomField model;
       expect(() => model = CustomFieldMapper.toDomain(row), returnsNormally);

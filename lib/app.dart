@@ -14,9 +14,12 @@ import 'package:prism_plurality/core/diagnostics/perf_probe.dart';
 import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/features/prism_social/social_device_notifications.dart';
-import 'package:prism_plurality/features/prism_social/social_remote.dart' show socialSyncProvider;
-import 'package:prism_plurality/features/dictionary/importer/import_job.dart' show importJobProvider;
-import 'package:prism_plurality/features/fitness/health/health_sync.dart' show healthAutoSyncProvider;
+import 'package:prism_plurality/features/prism_social/social_remote.dart'
+    show socialSyncProvider;
+import 'package:prism_plurality/features/dictionary/importer/import_job.dart'
+    show importJobProvider;
+import 'package:prism_plurality/features/fitness/health/health_sync.dart'
+    show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
@@ -33,18 +36,30 @@ import 'package:prism_plurality/features/appearance/services/appearance_store.da
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/features/social/services/social_onboarding.dart';
 import 'package:prism_plurality/features/automations/automation_engine.dart';
-import 'package:prism_plurality/features/connections/connections_screens.dart' show registerConnOpeners;
-import 'package:prism_plurality/features/demo/demo_mode_screen.dart' show DemoBanner;
-import 'package:prism_plurality/features/dreams/dream_journal.dart' show registerDreamOpener;
-import 'package:prism_plurality/features/habits/center/habit_center_services.dart' show habitCenterBootProvider;
-import 'package:prism_plurality/features/relationships/hub/rel_profile.dart' show relRoute;
-import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart' show isolationSyncProvider;
-import 'package:prism_plurality/features/subsystems/hub/subsystem_profile.dart' show subsystemFrontNotifierProvider;
-import 'package:prism_plurality/features/habits/center/habit_sheets.dart' show openHabitCompletion;
-import 'package:prism_plurality/features/links/models/record_ref.dart' show RecordRef;
-import 'package:prism_plurality/features/links/views/record_opener.dart' show recordKindOpeners, recordTypeOpeners;
-import 'package:prism_plurality/features/nutrition/nutrition_meals.dart' show registerNutritionOpeners;
-import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart' show registerScrapOpeners;
+import 'package:prism_plurality/features/connections/connections_screens.dart'
+    show registerConnOpeners;
+import 'package:prism_plurality/features/demo/demo_mode_screen.dart'
+    show DemoBanner;
+import 'package:prism_plurality/features/dreams/dream_journal.dart'
+    show registerDreamOpener;
+import 'package:prism_plurality/features/habits/center/habit_center_services.dart'
+    show habitCenterBootProvider;
+import 'package:prism_plurality/features/relationships/hub/rel_profile.dart'
+    show relRoute;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart'
+    show isolationSyncProvider;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_profile.dart'
+    show subsystemFrontNotifierProvider;
+import 'package:prism_plurality/features/habits/center/habit_sheets.dart'
+    show openHabitCompletion;
+import 'package:prism_plurality/features/links/models/record_ref.dart'
+    show RecordRef;
+import 'package:prism_plurality/features/links/views/record_opener.dart'
+    show recordKindOpeners, recordTypeOpeners;
+import 'package:prism_plurality/features/nutrition/nutrition_meals.dart'
+    show registerNutritionOpeners;
+import 'package:prism_plurality/features/scrapbook/scrapbook_screens.dart'
+    show registerScrapOpeners;
 import 'package:prism_plurality/features/home_widgets/services/home_widget_controller.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_actions.dart';
 import 'package:prism_plurality/features/fronting_notification/services/fronting_notification_controller.dart';
@@ -55,7 +70,8 @@ import 'package:prism_sync/generated/api.dart' as ffi;
 import 'core/database/app_database.dart';
 import 'core/database/database_providers.dart' show memberRepositoryProvider;
 import 'package:prism_plurality/features/astro/data/astro_model.dart';
-import 'package:prism_plurality/features/astro/engine/chart.dart' show BirthPlace;
+import 'package:prism_plurality/features/astro/engine/chart.dart'
+    show BirthPlace;
 import 'core/database/database_encryption.dart';
 import 'core/database/database_provider.dart';
 import 'core/diagnostics/main_isolate_stalls.dart';
@@ -133,7 +149,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     // to Home.
     _scheduleWhosThere(const Duration(milliseconds: 3500));
     _updateCheckTimer = Timer(const Duration(seconds: 8), () {
-      if (mounted) unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
+      if (mounted)
+        unawaited(ref.read(appUpdateNotifierProvider.notifier).autoCheck());
     });
     if (kPerfMode) {
       PerfProbe.register('go', (path) {
@@ -148,9 +165,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         unawaited(() async {
           // The library loads lazily (normally when Music opens).
           await ref.read(musicLibraryProvider.future);
-          await ref
-              .read(musicControllerProvider.notifier)
-              .playTracks(['perf-track']);
+          await ref.read(musicControllerProvider.notifier).playTracks([
+            'perf-track',
+          ]);
         }());
         return 'ok';
       });
@@ -160,7 +177,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
       });
       PerfProbe.register('banners', (on) {
         unawaited(
-          ref.read(appearanceProvider.notifier).setShowMemberBanners(on == 'on'),
+          ref
+              .read(appearanceProvider.notifier)
+              .setShowMemberBanners(on == 'on'),
         );
         return 'ok';
       });
@@ -210,11 +229,61 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         // Birth details for a few stress-fixture alters (harness only).
         unawaited(() async {
           const seeds = [
-            ('stress-member-0', '1994-02-03', 14, 20, 'London', 51.507, -0.128, 'Europe/London', 'system'),
-            ('stress-member-1', '1988-10-12', 7, 5, 'New York City', 40.713, -74.006, 'America/New_York', 'system'),
-            ('stress-member-2', '2001-07-28', null, null, null, null, null, null, 'system'),
-            ('stress-member-3', '1979-05-15', 22, 40, 'Madrid', 40.417, -3.704, 'Europe/Madrid', 'shareable'),
-            ('stress-member-4', '0004-12-01', null, null, null, null, null, null, 'private'),
+            (
+              'stress-member-0',
+              '1994-02-03',
+              14,
+              20,
+              'London',
+              51.507,
+              -0.128,
+              'Europe/London',
+              'system',
+            ),
+            (
+              'stress-member-1',
+              '1988-10-12',
+              7,
+              5,
+              'New York City',
+              40.713,
+              -74.006,
+              'America/New_York',
+              'system',
+            ),
+            (
+              'stress-member-2',
+              '2001-07-28',
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              'system',
+            ),
+            (
+              'stress-member-3',
+              '1979-05-15',
+              22,
+              40,
+              'Madrid',
+              40.417,
+              -3.704,
+              'Europe/Madrid',
+              'shareable',
+            ),
+            (
+              'stress-member-4',
+              '0004-12-01',
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              'private',
+            ),
           ];
           final members = ref.read(membersNotifierProvider.notifier);
           final repo = ref.read(memberRepositoryProvider);
@@ -223,14 +292,23 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             if (m == null) continue;
             await members.updateMember(m.copyWith(birthday: x.$2));
             final existing = ref.read(astroProfilesProvider)[x.$1];
-            await ref.read(astroActionsProvider).saveProfile(
-              (existing ?? AstroProfile(memberId: x.$1)).copyWith(
-                hour: x.$3,
-                minute: x.$4,
-                place: x.$5 == null ? null : BirthPlace(name: x.$5!, lat: x.$6!, lon: x.$7!, timeZone: x.$8!),
-                visibility: AstroVisibility.parse(x.$9),
-              ),
-            );
+            await ref
+                .read(astroActionsProvider)
+                .saveProfile(
+                  (existing ?? AstroProfile(memberId: x.$1)).copyWith(
+                    hour: x.$3,
+                    minute: x.$4,
+                    place: x.$5 == null
+                        ? null
+                        : BirthPlace(
+                            name: x.$5!,
+                            lat: x.$6!,
+                            lon: x.$7!,
+                            timeZone: x.$8!,
+                          ),
+                    visibility: AstroVisibility.parse(x.$9),
+                  ),
+                );
           }
         }());
         return 'ok';
@@ -379,7 +457,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
   void _onRouteChanged() {
     final c = _watchedRouter?.routerDelegate.currentConfiguration;
     final path = c == null || c.isEmpty ? '' : c.uri.path;
-    if (path == AppRoutePaths.home && _lastPath != AppRoutePaths.home) _scheduleWhosThere(const Duration(milliseconds: 600));
+    if (path == AppRoutePaths.home && _lastPath != AppRoutePaths.home)
+      _scheduleWhosThere(const Duration(milliseconds: 600));
     _lastPath = path;
   }
 
@@ -394,25 +473,45 @@ class _PrismAppState extends ConsumerState<PrismApp> {
     if (!mounted) return;
     try {
       if (!ref.read(databaseReadyProvider).hasValue) {
-        if (retries > 0) _whosThereTimer = Timer(const Duration(seconds: 2), () => _maybeShowWhosThere(retries: retries - 1));
+        if (retries > 0)
+          _whosThereTimer = Timer(
+            const Duration(seconds: 2),
+            () => _maybeShowWhosThere(retries: retries - 1),
+          );
         return;
       }
       _watchRouter();
       // Wait until role data has loaded, so defaults never trigger it early.
-      final settingsLoaded = ref.read(trackerKindProvider(TrackerKind.frontRoleSettings)).hasValue;
+      final settingsLoaded = ref
+          .read(trackerKindProvider(TrackerKind.frontRoleSettings))
+          .hasValue;
       final sessionsLoaded = ref.read(activeSessionsProvider).hasValue;
       final membersLoaded = ref.read(userVisibleMembersProvider).hasValue;
       if (!settingsLoaded || !sessionsLoaded || !membersLoaded) {
-        if (retries > 0) _whosThereTimer = Timer(const Duration(seconds: 2), () => _maybeShowWhosThere(retries: retries - 1));
+        if (retries > 0)
+          _whosThereTimer = Timer(
+            const Duration(seconds: 2),
+            () => _maybeShowWhosThere(retries: retries - 1),
+          );
         return;
       }
-      if ((ref.read(userVisibleMembersProvider).value ?? const []).isEmpty) return;
-      if (!whosThereDue(settings: ref.read(roleSettingsProvider), lastChange: ref.read(lastFrontingChangeProvider), now: DateTime.now())) return;
+      if ((ref.read(userVisibleMembersProvider).value ?? const []).isEmpty)
+        return;
+      if (!whosThereDue(
+        settings: ref.read(roleSettingsProvider),
+        lastChange: ref.read(lastFrontingChangeProvider),
+        now: DateTime.now(),
+      ))
+        return;
       final router = ref.read(routerProvider);
       final c = router.routerDelegate.currentConfiguration;
-      if (c.isEmpty || c.uri.path != AppRoutePaths.home || router.canPop()) return;
+      if (c.isEmpty || c.uri.path != AppRoutePaths.home || router.canPop())
+        return;
       final focus = FocusManager.instance.primaryFocus?.context;
-      if (focus != null && (focus.widget is EditableText || focus.findAncestorWidgetOfExactType<EditableText>() != null)) return;
+      if (focus != null &&
+          (focus.widget is EditableText ||
+              focus.findAncestorWidgetOfExactType<EditableText>() != null))
+        return;
       router.push(AppRoutePaths.whosThere);
     } catch (_) {}
   }
@@ -685,135 +784,135 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         // The whole pipeline (style, fonts, accessibility, looks) for one
         // light/dark pair. [medium] swaps the dark side for the medium tone.
         (ThemeData, ThemeData) buildPair({required bool medium}) {
-        ThemeData lightTheme;
-        ThemeData darkTheme;
+          ThemeData lightTheme;
+          ThemeData darkTheme;
 
-        switch (style) {
-          case ThemeStyle.materialYou:
-            lightTheme = AppTheme.materialYouLight(
-              lightDynamic,
-              cornerStyle: cornerStyle,
-              paletteSource: paletteSource,
-              paletteSeedColorHex: paletteSeedColorHex,
-              paletteMood: paletteMood,
-              paletteContrast: paletteContrast,
-              paletteCustom: paletteCustom,
-            );
-            darkTheme = medium
-                ? AppTheme.materialYouMedium(
-                    darkDynamic,
-                    lightDynamic,
-                    cornerStyle: cornerStyle,
-                    paletteSource: paletteSource,
-                    paletteSeedColorHex: paletteSeedColorHex,
-                    paletteMood: paletteMood,
-                    paletteContrast: paletteContrast,
-                    paletteCustom: paletteCustom,
-                  )
-                : AppTheme.materialYouDark(
-                    darkDynamic,
-                    cornerStyle: cornerStyle,
-                    paletteSource: paletteSource,
-                    paletteSeedColorHex: paletteSeedColorHex,
-                    paletteMood: paletteMood,
-                    paletteContrast: paletteContrast,
-                    paletteCustom: paletteCustom,
-                  );
-          case ThemeStyle.oled:
-            lightTheme = AppTheme.light(
-              accentColor: accentColor,
-              cornerStyle: cornerStyle,
-            );
-            // OLED is about true black; the medium tone replaces it.
-            darkTheme = medium
-                ? AppTheme.medium(
-                    accentColor: accentColor,
-                    cornerStyle: cornerStyle,
-                  )
-                : AppTheme.oled(
-                    accentColor: accentColor,
-                    cornerStyle: cornerStyle,
-                  );
-          case ThemeStyle.standard:
-            lightTheme = AppTheme.light(
-              accentColor: accentColor,
-              cornerStyle: cornerStyle,
-            );
-            darkTheme = medium
-                ? AppTheme.medium(
-                    accentColor: accentColor,
-                    cornerStyle: cornerStyle,
-                  )
-                : AppTheme.dark(
-                    accentColor: accentColor,
-                    cornerStyle: cornerStyle,
-                  );
-        }
+          switch (style) {
+            case ThemeStyle.materialYou:
+              lightTheme = AppTheme.materialYouLight(
+                lightDynamic,
+                cornerStyle: cornerStyle,
+                paletteSource: paletteSource,
+                paletteSeedColorHex: paletteSeedColorHex,
+                paletteMood: paletteMood,
+                paletteContrast: paletteContrast,
+                paletteCustom: paletteCustom,
+              );
+              darkTheme = medium
+                  ? AppTheme.materialYouMedium(
+                      darkDynamic,
+                      lightDynamic,
+                      cornerStyle: cornerStyle,
+                      paletteSource: paletteSource,
+                      paletteSeedColorHex: paletteSeedColorHex,
+                      paletteMood: paletteMood,
+                      paletteContrast: paletteContrast,
+                      paletteCustom: paletteCustom,
+                    )
+                  : AppTheme.materialYouDark(
+                      darkDynamic,
+                      cornerStyle: cornerStyle,
+                      paletteSource: paletteSource,
+                      paletteSeedColorHex: paletteSeedColorHex,
+                      paletteMood: paletteMood,
+                      paletteContrast: paletteContrast,
+                      paletteCustom: paletteCustom,
+                    );
+            case ThemeStyle.oled:
+              lightTheme = AppTheme.light(
+                accentColor: accentColor,
+                cornerStyle: cornerStyle,
+              );
+              // OLED is about true black; the medium tone replaces it.
+              darkTheme = medium
+                  ? AppTheme.medium(
+                      accentColor: accentColor,
+                      cornerStyle: cornerStyle,
+                    )
+                  : AppTheme.oled(
+                      accentColor: accentColor,
+                      cornerStyle: cornerStyle,
+                    );
+            case ThemeStyle.standard:
+              lightTheme = AppTheme.light(
+                accentColor: accentColor,
+                cornerStyle: cornerStyle,
+              );
+              darkTheme = medium
+                  ? AppTheme.medium(
+                      accentColor: accentColor,
+                      cornerStyle: cornerStyle,
+                    )
+                  : AppTheme.dark(
+                      accentColor: accentColor,
+                      cornerStyle: cornerStyle,
+                    );
+          }
 
-        // Strip Unbounded from display/headline roles when the user opts out.
-        if (!useDisplayFont) {
-          lightTheme = AppTheme.withoutDisplayFont(lightTheme);
-          darkTheme = AppTheme.withoutDisplayFont(darkTheme);
-        }
+          // Strip Unbounded from display/headline roles when the user opts out.
+          if (!useDisplayFont) {
+            lightTheme = AppTheme.withoutDisplayFont(lightTheme);
+            darkTheme = AppTheme.withoutDisplayFont(darkTheme);
+          }
 
-        if (appFontFamily != null) {
-          lightTheme = AppTheme.withAppFontFamily(
-            lightTheme,
-            appFontFamily,
-            preserveDisplayFont: useDisplayFont,
+          if (appFontFamily != null) {
+            lightTheme = AppTheme.withAppFontFamily(
+              lightTheme,
+              appFontFamily,
+              preserveDisplayFont: useDisplayFont,
+            );
+            darkTheme = AppTheme.withAppFontFamily(
+              darkTheme,
+              appFontFamily,
+              preserveDisplayFont: useDisplayFont,
+            );
+          }
+
+          if (letterSpacing != 0.0) {
+            lightTheme = AppTheme.withLetterSpacing(lightTheme, letterSpacing);
+            darkTheme = AppTheme.withLetterSpacing(darkTheme, letterSpacing);
+          }
+
+          // Light, GPU-friendly page transitions on Android (the zoom
+          // transition renders whole pages into offscreen layers).
+          const transitions = PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+              // Desktop and the web on Windows/Linux get the same animated
+              // transition instead of the heavier default zoom.
+              TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+              TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+              TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
+            },
           );
-          darkTheme = AppTheme.withAppFontFamily(
-            darkTheme,
-            appFontFamily,
-            preserveDisplayFont: useDisplayFont,
+          lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);
+          darkTheme = darkTheme.copyWith(pageTransitionsTheme: transitions);
+
+          // Accessibility first (colour-vision palette, contrast, spacing),
+          // then the appearance preset on top.
+          lightTheme = applyAccessibility(lightTheme, a11y);
+          darkTheme = applyAccessibility(darkTheme, a11y);
+          final lightBase = lightTheme;
+          final darkBase = darkTheme;
+          lightTheme = applyLook(
+            lightBase,
+            lightLook,
+            opposite: darkBase,
+            reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
+            reduceEffects: a11y.reduceEffects,
+            backgroundDir: backgroundDir,
           );
-        }
-
-        if (letterSpacing != 0.0) {
-          lightTheme = AppTheme.withLetterSpacing(lightTheme, letterSpacing);
-          darkTheme = AppTheme.withLetterSpacing(darkTheme, letterSpacing);
-        }
-
-        // Light, GPU-friendly page transitions on Android (the zoom
-        // transition renders whole pages into offscreen layers).
-        const transitions = PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-            // Desktop and the web on Windows/Linux get the same animated
-            // transition instead of the heavier default zoom.
-            TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
-          },
-        );
-        lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);
-        darkTheme = darkTheme.copyWith(pageTransitionsTheme: transitions);
-
-        // Accessibility first (colour-vision palette, contrast, spacing),
-        // then the appearance preset on top.
-        lightTheme = applyAccessibility(lightTheme, a11y);
-        darkTheme = applyAccessibility(darkTheme, a11y);
-        final lightBase = lightTheme;
-        final darkBase = darkTheme;
-        lightTheme = applyLook(
-          lightBase,
-          lightLook,
-          opposite: darkBase,
-          reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
-          reduceEffects: a11y.reduceEffects,
-          backgroundDir: backgroundDir,
-        );
-        darkTheme = applyLook(
-          darkBase,
-          darkLook,
-          opposite: lightBase,
-          reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
-          reduceEffects: a11y.reduceEffects,
-          backgroundDir: backgroundDir,
-        );
-        return (lightTheme, darkTheme);
+          darkTheme = applyLook(
+            darkBase,
+            darkLook,
+            opposite: lightBase,
+            reduceTransparency: a11y.reduceTransparency || a11y.highContrast,
+            reduceEffects: a11y.reduceEffects,
+            backgroundDir: backgroundDir,
+          );
+          return (lightTheme, darkTheme);
         }
 
         final appMedium = brightness == ThemeBrightness.medium;
@@ -823,7 +922,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
         final variants = PrismThemeVariants(
           light: lightTheme,
           dark: appMedium ? () => buildPair(medium: false).$2 : () => darkTheme,
-          medium: appMedium ? () => darkTheme : () => buildPair(medium: true).$2,
+          medium: appMedium
+              ? () => darkTheme
+              : () => buildPair(medium: true).$2,
           appTone: switch (brightness) {
             ThemeBrightness.light => PageTone.light,
             ThemeBrightness.dark => PageTone.dark,
@@ -1153,7 +1254,6 @@ class _DatabaseStartupError extends StatelessWidget {
   }
 }
 
-
 bool _openersRegistered = false;
 
 /// Lets the connections explorer open records owned by the newer modules.
@@ -1165,7 +1265,8 @@ void registerAdvancedRecordOpeners() {
   registerScrapOpeners(recordKindOpeners);
   registerConnOpeners(recordKindOpeners);
   recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
-  recordKindOpeners[TrackerKind.relationship] = (context, id) => GoRouter.of(context).push(relRoute(id));
+  recordKindOpeners[TrackerKind.relationship] = (context, id) =>
+      GoRouter.of(context).push(relRoute(id));
 }
 
 /// Notes theme switches (it sits below the app theme) so implicit
@@ -1177,7 +1278,12 @@ class _ThemeSwitchObserver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
-    ThemeSwitch.observe((t.brightness, t.colorScheme.primary, t.colorScheme.surface, t.extension<LookTheme>()?.look.id));
+    ThemeSwitch.observe((
+      t.brightness,
+      t.colorScheme.primary,
+      t.colorScheme.surface,
+      t.extension<LookTheme>()?.look.id,
+    ));
     return child;
   }
 }

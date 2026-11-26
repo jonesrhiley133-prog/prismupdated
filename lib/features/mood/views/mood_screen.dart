@@ -986,11 +986,17 @@ class MoodEntryTile extends ConsumerWidget {
                           // tag opens them there.
                           if (entry.bodySensations.isNotEmpty)
                             GestureDetector(
-                              onTap: () => context.go(AppRoutePaths.healthMoodSensations(entry.id)),
+                              onTap: () => context.go(
+                                AppRoutePaths.healthMoodSensations(entry.id),
+                              ),
                               child: Semantics(
                                 link: true,
                                 child: _TinyTag(
-                                  label: Localizations.localeOf(context).languageCode == 'es'
+                                  label:
+                                      Localizations.localeOf(
+                                            context,
+                                          ).languageCode ==
+                                          'es'
                                       ? 'Mapa corporal · ${entry.bodySensations.length}'
                                       : 'Body Map · ${entry.bodySensations.length}',
                                   color: Theme.of(context).colorScheme.primary,

@@ -34,8 +34,10 @@ Widget _buildSubject(ProviderContainer container) {
   );
 }
 
-ProviderContainer _container(FakeFrontingSessionRepository repo,
-    List<Member> members) {
+ProviderContainer _container(
+  FakeFrontingSessionRepository repo,
+  List<Member> members,
+) {
   return ProviderContainer(
     overrides: [
       frontingSessionRepositoryProvider.overrideWithValue(repo),

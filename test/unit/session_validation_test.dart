@@ -42,15 +42,17 @@ void main() {
       expect(action, QuickSwitchAction.createNew);
     });
 
-    test('returns createNew when current session is not active (has endTime)',
-        () {
-      final session = _session(
-        startTime: DateTime.now().subtract(const Duration(seconds: 10)),
-        endTime: DateTime.now(),
-      );
-      final action = service.evaluateQuickSwitch(session);
-      expect(action, QuickSwitchAction.createNew);
-    });
+    test(
+      'returns createNew when current session is not active (has endTime)',
+      () {
+        final session = _session(
+          startTime: DateTime.now().subtract(const Duration(seconds: 10)),
+          endTime: DateTime.now(),
+        );
+        final action = service.evaluateQuickSwitch(session);
+        expect(action, QuickSwitchAction.createNew);
+      },
+    );
 
     test('returns correctExisting when session started within threshold', () {
       final now = DateTime(2025, 1, 1, 12, 0, 0);
@@ -214,52 +216,58 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('getDeleteOptions', () {
-    test('active session with previous: offers makePreviousActive and delete',
-        () {
-      final prev = _session(
-        id: 'prev',
-        startTime: DateTime(2025, 1, 1, 9, 0),
-        endTime: DateTime(2025, 1, 1, 10, 0),
-      );
-      final active = _session(
-        id: 'current',
-        startTime: DateTime(2025, 1, 1, 10, 0),
-        endTime: null, // active
-      );
+    test(
+      'active session with previous: offers makePreviousActive and delete',
+      () {
+        final prev = _session(
+          id: 'prev',
+          startTime: DateTime(2025, 1, 1, 9, 0),
+          endTime: DateTime(2025, 1, 1, 10, 0),
+        );
+        final active = _session(
+          id: 'current',
+          startTime: DateTime(2025, 1, 1, 10, 0),
+          endTime: null, // active
+        );
 
-      final ctx = service.getDeleteOptions(active, [prev, active]);
-      expect(ctx.availableOptions, contains(DeleteOption.makePreviousActive));
-      expect(ctx.availableOptions, contains(DeleteOption.delete));
-      // Should NOT offer extendPrevious/extendNext (those are for ended sessions)
-      expect(
-          ctx.availableOptions, isNot(contains(DeleteOption.extendPrevious)));
-    });
+        final ctx = service.getDeleteOptions(active, [prev, active]);
+        expect(ctx.availableOptions, contains(DeleteOption.makePreviousActive));
+        expect(ctx.availableOptions, contains(DeleteOption.delete));
+        // Should NOT offer extendPrevious/extendNext (those are for ended sessions)
+        expect(
+          ctx.availableOptions,
+          isNot(contains(DeleteOption.extendPrevious)),
+        );
+      },
+    );
 
-    test('ended session between two others: offers extendPrevious, extendNext, delete',
-        () {
-      final prev = _session(
-        id: 'prev',
-        startTime: DateTime(2025, 1, 1, 9, 0),
-        endTime: DateTime(2025, 1, 1, 10, 0),
-      );
-      final mid = _session(
-        id: 'mid',
-        startTime: DateTime(2025, 1, 1, 10, 0),
-        endTime: DateTime(2025, 1, 1, 11, 0),
-      );
-      final next = _session(
-        id: 'next',
-        startTime: DateTime(2025, 1, 1, 11, 0),
-        endTime: DateTime(2025, 1, 1, 12, 0),
-      );
+    test(
+      'ended session between two others: offers extendPrevious, extendNext, delete',
+      () {
+        final prev = _session(
+          id: 'prev',
+          startTime: DateTime(2025, 1, 1, 9, 0),
+          endTime: DateTime(2025, 1, 1, 10, 0),
+        );
+        final mid = _session(
+          id: 'mid',
+          startTime: DateTime(2025, 1, 1, 10, 0),
+          endTime: DateTime(2025, 1, 1, 11, 0),
+        );
+        final next = _session(
+          id: 'next',
+          startTime: DateTime(2025, 1, 1, 11, 0),
+          endTime: DateTime(2025, 1, 1, 12, 0),
+        );
 
-      final ctx = service.getDeleteOptions(mid, [prev, mid, next]);
-      expect(ctx.availableOptions, contains(DeleteOption.extendPrevious));
-      expect(ctx.availableOptions, contains(DeleteOption.extendNext));
-      expect(ctx.availableOptions, contains(DeleteOption.delete));
-      expect(ctx.previous?.id, 'prev');
-      expect(ctx.next?.id, 'next');
-    });
+        final ctx = service.getDeleteOptions(mid, [prev, mid, next]);
+        expect(ctx.availableOptions, contains(DeleteOption.extendPrevious));
+        expect(ctx.availableOptions, contains(DeleteOption.extendNext));
+        expect(ctx.availableOptions, contains(DeleteOption.delete));
+        expect(ctx.previous?.id, 'prev');
+        expect(ctx.next?.id, 'next');
+      },
+    );
 
     test('single ended session: only offers delete', () {
       final solo = _session(
@@ -287,7 +295,10 @@ void main() {
       );
 
       final ctx = service.getDeleteOptions(first, [first, second]);
-      expect(ctx.availableOptions, isNot(contains(DeleteOption.extendPrevious)));
+      expect(
+        ctx.availableOptions,
+        isNot(contains(DeleteOption.extendPrevious)),
+      );
       expect(ctx.availableOptions, contains(DeleteOption.extendNext));
       expect(ctx.availableOptions, contains(DeleteOption.delete));
     });
@@ -332,42 +343,46 @@ void main() {
       expect(updated.endTime, DateTime(2025, 1, 1, 10, 30));
     });
 
-    test('trims start of overlapping session that started during edited',
-        () async {
-      final edited = _session(
-        id: 'edited',
-        startTime: DateTime(2025, 1, 1, 10, 0),
-        endTime: DateTime(2025, 1, 1, 11, 0),
-      );
-      final overlapping = _session(
-        id: 'overlap',
-        startTime: DateTime(2025, 1, 1, 10, 30),
-        endTime: DateTime(2025, 1, 1, 12, 0),
-      );
-      repo.sessions.add(overlapping);
+    test(
+      'trims start of overlapping session that started during edited',
+      () async {
+        final edited = _session(
+          id: 'edited',
+          startTime: DateTime(2025, 1, 1, 10, 0),
+          endTime: DateTime(2025, 1, 1, 11, 0),
+        );
+        final overlapping = _session(
+          id: 'overlap',
+          startTime: DateTime(2025, 1, 1, 10, 30),
+          endTime: DateTime(2025, 1, 1, 12, 0),
+        );
+        repo.sessions.add(overlapping);
 
-      await service.trimOverlap(edited, overlapping, repo);
-      final updated = repo.sessions.firstWhere((s) => s.id == 'overlap');
-      expect(updated.startTime, DateTime(2025, 1, 1, 11, 0));
-    });
+        await service.trimOverlap(edited, overlapping, repo);
+        final updated = repo.sessions.firstWhere((s) => s.id == 'overlap');
+        expect(updated.startTime, DateTime(2025, 1, 1, 11, 0));
+      },
+    );
 
-    test('deletes overlapping session if trimming would make it zero duration',
-        () async {
-      final edited = _session(
-        id: 'edited',
-        startTime: DateTime(2025, 1, 1, 10, 0),
-        endTime: DateTime(2025, 1, 1, 11, 0),
-      );
-      final overlapping = _session(
-        id: 'overlap',
-        startTime: DateTime(2025, 1, 1, 10, 0), // same start
-        endTime: DateTime(2025, 1, 1, 11, 0), // same end
-      );
-      repo.sessions.add(overlapping);
+    test(
+      'deletes overlapping session if trimming would make it zero duration',
+      () async {
+        final edited = _session(
+          id: 'edited',
+          startTime: DateTime(2025, 1, 1, 10, 0),
+          endTime: DateTime(2025, 1, 1, 11, 0),
+        );
+        final overlapping = _session(
+          id: 'overlap',
+          startTime: DateTime(2025, 1, 1, 10, 0), // same start
+          endTime: DateTime(2025, 1, 1, 11, 0), // same end
+        );
+        repo.sessions.add(overlapping);
 
-      await service.trimOverlap(edited, overlapping, repo);
-      expect(repo.deletedIds, contains('overlap'));
-    });
+        await service.trimOverlap(edited, overlapping, repo);
+        expect(repo.deletedIds, contains('overlap'));
+      },
+    );
   });
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -396,8 +411,7 @@ void main() {
       );
       repo.sessions.addAll([target, earlier]);
 
-      final result =
-          await service.mergeAdjacent(target, [earlier], repo);
+      final result = await service.mergeAdjacent(target, [earlier], repo);
       expect(result.startTime, DateTime(2025, 1, 1, 10, 0));
       expect(result.endTime, DateTime(2025, 1, 1, 12, 0));
       expect(repo.deletedIds, contains('earlier'));
@@ -435,8 +449,7 @@ void main() {
       );
       repo.sessions.addAll([target, activeSession]);
 
-      final result =
-          await service.mergeAdjacent(target, [activeSession], repo);
+      final result = await service.mergeAdjacent(target, [activeSession], repo);
       expect(result.endTime, isNull);
     });
 
@@ -532,32 +545,34 @@ void main() {
       expect(sentinel, isNotNull);
     });
 
-    test('extendPrevious stretches previous to cover deleted session end',
-        () async {
-      final prev = _session(
-        id: 'prev',
-        startTime: DateTime(2025, 1, 1, 9, 0),
-        endTime: DateTime(2025, 1, 1, 10, 0),
-      );
-      final toDelete = _session(
-        id: 'mid',
-        startTime: DateTime(2025, 1, 1, 10, 0),
-        endTime: DateTime(2025, 1, 1, 11, 0),
-      );
-      repo.sessions.addAll([prev, toDelete]);
+    test(
+      'extendPrevious stretches previous to cover deleted session end',
+      () async {
+        final prev = _session(
+          id: 'prev',
+          startTime: DateTime(2025, 1, 1, 9, 0),
+          endTime: DateTime(2025, 1, 1, 10, 0),
+        );
+        final toDelete = _session(
+          id: 'mid',
+          startTime: DateTime(2025, 1, 1, 10, 0),
+          endTime: DateTime(2025, 1, 1, 11, 0),
+        );
+        repo.sessions.addAll([prev, toDelete]);
 
-      final ctx = DeleteContext(
-        session: toDelete,
-        previous: prev,
-        next: null,
-        availableOptions: [DeleteOption.extendPrevious],
-      );
+        final ctx = DeleteContext(
+          session: toDelete,
+          previous: prev,
+          next: null,
+          availableOptions: [DeleteOption.extendPrevious],
+        );
 
-      await service.executeDelete(DeleteOption.extendPrevious, ctx, repo);
-      expect(repo.deletedIds, contains('mid'));
-      final updatedPrev = repo.sessions.firstWhere((s) => s.id == 'prev');
-      expect(updatedPrev.endTime, DateTime(2025, 1, 1, 11, 0));
-    });
+        await service.executeDelete(DeleteOption.extendPrevious, ctx, repo);
+        expect(repo.deletedIds, contains('mid'));
+        final updatedPrev = repo.sessions.firstWhere((s) => s.id == 'prev');
+        expect(updatedPrev.endTime, DateTime(2025, 1, 1, 11, 0));
+      },
+    );
   });
 
   // ════════════════════════════════════════════════════════════════════════════

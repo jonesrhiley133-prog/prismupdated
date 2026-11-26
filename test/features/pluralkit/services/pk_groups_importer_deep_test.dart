@@ -152,15 +152,20 @@ void main() {
       final importResult = await importer.importGroups(pkGroups);
 
       // Assert all 10 groups were inserted by the importer.
-      expect(importResult.groupsInserted, 10,
-          reason: 'importer must persist all 10 PK groups');
+      expect(
+        importResult.groupsInserted,
+        10,
+        reason: 'importer must persist all 10 PK groups',
+      );
 
       // Wire the parent chain: g1 → g0, g2 → g1, …, g9 → g8.
       // This mirrors what Prism's group-management layer does when a user
       // arranges groups into a hierarchy after (or during) a PK import.
       for (var i = 1; i < 10; i++) {
         final childLocalId = PkGroupsImporter.deriveGroupId('pk-uuid-$i');
-        final parentLocalId = PkGroupsImporter.deriveGroupId('pk-uuid-${i - 1}');
+        final parentLocalId = PkGroupsImporter.deriveGroupId(
+          'pk-uuid-${i - 1}',
+        );
         await (db.update(db.memberGroups)
               ..where((g) => g.id.equals(childLocalId)))
             .write(MemberGroupsCompanion(parentGroupId: Value(parentLocalId)));
@@ -185,11 +190,14 @@ void main() {
       final tree = GroupTreeUtils.buildGroupTree(groups);
       final depth = GroupTreeUtils.getGroupDepth(leafLocalId, tree);
 
-      expect(depth, 10,
-          reason:
-              'GroupTreeUtils must report depth 10 for the leaf of a '
-              'PK-imported depth-10 chain; depth was previously clamped by '
-              'the UI at 5 — this regression locks in the removal of that cap');
+      expect(
+        depth,
+        10,
+        reason:
+            'GroupTreeUtils must report depth 10 for the leaf of a '
+            'PK-imported depth-10 chain; depth was previously clamped by '
+            'the UI at 5 — this regression locks in the removal of that cap',
+      );
     },
   );
 }

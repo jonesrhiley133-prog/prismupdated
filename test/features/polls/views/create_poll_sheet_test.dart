@@ -73,25 +73,26 @@ void main() {
     },
   );
 
-  testWidgets('picking a quick swatch closes the popover and marks it selected', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildSubject(makeContainer()));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'picking a quick swatch closes the popover and marks it selected',
+    (tester) async {
+      await tester.pumpWidget(buildSubject(makeContainer()));
+      await tester.pumpAndSettle();
 
-    await openFirstColorPopover(tester);
+      await openFirstColorPopover(tester);
 
-    // Nothing selected yet.
-    expect(checkInside('Red'), findsNothing);
+      // Nothing selected yet.
+      expect(checkInside('Red'), findsNothing);
 
-    await tester.tap(find.byTooltip('Red'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Red'));
+      await tester.pumpAndSettle();
 
-    // Selecting a swatch dismisses the popover.
-    expect(find.byTooltip('Red'), findsNothing);
+      // Selecting a swatch dismisses the popover.
+      expect(find.byTooltip('Red'), findsNothing);
 
-    // Reopen: the chosen swatch now shows the selected check.
-    await openFirstColorPopover(tester);
-    expect(checkInside('Red'), findsOneWidget);
-  });
+      // Reopen: the chosen swatch now shows the selected check.
+      await openFirstColorPopover(tester);
+      expect(checkInside('Red'), findsOneWidget);
+    },
+  );
 }

@@ -32,7 +32,13 @@ enum PlayStyle {
 
 /// What finishing a game produced.
 class GameOutcome {
-  const GameOutcome({this.score, this.max, this.summary = '', this.details = const {}, this.memorable});
+  const GameOutcome({
+    this.score,
+    this.max,
+    this.summary = '',
+    this.details = const {},
+    this.memorable,
+  });
 
   /// Null for activities without a score.
   final int? score;
@@ -156,7 +162,11 @@ String playersLabel(BuildContext c, GameDef d) => d.maxPlayers <= 1
     ? tr(c, 'Solo', 'Individual')
     : d.minPlayers <= 1
     ? tr(c, '1–${d.maxPlayers} alters', '1–${d.maxPlayers} alters')
-    : tr(c, '${d.minPlayers}–${d.maxPlayers} alters', '${d.minPlayers}–${d.maxPlayers} alters');
+    : tr(
+        c,
+        '${d.minPlayers}–${d.maxPlayers} alters',
+        '${d.minPlayers}–${d.maxPlayers} alters',
+      );
 
 /// Today's seed, the same for everyone (daily puzzles).
 int dailySeed([DateTime? now]) {
@@ -166,11 +176,16 @@ int dailySeed([DateTime? now]) {
 
 /// A tidy panel used inside games.
 class GamePanel extends StatelessWidget {
-  const GamePanel({super.key, required this.child, this.padding = const EdgeInsets.all(16)});
+  const GamePanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+  });
   final Widget child;
   final EdgeInsets padding;
   @override
-  Widget build(BuildContext context) => PrismSurface(padding: padding, child: child);
+  Widget build(BuildContext context) =>
+      PrismSurface(padding: padding, child: child);
 }
 
 /// Big centred prompt text.
@@ -182,14 +197,25 @@ class GamePrompt extends StatelessWidget {
   Widget build(BuildContext context) => Text(
     text,
     textAlign: TextAlign.center,
-    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: size, fontWeight: FontWeight.w700, height: 1.3),
+    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+      fontSize: size,
+      fontWeight: FontWeight.w700,
+      height: 1.3,
+    ),
   );
 }
 
 /// A tappable answer/option tile that follows the theme. [state]: null
 /// neutral, true correct, false wrong. Shapes (✓ / ✗) back up colour.
 class OptionTile extends StatelessWidget {
-  const OptionTile({super.key, required this.label, required this.onTap, this.state, this.selected = false, this.leading});
+  const OptionTile({
+    super.key,
+    required this.label,
+    required this.onTap,
+    this.state,
+    this.selected = false,
+    this.leading,
+  });
   final String label;
   final VoidCallback? onTap;
   final bool? state;
@@ -228,7 +254,10 @@ class OptionTile extends StatelessWidget {
               : scheme.surfaceContainerHigh,
           shape: RoundedRectangleBorder(
             borderRadius: prismCorners(context, PrismTokens.radiusMedium),
-            side: BorderSide(color: border, width: state == null && !selected ? 1 : 1.6),
+            side: BorderSide(
+              color: border,
+              width: state == null && !selected ? 1 : 1.6,
+            ),
           ),
           child: InkWell(
             borderRadius: prismCorners(context, PrismTokens.radiusMedium),
@@ -239,10 +268,26 @@ class OptionTile extends StatelessWidget {
                 children: [
                   if (leading != null) ...[leading!, const SizedBox(width: 10)],
                   Expanded(
-                    child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  if (state == true) Icon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill), color: good, size: 20),
-                  if (state == false) Icon(PhosphorIcons.xCircle(PhosphorIconsStyle.fill), color: bad, size: 20),
+                  if (state == true)
+                    Icon(
+                      PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+                      color: good,
+                      size: 20,
+                    ),
+                  if (state == false)
+                    Icon(
+                      PhosphorIcons.xCircle(PhosphorIconsStyle.fill),
+                      color: bad,
+                      size: 20,
+                    ),
                 ],
               ),
             ),
@@ -255,7 +300,12 @@ class OptionTile extends StatelessWidget {
 
 /// Small "3 / 10" progress line with a bar.
 class GameProgress extends StatelessWidget {
-  const GameProgress({super.key, required this.current, required this.total, this.trailing});
+  const GameProgress({
+    super.key,
+    required this.current,
+    required this.total,
+    this.trailing,
+  });
   final int current;
   final int total;
   final String? trailing;
@@ -266,22 +316,36 @@ class GameProgress extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Text('$current / $total', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            '$current / $total',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Container(
               height: 6,
               alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 3)),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: prismCorners(context, 3),
+              ),
               child: FractionallySizedBox(
                 widthFactor: total == 0 ? 0 : (current / total).clamp(0.0, 1.0),
                 child: Container(
-                  decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: prismCorners(context, 3)),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: prismCorners(context, 3),
+                  ),
                 ),
               ),
             ),
           ),
-          if (trailing != null) ...[const SizedBox(width: 10), Text(trailing!, style: theme.textTheme.labelMedium)],
+          if (trailing != null) ...[
+            const SizedBox(width: 10),
+            Text(trailing!, style: theme.textTheme.labelMedium),
+          ],
         ],
       ),
     );
@@ -290,7 +354,12 @@ class GameProgress extends StatelessWidget {
 
 /// A countdown shown only when the player turned the timer on.
 class GameTimer extends StatefulWidget {
-  const GameTimer({super.key, required this.seconds, required this.onDone, this.running = true});
+  const GameTimer({
+    super.key,
+    required this.seconds,
+    required this.onDone,
+    this.running = true,
+  });
   final int seconds;
   final VoidCallback onDone;
   final bool running;
@@ -298,7 +367,8 @@ class GameTimer extends StatefulWidget {
   State<GameTimer> createState() => _GameTimerState();
 }
 
-class _GameTimerState extends State<GameTimer> with SingleTickerProviderStateMixin {
+class _GameTimerState extends State<GameTimer>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _c =
       AnimationController(
         vsync: this,
@@ -338,9 +408,20 @@ class _GameTimerState extends State<GameTimer> with SingleTickerProviderStateMix
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(PhosphorIcons.timer(), size: 16, color: left <= 5 ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant),
+              Icon(
+                PhosphorIcons.timer(),
+                size: 16,
+                color: left <= 5
+                    ? theme.colorScheme.error
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
-              Text('${left}s', style: theme.textTheme.labelLarge?.copyWith(color: left <= 5 ? theme.colorScheme.error : null)),
+              Text(
+                '${left}s',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: left <= 5 ? theme.colorScheme.error : null,
+                ),
+              ),
             ],
           ),
         );
@@ -356,7 +437,12 @@ class GameActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 14),
-    child: Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: children),
+    child: Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 10,
+      runSpacing: 10,
+      children: children,
+    ),
   );
 }
 
@@ -364,7 +450,14 @@ class GameActions extends StatelessWidget {
 /// colours (colour matching keeps real colours; everything else adapts).
 List<Color> gameColors(BuildContext context) {
   final s = Theme.of(context).colorScheme;
-  return [s.primary, s.secondary, s.tertiary, s.error, Color.lerp(s.primary, s.tertiary, 0.5)!, Color.lerp(s.secondary, s.error, 0.5)!];
+  return [
+    s.primary,
+    s.secondary,
+    s.tertiary,
+    s.error,
+    Color.lerp(s.primary, s.tertiary, 0.5)!,
+    Color.lerp(s.secondary, s.error, 0.5)!,
+  ];
 }
 
 /// Fixed, colour-blind-friendly gameplay colours with names and shapes.
@@ -377,4 +470,5 @@ const gameplayColors = <(Color, String, String)>[
   (Color(0xFFE377C2), 'Pink', '✚'),
 ];
 
-List<T> shuffled<T>(Iterable<T> list, math.Random rng) => [...list]..shuffle(rng);
+List<T> shuffled<T>(Iterable<T> list, math.Random rng) =>
+    [...list]..shuffle(rng);

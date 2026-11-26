@@ -44,14 +44,9 @@ Member _makeMember({
   );
 }
 
-Widget _wrapText(Widget child) => MaterialApp(
-      home: Scaffold(body: child),
-    );
+Widget _wrapText(Widget child) => MaterialApp(home: Scaffold(body: child));
 
-Widget _chatText({
-  required String content,
-  Map<String, Member>? authorMap,
-}) =>
+Widget _chatText({required String content, Map<String, Member>? authorMap}) =>
     _wrapText(
       ChatMessageText(
         content: content,
@@ -70,8 +65,9 @@ void main() {
   setUp(debugResetChatStylesheetCache);
 
   group('1. bold rendering via ChatMessageText', () {
-    testWidgets('**bold** uses MarkdownBody and renders "bold"',
-        (tester) async {
+    testWidgets('**bold** uses MarkdownBody and renders "bold"', (
+      tester,
+    ) async {
       await tester.pumpWidget(_chatText(content: '**bold**'));
       expect(find.byType(MarkdownBody), findsOneWidget);
       expect(find.textContaining('bold'), findsAtLeastNWidgets(1));
@@ -88,8 +84,7 @@ void main() {
   // 2. Edit dialog controller type
   // ---------------------------------------------------------------------------
 
-  group('2. ChatMarkdownEditingController usable as TextEditingController',
-      () {
+  group('2. ChatMarkdownEditingController usable as TextEditingController', () {
     test('is a subtype of TextEditingController', () {
       final controller = ChatMarkdownEditingController(text: 'hello **world**');
       expect(controller, isA<TextEditingController>());
@@ -103,9 +98,11 @@ void main() {
 
     testWidgets('can be assigned to a TextField without error', (tester) async {
       final controller = ChatMarkdownEditingController(text: '**test**');
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(body: TextField(controller: controller)),
-      ));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: TextField(controller: controller)),
+        ),
+      );
       // updateTheme requires a valid BuildContext with Theme.
       final context = tester.element(find.byType(TextField));
       controller.updateTheme(context);
@@ -162,8 +159,7 @@ void main() {
 
     test('strips markdown AND resolves mention in same string', () {
       final authorMap = {_kMentionId: _makeMember()};
-      final result =
-          stripChatMarkdown('**hey** @[$_kMentionId]', authorMap);
+      final result = stripChatMarkdown('**hey** @[$_kMentionId]', authorMap);
       expect(result, 'hey @Alice');
     });
 
@@ -191,11 +187,17 @@ void main() {
         redactSpoilers('plot: ||hidden ending|| whoa'),
         {},
       );
-      expect(preview.contains('ending'), isFalse,
-          reason: 'spoiler content must not leak into the reply preview');
+      expect(
+        preview.contains('ending'),
+        isFalse,
+        reason: 'spoiler content must not leak into the reply preview',
+      );
       expect(preview.contains('hidden'), isFalse);
-      expect(preview.contains('▮'), isTrue,
-          reason: 'redacted span should render as ▮ block characters');
+      expect(
+        preview.contains('▮'),
+        isTrue,
+        reason: 'redacted span should render as ▮ block characters',
+      );
     });
 
     test('redaction survives markdown stripping when mixed with **bold**', () {
@@ -226,34 +228,42 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('6. _ReplyQuote Semantics label redacts spoilers', () {
-    testWidgets('spoiler plaintext does not leak to screen readers',
-        (tester) async {
+    testWidgets('spoiler plaintext does not leak to screen readers', (
+      tester,
+    ) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: Builder(builder: (context) {
-              const raw = 'plot: ||hidden ending|| whoa';
-              return Semantics(
-                key: const Key('reply-quote-label'),
-                label: buildReplyQuoteA11yLabel(
-                  AppLocalizations.of(context),
-                  authorName: 'Alice',
-                  content: raw,
-                  isDeleted: false,
-                ),
-                child: const SizedBox(width: 10, height: 10),
-              );
-            }),
+            body: Builder(
+              builder: (context) {
+                const raw = 'plot: ||hidden ending|| whoa';
+                return Semantics(
+                  key: const Key('reply-quote-label'),
+                  label: buildReplyQuoteA11yLabel(
+                    AppLocalizations.of(context),
+                    authorName: 'Alice',
+                    content: raw,
+                    isDeleted: false,
+                  ),
+                  child: const SizedBox(width: 10, height: 10),
+                );
+              },
+            ),
           ),
         ),
       );
 
-      final sem = tester.getSemantics(find.byKey(const Key('reply-quote-label')));
-      expect(sem.label.contains('ending'), isFalse,
-          reason: 'spoiler plaintext must not reach the accessibility label');
+      final sem = tester.getSemantics(
+        find.byKey(const Key('reply-quote-label')),
+      );
+      expect(
+        sem.label.contains('ending'),
+        isFalse,
+        reason: 'spoiler plaintext must not reach the accessibility label',
+      );
       expect(sem.label.contains('hidden'), isFalse);
       expect(sem.label.contains('▮'), isTrue);
       handle.dispose();
@@ -266,23 +276,27 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: Builder(builder: (context) {
-              return Semantics(
-                key: const Key('reply-quote-label'),
-                label: buildReplyQuoteA11yLabel(
-                  AppLocalizations.of(context),
-                  authorName: 'Alice',
-                  content: '||anything||',
-                  isDeleted: true,
-                ),
-                child: const SizedBox(width: 10, height: 10),
-              );
-            }),
+            body: Builder(
+              builder: (context) {
+                return Semantics(
+                  key: const Key('reply-quote-label'),
+                  label: buildReplyQuoteA11yLabel(
+                    AppLocalizations.of(context),
+                    authorName: 'Alice',
+                    content: '||anything||',
+                    isDeleted: true,
+                  ),
+                  child: const SizedBox(width: 10, height: 10),
+                );
+              },
+            ),
           ),
         ),
       );
 
-      final sem = tester.getSemantics(find.byKey(const Key('reply-quote-label')));
+      final sem = tester.getSemantics(
+        find.byKey(const Key('reply-quote-label')),
+      );
       expect(sem.label.contains('Alice'), isFalse);
       expect(sem.label.contains('anything'), isFalse);
       handle.dispose();

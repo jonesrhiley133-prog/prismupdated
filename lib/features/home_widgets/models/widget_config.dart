@@ -124,8 +124,10 @@ class WidgetStyle {
     'imageDim': imageDim,
   };
 
-  static T _e<T extends Enum>(List<T> v, Object? n, T d) => v.firstWhere((x) => x.name == n, orElse: () => d);
-  static double _d(Object? v, double d, double lo, double hi) => (v is num ? v.toDouble() : d).clamp(lo, hi).toDouble();
+  static T _e<T extends Enum>(List<T> v, Object? n, T d) =>
+      v.firstWhere((x) => x.name == n, orElse: () => d);
+  static double _d(Object? v, double d, double lo, double hi) =>
+      (v is num ? v.toDouble() : d).clamp(lo, hi).toDouble();
 
   static WidgetStyle fromJson(Map<String, dynamic> j) => WidgetStyle(
     theme: _e(WidgetTheme.values, j['theme'], WidgetTheme.system),
@@ -153,7 +155,11 @@ class WidgetStyle {
 /// What a widget is allowed to reveal on the home screen.
 @immutable
 class WidgetPrivacy {
-  const WidgetPrivacy({this.hideSensitive = true, this.hideNames = false, this.maskNumbers = false});
+  const WidgetPrivacy({
+    this.hideSensitive = true,
+    this.hideNames = false,
+    this.maskNumbers = false,
+  });
 
   /// Hide journal text, private entries and other sensitive details.
   final bool hideSensitive;
@@ -164,13 +170,21 @@ class WidgetPrivacy {
   /// Replace money and grades with dots.
   final bool maskNumbers;
 
-  WidgetPrivacy copyWith({bool? hideSensitive, bool? hideNames, bool? maskNumbers}) => WidgetPrivacy(
+  WidgetPrivacy copyWith({
+    bool? hideSensitive,
+    bool? hideNames,
+    bool? maskNumbers,
+  }) => WidgetPrivacy(
     hideSensitive: hideSensitive ?? this.hideSensitive,
     hideNames: hideNames ?? this.hideNames,
     maskNumbers: maskNumbers ?? this.maskNumbers,
   );
 
-  Map<String, Object?> toJson() => {'hideSensitive': hideSensitive, 'hideNames': hideNames, 'maskNumbers': maskNumbers};
+  Map<String, Object?> toJson() => {
+    'hideSensitive': hideSensitive,
+    'hideNames': hideNames,
+    'maskNumbers': maskNumbers,
+  };
 
   static WidgetPrivacy fromJson(Map<String, dynamic> j) => WidgetPrivacy(
     hideSensitive: j['hideSensitive'] != false,
@@ -200,14 +214,19 @@ class WidgetConfig {
   /// Type-specific choices (selected members, map, countdown dates …).
   final Map<String, Object?> options;
 
-  WidgetConfig copyWith({String? type, String? name, WidgetStyle? style, WidgetPrivacy? privacy, Map<String, Object?>? options}) =>
-      WidgetConfig(
-        type: type ?? this.type,
-        name: name ?? this.name,
-        style: style ?? this.style,
-        privacy: privacy ?? this.privacy,
-        options: options ?? this.options,
-      );
+  WidgetConfig copyWith({
+    String? type,
+    String? name,
+    WidgetStyle? style,
+    WidgetPrivacy? privacy,
+    Map<String, Object?>? options,
+  }) => WidgetConfig(
+    type: type ?? this.type,
+    name: name ?? this.name,
+    style: style ?? this.style,
+    privacy: privacy ?? this.privacy,
+    options: options ?? this.options,
+  );
 
   WidgetConfig withOption(String key, Object? value) {
     final o = Map<String, Object?>.of(options);
@@ -217,12 +236,20 @@ class WidgetConfig {
 
   List<String> stringList(String key) {
     final v = options[key];
-    return v is List ? [for (final x in v) if (x is String) x] : const [];
+    return v is List
+        ? [
+            for (final x in v)
+              if (x is String) x,
+          ]
+        : const [];
   }
 
-  int intOption(String key, int fallback) => options[key] is int ? options[key] as int : fallback;
-  bool boolOption(String key, bool fallback) => options[key] is bool ? options[key] as bool : fallback;
-  String? stringOption(String key) => options[key] is String ? options[key] as String : null;
+  int intOption(String key, int fallback) =>
+      options[key] is int ? options[key] as int : fallback;
+  bool boolOption(String key, bool fallback) =>
+      options[key] is bool ? options[key] as bool : fallback;
+  String? stringOption(String key) =>
+      options[key] is String ? options[key] as String : null;
 
   Map<String, Object?> toJson() => {
     'type': type,
@@ -235,9 +262,15 @@ class WidgetConfig {
   static WidgetConfig fromJson(Map<String, dynamic> j) => WidgetConfig(
     type: j['type'] is String ? j['type'] as String : 'current_fronter',
     name: j['name'] is String ? j['name'] as String : '',
-    style: j['style'] is Map<String, dynamic> ? WidgetStyle.fromJson(j['style'] as Map<String, dynamic>) : const WidgetStyle(),
-    privacy: j['privacy'] is Map<String, dynamic> ? WidgetPrivacy.fromJson(j['privacy'] as Map<String, dynamic>) : const WidgetPrivacy(),
-    options: j['options'] is Map<String, dynamic> ? Map<String, Object?>.of(j['options'] as Map<String, dynamic>) : const {},
+    style: j['style'] is Map<String, dynamic>
+        ? WidgetStyle.fromJson(j['style'] as Map<String, dynamic>)
+        : const WidgetStyle(),
+    privacy: j['privacy'] is Map<String, dynamic>
+        ? WidgetPrivacy.fromJson(j['privacy'] as Map<String, dynamic>)
+        : const WidgetPrivacy(),
+    options: j['options'] is Map<String, dynamic>
+        ? Map<String, Object?>.of(j['options'] as Map<String, dynamic>)
+        : const {},
   );
 
   static WidgetConfig defaultFor(String type) => WidgetConfig(type: type);
@@ -246,20 +279,55 @@ class WidgetConfig {
 /// Resolved colours for a theme (what the native side draws with).
 @immutable
 class WidgetPalette {
-  const WidgetPalette(this.bg1, this.bg2, this.text, this.text2, this.accent, this.border);
+  const WidgetPalette(
+    this.bg1,
+    this.bg2,
+    this.text,
+    this.text2,
+    this.accent,
+    this.border,
+  );
 
   final int bg1, bg2, text, text2, accent, border;
 
-  Map<String, Object?> toJson() => {'bg1': bg1, 'bg2': bg2, 'text': text, 'text2': text2, 'accent': accent, 'border': border};
+  Map<String, Object?> toJson() => {
+    'bg1': bg1,
+    'bg2': bg2,
+    'text': text,
+    'text2': text2,
+    'accent': accent,
+    'border': border,
+  };
 }
 
 WidgetPalette paletteFor(WidgetStyle s, {required bool dark}) {
   final amoled = s.theme == WidgetTheme.amoled;
   final base = amoled
-      ? const WidgetPalette(0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xB3FFFFFF, 0xFFB39DDB, 0x33FFFFFF)
+      ? const WidgetPalette(
+          0xFF000000,
+          0xFF000000,
+          0xFFFFFFFF,
+          0xB3FFFFFF,
+          0xFFB39DDB,
+          0x33FFFFFF,
+        )
       : dark
-      ? const WidgetPalette(0xFF2A2235, 0xFF1A1622, 0xFFF5F0FA, 0xB3F5F0FA, 0xFFB39DDB, 0x33FFFFFF)
-      : const WidgetPalette(0xFFFBF7F1, 0xFFEDE4F5, 0xFF2B2530, 0x992B2530, 0xFF7E57C2, 0x22000000);
+      ? const WidgetPalette(
+          0xFF2A2235,
+          0xFF1A1622,
+          0xFFF5F0FA,
+          0xB3F5F0FA,
+          0xFFB39DDB,
+          0x33FFFFFF,
+        )
+      : const WidgetPalette(
+          0xFFFBF7F1,
+          0xFFEDE4F5,
+          0xFF2B2530,
+          0x992B2530,
+          0xFF7E57C2,
+          0x22000000,
+        );
   int text2(int t) => (t & 0x00FFFFFF) | 0xB3000000;
   return WidgetPalette(
     s.bg1 ?? base.bg1,

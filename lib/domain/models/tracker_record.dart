@@ -63,7 +63,12 @@ abstract class TrackerRecord with _$TrackerRecord {
 
   List<String> strings(String key) {
     final v = fields[key];
-    return v is List ? [for (final x in v) if (x is String) x] : const [];
+    return v is List
+        ? [
+            for (final x in v)
+              if (x is String) x,
+          ]
+        : const [];
   }
 
   /// Returns a copy with [changes] merged into [data] (null values remove a

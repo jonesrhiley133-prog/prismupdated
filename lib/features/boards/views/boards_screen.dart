@@ -385,7 +385,10 @@ class _UnreadDot extends StatelessWidget {
     return Container(
       width: 7,
       height: 7,
-      decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: prismRound(context),
+      ),
     );
   }
 }

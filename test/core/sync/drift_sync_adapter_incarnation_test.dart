@@ -37,48 +37,50 @@ Future<void> _seedMemberAndGroup(AppDatabase db) async {
 
 void main() {
   group('group incarnation parse + guard', () {
-    test('a strictly-newer group incarnation create revives + bumps gen',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final groups = _entityFor(db, 'member_groups');
+    test(
+      'a strictly-newer group incarnation create revives + bumps gen',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final groups = _entityFor(db, 'member_groups');
 
-      // Local gen-0 row, tombstoned (a peer removal applied locally).
-      await db
-          .into(db.memberGroups)
-          .insert(
-            MemberGroupsCompanion.insert(
-              id: 'pk-group-$_gUuid',
-              name: 'G',
-              createdAt: DateTime.utc(2026, 1, 1),
-              pluralkitUuid: const Value(_gUuid),
-              isDeleted: const Value(true),
-            ),
-          );
+        // Local gen-0 row, tombstoned (a peer removal applied locally).
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'pk-group-$_gUuid',
+                name: 'G',
+                createdAt: DateTime.utc(2026, 1, 1),
+                pluralkitUuid: const Value(_gUuid),
+                isDeleted: const Value(true),
+              ),
+            );
 
-      // Incoming gen-1 incarnation create with an explicit is_deleted=false.
-      final gen1Id = deriveGroupIncarnationEntityId(_gUuid, 1);
-      await groups.applyFields(gen1Id, {
-        'name': 'G',
-        'created_at': DateTime.utc(2026, 1, 1).toIso8601String(),
-        'pluralkit_uuid': _gUuid,
-        'is_deleted': false,
-      });
+        // Incoming gen-1 incarnation create with an explicit is_deleted=false.
+        final gen1Id = deriveGroupIncarnationEntityId(_gUuid, 1);
+        await groups.applyFields(gen1Id, {
+          'name': 'G',
+          'created_at': DateTime.utc(2026, 1, 1).toIso8601String(),
+          'pluralkit_uuid': _gUuid,
+          'is_deleted': false,
+        });
 
-      final row = await (db.select(
-        db.memberGroups,
-      )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingle();
-      expect(row.isDeleted, isFalse, reason: 'sanctioned revive');
-      expect(row.syncGeneration, 1, reason: 'advanced to the incoming gen');
+        final row = await (db.select(
+          db.memberGroups,
+        )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingle();
+        expect(row.isDeleted, isFalse, reason: 'sanctioned revive');
+        expect(row.syncGeneration, 1, reason: 'advanced to the incoming gen');
 
-      // An alias is recorded for the incarnation id so a later sparse patch
-      // under that id resolves back to this row.
-      final alias = await (db.select(
-        db.pkGroupSyncAliases,
-      )..where((t) => t.legacyEntityId.equals(gen1Id))).getSingleOrNull();
-      expect(alias, isNotNull);
-      expect(alias!.pkGroupUuid, _gUuid);
-    });
+        // An alias is recorded for the incarnation id so a later sparse patch
+        // under that id resolves back to this row.
+        final alias = await (db.select(
+          db.pkGroupSyncAliases,
+        )..where((t) => t.legacyEntityId.equals(gen1Id))).getSingleOrNull();
+        expect(alias, isNotNull);
+        expect(alias!.pkGroupUuid, _gUuid);
+      },
+    );
 
     test('a lower/equal incarnation never demotes sync_generation', () async {
       final db = AppDatabase(NativeDatabase.memory());
@@ -112,36 +114,41 @@ void main() {
       expect(row.syncGeneration, 2, reason: 'gen never decreases');
     });
 
-    test('hardDelete is skipped when the live row is a newer incarnation',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final groups = _entityFor(db, 'member_groups');
-
-      await db
-          .into(db.memberGroups)
-          .insert(
-            MemberGroupsCompanion.insert(
-              id: 'pk-group-$_gUuid',
-              name: 'G',
-              createdAt: DateTime.utc(2026, 1, 1),
-              pluralkitUuid: const Value(_gUuid),
-              syncGeneration: const Value(1),
-            ),
-          );
-
-      // The burned gen-0 tombstone is re-delivered.
-      await groups.hardDelete('pk-group:$_gUuid');
-
-      final row = await (db.select(
-        db.memberGroups,
-      )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingleOrNull();
-      expect(row, isNotNull, reason: 'gen-1 row survives the gen-0 tombstone');
-      expect(row!.syncGeneration, 1);
-    });
-
     test(
-        'a fields-borne gen-0 is_deleted=true never tombstones a newer-gen '
+      'hardDelete is skipped when the live row is a newer incarnation',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final groups = _entityFor(db, 'member_groups');
+
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'pk-group-$_gUuid',
+                name: 'G',
+                createdAt: DateTime.utc(2026, 1, 1),
+                pluralkitUuid: const Value(_gUuid),
+                syncGeneration: const Value(1),
+              ),
+            );
+
+        // The burned gen-0 tombstone is re-delivered.
+        await groups.hardDelete('pk-group:$_gUuid');
+
+        final row = await (db.select(
+          db.memberGroups,
+        )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingleOrNull();
+        expect(
+          row,
+          isNotNull,
+          reason: 'gen-1 row survives the gen-0 tombstone',
+        );
+        expect(row!.syncGeneration, 1);
+      },
+    );
+
+    test('a fields-borne gen-0 is_deleted=true never tombstones a newer-gen '
         'group row', () async {
       // Blocker 2(b): the group applyFields wrote is_deleted unguarded. A stale
       // gen-0 tombstone (re-pushed by sync_bootstrap as a record_create with
@@ -182,8 +189,7 @@ void main() {
       expect(row.syncGeneration, 1);
     });
 
-    test(
-        'a gen-1 group tombstone deletes the live gen-1 row keyed by its local '
+    test('a gen-1 group tombstone deletes the live gen-1 row keyed by its local '
         'id (blocker 3 group variant)', () async {
       // The live gen-1 group row is keyed by its own local id (`pk-group-<uuid>`)
       // but carries sync_generation=1. A legitimate gen-1 tombstone arrives
@@ -212,87 +218,94 @@ void main() {
       final row = await (db.select(
         db.memberGroups,
       )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingleOrNull();
-      expect(row, isNull, reason: 'the gen-1 tombstone deletes the gen-1 group');
-    });
-
-    test('hardDelete proceeds when the tombstone matches the row generation',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final groups = _entityFor(db, 'member_groups');
-
-      await db
-          .into(db.memberGroups)
-          .insert(
-            MemberGroupsCompanion.insert(
-              id: 'pk-group-$_gUuid',
-              name: 'G',
-              createdAt: DateTime.utc(2026, 1, 1),
-              pluralkitUuid: const Value(_gUuid),
-            ),
-          );
-
-      await groups.hardDelete('pk-group:$_gUuid');
-
-      final row = await (db.select(
-        db.memberGroups,
-      )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingleOrNull();
-      expect(row, isNull, reason: 'gen-0 tombstone deletes the gen-0 row');
-    });
-  });
-
-  group('entry incarnation parse + guard', () {
-    test('a strictly-newer entry incarnation create bumps the row gen',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      await _seedMemberAndGroup(db);
-      final entries = _entityFor(db, 'member_group_entries');
-
-      await db
-          .into(db.memberGroups)
-          .insert(
-            MemberGroupsCompanion.insert(
-              id: 'g-local',
-              name: 'G',
-              createdAt: DateTime.utc(2026, 1, 1),
-              pluralkitUuid: const Value(_gUuid),
-            ),
-          );
-
-      // Tombstoned gen-0 entry row.
-      final gen0 = deriveEntryIncarnationEntityId(_gUuid, _mUuid, 0)!;
-      await db
-          .into(db.memberGroupEntries)
-          .insert(
-            MemberGroupEntriesCompanion.insert(
-              id: gen0,
-              groupId: 'g-local',
-              memberId: 'm-local',
-              pkGroupUuid: const Value(_gUuid),
-              pkMemberUuid: const Value(_mUuid),
-              isDeleted: const Value(true),
-            ),
-          );
-
-      // Incoming gen-1 incarnation create.
-      final gen1 = deriveEntryIncarnationEntityId(_gUuid, _mUuid, 1)!;
-      await entries.applyFields(gen1, {
-        'pk_group_uuid': _gUuid,
-        'pk_member_uuid': _mUuid,
-        'is_deleted': false,
-      });
-
-      final live = await (db.select(
-        db.memberGroupEntries,
-      )..where((t) => t.id.equals(gen1))).getSingleOrNull();
-      expect(live, isNotNull);
-      expect(live!.isDeleted, isFalse);
-      expect(live.syncGeneration, 1);
+      expect(
+        row,
+        isNull,
+        reason: 'the gen-1 tombstone deletes the gen-1 group',
+      );
     });
 
     test(
-        'a stale gen-0 entry op never soft-deletes / re-roots the live gen-1 '
+      'hardDelete proceeds when the tombstone matches the row generation',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final groups = _entityFor(db, 'member_groups');
+
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'pk-group-$_gUuid',
+                name: 'G',
+                createdAt: DateTime.utc(2026, 1, 1),
+                pluralkitUuid: const Value(_gUuid),
+              ),
+            );
+
+        await groups.hardDelete('pk-group:$_gUuid');
+
+        final row = await (db.select(
+          db.memberGroups,
+        )..where((t) => t.pluralkitUuid.equals(_gUuid))).getSingleOrNull();
+        expect(row, isNull, reason: 'gen-0 tombstone deletes the gen-0 row');
+      },
+    );
+  });
+
+  group('entry incarnation parse + guard', () {
+    test(
+      'a strictly-newer entry incarnation create bumps the row gen',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        await _seedMemberAndGroup(db);
+        final entries = _entityFor(db, 'member_group_entries');
+
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'g-local',
+                name: 'G',
+                createdAt: DateTime.utc(2026, 1, 1),
+                pluralkitUuid: const Value(_gUuid),
+              ),
+            );
+
+        // Tombstoned gen-0 entry row.
+        final gen0 = deriveEntryIncarnationEntityId(_gUuid, _mUuid, 0)!;
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
+              MemberGroupEntriesCompanion.insert(
+                id: gen0,
+                groupId: 'g-local',
+                memberId: 'm-local',
+                pkGroupUuid: const Value(_gUuid),
+                pkMemberUuid: const Value(_mUuid),
+                isDeleted: const Value(true),
+              ),
+            );
+
+        // Incoming gen-1 incarnation create.
+        final gen1 = deriveEntryIncarnationEntityId(_gUuid, _mUuid, 1)!;
+        await entries.applyFields(gen1, {
+          'pk_group_uuid': _gUuid,
+          'pk_member_uuid': _mUuid,
+          'is_deleted': false,
+        });
+
+        final live = await (db.select(
+          db.memberGroupEntries,
+        )..where((t) => t.id.equals(gen1))).getSingleOrNull();
+        expect(live, isNotNull);
+        expect(live!.isDeleted, isFalse);
+        expect(live.syncGeneration, 1);
+      },
+    );
+
+    test('a stale gen-0 entry op never soft-deletes / re-roots the live gen-1 '
         'edge (canonical-collapse redirect guard)', () async {
       // Blocker 2(a), redirect arm: a stale gen-0 (canonical) live op arrives
       // while the live edge is a separate gen-1 row. The redirect must NOT
@@ -348,18 +361,17 @@ void main() {
       );
       expect(gen1Row.syncGeneration, 1, reason: 'generation never regresses');
       // No fresh gen-0 row was rooted: only the gen-1 row exists for this edge.
-      final all = await (db.select(
-        db.memberGroupEntries,
-      )..where(
-            (t) =>
-                t.pkGroupUuid.equals(_gUuid) & t.pkMemberUuid.equals(_mUuid),
-          ))
-          .get();
+      final all =
+          await (db.select(db.memberGroupEntries)..where(
+                (t) =>
+                    t.pkGroupUuid.equals(_gUuid) &
+                    t.pkMemberUuid.equals(_mUuid),
+              ))
+              .get();
       expect(all.map((r) => r.id).toSet(), {gen1});
     });
 
-    test(
-        'a fields-borne gen-0 is_deleted=true never tombstones a collapsed '
+    test('a fields-borne gen-0 is_deleted=true never tombstones a collapsed '
         'gen-1 row', () async {
       // Blocker 2(a), is_deleted arm: the live edge collapsed onto the gen-0 id
       // carrying sync_generation=1. A stale gen-0 op with is_deleted=true must
@@ -413,8 +425,7 @@ void main() {
       expect(row.syncGeneration, 1);
     });
 
-    test(
-        'entry hardDelete skips the gen-0 tombstone when the live edge '
+    test('entry hardDelete skips the gen-0 tombstone when the live edge '
         'COLLAPSED onto the gen-0 id at sync_generation=1', () async {
       // The case the guard actually protects (blocker 4): after a canonical-
       // collapse redirect the live edge lives at the gen-0 SHA but carries
@@ -453,8 +464,7 @@ void main() {
       expect(live!.syncGeneration, 1);
     });
 
-    test(
-        'entry hardDelete skips the gen-0 tombstone with a stale soft-deleted '
+    test('entry hardDelete skips the gen-0 tombstone with a stale soft-deleted '
         'gen-0 row + a separate live gen-1 row', () async {
       // Two-row variant: a stale soft-deleted gen-0 row (left behind by a
       // re-add) PLUS the live gen-1 row at the gen-1 sha. The gen-0 tombstone
@@ -505,8 +515,7 @@ void main() {
       expect(live!.isDeleted, isFalse);
     });
 
-    test(
-        'entry hardDelete removes the collapsed live edge when the tombstone '
+    test('entry hardDelete removes the collapsed live edge when the tombstone '
         'matches its generation', () async {
       // Blocker 3 positive case: a legitimate gen-1 tombstone arrives keyed by
       // the gen-1 sha, but the live edge collapsed onto the gen-0 sha carrying
@@ -534,13 +543,13 @@ void main() {
 
       await entries.hardDelete(gen1);
 
-      final remaining = await (db.select(
-        db.memberGroupEntries,
-      )..where(
-            (t) =>
-                t.pkGroupUuid.equals(_gUuid) & t.pkMemberUuid.equals(_mUuid),
-          ))
-          .get();
+      final remaining =
+          await (db.select(db.memberGroupEntries)..where(
+                (t) =>
+                    t.pkGroupUuid.equals(_gUuid) &
+                    t.pkMemberUuid.equals(_mUuid),
+              ))
+              .get();
       expect(
         remaining,
         isEmpty,

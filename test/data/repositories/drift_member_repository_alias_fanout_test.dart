@@ -26,11 +26,7 @@ void main() {
     await db.close();
   });
 
-  Future<void> insertMember(
-    String id, {
-    String? pkUuid,
-    String? pkId,
-  }) {
+  Future<void> insertMember(String id, {String? pkUuid, String? pkId}) {
     return dao.insertMember(
       MembersCompanion.insert(
         id: id,
@@ -42,40 +38,42 @@ void main() {
     );
   }
 
-  test('deleteMember emits delete for the row id and each recorded alias id',
-      () async {
-    await insertMember('rowY', pkUuid: 'U', pkId: 'abcde');
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'members',
-      legacyEntityId: 'alias-1',
-      pkUuid: 'U',
-      pkId: 'abcde',
-      targetRowId: 'rowY',
-    );
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'members',
-      legacyEntityId: 'alias-2',
-      pkUuid: 'U',
-      pkId: 'abcde',
-      targetRowId: 'rowY',
-    );
+  test(
+    'deleteMember emits delete for the row id and each recorded alias id',
+    () async {
+      await insertMember('rowY', pkUuid: 'U', pkId: 'abcde');
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'members',
+        legacyEntityId: 'alias-1',
+        pkUuid: 'U',
+        pkId: 'abcde',
+        targetRowId: 'rowY',
+      );
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'members',
+        legacyEntityId: 'alias-2',
+        pkUuid: 'U',
+        pkId: 'abcde',
+        targetRowId: 'rowY',
+      );
 
-    final captured = <CapturedSyncOp>[];
-    SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-    addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-    await repo.deleteMember('rowY');
+      await repo.deleteMember('rowY');
 
-    final deletes = captured
-        .where(
-          (op) =>
-              op.table == 'members' && op.opType == SyncRecordOpType.delete,
-        )
-        .map((op) => op.entityId)
-        .toList();
-    expect(deletes, containsAll(<String>['rowY', 'alias-1', 'alias-2']));
-    expect(deletes, hasLength(3));
-  });
+      final deletes = captured
+          .where(
+            (op) =>
+                op.table == 'members' && op.opType == SyncRecordOpType.delete,
+          )
+          .map((op) => op.entityId)
+          .toList();
+      expect(deletes, containsAll(<String>['rowY', 'alias-1', 'alias-2']));
+      expect(deletes, hasLength(3));
+    },
+  );
 
   test('deleteMember skips an alias id that is an active local row', () async {
     await insertMember('rowY', pkUuid: 'U', pkId: 'abcde');
@@ -105,8 +103,7 @@ void main() {
 
     final deletes = captured
         .where(
-          (op) =>
-              op.table == 'members' && op.opType == SyncRecordOpType.delete,
+          (op) => op.table == 'members' && op.opType == SyncRecordOpType.delete,
         )
         .map((op) => op.entityId)
         .toList();
@@ -115,30 +112,32 @@ void main() {
     expect(deletes, hasLength(2));
   });
 
-  test('deleteMember of a member with no PK identity emits only the row delete',
-      () async {
-    await insertMember('rowZ');
-    // A stray alias keyed on a different identity must not be fanned out.
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'members',
-      legacyEntityId: 'unrelated',
-      pkUuid: 'OTHER',
-      targetRowId: 'somewhere',
-    );
+  test(
+    'deleteMember of a member with no PK identity emits only the row delete',
+    () async {
+      await insertMember('rowZ');
+      // A stray alias keyed on a different identity must not be fanned out.
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'members',
+        legacyEntityId: 'unrelated',
+        pkUuid: 'OTHER',
+        targetRowId: 'somewhere',
+      );
 
-    final captured = <CapturedSyncOp>[];
-    SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-    addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-    await repo.deleteMember('rowZ');
+      await repo.deleteMember('rowZ');
 
-    final deletes = captured
-        .where(
-          (op) =>
-              op.table == 'members' && op.opType == SyncRecordOpType.delete,
-        )
-        .map((op) => op.entityId)
-        .toList();
-    expect(deletes, <String>['rowZ']);
-  });
+      final deletes = captured
+          .where(
+            (op) =>
+                op.table == 'members' && op.opType == SyncRecordOpType.delete,
+          )
+          .map((op) => op.entityId)
+          .toList();
+      expect(deletes, <String>['rowZ']);
+    },
+  );
 }

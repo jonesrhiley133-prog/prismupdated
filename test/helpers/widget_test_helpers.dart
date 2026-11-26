@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 Widget testApp(Widget child, {bool center = true, ThemeData? theme}) {
   return MaterialApp(
     theme: theme,
-    home: Scaffold(
-      body: center ? Center(child: child) : child,
-    ),
+    home: Scaffold(body: center ? Center(child: child) : child),
   );
 }

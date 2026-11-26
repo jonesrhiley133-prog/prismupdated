@@ -5,7 +5,8 @@ import 'package:prism_plurality/core/features/feature_state.dart'
     show featureEnabledProvider;
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/preferences/dashboard_preferences.dart';
-import 'package:prism_plurality/features/home/widgets/home_dashboard.dart' show homeCardSizesProvider;
+import 'package:prism_plurality/features/home/widgets/home_dashboard.dart'
+    show homeCardSizesProvider;
 import 'package:prism_plurality/features/fitness/health/health_sync.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -71,17 +72,21 @@ class HealthHomeCard extends ConsumerWidget {
       ),
     );
 
-    if (ref.watch(homeCardSizesProvider)[DashboardWidgetId.health] == 'compact') {
+    if (ref.watch(homeCardSizesProvider)[DashboardWidgetId.health] ==
+        'compact') {
       return PrismSurface(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         onTap: () => context.go(AppRoutePaths.fitness),
         child: Text(
           [
-            if (steps != null) '🚶 ${NumberFormat.decimalPattern().format(steps)}',
+            if (steps != null)
+              '🚶 ${NumberFormat.decimalPattern().format(steps)}',
             if (sleep != null) '😴 ${sleep ~/ 60}h ${sleep % 60}m',
             if (hr != null) '❤️ $hr bpm',
           ].join('   ·   '),
-          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       );
     }

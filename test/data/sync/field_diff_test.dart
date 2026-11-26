@@ -30,17 +30,11 @@ void main() {
     });
 
     test('is_deleted is stripped even when previous lacks the key', () {
-      expect(
-        diffSyncFields({'a': 1}, {'a': 1, 'is_deleted': false}),
-        isEmpty,
-      );
+      expect(diffSyncFields({'a': 1}, {'a': 1, 'is_deleted': false}), isEmpty);
     });
 
     test('field present in previous but absent from next is not emitted', () {
-      expect(
-        diffSyncFields({'a': 1, 'b': 2}, {'a': 1}),
-        isEmpty,
-      );
+      expect(diffSyncFields({'a': 1, 'b': 2}, {'a': 1}), isEmpty);
     });
 
     test('JSON-encoded list values compared as strings', () {

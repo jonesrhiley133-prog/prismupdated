@@ -69,7 +69,9 @@ class A11ySettings {
   final bool announce;
   final int modifiedAt;
 
-  bool get isDefault => jsonEncode((copyWith(modifiedAt: 0)).toJson()) == jsonEncode(const A11ySettings().toJson());
+  bool get isDefault =>
+      jsonEncode((copyWith(modifiedAt: 0)).toJson()) ==
+      jsonEncode(const A11ySettings().toJson());
 
   A11ySettings copyWith({
     double? uiScale,
@@ -134,7 +136,8 @@ class A11ySettings {
 
   static A11ySettings fromJson(Object? j) {
     if (j is! Map) return const A11ySettings();
-    double d(String k, double def, double lo, double hi) => (j[k] is num ? (j[k] as num).toDouble() : def).clamp(lo, hi).toDouble();
+    double d(String k, double def, double lo, double hi) =>
+        (j[k] is num ? (j[k] as num).toDouble() : def).clamp(lo, hi).toDouble();
     return A11ySettings(
       uiScale: d('uiScale', 1, 0.85, 1.4),
       lineHeight: d('lineHeight', 1, 1, 1.8),
@@ -146,7 +149,10 @@ class A11ySettings {
       reduceEffects: j['reduceEffects'] == true,
       reduceMotion: j['reduceMotion'] == true,
       animationSpeed: d('animationSpeed', 1, 0.5, 2),
-      colorVision: ColorVision.values.firstWhere((v) => v.name == j['colorVision'], orElse: () => ColorVision.standard),
+      colorVision: ColorVision.values.firstWhere(
+        (v) => v.name == j['colorVision'],
+        orElse: () => ColorVision.standard,
+      ),
       strongFocus: j['strongFocus'] == true,
       largeIcons: j['largeIcons'] == true,
       touchScale: d('touchScale', 1, 1, 1.5),
@@ -167,7 +173,9 @@ class A11yNotifier extends AsyncNotifier<A11ySettings> {
     A11ySettings s;
     try {
       final raw = (await SharedPreferences.getInstance()).getString(_prefsKey);
-      s = raw == null ? const A11ySettings() : A11ySettings.fromJson(jsonDecode(raw));
+      s = raw == null
+          ? const A11ySettings()
+          : A11ySettings.fromJson(jsonDecode(raw));
     } catch (_) {
       s = const A11ySettings();
     }
@@ -176,28 +184,39 @@ class A11yNotifier extends AsyncNotifier<A11ySettings> {
   }
 
   Future<void> _save(A11ySettings next, {bool touch = true}) async {
-    final stamped = touch ? next.copyWith(modifiedAt: DateTime.now().millisecondsSinceEpoch) : next;
+    final stamped = touch
+        ? next.copyWith(modifiedAt: DateTime.now().millisecondsSinceEpoch)
+        : next;
     Haptics.enabled = stamped.haptics;
     state = AsyncData(stamped);
     try {
-      await (await SharedPreferences.getInstance()).setString(_prefsKey, jsonEncode(stamped.toJson()));
+      await (await SharedPreferences.getInstance()).setString(
+        _prefsKey,
+        jsonEncode(stamped.toJson()),
+      );
     } catch (_) {
       // Kept in memory for this session.
     }
   }
 
   /// Saved automatically on every change.
-  Future<void> change(A11ySettings Function(A11ySettings) f) async => _save(f(state.value ?? await future));
+  Future<void> change(A11ySettings Function(A11ySettings) f) async =>
+      _save(f(state.value ?? await future));
 
   Future<void> reset() => _save(const A11ySettings());
 
-  Future<void> adoptRemote(Map<String, dynamic> json) => _save(A11ySettings.fromJson(json), touch: false);
+  Future<void> adoptRemote(Map<String, dynamic> json) =>
+      _save(A11ySettings.fromJson(json), touch: false);
 }
 
-final a11yProvider = AsyncNotifierProvider<A11yNotifier, A11ySettings>(A11yNotifier.new);
+final a11yProvider = AsyncNotifierProvider<A11yNotifier, A11ySettings>(
+  A11yNotifier.new,
+);
 
 /// Current settings, defaults until loaded.
-final a11ySettingsProvider = Provider<A11ySettings>((ref) => ref.watch(a11yProvider).value ?? const A11ySettings());
+final a11ySettingsProvider = Provider<A11ySettings>(
+  (ref) => ref.watch(a11yProvider).value ?? const A11ySettings(),
+);
 
 final a11ySyncProvider = Provider<void>((ref) {
   bindSyncedSetting(

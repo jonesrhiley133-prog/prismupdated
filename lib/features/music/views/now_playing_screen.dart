@@ -53,17 +53,23 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
     final c = ref.read(musicControllerProvider.notifier);
     final look = state.look;
     final artBg = look.artworkBackground && track?.art != null;
-    final base = look.color != null ? Color(look.color!) : theme.scaffoldBackgroundColor;
+    final base = look.color != null
+        ? Color(look.color!)
+        : theme.scaffoldBackgroundColor;
     final fg = artBg
         ? Colors.white
-        : (ThemeData.estimateBrightnessForColor(base) == Brightness.dark ? Colors.white : Colors.black87);
+        : (ThemeData.estimateBrightnessForColor(base) == Brightness.dark
+              ? Colors.white
+              : Colors.black87);
     final total = state.durationMs;
 
     return Shortcuts(
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.space): _PlayerIntent('toggle'),
-        SingleActivator(LogicalKeyboardKey.arrowRight, control: true): _PlayerIntent('next'),
-        SingleActivator(LogicalKeyboardKey.arrowLeft, control: true): _PlayerIntent('previous'),
+        SingleActivator(LogicalKeyboardKey.arrowRight, control: true):
+            _PlayerIntent('next'),
+        SingleActivator(LogicalKeyboardKey.arrowLeft, control: true):
+            _PlayerIntent('previous'),
       },
       child: Actions(
         actions: {
@@ -82,7 +88,12 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                if (artBg) ArtworkBackdrop(track: track, blur: look.blurArtwork, dim: 0.5),
+                if (artBg)
+                  ArtworkBackdrop(
+                    track: track,
+                    blur: look.blurArtwork,
+                    dim: 0.5,
+                  ),
                 SafeArea(
                   child: Center(
                     child: ConstrainedBox(
@@ -105,7 +116,9 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelLarge?.copyWith(color: fg.withValues(alpha: 0.8)),
+                                    style: theme.textTheme.labelLarge?.copyWith(
+                                      color: fg.withValues(alpha: 0.8),
+                                    ),
                                   ),
                                 ),
                                 PlayerButton(
@@ -120,8 +133,15 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                               child: Center(
                                 child: LayoutBuilder(
                                   builder: (context, box) {
-                                    final side = box.biggest.shortestSide.clamp(80.0, 360.0);
-                                    return TrackArt(track: track, size: side, radius: 20);
+                                    final side = box.biggest.shortestSide.clamp(
+                                      80.0,
+                                      360.0,
+                                    );
+                                    return TrackArt(
+                                      track: track,
+                                      size: side,
+                                      radius: 20,
+                                    );
                                   },
                                 ),
                               ),
@@ -130,31 +150,48 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         track?.title ?? l10n.musNothingPlaying,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.titleLarge?.copyWith(color: fg),
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(color: fg),
                                       ),
-                                      if (track != null && (track.artist.isNotEmpty || track.album.isNotEmpty))
+                                      if (track != null &&
+                                          (track.artist.isNotEmpty ||
+                                              track.album.isNotEmpty))
                                         Text(
-                                          [track.artist, track.album].where((x) => x.isNotEmpty).join(' · '),
+                                          [track.artist, track.album]
+                                              .where((x) => x.isNotEmpty)
+                                              .join(' · '),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.bodyMedium?.copyWith(color: fg.withValues(alpha: 0.75)),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: fg.withValues(
+                                                  alpha: 0.75,
+                                                ),
+                                              ),
                                         ),
                                     ],
                                   ),
                                 ),
                                 if (track != null)
                                   PlayerButton(
-                                    icon: track.favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                    label: track.favorite ? l10n.musUnfavorite : l10n.musFavorite,
+                                    icon: track.favorite
+                                        ? Icons.favorite_rounded
+                                        : Icons.favorite_border_rounded,
+                                    label: track.favorite
+                                        ? l10n.musUnfavorite
+                                        : l10n.musFavorite,
                                     color: fg,
                                     active: track.favorite,
-                                    onPressed: () => ref.read(musicLibraryProvider.notifier).toggleFavorite(track.id),
+                                    onPressed: () => ref
+                                        .read(musicLibraryProvider.notifier)
+                                        .toggleFavorite(track.id),
                                   ),
                               ],
                             ),
@@ -163,7 +200,9 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
                                   l10n.musCannotPlay(state.error!),
-                                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.error,
+                                  ),
                                 ),
                               ),
                             // Only the scrubber follows playback ticks; the
@@ -180,19 +219,39 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                                   active: state.queue.shuffle,
                                   onPressed: c.toggleShuffle,
                                 ),
-                                PlayerButton(icon: Icons.skip_previous_rounded, label: l10n.musPrevious, color: fg, size: 52, iconSize: 32, onPressed: c.previous),
                                 PlayerButton(
-                                  icon: state.playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                  label: state.playing ? l10n.musPause : l10n.musPlay,
+                                  icon: Icons.skip_previous_rounded,
+                                  label: l10n.musPrevious,
+                                  color: fg,
+                                  size: 52,
+                                  iconSize: 32,
+                                  onPressed: c.previous,
+                                ),
+                                PlayerButton(
+                                  icon: state.playing
+                                      ? Icons.pause_rounded
+                                      : Icons.play_arrow_rounded,
+                                  label: state.playing
+                                      ? l10n.musPause
+                                      : l10n.musPlay,
                                   color: fg,
                                   filled: true,
                                   size: 68,
                                   iconSize: 38,
                                   onPressed: state.hasTrack ? c.toggle : null,
                                 ),
-                                PlayerButton(icon: Icons.skip_next_rounded, label: l10n.musNext, color: fg, size: 52, iconSize: 32, onPressed: c.next),
                                 PlayerButton(
-                                  icon: state.queue.repeat == RepeatMode.one ? Icons.repeat_one_rounded : Icons.repeat_rounded,
+                                  icon: Icons.skip_next_rounded,
+                                  label: l10n.musNext,
+                                  color: fg,
+                                  size: 52,
+                                  iconSize: 32,
+                                  onPressed: c.next,
+                                ),
+                                PlayerButton(
+                                  icon: state.queue.repeat == RepeatMode.one
+                                      ? Icons.repeat_one_rounded
+                                      : Icons.repeat_rounded,
                                   label: switch (state.queue.repeat) {
                                     RepeatMode.off => l10n.musRepeatOff,
                                     RepeatMode.all => l10n.musRepeatAll,
@@ -207,18 +266,27 @@ class _NowPlayingScreenState extends ConsumerState<NowPlayingScreen> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.volume_down_rounded, color: fg.withValues(alpha: 0.8), size: 20),
+                                Icon(
+                                  Icons.volume_down_rounded,
+                                  color: fg.withValues(alpha: 0.8),
+                                  size: 20,
+                                ),
                                 Expanded(
                                   child: SliderTheme(
                                     data: SliderTheme.of(context).copyWith(
-                                      activeTrackColor: fg.withValues(alpha: 0.8),
-                                      inactiveTrackColor: fg.withValues(alpha: 0.2),
+                                      activeTrackColor: fg.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                      inactiveTrackColor: fg.withValues(
+                                        alpha: 0.2,
+                                      ),
                                       thumbColor: fg,
                                       trackHeight: 2,
                                     ),
                                     child: Slider(
                                       value: state.volume,
-                                      semanticFormatterCallback: (v) => l10n.musVolumeValue((v * 100).round()),
+                                      semanticFormatterCallback: (v) => l10n
+                                          .musVolumeValue((v * 100).round()),
                                       onChanged: c.setVolume,
                                     ),
                                   ),
@@ -252,10 +320,11 @@ class _PlayerIntent extends Intent {
   final String action;
 }
 
-Future<void> showQueueSheet(BuildContext context) => PrismSheet.showFullScreen<void>(
-  context: context,
-  builder: (context, scroll) => _QueueSheet(scroll: scroll),
-);
+Future<void> showQueueSheet(BuildContext context) =>
+    PrismSheet.showFullScreen<void>(
+      context: context,
+      builder: (context, scroll) => _QueueSheet(scroll: scroll),
+    );
 
 class _QueueSheet extends ConsumerWidget {
   const _QueueSheet({required this.scroll});
@@ -286,27 +355,43 @@ class _QueueSheet extends ConsumerWidget {
                       final current = i == queue.index;
                       return Material(
                         key: ValueKey('$i-${queue.items[i]}'),
-                        color: current ? theme.colorScheme.primary.withValues(alpha: 0.12) : Colors.transparent,
+                        color: current
+                            ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                            : Colors.transparent,
                         child: InkWell(
                           onTap: () => c.jumpTo(i),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             child: Row(
                               children: [
                                 TrackArt(track: t, size: 40),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         t?.title ?? '?',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: current ? FontWeight.w700 : null),
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                              fontWeight: current
+                                                  ? FontWeight.w700
+                                                  : null,
+                                            ),
                                       ),
                                       if (t != null && t.artist.isNotEmpty)
-                                        Text(t.artist, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                                        Text(
+                                          t.artist,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodySmall,
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -316,14 +401,22 @@ class _QueueSheet extends ConsumerWidget {
                                   size: 40,
                                   iconSize: 20,
                                   onPressed: () async {
-                                    if (await confirmIfAsked(context, ref, title: l10n.musRemoveFromQueue)) await c.removeFromQueue(i);
+                                    if (await confirmIfAsked(
+                                      context,
+                                      ref,
+                                      title: l10n.musRemoveFromQueue,
+                                    ))
+                                      await c.removeFromQueue(i);
                                   },
                                 ),
                                 ReorderableDragStartListener(
                                   index: i,
                                   child: Semantics(
                                     label: l10n.musReorder,
-                                    child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.drag_handle_rounded)),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Icon(Icons.drag_handle_rounded),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -356,7 +449,15 @@ class _LookSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final look = ref.watch(musicControllerProvider.select((s) => s.look));
     final c = ref.read(musicControllerProvider.notifier);
-    const swatches = [0xFF7E57C2, 0xFF5C6BC0, 0xFF26A69A, 0xFFEC407A, 0xFFFF7043, 0xFF263238, 0xFF000000];
+    const swatches = [
+      0xFF7E57C2,
+      0xFF5C6BC0,
+      0xFF26A69A,
+      0xFFEC407A,
+      0xFFFF7043,
+      0xFF263238,
+      0xFF000000,
+    ];
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
@@ -367,8 +468,14 @@ class _LookSheet extends ConsumerWidget {
           PrismSegmentedControl<PlayerLayout>(
             segments: [
               PrismSegment(value: PlayerLayout.bar, label: l10n.musLayoutBar),
-              PrismSegment(value: PlayerLayout.bubble, label: l10n.musLayoutBubble),
-              PrismSegment(value: PlayerLayout.hidden, label: l10n.musLayoutHidden),
+              PrismSegment(
+                value: PlayerLayout.bubble,
+                label: l10n.musLayoutBubble,
+              ),
+              PrismSegment(
+                value: PlayerLayout.hidden,
+                label: l10n.musLayoutHidden,
+              ),
             ],
             selected: look.layout,
             onChanged: (v) => c.setLook(look.copyWith(layout: v)),
@@ -376,7 +483,9 @@ class _LookSheet extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             l10n.musLayoutHelp,
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           if (look.layout == PlayerLayout.bar) ...[
             const SizedBox(height: 12),
@@ -384,8 +493,14 @@ class _LookSheet extends ConsumerWidget {
             const SizedBox(height: 6),
             PrismSegmentedControl<PlayerPlacement>(
               segments: [
-                PrismSegment(value: PlayerPlacement.bottom, label: l10n.musPlacementBottom),
-                PrismSegment(value: PlayerPlacement.top, label: l10n.musPlacementTop),
+                PrismSegment(
+                  value: PlayerPlacement.bottom,
+                  label: l10n.musPlacementBottom,
+                ),
+                PrismSegment(
+                  value: PlayerPlacement.top,
+                  label: l10n.musPlacementTop,
+                ),
               ],
               selected: look.placement,
               onChanged: (v) => c.setLook(look.copyWith(placement: v)),
@@ -411,7 +526,11 @@ class _LookSheet extends ConsumerWidget {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              PrismChip(label: l10n.musColorTheme, selected: look.color == null, onTap: () => c.setLook(look.copyWith(clearColor: true))),
+              PrismChip(
+                label: l10n.musColorTheme,
+                selected: look.color == null,
+                onTap: () => c.setLook(look.copyWith(clearColor: true)),
+              ),
               for (final s in swatches)
                 Semantics(
                   button: true,
@@ -425,7 +544,10 @@ class _LookSheet extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: Color(s),
                         borderRadius: prismRound(context),
-                        border: Border.all(width: look.color == s ? 3 : 1, color: theme.colorScheme.outline),
+                        border: Border.all(
+                          width: look.color == s ? 3 : 1,
+                          color: theme.colorScheme.outline,
+                        ),
                       ),
                     ),
                   ),
@@ -434,9 +556,15 @@ class _LookSheet extends ConsumerWidget {
                 label: l10n.fnColorCustom,
                 density: PrismControlDensity.compact,
                 onPressed: () async {
-                  final hex = await showPrismColorPickerDialog(context: context, initialColor: Color(look.color ?? 0xFF7E57C2));
-                  final v = hex == null ? null : int.tryParse(hex.replaceFirst('#', ''), radix: 16);
-                  if (v != null) c.setLook(look.copyWith(color: 0xFF000000 | v));
+                  final hex = await showPrismColorPickerDialog(
+                    context: context,
+                    initialColor: Color(look.color ?? 0xFF7E57C2),
+                  );
+                  final v = hex == null
+                      ? null
+                      : int.tryParse(hex.replaceFirst('#', ''), radix: 16);
+                  if (v != null)
+                    c.setLook(look.copyWith(color: 0xFF000000 | v));
                 },
               ),
             ],
@@ -446,7 +574,6 @@ class _LookSheet extends ConsumerWidget {
     );
   }
 }
-
 
 /// Seek bar and elapsed / total time. Watches the playback position on its
 /// own so a position tick (every 200 ms) rebuilds only this strip.
@@ -469,10 +596,14 @@ class _PlaybackScrubberState extends ConsumerState<_PlaybackScrubber> {
     final fg = widget.color;
     final total = widget.totalMs;
     final pos = ref.watch(musicPositionProvider).value ?? Duration.zero;
-    final value = _scrub ?? (total <= 0 ? 0.0 : (pos.inMilliseconds / total).clamp(0.0, 1.0));
+    final value =
+        _scrub ??
+        (total <= 0 ? 0.0 : (pos.inMilliseconds / total).clamp(0.0, 1.0));
     final shown = Duration(milliseconds: (value * total).round());
     final c = ref.read(musicControllerProvider.notifier);
-    final label = theme.textTheme.labelSmall?.copyWith(color: fg.withValues(alpha: 0.8));
+    final label = theme.textTheme.labelSmall?.copyWith(
+      color: fg.withValues(alpha: 0.8),
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -500,7 +631,10 @@ class _PlaybackScrubberState extends ConsumerState<_PlaybackScrubber> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(formatTrackTime(shown), style: label),
-              Text(formatTrackTime(Duration(milliseconds: total)), style: label),
+              Text(
+                formatTrackTime(Duration(milliseconds: total)),
+                style: label,
+              ),
             ],
           ),
         ),

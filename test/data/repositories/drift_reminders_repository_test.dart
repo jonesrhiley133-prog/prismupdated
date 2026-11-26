@@ -160,12 +160,14 @@ void main() {
 
   group('getById', () {
     test('returns reminder when it exists', () async {
-      await repo.create(makeReminder(
-        id: 'r1',
-        name: 'Find Me',
-        trigger: ReminderTrigger.onFrontChange,
-        delayHours: 3,
-      ));
+      await repo.create(
+        makeReminder(
+          id: 'r1',
+          name: 'Find Me',
+          trigger: ReminderTrigger.onFrontChange,
+          delayHours: 3,
+        ),
+      );
 
       final found = await repo.getById('r1');
       expect(found, isNotNull);
@@ -186,9 +188,9 @@ void main() {
   // Z-suffixed UTC even when the input is a local DateTime.
   group('debugReminderFields sync contract', () {
     test('target_member_id is emitted in the field map', () {
-      final reminder = makeReminder(id: 'r1').copyWith(
-        targetMemberId: 'member-42',
-      );
+      final reminder = makeReminder(
+        id: 'r1',
+      ).copyWith(targetMemberId: 'member-42');
       final fields = repo.debugReminderFields(reminder);
       expect(fields.containsKey('target_member_id'), isTrue);
       expect(fields['target_member_id'], 'member-42');
@@ -201,33 +203,29 @@ void main() {
       expect(fields['target_member_id'], isNull);
     });
 
-    test(
-      'created_at and modified_at emit Z-suffixed UTC even when input is '
-      'a local DateTime',
-      () {
-        final localCreated = DateTime(2026, 4, 27, 10, 0);
-        final localModified = DateTime(2026, 4, 27, 11, 30);
-        final reminder = makeReminder(id: 'r1').copyWith(
-          createdAt: localCreated,
-          modifiedAt: localModified,
-        );
+    test('created_at and modified_at emit Z-suffixed UTC even when input is '
+        'a local DateTime', () {
+      final localCreated = DateTime(2026, 4, 27, 10, 0);
+      final localModified = DateTime(2026, 4, 27, 11, 30);
+      final reminder = makeReminder(
+        id: 'r1',
+      ).copyWith(createdAt: localCreated, modifiedAt: localModified);
 
-        final fields = repo.debugReminderFields(reminder);
-        final createdStr = fields['created_at'] as String;
-        final modifiedStr = fields['modified_at'] as String;
+      final fields = repo.debugReminderFields(reminder);
+      final createdStr = fields['created_at'] as String;
+      final modifiedStr = fields['modified_at'] as String;
 
-        expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
-        expect(modifiedStr.endsWith('Z'), isTrue, reason: modifiedStr);
-        expect(
-          DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
-          isTrue,
-        );
-        expect(
-          DateTime.parse(modifiedStr).isAtSameMomentAs(localModified.toUtc()),
-          isTrue,
-        );
-      },
-    );
+      expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
+      expect(modifiedStr.endsWith('Z'), isTrue, reason: modifiedStr);
+      expect(
+        DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
+        isTrue,
+      );
+      expect(
+        DateTime.parse(modifiedStr).isAtSameMomentAs(localModified.toUtc()),
+        isTrue,
+      );
+    });
   });
 
   group('update (patch-style emission)', () {
@@ -272,9 +270,7 @@ void main() {
       addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
       final later = baseTime.add(const Duration(hours: 1));
-      await repo.update(
-        makeBase(name: 'New name', modifiedAt: later),
-      );
+      await repo.update(makeBase(name: 'New name', modifiedAt: later));
 
       expect(captured, hasLength(1));
       expect(captured.single.opType, SyncRecordOpType.update);
@@ -285,17 +281,19 @@ void main() {
       expect(captured.single.fields.containsKey('is_deleted'), isFalse);
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.create(makeBase());
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.create(makeBase());
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.update(makeBase());
+        await repo.update(makeBase());
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
       await repo.create(
@@ -330,34 +328,33 @@ void main() {
       expect(row.isActive, isTrue);
     });
 
-    test('null-clearing weekly_days emits the null and writes it to the database',
-        () async {
-      await repo.create(
-        makeBase(
-          frequency: ReminderFrequency.weekly,
-          weeklyDays: [1, 3, 5],
-        ),
-      );
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'null-clearing weekly_days emits the null and writes it to the database',
+      () async {
+        await repo.create(
+          makeBase(frequency: ReminderFrequency.weekly, weeklyDays: [1, 3, 5]),
+        );
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.update(
-        makeBase(
-          frequency: ReminderFrequency.weekly,
-          weeklyDays: null,
-          modifiedAt: baseTime.add(const Duration(hours: 1)),
-        ),
-      );
+        await repo.update(
+          makeBase(
+            frequency: ReminderFrequency.weekly,
+            weeklyDays: null,
+            modifiedAt: baseTime.add(const Duration(hours: 1)),
+          ),
+        );
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('weekly_days'), isTrue);
-      expect(patch['weekly_days'], isNull);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('weekly_days'), isTrue);
+        expect(patch['weekly_days'], isNull);
 
-      final row = await dao.getById('r1');
-      expect(row!.weeklyDays, isNull);
-    });
+        final row = await dao.getById('r1');
+        expect(row!.weeklyDays, isNull);
+      },
+    );
 
     test('silently no-ops on a tombstoned row (does not emit, '
         'does not resurrect)', () async {
@@ -390,20 +387,14 @@ void main() {
 
     test('reordering weekly_days produces no diff', () async {
       await repo.create(
-        makeBase(
-          frequency: ReminderFrequency.weekly,
-          weeklyDays: [1, 3, 5],
-        ),
+        makeBase(frequency: ReminderFrequency.weekly, weeklyDays: [1, 3, 5]),
       );
       final captured = <CapturedSyncOp>[];
       SyncRecordMixin.installCaptureSinkForTesting(captured.add);
       addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
       await repo.update(
-        makeBase(
-          frequency: ReminderFrequency.weekly,
-          weeklyDays: [5, 1, 3],
-        ),
+        makeBase(frequency: ReminderFrequency.weekly, weeklyDays: [5, 1, 3]),
       );
 
       expect(captured, isEmpty);

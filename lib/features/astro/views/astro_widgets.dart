@@ -8,7 +8,8 @@ import 'package:prism_plurality/shared/providers/visual_effects_provider.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 
-bool astroEs(BuildContext c) => Localizations.maybeLocaleOf(c)?.languageCode == 'es';
+bool astroEs(BuildContext c) =>
+    Localizations.maybeLocaleOf(c)?.languageCode == 'es';
 
 String trp(BuildContext c, (String, String) p) => tr(c, p.$1, p.$2);
 
@@ -33,7 +34,15 @@ class AstroGlyph extends StatelessWidget {
     final c = color ?? Theme.of(context).colorScheme.primary;
     // Angles (AC / MC) are letters, drawn in the app font.
     if (glyph.length > 1 && !glyph.runes.any((r) => r > 0x2000)) {
-      return Text(glyph, style: TextStyle(fontSize: size * 0.62, fontWeight: FontWeight.w800, color: c, letterSpacing: 0.5));
+      return Text(
+        glyph,
+        style: TextStyle(
+          fontSize: size * 0.62,
+          fontWeight: FontWeight.w800,
+          color: c,
+          letterSpacing: 0.5,
+        ),
+      );
     }
     return Text(glyph, style: astroGlyphStyle(size, c));
   }
@@ -60,13 +69,18 @@ class StarField extends ConsumerStatefulWidget {
   ConsumerState<StarField> createState() => _StarFieldState();
 }
 
-class _StarFieldState extends ConsumerState<StarField> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(seconds: 6));
+class _StarFieldState extends ConsumerState<StarField>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 6),
+  );
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final animate = VisualEffectsModeX.of(context, ref) == VisualEffectsMode.full;
+    final animate =
+        VisualEffectsModeX.of(context, ref) == VisualEffectsMode.full;
     if (animate && !_c.isAnimating) {
       _c.repeat();
     } else if (!animate && _c.isAnimating) {
@@ -95,7 +109,8 @@ class _StarFieldState extends ConsumerState<StarField> with SingleTickerProvider
 }
 
 class _StarPainter extends CustomPainter {
-  _StarPainter(this.count, this.seed, this.color, this.anim) : super(repaint: anim);
+  _StarPainter(this.count, this.seed, this.color, this.anim)
+    : super(repaint: anim);
   final int count;
   final int seed;
   final Color color;
@@ -121,12 +136,19 @@ class _StarPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_StarPainter old) => old.color != color || old.count != count;
+  bool shouldRepaint(_StarPainter old) =>
+      old.color != color || old.count != count;
 }
 
 /// The Astro hero card: a Prism surface with a starfield behind it.
 class AstroHero extends StatelessWidget {
-  const AstroHero({super.key, required this.child, this.accent, this.onTap, this.seed = 7});
+  const AstroHero({
+    super.key,
+    required this.child,
+    this.accent,
+    this.onTap,
+    this.seed = 7,
+  });
   final Widget child;
   final Color? accent;
   final VoidCallback? onTap;
@@ -151,7 +173,11 @@ class AstroHero extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [a.withValues(alpha: 0.16), a.withValues(alpha: 0.02), scheme.tertiary.withValues(alpha: 0.08)],
+                    colors: [
+                      a.withValues(alpha: 0.16),
+                      a.withValues(alpha: 0.02),
+                      scheme.tertiary.withValues(alpha: 0.08),
+                    ],
                   ),
                 ),
               ),
@@ -167,7 +193,15 @@ class AstroHero extends StatelessWidget {
 
 /// A titled card in a section.
 class AstroCard extends StatelessWidget {
-  const AstroCard({super.key, required this.child, this.title, this.emoji, this.trailing, this.onTap, this.padding = const EdgeInsets.all(16)});
+  const AstroCard({
+    super.key,
+    required this.child,
+    this.title,
+    this.emoji,
+    this.trailing,
+    this.onTap,
+    this.padding = const EdgeInsets.all(16),
+  });
   final Widget child;
   final String? title;
   final String? emoji;
@@ -187,8 +221,18 @@ class AstroCard extends StatelessWidget {
           if (title != null) ...[
             Row(
               children: [
-                if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 16)), const SizedBox(width: 8)],
-                Expanded(child: Text(title!, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700))),
+                if (emoji != null) ...[
+                  Text(emoji!, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: Text(
+                    title!,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
                 ?trailing,
               ],
             ),
@@ -203,7 +247,12 @@ class AstroCard extends StatelessWidget {
 
 /// "☉ Aquarius · ☽ Pisces · AC Leo"
 class BigThree extends StatelessWidget {
-  const BigThree({super.key, required this.access, this.size = 14, this.wrap = true});
+  const BigThree({
+    super.key,
+    required this.access,
+    this.size = 14,
+    this.wrap = true,
+  });
   final AstroAccess access;
   final double size;
   final bool wrap;
@@ -215,26 +264,59 @@ class BigThree extends StatelessWidget {
     final accent = alterAccent(context, access);
     final c = access.chart;
     final items = <(String, String, bool)>[
-      if (access.sunSign != null) (signs[access.sunSign!].glyph, '${signs[access.sunSign!].name.of(es)}${access.cuspWith != null ? '*' : ''}', true),
-      if (c != null && c.moonCertain) ('☽', '${signs[c.moonSign].name.of(es)} ${es ? 'Luna' : 'Moon'}', true),
-      if (c?.risingSign != null) ('AC', '${signs[c!.risingSign!].name.of(es)} ${es ? 'Asc.' : 'Rising'}', true),
+      if (access.sunSign != null)
+        (
+          signs[access.sunSign!].glyph,
+          '${signs[access.sunSign!].name.of(es)}${access.cuspWith != null ? '*' : ''}',
+          true,
+        ),
+      if (c != null && c.moonCertain)
+        ('☽', '${signs[c.moonSign].name.of(es)} ${es ? 'Luna' : 'Moon'}', true),
+      if (c?.risingSign != null)
+        (
+          'AC',
+          '${signs[c!.risingSign!].name.of(es)} ${es ? 'Asc.' : 'Rising'}',
+          true,
+        ),
     ];
     final children = [
       for (final (i, it) in items.indexed) ...[
-        if (i > 0) Text(' · ', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        if (i > 0)
+          Text(
+            ' · ',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         AstroGlyph(it.$1, size: size + 2, color: accent),
         const SizedBox(width: 4),
-        Text(it.$2, style: theme.textTheme.bodySmall?.copyWith(fontSize: size - 1, fontWeight: FontWeight.w600)),
+        Text(
+          it.$2,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontSize: size - 1,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     ];
     if (!wrap) return Row(mainAxisSize: MainAxisSize.min, children: children);
-    return Wrap(crossAxisAlignment: WrapCrossAlignment.center, runSpacing: 4, children: children);
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runSpacing: 4,
+      children: children,
+    );
   }
 }
 
 /// Horizontal bar for a 0–100 energy value.
 class EnergyBar extends StatelessWidget {
-  const EnergyBar({super.key, required this.kind, required this.value, this.compare, this.color});
+  const EnergyBar({
+    super.key,
+    required this.kind,
+    required this.value,
+    this.compare,
+    this.color,
+  });
   final EnergyKind kind;
   final int value;
 
@@ -253,34 +335,70 @@ class EnergyBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Row(
           children: [
-            SizedBox(width: 26, child: Text(kind.emoji, style: const TextStyle(fontSize: 15))),
-            SizedBox(width: 92, child: Text(kind.label.of(es), style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
+            SizedBox(
+              width: 26,
+              child: Text(kind.emoji, style: const TextStyle(fontSize: 15)),
+            ),
+            SizedBox(
+              width: 92,
+              child: Text(
+                kind.label.of(es),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, box) => Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(height: 8, decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: prismCorners(context, 4))),
+                    Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: prismCorners(context, 4),
+                      ),
+                    ),
                     Container(
                       height: 8,
                       width: box.maxWidth * value / 100,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [c.withValues(alpha: 0.55), c]),
+                        gradient: LinearGradient(
+                          colors: [c.withValues(alpha: 0.55), c],
+                        ),
                         borderRadius: prismCorners(context, 4),
                       ),
                     ),
                     if (compare != null)
                       Positioned(
-                        left: (box.maxWidth * compare! / 100 - 2).clamp(0, box.maxWidth - 4),
+                        left: (box.maxWidth * compare! / 100 - 2).clamp(
+                          0,
+                          box.maxWidth - 4,
+                        ),
                         top: -3,
-                        child: Container(width: 4, height: 14, decoration: BoxDecoration(color: theme.colorScheme.tertiary, borderRadius: prismCorners(context, 2))),
+                        child: Container(
+                          width: 4,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.tertiary,
+                            borderRadius: prismCorners(context, 2),
+                          ),
+                        ),
                       ),
                   ],
                 ),
               ),
             ),
             const SizedBox(width: 10),
-            SizedBox(width: 34, child: Text('$value%', textAlign: TextAlign.right, style: theme.textTheme.labelSmall)),
+            SizedBox(
+              width: 34,
+              child: Text(
+                '$value%',
+                textAlign: TextAlign.right,
+                style: theme.textTheme.labelSmall,
+              ),
+            ),
           ],
         ),
       ),
@@ -301,14 +419,28 @@ class AstroDisclaimer extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(PhosphorIcons.info(), size: 14, color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            PhosphorIcons.info(),
+            size: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               tarot
-                  ? tr(context, 'Tarot here is for reflection and fun — it doesn\'t predict what will happen.', 'Aquí el tarot es para reflexionar y divertirse: no predice lo que va a pasar.')
-                  : tr(context, 'Astrology-inspired interpretations for reflection, not predictions or facts.', 'Interpretaciones inspiradas en la astrología para reflexionar, no predicciones ni hechos.'),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ? tr(
+                      context,
+                      'Tarot here is for reflection and fun — it doesn\'t predict what will happen.',
+                      'Aquí el tarot es para reflexionar y divertirse: no predice lo que va a pasar.',
+                    )
+                  : tr(
+                      context,
+                      'Astrology-inspired interpretations for reflection, not predictions or facts.',
+                      'Interpretaciones inspiradas en la astrología para reflexionar, no predicciones ni hechos.',
+                    ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -351,13 +483,22 @@ class SignChip extends StatelessWidget {
     final c = color ?? theme.colorScheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.12), borderRadius: prismCorners(context, 20), border: Border.all(color: c.withValues(alpha: 0.25))),
+      decoration: BoxDecoration(
+        color: c.withValues(alpha: 0.12),
+        borderRadius: prismCorners(context, 20),
+        border: Border.all(color: c.withValues(alpha: 0.25)),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           AstroGlyph(signs[sign].glyph, size: 15, color: c),
           const SizedBox(width: 5),
-          Text('${prefix == null ? '' : '$prefix '}${signs[sign].name.of(es)}', style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            '${prefix == null ? '' : '$prefix '}${signs[sign].name.of(es)}',
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

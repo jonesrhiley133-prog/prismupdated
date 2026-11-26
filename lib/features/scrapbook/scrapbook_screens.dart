@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -1397,6 +1398,17 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
           tr(context, 'Video', 'Vídeo'),
           () => _videoOptions(e),
         ),
+      if (e.type == ScrapType.photo && e.media != null)
+        (
+          PhosphorIcons.crop(),
+          tr(context, 'Crop', 'Recortar'),
+          () async {
+            final id = await PrismMedia.recropImage(ref, e.media!);
+            if (id == null) return;
+            setState(() => e.media = id);
+            _changed();
+          },
+        ),
       if (e.type == ScrapType.photo ||
           e.type == ScrapType.drawing ||
           e.type == ScrapType.video)
@@ -1924,7 +1936,10 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
               label: tr(context, 'Choose', 'Elegir'),
               icon: AppIcons.imageOutlined,
               onPressed: () async {
-                final id = await PrismMedia.pickImage(ref);
+                final id = await PrismMedia.pickImage(
+                  ref,
+                  spec: const PrismCropSpec(aspect: scrapPageAspect),
+                );
                 if (id != null) setState(() => _cover = id);
               },
             ),

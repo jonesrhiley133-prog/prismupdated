@@ -69,7 +69,7 @@ class _FakeMemberRepository implements MemberRepository {
 
   @override
   Future<({member_domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 
   @override
   Future<void> updateMember(member_domain.Member member) async {}
@@ -140,7 +140,10 @@ class _RecordingMemberGroupsRepository extends DriftMemberGroupsRepository {
   }
 
   @override
-  Future<void> syncRecordDeleteMulti(String table, List<String> entityIds) async {
+  Future<void> syncRecordDeleteMulti(
+    String table,
+    List<String> entityIds,
+  ) async {
     for (final entityId in entityIds) {
       deletes.add({'table': table, 'entityId': entityId});
     }
@@ -169,14 +172,14 @@ MemberGroupsCompanion _group({
   bool syncSuppressed = false,
   String? suspectedPkGroupUuid,
 }) => pkFixtureGroup(
-      id: id,
-      name: name,
-      createdAt: createdAt,
-      parentGroupId: parentGroupId,
-      pluralkitUuid: pluralkitUuid,
-      syncSuppressed: syncSuppressed,
-      suspectedPkGroupUuid: suspectedPkGroupUuid,
-    );
+  id: id,
+  name: name,
+  createdAt: createdAt,
+  parentGroupId: parentGroupId,
+  pluralkitUuid: pluralkitUuid,
+  syncSuppressed: syncSuppressed,
+  suspectedPkGroupUuid: suspectedPkGroupUuid,
+);
 
 MemberGroupEntriesCompanion _entry({
   required String id,
@@ -185,12 +188,12 @@ MemberGroupEntriesCompanion _entry({
   String? pkGroupUuid,
   String? pkMemberUuid,
 }) => pkFixtureEntry(
-      id: id,
-      groupId: groupId,
-      memberId: memberId,
-      pkGroupUuid: pkGroupUuid,
-      pkMemberUuid: pkMemberUuid,
-    );
+  id: id,
+  groupId: groupId,
+  memberId: memberId,
+  pkGroupUuid: pkGroupUuid,
+  pkMemberUuid: pkMemberUuid,
+);
 
 PkGroupEntryDeferredSyncOpsCompanion _deferredOp({
   required String id,
@@ -392,10 +395,10 @@ void main() {
         'local-child',
         'local-grandchild',
       });
-      expect(
-        repository.deletes.map((op) => op['entityId']).toSet(),
-        {'suppressed-entry', 'suppressed'},
-      );
+      expect(repository.deletes.map((op) => op['entityId']).toSet(), {
+        'suppressed-entry',
+        'suppressed',
+      });
     },
   );
 

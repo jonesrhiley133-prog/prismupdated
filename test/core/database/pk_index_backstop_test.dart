@@ -34,7 +34,9 @@ void main() {
     final db1 = AppDatabase(NativeDatabase(dbFile));
     await db1.customSelect('SELECT 1').get();
     // Simulate the renumbered-DB window: the backstop index is absent.
-    await db1.customStatement('DROP INDEX IF EXISTS idx_members_pluralkit_uuid');
+    await db1.customStatement(
+      'DROP INDEX IF EXISTS idx_members_pluralkit_uuid',
+    );
     expect(await indexNamed(db1, 'idx_members_pluralkit_uuid'), isNull);
     await db1.close();
 
@@ -49,17 +51,20 @@ void main() {
     );
   });
 
-  test(
-      'F20: boot does not brick when pre-existing duplicate uuids block the '
+  test('F20: boot does not brick when pre-existing duplicate uuids block the '
       're-ensure', () async {
     final dbFile = dbFileIn('prism_f20_dup_');
 
     final db1 = AppDatabase(NativeDatabase(dbFile));
     await db1.customSelect('SELECT 1').get();
-    await db1.customStatement('DROP INDEX IF EXISTS idx_members_pluralkit_uuid');
+    await db1.customStatement(
+      'DROP INDEX IF EXISTS idx_members_pluralkit_uuid',
+    );
     // Two ACTIVE members sharing a uuid — the UNIQUE re-ensure will fail.
     for (final id in ['m-a', 'm-b']) {
-      await db1.into(db1.members).insert(
+      await db1
+          .into(db1.members)
+          .insert(
             MembersCompanion.insert(
               id: id,
               name: id,

@@ -278,12 +278,15 @@ class MemberListViewSettingsSheet extends ConsumerWidget {
                     subtitle: l10n.socShowBannersHelp,
                     value: ref.watch(showMemberBannersProvider),
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    onChanged: (v) => ref.read(appearanceProvider.notifier).setShowMemberBanners(v),
+                    onChanged: (v) => ref
+                        .read(appearanceProvider.notifier)
+                        .setShowMemberBanners(v),
                   ),
                   PrismButton(
                     label: l10n.socBannersAdjust,
                     icon: Icons.crop_rounded,
-                    onPressed: () => context.push(AppRoutePaths.headmateBanners),
+                    onPressed: () =>
+                        context.push(AppRoutePaths.headmateBanners),
                   ),
                 ],
               ),

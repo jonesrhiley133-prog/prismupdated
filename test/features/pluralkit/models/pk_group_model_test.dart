@@ -29,11 +29,7 @@ void main() {
     });
 
     test('members absent → memberIds is null (unknown, see R2)', () {
-      final g = PKGroup.fromJson({
-        'id': 'aaaaa',
-        'uuid': 'u1',
-        'name': 'N',
-      });
+      final g = PKGroup.fromJson({'id': 'aaaaa', 'uuid': 'u1', 'name': 'N'});
       expect(g.memberIds, isNull);
     });
 

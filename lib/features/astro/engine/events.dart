@@ -11,7 +11,8 @@ enum MoonPhase {
   lastQuarter,
   waningCrescent;
 
-  String get glyph => const ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][index];
+  String get glyph =>
+      const ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][index];
 
   bool get principal => index.isEven;
 }
@@ -44,7 +45,12 @@ class Ingress {
 
 /// A planet appearing to stop and turn.
 class Station {
-  const Station(this.body, this.utc, this.longitude, {required this.toRetrograde});
+  const Station(
+    this.body,
+    this.utc,
+    this.longitude, {
+    required this.toRetrograde,
+  });
   final Body body;
   final DateTime utc;
   final double longitude;
@@ -56,7 +62,9 @@ DateTime _root(DateTime a, DateTime b, double Function(DateTime) f) {
   var lo = a, hi = b;
   final flo = f(lo);
   for (var k = 0; k < 40; k++) {
-    final mid = lo.add(Duration(milliseconds: hi.difference(lo).inMilliseconds ~/ 2));
+    final mid = lo.add(
+      Duration(milliseconds: hi.difference(lo).inMilliseconds ~/ 2),
+    );
     final fm = f(mid);
     if ((fm < 0) == (flo < 0)) {
       lo = mid;
@@ -81,13 +89,19 @@ List<Lunation> lunations(DateTime from, DateTime to) {
       final target = q * 90.0;
       final a = angleDiff(prev, target), b = angleDiff(cur, target);
       if (a < 0 && b >= 0 && (b - a) < 90) {
-        final when = _root(t, next, (x) => angleDiff(moonElongation(x), target));
+        final when = _root(
+          t,
+          next,
+          (x) => angleDiff(moonElongation(x), target),
+        );
         if (!when.isBefore(from) && when.isBefore(to)) {
           final moon = positionOf(Body.moon, when);
           var eclipse = Eclipse.none;
           if (q == 0 && moon.latitude.abs() < 1.4) eclipse = Eclipse.solar;
           if (q == 2 && moon.latitude.abs() < 1.0) eclipse = Eclipse.lunar;
-          out.add(Lunation(MoonPhase.values[q * 2], when, moon.longitude, eclipse));
+          out.add(
+            Lunation(MoonPhase.values[q * 2], when, moon.longitude, eclipse),
+          );
         }
       }
     }
@@ -113,7 +127,11 @@ List<Ingress> ingresses(Body body, DateTime from, DateTime to) {
     if (signOf(cur) != signOf(prev)) {
       final forward = angleDiff(cur, prev) > 0;
       final boundary = forward ? (signOf(cur) * 30.0) : (signOf(prev) * 30.0);
-      final when = _root(t, next, (x) => angleDiff(longitudeOf(body, x), boundary));
+      final when = _root(
+        t,
+        next,
+        (x) => angleDiff(longitudeOf(body, x), boundary),
+      );
       if (!when.isBefore(from) && when.isBefore(to)) {
         out.add(Ingress(body, when, signOf(cur), retrograde: !forward));
       }
@@ -151,7 +169,8 @@ List<Station> stations(Body body, DateTime from, DateTime to) {
 MoonPhase phaseForDay(DateTime localDay, {List<Lunation>? known}) {
   final start = DateTime(localDay.year, localDay.month, localDay.day);
   final end = start.add(const Duration(days: 1));
-  final list = known ?? lunations(start.subtract(const Duration(hours: 1)), end);
+  final list =
+      known ?? lunations(start.subtract(const Duration(hours: 1)), end);
   for (final l in list) {
     final local = l.utc.toLocal();
     if (!local.isBefore(start) && local.isBefore(end)) return l.phase;
@@ -165,7 +184,9 @@ MoonPhase phaseForDay(DateTime localDay, {List<Lunation>? known}) {
 
 /// The Moon's sign through a local day: the sign at the start, and the
 /// sign it moves into (with the time) if it changes that day.
-({int sign, int? nextSign, DateTime? changeAt}) moonSignForDay(DateTime localDay) {
+({int sign, int? nextSign, DateTime? changeAt}) moonSignForDay(
+  DateTime localDay,
+) {
   final start = DateTime(localDay.year, localDay.month, localDay.day);
   final end = start.add(const Duration(days: 1));
   final s = signOf(longitudeOf(Body.moon, start.toUtc()));

@@ -169,7 +169,10 @@ class _WorkoutEditorState extends ConsumerState<WorkoutEditorSheet> {
             )
             // An imported workout edited by hand keeps the user's values:
             // later syncs leave it alone.
-            .withFields({...fields, if (e.flag('imported')) 'manualEdit': true}),
+            .withFields({
+              ...fields,
+              if (e.flag('imported')) 'manualEdit': true,
+            }),
       );
     }
     if (mounted) Navigator.of(context).pop();

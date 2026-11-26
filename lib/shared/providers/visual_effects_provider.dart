@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 enum VisualEffectsMode {
   /// Full blur and animation effects.
   full,
+
   /// Tinted glass only — no live backdrop blur. Better performance.
   reduced,
+
   /// High contrast, no blur, minimal translucency. Accessibility-safe.
   accessible,
 }
@@ -15,7 +17,8 @@ enum VisualEffectsMode {
 /// `null` means "auto" (follow platform accessibility signals).
 final visualEffectsPreferenceProvider =
     NotifierProvider<VisualEffectsPreferenceNotifier, VisualEffectsMode?>(
-        VisualEffectsPreferenceNotifier.new);
+      VisualEffectsPreferenceNotifier.new,
+    );
 
 class VisualEffectsPreferenceNotifier extends Notifier<VisualEffectsMode?> {
   @override

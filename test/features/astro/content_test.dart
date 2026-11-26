@@ -12,18 +12,40 @@ import 'package:prism_plurality/features/astro/engine/chart.dart';
 import 'package:prism_plurality/features/astro/engine/ephemeris.dart';
 
 void main() {
-  final london = const BirthPlace(name: 'London', lat: 51.507, lon: -0.128, timeZone: 'Europe/London');
+  final london = const BirthPlace(
+    name: 'London',
+    lat: 51.507,
+    lon: -0.128,
+    timeZone: 'Europe/London',
+  );
   final full = AstroSubject(
     name: 'Bonnie',
     sunSign: 10,
-    chart: NatalChart.of(BirthData(year: 1994, month: 2, day: 3, hour: 14, minute: 20, place: london)),
+    chart: NatalChart.of(
+      BirthData(
+        year: 1994,
+        month: 2,
+        day: 3,
+        hour: 14,
+        minute: 20,
+        place: london,
+      ),
+    ),
   );
-  final yearOnly = AstroSubject(name: 'Justin', sunSign: 6, chart: NatalChart.of(const BirthData(year: 1988, month: 10, day: 12)));
+  final yearOnly = AstroSubject(
+    name: 'Justin',
+    sunSign: 6,
+    chart: NatalChart.of(const BirthData(year: 1988, month: 10, day: 12)),
+  );
 
   test('daily readings for every sign, both languages', () {
     for (final es in [false, true]) {
       for (var s = 0; s < 12; s++) {
-        final r = dailyReading(AstroSubject(name: 'X', sunSign: s, seed: s), DateTime(2026, 11, 23), es);
+        final r = dailyReading(
+          AstroSubject(name: 'X', sunSign: s, seed: s),
+          DateTime(2026, 11, 23),
+          es,
+        );
         expect(r.parts.length, ReadingPart.values.length);
         expect(r.parts.values.every((p) => p.trim().isNotEmpty), isTrue);
         expect(r.scores.values.every((v) => v >= 12 && v <= 96), isTrue);
@@ -65,7 +87,10 @@ void main() {
     final a = dailyCard('alter-a', DateTime(2026, 11, 23, 8));
     final b = dailyCard('alter-a', DateTime(2026, 11, 23, 22));
     expect(a.card.id, b.card.id);
-    final days = {for (var d = 1; d <= 20; d++) dailyCard('alter-a', DateTime(2026, 11, d)).card.id};
+    final days = {
+      for (var d = 1; d <= 20; d++)
+        dailyCard('alter-a', DateTime(2026, 11, d)).card.id,
+    };
     expect(days.length, greaterThan(10));
     for (final c in fullDeck) {
       expect(c.meaningOf(false, false), isNotEmpty);
@@ -79,33 +104,83 @@ void main() {
     final r = compareCharts(full, yearOnly, false);
     expect(r.advanced, isTrue);
     expect(r.areas.length, CompatArea.values.length);
-    final all = [r.headline, r.summary, for (final a in r.areas.values) a.$2].join(' ');
+    final all = [
+      r.headline,
+      r.summary,
+      for (final a in r.areas.values) a.$2,
+    ].join(' ');
     expect(all.contains('%'), isFalse);
-    final basic = compareCharts(AstroSubject(name: 'A', sunSign: 0), AstroSubject(name: 'B', sunSign: 4), true);
+    final basic = compareCharts(
+      AstroSubject(name: 'A', sunSign: 0),
+      AstroSubject(name: 'B', sunSign: 4),
+      true,
+    );
     expect(basic.advanced, isFalse);
     expect(basic.areas[CompatArea.moon]!.$1, CompatTone.unknown);
   });
 
-  test('Ask Astro answers from the chart and never guesses the rising sign', () {
-    expect(askAstro('What does my Moon sign represent?', full, false).text, contains('Moon in'));
-    expect(askAstro('What does Venus in Libra mean?', null, false).text, contains('Venus in Libra'));
-    expect(askAstro('¿Qué significa Venus en Libra?', null, true).text, contains('Venus en Libra'));
-    expect(askAstro('What is my rising sign?', yearOnly, false).text, contains('birth time'));
-    expect(askAstro('What is the 7th house?', null, false).text, contains('partnership'));
-    expect(askAstro('Compare my chart with Justin', full, false, others: {'Justin': yearOnly}).text, contains('dynamic'));
-    expect(askAstro('blah', full, false).suggestions, isNotEmpty);
-  });
+  test(
+    'Ask Astro answers from the chart and never guesses the rising sign',
+    () {
+      expect(
+        askAstro('What does my Moon sign represent?', full, false).text,
+        contains('Moon in'),
+      );
+      expect(
+        askAstro('What does Venus in Libra mean?', null, false).text,
+        contains('Venus in Libra'),
+      );
+      expect(
+        askAstro('¿Qué significa Venus en Libra?', null, true).text,
+        contains('Venus en Libra'),
+      );
+      expect(
+        askAstro('What is my rising sign?', yearOnly, false).text,
+        contains('birth time'),
+      );
+      expect(
+        askAstro('What is the 7th house?', null, false).text,
+        contains('partnership'),
+      );
+      expect(
+        askAstro(
+          'Compare my chart with Justin',
+          full,
+          false,
+          others: {'Justin': yearOnly},
+        ).text,
+        contains('dynamic'),
+      );
+      expect(askAstro('blah', full, false).suggestions, isNotEmpty);
+    },
+  );
 
   group('privacy', () {
-    Member member(String id, {String? birthday}) => Member(id: id, name: id, createdAt: DateTime(2020), birthday: birthday);
-    AstroAccess access(Member m, AstroVisibility v, Set<String> viewers, {bool hasRecord = true}) => AstroAccess(
+    Member member(String id, {String? birthday}) =>
+        Member(id: id, name: id, createdAt: DateTime(2020), birthday: birthday);
+    AstroAccess access(
+      Member m,
+      AstroVisibility v,
+      Set<String> viewers, {
+      bool hasRecord = true,
+    }) => AstroAccess(
       member: m,
       profile: AstroProfile(
         memberId: m.id,
         visibility: v,
-        record: hasRecord ? TrackerRecord(id: 'r', kind: 'astro.profile', memberId: m.id, createdAt: DateTime(2020), modifiedAt: DateTime(2020)) : null,
+        record: hasRecord
+            ? TrackerRecord(
+                id: 'r',
+                kind: 'astro.profile',
+                memberId: m.id,
+                createdAt: DateTime(2020),
+                modifiedAt: DateTime(2020),
+              )
+            : null,
       ),
-      birth: m.birthday == null ? null : AstroProfile(memberId: m.id).birthData(m),
+      birth: m.birthday == null
+          ? null
+          : AstroProfile(memberId: m.id).birthData(m),
       viewers: viewers,
       preferDisplay: false,
     );
@@ -117,7 +192,10 @@ void main() {
       expect(access(m, AstroVisibility.private, {'b'}).canView, isFalse);
       expect(access(m, AstroVisibility.private, {'a'}).canView, isTrue);
       // A birthday alone (no Astro profile yet) is still private.
-      expect(access(m, AstroVisibility.private, {}, hasRecord: false).canView, isFalse);
+      expect(
+        access(m, AstroVisibility.private, {}, hasRecord: false).canView,
+        isFalse,
+      );
     });
 
     test('system and shareable are visible; hidden is never listed', () {
@@ -130,20 +208,31 @@ void main() {
     });
 
     test('nothing entered yet: nothing to hide', () {
-      final empty = access(member('c'), AstroVisibility.private, {}, hasRecord: false);
+      final empty = access(
+        member('c'),
+        AstroVisibility.private,
+        {},
+        hasRecord: false,
+      );
       expect(empty.isEmpty, isTrue);
       expect(empty.canView, isTrue);
       expect(empty.listed, isFalse);
     });
 
-    test('a hidden birth year stays out of the profile but feeds the chart', () {
-      final m = member('a', birthday: '0004-02-03');
-      final p = const AstroProfile(memberId: 'a', year: 1994);
-      final b = p.birthData(m)!;
-      expect(b.year, 1994);
-      expect(b.month, 2);
-      expect(const AstroProfile(memberId: 'a').birthData(m)!.hasYear, isFalse);
-    });
+    test(
+      'a hidden birth year stays out of the profile but feeds the chart',
+      () {
+        final m = member('a', birthday: '0004-02-03');
+        final p = const AstroProfile(memberId: 'a', year: 1994);
+        final b = p.birthData(m)!;
+        expect(b.year, 1994);
+        expect(b.month, 2);
+        expect(
+          const AstroProfile(memberId: 'a').birthData(m)!.hasYear,
+          isFalse,
+        );
+      },
+    );
   });
 
   test('every sign has text for every facet in both languages', () {

@@ -46,7 +46,7 @@ class _TestMemberGroupsDao extends MemberGroupsDao {
 
 class _RecordingRepo extends DriftMemberGroupsRepository {
   _RecordingRepo(MemberGroupsDao dao, MemberRepository memberRepository)
-      : super(dao, null, memberRepository: memberRepository);
+    : super(dao, null, memberRepository: memberRepository);
 
   final creates = <Map<String, Object?>>[];
   final updates = <Map<String, Object?>>[];
@@ -99,12 +99,11 @@ class _RecordingRepo extends DriftMemberGroupsRepository {
 }
 
 class _FakeMemberRepository implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _FakeMemberRepository([List<member_domain.Member>? members])
-      : _members = members ?? <member_domain.Member>[];
+    : _members = members ?? <member_domain.Member>[];
 
   final List<member_domain.Member> _members;
 
@@ -123,7 +122,8 @@ class _FakeMemberRepository implements MemberRepository {
   // The repository code under test only calls getMemberById and
   // getMembersByIds. Throwing on the rest keeps unintended call sites obvious.
   @override
-  Future<void> clearPluralKitLink(String id) async => throw UnimplementedError();
+  Future<void> clearPluralKitLink(String id) async =>
+      throw UnimplementedError();
   @override
   Future<void> createMember(member_domain.Member member) async =>
       throw UnimplementedError();
@@ -163,10 +163,12 @@ class _FakeMemberRepository implements MemberRepository {
   ) async => throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
   @override
   Stream<List<member_domain.Member>> watchActiveMembers() =>
       throw UnimplementedError();
@@ -181,14 +183,11 @@ class _FakeMemberRepository implements MemberRepository {
       throw UnimplementedError();
   @override
   Future<({member_domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
-member_domain.Member _member({required String id}) => member_domain.Member(
-      id: id,
-      name: id,
-      createdAt: DateTime.utc(2026, 1, 1),
-    );
+member_domain.Member _member({required String id}) =>
+    member_domain.Member(id: id, name: id, createdAt: DateTime.utc(2026, 1, 1));
 
 Future<void> _seedGroup(
   AppDatabase db, {
@@ -198,7 +197,9 @@ Future<void> _seedGroup(
   bool isDeleted = false,
 }) {
   final state = sortState ?? GroupSortState.manualEmpty;
-  return db.into(db.memberGroups).insert(
+  return db
+      .into(db.memberGroups)
+      .insert(
         MemberGroupsCompanion.insert(
           id: id,
           name: id,
@@ -216,7 +217,9 @@ Future<void> _seedEntry(
   required String groupId,
   required String memberId,
 }) {
-  return db.into(db.memberGroupEntries).insert(
+  return db
+      .into(db.memberGroupEntries)
+      .insert(
         MemberGroupEntriesCompanion.insert(
           id: id,
           groupId: groupId,
@@ -226,11 +229,15 @@ Future<void> _seedEntry(
 }
 
 Future<GroupSortState> _readSortState(AppDatabase db, String groupId) async {
-  final row = await (db.select(db.memberGroups)
-        ..where((g) => g.id.equals(groupId)))
-      .getSingle();
+  final row = await (db.select(
+    db.memberGroups,
+  )..where((g) => g.id.equals(groupId))).getSingle();
   final decoded = tryDecodeSortState(row.sortState);
-  expect(decoded, isNotNull, reason: 'sort_state must always decode to a valid state');
+  expect(
+    decoded,
+    isNotNull,
+    reason: 'sort_state must always decode to a valid state',
+  );
   return decoded!;
 }
 
@@ -256,7 +263,9 @@ void main() {
   late _TestMemberGroupsDao dao;
   late _RecordingRepo repo;
 
-  Future<void> setupRepo({List<member_domain.Member> members = const []}) async {
+  Future<void> setupRepo({
+    List<member_domain.Member> members = const [],
+  }) async {
     db = AppDatabase(NativeDatabase.memory());
     dao = _TestMemberGroupsDao(db);
     repo = _RecordingRepo(dao, _FakeMemberRepository([...members]));
@@ -283,109 +292,124 @@ void main() {
   });
 
   group('setGroupManualOrderSnapshot', () {
-    test('valid permutation: writes sort_state, returns applied, one sync update',
-        () async {
-      await setupRepo();
-      await _seedGroup(db, id: 'g1');
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
-      await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
+    test(
+      'valid permutation: writes sort_state, returns applied, one sync update',
+      () async {
+        await setupRepo();
+        await _seedGroup(db, id: 'g1');
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+        await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
 
-      final result =
-          await repo.setGroupManualOrderSnapshot('g1', ['e3', 'e1', 'e2']);
+        final result = await repo.setGroupManualOrderSnapshot('g1', [
+          'e3',
+          'e1',
+          'e2',
+        ]);
 
-      expect(result, isA<SnapshotApplied>());
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.mode, GroupSortMode.manual);
-      expect(stored.manualOrder, ['e3', 'e1', 'e2']);
+        expect(result, isA<SnapshotApplied>());
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.mode, GroupSortMode.manual);
+        expect(stored.manualOrder, ['e3', 'e1', 'e2']);
 
-      expect(_groupUpdates(repo), 1);
-      final update = _lastGroupUpdate(repo)!;
-      expect(update['entityId'], 'g1');
-      final fields = update['fields']! as Map<String, dynamic>;
-      expect(fields.containsKey('sort_state'), isTrue);
-      final emittedState =
-          tryDecodeSortState(fields['sort_state'] as String?)!;
-      expect(emittedState.manualOrder, ['e3', 'e1', 'e2']);
-    });
-
-    test('stale permutation missing a concurrently-added id: recovered.appendedIds',
-        () async {
-      await setupRepo();
-      await _seedGroup(db, id: 'g1');
-      // UI dragged e1, e2, e3. Meanwhile a peer add for e4 landed.
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
-      await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
-      await _seedEntry(db, id: 'e4', groupId: 'g1', memberId: 'm4');
-
-      final result = await repo.setGroupManualOrderSnapshot(
-        'g1',
-        ['e3', 'e1', 'e2'],
-      );
-
-      expect(result, isA<SnapshotRecovered>());
-      final recovered = result as SnapshotRecovered;
-      expect(recovered.droppedIds, isEmpty);
-      expect(recovered.appendedIds, ['e4']);
-
-      final stored = await _readSortState(db, 'g1');
-      // Final: (supplied - dropped) ++ appended-sorted-by-id
-      expect(stored.manualOrder, ['e3', 'e1', 'e2', 'e4']);
-    });
+        expect(_groupUpdates(repo), 1);
+        final update = _lastGroupUpdate(repo)!;
+        expect(update['entityId'], 'g1');
+        final fields = update['fields']! as Map<String, dynamic>;
+        expect(fields.containsKey('sort_state'), isTrue);
+        final emittedState = tryDecodeSortState(
+          fields['sort_state'] as String?,
+        )!;
+        expect(emittedState.manualOrder, ['e3', 'e1', 'e2']);
+      },
+    );
 
     test(
-        'stale permutation containing a concurrently-tombstoned id: recovered.droppedIds',
-        () async {
-      await setupRepo();
-      await _seedGroup(db, id: 'g1');
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
-      // UI dragged with e3 in the list, but a peer tombstoned it.
-      await db.into(db.memberGroupEntries).insert(
-            MemberGroupEntriesCompanion.insert(
-              id: 'e3',
-              groupId: 'g1',
-              memberId: 'm3',
-              isDeleted: const Value(true),
-            ),
-          );
+      'stale permutation missing a concurrently-added id: recovered.appendedIds',
+      () async {
+        await setupRepo();
+        await _seedGroup(db, id: 'g1');
+        // UI dragged e1, e2, e3. Meanwhile a peer add for e4 landed.
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+        await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
+        await _seedEntry(db, id: 'e4', groupId: 'g1', memberId: 'm4');
 
-      final result = await repo.setGroupManualOrderSnapshot(
-        'g1',
-        ['e3', 'e1', 'e2'],
-      );
+        final result = await repo.setGroupManualOrderSnapshot('g1', [
+          'e3',
+          'e1',
+          'e2',
+        ]);
 
-      expect(result, isA<SnapshotRecovered>());
-      final recovered = result as SnapshotRecovered;
-      expect(recovered.droppedIds, ['e3']);
-      expect(recovered.appendedIds, isEmpty);
+        expect(result, isA<SnapshotRecovered>());
+        final recovered = result as SnapshotRecovered;
+        expect(recovered.droppedIds, isEmpty);
+        expect(recovered.appendedIds, ['e4']);
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.manualOrder, ['e1', 'e2']);
-    });
+        final stored = await _readSortState(db, 'g1');
+        // Final: (supplied - dropped) ++ appended-sorted-by-id
+        expect(stored.manualOrder, ['e3', 'e1', 'e2', 'e4']);
+      },
+    );
 
-    test('empty supplied list: recovers all live entries sorted by id',
-        () async {
-      await setupRepo();
-      await _seedGroup(db, id: 'g1');
-      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-      await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
+    test(
+      'stale permutation containing a concurrently-tombstoned id: recovered.droppedIds',
+      () async {
+        await setupRepo();
+        await _seedGroup(db, id: 'g1');
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+        // UI dragged with e3 in the list, but a peer tombstoned it.
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
+              MemberGroupEntriesCompanion.insert(
+                id: 'e3',
+                groupId: 'g1',
+                memberId: 'm3',
+                isDeleted: const Value(true),
+              ),
+            );
 
-      final result = await repo.setGroupManualOrderSnapshot('g1', const []);
+        final result = await repo.setGroupManualOrderSnapshot('g1', [
+          'e3',
+          'e1',
+          'e2',
+        ]);
 
-      expect(result, isA<SnapshotRecovered>());
-      final recovered = result as SnapshotRecovered;
-      expect(recovered.droppedIds, isEmpty);
-      expect(recovered.appendedIds, ['e1', 'e2', 'e3']);
+        expect(result, isA<SnapshotRecovered>());
+        final recovered = result as SnapshotRecovered;
+        expect(recovered.droppedIds, ['e3']);
+        expect(recovered.appendedIds, isEmpty);
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.mode, GroupSortMode.manual);
-      expect(stored.manualOrder, ['e1', 'e2', 'e3']);
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.manualOrder, ['e1', 'e2']);
+      },
+    );
 
-      expect(_groupUpdates(repo), 1);
-    });
+    test(
+      'empty supplied list: recovers all live entries sorted by id',
+      () async {
+        await setupRepo();
+        await _seedGroup(db, id: 'g1');
+        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+        await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
+
+        final result = await repo.setGroupManualOrderSnapshot('g1', const []);
+
+        expect(result, isA<SnapshotRecovered>());
+        final recovered = result as SnapshotRecovered;
+        expect(recovered.droppedIds, isEmpty);
+        expect(recovered.appendedIds, ['e1', 'e2', 'e3']);
+
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.mode, GroupSortMode.manual);
+        expect(stored.manualOrder, ['e1', 'e2', 'e3']);
+
+        expect(_groupUpdates(repo), 1);
+      },
+    );
   });
 
   group('setGroupSortMode', () {
@@ -412,8 +436,7 @@ void main() {
       expect(_groupUpdates(repo), 1);
     });
 
-    test(
-        'setGroupSortMode(manual) on group in nameAsc with empty manualOrder '
+    test('setGroupSortMode(manual) on group in nameAsc with empty manualOrder '
         'keeps manualOrder empty (bare mode flip)', () async {
       await setupRepo();
       await _seedGroup(
@@ -431,131 +454,153 @@ void main() {
   });
 
   group('addMemberToGroup sort_state maintenance', () {
-    test('manual group: appends new entry id, emits one parent sync update',
-        () async {
-      await setupRepo(members: [_member(id: 'm1'), _member(id: 'm2')]);
-      await _seedGroup(
-        db,
-        id: 'g1',
-        sortState: const GroupSortState(
-          mode: GroupSortMode.manual,
-          manualOrder: ['existing-e0'],
-        ),
-      );
+    test(
+      'manual group: appends new entry id, emits one parent sync update',
+      () async {
+        await setupRepo(
+          members: [
+            _member(id: 'm1'),
+            _member(id: 'm2'),
+          ],
+        );
+        await _seedGroup(
+          db,
+          id: 'g1',
+          sortState: const GroupSortState(
+            mode: GroupSortMode.manual,
+            manualOrder: ['existing-e0'],
+          ),
+        );
 
-      await repo.addMemberToGroup('g1', 'm1', 'e1');
+        await repo.addMemberToGroup('g1', 'm1', 'e1');
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.mode, GroupSortMode.manual);
-      expect(stored.manualOrder, ['existing-e0', 'e1']);
-      // One parent sync update from the manual-order append. (The entry
-      // create's sync record goes to member_group_entries, not the group.)
-      expect(_groupUpdates(repo), 1);
-    });
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.mode, GroupSortMode.manual);
+        expect(stored.manualOrder, ['existing-e0', 'e1']);
+        // One parent sync update from the manual-order append. (The entry
+        // create's sync record goes to member_group_entries, not the group.)
+        expect(_groupUpdates(repo), 1);
+      },
+    );
 
-    test('nameAsc group: entry created, sortState unchanged, no parent update',
-        () async {
-      await setupRepo(members: [_member(id: 'm1')]);
-      await _seedGroup(
-        db,
-        id: 'g1',
-        sortState: GroupSortState.locked(GroupSortMode.nameAsc),
-      );
+    test(
+      'nameAsc group: entry created, sortState unchanged, no parent update',
+      () async {
+        await setupRepo(members: [_member(id: 'm1')]);
+        await _seedGroup(
+          db,
+          id: 'g1',
+          sortState: GroupSortState.locked(GroupSortMode.nameAsc),
+        );
 
-      await repo.addMemberToGroup('g1', 'm1', 'e1');
+        await repo.addMemberToGroup('g1', 'm1', 'e1');
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.mode, GroupSortMode.nameAsc);
-      expect(stored.manualOrder, isEmpty);
-      expect(_groupUpdates(repo), 0);
-    });
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.mode, GroupSortMode.nameAsc);
+        expect(stored.manualOrder, isEmpty);
+        expect(_groupUpdates(repo), 0);
+      },
+    );
   });
 
   group('removeMemberFromGroup sort_state maintenance', () {
-    test('manual group: prunes id from manualOrder, emits parent sync update',
-        () async {
-      await setupRepo(members: [_member(id: 'm1'), _member(id: 'm2')]);
-      await _seedGroup(
-        db,
-        id: 'g1',
-        sortState: const GroupSortState(
-          mode: GroupSortMode.manual,
-          manualOrder: ['e1', 'e2'],
-        ),
-      );
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+    test(
+      'manual group: prunes id from manualOrder, emits parent sync update',
+      () async {
+        await setupRepo(
+          members: [
+            _member(id: 'm1'),
+            _member(id: 'm2'),
+          ],
+        );
+        await _seedGroup(
+          db,
+          id: 'g1',
+          sortState: const GroupSortState(
+            mode: GroupSortMode.manual,
+            manualOrder: ['e1', 'e2'],
+          ),
+        );
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
 
-      await repo.removeMemberFromGroup('g1', 'm1');
+        await repo.removeMemberFromGroup('g1', 'm1');
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.manualOrder, ['e2']);
-      expect(_groupUpdates(repo), 1);
-    });
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.manualOrder, ['e2']);
+        expect(_groupUpdates(repo), 1);
+      },
+    );
 
-    test('nameAsc group: entry tombstoned, sortState unchanged, no parent update',
-        () async {
-      await setupRepo(members: [_member(id: 'm1')]);
-      await _seedGroup(
-        db,
-        id: 'g1',
-        sortState: GroupSortState.locked(GroupSortMode.nameAsc),
-      );
-      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+    test(
+      'nameAsc group: entry tombstoned, sortState unchanged, no parent update',
+      () async {
+        await setupRepo(members: [_member(id: 'm1')]);
+        await _seedGroup(
+          db,
+          id: 'g1',
+          sortState: GroupSortState.locked(GroupSortMode.nameAsc),
+        );
+        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
 
-      await repo.removeMemberFromGroup('g1', 'm1');
+        await repo.removeMemberFromGroup('g1', 'm1');
 
-      final stored = await _readSortState(db, 'g1');
-      expect(stored.mode, GroupSortMode.nameAsc);
-      expect(stored.manualOrder, isEmpty);
-      expect(_groupUpdates(repo), 0);
-    });
+        final stored = await _readSortState(db, 'g1');
+        expect(stored.mode, GroupSortMode.nameAsc);
+        expect(stored.manualOrder, isEmpty);
+        expect(_groupUpdates(repo), 0);
+      },
+    );
 
     // Regression: setGroupSortMode preserves manualOrder when flipping to
     // a sorted mode. A subsequent remove in that sorted mode must NOT
     // prune the preserved order, and must NOT emit a parent sync update —
     // sorted modes leave sortState untouched on add/remove.
-    test(
-      'nameAsc group with preserved manualOrder: remove leaves manualOrder '
-      'intact and emits no parent update',
-      () async {
-        await setupRepo(members: [_member(id: 'm1'), _member(id: 'm2'),
-          _member(id: 'm3')]);
-        await _seedGroup(
-          db,
-          id: 'g1',
-          sortState: const GroupSortState(
-            // Mode = nameAsc, but manualOrder is preserved from a prior
-            // manual state (setGroupSortMode preserves it across the flip).
-            mode: GroupSortMode.nameAsc,
-            manualOrder: ['a', 'b', 'c'],
-          ),
-        );
-        await _seedEntry(db, id: 'b', groupId: 'g1', memberId: 'm2');
+    test('nameAsc group with preserved manualOrder: remove leaves manualOrder '
+        'intact and emits no parent update', () async {
+      await setupRepo(
+        members: [
+          _member(id: 'm1'),
+          _member(id: 'm2'),
+          _member(id: 'm3'),
+        ],
+      );
+      await _seedGroup(
+        db,
+        id: 'g1',
+        sortState: const GroupSortState(
+          // Mode = nameAsc, but manualOrder is preserved from a prior
+          // manual state (setGroupSortMode preserves it across the flip).
+          mode: GroupSortMode.nameAsc,
+          manualOrder: ['a', 'b', 'c'],
+        ),
+      );
+      await _seedEntry(db, id: 'b', groupId: 'g1', memberId: 'm2');
 
-        await repo.removeMemberFromGroup('g1', 'm2');
+      await repo.removeMemberFromGroup('g1', 'm2');
 
-        final stored = await _readSortState(db, 'g1');
-        expect(stored.mode, GroupSortMode.nameAsc);
-        expect(
-          stored.manualOrder,
-          ['a', 'b', 'c'],
-          reason:
-              'sorted-mode remove must leave the preserved manualOrder '
-              'untouched',
-        );
-        expect(_groupUpdates(repo), 0,
-            reason:
-                'sorted-mode remove must not emit a parent sync update');
+      final stored = await _readSortState(db, 'g1');
+      expect(stored.mode, GroupSortMode.nameAsc);
+      expect(
+        stored.manualOrder,
+        ['a', 'b', 'c'],
+        reason:
+            'sorted-mode remove must leave the preserved manualOrder '
+            'untouched',
+      );
+      expect(
+        _groupUpdates(repo),
+        0,
+        reason: 'sorted-mode remove must not emit a parent sync update',
+      );
 
-        // The entry itself IS tombstoned — the parent state is just left
-        // alone.
-        final entryRow = await (db.select(db.memberGroupEntries)
-              ..where((e) => e.id.equals('b')))
-            .getSingle();
-        expect(entryRow.isDeleted, isTrue);
-      },
-    );
+      // The entry itself IS tombstoned — the parent state is just left
+      // alone.
+      final entryRow = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('b'))).getSingle();
+      expect(entryRow.isDeleted, isTrue);
+    });
   });
 
   group('cross-device convergence', () {
@@ -569,7 +614,8 @@ void main() {
       () {
         // Stub: needs a multi-peer harness (see skip message).
       },
-      skip: 'Deferred: cross-device LWW with real HLC tiebreaking requires '
+      skip:
+          'Deferred: cross-device LWW with real HLC tiebreaking requires '
           'a multi-peer test harness not currently set up. The integration '
           'tests exercise applyFields in sequence on one DB but do not '
           'simulate real cross-device merge.',
@@ -584,7 +630,8 @@ void main() {
       () {
         // Stub: needs a multi-peer harness (see skip message).
       },
-      skip: 'Deferred: cross-device LWW with real HLC tiebreaking requires '
+      skip:
+          'Deferred: cross-device LWW with real HLC tiebreaking requires '
           'a multi-peer test harness not currently set up. The integration '
           'tests exercise applyFields in sequence on one DB but do not '
           'simulate real cross-device merge.',
@@ -600,9 +647,9 @@ void main() {
 
     await repo.setGroupManualOrderSnapshot('g1', ['e1']);
 
-    final row = await (db.select(db.memberGroups)
-          ..where((g) => g.id.equals('g1')))
-        .getSingle();
+    final row = await (db.select(
+      db.memberGroups,
+    )..where((g) => g.id.equals('g1'))).getSingle();
     final raw = row.sortState;
     final parsed = jsonDecode(raw) as Map<String, dynamic>;
     expect(parsed.containsKey('mode'), isTrue);
@@ -611,103 +658,100 @@ void main() {
 
   // ── Duplicate detection in setGroupManualOrderSnapshot ─────────────────
   group('setGroupManualOrderSnapshot duplicate detection', () {
-    test(
-      'duplicate id in supplied permutation: returns recovered, stored '
-      'manualOrder is deduped (first occurrence wins), duplicate flagged '
-      'via droppedIds',
-      () async {
-        await setupRepo();
-        await _seedGroup(db, id: 'g1');
-        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-        await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
-        await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
+    test('duplicate id in supplied permutation: returns recovered, stored '
+        'manualOrder is deduped (first occurrence wins), duplicate flagged '
+        'via droppedIds', () async {
+      await setupRepo();
+      await _seedGroup(db, id: 'g1');
+      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
+      await _seedEntry(db, id: 'e2', groupId: 'g1', memberId: 'm2');
+      await _seedEntry(db, id: 'e3', groupId: 'g1', memberId: 'm3');
 
-        // UI handed us a list with a duplicate. The stored column must
-        // not contain the duplicate (it would ship on the wire to peers).
-        final result = await repo.setGroupManualOrderSnapshot(
-          'g1',
-          ['e1', 'e1', 'e2', 'e3'],
-        );
+      // UI handed us a list with a duplicate. The stored column must
+      // not contain the duplicate (it would ship on the wire to peers).
+      final result = await repo.setGroupManualOrderSnapshot('g1', [
+        'e1',
+        'e1',
+        'e2',
+        'e3',
+      ]);
 
-        // Not an exact permutation → recovered, not applied.
-        expect(result, isA<SnapshotRecovered>());
-        final recovered = result as SnapshotRecovered;
-        // Duplicate id is reported via droppedIds (the field is a recovery
-        // indicator; the toast copy is generic).
-        expect(recovered.droppedIds, contains('e1'));
-        expect(recovered.appendedIds, isEmpty);
+      // Not an exact permutation → recovered, not applied.
+      expect(result, isA<SnapshotRecovered>());
+      final recovered = result as SnapshotRecovered;
+      // Duplicate id is reported via droppedIds (the field is a recovery
+      // indicator; the toast copy is generic).
+      expect(recovered.droppedIds, contains('e1'));
+      expect(recovered.appendedIds, isEmpty);
 
-        final stored = await _readSortState(db, 'g1');
-        expect(
-          stored.manualOrder,
-          ['e1', 'e2', 'e3'],
-          reason:
-              'duplicate occurrence must be dropped (first wins); '
-              'no duplicates on the wire',
-        );
+      final stored = await _readSortState(db, 'g1');
+      expect(
+        stored.manualOrder,
+        ['e1', 'e2', 'e3'],
+        reason:
+            'duplicate occurrence must be dropped (first wins); '
+            'no duplicates on the wire',
+      );
 
-        // And nothing should leak duplicates into the emitted sync record.
-        final update = _lastGroupUpdate(repo)!;
-        final fields = update['fields']! as Map<String, dynamic>;
-        final emittedState =
-            tryDecodeSortState(fields['sort_state'] as String?)!;
-        expect(emittedState.manualOrder, ['e1', 'e2', 'e3']);
-      },
-    );
+      // And nothing should leak duplicates into the emitted sync record.
+      final update = _lastGroupUpdate(repo)!;
+      final fields = update['fields']! as Map<String, dynamic>;
+      final emittedState = tryDecodeSortState(fields['sort_state'] as String?)!;
+      expect(emittedState.manualOrder, ['e1', 'e2', 'e3']);
+    });
   });
 
   // ── Atomicity of entry write + parent sort_state update ────────────────
   group('addMemberToGroup atomicity', () {
-    test(
-      'an exception in the parent sort_state update rolls back the entry '
-      'insert (no entry persisted, no sync records emitted)',
-      () async {
-        await setupRepo(members: [_member(id: 'm1')]);
-        // Manual mode → addMemberToGroup will try to update sort_state.
-        await _seedGroup(
-          db,
-          id: 'g1',
-          sortState: const GroupSortState(
-            mode: GroupSortMode.manual,
-            manualOrder: ['existing'],
-          ),
-        );
+    test('an exception in the parent sort_state update rolls back the entry '
+        'insert (no entry persisted, no sync records emitted)', () async {
+      await setupRepo(members: [_member(id: 'm1')]);
+      // Manual mode → addMemberToGroup will try to update sort_state.
+      await _seedGroup(
+        db,
+        id: 'g1',
+        sortState: const GroupSortState(
+          mode: GroupSortMode.manual,
+          manualOrder: ['existing'],
+        ),
+      );
 
-        // Inject failure in the parent-update step.
-        dao.failUpdateGroupSortStateWith = StateError('boom');
+      // Inject failure in the parent-update step.
+      dao.failUpdateGroupSortStateWith = StateError('boom');
 
-        try {
-          await repo.addMemberToGroup('g1', 'm1', 'e1');
-          fail('addMemberToGroup should have rethrown the injected error');
-        } on StateError catch (e) {
-          expect(e.message, 'boom');
-        }
+      try {
+        await repo.addMemberToGroup('g1', 'm1', 'e1');
+        fail('addMemberToGroup should have rethrown the injected error');
+      } on StateError catch (e) {
+        expect(e.message, 'boom');
+      }
 
-        // Entry row was rolled back — neither active nor tombstoned.
-        final entryRow = await (db.select(db.memberGroupEntries)
-              ..where((e) => e.groupId.equals('g1')))
-            .get();
-        expect(entryRow, isEmpty,
-            reason:
-                'transaction rollback must drop the entry insert when the '
-                'parent update throws');
+      // Entry row was rolled back — neither active nor tombstoned.
+      final entryRow = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.groupId.equals('g1'))).get();
+      expect(
+        entryRow,
+        isEmpty,
+        reason:
+            'transaction rollback must drop the entry insert when the '
+            'parent update throws',
+      );
 
-        // No sync records emitted — emissions happen AFTER commit.
-        expect(repo.creates, isEmpty);
-        expect(repo.updates, isEmpty);
-        expect(repo.deletes, isEmpty);
+      // No sync records emitted — emissions happen AFTER commit.
+      expect(repo.creates, isEmpty);
+      expect(repo.updates, isEmpty);
+      expect(repo.deletes, isEmpty);
 
-        // Parent column is also unchanged.
-        final stored = await _readSortState(db, 'g1');
-        expect(stored.manualOrder, ['existing']);
-      },
-    );
+      // Parent column is also unchanged.
+      final stored = await _readSortState(db, 'g1');
+      expect(stored.manualOrder, ['existing']);
+    });
   });
 
   // ── Corrupt-local-row regression ────────────────────────────────────────
   group('emitGroupSyncState corrupt-local-row sanitization', () {
-    int errorCountBaseline() =>
-        ErrorReportingService.instance.errors.length;
+    int errorCountBaseline() => ErrorReportingService.instance.errors.length;
 
     int warningsSinceBaseline(int baseline) {
       final entries = ErrorReportingService.instance.errors;
@@ -718,33 +762,30 @@ void main() {
       return count;
     }
 
-    test(
-      'corrupt sort_state in the local column is substituted with '
-      'manualEmpty on emit + warn',
-      () async {
-        await setupRepo();
-        await _seedGroup(db, id: 'g1');
-        // Bypass the mapper/DAO helpers and inject garbage directly into
-        // the column. Simulates pre-validation legacy state, a manual DB
-        // edit, or file-level corruption.
-        await db.customStatement(
-          'UPDATE member_groups SET sort_state = ? WHERE id = ?',
-          ['utter garbage', 'g1'],
-        );
+    test('corrupt sort_state in the local column is substituted with '
+        'manualEmpty on emit + warn', () async {
+      await setupRepo();
+      await _seedGroup(db, id: 'g1');
+      // Bypass the mapper/DAO helpers and inject garbage directly into
+      // the column. Simulates pre-validation legacy state, a manual DB
+      // edit, or file-level corruption.
+      await db.customStatement(
+        'UPDATE member_groups SET sort_state = ? WHERE id = ?',
+        ['utter garbage', 'g1'],
+      );
 
-        final baseline = errorCountBaseline();
-        await repo.emitGroupSyncState('g1');
+      final baseline = errorCountBaseline();
+      await repo.emitGroupSyncState('g1');
 
-        final reconcile = _lastGroupReconcile(repo)!;
-        final fields = reconcile['fields']! as Map<String, dynamic>;
-        expect(
-          fields['sort_state'],
-          '{"mode":0,"order":[]}',
-          reason: 'corrupt local row must not propagate to peers',
-        );
-        expect(warningsSinceBaseline(baseline), 1);
-      },
-    );
+      final reconcile = _lastGroupReconcile(repo)!;
+      final fields = reconcile['fields']! as Map<String, dynamic>;
+      expect(
+        fields['sort_state'],
+        '{"mode":0,"order":[]}',
+        reason: 'corrupt local row must not propagate to peers',
+      );
+      expect(warningsSinceBaseline(baseline), 1);
+    });
   });
 
   // ── updateGroup patch-style emission (item #14 of the drift-repo
@@ -778,7 +819,9 @@ void main() {
       bool isDeleted = false,
     }) {
       final state = sortState ?? GroupSortState.manualEmpty;
-      return patchDb.into(patchDb.memberGroups).insert(
+      return patchDb
+          .into(patchDb.memberGroups)
+          .insert(
             MemberGroupsCompanion.insert(
               id: id,
               name: name,
@@ -849,9 +892,7 @@ void main() {
     test('emits only the changed fields', () async {
       await seedDirect(id: 'g-patch');
 
-      await patchRepo.updateGroup(
-        buildDomain(name: 'Renamed locally'),
-      );
+      await patchRepo.updateGroup(buildDomain(name: 'Renamed locally'));
 
       expect(captured, hasLength(1));
       expect(captured.single.opType, SyncRecordOpType.update);
@@ -904,10 +945,7 @@ void main() {
       );
 
       await patchRepo.updateGroup(
-        buildDomain(
-          description: null,
-          colorHex: '#abcdef',
-        ),
+        buildDomain(description: null, colorHex: '#abcdef'),
       );
 
       expect(captured, hasLength(1));
@@ -959,31 +997,26 @@ void main() {
       );
     });
 
-    test(
-      'preserves PK-link gating: PK-backed group with v2 disabled does not '
-      'emit even when fields changed',
-      () async {
-        // PK v2 enablement defaults to false on a fresh AppDatabase.
-        await patchDb.systemSettingsDao.getSettings();
-        await patchDb.systemSettingsDao.updatePkGroupSyncV2Enabled(false);
+    test('preserves PK-link gating: PK-backed group with v2 disabled does not '
+        'emit even when fields changed', () async {
+      // PK v2 enablement defaults to false on a fresh AppDatabase.
+      await patchDb.systemSettingsDao.getSettings();
+      await patchDb.systemSettingsDao.updatePkGroupSyncV2Enabled(false);
 
-        await seedDirect(
-          id: 'g-patch',
-          pluralkitUuid: 'pk-uuid-1',
-          pluralkitId: 'pk-id-1',
-        );
+      await seedDirect(
+        id: 'g-patch',
+        pluralkitUuid: 'pk-uuid-1',
+        pluralkitId: 'pk-id-1',
+      );
 
-        await patchRepo.updateGroup(
-          buildDomain(name: 'Renamed locally'),
-        );
+      await patchRepo.updateGroup(buildDomain(name: 'Renamed locally'));
 
-        // The DB write happens (so local state is correct), but no sync
-        // emission because the PK-link gate said "hold back".
-        final row = await patchDao.getGroupById('g-patch');
-        expect(row!.name, 'Renamed locally');
-        expect(captured, isEmpty);
-      },
-    );
+      // The DB write happens (so local state is correct), but no sync
+      // emission because the PK-link gate said "hold back".
+      final row = await patchDao.getGroupById('g-patch');
+      expect(row!.name, 'Renamed locally');
+      expect(captured, isEmpty);
+    });
 
     test(
       'sort_state.manualOrder: identical order produces no emission; '
@@ -1019,7 +1052,8 @@ void main() {
         expect(
           emitted.manualOrder,
           ['c', 'a', 'b'],
-          reason: 'manualOrder is the user-chosen order; reordering is a real '
+          reason:
+              'manualOrder is the user-chosen order; reordering is a real '
               'edit and must ship as a sort_state patch',
         );
       },
@@ -1031,101 +1065,103 @@ void main() {
   // and resurrecting a concurrently-deleted row. See
   // `lib/data/sync/field_diff.dart`.
   group('narrow-patch update emission (no is_deleted)', () {
-    test('promoteChildrenToRoot emits {parent_group_id: null} per child',
-        () async {
-      await setupRepo();
-      await _seedGroup(db, id: 'parent');
-      await db.into(db.memberGroups).insert(
-            MemberGroupsCompanion.insert(
-              id: 'child-a',
-              name: 'child-a',
-              createdAt: DateTime.utc(2026, 1, 1),
-              parentGroupId: const Value('parent'),
-              sortState: Value(
-                MemberGroupMapper.encodeSortStateForColumn(
-                  GroupSortState.manualEmpty,
+    test(
+      'promoteChildrenToRoot emits {parent_group_id: null} per child',
+      () async {
+        await setupRepo();
+        await _seedGroup(db, id: 'parent');
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'child-a',
+                name: 'child-a',
+                createdAt: DateTime.utc(2026, 1, 1),
+                parentGroupId: const Value('parent'),
+                sortState: Value(
+                  MemberGroupMapper.encodeSortStateForColumn(
+                    GroupSortState.manualEmpty,
+                  ),
                 ),
               ),
-            ),
-          );
-      await db.into(db.memberGroups).insert(
-            MemberGroupsCompanion.insert(
-              id: 'child-b',
-              name: 'child-b',
-              createdAt: DateTime.utc(2026, 1, 1),
-              parentGroupId: const Value('parent'),
-              sortState: Value(
-                MemberGroupMapper.encodeSortStateForColumn(
-                  GroupSortState.manualEmpty,
+            );
+        await db
+            .into(db.memberGroups)
+            .insert(
+              MemberGroupsCompanion.insert(
+                id: 'child-b',
+                name: 'child-b',
+                createdAt: DateTime.utc(2026, 1, 1),
+                parentGroupId: const Value('parent'),
+                sortState: Value(
+                  MemberGroupMapper.encodeSortStateForColumn(
+                    GroupSortState.manualEmpty,
+                  ),
                 ),
               ),
-            ),
-          );
+            );
 
-      await repo.promoteChildrenToRoot('parent');
+        await repo.promoteChildrenToRoot('parent');
 
-      final childUpdates = repo.updates
-          .where((u) =>
-              u['table'] == 'member_groups' &&
-              (u['entityId'] == 'child-a' || u['entityId'] == 'child-b'))
-          .toList();
-      expect(childUpdates, hasLength(2));
-      for (final update in childUpdates) {
+        final childUpdates = repo.updates
+            .where(
+              (u) =>
+                  u['table'] == 'member_groups' &&
+                  (u['entityId'] == 'child-a' || u['entityId'] == 'child-b'),
+            )
+            .toList();
+        expect(childUpdates, hasLength(2));
+        for (final update in childUpdates) {
+          final fields = update['fields']! as Map<String, dynamic>;
+          expect(fields, {'parent_group_id': null});
+        }
+      },
+    );
+
+    test('_emitGroupSortStateUpdateIfAllowed via addMemberToGroup emits '
+        '{sort_state} only', () async {
+      await setupRepo(members: [_member(id: 'm1')]);
+      await _seedGroup(
+        db,
+        id: 'g1',
+        sortState: const GroupSortState(
+          mode: GroupSortMode.manual,
+          manualOrder: ['existing-e0'],
+        ),
+      );
+
+      await repo.addMemberToGroup('g1', 'm1', 'e1');
+
+      final g1Updates = _allGroupUpdates(repo, entityId: 'g1');
+      expect(g1Updates, isNotEmpty);
+      for (final update in g1Updates) {
         final fields = update['fields']! as Map<String, dynamic>;
-        expect(fields, {'parent_group_id': null});
+        expect(fields.keys.toSet(), {'sort_state'});
       }
     });
 
-    test(
-      '_emitGroupSortStateUpdateIfAllowed via addMemberToGroup emits '
-      '{sort_state} only',
-      () async {
-        await setupRepo(members: [_member(id: 'm1')]);
-        await _seedGroup(
-          db,
-          id: 'g1',
-          sortState: const GroupSortState(
-            mode: GroupSortMode.manual,
-            manualOrder: ['existing-e0'],
-          ),
-        );
+    test('_emitGroupSortStateUpdateIfAllowed via removeMemberFromGroup emits '
+        '{sort_state} only', () async {
+      await setupRepo(members: [_member(id: 'm1')]);
+      await _seedGroup(
+        db,
+        id: 'g1',
+        sortState: const GroupSortState(
+          mode: GroupSortMode.manual,
+          manualOrder: ['e1'],
+        ),
+      );
+      await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
 
-        await repo.addMemberToGroup('g1', 'm1', 'e1');
+      await repo.removeMemberFromGroup('g1', 'm1');
 
-        final g1Updates = _allGroupUpdates(repo, entityId: 'g1');
-        expect(g1Updates, isNotEmpty);
-        for (final update in g1Updates) {
-          final fields = update['fields']! as Map<String, dynamic>;
-          expect(fields.keys.toSet(), {'sort_state'});
-        }
-      },
-    );
-
-    test(
-      '_emitGroupSortStateUpdateIfAllowed via removeMemberFromGroup emits '
-      '{sort_state} only',
-      () async {
-        await setupRepo(members: [_member(id: 'm1')]);
-        await _seedGroup(
-          db,
-          id: 'g1',
-          sortState: const GroupSortState(
-            mode: GroupSortMode.manual,
-            manualOrder: ['e1'],
-          ),
-        );
-        await _seedEntry(db, id: 'e1', groupId: 'g1', memberId: 'm1');
-
-        await repo.removeMemberFromGroup('g1', 'm1');
-
-        final g1Updates = _allGroupUpdates(repo, entityId: 'g1');
-        expect(g1Updates, isNotEmpty);
-        for (final update in g1Updates) {
-          final fields = update['fields']! as Map<String, dynamic>;
-          expect(fields.keys.toSet(), {'sort_state'});
-        }
-      },
-    );
+      final g1Updates = _allGroupUpdates(repo, entityId: 'g1');
+      expect(g1Updates, isNotEmpty);
+      for (final update in g1Updates) {
+        final fields = update['fields']! as Map<String, dynamic>;
+        expect(fields.keys.toSet(), {'sort_state'});
+      }
+    });
 
     test('setGroupManualOrderSnapshot emits {sort_state} only', () async {
       await setupRepo();
@@ -1173,9 +1209,11 @@ List<Map<String, Object?>> _allGroupUpdates(
   _RecordingRepo repo, {
   String? entityId,
 }) {
-  return repo.updates.where((u) {
-    if (u['table'] != 'member_groups') return false;
-    if (entityId != null && u['entityId'] != entityId) return false;
-    return true;
-  }).toList(growable: false);
+  return repo.updates
+      .where((u) {
+        if (u['table'] != 'member_groups') return false;
+        if (entityId != null && u['entityId'] != entityId) return false;
+        return true;
+      })
+      .toList(growable: false);
 }

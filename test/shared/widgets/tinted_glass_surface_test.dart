@@ -62,30 +62,27 @@ void main() {
     },
   );
 
-  testWidgets(
-    'tinted glass picks up accent in palette mode',
-    (tester) async {
-      final theme = ThemeData.light().copyWith(
-        extensions: const <ThemeExtension<dynamic>>[PrismThemeFlavor.palette],
-      );
-      await _pump(tester, theme);
+  testWidgets('tinted glass picks up accent in palette mode', (tester) async {
+    final theme = ThemeData.light().copyWith(
+      extensions: const <ThemeExtension<dynamic>>[PrismThemeFlavor.palette],
+    );
+    await _pump(tester, theme);
 
-      final decoration = _surfaceDecoration(tester);
-      final expectedBase = theme.colorScheme.surfaceContainerHigh.withValues(
-        alpha: PrismTokens.tintedFillAlphaLight,
-      );
+    final decoration = _surfaceDecoration(tester);
+    final expectedBase = theme.colorScheme.surfaceContainerHigh.withValues(
+      alpha: PrismTokens.tintedFillAlphaLight,
+    );
 
-      expect(
-        decoration.color,
-        Color.alphaBlend(
-          theme.colorScheme.primary.withValues(
-            alpha: PrismTokens.tintedDefaultTintAlphaLight,
-          ),
-          expectedBase,
+    expect(
+      decoration.color,
+      Color.alphaBlend(
+        theme.colorScheme.primary.withValues(
+          alpha: PrismTokens.tintedDefaultTintAlphaLight,
         ),
-      );
-    },
-  );
+        expectedBase,
+      ),
+    );
+  });
 }
 
 Future<void> _pump(WidgetTester tester, ThemeData theme) async {

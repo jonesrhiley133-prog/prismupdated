@@ -11,7 +11,14 @@ import 'package:prism_plurality/shared/extensions/app_localizations_extension.da
 /// Plays a video stored on this device (tap to play/pause). Videos added on
 /// another device show a note instead, since videos do not sync.
 class VideoTile extends ConsumerStatefulWidget {
-  const VideoTile({super.key, required this.id, this.autoplay = false, this.loop = false, this.onReady, this.fill = false});
+  const VideoTile({
+    super.key,
+    required this.id,
+    this.autoplay = false,
+    this.loop = false,
+    this.onReady,
+    this.fill = false,
+  });
 
   final String id;
   final bool autoplay;
@@ -62,18 +69,36 @@ class _VideoTileState extends ConsumerState<VideoTile> {
     if (path == null) {
       return Container(
         height: 120,
-        decoration: BoxDecoration(borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHighest),
+        decoration: BoxDecoration(
+          borderRadius: prismCorners(context, 14),
+          color: theme.colorScheme.surfaceContainerHighest,
+        ),
         alignment: Alignment.center,
         padding: const EdgeInsets.all(12),
-        child: Text(l10n.socVideoElsewhere, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+        child: Text(
+          l10n.socVideoElsewhere,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall,
+        ),
       );
     }
     _load(path);
     final c = _c;
     if (c == null || !c.value.isInitialized) {
-      return const AspectRatio(aspectRatio: 16 / 9, child: ColoredBox(color: Colors.black, child: Center(child: Icon(Icons.movie_outlined, color: Colors.white54))));
+      return const AspectRatio(
+        aspectRatio: 16 / 9,
+        child: ColoredBox(
+          color: Colors.black,
+          child: Center(
+            child: Icon(Icons.movie_outlined, color: Colors.white54),
+          ),
+        ),
+      );
     }
-    final video = AspectRatio(aspectRatio: c.value.aspectRatio, child: VideoPlayer(c));
+    final video = AspectRatio(
+      aspectRatio: c.value.aspectRatio,
+      child: VideoPlayer(c),
+    );
     return Semantics(
       button: true,
       label: c.value.isPlaying ? l10n.musPause : l10n.musPlay,
@@ -84,11 +109,33 @@ class _VideoTileState extends ConsumerState<VideoTile> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              if (widget.fill) SizedBox.expand(child: FittedBox(fit: BoxFit.cover, child: SizedBox(width: c.value.size.width, height: c.value.size.height, child: VideoPlayer(c)))) else video,
+              if (widget.fill)
+                SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: c.value.size.width,
+                      height: c.value.size.height,
+                      child: VideoPlayer(c),
+                    ),
+                  ),
+                )
+              else
+                video,
               if (!c.value.isPlaying && !widget.autoplay)
                 DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.black45, borderRadius: prismRound(context)),
-                  child: Padding(padding: EdgeInsets.all(10), child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 40)),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: prismRound(context),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
                 ),
             ],
           ),

@@ -573,7 +573,10 @@ class _MemberSearchSheetState extends ConsumerState<MemberSearchSheet> {
     return Container(
       width: 20,
       height: 20,
-      decoration: BoxDecoration(color: colors.fill, borderRadius: prismRound(context)),
+      decoration: BoxDecoration(
+        color: colors.fill,
+        borderRadius: prismRound(context),
+      ),
       alignment: Alignment.center,
       child: emoji != null && emoji.isNotEmpty
           ? Text(emoji, style: const TextStyle(fontSize: 11, height: 1))

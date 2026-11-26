@@ -90,8 +90,10 @@ class _FakeClient implements PluralKitClient {
   @override
   Future<PKMember> getMember(String memberRef) => throw UnimplementedError();
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async =>
-      const [];
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async => const [];
   @override
   Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   @override
@@ -113,14 +115,20 @@ class _FakeClient implements PluralKitClient {
   Future<PKMember> updateMember(String id, Map<String, dynamic> data) =>
       throw UnimplementedError();
   @override
-  Future<PKSwitch> createSwitch(List<String> memberIds, {DateTime? timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> createSwitch(
+    List<String> memberIds, {
+    DateTime? timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitch(String switchId, {required DateTime timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitch(
+    String switchId, {
+    required DateTime timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitchMembers(String switchId, List<String> memberIds) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitchMembers(
+    String switchId,
+    List<String> memberIds,
+  ) => throw UnimplementedError();
   @override
   Future<void> deleteSwitch(String switchId) => throw UnimplementedError();
   @override
@@ -221,42 +229,38 @@ void main() {
   });
 
   group('_tombstoneImporterArtifact', () {
-    test(
-      'clears the PK link then soft-deletes, stamping NO delete intent and '
-      'leaving the row out of getDeletedLinkedSessions',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
-        final (:service, :sessionRepo) = _makeService(db);
+    test('clears the PK link then soft-deletes, stamping NO delete intent and '
+        'leaving the row out of getDeletedLinkedSessions', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
+      final (:service, :sessionRepo) = _makeService(db);
 
-        await sessionRepo.createSession(
-          _session(id: _rowIdA, pluralkitUuid: _switchUuidA),
-        );
+      await sessionRepo.createSession(
+        _session(id: _rowIdA, pluralkitUuid: _switchUuidA),
+      );
 
-        await service.debugTombstoneImporterArtifact(_rowIdA);
+      await service.debugTombstoneImporterArtifact(_rowIdA);
 
-        final raw = await db.frontingSessionsDao
-            .getAllSessionsIncludingDeleted();
-        expect(raw, hasLength(1));
-        final row = raw.single;
-        expect(row.isDeleted, isTrue, reason: 'row is tombstoned');
-        expect(
-          row.pluralkitUuid,
-          anyOf(isNull, ''),
-          reason: 'PK link cleared before the soft delete',
-        );
-        expect(
-          row.deleteIntentEpoch,
-          isNull,
-          reason: 'importer cleanup must never queue a PK API deletion',
-        );
-        expect(
-          await sessionRepo.getDeletedLinkedSessions(),
-          isEmpty,
-          reason: 'a link-cleared tombstone is not a deletion candidate',
-        );
-      },
-    );
+      final raw = await db.frontingSessionsDao.getAllSessionsIncludingDeleted();
+      expect(raw, hasLength(1));
+      final row = raw.single;
+      expect(row.isDeleted, isTrue, reason: 'row is tombstoned');
+      expect(
+        row.pluralkitUuid,
+        anyOf(isNull, ''),
+        reason: 'PK link cleared before the soft delete',
+      );
+      expect(
+        row.deleteIntentEpoch,
+        isNull,
+        reason: 'importer cleanup must never queue a PK API deletion',
+      );
+      expect(
+        await sessionRepo.getDeletedLinkedSessions(),
+        isEmpty,
+        reason: 'a link-cleared tombstone is not a deletion candidate',
+      );
+    });
 
     test(
       'contrast: a plain deleteSession on a still-linked row DOES stamp intent '
@@ -362,7 +366,8 @@ void main() {
         ]);
         // The link-clear update carries exactly the nulled link field.
         final clearA = replayed.firstWhere(
-          (op) => op.opType == SyncRecordOpType.update && op.entityId == _rowIdA,
+          (op) =>
+              op.opType == SyncRecordOpType.update && op.entityId == _rowIdA,
         );
         expect(clearA.fields, {'pluralkit_uuid': null});
 
@@ -378,22 +383,24 @@ void main() {
       },
     );
 
-    test('returns the body result and replays nothing when no op is emitted',
-        () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-      final service = _makeService(db).service;
+    test(
+      'returns the body result and replays nothing when no op is emitted',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
+        final service = _makeService(db).service;
 
-      final replayed = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(replayed.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+        final replayed = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(replayed.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      final result = await service.debugCaptureImportEmissions<int>(() async {
-        return 42;
-      });
+        final result = await service.debugCaptureImportEmissions<int>(() async {
+          return 42;
+        });
 
-      expect(result, 42);
-      expect(replayed, isEmpty);
-    });
+        expect(result, 42);
+        expect(replayed, isEmpty);
+      },
+    );
   });
 }

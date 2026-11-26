@@ -2292,8 +2292,7 @@ void main() {
       },
     );
 
-    test(
-        'F17: a latch-only pre-arm (armBatchCompletionLatch) does not wedge the '
+    test('F17: a latch-only pre-arm (armBatchCompletionLatch) does not wedge the '
         'replay — a later batch still drains it', () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
@@ -2314,36 +2313,46 @@ void main() {
       await controller.requestReplay();
       expect(runs, 0, reason: 'deferred while the apply batch is open');
       await swc.completeSyncBatch();
-      expect(runs, 1,
-          reason: 'F17: the pre-arm latch must not pin the depth; the batch '
-              'completes at depth 0 and drains the deferred replay');
+      expect(
+        runs,
+        1,
+        reason:
+            'F17: the pre-arm latch must not pin the depth; the batch '
+            'completes at depth 0 and drains the deferred replay',
+      );
     });
 
     test(
-        'F17: an unmatched full beginSyncBatch pre-arm WOULD wedge the replay — '
-        'the hazard armBatchCompletionLatch exists to avoid', () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      var runs = 0;
-      final controller = DeferredPkEntryReplayController(() async {
-        runs++;
-      });
-      final swc = SyncAdapterWithCompletion(
-        buildSyncAdapterWithCompletion(db).adapter,
-        <Future<void>>[],
-        controller,
-      );
+      'F17: an unmatched full beginSyncBatch pre-arm WOULD wedge the replay — '
+      'the hazard armBatchCompletionLatch exists to avoid',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        var runs = 0;
+        final controller = DeferredPkEntryReplayController(() async {
+          runs++;
+        });
+        final swc = SyncAdapterWithCompletion(
+          buildSyncAdapterWithCompletion(db).adapter,
+          <Future<void>>[],
+          controller,
+        );
 
-      // The OLD pairing pre-arm called beginSyncBatch (depth -> 1) with no
-      // matching completeSyncBatch; a later snapshot batch then never returns
-      // depth to 0, starving the deferred replay for the rest of the session.
-      swc.beginSyncBatch();
-      swc.beginSyncBatch();
-      await swc.completeSyncBatch();
-      expect(runs, 0,
-          reason: 'documents the wedge an unmatched beginSyncBatch causes — '
-              'depth stays > 0 so the replay never runs');
-    });
+        // The OLD pairing pre-arm called beginSyncBatch (depth -> 1) with no
+        // matching completeSyncBatch; a later snapshot batch then never returns
+        // depth to 0, starving the deferred replay for the rest of the session.
+        swc.beginSyncBatch();
+        swc.beginSyncBatch();
+        await swc.completeSyncBatch();
+        expect(
+          runs,
+          0,
+          reason:
+              'documents the wedge an unmatched beginSyncBatch causes — '
+              'depth stays > 0 so the replay never runs',
+        );
+      },
+    );
 
     test(
       'a sync batch replays deferred PK entries once, not per member_group',
@@ -2453,104 +2462,97 @@ void main() {
       },
     );
 
-    test(
-      'a received hardDelete for the deterministic pk-group-<uuid> id is '
-      'SKIPPED against an active PK-linked row',
-      () async {
-        final db = AppDatabase(NativeDatabase.memory());
-        addTearDown(db.close);
+    test('a received hardDelete for the deterministic pk-group-<uuid> id is '
+        'SKIPPED against an active PK-linked row', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
 
-        final groupsEntity = _entityFor(db, 'member_groups');
-        const pkUuid = 'pk-g-uuid-active';
-        const selfId = 'pk-group-$pkUuid';
-        final createdAt = DateTime.utc(2026, 4, 18, 12);
+      final groupsEntity = _entityFor(db, 'member_groups');
+      const pkUuid = 'pk-g-uuid-active';
+      const selfId = 'pk-group-$pkUuid';
+      final createdAt = DateTime.utc(2026, 4, 18, 12);
 
-        // The device's ACTIVE PK-linked group under the deterministic id.
-        await db
-            .into(db.memberGroups)
-            .insert(
-              MemberGroupsCompanion.insert(
-                id: selfId,
-                name: 'Live Group',
-                createdAt: createdAt,
-                pluralkitUuid: const Value(pkUuid),
-              ),
-            );
+      // The device's ACTIVE PK-linked group under the deterministic id.
+      await db
+          .into(db.memberGroups)
+          .insert(
+            MemberGroupsCompanion.insert(
+              id: selfId,
+              name: 'Live Group',
+              createdAt: createdAt,
+              pluralkitUuid: const Value(pkUuid),
+            ),
+          );
 
-        // A stale-alias kill arriving from a poisoned/un-upgraded peer.
-        await groupsEntity.hardDelete(selfId);
+      // A stale-alias kill arriving from a poisoned/un-upgraded peer.
+      await groupsEntity.hardDelete(selfId);
 
-        final row = await (db.select(
+      final row = await (db.select(
+        db.memberGroups,
+      )..where((t) => t.id.equals(selfId))).getSingleOrNull();
+      expect(row, isNotNull, reason: 'F25: active PK-linked row survives');
+      expect(row!.isDeleted, isFalse);
+    });
+
+    test('a received hardDelete for the deterministic pk-group-<uuid> id still '
+        'deletes a soft-deleted row or a non-PK active row', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      // Two distinct uuids would normally collide on the unique index; this
+      // test seeds them sequentially so no two active PK rows coexist.
+
+      final groupsEntity = _entityFor(db, 'member_groups');
+      final createdAt = DateTime.utc(2026, 4, 18, 12);
+
+      // (a) soft-deleted PK-linked row — narrowing does not apply, delete it.
+      const softUuid = 'pk-g-uuid-soft';
+      const softId = 'pk-group-$softUuid';
+      await db
+          .into(db.memberGroups)
+          .insert(
+            MemberGroupsCompanion.insert(
+              id: softId,
+              name: 'Soft Deleted',
+              createdAt: createdAt,
+              pluralkitUuid: const Value(softUuid),
+              isDeleted: const Value(true),
+            ),
+          );
+      await groupsEntity.hardDelete(softId);
+      expect(
+        await (db.select(
           db.memberGroups,
-        )..where((t) => t.id.equals(selfId))).getSingleOrNull();
-        expect(row, isNotNull, reason: 'F25: active PK-linked row survives');
-        expect(row!.isDeleted, isFalse);
-      },
-    );
+        )..where((t) => t.id.equals(softId))).getSingleOrNull(),
+        isNull,
+        reason: 'F25: a soft-deleted PK row is still hard-deleted',
+      );
 
-    test(
-      'a received hardDelete for the deterministic pk-group-<uuid> id still '
-      'deletes a soft-deleted row or a non-PK active row',
-      () async {
-        final db = AppDatabase(NativeDatabase.memory());
-        addTearDown(db.close);
-        // Two distinct uuids would normally collide on the unique index; this
-        // test seeds them sequentially so no two active PK rows coexist.
-
-        final groupsEntity = _entityFor(db, 'member_groups');
-        final createdAt = DateTime.utc(2026, 4, 18, 12);
-
-        // (a) soft-deleted PK-linked row — narrowing does not apply, delete it.
-        const softUuid = 'pk-g-uuid-soft';
-        const softId = 'pk-group-$softUuid';
-        await db
-            .into(db.memberGroups)
-            .insert(
-              MemberGroupsCompanion.insert(
-                id: softId,
-                name: 'Soft Deleted',
-                createdAt: createdAt,
-                pluralkitUuid: const Value(softUuid),
-                isDeleted: const Value(true),
-              ),
-            );
-        await groupsEntity.hardDelete(softId);
-        expect(
-          await (db.select(
-            db.memberGroups,
-          )..where((t) => t.id.equals(softId))).getSingleOrNull(),
-          isNull,
-          reason: 'F25: a soft-deleted PK row is still hard-deleted',
-        );
-
-        // (b) active NON-PK row (pluralkit_uuid null) under a hyphen-form id —
-        // narrowing requires a PK link, so this delete still lands.
-        const nonPkId = 'pk-group-not-really-pk';
-        await db
-            .into(db.memberGroups)
-            .insert(
-              MemberGroupsCompanion.insert(
-                id: nonPkId,
-                name: 'Non-PK',
-                createdAt: createdAt,
-                pluralkitUuid: const Value(null),
-              ),
-            );
-        await groupsEntity.hardDelete(nonPkId);
-        expect(
-          await (db.select(
-            db.memberGroups,
-          )..where((t) => t.id.equals(nonPkId))).getSingleOrNull(),
-          isNull,
-          reason: 'F25: an active non-PK row is still hard-deleted',
-        );
-      },
-    );
+      // (b) active NON-PK row (pluralkit_uuid null) under a hyphen-form id —
+      // narrowing requires a PK link, so this delete still lands.
+      const nonPkId = 'pk-group-not-really-pk';
+      await db
+          .into(db.memberGroups)
+          .insert(
+            MemberGroupsCompanion.insert(
+              id: nonPkId,
+              name: 'Non-PK',
+              createdAt: createdAt,
+              pluralkitUuid: const Value(null),
+            ),
+          );
+      await groupsEntity.hardDelete(nonPkId);
+      expect(
+        await (db.select(
+          db.memberGroups,
+        )..where((t) => t.id.equals(nonPkId))).getSingleOrNull(),
+        isNull,
+        reason: 'F25: an active non-PK row is still hard-deleted',
+      );
+    });
   });
 
   group('F8/F9/F11 group-entry apply hardening', () {
-    test(
-        'F9: a duplicate non-PK (group, member) edge under a different id '
+    test('F9: a duplicate non-PK (group, member) edge under a different id '
         'collapses instead of tripping the unique index', () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
@@ -2570,18 +2572,22 @@ void main() {
         'is_deleted': false,
       });
 
-      final active = await (db.select(db.memberGroupEntries)
-            ..where((t) =>
-                t.groupId.equals('group-1') &
-                t.memberId.equals('member-1') &
-                t.isDeleted.equals(false)))
-          .get();
-      expect(active, hasLength(1),
-          reason: 'F9: the duplicate edge collapses to one active row');
+      final active =
+          await (db.select(db.memberGroupEntries)..where(
+                (t) =>
+                    t.groupId.equals('group-1') &
+                    t.memberId.equals('member-1') &
+                    t.isDeleted.equals(false),
+              ))
+              .get();
+      expect(
+        active,
+        hasLength(1),
+        reason: 'F9: the duplicate edge collapses to one active row',
+      );
     });
 
-    test(
-        'F9: the collapse resolver tolerates pre-existing duplicate active '
+    test('F9: the collapse resolver tolerates pre-existing duplicate active '
         'edges (the missing entries-unique-index window)', () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
@@ -2590,9 +2596,12 @@ void main() {
       // duplicate edges (the apply path itself would collapse them, so insert
       // directly).
       await db.customStatement(
-          'DROP INDEX IF EXISTS idx_member_group_entries_unique');
+        'DROP INDEX IF EXISTS idx_member_group_entries_unique',
+      );
       for (final id in ['edge-a', 'edge-b']) {
-        await db.into(db.memberGroupEntries).insert(
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
               MemberGroupEntriesCompanion.insert(
                 id: id,
                 groupId: 'group-1',
@@ -2610,22 +2619,29 @@ void main() {
         'is_deleted': false,
       });
 
-      final activeIds = (await (db.select(db.memberGroupEntries)
-                ..where((t) =>
-                    t.groupId.equals('group-1') &
-                    t.memberId.equals('member-1') &
-                    t.isDeleted.equals(false)))
-              .get())
-          .map((r) => r.id)
-          .toSet();
-      expect(activeIds, isNot(contains('edge-c')),
-          reason: 'collapsed onto an existing active edge, not a new row');
-      expect(activeIds, contains('edge-a'),
-          reason: 'the lowest-id active duplicate is the collapse target');
+      final activeIds =
+          (await (db.select(db.memberGroupEntries)..where(
+                    (t) =>
+                        t.groupId.equals('group-1') &
+                        t.memberId.equals('member-1') &
+                        t.isDeleted.equals(false),
+                  ))
+                  .get())
+              .map((r) => r.id)
+              .toSet();
+      expect(
+        activeIds,
+        isNot(contains('edge-c')),
+        reason: 'collapsed onto an existing active edge, not a new row',
+      );
+      expect(
+        activeIds,
+        contains('edge-a'),
+        reason: 'the lowest-id active duplicate is the collapse target',
+      );
     });
 
-    test(
-        'F8: a duplicate active pluralkit_uuid does not poison-pill the '
+    test('F8: a duplicate active pluralkit_uuid does not poison-pill the '
         'group-entry resolver', () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
@@ -2634,10 +2650,13 @@ void main() {
 
       // Recreate the duplicate-uuid window: drop the backstop index, then insert
       // two ACTIVE members sharing one pluralkit_uuid.
-      await db
-          .customStatement('DROP INDEX IF EXISTS idx_members_pluralkit_uuid');
+      await db.customStatement(
+        'DROP INDEX IF EXISTS idx_members_pluralkit_uuid',
+      );
       for (final id in ['member-a', 'member-b']) {
-        await db.into(db.members).insert(
+        await db
+            .into(db.members)
+            .insert(
               MembersCompanion.insert(
                 id: id,
                 name: id,
@@ -2646,7 +2665,9 @@ void main() {
               ),
             );
       }
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.memberGroups)
+          .insert(
             MemberGroupsCompanion.insert(
               id: 'group-local',
               name: 'Core',
@@ -2664,15 +2685,14 @@ void main() {
         'is_deleted': false,
       });
 
-      final row = await (db.select(db.memberGroupEntries)
-            ..where((t) => t.id.equals('entry-dup')))
-          .getSingleOrNull();
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((t) => t.id.equals('entry-dup'))).getSingleOrNull();
       expect(row, isNotNull, reason: 'F8: the entry applied without a throw');
       expect(row!.memberId, 'member-a', reason: 'lowest-id active holder');
     });
 
-    test(
-        'F11: a group-entry prefers the ACTIVE holder over a soft-deleted '
+    test('F11: a group-entry prefers the ACTIVE holder over a soft-deleted '
         'duplicate of the same pluralkit_uuid', () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
@@ -2680,9 +2700,12 @@ void main() {
       final now = DateTime.utc(2026, 4, 18, 12);
 
       // Active and soft-deleted members sharing one uuid (the dup window).
+      await db.customStatement(
+        'DROP INDEX IF EXISTS idx_members_pluralkit_uuid',
+      );
       await db
-          .customStatement('DROP INDEX IF EXISTS idx_members_pluralkit_uuid');
-      await db.into(db.members).insert(
+          .into(db.members)
+          .insert(
             MembersCompanion.insert(
               id: 'aaa-deleted',
               name: 'Gone',
@@ -2691,7 +2714,9 @@ void main() {
               isDeleted: const Value(true),
             ),
           );
-      await db.into(db.members).insert(
+      await db
+          .into(db.members)
+          .insert(
             MembersCompanion.insert(
               id: 'zzz-active',
               name: 'Live',
@@ -2699,7 +2724,9 @@ void main() {
               pluralkitUuid: const Value('pk-member-1'),
             ),
           );
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.memberGroups)
+          .insert(
             MemberGroupsCompanion.insert(
               id: 'group-local',
               name: 'Core',
@@ -2715,14 +2742,18 @@ void main() {
         'is_deleted': false,
       });
 
-      final row = await (db.select(db.memberGroupEntries)
-            ..where((t) => t.id.equals('entry-prefer-active')))
-          .getSingleOrNull();
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((t) => t.id.equals('entry-prefer-active'))).getSingleOrNull();
       expect(row, isNotNull);
       // Lower id is 'aaa-deleted', but the active member must win.
-      expect(row!.memberId, 'zzz-active',
-          reason: 'F11: the membership attaches to the live member, not the '
-              'soft-deleted duplicate');
+      expect(
+        row!.memberId,
+        'zzz-active',
+        reason:
+            'F11: the membership attaches to the live member, not the '
+            'soft-deleted duplicate',
+      );
     });
   });
 }

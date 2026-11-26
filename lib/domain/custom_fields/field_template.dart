@@ -157,8 +157,9 @@ class FieldTemplateEntry {
       name: json['n'] as String,
       fieldTypeId: json['t'] as String,
       parentIndex: json['p'] as int?,
-      compactConfig:
-          rawC != null ? Map<String, dynamic>.from(rawC as Map) : null,
+      compactConfig: rawC != null
+          ? Map<String, dynamic>.from(rawC as Map)
+          : null,
       rawConfigJson: rawR as String?,
       datePrecision: json['dp'] as int?,
     );

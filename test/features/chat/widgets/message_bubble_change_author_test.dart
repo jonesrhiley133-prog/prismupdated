@@ -29,7 +29,10 @@ class _RecordingChatNotifier extends ChatNotifier {
   final List<(String, String?)> changeAuthorCalls = [];
 
   @override
-  Future<void> changeMessageAuthor(String messageId, String? newAuthorId) async {
+  Future<void> changeMessageAuthor(
+    String messageId,
+    String? newAuthorId,
+  ) async {
     changeAuthorCalls.add((messageId, newAuthorId));
   }
 }
@@ -112,9 +115,7 @@ Widget _buildSubject({
 
   return ProviderScope(
     overrides: [
-      activeMembersProvider.overrideWith(
-        (ref) => Stream.value(members),
-      ),
+      activeMembersProvider.overrideWith((ref) => Stream.value(members)),
       if (chatNotifierFactory != null)
         chatNotifierProvider.overrideWith(chatNotifierFactory),
     ],
@@ -161,8 +162,11 @@ void main() {
       (tester) async {
         final perms = _makePerms();
         // canChangeMessageAuthor(aliceId) → (canWrite && aliceId != null) == true
-        expect(perms.canChangeMessageAuthor(_kAliceId), isTrue,
-            reason: 'precondition: perms allow change author');
+        expect(
+          perms.canChangeMessageAuthor(_kAliceId),
+          isTrue,
+          reason: 'precondition: perms allow change author',
+        );
 
         await tester.pumpWidget(
           _buildSubject(
@@ -192,8 +196,11 @@ void main() {
           speakingAsMemberId: null,
           speakingAsMember: null,
         );
-        expect(perms.canChangeMessageAuthor(_kAliceId), isFalse,
-            reason: 'precondition: perms deny change author');
+        expect(
+          perms.canChangeMessageAuthor(_kAliceId),
+          isFalse,
+          reason: 'precondition: perms deny change author',
+        );
 
         await tester.pumpWidget(
           _buildSubject(
@@ -238,33 +245,35 @@ void main() {
 
         await _openContextMenu(tester);
 
-        expect(find.text('Change author'), findsNothing,
-            reason:
-                'with only 1 candidate (Alice only, no Unknown sentinel in DM), '
-                'menu entry should be hidden');
-      },
-    );
-
-    testWidgets(
-      'hides "Change author" entry on system messages',
-      (tester) async {
-        final perms = _makePerms();
-
-        await tester.pumpWidget(
-          _buildSubject(
-            message: _makeMessage(isSystemMessage: true),
-            permissions: perms,
-            activeMembers: [_alice, _bob],
-          ),
+        expect(
+          find.text('Change author'),
+          findsNothing,
+          reason:
+              'with only 1 candidate (Alice only, no Unknown sentinel in DM), '
+              'menu entry should be hidden',
         );
-        await tester.pumpAndSettle();
-
-        // System messages render a _SystemMessage widget (plain centered text),
-        // not the full bubble with long-press, so the context menu never opens.
-        // We verify no Change author text appears at all.
-        expect(find.text('Change author'), findsNothing);
       },
     );
+
+    testWidgets('hides "Change author" entry on system messages', (
+      tester,
+    ) async {
+      final perms = _makePerms();
+
+      await tester.pumpWidget(
+        _buildSubject(
+          message: _makeMessage(isSystemMessage: true),
+          permissions: perms,
+          activeMembers: [_alice, _bob],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // System messages render a _SystemMessage widget (plain centered text),
+      // not the full bubble with long-press, so the context menu never opens.
+      // We verify no Change author text appears at all.
+      expect(find.text('Change author'), findsNothing);
+    });
   });
 
   // -----------------------------------------------------------------------
@@ -371,8 +380,11 @@ void main() {
         // The Unknown sentinel row is always appended in group conversations.
         // Find it by the l10n key (text "Unknown").
         final unknownFinder = find.text('Unknown');
-        expect(unknownFinder, findsAtLeastNWidgets(1),
-            reason: 'Unknown sentinel must appear in the picker');
+        expect(
+          unknownFinder,
+          findsAtLeastNWidgets(1),
+          reason: 'Unknown sentinel must appear in the picker',
+        );
 
         await tester.tap(unknownFinder.last);
         await tester.pumpAndSettle();
@@ -403,9 +415,7 @@ void main() {
 
     /// A reply message: replyToId → parent, replyToAuthorId → Alice (stale
     /// denormalized value captured at send time).
-    ChatMessage makeReplyMessage({
-      String replyToAuthorId = _kAliceId,
-    }) {
+    ChatMessage makeReplyMessage({String replyToAuthorId = _kAliceId}) {
       return ChatMessage(
         id: kReplyMsgId,
         content: 'this is a reply',
@@ -447,8 +457,7 @@ void main() {
         expect(
           find.text('Bob'),
           findsAtLeastNWidgets(1),
-          reason:
-              'reply chip must show the parent\'s current author (Bob)',
+          reason: 'reply chip must show the parent\'s current author (Bob)',
         );
         expect(
           find.text('Alice'),
@@ -515,62 +524,64 @@ void main() {
       isDirectMessage: true,
     );
 
-    testWidgets(
-      'menu shows for DM with [departed, active] participants when '
-      'current author is the departed one',
-      (tester) async {
-        // Speaking as Bob (the active participant).
-        final perms = _makePerms(
-          speakingAsMemberId: _kBobId,
-          speakingAsMember: _bob,
-          conversation: dmConv,
-        );
-        expect(
-          perms.canChangeMessageAuthor(kDepartedId),
-          isTrue,
-          reason: 'precondition: Bob can change the author of Departed\'s msg',
-        );
+    testWidgets('menu shows for DM with [departed, active] participants when '
+        'current author is the departed one', (tester) async {
+      // Speaking as Bob (the active participant).
+      final perms = _makePerms(
+        speakingAsMemberId: _kBobId,
+        speakingAsMember: _bob,
+        conversation: dmConv,
+      );
+      expect(
+        perms.canChangeMessageAuthor(kDepartedId),
+        isTrue,
+        reason: 'precondition: Bob can change the author of Departed\'s msg',
+      );
 
-        // authorMap contains the departed member so the bubble can resolve it.
-        final authorMap = {kDepartedId: departed, _kBobId: _bob};
+      // authorMap contains the departed member so the bubble can resolve it.
+      final authorMap = {kDepartedId: departed, _kBobId: _bob};
 
-        await tester.pumpWidget(
-          _buildSubject(
-            message: _makeMessage(authorId: kDepartedId),
-            permissions: perms,
-            // activeMembers contains only Bob; Departed has left.
-            activeMembers: [_bob],
-            authorMap: authorMap,
-          ),
-        );
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        _buildSubject(
+          message: _makeMessage(authorId: kDepartedId),
+          permissions: perms,
+          // activeMembers contains only Bob; Departed has left.
+          activeMembers: [_bob],
+          authorMap: authorMap,
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        await _openContextMenu(tester);
+      await _openContextMenu(tester);
 
-        // The "Change author" entry must appear: even though Departed is not in
-        // activeMembers, passing currentAuthor should add them to candidates,
-        // giving 2 candidates (Departed + Bob) and showing the menu entry.
-        expect(
-          find.text('Change author'),
-          findsOneWidget,
-          reason:
-              '"Change author" must appear: 2 candidates (Departed + Bob)',
-        );
+      // The "Change author" entry must appear: even though Departed is not in
+      // activeMembers, passing currentAuthor should add them to candidates,
+      // giving 2 candidates (Departed + Bob) and showing the menu entry.
+      expect(
+        find.text('Change author'),
+        findsOneWidget,
+        reason: '"Change author" must appear: 2 candidates (Departed + Bob)',
+      );
 
-        // Open the picker and verify both members are present.
-        await tester.tap(find.text('Change author'));
-        await tester.pumpAndSettle();
+      // Open the picker and verify both members are present.
+      await tester.tap(find.text('Change author'));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Departed'), findsAtLeastNWidgets(1),
-            reason: 'departed author must appear in picker');
-        expect(find.text('Bob'), findsAtLeastNWidgets(1),
-            reason: 'active participant must appear in picker');
+      expect(
+        find.text('Departed'),
+        findsAtLeastNWidgets(1),
+        reason: 'departed author must appear in picker',
+      );
+      expect(
+        find.text('Bob'),
+        findsAtLeastNWidgets(1),
+        reason: 'active participant must appear in picker',
+      );
 
-        // Departed should be at position 0 (current author is pinned first).
-        final pickerItems = tester.widgetList(find.text('Departed'));
-        expect(pickerItems, isNotEmpty);
-      },
-    );
+      // Departed should be at position 0 (current author is pinned first).
+      final pickerItems = tester.widgetList(find.text('Departed'));
+      expect(pickerItems, isNotEmpty);
+    });
   });
 
   // -----------------------------------------------------------------------
@@ -600,10 +611,10 @@ void main() {
 
         await _openContextMenu(tester);
 
-        final changeAuthorTop =
-            tester.getTopLeft(find.text('Change author')).dy;
-        final editTop =
-            tester.getTopLeft(find.text('Edit Message')).dy;
+        final changeAuthorTop = tester
+            .getTopLeft(find.text('Change author'))
+            .dy;
+        final editTop = tester.getTopLeft(find.text('Edit Message')).dy;
 
         expect(
           changeAuthorTop,

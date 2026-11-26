@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:intl/intl.dart' show DateFormat;
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/companions/adopt_screen.dart';
 import 'package:prism_plurality/features/companions/appearance_editor.dart';
@@ -1633,7 +1634,10 @@ class _CompanionInfoEditorState extends ConsumerState<CompanionInfoEditor> {
                       onPressed: () => setState(() => _avatar = null),
                     ),
               onTap: () async {
-                final id = await PrismMedia.pickImage(ref);
+                final id = await PrismMedia.pickImage(
+                  ref,
+                  spec: PrismCropSpec.avatar,
+                );
                 if (id != null) setState(() => _avatar = id);
               },
             ),
@@ -1653,7 +1657,10 @@ class _CompanionInfoEditorState extends ConsumerState<CompanionInfoEditor> {
                       onPressed: () => setState(() => _banner = null),
                     ),
               onTap: () async {
-                final id = await PrismMedia.pickImage(ref);
+                final id = await PrismMedia.pickImage(
+                  ref,
+                  spec: PrismCropSpec.banner,
+                );
                 if (id != null) setState(() => _banner = id);
               },
             ),

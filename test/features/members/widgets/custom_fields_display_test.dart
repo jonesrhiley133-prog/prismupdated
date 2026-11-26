@@ -998,7 +998,8 @@ void main() {
         if (widget is! DecoratedBox) return false;
         final decoration = widget.decoration;
         return decoration is BoxDecoration &&
-            (decoration.shape == BoxShape.circle || (decoration.borderRadius != null && decoration.border == null));
+            (decoration.shape == BoxShape.circle ||
+                (decoration.borderRadius != null && decoration.border == null));
       }),
     );
     expect(iconCircle, findsOneWidget);

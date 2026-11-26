@@ -10,7 +10,8 @@ import 'package:prism_plurality/features/cozy/views/mailbox_view.dart';
 import 'package:prism_plurality/features/cozy/views/together_view.dart';
 import 'package:prism_plurality/features/games/content/prompt_bank.dart';
 import 'package:prism_plurality/features/games/core/games_data.dart';
-import 'package:prism_plurality/features/settings/views/feature_data_screen.dart' show FeatureDataAction;
+import 'package:prism_plurality/features/settings/views/feature_data_screen.dart'
+    show FeatureDataAction;
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
@@ -36,7 +37,9 @@ class CozyHubScreen extends ConsumerStatefulWidget {
 }
 
 class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
-  late CozyTab _tab = CozyTab.values.where((t) => t.name == widget.tab).firstOrNull ?? CozyTab.corner;
+  late CozyTab _tab =
+      CozyTab.values.where((t) => t.name == widget.tab).firstOrNull ??
+      CozyTab.corner;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +48,25 @@ class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Cozy', 'Acogedor'),
-        subtitle: settings.name.isEmpty ? null : '${settings.emoji} ${settings.name}',
+        subtitle: settings.name.isEmpty
+            ? null
+            : '${settings.emoji} ${settings.name}',
         actions: [
-          PrismTopBarAction(icon: PhosphorIcons.pawPrint(), tooltip: tr(context, 'Companions', 'Compañeros'), onPressed: () => context.push(AppRoutePaths.companions)),
-          PrismTopBarAction(icon: PhosphorIcons.stamp(), tooltip: tr(context, 'Passports', 'Pasaportes'), onPressed: () => context.push(AppRoutePaths.passports)),
-          PrismTopBarAction(icon: PhosphorIcons.slidersHorizontal(), tooltip: tr(context, 'Customize', 'Personalizar'), onPressed: () => _customize(context)),
+          PrismTopBarAction(
+            icon: PhosphorIcons.pawPrint(),
+            tooltip: tr(context, 'Companions', 'Compañeros'),
+            onPressed: () => context.push(AppRoutePaths.companions),
+          ),
+          PrismTopBarAction(
+            icon: PhosphorIcons.stamp(),
+            tooltip: tr(context, 'Passports', 'Pasaportes'),
+            onPressed: () => context.push(AppRoutePaths.passports),
+          ),
+          PrismTopBarAction(
+            icon: PhosphorIcons.slidersHorizontal(),
+            tooltip: tr(context, 'Customize', 'Personalizar'),
+            onPressed: () => _customize(context),
+          ),
           const FeatureDataAction(featureId: 'cozy'),
         ],
       ),
@@ -68,7 +85,8 @@ class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
                     Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: PrismChip(
-                        label: '${t.label.$1} ${tr(context, t.label.$2, t.label.$3)}${t == CozyTab.mailbox && unread > 0 ? ' · $unread' : ''}',
+                        label:
+                            '${t.label.$1} ${tr(context, t.label.$2, t.label.$3)}${t == CozyTab.mailbox && unread > 0 ? ' · $unread' : ''}',
                         selected: _tab == t,
                         onTap: () => setState(() => _tab = t),
                       ),
@@ -80,7 +98,9 @@ class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
             SectionSwitcher(
               id: _tab,
               child: switch (_tab) {
-                CozyTab.corner => _Corner(onGo: (t) => setState(() => _tab = t)),
+                CozyTab.corner => _Corner(
+                  onGo: (t) => setState(() => _tab = t),
+                ),
                 CozyTab.rooms => const _Rooms(),
                 CozyTab.mailbox => const MailboxView(),
                 CozyTab.together => const TogetherView(),
@@ -95,7 +115,11 @@ class _CozyHubScreenState extends ConsumerState<CozyHubScreen> {
     );
   }
 
-  Future<void> _customize(BuildContext context) => PrismSheet.show<void>(context: context, title: tr(context, 'Customize Cozy', 'Personalizar Acogedor'), builder: (_) => const _CustomizeSheet());
+  Future<void> _customize(BuildContext context) => PrismSheet.show<void>(
+    context: context,
+    title: tr(context, 'Customize Cozy', 'Personalizar Acogedor'),
+    builder: (_) => const _CustomizeSheet(),
+  );
 }
 
 class _CustomizeSheet extends ConsumerStatefulWidget {
@@ -107,7 +131,20 @@ class _CustomizeSheet extends ConsumerStatefulWidget {
 class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
   late CozySettings _s = ref.read(cozySettingsProvider);
   late final _name = TextEditingController(text: _s.name);
-  static const emojis = ['☕', '🛋️', '🕯️', '🏡', '🌙', '🍵', '🧸', '🌿', '🔥', '📚', '🌸', '🪴'];
+  static const emojis = [
+    '☕',
+    '🛋️',
+    '🕯️',
+    '🏡',
+    '🌙',
+    '🍵',
+    '🧸',
+    '🌿',
+    '🔥',
+    '📚',
+    '🌸',
+    '🪴',
+  ];
 
   @override
   void dispose() {
@@ -120,7 +157,14 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
     ref.read(cozyActionsProvider).saveSettings(s);
   }
 
-  CozySettings _copy({String? name, String? emoji, bool? q, bool? a, bool? qu, bool? w}) => CozySettings(
+  CozySettings _copy({
+    String? name,
+    String? emoji,
+    bool? q,
+    bool? a,
+    bool? qu,
+    bool? w,
+  }) => CozySettings(
     record: _s.record ?? ref.read(cozySettingsProvider).record,
     name: name ?? _s.name,
     emoji: emoji ?? _s.emoji,
@@ -141,7 +185,11 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
           PrismTextField(
             controller: _name,
             labelText: tr(context, 'Lounge name', 'Nombre de la sala'),
-            hintText: tr(context, 'e.g. The Lantern Room', 'p. ej. La sala del farol'),
+            hintText: tr(
+              context,
+              'e.g. The Lantern Room',
+              'p. ej. La sala del farol',
+            ),
             onSubmitted: (v) => _set(_copy(name: v.trim())),
             onChanged: (v) => _s = _copy(name: v.trim()),
           ),
@@ -173,7 +221,11 @@ class _CustomizeSheetState extends ConsumerState<_CustomizeSheet> {
             onChanged: (v) => _set(_copy(qu: v)),
           ),
           PrismSwitchRow(
-            title: tr(context, 'Wishlist preview', 'Vista de la lista de deseos'),
+            title: tr(
+              context,
+              'Wishlist preview',
+              'Vista de la lista de deseos',
+            ),
             value: _s.showWishlist,
             onChanged: (v) => _set(_copy(w: v)),
           ),
@@ -204,18 +256,42 @@ class _Corner extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final s = ref.watch(cozySettingsProvider);
-    final posts = ref.watch(cozyPostsProvider).where((p) => p.fields['room'] == null).toList();
+    final posts = ref
+        .watch(cozyPostsProvider)
+        .where((p) => p.fields['room'] == null)
+        .toList();
     final participants = ref.watch(recentCozyParticipantsProvider);
     final question = dailyPick(questionCards, salt: 3);
-    final todaysAnswers = posts.where((p) => p.fields['starter'] == question && DateUtils.isSameDay(p.createdAt, DateTime.now())).length;
+    final todaysAnswers = posts
+        .where(
+          (p) =>
+              p.fields['starter'] == question &&
+              DateUtils.isSameDay(p.createdAt, DateTime.now()),
+        )
+        .length;
     final (quote, author) = dailyPick(quotes, salt: 1);
     final wishes = ref.watch(cozyListProvider('wishlist'));
     final unread = ref.watch(unreadLettersProvider);
     final thirsty = ref.watch(plantsProvider).where((p) => p.thirsty).length;
 
     Future<void> write({String? starter}) async {
-      final c = await composeSheet(context, ref, title: starter == null ? tr(context, 'Share in the lounge', 'Compartir en la sala') : tr(context, 'Answer', 'Responder'), prompt: starter);
-      if (c != null) await ref.read(cozyActionsProvider).post(body: c.text, memberId: c.author, starter: starter, mood: c.mood);
+      final c = await composeSheet(
+        context,
+        ref,
+        title: starter == null
+            ? tr(context, 'Share in the lounge', 'Compartir en la sala')
+            : tr(context, 'Answer', 'Responder'),
+        prompt: starter,
+      );
+      if (c != null)
+        await ref
+            .read(cozyActionsProvider)
+            .post(
+              body: c.text,
+              memberId: c.author,
+              starter: starter,
+              mood: c.mood,
+            );
     }
 
     return Column(
@@ -226,13 +302,28 @@ class _Corner extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${s.emoji} ${s.name.isEmpty ? tr(context, 'The Cozy Corner', 'El rincón acogedor') : s.name}', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              Text(
+                '${s.emoji} ${s.name.isEmpty ? tr(context, 'The Cozy Corner', 'El rincón acogedor') : s.name}',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
-                tr(context, 'A shared space for everyone in the system — whoever is fronting, and whoever isn\'t.', 'Un espacio compartido para todo el sistema: quien esté al frente y quien no.'),
+                tr(
+                  context,
+                  'A shared space for everyone in the system — whoever is fronting, and whoever isn\'t.',
+                  'Un espacio compartido para todo el sistema: quien esté al frente y quien no.',
+                ),
                 style: theme.textTheme.bodySmall,
               ),
-              if (s.showAffirmation) ...[const SizedBox(height: 10), Text('🌼 ${dailyPick(affirmations, salt: 2)}', style: const TextStyle(fontWeight: FontWeight.w600))],
+              if (s.showAffirmation) ...[
+                const SizedBox(height: 10),
+                Text(
+                  '🌼 ${dailyPick(affirmations, salt: 2)}',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
               if (unread > 0 || thirsty > 0) ...[
                 const SizedBox(height: 10),
                 Wrap(
@@ -241,13 +332,21 @@ class _Corner extends ConsumerWidget {
                   children: [
                     if (unread > 0)
                       PrismChip(
-                        label: tr(context, '💌 $unread new letter${unread == 1 ? '' : 's'}', '💌 $unread carta${unread == 1 ? '' : 's'} nueva${unread == 1 ? '' : 's'}'),
+                        label: tr(
+                          context,
+                          '💌 $unread new letter${unread == 1 ? '' : 's'}',
+                          '💌 $unread carta${unread == 1 ? '' : 's'} nueva${unread == 1 ? '' : 's'}',
+                        ),
                         selected: false,
                         onTap: () => onGo(CozyTab.mailbox),
                       ),
                     if (thirsty > 0)
                       PrismChip(
-                        label: tr(context, '💧 $thirsty plant${thirsty == 1 ? '' : 's'} would love water', '💧 $thirsty planta${thirsty == 1 ? '' : 's'} con sed'),
+                        label: tr(
+                          context,
+                          '💧 $thirsty plant${thirsty == 1 ? '' : 's'} would love water',
+                          '💧 $thirsty planta${thirsty == 1 ? '' : 's'} con sed',
+                        ),
                         selected: false,
                         onTap: () => onGo(CozyTab.garden),
                       ),
@@ -258,17 +357,32 @@ class _Corner extends ConsumerWidget {
           ),
         ),
         if (s.showQuestion) ...[
-          PrismSectionHeader(title: tr(context, 'QUESTION OF THE DAY', 'PREGUNTA DEL DÍA')),
+          PrismSectionHeader(
+            title: tr(context, 'QUESTION OF THE DAY', 'PREGUNTA DEL DÍA'),
+          ),
           PrismSurface(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(question, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  question,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   todaysAnswers == 0
-                      ? tr(context, 'No answers yet today.', 'Aún no hay respuestas hoy.')
-                      : tr(context, '$todaysAnswers answer${todaysAnswers == 1 ? '' : 's'} below.', '$todaysAnswers respuesta${todaysAnswers == 1 ? '' : 's'} abajo.'),
+                      ? tr(
+                          context,
+                          'No answers yet today.',
+                          'Aún no hay respuestas hoy.',
+                        )
+                      : tr(
+                          context,
+                          '$todaysAnswers answer${todaysAnswers == 1 ? '' : 's'} below.',
+                          '$todaysAnswers respuesta${todaysAnswers == 1 ? '' : 's'} abajo.',
+                        ),
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
@@ -287,17 +401,28 @@ class _Corner extends ConsumerWidget {
         if (s.showQuote) ...[
           const SizedBox(height: 10),
           PrismSurface(
-            child: Text('“$quote”\n— $author', style: const TextStyle(fontStyle: FontStyle.italic, height: 1.4)),
+            child: Text(
+              '“$quote”\n— $author',
+              style: const TextStyle(fontStyle: FontStyle.italic, height: 1.4),
+            ),
           ),
         ],
-        PrismSectionHeader(title: tr(context, 'RECENTLY HERE', 'POR AQUÍ HACE POCO')),
+        PrismSectionHeader(
+          title: tr(context, 'RECENTLY HERE', 'POR AQUÍ HACE POCO'),
+        ),
         ParticipantsRow(ids: participants),
-        PrismSectionHeader(title: tr(context, 'CONVERSATION STARTERS', 'PARA EMPEZAR A CHARLAR')),
+        PrismSectionHeader(
+          title: tr(context, 'CONVERSATION STARTERS', 'PARA EMPEZAR A CHARLAR'),
+        ),
         Wrap(
           spacing: 6,
           runSpacing: 6,
           children: [
-            for (final st in [dailyPick(conversationStarters, salt: 4), dailyPick(conversationStarters, salt: 9), dailyPick(conversationStarters, salt: 15)].toSet())
+            for (final st in [
+              dailyPick(conversationStarters, salt: 4),
+              dailyPick(conversationStarters, salt: 9),
+              dailyPick(conversationStarters, salt: 15),
+            ].toSet())
               PrismChip(
                 label: st,
                 selected: false,
@@ -305,20 +430,33 @@ class _Corner extends ConsumerWidget {
               ),
           ],
         ),
-        PrismSectionHeader(title: tr(context, 'QUICK GRATITUDE', 'GRATITUD RÁPIDA')),
+        PrismSectionHeader(
+          title: tr(context, 'QUICK GRATITUDE', 'GRATITUD RÁPIDA'),
+        ),
         _GratitudeQuick(),
         if (s.showWishlist && wishes.isNotEmpty) ...[
           PrismSectionHeader(title: tr(context, 'WISHLIST', 'LISTA DE DESEOS')),
-          PrismSurface(onTap: () => onGo(CozyTab.collections), child: Text(wishes.take(4).map((w) => '• ${w.title}').join('\n'))),
+          PrismSurface(
+            onTap: () => onGo(CozyTab.collections),
+            child: Text(wishes.take(4).map((w) => '• ${w.title}').join('\n')),
+          ),
         ],
         PrismSectionHeader(title: tr(context, 'THE LOUNGE', 'LA SALA')),
-        PrismButton(icon: PhosphorIcons.chatCircleText(), label: tr(context, 'Share something', 'Compartir algo'), onPressed: write),
+        PrismButton(
+          icon: PhosphorIcons.chatCircleText(),
+          label: tr(context, 'Share something', 'Compartir algo'),
+          onPressed: write,
+        ),
         const SizedBox(height: 10),
         if (posts.isEmpty)
           EmptyState(
             icon: Icon(PhosphorIcons.coffee()),
             title: tr(context, 'The lounge is quiet', 'La sala está tranquila'),
-            subtitle: tr(context, 'Say hello, share a thought, or answer today\'s question.', 'Saluda, comparte algo o responde la pregunta de hoy.'),
+            subtitle: tr(
+              context,
+              'Say hello, share a thought, or answer today\'s question.',
+              'Saluda, comparte algo o responde la pregunta de hoy.',
+            ),
           )
         else
           for (final p in posts.take(40)) PostCard(post: p),
@@ -346,9 +484,21 @@ class _GratitudeQuickState extends ConsumerState<_GratitudeQuick> {
     return Row(
       children: [
         Expanded(
-          child: PrismTextField(controller: _ctl, hintText: tr(context, 'Something you\'re grateful for… ($count in the jar)', 'Algo que agradeces… ($count en el tarro)'), onSubmitted: (_) => _add()),
+          child: PrismTextField(
+            controller: _ctl,
+            hintText: tr(
+              context,
+              'Something you\'re grateful for… ($count in the jar)',
+              'Algo que agradeces… ($count en el tarro)',
+            ),
+            onSubmitted: (_) => _add(),
+          ),
         ),
-        PrismIconButton(icon: PhosphorIcons.plus(), tooltip: tr(context, 'Add to jar', 'Añadir al tarro'), onPressed: _add),
+        PrismIconButton(
+          icon: PhosphorIcons.plus(),
+          tooltip: tr(context, 'Add to jar', 'Añadir al tarro'),
+          onPressed: _add,
+        ),
       ],
     );
   }
@@ -356,9 +506,19 @@ class _GratitudeQuickState extends ConsumerState<_GratitudeQuick> {
   Future<void> _add() async {
     final t = _ctl.text.trim();
     if (t.isEmpty) return;
-    await ref.read(cozyActionsProvider).addListItem('gratitude', title: t, memberId: ref.read(cozyMeProvider));
+    await ref
+        .read(cozyActionsProvider)
+        .addListItem('gratitude', title: t, memberId: ref.read(cozyMeProvider));
     _ctl.clear();
-    if (mounted) PrismToast.show(context, message: tr(context, 'Added to the gratitude jar 🫙', 'Añadido al tarro de gratitud 🫙'));
+    if (mounted)
+      PrismToast.show(
+        context,
+        message: tr(
+          context,
+          'Added to the gratitude jar 🫙',
+          'Añadido al tarro de gratitud 🫙',
+        ),
+      );
   }
 }
 
@@ -389,16 +549,27 @@ class _Rooms extends ConsumerWidget {
             'Rooms are little shared spaces with their own board, notes and checklists. Each room can be open to everyone, private, shared with chosen alters or tied to a subsystem.',
             'Las habitaciones son pequeños espacios con su propio tablero, notas y listas. Pueden ser para todos, privadas, compartidas o de un subsistema.',
           ),
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 10),
-        PrismButton(tone: PrismButtonTone.filled, icon: PhosphorIcons.plus(), label: tr(context, 'New room', 'Nueva habitación'), onPressed: () => editRoom(context, ref)),
+        PrismButton(
+          tone: PrismButtonTone.filled,
+          icon: PhosphorIcons.plus(),
+          label: tr(context, 'New room', 'Nueva habitación'),
+          onPressed: () => editRoom(context, ref),
+        ),
         const SizedBox(height: 12),
         if (rooms.isEmpty)
           EmptyState(
             icon: Icon(PhosphorIcons.door()),
             title: tr(context, 'No rooms yet', 'Aún no hay habitaciones'),
-            subtitle: tr(context, 'A reading nook, an art studio, a quiet room…', 'Un rincón de lectura, un estudio de arte, una sala tranquila…'),
+            subtitle: tr(
+              context,
+              'A reading nook, an art studio, a quiet room…',
+              'Un rincón de lectura, un estudio de arte, una sala tranquila…',
+            ),
           )
         else
           LayoutBuilder(
@@ -425,10 +596,23 @@ class _Rooms extends ConsumerWidget {
                             r.name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                          Text(accessLabel(context, r.access), style: theme.textTheme.labelSmall),
-                          if (r.owner != null) Text(tr(context, 'by ${names[r.owner] ?? '?'}', 'de ${names[r.owner] ?? '?'}'), style: theme.textTheme.labelSmall),
+                          Text(
+                            accessLabel(context, r.access),
+                            style: theme.textTheme.labelSmall,
+                          ),
+                          if (r.owner != null)
+                            Text(
+                              tr(
+                                context,
+                                'by ${names[r.owner] ?? '?'}',
+                                'de ${names[r.owner] ?? '?'}',
+                              ),
+                              style: theme.textTheme.labelSmall,
+                            ),
                         ],
                       ),
                     ),
@@ -441,11 +625,14 @@ class _Rooms extends ConsumerWidget {
   }
 }
 
-Future<void> editRoom(BuildContext context, WidgetRef ref, {Room? room}) => PrismSheet.show<void>(
-  context: context,
-  title: room == null ? tr(context, 'New room', 'Nueva habitación') : tr(context, 'Room settings', 'Ajustes de la habitación'),
-  builder: (_) => _RoomEditor(room: room),
-);
+Future<void> editRoom(BuildContext context, WidgetRef ref, {Room? room}) =>
+    PrismSheet.show<void>(
+      context: context,
+      title: room == null
+          ? tr(context, 'New room', 'Nueva habitación')
+          : tr(context, 'Room settings', 'Ajustes de la habitación'),
+      builder: (_) => _RoomEditor(room: room),
+    );
 
 class _RoomEditor extends ConsumerStatefulWidget {
   const _RoomEditor({this.room});
@@ -456,13 +643,30 @@ class _RoomEditor extends ConsumerStatefulWidget {
 
 class _RoomEditorState extends ConsumerState<_RoomEditor> {
   late final _name = TextEditingController(text: widget.room?.name ?? '');
-  late final _desc = TextEditingController(text: widget.room?.description ?? '');
+  late final _desc = TextEditingController(
+    text: widget.room?.description ?? '',
+  );
   late String _emoji = widget.room?.emoji ?? '🛋️';
   late String _access = widget.room?.access ?? 'public';
   late List<String> _members = widget.room?.members ?? [];
   late String? _owner = widget.room?.owner ?? ref.read(cozyMeProvider);
   late String? _sub = widget.room?.subsystemId;
-  static const emojis = ['🛋️', '📚', '🎨', '🎮', '🌿', '🕯️', '🎵', '🧸', '🍳', '🌙', '🔭', '🛁', '🧶', '🏕️'];
+  static const emojis = [
+    '🛋️',
+    '📚',
+    '🎨',
+    '🎮',
+    '🌿',
+    '🕯️',
+    '🎵',
+    '🧸',
+    '🍳',
+    '🌙',
+    '🔭',
+    '🛁',
+    '🧶',
+    '🏕️',
+  ];
 
   @override
   void dispose() {
@@ -481,36 +685,80 @@ class _RoomEditorState extends ConsumerState<_RoomEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), autofocus: widget.room == null),
+          PrismTextField(
+            controller: _name,
+            labelText: tr(context, 'Name', 'Nombre'),
+            autofocus: widget.room == null,
+          ),
           const SizedBox(height: 8),
-          PrismTextField(controller: _desc, labelText: tr(context, 'Description (optional)', 'Descripción (opcional)'), maxLines: 2),
+          PrismTextField(
+            controller: _desc,
+            labelText: tr(
+              context,
+              'Description (optional)',
+              'Descripción (opcional)',
+            ),
+            maxLines: 2,
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 4,
-            children: [for (final e in emojis) PrismChip(label: e, selected: _emoji == e, onTap: () => setState(() => _emoji = e))],
+            children: [
+              for (final e in emojis)
+                PrismChip(
+                  label: e,
+                  selected: _emoji == e,
+                  onTap: () => setState(() => _emoji = e),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: [
-              for (final a in const ['public', 'private', 'shared', 'subsystem']) PrismChip(label: accessLabel(context, a), selected: _access == a, onTap: () => setState(() => _access = a)),
+              for (final a in const [
+                'public',
+                'private',
+                'shared',
+                'subsystem',
+              ])
+                PrismChip(
+                  label: accessLabel(context, a),
+                  selected: _access == a,
+                  onTap: () => setState(() => _access = a),
+                ),
             ],
           ),
           const SizedBox(height: 8),
           PrismListRow(
             dense: true,
             leading: AlterDot(_owner, size: 26),
-            title: Text(tr(context, 'Owner: ${_owner == null ? 'the system' : names[_owner] ?? '?'}', 'Dueño: ${_owner == null ? 'el sistema' : names[_owner] ?? '?'}')),
+            title: Text(
+              tr(
+                context,
+                'Owner: ${_owner == null ? 'the system' : names[_owner] ?? '?'}',
+                'Dueño: ${_owner == null ? 'el sistema' : names[_owner] ?? '?'}',
+              ),
+            ),
             onTap: () async {
-              final p = await pickAlters(context, ref, max: 1, selected: [?_owner]);
+              final p = await pickAlters(
+                context,
+                ref,
+                max: 1,
+                selected: [?_owner],
+              );
               if (p != null) setState(() => _owner = p.firstOrNull);
             },
           ),
           if (_access == 'shared')
             AlterChips(
               ids: _members,
-              emptyLabel: tr(context, 'Choose who can enter', 'Elige quién puede entrar'),
+              emptyLabel: tr(
+                context,
+                'Choose who can enter',
+                'Elige quién puede entrar',
+              ),
               onTap: () async {
                 final p = await pickAlters(context, ref, selected: _members);
                 if (p != null) setState(() => _members = p);
@@ -518,23 +766,57 @@ class _RoomEditorState extends ConsumerState<_RoomEditor> {
             ),
           if (_access == 'subsystem')
             subs.isEmpty
-                ? Text(tr(context, 'No subsystems yet — create one in Subsystems.', 'Aún no hay subsistemas: crea uno en Subsistemas.'))
+                ? Text(
+                    tr(
+                      context,
+                      'No subsystems yet — create one in Subsystems.',
+                      'Aún no hay subsistemas: crea uno en Subsistemas.',
+                    ),
+                  )
                 : Wrap(
                     spacing: 6,
-                    children: [for (final s in subs) PrismChip(label: s.title, selected: _sub == s.id, onTap: () => setState(() => _sub = s.id))],
+                    children: [
+                      for (final s in subs)
+                        PrismChip(
+                          label: s.title,
+                          selected: _sub == s.id,
+                          onTap: () => setState(() => _sub = s.id),
+                        ),
+                    ],
                   ),
           const SizedBox(height: 12),
           PrismButton(
             tone: PrismButtonTone.filled,
             label: tr(context, 'Save', 'Guardar'),
             onPressed: () async {
-              final name = _name.text.trim().isEmpty ? tr(context, 'New room', 'Nueva habitación') : _name.text.trim();
-              final fields = {'emoji': _emoji, 'access': _access, 'members': _members, 'subsystem': _sub};
+              final name = _name.text.trim().isEmpty
+                  ? tr(context, 'New room', 'Nueva habitación')
+                  : _name.text.trim();
+              final fields = {
+                'emoji': _emoji,
+                'access': _access,
+                'members': _members,
+                'subsystem': _sub,
+              };
               final t = ref.read(trackerNotifierProvider.notifier);
               if (widget.room == null) {
-                await t.create(kind: TrackerKind.cozyRoom, title: name, body: _desc.text.trim(), memberId: _owner, fields: fields);
+                await t.create(
+                  kind: TrackerKind.cozyRoom,
+                  title: name,
+                  body: _desc.text.trim(),
+                  memberId: _owner,
+                  fields: fields,
+                );
               } else {
-                await t.save(widget.room!.r.copyWith(title: name, body: _desc.text.trim(), memberId: _owner).withFields({...widget.room!.r.fields, ...fields}));
+                await t.save(
+                  widget.room!.r
+                      .copyWith(
+                        title: name,
+                        body: _desc.text.trim(),
+                        memberId: _owner,
+                      )
+                      .withFields({...widget.room!.r.fields, ...fields}),
+                );
               }
               if (context.mounted) Navigator.of(context).pop();
             },
@@ -558,19 +840,30 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final room = ref.watch(roomsProvider).where((r) => r.r.id == widget.roomId).firstOrNull;
+    final room = ref
+        .watch(roomsProvider)
+        .where((r) => r.r.id == widget.roomId)
+        .firstOrNull;
     final theme = Theme.of(context);
     if (room == null) {
       return PrismPageScaffold(
         topBar: PrismTopBar(title: tr(context, 'Room', 'Habitación')),
-        body: EmptyState(icon: Icon(PhosphorIcons.door()), title: tr(context, 'Room not found', 'Habitación no encontrada'), subtitle: ''),
+        body: EmptyState(
+          icon: Icon(PhosphorIcons.door()),
+          title: tr(context, 'Room not found', 'Habitación no encontrada'),
+          subtitle: '',
+        ),
       );
     }
     final allowed = ref.watch(roomAllowedProvider(room.r.id));
     final me = ref.watch(cozyMeProvider);
-    final mayEnter = allowed == null || _knocked || (me != null && allowed.contains(me));
+    final mayEnter =
+        allowed == null || _knocked || (me != null && allowed.contains(me));
     final items = ref.watch(roomItemsProvider(room.r.id));
-    final posts = ref.watch(cozyPostsProvider).where((p) => p.fields['room'] == room.r.id).toList();
+    final posts = ref
+        .watch(cozyPostsProvider)
+        .where((p) => p.fields['room'] == room.r.id)
+        .toList();
     final names = ref.watch(gameNamesProvider);
 
     return PrismPageScaffold(
@@ -606,48 +899,89 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
           children: !mayEnter
               ? [
                   const SizedBox(height: 40),
-                  Icon(PhosphorIcons.lock(), size: 48, color: theme.colorScheme.primary),
+                  Icon(
+                    PhosphorIcons.lock(),
+                    size: 48,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(height: 12),
                   Text(
-                    tr(context, 'This room is ${room.access == 'private' ? 'private' : 'for certain alters'}.', 'Esta habitación es ${room.access == 'private' ? 'privada' : 'para ciertos alters'}.'),
+                    tr(
+                      context,
+                      'This room is ${room.access == 'private' ? 'private' : 'for certain alters'}.',
+                      'Esta habitación es ${room.access == 'private' ? 'privada' : 'para ciertos alters'}.',
+                    ),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    tr(context, 'It belongs to ${names[room.owner] ?? 'someone'}. Please respect their space.', 'Es de ${names[room.owner] ?? 'alguien'}. Respeta su espacio.'),
+                    tr(
+                      context,
+                      'It belongs to ${names[room.owner] ?? 'someone'}. Please respect their space.',
+                      'Es de ${names[room.owner] ?? 'alguien'}. Respeta su espacio.',
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Center(
-                    child: PrismButton(label: tr(context, 'I\'m allowed in', 'Tengo permiso'), onPressed: () => setState(() => _knocked = true)),
+                    child: PrismButton(
+                      label: tr(context, 'I\'m allowed in', 'Tengo permiso'),
+                      onPressed: () => setState(() => _knocked = true),
+                    ),
                   ),
                 ]
               : [
                   if (room.description.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: Text(room.description, style: theme.textTheme.bodyMedium),
+                      child: Text(
+                        room.description,
+                        style: theme.textTheme.bodyMedium,
+                      ),
                     ),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      PrismButton(icon: PhosphorIcons.note(), label: tr(context, 'Pin a note', 'Fijar una nota'), onPressed: () => _addItem(context, 'note')),
-                      PrismButton(icon: PhosphorIcons.checkSquare(), label: tr(context, 'Add to-do', 'Añadir tarea'), onPressed: () => _addItem(context, 'todo')),
+                      PrismButton(
+                        icon: PhosphorIcons.note(),
+                        label: tr(context, 'Pin a note', 'Fijar una nota'),
+                        onPressed: () => _addItem(context, 'note'),
+                      ),
+                      PrismButton(
+                        icon: PhosphorIcons.checkSquare(),
+                        label: tr(context, 'Add to-do', 'Añadir tarea'),
+                        onPressed: () => _addItem(context, 'todo'),
+                      ),
                       PrismButton(
                         icon: PhosphorIcons.chatCircleText(),
                         label: tr(context, 'Post', 'Publicar'),
                         onPressed: () async {
-                          final c = await composeSheet(context, ref, title: room.name);
-                          if (c != null) await ref.read(cozyActionsProvider).post(body: c.text, memberId: c.author, room: room.r.id, mood: c.mood);
+                          final c = await composeSheet(
+                            context,
+                            ref,
+                            title: room.name,
+                          );
+                          if (c != null)
+                            await ref
+                                .read(cozyActionsProvider)
+                                .post(
+                                  body: c.text,
+                                  memberId: c.author,
+                                  room: room.r.id,
+                                  mood: c.mood,
+                                );
                         },
                       ),
                     ],
                   ),
                   PrismSectionHeader(title: tr(context, 'BOARD', 'TABLERO')),
                   if (items.isEmpty)
-                    Text(tr(context, 'Nothing pinned yet.', 'Nada fijado aún.'), style: theme.textTheme.bodySmall)
+                    Text(
+                      tr(context, 'Nothing pinned yet.', 'Nada fijado aún.'),
+                      style: theme.textTheme.bodySmall,
+                    )
                   else
                     Wrap(
                       spacing: 8,
@@ -658,21 +992,44 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
                             width: 160,
                             child: PrismSurface(
                               padding: const EdgeInsets.all(10),
-                              fillColor: i.fields['type'] == 'note' ? const Color(0xFFFFF4C2).withValues(alpha: theme.brightness == Brightness.dark ? 0.18 : 0.9) : null,
-                              onLongPress: () => ref.read(cozyActionsProvider).delete(i),
-                              onTap: i.fields['type'] == 'todo' ? () => ref.read(cozyActionsProvider).setFields(i, {'done': i.fields['done'] != true}) : null,
+                              fillColor: i.fields['type'] == 'note'
+                                  ? const Color(0xFFFFF4C2).withValues(
+                                      alpha: theme.brightness == Brightness.dark
+                                          ? 0.18
+                                          : 0.9,
+                                    )
+                                  : null,
+                              onLongPress: () =>
+                                  ref.read(cozyActionsProvider).delete(i),
+                              onTap: i.fields['type'] == 'todo'
+                                  ? () =>
+                                        ref.read(cozyActionsProvider).setFields(
+                                          i,
+                                          {'done': i.fields['done'] != true},
+                                        )
+                                  : null,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     '${i.fields['type'] == 'todo' ? (i.fields['done'] == true ? '☑️ ' : '⬜ ') : ''}${i.title}',
                                     style: TextStyle(
-                                      decoration: i.fields['done'] == true ? TextDecoration.lineThrough : null,
-                                      color: i.fields['type'] == 'note' && theme.brightness == Brightness.light ? const Color(0xFF3B3B58) : null,
+                                      decoration: i.fields['done'] == true
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color:
+                                          i.fields['type'] == 'note' &&
+                                              theme.brightness ==
+                                                  Brightness.light
+                                          ? const Color(0xFF3B3B58)
+                                          : null,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(names[i.memberId] ?? '', style: theme.textTheme.labelSmall),
+                                  Text(
+                                    names[i.memberId] ?? '',
+                                    style: theme.textTheme.labelSmall,
+                                  ),
                                 ],
                               ),
                             ),
@@ -682,10 +1039,29 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
                   if (items.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text(tr(context, 'Tap a to-do to tick it · long-press to remove', 'Toca una tarea para marcarla · mantén para quitar'), style: theme.textTheme.bodySmall),
+                      child: Text(
+                        tr(
+                          context,
+                          'Tap a to-do to tick it · long-press to remove',
+                          'Toca una tarea para marcarla · mantén para quitar',
+                        ),
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ),
-                  PrismSectionHeader(title: tr(context, 'CONVERSATION', 'CONVERSACIÓN')),
-                  if (posts.isEmpty) Text(tr(context, 'No posts in this room yet.', 'Aún no hay publicaciones.'), style: theme.textTheme.bodySmall) else for (final p in posts) PostCard(post: p),
+                  PrismSectionHeader(
+                    title: tr(context, 'CONVERSATION', 'CONVERSACIÓN'),
+                  ),
+                  if (posts.isEmpty)
+                    Text(
+                      tr(
+                        context,
+                        'No posts in this room yet.',
+                        'Aún no hay publicaciones.',
+                      ),
+                      style: theme.textTheme.bodySmall,
+                    )
+                  else
+                    for (final p in posts) PostCard(post: p),
                 ],
         ),
       ),
@@ -696,7 +1072,9 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
     final ctl = TextEditingController();
     final t = await PrismSheet.show<String>(
       context: context,
-      title: type == 'note' ? tr(context, 'Pin a note', 'Fijar una nota') : tr(context, 'Add to-do', 'Añadir tarea'),
+      title: type == 'note'
+          ? tr(context, 'Pin a note', 'Fijar una nota')
+          : tr(context, 'Add to-do', 'Añadir tarea'),
       builder: (ctx) => SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
@@ -705,13 +1083,25 @@ class _CozyRoomScreenState extends ConsumerState<CozyRoomScreen> {
           children: [
             PrismTextField(controller: ctl, autofocus: true, maxLines: 3),
             const SizedBox(height: 10),
-            PrismButton(tone: PrismButtonTone.filled, label: tr(ctx, 'Add', 'Añadir'), onPressed: () => Navigator.of(ctx).pop(ctl.text.trim())),
+            PrismButton(
+              tone: PrismButtonTone.filled,
+              label: tr(ctx, 'Add', 'Añadir'),
+              onPressed: () => Navigator.of(ctx).pop(ctl.text.trim()),
+            ),
           ],
         ),
       ),
     );
     ctl.dispose();
     if (t == null || t.isEmpty) return;
-    await ref.read(trackerNotifierProvider.notifier).create(kind: TrackerKind.cozyRoomItem, parentId: widget.roomId, title: t, memberId: ref.read(cozyMeProvider), fields: {'type': type});
+    await ref
+        .read(trackerNotifierProvider.notifier)
+        .create(
+          kind: TrackerKind.cozyRoomItem,
+          parentId: widget.roomId,
+          title: t,
+          memberId: ref.read(cozyMeProvider),
+          fields: {'type': type},
+        );
   }
 }

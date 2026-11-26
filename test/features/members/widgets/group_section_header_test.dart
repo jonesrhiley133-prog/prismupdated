@@ -17,11 +17,8 @@ MemberGroup _group(String name, {String? emoji, String? colorHex}) =>
       createdAt: DateTime(2024, 1, 1),
     );
 
-MemberGroup _grp(String name) => MemberGroup(
-  id: name,
-  name: name,
-  createdAt: DateTime(2024, 1, 1),
-);
+MemberGroup _grp(String name) =>
+    MemberGroup(id: name, name: name, createdAt: DateTime(2024, 1, 1));
 
 Widget _host(Widget child) => ProviderScope(
   child: MaterialApp(
@@ -99,94 +96,129 @@ void main() {
   });
 
   group('GroupSectionHeader detail-view affordance', () {
-    testWidgets('absent at depth < cap even with deeper descendants', (tester) async {
+    testWidgets('absent at depth < cap even with deeper descendants', (
+      tester,
+    ) async {
       bool tapped = false;
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('alpha'),
-        depth: 3,
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: true,
-        onOpenDetail: () => tapped = true,
-      )));
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('alpha'),
+            depth: 3,
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: true,
+            onOpenDetail: () => tapped = true,
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.account_tree_outlined), findsNothing);
       expect(tapped, isFalse);
     });
 
-    testWidgets('present at cap when hasDeeperDescendants is true', (tester) async {
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('alpha'),
-        depth: kSectionsVisualDepthCap,
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: true,
-        onOpenDetail: () {},
-      )));
+    testWidgets('present at cap when hasDeeperDescendants is true', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('alpha'),
+            depth: kSectionsVisualDepthCap,
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: true,
+            onOpenDetail: () {},
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.account_tree_outlined), findsOneWidget);
     });
 
-    testWidgets('absent at cap when hasDeeperDescendants is false', (tester) async {
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('alpha'),
-        depth: kSectionsVisualDepthCap,
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: false,
-        onOpenDetail: () {},
-      )));
+    testWidgets('absent at cap when hasDeeperDescendants is false', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('alpha'),
+            depth: kSectionsVisualDepthCap,
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: false,
+            onOpenDetail: () {},
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.account_tree_outlined), findsNothing);
     });
 
     testWidgets('tap fires onOpenDetail', (tester) async {
       var tapped = 0;
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('alpha'),
-        depth: kSectionsVisualDepthCap,
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: true,
-        onOpenDetail: () => tapped++,
-      )));
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('alpha'),
+            depth: kSectionsVisualDepthCap,
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: true,
+            onOpenDetail: () => tapped++,
+          ),
+        ),
+      );
       await tester.tap(find.byIcon(Icons.account_tree_outlined));
       await tester.pump();
       expect(tapped, 1);
     });
 
-    testWidgets('present at exactly cap when hasDeeperDescendants is true', (tester) async {
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('beta'),
-        depth: kSectionsVisualDepthCap,
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: true,
-        onOpenDetail: () {},
-      )));
+    testWidgets('present at exactly cap when hasDeeperDescendants is true', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('beta'),
+            depth: kSectionsVisualDepthCap,
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: true,
+            onOpenDetail: () {},
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.account_tree_outlined), findsOneWidget);
     });
 
-    testWidgets('handles depth > cap without overflow and shows icon when told', (tester) async {
+    testWidgets('handles depth > cap without overflow and shows icon when told', (
+      tester,
+    ) async {
       // The widget itself accepts any depth; the caller clamps. Here we verify the
       // widget doesn't blow up when given a value above the cap.
-      await tester.pumpWidget(_wrap(GroupSectionHeader(
-        group: _grp('beta'),
-        depth: kSectionsVisualDepthCap, // typical: caller clamps before passing
-        memberCount: 0,
-        isCollapsed: false,
-        canCollapse: true,
-        onToggle: () {},
-        hasDeeperDescendants: true,
-        onOpenDetail: () {},
-      )));
+      await tester.pumpWidget(
+        _wrap(
+          GroupSectionHeader(
+            group: _grp('beta'),
+            depth:
+                kSectionsVisualDepthCap, // typical: caller clamps before passing
+            memberCount: 0,
+            isCollapsed: false,
+            canCollapse: true,
+            onToggle: () {},
+            hasDeeperDescendants: true,
+            onOpenDetail: () {},
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.account_tree_outlined), findsOneWidget);
     });
   });

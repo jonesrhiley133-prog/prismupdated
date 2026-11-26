@@ -7,7 +7,10 @@ void main() {
     test('default → empty', () {
       expect(const ImageSizeSpec().fragment, '');
       expect(
-        const ImageSizeSpec(mode: ImageSizeMode.defaultSize, value: 99).fragment,
+        const ImageSizeSpec(
+          mode: ImageSizeMode.defaultSize,
+          value: 99,
+        ).fragment,
         '',
       );
     });

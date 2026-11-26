@@ -26,24 +26,16 @@ FieldTemplate _groupPlusTwoChildren() => const FieldTemplate(
   version: 1,
   entries: [
     FieldTemplateEntry(name: 'My Group', fieldTypeId: kGroupFieldTypeId),
-    FieldTemplateEntry(
-      name: 'Child A',
-      fieldTypeId: 'text',
-      parentIndex: 0,
-    ),
-    FieldTemplateEntry(
-      name: 'Child B',
-      fieldTypeId: 'text',
-      parentIndex: 0,
-    ),
+    FieldTemplateEntry(name: 'Child A', fieldTypeId: 'text', parentIndex: 0),
+    FieldTemplateEntry(name: 'Child B', fieldTypeId: 'text', parentIndex: 0),
   ],
 );
 
 /// Fake repo that throws on the N-th createFieldAtEnd call (1-based).
 class _ThrowingOnNthRepo extends DriftCustomFieldsRepository {
   _ThrowingOnNthRepo(CustomFieldsDao dao, {required int throwOnCall})
-      : _throwOnCall = throwOnCall,
-        super(dao, null);
+    : _throwOnCall = throwOnCall,
+      super(dao, null);
 
   final int _throwOnCall;
   int _callCount = 0;
@@ -89,28 +81,28 @@ void main() {
 
   // ── Happy path ─────────────────────────────────────────────────────────────
 
-  test('happy: imports group + 2 children → 3 rows, correct parent links', () async {
-    final result = await svc.importTemplate(_groupPlusTwoChildren());
+  test(
+    'happy: imports group + 2 children → 3 rows, correct parent links',
+    () async {
+      final result = await svc.importTemplate(_groupPlusTwoChildren());
 
-    expect(result.fieldsImported, 3);
-    expect(result.groupIds, hasLength(1));
+      expect(result.fieldsImported, 3);
+      expect(result.groupIds, hasLength(1));
 
-    final rows = await db.select(db.customFields).get();
-    expect(rows, hasLength(3));
+      final rows = await db.select(db.customFields).get();
+      expect(rows, hasLength(3));
 
-    final groupId = result.groupIds.first;
-    final group = rows.firstWhere((r) => r.id == groupId);
-    expect(group.name, 'My Group');
-    expect(group.parentFieldId, isNull);
-    expect(group.fieldTypeId, kGroupFieldTypeId);
+      final groupId = result.groupIds.first;
+      final group = rows.firstWhere((r) => r.id == groupId);
+      expect(group.name, 'My Group');
+      expect(group.parentFieldId, isNull);
+      expect(group.fieldTypeId, kGroupFieldTypeId);
 
-    final children = rows.where((r) => r.parentFieldId == groupId).toList();
-    expect(children, hasLength(2));
-    expect(
-      children.map((c) => c.name).toSet(),
-      {'Child A', 'Child B'},
-    );
-  });
+      final children = rows.where((r) => r.parentFieldId == groupId).toList();
+      expect(children, hasLength(2));
+      expect(children.map((c) => c.name).toSet(), {'Child A', 'Child B'});
+    },
+  );
 
   test('happy: displayOrder is appended after a pre-seeded field', () async {
     // Seed one existing field so the imported group gets a non-zero displayOrder.
@@ -134,44 +126,50 @@ void main() {
 
   // ── Re-import identity ─────────────────────────────────────────────────────
 
-  test('re-import: two imports of same template → 6 rows, two independent groups', () async {
-    final r1 = await svc.importTemplate(_groupPlusTwoChildren());
-    final r2 = await svc.importTemplate(_groupPlusTwoChildren());
+  test(
+    're-import: two imports of same template → 6 rows, two independent groups',
+    () async {
+      final r1 = await svc.importTemplate(_groupPlusTwoChildren());
+      final r2 = await svc.importTemplate(_groupPlusTwoChildren());
 
-    expect(await _rowCount(db), 6);
-    expect(r1.groupIds.first, isNot(equals(r2.groupIds.first)));
+      expect(await _rowCount(db), 6);
+      expect(r1.groupIds.first, isNot(equals(r2.groupIds.first)));
 
-    // Both groups must exist in the DB.
-    final rows = await db.select(db.customFields).get();
-    final groupIds = rows
-        .where((r) => r.fieldTypeId == kGroupFieldTypeId)
-        .map((r) => r.id)
-        .toSet();
-    expect(groupIds, containsAll([r1.groupIds.first, r2.groupIds.first]));
-  });
+      // Both groups must exist in the DB.
+      final rows = await db.select(db.customFields).get();
+      final groupIds = rows
+          .where((r) => r.fieldTypeId == kGroupFieldTypeId)
+          .map((r) => r.id)
+          .toSet();
+      expect(groupIds, containsAll([r1.groupIds.first, r2.groupIds.first]));
+    },
+  );
 
   // ── Validation at the boundary ─────────────────────────────────────────────
 
-  test('validation: over the entry cap → throws invalid, writes nothing', () async {
-    final oversized = FieldTemplate(
-      version: 1,
-      entries: List.generate(
-        kMaxTemplateEntries + 1,
-        (i) => FieldTemplateEntry(name: 'F$i', fieldTypeId: 'text'),
-      ),
-    );
-    await expectLater(
-      svc.importTemplate(oversized),
-      throwsA(
-        isA<FieldTemplateCodecException>().having(
-          (e) => e.kind,
-          'kind',
-          FieldTemplateCodecError.invalid,
+  test(
+    'validation: over the entry cap → throws invalid, writes nothing',
+    () async {
+      final oversized = FieldTemplate(
+        version: 1,
+        entries: List.generate(
+          kMaxTemplateEntries + 1,
+          (i) => FieldTemplateEntry(name: 'F$i', fieldTypeId: 'text'),
         ),
-      ),
-    );
-    expect(await _rowCount(db), 0);
-  });
+      );
+      await expectLater(
+        svc.importTemplate(oversized),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
+        ),
+      );
+      expect(await _rowCount(db), 0);
+    },
+  );
 
   test('validation: depth-2 nesting → throws invalid, writes nothing', () async {
     // Entry 0 = group; entry 1 = child of 0; entry 2 = child of 1 (depth 2 → invalid).
@@ -193,11 +191,13 @@ void main() {
     );
     await expectLater(
       svc.importTemplate(tooDeep),
-      throwsA(isA<FieldTemplateCodecException>().having(
-        (e) => e.kind,
-        'kind',
-        FieldTemplateCodecError.invalid,
-      )),
+      throwsA(
+        isA<FieldTemplateCodecException>().having(
+          (e) => e.kind,
+          'kind',
+          FieldTemplateCodecError.invalid,
+        ),
+      ),
     );
     expect(await _rowCount(db), 0);
   });
@@ -219,81 +219,91 @@ void main() {
     );
     await expectLater(
       svc.importTemplate(badColor),
-      throwsA(isA<FieldTemplateCodecException>().having(
-        (e) => e.kind,
-        'kind',
-        FieldTemplateCodecError.invalid,
-      )),
+      throwsA(
+        isA<FieldTemplateCodecException>().having(
+          (e) => e.kind,
+          'kind',
+          FieldTemplateCodecError.invalid,
+        ),
+      ),
     );
     expect(await _rowCount(db), 0);
   });
 
-  test('validation: malformed config (options not a list) → invalid, writes nothing', () async {
-    // Passes structural validation but throws when inflated — the service must
-    // surface a typed invalid (not a raw _TypeError) and write nothing.
-    const malformed = FieldTemplate(
-      version: 1,
-      entries: [
-        FieldTemplateEntry(
-          name: 'Choice',
-          fieldTypeId: 'choice',
-          compactConfig: {'runtimeType': 'choice', 'options': 'notalist'},
+  test(
+    'validation: malformed config (options not a list) → invalid, writes nothing',
+    () async {
+      // Passes structural validation but throws when inflated — the service must
+      // surface a typed invalid (not a raw _TypeError) and write nothing.
+      const malformed = FieldTemplate(
+        version: 1,
+        entries: [
+          FieldTemplateEntry(
+            name: 'Choice',
+            fieldTypeId: 'choice',
+            compactConfig: {'runtimeType': 'choice', 'options': 'notalist'},
+          ),
+        ],
+      );
+      await expectLater(
+        svc.importTemplate(malformed),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
         ),
-      ],
-    );
-    await expectLater(
-      svc.importTemplate(malformed),
-      throwsA(isA<FieldTemplateCodecException>().having(
-        (e) => e.kind,
-        'kind',
-        FieldTemplateCodecError.invalid,
-      )),
-    );
-    expect(await _rowCount(db), 0);
-  });
+      );
+      expect(await _rowCount(db), 0);
+    },
+  );
 
-  test('validation: out-of-range parentIndex → imported top-level, no throw', () async {
-    const withBadParent = FieldTemplate(
-      version: 1,
-      entries: [
-        FieldTemplateEntry(
-          name: 'Orphan',
-          fieldTypeId: 'text',
-          parentIndex: 99, // out of range → promoted
-        ),
-      ],
-    );
-    final result = await svc.importTemplate(withBadParent);
-    expect(result.fieldsImported, 1);
+  test(
+    'validation: out-of-range parentIndex → imported top-level, no throw',
+    () async {
+      const withBadParent = FieldTemplate(
+        version: 1,
+        entries: [
+          FieldTemplateEntry(
+            name: 'Orphan',
+            fieldTypeId: 'text',
+            parentIndex: 99, // out of range → promoted
+          ),
+        ],
+      );
+      final result = await svc.importTemplate(withBadParent);
+      expect(result.fieldsImported, 1);
 
-    final rows = await db.select(db.customFields).get();
-    expect(rows, hasLength(1));
-    expect(rows.first.parentFieldId, isNull);
-  });
+      final rows = await db.select(db.customFields).get();
+      expect(rows, hasLength(1));
+      expect(rows.first.parentFieldId, isNull);
+    },
+  );
 
   // ── Sync emission ──────────────────────────────────────────────────────────
 
-  test('sync emission: one create op captured per field (verified via outbox)', () async {
-    // Inside runFencedEmissionTransaction, the zone capture context takes
-    // precedence over the test capture sink — ops go to the service's internal
-    // `captured` list, not to any external sink. The authoritative proof is that
-    // persistCapturedOpsToOutbox wrote one outbox row per field.
-    syncCredentialsPersisted.value = true;
-    try {
-      final result = await svc.importTemplate(_groupPlusTwoChildren());
-      final outboxRows = await db.syncOutboxDao.allInIdOrder();
+  test(
+    'sync emission: one create op captured per field (verified via outbox)',
+    () async {
+      // Inside runFencedEmissionTransaction, the zone capture context takes
+      // precedence over the test capture sink — ops go to the service's internal
+      // `captured` list, not to any external sink. The authoritative proof is that
+      // persistCapturedOpsToOutbox wrote one outbox row per field.
+      syncCredentialsPersisted.value = true;
+      try {
+        final result = await svc.importTemplate(_groupPlusTwoChildren());
+        final outboxRows = await db.syncOutboxDao.allInIdOrder();
 
-      // N fields → N outbox rows, all 'create', all on 'custom_fields'.
-      expect(outboxRows, hasLength(result.fieldsImported));
-      expect(outboxRows.map((r) => r.opType), everyElement('create'));
-      expect(
-        outboxRows.map((r) => r.entityTable).toSet(),
-        {'custom_fields'},
-      );
-    } finally {
-      syncCredentialsPersisted.value = false;
-    }
-  });
+        // N fields → N outbox rows, all 'create', all on 'custom_fields'.
+        expect(outboxRows, hasLength(result.fieldsImported));
+        expect(outboxRows.map((r) => r.opType), everyElement('create'));
+        expect(outboxRows.map((r) => r.entityTable).toSet(), {'custom_fields'});
+      } finally {
+        syncCredentialsPersisted.value = false;
+      }
+    },
+  );
 
   test('sync outbox: rows persisted when credentials on', () async {
     syncCredentialsPersisted.value = true;
@@ -313,28 +323,35 @@ void main() {
 
   // ── Rollback safety ────────────────────────────────────────────────────────
 
-  test('rollback: failure mid-import → zero data rows AND zero outbox rows', () async {
-    syncCredentialsPersisted.value = true;
+  test(
+    'rollback: failure mid-import → zero data rows AND zero outbox rows',
+    () async {
+      syncCredentialsPersisted.value = true;
 
-    // Repo that throws on the 2nd createFieldAtEnd call (after inserting the group).
-    final throwingRepo = _ThrowingOnNthRepo(
-      db.customFieldsDao,
-      throwOnCall: 2,
-    );
-    final throwingSvc = FieldTemplateImportService(db, throwingRepo);
+      // Repo that throws on the 2nd createFieldAtEnd call (after inserting the group).
+      final throwingRepo = _ThrowingOnNthRepo(
+        db.customFieldsDao,
+        throwOnCall: 2,
+      );
+      final throwingSvc = FieldTemplateImportService(db, throwingRepo);
 
-    await expectLater(
-      throwingSvc.importTemplate(_groupPlusTwoChildren()),
-      throwsA(isA<Exception>()),
-    );
+      await expectLater(
+        throwingSvc.importTemplate(_groupPlusTwoChildren()),
+        throwsA(isA<Exception>()),
+      );
 
-    expect(await _rowCount(db), 0, reason: 'transaction must have rolled back');
-    expect(
-      await _outboxCount(db),
-      0,
-      reason: 'outbox rows must roll back with data rows',
-    );
+      expect(
+        await _rowCount(db),
+        0,
+        reason: 'transaction must have rolled back',
+      );
+      expect(
+        await _outboxCount(db),
+        0,
+        reason: 'outbox rows must roll back with data rows',
+      );
 
-    syncCredentialsPersisted.value = false;
-  });
+      syncCredentialsPersisted.value = false;
+    },
+  );
 }

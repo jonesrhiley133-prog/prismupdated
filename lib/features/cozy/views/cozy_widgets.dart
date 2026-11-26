@@ -8,16 +8,20 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 String cozyAgo(BuildContext context, DateTime t) {
   final d = DateTime.now().difference(t);
   if (d.inMinutes < 1) return tr(context, 'just now', 'ahora');
-  if (d.inMinutes < 60) return tr(context, '${d.inMinutes} min ago', 'hace ${d.inMinutes} min');
-  if (d.inHours < 24) return tr(context, '${d.inHours} h ago', 'hace ${d.inHours} h');
-  if (d.inDays < 7) return tr(context, '${d.inDays} d ago', 'hace ${d.inDays} d');
+  if (d.inMinutes < 60)
+    return tr(context, '${d.inMinutes} min ago', 'hace ${d.inMinutes} min');
+  if (d.inHours < 24)
+    return tr(context, '${d.inHours} h ago', 'hace ${d.inHours} h');
+  if (d.inDays < 7)
+    return tr(context, '${d.inDays} d ago', 'hace ${d.inDays} d');
   return DateFormat.MMMd().format(t);
 }
 
 /// An alter's accent colour (their custom colour, or the theme's).
 final memberAccentProvider = Provider.family<Color?, String?>((ref, id) {
   final m = ref.watch(gameMembersProvider).where((x) => x.id == id).firstOrNull;
-  if (m == null || !m.customColorEnabled || m.customColorHex == null) return null;
+  if (m == null || !m.customColorEnabled || m.customColorHex == null)
+    return null;
   final hex = m.customColorHex!.replaceAll('#', '');
   final v = int.tryParse(hex.length == 6 ? 'FF$hex' : hex, radix: 16);
   return v == null ? null : Color(v);
@@ -25,7 +29,13 @@ final memberAccentProvider = Provider.family<Color?, String?>((ref, id) {
 
 /// Avatar + name + time line.
 class AuthorLine extends ConsumerWidget {
-  const AuthorLine({super.key, required this.memberId, required this.when, this.trailing, this.anonymous = false});
+  const AuthorLine({
+    super.key,
+    required this.memberId,
+    required this.when,
+    this.trailing,
+    this.anonymous = false,
+  });
   final String? memberId;
   final DateTime when;
   final Widget? trailing;
@@ -37,19 +47,30 @@ class AuthorLine extends ConsumerWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        if (anonymous) PrismCircleAvatar(radius: 14, child: Text('?', style: theme.textTheme.labelLarge)) else AlterDot(memberId, size: 28),
+        if (anonymous)
+          PrismCircleAvatar(
+            radius: 14,
+            child: Text('?', style: theme.textTheme.labelLarge),
+          )
+        else
+          AlterDot(memberId, size: 28),
         const SizedBox(width: 8),
         Expanded(
           child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
-                  text: anonymous ? tr(context, 'Someone', 'Alguien') : (names[memberId] ?? tr(context, 'The system', 'El sistema')),
+                  text: anonymous
+                      ? tr(context, 'Someone', 'Alguien')
+                      : (names[memberId] ??
+                            tr(context, 'The system', 'El sistema')),
                   style: TextStyle(fontWeight: FontWeight.w700, color: accent),
                 ),
                 TextSpan(
                   text: '  ·  ${cozyAgo(context, when)}',
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -87,10 +108,17 @@ class ReactionBar extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (map[e]?.contains(me) ?? false) ? theme.colorScheme.primary.withValues(alpha: 0.16) : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                  color: (map[e]?.contains(me) ?? false)
+                      ? theme.colorScheme.primary.withValues(alpha: 0.16)
+                      : theme.colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.6,
+                        ),
                   borderRadius: prismCorners(context, 14),
                 ),
-                child: Text('$e${(map[e]?.isNotEmpty ?? false) ? ' ${map[e]!.length}' : ''}', style: const TextStyle(fontSize: 13)),
+                child: Text(
+                  '$e${(map[e]?.isNotEmpty ?? false) ? ' ${map[e]!.length}' : ''}',
+                  style: const TextStyle(fontSize: 13),
+                ),
               ),
             ),
           ),
@@ -129,11 +157,26 @@ class PostCard extends ConsumerWidget {
                     children: [
                       PrismListRow(
                         leading: Icon(PhosphorIcons.notebook()),
-                        title: Text(tr(ctx, 'Save to Journal', 'Guardar en el diario')),
+                        title: Text(
+                          tr(ctx, 'Save to Journal', 'Guardar en el diario'),
+                        ),
                         onTap: () {
-                          ref.read(cozyActionsProvider).toJournal(title: '☕ Cozy', body: post.body ?? '', memberId: post.memberId);
+                          ref
+                              .read(cozyActionsProvider)
+                              .toJournal(
+                                title: '☕ Cozy',
+                                body: post.body ?? '',
+                                memberId: post.memberId,
+                              );
                           Navigator.of(ctx).pop();
-                          PrismToast.show(context, message: tr(context, 'Saved to Journal', 'Guardado en el diario'));
+                          PrismToast.show(
+                            context,
+                            message: tr(
+                              context,
+                              'Saved to Journal',
+                              'Guardado en el diario',
+                            ),
+                          );
                         },
                       ),
                       PrismListRow(
@@ -153,10 +196,18 @@ class PostCard extends ConsumerWidget {
             if (starter != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text('“$starter”', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                child: Text(
+                  '“$starter”',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
+                ),
               ),
             const SizedBox(height: 8),
-            Text('${mood == null ? '' : '$mood  '}${post.body ?? ''}', style: const TextStyle(height: 1.4)),
+            Text(
+              '${mood == null ? '' : '$mood  '}${post.body ?? ''}',
+              style: const TextStyle(height: 1.4),
+            ),
             const SizedBox(height: 8),
             ReactionBar(record: post),
           ],
@@ -176,11 +227,19 @@ class Composed {
 
 /// A text composer with "posting as" (any alter, fronting or not) and an
 /// optional mood tag.
-Future<Composed?> composeSheet(BuildContext context, WidgetRef ref, {required String title, String? hint, String? prompt, bool allowMood = true}) {
+Future<Composed?> composeSheet(
+  BuildContext context,
+  WidgetRef ref, {
+  required String title,
+  String? hint,
+  String? prompt,
+  bool allowMood = true,
+}) {
   return PrismSheet.show<Composed>(
     context: context,
     title: title,
-    builder: (ctx) => _Composer(hint: hint, prompt: prompt, allowMood: allowMood),
+    builder: (ctx) =>
+        _Composer(hint: hint, prompt: prompt, allowMood: allowMood),
   );
 }
 
@@ -216,21 +275,41 @@ class _ComposerState extends ConsumerState<_Composer> {
           if (widget.prompt != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Text(widget.prompt!, style: const TextStyle(fontStyle: FontStyle.italic)),
+              child: Text(
+                widget.prompt!,
+                style: const TextStyle(fontStyle: FontStyle.italic),
+              ),
             ),
-          PrismTextField(controller: _ctl, autofocus: true, maxLines: 5, minLines: 2, hintText: widget.hint ?? tr(context, 'Write something…', 'Escribe algo…')),
+          PrismTextField(
+            controller: _ctl,
+            autofocus: true,
+            maxLines: 5,
+            minLines: 2,
+            hintText:
+                widget.hint ?? tr(context, 'Write something…', 'Escribe algo…'),
+          ),
           const SizedBox(height: 10),
           Row(
             children: [
-              Text(tr(context, 'As', 'Como'), style: Theme.of(context).textTheme.labelMedium),
+              Text(
+                tr(context, 'As', 'Como'),
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: PrismChip(
                   avatar: AlterDot(_author, size: 20),
-                  label: _author == null ? tr(context, 'The system', 'El sistema') : (names[_author] ?? '?'),
+                  label: _author == null
+                      ? tr(context, 'The system', 'El sistema')
+                      : (names[_author] ?? '?'),
                   selected: false,
                   onTap: () async {
-                    final p = await pickAlters(context, ref, max: 1, selected: [?_author]);
+                    final p = await pickAlters(
+                      context,
+                      ref,
+                      max: 1,
+                      selected: [?_author],
+                    );
                     if (p != null) setState(() => _author = p.firstOrNull);
                   },
                 ),
@@ -243,8 +322,16 @@ class _ComposerState extends ConsumerState<_Composer> {
               spacing: 4,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(tr(context, 'Mood (optional)', 'Ánimo (opcional)'), style: Theme.of(context).textTheme.labelMedium),
-                for (final m in cozyMoods) PrismChip(label: m, selected: _mood == m, onTap: () => setState(() => _mood = _mood == m ? null : m)),
+                Text(
+                  tr(context, 'Mood (optional)', 'Ánimo (opcional)'),
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                for (final m in cozyMoods)
+                  PrismChip(
+                    label: m,
+                    selected: _mood == m,
+                    onTap: () => setState(() => _mood = _mood == m ? null : m),
+                  ),
               ],
             ),
           ],
@@ -254,7 +341,9 @@ class _ComposerState extends ConsumerState<_Composer> {
             label: tr(context, 'Share', 'Compartir'),
             onPressed: () {
               if (_ctl.text.trim().isEmpty) return;
-              Navigator.of(context).pop(Composed(_ctl.text.trim(), _author, _mood));
+              Navigator.of(
+                context,
+              ).pop(Composed(_ctl.text.trim(), _author, _mood));
             },
           ),
         ],
@@ -270,7 +359,15 @@ class ParticipantsRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final names = ref.watch(gameNamesProvider);
-    if (ids.isEmpty) return Text(tr(context, 'Quiet this week — it\'s always open.', 'Tranquilo esta semana: siempre está abierto.'), style: Theme.of(context).textTheme.bodySmall);
+    if (ids.isEmpty)
+      return Text(
+        tr(
+          context,
+          'Quiet this week — it\'s always open.',
+          'Tranquilo esta semana: siempre está abierto.',
+        ),
+        style: Theme.of(context).textTheme.bodySmall,
+      );
     return SizedBox(
       height: 62,
       child: ListView(
@@ -285,7 +382,13 @@ class ParticipantsRow extends ConsumerWidget {
                   const SizedBox(height: 2),
                   SizedBox(
                     width: 52,
-                    child: Text(names[id] ?? '', textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall),
+                    child: Text(
+                      names[id] ?? '',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
                   ),
                 ],
               ),

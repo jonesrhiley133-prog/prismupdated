@@ -10,11 +10,11 @@ enum HabitFrequency {
   custom;
 
   String get label => switch (this) {
-        HabitFrequency.daily => 'Daily',
-        HabitFrequency.weekly => 'Weekly',
-        HabitFrequency.interval => 'Every X days',
-        HabitFrequency.custom => 'Custom',
-      };
+    HabitFrequency.daily => 'Daily',
+    HabitFrequency.weekly => 'Weekly',
+    HabitFrequency.interval => 'Every X days',
+    HabitFrequency.custom => 'Custom',
+  };
 }
 
 enum StatisticsTimeframe {
@@ -24,24 +24,24 @@ enum StatisticsTimeframe {
   all;
 
   String get label => switch (this) {
-        StatisticsTimeframe.week => 'Week',
-        StatisticsTimeframe.month => 'Month',
-        StatisticsTimeframe.year => 'Year',
-        StatisticsTimeframe.all => 'All Time',
-      };
+    StatisticsTimeframe.week => 'Week',
+    StatisticsTimeframe.month => 'Month',
+    StatisticsTimeframe.year => 'Year',
+    StatisticsTimeframe.all => 'All Time',
+  };
 
   /// Returns the date range for this timeframe (start date, inclusive).
   DateTime get startDate {
     final now = DateTime.now();
     return switch (this) {
-      StatisticsTimeframe.week =>
-        DateTime(now.year, now.month, now.day).subtract(const Duration(days: 7)),
-      StatisticsTimeframe.month =>
-        DateTime(now.year, now.month - 1, now.day),
-      StatisticsTimeframe.year =>
-        DateTime(now.year - 1, now.month, now.day),
-      StatisticsTimeframe.all =>
-        DateTime(2000),
+      StatisticsTimeframe.week => DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(const Duration(days: 7)),
+      StatisticsTimeframe.month => DateTime(now.year, now.month - 1, now.day),
+      StatisticsTimeframe.year => DateTime(now.year - 1, now.month, now.day),
+      StatisticsTimeframe.all => DateTime(2000),
     };
   }
 }

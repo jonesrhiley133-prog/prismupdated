@@ -3,7 +3,12 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Row of colour swatches.
 class ColorChoiceRow extends StatelessWidget {
-  const ColorChoiceRow({super.key, required this.value, required this.onChanged, this.colors = colorChoices});
+  const ColorChoiceRow({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.colors = colorChoices,
+  });
   final int? value;
   final ValueChanged<int> onChanged;
   final List<int> colors;
@@ -30,7 +35,9 @@ class ColorChoiceRow extends StatelessWidget {
                   color: Color(c),
                   borderRadius: prismRound(context),
                   border: Border.all(
-                    color: value == c ? theme.colorScheme.onSurface : Colors.transparent,
+                    color: value == c
+                        ? theme.colorScheme.onSurface
+                        : Colors.transparent,
                     width: 3,
                   ),
                 ),
@@ -44,7 +51,13 @@ class ColorChoiceRow extends StatelessWidget {
 
 /// Grid of icons from [iconChoices].
 class IconChoiceGrid extends StatelessWidget {
-  const IconChoiceGrid({super.key, required this.value, required this.onChanged, this.color, this.keys});
+  const IconChoiceGrid({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.color,
+    this.keys,
+  });
   final String? value;
   final ValueChanged<String> onChanged;
   final Color? color;
@@ -68,11 +81,24 @@ class IconChoiceGrid extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: prismCorners(context, 10),
                 color: value == k
-                    ? (color ?? theme.colorScheme.primary).withValues(alpha: 0.2)
-                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                border: Border.all(color: value == k ? (color ?? theme.colorScheme.primary) : Colors.transparent, width: 2),
+                    ? (color ?? theme.colorScheme.primary).withValues(
+                        alpha: 0.2,
+                      )
+                    : theme.colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
+                      ),
+                border: Border.all(
+                  color: value == k
+                      ? (color ?? theme.colorScheme.primary)
+                      : Colors.transparent,
+                  width: 2,
+                ),
               ),
-              child: Icon(iconChoices[k], size: 20, color: color ?? theme.colorScheme.onSurface),
+              child: Icon(
+                iconChoices[k],
+                size: 20,
+                color: color ?? theme.colorScheme.onSurface,
+              ),
             ),
           ),
       ],

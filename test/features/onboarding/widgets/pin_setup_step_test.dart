@@ -46,9 +46,9 @@ Widget _buildWidget({
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          textScaler: TextScaler.linear(textScaleFactor),
-        ),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScaleFactor)),
         child: PrismToastHost(child: child ?? const SizedBox.shrink()),
       ),
       home: Scaffold(body: PinSetupStep(onPinConfirmed: onPinConfirmed)),

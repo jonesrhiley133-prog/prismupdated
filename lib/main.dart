@@ -86,7 +86,9 @@ void main() async {
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     final first = details.exceptionAsString().split('\n').first;
-    FreezeWatchdog.crumb('error ${details.library ?? ''}: ${first.length > 160 ? first.substring(0, 160) : first}');
+    FreezeWatchdog.crumb(
+      'error ${details.library ?? ''}: ${first.length > 160 ? first.substring(0, 160) : first}',
+    );
     ErrorReportingService.instance.report(
       details.exceptionAsString(),
       stackTrace: details.stack,
@@ -265,7 +267,8 @@ void main() async {
   if (kReleaseMode) {
     // A themed, recoverable view instead of a blank/black area, with the
     // error recorded for diagnostics.
-    ErrorWidget.builder = (FlutterErrorDetails details) => RecoverableErrorView(details: details);
+    ErrorWidget.builder = (FlutterErrorDetails details) =>
+        RecoverableErrorView(details: details);
   }
 
   // Read cached theme prefs so the first frame uses the correct colors,

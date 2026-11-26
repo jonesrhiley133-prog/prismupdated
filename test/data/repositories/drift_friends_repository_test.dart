@@ -36,63 +36,58 @@ void main() {
   tearDown(() => db.close());
 
   group('debugFriendFields UTC normalization', () {
-    test(
-      'created_at, established_at, and last_sync_at emit Z-suffixed UTC '
-      'even when input is a local DateTime',
-      () {
-        final localCreated = DateTime(2026, 4, 27, 10, 0);
-        final localEstablished = DateTime(2026, 4, 27, 11, 0);
-        final localLastSync = DateTime(2026, 4, 27, 12, 0);
+    test('created_at, established_at, and last_sync_at emit Z-suffixed UTC '
+        'even when input is a local DateTime', () {
+      final localCreated = DateTime(2026, 4, 27, 10, 0);
+      final localEstablished = DateTime(2026, 4, 27, 11, 0);
+      final localLastSync = DateTime(2026, 4, 27, 12, 0);
 
-        final friend = domain.FriendRecord(
-          id: 'f1',
-          displayName: 'friend',
-          publicKeyHex: 'deadbeef',
-          createdAt: localCreated,
-          establishedAt: localEstablished,
-          lastSyncAt: localLastSync,
-        );
+      final friend = domain.FriendRecord(
+        id: 'f1',
+        displayName: 'friend',
+        publicKeyHex: 'deadbeef',
+        createdAt: localCreated,
+        establishedAt: localEstablished,
+        lastSyncAt: localLastSync,
+      );
 
-        final fields = repo.debugFriendFields(friend);
-        final createdStr = fields['created_at'] as String;
-        final establishedStr = fields['established_at'] as String;
-        final lastSyncStr = fields['last_sync_at'] as String;
+      final fields = repo.debugFriendFields(friend);
+      final createdStr = fields['created_at'] as String;
+      final establishedStr = fields['established_at'] as String;
+      final lastSyncStr = fields['last_sync_at'] as String;
 
-        expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
-        expect(establishedStr.endsWith('Z'), isTrue, reason: establishedStr);
-        expect(lastSyncStr.endsWith('Z'), isTrue, reason: lastSyncStr);
-        expect(
-          DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
-          isTrue,
-        );
-        expect(
-          DateTime.parse(establishedStr)
-              .isAtSameMomentAs(localEstablished.toUtc()),
-          isTrue,
-        );
-        expect(
-          DateTime.parse(lastSyncStr).isAtSameMomentAs(localLastSync.toUtc()),
-          isTrue,
-        );
-      },
-    );
+      expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
+      expect(establishedStr.endsWith('Z'), isTrue, reason: establishedStr);
+      expect(lastSyncStr.endsWith('Z'), isTrue, reason: lastSyncStr);
+      expect(
+        DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
+        isTrue,
+      );
+      expect(
+        DateTime.parse(
+          establishedStr,
+        ).isAtSameMomentAs(localEstablished.toUtc()),
+        isTrue,
+      );
+      expect(
+        DateTime.parse(lastSyncStr).isAtSameMomentAs(localLastSync.toUtc()),
+        isTrue,
+      );
+    });
 
-    test(
-      'null established_at and last_sync_at remain null in field map',
-      () {
-        final friend = domain.FriendRecord(
-          id: 'f2',
-          displayName: 'friend',
-          publicKeyHex: 'cafebabe',
-          createdAt: DateTime(2026, 4, 27),
-          // establishedAt and lastSyncAt left null.
-        );
+    test('null established_at and last_sync_at remain null in field map', () {
+      final friend = domain.FriendRecord(
+        id: 'f2',
+        displayName: 'friend',
+        publicKeyHex: 'cafebabe',
+        createdAt: DateTime(2026, 4, 27),
+        // establishedAt and lastSyncAt left null.
+      );
 
-        final fields = repo.debugFriendFields(friend);
-        expect(fields['established_at'], isNull);
-        expect(fields['last_sync_at'], isNull);
-      },
-    );
+      final fields = repo.debugFriendFields(friend);
+      expect(fields['established_at'], isNull);
+      expect(fields['last_sync_at'], isNull);
+    });
   });
 
   group('updateFriend (patch-style emission)', () {
@@ -149,17 +144,19 @@ void main() {
       expect(captured.single.fields.containsKey('is_deleted'), isFalse);
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.createFriend(makeFriend());
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.createFriend(makeFriend());
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateFriend(makeFriend());
+        await repo.updateFriend(makeFriend());
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
       await repo.createFriend(
@@ -193,35 +190,34 @@ void main() {
       expect(row.isVerified, isTrue);
       expect(row.initId, 'init-1');
       // Scopes round-trip through canonical (sorted) jsonSet encoding.
-      expect(
-        (jsonDecode(row.offeredScopes) as List).cast<String>(),
-        ['a', 'b'],
-      );
-      expect(
-        (jsonDecode(row.grantedScopes) as List).cast<String>(),
-        ['x'],
-      );
+      expect((jsonDecode(row.offeredScopes) as List).cast<String>(), [
+        'a',
+        'b',
+      ]);
+      expect((jsonDecode(row.grantedScopes) as List).cast<String>(), ['x']);
     });
 
-    test('null-clearing a blob column emits the null and clears the row',
-        () async {
-      final pinned = Uint8List.fromList(const [1, 2, 3, 4]);
-      await repo.createFriend(makeFriend(pinnedIdentity: pinned));
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'null-clearing a blob column emits the null and clears the row',
+      () async {
+        final pinned = Uint8List.fromList(const [1, 2, 3, 4]);
+        await repo.createFriend(makeFriend(pinnedIdentity: pinned));
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateFriend(makeFriend(pinnedIdentity: null));
+        await repo.updateFriend(makeFriend(pinnedIdentity: null));
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('pinned_identity'), isTrue);
-      expect(patch['pinned_identity'], isNull);
-      expect(patch.containsKey('is_deleted'), isFalse);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('pinned_identity'), isTrue);
+        expect(patch['pinned_identity'], isNull);
+        expect(patch.containsKey('is_deleted'), isFalse);
 
-      final row = await dao.getById('f1');
-      expect(row!.pinnedIdentity, isNull);
-    });
+        final row = await dao.getById('f1');
+        expect(row!.pinnedIdentity, isNull);
+      },
+    );
 
     test('silently no-ops on a tombstoned row (does not emit, '
         'does not resurrect)', () async {
@@ -252,26 +248,28 @@ void main() {
       expect(row, isNull);
     });
 
-    test('reordering offered_scopes produces no diff (jsonSet canonicalizes)',
-        () async {
-      await repo.createFriend(
-        makeFriend(offeredScopes: const ['a', 'b', 'c']),
-      );
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'reordering offered_scopes produces no diff (jsonSet canonicalizes)',
+      () async {
+        await repo.createFriend(
+          makeFriend(offeredScopes: const ['a', 'b', 'c']),
+        );
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      // Same scopes, reordered. Everything else identical.
-      await repo.updateFriend(
-        makeFriend(offeredScopes: const ['c', 'a', 'b']),
-      );
+        // Same scopes, reordered. Everything else identical.
+        await repo.updateFriend(
+          makeFriend(offeredScopes: const ['c', 'a', 'b']),
+        );
 
-      expect(
-        captured,
-        isEmpty,
-        reason: 'set-semantic offered_scopes must canonicalize via jsonSet',
-      );
-    });
+        expect(
+          captured,
+          isEmpty,
+          reason: 'set-semantic offered_scopes must canonicalize via jsonSet',
+        );
+      },
+    );
 
     test('does not emit is_deleted in the patch', () async {
       await repo.createFriend(makeFriend());

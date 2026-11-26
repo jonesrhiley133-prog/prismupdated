@@ -41,9 +41,13 @@ class _DemoSeedGateState extends ConsumerState<DemoSeedGate> {
     }
     try {
       final days = demoDurations[DemoMode.duration(prefs)] ?? 30;
-      await DemoSeeder(ref, days: days, onProgress: (p, _) {
-        if (mounted) setState(() => _progress = p);
-      }).run();
+      await DemoSeeder(
+        ref,
+        days: days,
+        onProgress: (p, _) {
+          if (mounted) setState(() => _progress = p);
+        },
+      ).run();
       await DemoMode.markSeeded(prefs);
       if (mounted) setState(() => _ready = true);
     } catch (e) {
@@ -56,8 +60,15 @@ class _DemoSeedGateState extends ConsumerState<DemoSeedGate> {
     if (_ready) return widget.child;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: const Color(0xFF8E7CC3), useMaterial3: true),
-      darkTheme: ThemeData(colorSchemeSeed: const Color(0xFF8E7CC3), brightness: Brightness.dark, useMaterial3: true),
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xFF8E7CC3),
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        colorSchemeSeed: const Color(0xFF8E7CC3),
+        brightness: Brightness.dark,
+        useMaterial3: true,
+      ),
       home: Builder(
         builder: (context) => Scaffold(
           body: Center(
@@ -68,18 +79,32 @@ class _DemoSeedGateState extends ConsumerState<DemoSeedGate> {
                 children: [
                   const Text('✨', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 12),
-                  Text(_error == null ? 'Preparing the demo…' : 'The demo could not be prepared', style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+                  Text(
+                    _error == null
+                        ? 'Preparing the demo…'
+                        : 'The demo could not be prepared',
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 16),
-                  if (_error == null) LinearProgressIndicator(value: _progress) else Text(_error!, textAlign: TextAlign.center),
+                  if (_error == null)
+                    LinearProgressIndicator(value: _progress)
+                  else
+                    Text(_error!, textAlign: TextAlign.center),
                   const SizedBox(height: 12),
-                  const Text('Your real data is kept separately and is not changed.', textAlign: TextAlign.center),
+                  const Text(
+                    'Your real data is kept separately and is not changed.',
+                    textAlign: TextAlign.center,
+                  ),
                   if (_error != null) ...[
                     const SizedBox(height: 16),
                     PrismButton(
                       label: 'Leave Demo Mode',
                       tone: PrismButtonTone.filled,
                       onPressed: () async {
-                        await DemoMode.exit(await SharedPreferences.getInstance());
+                        await DemoMode.exit(
+                          await SharedPreferences.getInstance(),
+                        );
                         if (context.mounted) AppRestartScope.restart(context);
                       },
                     ),
@@ -115,15 +140,31 @@ class DemoBanner extends StatelessWidget {
             child: Center(
               child: Material(
                 color: const Color(0xFFF2A93B),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(10),
+                ),
                 child: InkWell(
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(10),
+                  ),
                   onTap: () => confirmExitDemo(context),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 3,
+                    ),
                     child: Text(
-                      tr(context, 'DEMO MODE · sample data · tap to exit', 'MODO DEMO · datos de ejemplo · toca para salir'),
-                      style: const TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.4),
+                      tr(
+                        context,
+                        'DEMO MODE · sample data · tap to exit',
+                        'MODO DEMO · datos de ejemplo · toca para salir',
+                      ),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.4,
+                      ),
                     ),
                   ),
                 ),
@@ -145,12 +186,26 @@ class DemoGuard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!DemoMode.active) return child;
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: tr(context, 'Not available in Demo Mode', 'No disponible en el modo demo'), showBackButton: true),
+      topBar: PrismTopBar(
+        title: tr(
+          context,
+          'Not available in Demo Mode',
+          'No disponible en el modo demo',
+        ),
+        showBackButton: true,
+      ),
       body: EmptyState(
         icon: Icon(PhosphorIcons.shieldCheck()),
-        title: tr(context, 'This is turned off in Demo Mode', 'Esto está desactivado en el modo demo'),
-        subtitle: tr(context, 'Sync, PluralKit and data resets only work with your real data, so sample data can never reach your accounts or devices.',
-            'La sincronización, PluralKit y los reinicios solo funcionan con tus datos reales, para que los datos de ejemplo nunca lleguen a tus cuentas o dispositivos.'),
+        title: tr(
+          context,
+          'This is turned off in Demo Mode',
+          'Esto está desactivado en el modo demo',
+        ),
+        subtitle: tr(
+          context,
+          'Sync, PluralKit and data resets only work with your real data, so sample data can never reach your accounts or devices.',
+          'La sincronización, PluralKit y los reinicios solo funcionan con tus datos reales, para que los datos de ejemplo nunca lleguen a tus cuentas o dispositivos.',
+        ),
         actionLabel: tr(context, 'Leave Demo Mode', 'Salir del modo demo'),
         onAction: () => confirmExitDemo(context),
       ),
@@ -162,8 +217,11 @@ Future<void> confirmExitDemo(BuildContext context) async {
   final ok = await PrismDialog.confirm(
     context: context,
     title: tr(context, 'Leave Demo Mode?', '¿Salir del modo demo?'),
-    message: tr(context, 'Prism will reload with your real alters, records, settings and dashboard exactly as you left them. The demo data is kept in case you come back.',
-        'Prism se recargará con tus alters, registros, ajustes y panel reales tal como los dejaste. Los datos de demostración se guardan por si vuelves.'),
+    message: tr(
+      context,
+      'Prism will reload with your real alters, records, settings and dashboard exactly as you left them. The demo data is kept in case you come back.',
+      'Prism se recargará con tus alters, registros, ajustes y panel reales tal como los dejaste. Los datos de demostración se guardan por si vuelves.',
+    ),
     confirmLabel: tr(context, 'Leave demo', 'Salir de la demo'),
     cancelLabel: context.l10n.cancel,
   );
@@ -207,16 +265,27 @@ class _DemoModeScreenState extends State<DemoModeScreen> {
       cancelLabel: context.l10n.cancel,
     );
     if (!ok || !mounted) return;
-    await DemoMode.enter(await SharedPreferences.getInstance(), _duration, freshData: fresh || !_hasDemo);
+    await DemoMode.enter(
+      await SharedPreferences.getInstance(),
+      _duration,
+      freshData: fresh || !_hasDemo,
+    );
     if (mounted) AppRestartScope.restart(context);
   }
 
   Future<void> _regenerate() async {
     final ok = await PrismDialog.confirm(
       context: context,
-      title: tr(context, 'Replace the demo data?', '¿Reemplazar los datos de demostración?'),
-      message: tr(context, 'All sample data (including changes you made in the demo) is replaced with a new ${demoDurationLabel(context, _duration).toLowerCase()} set. Real data is not affected.',
-          'Todos los datos de ejemplo (incluidos tus cambios en la demo) se sustituyen por un nuevo conjunto. Los datos reales no se ven afectados.'),
+      title: tr(
+        context,
+        'Replace the demo data?',
+        '¿Reemplazar los datos de demostración?',
+      ),
+      message: tr(
+        context,
+        'All sample data (including changes you made in the demo) is replaced with a new ${demoDurationLabel(context, _duration).toLowerCase()} set. Real data is not affected.',
+        'Todos los datos de ejemplo (incluidos tus cambios en la demo) se sustituyen por un nuevo conjunto. Los datos reales no se ven afectados.',
+      ),
       destructive: true,
       confirmLabel: tr(context, 'Replace', 'Reemplazar'),
       cancelLabel: context.l10n.cancel,
@@ -236,7 +305,10 @@ class _DemoModeScreenState extends State<DemoModeScreen> {
     final theme = Theme.of(context);
     final active = DemoMode.active;
     return PrismPageScaffold(
-      topBar: PrismTopBar(title: tr(context, 'Demo Mode', 'Modo demo'), showBackButton: true),
+      topBar: PrismTopBar(
+        title: tr(context, 'Demo Mode', 'Modo demo'),
+        showBackButton: true,
+      ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
       body: ListView(
         padding: EdgeInsets.only(top: 8, bottom: NavBarInset.of(context) + 24),
@@ -247,9 +319,27 @@ class _DemoModeScreenState extends State<DemoModeScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(active ? PhosphorIcons.playCircle(PhosphorIconsStyle.fill) : PhosphorIcons.flask(), color: const Color(0xFFF2A93B)),
+                    Icon(
+                      active
+                          ? PhosphorIcons.playCircle(PhosphorIconsStyle.fill)
+                          : PhosphorIcons.flask(),
+                      color: const Color(0xFFF2A93B),
+                    ),
                     const SizedBox(width: 8),
-                    Text(active ? tr(context, 'Demo Mode is on', 'El modo demo está activado') : tr(context, 'Explore with sample data', 'Explora con datos de ejemplo'), style: theme.textTheme.titleMedium),
+                    Text(
+                      active
+                          ? tr(
+                              context,
+                              'Demo Mode is on',
+                              'El modo demo está activado',
+                            )
+                          : tr(
+                              context,
+                              'Explore with sample data',
+                              'Explora con datos de ejemplo',
+                            ),
+                      style: theme.textTheme.titleMedium,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -262,8 +352,11 @@ class _DemoModeScreenState extends State<DemoModeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  tr(context, 'Your real data lives in a separate file and is never changed, deleted or synced while the demo is on. Leaving restores your alters, records, settings and dashboard exactly.',
-                      'Tus datos reales viven en un archivo aparte y nunca se cambian, borran ni sincronizan durante la demo. Al salir se restauran tus alters, registros, ajustes y panel.'),
+                  tr(
+                    context,
+                    'Your real data lives in a separate file and is never changed, deleted or synced while the demo is on. Leaving restores your alters, records, settings and dashboard exactly.',
+                    'Tus datos reales viven en un archivo aparte y nunca se cambian, borran ni sincronizan durante la demo. Al salir se restauran tus alters, registros, ajustes y panel.',
+                  ),
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -274,24 +367,64 @@ class _DemoModeScreenState extends State<DemoModeScreen> {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: [for (final k in demoDurations.keys) PrismChip(label: demoDurationLabel(context, k), selected: _duration == k, onTap: () => setState(() => _duration = k))],
+            children: [
+              for (final k in demoDurations.keys)
+                PrismChip(
+                  label: demoDurationLabel(context, k),
+                  selected: _duration == k,
+                  onTap: () => setState(() => _duration = k),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
           if (!active) ...[
-            PrismButton(label: tr(context, 'Start a fresh demo', 'Iniciar una demo nueva'), icon: PhosphorIcons.play(), tone: PrismButtonTone.filled, onPressed: () => _enter(fresh: true)),
+            PrismButton(
+              label: tr(
+                context,
+                'Start a fresh demo',
+                'Iniciar una demo nueva',
+              ),
+              icon: PhosphorIcons.play(),
+              tone: PrismButtonTone.filled,
+              onPressed: () => _enter(fresh: true),
+            ),
             if (_hasDemo) ...[
               const SizedBox(height: 8),
-              PrismButton(label: tr(context, 'Continue previous demo', 'Continuar la demo anterior'), icon: PhosphorIcons.arrowClockwise(), onPressed: () => _enter(fresh: false)),
+              PrismButton(
+                label: tr(
+                  context,
+                  'Continue previous demo',
+                  'Continuar la demo anterior',
+                ),
+                icon: PhosphorIcons.arrowClockwise(),
+                onPressed: () => _enter(fresh: false),
+              ),
             ],
           ] else ...[
-            PrismButton(label: tr(context, 'Leave Demo Mode', 'Salir del modo demo'), icon: PhosphorIcons.signOut(), tone: PrismButtonTone.filled, onPressed: () => confirmExitDemo(context)),
+            PrismButton(
+              label: tr(context, 'Leave Demo Mode', 'Salir del modo demo'),
+              icon: PhosphorIcons.signOut(),
+              tone: PrismButtonTone.filled,
+              onPressed: () => confirmExitDemo(context),
+            ),
             const SizedBox(height: 8),
-            PrismButton(label: tr(context, 'Regenerate demo data', 'Regenerar datos de demostración'), icon: PhosphorIcons.arrowsClockwise(), onPressed: _regenerate),
+            PrismButton(
+              label: tr(
+                context,
+                'Regenerate demo data',
+                'Regenerar datos de demostración',
+              ),
+              icon: PhosphorIcons.arrowsClockwise(),
+              onPressed: _regenerate,
+            ),
           ],
           const SizedBox(height: 16),
           Text(
-            tr(context, 'While the demo is on: sync, PluralKit and data resets are paused, and a “Demo Mode” strip shows at the top of the screen.',
-                'Durante la demo: la sincronización, PluralKit y los reinicios de datos están en pausa y se muestra una franja «Modo demo» arriba.'),
+            tr(
+              context,
+              'While the demo is on: sync, PluralKit and data resets are paused, and a “Demo Mode” strip shows at the top of the screen.',
+              'Durante la demo: la sincronización, PluralKit y los reinicios de datos están en pausa y se muestra una franja «Modo demo» arriba.',
+            ),
             style: theme.textTheme.bodySmall,
           ),
         ],

@@ -70,7 +70,10 @@ class HomeWidgetData {
   final String currency;
   final String customStatus;
 
-  List<TrackerRecord> kind(String k) => [for (final r in records) if (r.kind == k) r];
+  List<TrackerRecord> kind(String k) => [
+    for (final r in records)
+      if (r.kind == k) r,
+  ];
 }
 
 /// Fronting in the last 30 days (for recent fronters and statistics).
@@ -78,11 +81,16 @@ final _recentSessionsProvider = StreamProvider<List<FrontingSession>>((ref) {
   final now = DateTime.now();
   return ref
       .watch(frontingSessionRepositoryProvider)
-      .watchSessionsOverlappingRange(now.subtract(const Duration(days: 30)), now.add(const Duration(days: 1)));
+      .watchSessionsOverlappingRange(
+        now.subtract(const Duration(days: 30)),
+        now.add(const Duration(days: 1)),
+      );
 });
 
 final _recentSleepProvider = StreamProvider<List<FrontingSession>>(
-  (ref) => ref.watch(frontingSessionRepositoryProvider).watchRecentSleepSessions(limit: 10),
+  (ref) => ref
+      .watch(frontingSessionRepositoryProvider)
+      .watchRecentSleepSessions(limit: 10),
 );
 
 /// Recomputed whenever any source stream changes; null until the core
@@ -113,6 +121,8 @@ final homeWidgetDataProvider = Provider<HomeWidgetData?>((ref) {
     calendar: ref.watch(calendarDataProvider),
     achievements: ref.watch(achievementProgressProvider).value ?? const [],
     currency: ref.watch(financeCurrencyProvider).value ?? 'USD',
-    customStatus: ref.watch(frontingNotificationSettingsProvider).value?.customStatus ?? '',
+    customStatus:
+        ref.watch(frontingNotificationSettingsProvider).value?.customStatus ??
+        '',
   );
 });

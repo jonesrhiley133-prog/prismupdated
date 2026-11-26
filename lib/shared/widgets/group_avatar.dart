@@ -40,8 +40,7 @@ class GroupAvatar extends ConsumerWidget {
       avatarImageData: group.avatarImageData,
       memberName: group.name,
       emoji: group.emoji ?? '❔',
-      customColorEnabled:
-          group.colorHex != null && group.colorHex!.isNotEmpty,
+      customColorEnabled: group.colorHex != null && group.colorHex!.isNotEmpty,
       customColorHex: group.colorHex,
       tintOverride: tintOverride,
       size: size,

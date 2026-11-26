@@ -4,25 +4,20 @@ import 'package:prism_plurality/domain/models/typed_field_value.dart';
 
 void main() {
   group('sliderFieldDefinition metadata', () {
-    test('id is "slider"',
-        () => expect(sliderFieldDefinition.id, 'slider'));
-    test('legacyIntValue is 7',
-        () => expect(sliderFieldDefinition.legacyIntValue, 7));
+    test('id is "slider"', () => expect(sliderFieldDefinition.id, 'slider'));
+    test(
+      'legacyIntValue is 7',
+      () => expect(sliderFieldDefinition.legacyIntValue, 7),
+    );
   });
 
   group('sliderFieldDefinition.valueParser', () {
     test('null → empty SliderFieldValue', () {
-      expect(
-        sliderFieldDefinition.valueParser(null),
-        const SliderFieldValue(),
-      );
+      expect(sliderFieldDefinition.valueParser(null), const SliderFieldValue());
     });
 
     test('empty string → empty SliderFieldValue', () {
-      expect(
-        sliderFieldDefinition.valueParser(''),
-        const SliderFieldValue(),
-      );
+      expect(sliderFieldDefinition.valueParser(''), const SliderFieldValue());
     });
 
     test('"65" → SliderFieldValue(value: 65.0)', () {
@@ -68,19 +63,13 @@ void main() {
     });
 
     test('"" (empty) → empty SliderFieldValue', () {
-      expect(
-        sliderFieldDefinition.valueParser(''),
-        const SliderFieldValue(),
-      );
+      expect(sliderFieldDefinition.valueParser(''), const SliderFieldValue());
     });
   });
 
   group('sliderFieldDefinition.valueEncoder', () {
     test('empty SliderFieldValue → ""', () {
-      expect(
-        sliderFieldDefinition.valueEncoder(const SliderFieldValue()),
-        '',
-      );
+      expect(sliderFieldDefinition.valueEncoder(const SliderFieldValue()), '');
     });
 
     test('SliderFieldValue(value: 7.0) → "7" (no decimal for integer)', () {
@@ -92,8 +81,7 @@ void main() {
 
     test('SliderFieldValue(value: 7.5) → "7.5" (decimal preserved)', () {
       expect(
-        sliderFieldDefinition.valueEncoder(
-            const SliderFieldValue(value: 7.5)),
+        sliderFieldDefinition.valueEncoder(const SliderFieldValue(value: 7.5)),
         '7.5',
       );
     });
@@ -106,10 +94,7 @@ void main() {
     });
 
     test('SliderFieldValue(value: null) → ""', () {
-      expect(
-        sliderFieldDefinition.valueEncoder(const SliderFieldValue()),
-        '',
-      );
+      expect(sliderFieldDefinition.valueEncoder(const SliderFieldValue()), '');
     });
 
     test('SliderFieldValue(value: 0.0) → "0"', () {
@@ -122,7 +107,8 @@ void main() {
     test('SliderFieldValue(value: 100.0) → "100"', () {
       expect(
         sliderFieldDefinition.valueEncoder(
-            const SliderFieldValue(value: 100.0)),
+          const SliderFieldValue(value: 100.0),
+        ),
         '100',
       );
     });
@@ -151,10 +137,7 @@ void main() {
 
     for (final input in inputs) {
       test('parser("$input") does not throw', () {
-        expect(
-          () => sliderFieldDefinition.valueParser(input),
-          returnsNormally,
-        );
+        expect(() => sliderFieldDefinition.valueParser(input), returnsNormally);
       });
     }
   });

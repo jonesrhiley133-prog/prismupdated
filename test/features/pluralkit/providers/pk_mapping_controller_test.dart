@@ -95,19 +95,17 @@ class _FakeMemberRepo implements MemberRepository {
   ) async => throw UnimplementedError();
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _byId[id];
     if (existing == null || existing.isDeleted) return 0;
     updateCallCount++;
     _byId[id] = existing.copyWith(
-      pluralkitUuid: patch['pluralkit_uuid'] as String? ?? existing.pluralkitUuid,
+      pluralkitUuid:
+          patch['pluralkit_uuid'] as String? ?? existing.pluralkitUuid,
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
       pluralkitSyncIgnored: false,
     );
     return 1;
@@ -122,11 +120,12 @@ class _FakeMemberRepo implements MemberRepository {
     if (existing == null || existing.isDeleted) return 0;
     updateCallCount++;
     _byId[id] = existing.copyWith(
-      pluralkitUuid: patch['pluralkit_uuid'] as String? ?? existing.pluralkitUuid,
+      pluralkitUuid:
+          patch['pluralkit_uuid'] as String? ?? existing.pluralkitUuid,
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
     );
     return 1;
   }
@@ -1361,9 +1360,7 @@ void main() {
         );
         addTearDown(localContainer.dispose);
 
-        final s = await localContainer.read(
-          pkMappingControllerProvider.future,
-        );
+        final s = await localContainer.read(pkMappingControllerProvider.future);
 
         // l1 (unresolved-link) and l2 (truly-unlinked) must both be
         // candidates — neither is filtered out by hasResolvablePluralKitLink.
@@ -1442,9 +1439,7 @@ void main() {
         );
         addTearDown(localContainer.dispose);
 
-        final s = await localContainer.read(
-          pkMappingControllerProvider.future,
-        );
+        final s = await localContainer.read(pkMappingControllerProvider.future);
 
         // pk-alice + pk-dana are the fetch; neither is consumed by a
         // resolved local link.
@@ -1505,9 +1500,7 @@ void main() {
         addTearDown(localContainer.dispose);
 
         await localContainer.read(pkMappingControllerProvider.future);
-        final ctrl = localContainer.read(
-          pkMappingControllerProvider.notifier,
-        );
+        final ctrl = localContainer.read(pkMappingControllerProvider.notifier);
 
         await ctrl.apply();
 
@@ -1594,9 +1587,8 @@ void main() {
 /// Records mapping state at each member-repo write — used to observe what the
 /// controller's phase / applyProgress look like during the per-decision loop.
 class _RecordingMemberRepo implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _RecordingMemberRepo(this._inner, {required this.onWrite});
 
@@ -1766,6 +1758,10 @@ class _PhaseProbeSyncService extends PluralKitSyncService {
     liveFrontsOnlyDirection = direction;
     final summary = liveFrontsOnlySummary;
     if (summary != null) return Future.value(summary);
-    return super.syncLiveFrontersOnly(direction: direction, isManual: isManual, knownCurrentFronters: knownCurrentFronters);
+    return super.syncLiveFrontersOnly(
+      direction: direction,
+      isManual: isManual,
+      knownCurrentFronters: knownCurrentFronters,
+    );
   }
 }

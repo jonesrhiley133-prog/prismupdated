@@ -74,28 +74,27 @@ void main() {
 
       // members have no deterministic self-id form, so pkUuid is null/empty —
       // the active-row match supplies the guard.
-      expect(
-        await isForbiddenAliasTarget(db, 'members', ownId, null),
-        isTrue,
-      );
+      expect(await isForbiddenAliasTarget(db, 'members', ownId, null), isTrue);
     });
 
-    test('FALSE for a legit loser alias (random id, not active locally)',
-        () async {
-      // A genuine loser alias: a random row id that is NOT the self-id form and
-      // does NOT exist as an active local row — exactly what the emitters MUST
-      // still fan a tombstone out to.
-      const loserId = 'random-loser-row-id';
-      expect(
-        await isForbiddenAliasTarget(
-          db,
-          'member_groups',
-          loserId,
-          'uuid-some-group',
-        ),
-        isFalse,
-      );
-    });
+    test(
+      'FALSE for a legit loser alias (random id, not active locally)',
+      () async {
+        // A genuine loser alias: a random row id that is NOT the self-id form and
+        // does NOT exist as an active local row — exactly what the emitters MUST
+        // still fan a tombstone out to.
+        const loserId = 'random-loser-row-id';
+        expect(
+          await isForbiddenAliasTarget(
+            db,
+            'member_groups',
+            loserId,
+            'uuid-some-group',
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test('FALSE when the only matching row is soft-deleted', () async {
       const tombstonedId = 'tombstoned-row';

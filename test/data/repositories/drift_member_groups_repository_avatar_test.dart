@@ -14,7 +14,7 @@ import 'package:prism_plurality/shared/utils/avatar_normalizer.dart';
 /// Minimal recording repo that suppresses sync emissions.
 class _RecordingRepo extends DriftMemberGroupsRepository {
   _RecordingRepo(MemberGroupsDao dao)
-      : super(dao, null, memberRepository: const _NoopMemberRepository());
+    : super(dao, null, memberRepository: const _NoopMemberRepository());
 
   @override
   Future<void> syncRecordCreate(
@@ -35,9 +35,8 @@ class _RecordingRepo extends DriftMemberGroupsRepository {
 }
 
 class _NoopMemberRepository implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   const _NoopMemberRepository();
 
@@ -90,10 +89,12 @@ class _NoopMemberRepository implements MemberRepository {
   ) async => throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
   @override
   Stream<List<member_domain.Member>> watchActiveMembers() =>
       throw UnimplementedError();
@@ -108,7 +109,7 @@ class _NoopMemberRepository implements MemberRepository {
       throw UnimplementedError();
   @override
   Future<({member_domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 /// Generates image bytes well over [AvatarNormalizer.targetMaxBytes].
@@ -160,9 +161,9 @@ domain.MemberGroup _group({required String id, Uint8List? avatar}) =>
     );
 
 Future<Uint8List?> _readStoredAvatar(AppDatabase db, String groupId) async {
-  final row = await (db.select(db.memberGroups)
-        ..where((g) => g.id.equals(groupId)))
-      .getSingleOrNull();
+  final row = await (db.select(
+    db.memberGroups,
+  )..where((g) => g.id.equals(groupId))).getSingleOrNull();
   return row?.avatarImageData;
 }
 
@@ -208,18 +209,20 @@ void main() {
       expect(stored, isNull);
     });
 
-    test('already-conforming JPEG stores byte-identical bytes (idempotent fast-path)',
-        () async {
-      final jpeg = _smallJpeg();
+    test(
+      'already-conforming JPEG stores byte-identical bytes (idempotent fast-path)',
+      () async {
+        final jpeg = _smallJpeg();
 
-      await repo.createGroup(_group(id: 'g3', avatar: jpeg));
+        await repo.createGroup(_group(id: 'g3', avatar: jpeg));
 
-      final stored = await _readStoredAvatar(db, 'g3');
-      expect(stored, isNotNull);
-      expect(stored!.length, jpeg.length);
-      // Byte-for-byte identical — no re-encoding occurred.
-      expect(stored, equals(jpeg));
-    });
+        final stored = await _readStoredAvatar(db, 'g3');
+        expect(stored, isNotNull);
+        expect(stored!.length, jpeg.length);
+        // Byte-for-byte identical — no re-encoding occurred.
+        expect(stored, equals(jpeg));
+      },
+    );
   });
 
   group('avatar normalization — updateGroup', () {
@@ -232,9 +235,9 @@ void main() {
 
       final withAvatar = _group(id: 'g4', avatar: pngBytes);
       // Assign the display_order that the repo would have assigned on create.
-      final storedInitial = await (db.select(db.memberGroups)
-            ..where((g) => g.id.equals('g4')))
-          .getSingle();
+      final storedInitial = await (db.select(
+        db.memberGroups,
+      )..where((g) => g.id.equals('g4'))).getSingle();
       await repo.updateGroup(
         withAvatar.copyWith(displayOrder: storedInitial.displayOrder),
       );

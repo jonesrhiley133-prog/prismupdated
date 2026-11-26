@@ -3,16 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'reminder.freezed.dart';
 part 'reminder.g.dart';
 
-enum ReminderTrigger {
-  scheduled,
-  onFrontChange;
-}
+enum ReminderTrigger { scheduled, onFrontChange }
 
-enum ReminderFrequency {
-  daily,
-  weekly,
-  interval;
-}
+enum ReminderFrequency { daily, weekly, interval }
 
 @freezed
 abstract class Reminder with _$Reminder {
@@ -48,6 +41,7 @@ abstract class Reminder with _$Reminder {
     /// day. Use [Reminder.allTimesOfDay] for the full, sorted list.
     List<String>? additionalTimes,
     int? delayHours,
+
     /// Optional target member ID. null = fires on any front change;
     /// non-null = fires only when the referenced member is in the current
     /// fronter set. Custom fronts are represented as tagged members, so the

@@ -331,10 +331,9 @@ Future<String> snapshotDb(AppDatabase db) async {
   for (final t in tableNames) {
     final rows = await db.customSelect('SELECT * FROM $t').get();
     final exclude = _localOnlyColumns[t] ?? const <String>{};
-    final normalized = rows
-        .map((r) => _canonicalizeRow(r.data, exclude: exclude))
-        .toList()
-      ..sort(_rowComparator);
+    final normalized =
+        rows.map((r) => _canonicalizeRow(r.data, exclude: exclude)).toList()
+          ..sort(_rowComparator);
     // member_group_entries.created_at is a local-only recency stamp defaulted to
     // DateTime.now() (not in prismSyncSchema, never routed through FixedClock) —
     // mask it so the baseline stays deterministic across regen wall-clocks.

@@ -24,7 +24,12 @@ class CompatPartner {
 
 AstroSubject subjectFromBirth(String name, BirthData b) {
   final chart = b.hasYear ? NatalChart.of(b) : null;
-  return AstroSubject(name: name, sunSign: chart?.sunSign ?? sunSignForDate(b.month, b.day).$1, chart: chart, seed: name.hashCode);
+  return AstroSubject(
+    name: name,
+    sunSign: chart?.sunSign ?? sunSignForDate(b.month, b.day).$1,
+    chart: chart,
+    seed: name.hashCode,
+  );
 }
 
 class CompatSection extends ConsumerStatefulWidget {
@@ -53,7 +58,10 @@ class _CompatSectionState extends ConsumerState<CompatSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tr(context, 'COMPARE ME WITH…', 'COMPÁRAME CON…'), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1)),
+              Text(
+                tr(context, 'COMPARE ME WITH…', 'COMPÁRAME CON…'),
+                style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -64,7 +72,9 @@ class _CompatSectionState extends ConsumerState<CompatSection> {
                   Expanded(
                     child: PrismButton(
                       icon: PhosphorIcons.userPlus(),
-                      label: p == null ? tr(context, 'Choose someone', 'Elegir a alguien') : p.name,
+                      label: p == null
+                          ? tr(context, 'Choose someone', 'Elegir a alguien')
+                          : p.name,
                       onPressed: () async {
                         final picked = await _pickPartner(context, ref, a);
                         if (picked != null) setState(() => _partner = picked);
@@ -80,13 +90,20 @@ class _CompatSectionState extends ConsumerState<CompatSection> {
         if (p == null)
           AstroCard(
             child: Text(
-              tr(context, 'Pick another alter, a contact with a birthday, or enter anyone by hand. More birth data on both sides unlocks a deeper comparison.',
-                  'Elige otro alter, un contacto con cumpleaños o introduce a cualquiera a mano. Con más datos de nacimiento en ambos lados la comparación es más profunda.'),
+              tr(
+                context,
+                'Pick another alter, a contact with a birthday, or enter anyone by hand. More birth data on both sides unlocks a deeper comparison.',
+                'Elige otro alter, un contacto con cumpleaños o introduce a cualquiera a mano. Con más datos de nacimiento en ambos lados la comparación es más profunda.',
+              ),
               style: const TextStyle(height: 1.45),
             ),
           )
         else
-          _CompatResult(reading: compareCharts(a.subject!, p.subject, es), a: a, partner: p),
+          _CompatResult(
+            reading: compareCharts(a.subject!, p.subject, es),
+            a: a,
+            partner: p,
+          ),
         const AstroDisclaimer(),
       ],
     );
@@ -94,7 +111,11 @@ class _CompatSectionState extends ConsumerState<CompatSection> {
 }
 
 class _CompatResult extends StatelessWidget {
-  const _CompatResult({required this.reading, required this.a, required this.partner});
+  const _CompatResult({
+    required this.reading,
+    required this.a,
+    required this.partner,
+  });
   final CompatReading reading;
   final AstroAccess a;
   final CompatPartner partner;
@@ -112,9 +133,20 @@ class _CompatResult extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${a.name} + ${partner.name}', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                '${a.name} + ${partner.name}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(r.headline, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: accent)),
+              Text(
+                r.headline,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: accent,
+                ),
+              ),
               const SizedBox(height: 6),
               Text(r.summary, style: const TextStyle(height: 1.45)),
             ],
@@ -123,23 +155,46 @@ class _CompatResult extends StatelessWidget {
         PrismSectionHeader(title: tr(context, 'BASICS', 'LO BÁSICO')),
         PrismSurface(
           padding: EdgeInsets.zero,
-          child: Column(children: [for (final b in r.basics) PrismListRow(dense: true, title: Text(b.$1), subtitle: Text(b.$2))]),
+          child: Column(
+            children: [
+              for (final b in r.basics)
+                PrismListRow(
+                  dense: true,
+                  title: Text(b.$1),
+                  subtitle: Text(b.$2),
+                ),
+            ],
+          ),
         ),
-        PrismSectionHeader(title: tr(context, 'HOW YOU CONNECT', 'CÓMO CONECTÁIS')),
+        PrismSectionHeader(
+          title: tr(context, 'HOW YOU CONNECT', 'CÓMO CONECTÁIS'),
+        ),
         PrismSurface(
           padding: EdgeInsets.zero,
           child: Column(
             children: [
               for (final e in r.areas.entries)
                 PrismListRow(
-                  leading: Text(e.key.emoji, style: const TextStyle(fontSize: 18)),
+                  leading: Text(
+                    e.key.emoji,
+                    style: const TextStyle(fontSize: 18),
+                  ),
                   title: Row(
                     children: [
                       Expanded(child: Text(e.key.label.of(es))),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: prismCorners(context, 12)),
-                        child: Text('${e.value.$1.emoji} ${e.value.$1.label.of(es)}', style: theme.textTheme.labelSmall),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accent.withValues(alpha: 0.12),
+                          borderRadius: prismCorners(context, 12),
+                        ),
+                        child: Text(
+                          '${e.value.$1.emoji} ${e.value.$1.label.of(es)}',
+                          style: theme.textTheme.labelSmall,
+                        ),
                       ),
                     ],
                   ),
@@ -149,7 +204,9 @@ class _CompatResult extends StatelessWidget {
           ),
         ),
         if (r.advanced && r.aspects.isNotEmpty) ...[
-          PrismSectionHeader(title: tr(context, 'SYNASTRY ASPECTS', 'ASPECTOS DE SINASTRÍA')),
+          PrismSectionHeader(
+            title: tr(context, 'SYNASTRY ASPECTS', 'ASPECTOS DE SINASTRÍA'),
+          ),
           PrismSurface(
             padding: EdgeInsets.zero,
             child: Column(
@@ -157,9 +214,24 @@ class _CompatResult extends StatelessWidget {
                 for (final s in r.aspects.take(12))
                   PrismListRow(
                     dense: true,
-                    leading: SizedBox(width: 28, child: Center(child: AstroGlyph(aspectNames[s.type.index].glyph, size: 16, color: s.type.harmonious == false ? theme.colorScheme.tertiary : accent))),
-                    title: Text('${a.name} ${pointName(s.a, es)} ${aspectNames[s.type.index].name.of(es).toLowerCase()} ${partner.name} ${pointName(s.b, es)}'),
-                    subtitle: Text('${es ? 'orbe' : 'orb'} ${s.orb.toStringAsFixed(1)}° · ${aspectNames[s.type.index].meaning.of(es)}'),
+                    leading: SizedBox(
+                      width: 28,
+                      child: Center(
+                        child: AstroGlyph(
+                          aspectNames[s.type.index].glyph,
+                          size: 16,
+                          color: s.type.harmonious == false
+                              ? theme.colorScheme.tertiary
+                              : accent,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      '${a.name} ${pointName(s.a, es)} ${aspectNames[s.type.index].name.of(es).toLowerCase()} ${partner.name} ${pointName(s.b, es)}',
+                    ),
+                    subtitle: Text(
+                      '${es ? 'orbe' : 'orb'} ${s.orb.toStringAsFixed(1)}° · ${aspectNames[s.type.index].meaning.of(es)}',
+                    ),
                   ),
               ],
             ),
@@ -168,9 +240,14 @@ class _CompatResult extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Text(
-              tr(context, 'With a birth year (and ideally time and place) for both, Prism can compare Moon, Venus, Mars and Rising signs too.',
-                  'Con el año de nacimiento de ambos (y mejor aún hora y lugar), Prism puede comparar también Luna, Venus, Marte y ascendente.'),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              tr(
+                context,
+                'With a birth year (and ideally time and place) for both, Prism can compare Moon, Venus, Mars and Rising signs too.',
+                'Con el año de nacimiento de ambos (y mejor aún hora y lugar), Prism puede comparar también Luna, Venus, Marte y ascendente.',
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
       ],
@@ -178,7 +255,11 @@ class _CompatResult extends StatelessWidget {
   }
 }
 
-Future<CompatPartner?> _pickPartner(BuildContext context, WidgetRef ref, AstroAccess me) {
+Future<CompatPartner?> _pickPartner(
+  BuildContext context,
+  WidgetRef ref,
+  AstroAccess me,
+) {
   final alters = [
     for (final x in ref.read(astroAllProvider))
       if (x.member.id != me.member.id && x.listed && x.subject != null) x,
@@ -199,7 +280,14 @@ Future<CompatPartner?> _pickPartner(BuildContext context, WidgetRef ref, AstroAc
         children: [
           PrismSectionHeader(title: tr(ctx, 'ALTERS', 'ALTERS')),
           if (alters.isEmpty)
-            Text(tr(ctx, 'No other alters share their astrology yet.', 'Ningún otro alter comparte su astrología todavía.'), style: Theme.of(ctx).textTheme.bodySmall)
+            Text(
+              tr(
+                ctx,
+                'No other alters share their astrology yet.',
+                'Ningún otro alter comparte su astrología todavía.',
+              ),
+              style: Theme.of(ctx).textTheme.bodySmall,
+            )
           else
             PrismSurface(
               padding: EdgeInsets.zero,
@@ -210,7 +298,9 @@ Future<CompatPartner?> _pickPartner(BuildContext context, WidgetRef ref, AstroAc
                       leading: AstroAvatar(x, size: 32),
                       title: Text(x.name),
                       subtitle: Text(signs[x.sunSign!].name.of(es)),
-                      onTap: () => Navigator.of(ctx).pop(CompatPartner(x.name, x.subject!, kind: 'alter')),
+                      onTap: () => Navigator.of(
+                        ctx,
+                      ).pop(CompatPartner(x.name, x.subject!, kind: 'alter')),
                     ),
                 ],
               ),
@@ -225,8 +315,19 @@ Future<CompatPartner?> _pickPartner(BuildContext context, WidgetRef ref, AstroAc
                     PrismListRow(
                       leading: Icon(PhosphorIcons.addressBook()),
                       title: Text(c.displayName),
-                      subtitle: Text(signs[sunSignForDate(b.month, b.day).$1].name.of(es)),
-                      onTap: () => Navigator.of(ctx).pop(CompatPartner(c.displayName, subjectFromBirth(c.displayName, BirthData(month: b.month, day: b.day, year: b.year)), kind: 'contact')),
+                      subtitle: Text(
+                        signs[sunSignForDate(b.month, b.day).$1].name.of(es),
+                      ),
+                      onTap: () => Navigator.of(ctx).pop(
+                        CompatPartner(
+                          c.displayName,
+                          subjectFromBirth(
+                            c.displayName,
+                            BirthData(month: b.month, day: b.day, year: b.year),
+                          ),
+                          kind: 'contact',
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -280,40 +381,90 @@ class _ManualPersonState extends State<_ManualPerson> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), onChanged: (_) => setState(() {})),
+          PrismTextField(
+            controller: _name,
+            labelText: tr(context, 'Name', 'Nombre'),
+            onChanged: (_) => setState(() {}),
+          ),
           const SizedBox(height: 10),
           Builder(
             builder: (anchor) => PrismButton(
               icon: PhosphorIcons.cake(),
-              label: _date == null ? tr(context, 'Birthday', 'Cumpleaños') : (_yearKnown ? DateFormat.yMMMd(context.dateLocale) : DateFormat.MMMd(context.dateLocale)).format(_date!),
+              label: _date == null
+                  ? tr(context, 'Birthday', 'Cumpleaños')
+                  : (_yearKnown
+                            ? DateFormat.yMMMd(context.dateLocale)
+                            : DateFormat.MMMd(context.dateLocale))
+                        .format(_date!),
               onPressed: () async {
-                final d = await showPrismDatePicker(context: context, anchorContext: anchor, initialDate: _date ?? DateTime(2000), firstDate: DateTime(1800), lastDate: DateTime.now());
+                final d = await showPrismDatePicker(
+                  context: context,
+                  anchorContext: anchor,
+                  initialDate: _date ?? DateTime(2000),
+                  firstDate: DateTime(1800),
+                  lastDate: DateTime.now(),
+                );
                 if (d != null) setState(() => _date = d);
               },
             ),
           ),
-          PrismSwitchRow(padding: const EdgeInsets.symmetric(vertical: 6), title: tr(context, 'Birth year known', 'Se sabe el año'), value: _yearKnown, onChanged: (v) => setState(() => _yearKnown = v)),
+          PrismSwitchRow(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            title: tr(context, 'Birth year known', 'Se sabe el año'),
+            value: _yearKnown,
+            onChanged: (v) => setState(() => _yearKnown = v),
+          ),
           if (_yearKnown) ...[
             Builder(
               builder: (anchor) => PrismButton(
                 icon: PhosphorIcons.clock(),
-                label: _time == null ? tr(context, 'Birth time (optional)', 'Hora (opcional)') : _time!.format(context),
+                label: _time == null
+                    ? tr(context, 'Birth time (optional)', 'Hora (opcional)')
+                    : _time!.format(context),
                 onPressed: () async {
-                  final t = await showPrismTimePicker(context: context, anchorContext: anchor, initialTime: _time ?? const TimeOfDay(hour: 12, minute: 0));
+                  final t = await showPrismTimePicker(
+                    context: context,
+                    anchorContext: anchor,
+                    initialTime: _time ?? const TimeOfDay(hour: 12, minute: 0),
+                  );
                   if (t != null) setState(() => _time = t);
                 },
               ),
             ),
             const SizedBox(height: 10),
             if (_place != null)
-              PrismListRow(dense: true, leading: Icon(PhosphorIcons.mapPin()), title: Text(_place!.name), trailing: PrismIconButton(icon: PhosphorIcons.x(), tooltip: tr(context, 'Remove', 'Quitar'), onPressed: () => setState(() => _place = null)))
+              PrismListRow(
+                dense: true,
+                leading: Icon(PhosphorIcons.mapPin()),
+                title: Text(_place!.name),
+                trailing: PrismIconButton(
+                  icon: PhosphorIcons.x(),
+                  tooltip: tr(context, 'Remove', 'Quitar'),
+                  onPressed: () => setState(() => _place = null),
+                ),
+              )
             else ...[
-              PrismTextField(controller: _search, hintText: tr(context, 'Birthplace (optional)', 'Lugar de nacimiento (opcional)'), prefixIcon: Icon(PhosphorIcons.magnifyingGlass()), onChanged: (q) => setState(() => _results = _index?.search(q, limit: 5) ?? const [])),
+              PrismTextField(
+                controller: _search,
+                hintText: tr(
+                  context,
+                  'Birthplace (optional)',
+                  'Lugar de nacimiento (opcional)',
+                ),
+                prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+                onChanged: (q) => setState(
+                  () => _results = _index?.search(q, limit: 5) ?? const [],
+                ),
+              ),
               for (final c in _results)
-                PrismListRow(dense: true, title: Text(c.label), onTap: () => setState(() {
-                  _place = c.toPlace();
-                  _results = const [];
-                })),
+                PrismListRow(
+                  dense: true,
+                  title: Text(c.label),
+                  onTap: () => setState(() {
+                    _place = c.toPlace();
+                    _results = const [];
+                  }),
+                ),
             ],
           ],
           const SizedBox(height: 12),
@@ -323,12 +474,29 @@ class _ManualPersonState extends State<_ManualPerson> {
             enabled: _date != null && _name.text.trim().isNotEmpty,
             onPressed: () {
               final d = _date!;
-              final b = BirthData(month: d.month, day: d.day, year: _yearKnown ? d.year : null, hour: _yearKnown ? _time?.hour : null, minute: _yearKnown ? _time?.minute : null, place: _yearKnown ? _place : null);
-              widget.onDone(CompatPartner(_name.text.trim(), subjectFromBirth(_name.text.trim(), b)));
+              final b = BirthData(
+                month: d.month,
+                day: d.day,
+                year: _yearKnown ? d.year : null,
+                hour: _yearKnown ? _time?.hour : null,
+                minute: _yearKnown ? _time?.minute : null,
+                place: _yearKnown ? _place : null,
+              );
+              widget.onDone(
+                CompatPartner(
+                  _name.text.trim(),
+                  subjectFromBirth(_name.text.trim(), b),
+                ),
+              );
             },
           ),
           const SizedBox(height: 6),
-          Text(tr(context, 'Not saved anywhere.', 'No se guarda en ningún sitio.'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            tr(context, 'Not saved anywhere.', 'No se guarda en ningún sitio.'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );

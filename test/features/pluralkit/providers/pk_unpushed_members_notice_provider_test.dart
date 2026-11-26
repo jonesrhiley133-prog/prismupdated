@@ -41,9 +41,7 @@ void main() {
     addTearDown(container.dispose);
 
     await container.read(pkUnpushedMembersNoticeProvider.future);
-    final controller = container.read(
-      pkUnpushedMembersNoticeProvider.notifier,
-    );
+    final controller = container.read(pkUnpushedMembersNoticeProvider.notifier);
 
     // Seed a notice via a normal apply first.
     await controller.applyMembersSnapshot(
@@ -73,9 +71,7 @@ void main() {
     addTearDown(container.dispose);
 
     await container.read(pkUnpushedMembersNoticeProvider.future);
-    final controller = container.read(
-      pkUnpushedMembersNoticeProvider.notifier,
-    );
+    final controller = container.read(pkUnpushedMembersNoticeProvider.notifier);
 
     await controller.applyMembersSnapshot(
       [_member(id: 'm-1', name: 'Alice')],
@@ -137,13 +133,7 @@ void main() {
       await container
           .read(pkUnpushedMembersNoticeProvider.notifier)
           .applyMembersSnapshot(
-            [
-              _member(
-                id: 'm-1',
-                name: 'Alice',
-                pluralkitSyncIgnored: true,
-              ),
-            ],
+            [_member(id: 'm-1', name: 'Alice', pluralkitSyncIgnored: true)],
             pkReady: true,
             pushDisabled: true,
           );
@@ -164,11 +154,7 @@ void main() {
         .read(pkUnpushedMembersNoticeProvider.notifier)
         .applyMembersSnapshot(
           [
-            _member(
-              id: 'm-1',
-              name: 'Linked',
-              pluralkitUuid: 'uuid-1',
-            ),
+            _member(id: 'm-1', name: 'Linked', pluralkitUuid: 'uuid-1'),
             _member(id: 'm-2', name: 'LinkedShort', pluralkitId: 'abcde'),
           ],
           pkReady: true,
@@ -314,60 +300,59 @@ void main() {
           .value
           ?.currentNotice;
       expect(next, isNotNull);
-      expect(
-        next!.memberIds,
-        equals({'m-1', 'm-2'}),
-      );
+      expect(next!.memberIds, equals({'m-1', 'm-2'}));
       expect(next.dismissalKey, isNot(firstNotice.dismissalKey));
     },
   );
 
-  test('clearDismissals allows previously-dismissed cohort to republish',
-      () async {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
+  test(
+    'clearDismissals allows previously-dismissed cohort to republish',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
 
-    await container.read(pkUnpushedMembersNoticeProvider.future);
-    final controller = container.read(
-      pkUnpushedMembersNoticeProvider.notifier,
-    );
+      await container.read(pkUnpushedMembersNoticeProvider.future);
+      final controller = container.read(
+        pkUnpushedMembersNoticeProvider.notifier,
+      );
 
-    final members = [_member(id: 'm-1', name: 'Alice')];
+      final members = [_member(id: 'm-1', name: 'Alice')];
 
-    await controller.applyMembersSnapshot(
-      members,
-      pkReady: true,
-      pushDisabled: true,
-    );
-    final notice = container
-        .read(pkUnpushedMembersNoticeProvider)
-        .value!
-        .currentNotice!;
-    await controller.dismiss(notice);
+      await controller.applyMembersSnapshot(
+        members,
+        pkReady: true,
+        pushDisabled: true,
+      );
+      final notice = container
+          .read(pkUnpushedMembersNoticeProvider)
+          .value!
+          .currentNotice!;
+      await controller.dismiss(notice);
 
-    await controller.applyMembersSnapshot(
-      members,
-      pkReady: true,
-      pushDisabled: true,
-    );
-    expect(
-      container.read(pkUnpushedMembersNoticeProvider).value?.currentNotice,
-      isNull,
-    );
+      await controller.applyMembersSnapshot(
+        members,
+        pkReady: true,
+        pushDisabled: true,
+      );
+      expect(
+        container.read(pkUnpushedMembersNoticeProvider).value?.currentNotice,
+        isNull,
+      );
 
-    await controller.clearDismissals();
+      await controller.clearDismissals();
 
-    await controller.applyMembersSnapshot(
-      members,
-      pkReady: true,
-      pushDisabled: true,
-    );
+      await controller.applyMembersSnapshot(
+        members,
+        pkReady: true,
+        pushDisabled: true,
+      );
 
-    final after = container
-        .read(pkUnpushedMembersNoticeProvider)
-        .value
-        ?.currentNotice;
-    expect(after, isNotNull);
-    expect(after!.memberIds, equals({'m-1'}));
-  });
+      final after = container
+          .read(pkUnpushedMembersNoticeProvider)
+          .value
+          ?.currentNotice;
+      expect(after, isNotNull);
+      expect(after!.memberIds, equals({'m-1'}));
+    },
+  );
 }

@@ -10,24 +10,20 @@ Member _member({
   int displayOrder = 0,
   bool isActive = true,
   bool isDeleted = false,
-}) =>
-    Member(
-      id: id,
-      name: name ?? id,
-      displayOrder: displayOrder,
-      isActive: isActive,
-      isDeleted: isDeleted,
-      proxyTagsJson: proxyTagsJson,
-      createdAt: DateTime(2026, 1, 1),
-    );
+}) => Member(
+  id: id,
+  name: name ?? id,
+  displayOrder: displayOrder,
+  isActive: isActive,
+  isDeleted: isDeleted,
+  proxyTagsJson: proxyTagsJson,
+  createdAt: DateTime(2026, 1, 1),
+);
 
 void main() {
   group('matchProxyTag', () {
     test('prefix-only match strips prefix', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"prefix":"A:"}]');
       final match = matchProxyTag('A: hi there', [alex]);
       expect(match, isNotNull);
       expect(match!.memberId, 'alex');
@@ -37,10 +33,7 @@ void main() {
     });
 
     test('suffix-only match strips suffix and handles trailing whitespace', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"suffix":"-a"}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"suffix":"-a"}]');
       final match = matchProxyTag('text -a ', [alex]);
       expect(match, isNotNull);
       expect(match!.strippedText, 'text');
@@ -61,10 +54,7 @@ void main() {
     });
 
     test('case mismatch returns null', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"prefix":"A:"}]');
       expect(matchProxyTag('a: hi', [alex]), isNull);
     });
 
@@ -102,24 +92,15 @@ void main() {
     });
 
     test('equal displayOrder tie broken by id lexicographic', () {
-      final a = _member(
-        id: 'zzz',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
-      final b = _member(
-        id: 'aaa',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
+      final a = _member(id: 'zzz', proxyTagsJson: '[{"prefix":"A:"}]');
+      final b = _member(id: 'aaa', proxyTagsJson: '[{"prefix":"A:"}]');
       final match = matchProxyTag('A: hi', [a, b]);
       expect(match, isNotNull);
       expect(match!.memberId, 'aaa');
     });
 
     test('stripped-empty still matches (banner preview)', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"prefix":"A:"}]');
       // The matcher fires as soon as the tag is typed so the "Posting as"
       // banner can appear without waiting for content. Send-path guards
       // block the actual empty send.
@@ -155,29 +136,20 @@ void main() {
 
     test('null proxy_tags_json member skipped', () {
       final alex = _member(id: 'alex', proxyTagsJson: null);
-      final bob = _member(
-        id: 'bob',
-        proxyTagsJson: '[{"prefix":"B:"}]',
-      );
+      final bob = _member(id: 'bob', proxyTagsJson: '[{"prefix":"B:"}]');
       final match = matchProxyTag('B: yo', [alex, bob]);
       expect(match, isNotNull);
       expect(match!.memberId, 'bob');
     });
 
     test('PK empty-string prefix does not match any draft', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"prefix":""}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"prefix":""}]');
       expect(matchProxyTag('anything', [alex]), isNull);
       expect(matchProxyTag('', [alex]), isNull);
     });
 
     test('empty draft returns null', () {
-      final alex = _member(
-        id: 'alex',
-        proxyTagsJson: '[{"prefix":"A:"}]',
-      );
+      final alex = _member(id: 'alex', proxyTagsJson: '[{"prefix":"A:"}]');
       expect(matchProxyTag('', [alex]), isNull);
     });
 

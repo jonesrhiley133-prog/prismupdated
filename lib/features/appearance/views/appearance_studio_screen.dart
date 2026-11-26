@@ -33,7 +33,11 @@ import 'package:prism_plurality/shared/widgets/prism_top_bar.dart';
 class AppearanceStudioScreen extends ConsumerWidget {
   const AppearanceStudioScreen({super.key});
 
-  Future<String?> _name(BuildContext context, String title, String initial) async {
+  Future<String?> _name(
+    BuildContext context,
+    String title,
+    String initial,
+  ) async {
     final c = TextEditingController(text: initial);
     final l10n = context.l10n;
     final ok = await PrismDialog.show<bool>(
@@ -42,14 +46,26 @@ class AppearanceStudioScreen extends ConsumerWidget {
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          PrismTextField(controller: c, autofocus: true, labelText: l10n.apPresetName, onSubmitted: (_) => Navigator.of(context).pop(true)),
+          PrismTextField(
+            controller: c,
+            autofocus: true,
+            labelText: l10n.apPresetName,
+            onSubmitted: (_) => Navigator.of(context).pop(true),
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              PrismButton(label: l10n.cancel, onPressed: () => Navigator.of(context).pop(false)),
+              PrismButton(
+                label: l10n.cancel,
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
               const SizedBox(width: 8),
-              PrismButton(label: l10n.save, tone: PrismButtonTone.filled, onPressed: () => Navigator.of(context).pop(true)),
+              PrismButton(
+                label: l10n.save,
+                tone: PrismButtonTone.filled,
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
             ],
           ),
         ],
@@ -60,18 +76,28 @@ class AppearanceStudioScreen extends ConsumerWidget {
   }
 
   void _edit(BuildContext context, PrismLook look) {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => LookEditorScreen(initial: look)));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LookEditorScreen(initial: look)),
+    );
   }
 
-  Future<void> _share(BuildContext context, WidgetRef ref, PrismLook look) async {
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    PrismLook look,
+  ) async {
     final l10n = context.l10n;
     final text = ref.read(appearanceProvider.notifier).export(look);
     try {
       final dir = await getTemporaryDirectory();
       final safe = look.name.replaceAll(RegExp(r'[^A-Za-z0-9 _-]'), '').trim();
-      final f = File(p.join(dir.path, '${safe.isEmpty ? 'theme' : safe}.prismtheme.json'));
+      final f = File(
+        p.join(dir.path, '${safe.isEmpty ? 'theme' : safe}.prismtheme.json'),
+      );
       await f.writeAsString(text);
-      await SharePlus.instance.share(ShareParams(files: [XFile(f.path)], subject: look.name));
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(f.path)], subject: look.name),
+      );
     } catch (_) {
       await Clipboard.setData(ClipboardData(text: text));
       if (context.mounted) PrismToast.success(context, message: l10n.apCopied);
@@ -89,9 +115,16 @@ class AppearanceStudioScreen extends ConsumerWidget {
         children: [
           Text(l10n.apImportHelp),
           const SizedBox(height: 12),
-          PrismButton(label: l10n.apImportFile, tone: PrismButtonTone.filled, onPressed: () => Navigator.of(context).pop('file')),
+          PrismButton(
+            label: l10n.apImportFile,
+            tone: PrismButtonTone.filled,
+            onPressed: () => Navigator.of(context).pop('file'),
+          ),
           const SizedBox(height: 8),
-          PrismButton(label: l10n.apImportPaste, onPressed: () => Navigator.of(context).pop('paste')),
+          PrismButton(
+            label: l10n.apImportPaste,
+            onPressed: () => Navigator.of(context).pop('paste'),
+          ),
         ],
       ),
     );
@@ -124,9 +157,16 @@ class AppearanceStudioScreen extends ConsumerWidget {
       context: context,
       title: look.name,
       builder: (sheet) {
-        Widget row(IconData icon, String label, Future<void> Function() onTap, {bool destructive = false}) {
+        Widget row(
+          IconData icon,
+          String label,
+          Future<void> Function() onTap, {
+          bool destructive = false,
+        }) {
           final theme = Theme.of(sheet);
-          final color = destructive ? theme.colorScheme.error : theme.colorScheme.onSurface;
+          final color = destructive
+              ? theme.colorScheme.error
+              : theme.colorScheme.onSurface;
           return Semantics(
             button: true,
             child: InkWell(
@@ -136,8 +176,24 @@ class AppearanceStudioScreen extends ConsumerWidget {
                 await onTap();
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                child: Row(children: [Icon(icon, color: color), const SizedBox(width: 14), Expanded(child: Text(label, style: theme.textTheme.bodyLarge?.copyWith(color: color)))]),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
+                child: Row(
+                  children: [
+                    Icon(icon, color: color),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -149,20 +205,49 @@ class AppearanceStudioScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              row(Icons.check_circle_outline_rounded, l10n.apApply, () => n.activate(look.id)),
-              row(Icons.edit_rounded, look.builtIn ? l10n.apCustomizeCopy : l10n.apEdit, () async {
-                _edit(context, look.builtIn ? look.copyWith(id: '', name: l10n.apCopyOf(look.name), builtIn: false) : look);
-              }),
+              row(
+                Icons.check_circle_outline_rounded,
+                l10n.apApply,
+                () => n.activate(look.id),
+              ),
+              row(
+                Icons.edit_rounded,
+                look.builtIn ? l10n.apCustomizeCopy : l10n.apEdit,
+                () async {
+                  _edit(
+                    context,
+                    look.builtIn
+                        ? look.copyWith(
+                            id: '',
+                            name: l10n.apCopyOf(look.name),
+                            builtIn: false,
+                          )
+                        : look,
+                  );
+                },
+              ),
               row(Icons.copy_rounded, l10n.apDuplicate, () async {
-                final name = await _name(context, l10n.apDuplicate, l10n.apCopyOf(look.name));
+                final name = await _name(
+                  context,
+                  l10n.apDuplicate,
+                  l10n.apCopyOf(look.name),
+                );
                 if (name != null) await n.duplicate(look, name);
               }),
               if (!look.builtIn)
-                row(Icons.drive_file_rename_outline_rounded, l10n.apRename, () async {
-                  final name = await _name(context, l10n.apRename, look.name);
-                  if (name != null) await n.rename(look.id, name);
-                }),
-              row(Icons.ios_share_rounded, l10n.apExport, () => _share(context, ref, look)),
+                row(
+                  Icons.drive_file_rename_outline_rounded,
+                  l10n.apRename,
+                  () async {
+                    final name = await _name(context, l10n.apRename, look.name);
+                    if (name != null) await n.rename(look.id, name);
+                  },
+                ),
+              row(
+                Icons.ios_share_rounded,
+                l10n.apExport,
+                () => _share(context, ref, look),
+              ),
               if (!look.builtIn)
                 row(Icons.delete_outline_rounded, l10n.delete, () async {
                   final ok = await PrismDialog.confirm(
@@ -192,28 +277,51 @@ class AppearanceStudioScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(tr(sheet, 'Your data is not affected — only how the app looks.', 'Tus datos no se ven afectados, solo el aspecto de la app.')),
+            Text(
+              tr(
+                sheet,
+                'Your data is not affected — only how the app looks.',
+                'Tus datos no se ven afectados, solo el aspecto de la app.',
+              ),
+            ),
             const SizedBox(height: 12),
             PrismButton(
-              label: tr(sheet, 'Reset, keep my saved themes', 'Restablecer y conservar mis temas'),
+              label: tr(
+                sheet,
+                'Reset, keep my saved themes',
+                'Restablecer y conservar mis temas',
+              ),
               tone: PrismButtonTone.filled,
               onPressed: () => Navigator.of(sheet).pop('keep'),
             ),
             const SizedBox(height: 8),
             PrismButton(
-              label: tr(sheet, 'Reset everything, delete my themes and pictures', 'Restablecer todo y borrar mis temas e imágenes'),
+              label: tr(
+                sheet,
+                'Reset everything, delete my themes and pictures',
+                'Restablecer todo y borrar mis temas e imágenes',
+              ),
               tone: PrismButtonTone.destructive,
               onPressed: () => Navigator.of(sheet).pop('all'),
             ),
             const SizedBox(height: 8),
-            PrismButton(label: context.l10n.cancel, onPressed: () => Navigator.of(sheet).pop()),
+            PrismButton(
+              label: context.l10n.cancel,
+              onPressed: () => Navigator.of(sheet).pop(),
+            ),
           ],
         ),
       ),
     );
     if (choice == null) return;
-    await ref.read(appearanceProvider.notifier).resetAppearance(everything: choice == 'all');
-    if (context.mounted) PrismToast.show(context, message: tr(context, 'Appearance reset', 'Apariencia restablecida'));
+    await ref
+        .read(appearanceProvider.notifier)
+        .resetAppearance(everything: choice == 'all');
+    if (context.mounted)
+      PrismToast.show(
+        context,
+        message: tr(context, 'Appearance reset', 'Apariencia restablecida'),
+      );
   }
 
   @override
@@ -233,7 +341,12 @@ class AppearanceStudioScreen extends ConsumerWidget {
           final n = ref.read(appearanceProvider.notifier);
           final active = state.active(dark: dark);
           final children = <Widget>[
-            Text(l10n.apStudioIntro, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              l10n.apStudioIntro,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -241,11 +354,23 @@ class AppearanceStudioScreen extends ConsumerWidget {
                   child: PrismButton(
                     label: l10n.apNewTheme,
                     tone: PrismButtonTone.filled,
-                    onPressed: () => _edit(context, active.copyWith(id: '', name: l10n.apMyTheme, builtIn: false)),
+                    onPressed: () => _edit(
+                      context,
+                      active.copyWith(
+                        id: '',
+                        name: l10n.apMyTheme,
+                        builtIn: false,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(child: PrismButton(label: l10n.apImport, onPressed: () => _import(context, ref))),
+                Expanded(
+                  child: PrismButton(
+                    label: l10n.apImport,
+                    onPressed: () => _import(context, ref),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -284,11 +409,25 @@ class AppearanceStudioScreen extends ConsumerWidget {
                     title: l10n.apAuto,
                     subtitle: l10n.apAutoHelp,
                     value: state.auto,
-                    onChanged: (v) => n.setAuto(auto: v, lightId: state.auto ? null : active.id, darkId: state.auto ? null : active.id),
+                    onChanged: (v) => n.setAuto(
+                      auto: v,
+                      lightId: state.auto ? null : active.id,
+                      darkId: state.auto ? null : active.id,
+                    ),
                   ),
                   if (state.auto) ...[
-                    _PresetPicker(label: l10n.apForLight, value: state.lightId, looks: state.all, onChanged: (id) => n.setAuto(lightId: id)),
-                    _PresetPicker(label: l10n.apForDark, value: state.darkId, looks: state.all, onChanged: (id) => n.setAuto(darkId: id)),
+                    _PresetPicker(
+                      label: l10n.apForLight,
+                      value: state.lightId,
+                      looks: state.all,
+                      onChanged: (id) => n.setAuto(lightId: id),
+                    ),
+                    _PresetPicker(
+                      label: l10n.apForDark,
+                      value: state.darkId,
+                      looks: state.all,
+                      onChanged: (id) => n.setAuto(darkId: id),
+                    ),
                     const SizedBox(height: 8),
                   ],
                 ],
@@ -297,13 +436,21 @@ class AppearanceStudioScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Text(l10n.apPageThemes, style: theme.textTheme.titleSmall),
             const SizedBox(height: 4),
-            Text(l10n.apPageThemesHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              l10n.apPageThemesHelp,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 8),
             for (final page in lookPages)
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: PrismSurface(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   onTap: () => PrismSheet.show<void>(
                     context: context,
                     title: pageLabel(l10n, page),
@@ -336,22 +483,39 @@ class AppearanceStudioScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Expanded(child: Text(pageLabel(l10n, page), style: theme.textTheme.bodyLarge)),
+                      Expanded(
+                        child: Text(
+                          pageLabel(l10n, page),
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
                       Text(
-                        state.pageLooks.containsKey(page) ? state.look(state.pageLooks[page]!).name : l10n.apSameAsApp,
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        state.pageLooks.containsKey(page)
+                            ? state.look(state.pageLooks[page]!).name
+                            : l10n.apSameAsApp,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             const SizedBox(height: 20),
-            Text(tr(context, 'Start over', 'Empezar de nuevo'), style: theme.textTheme.titleSmall),
+            Text(
+              tr(context, 'Start over', 'Empezar de nuevo'),
+              style: theme.textTheme.titleSmall,
+            ),
             const SizedBox(height: 4),
             Text(
-              tr(context, 'Put Prism back to how it looked when you first installed it: the Prism theme, standard colours, light/dark following your phone, default fonts and corners, and no page themes.',
-                  'Devuelve Prism a su aspecto original: el tema Prism, colores estándar, claro/oscuro según el teléfono, fuentes y esquinas predeterminadas y sin temas por página.'),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              tr(
+                context,
+                'Put Prism back to how it looked when you first installed it: the Prism theme, standard colours, light/dark following your phone, default fonts and corners, and no page themes.',
+                'Devuelve Prism a su aspecto original: el tema Prism, colores estándar, claro/oscuro según el teléfono, fuentes y esquinas predeterminadas y sin temas por página.',
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 8),
             PrismButton(
@@ -367,8 +531,13 @@ class AppearanceStudioScreen extends ConsumerWidget {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+                  constraints: BoxConstraints(
+                    maxWidth: PrismTokens.contentMaxWidth,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: children,
+                  ),
                 ),
               ),
             ],
@@ -380,7 +549,12 @@ class AppearanceStudioScreen extends ConsumerWidget {
 }
 
 class _PresetPicker extends StatelessWidget {
-  const _PresetPicker({required this.label, required this.value, required this.looks, required this.onChanged});
+  const _PresetPicker({
+    required this.label,
+    required this.value,
+    required this.looks,
+    required this.onChanged,
+  });
 
   final String label;
   final String value;
@@ -400,7 +574,14 @@ class _PresetPicker extends StatelessWidget {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: [for (final l in looks) PrismChip(label: l.name, selected: value == l.id, onTap: () => onChanged(l.id))],
+            children: [
+              for (final l in looks)
+                PrismChip(
+                  label: l.name,
+                  selected: value == l.id,
+                  onTap: () => onChanged(l.id),
+                ),
+            ],
           ),
         ],
       ),
@@ -410,7 +591,13 @@ class _PresetPicker extends StatelessWidget {
 
 /// A preset rendered as a tiny screen in its own colours.
 class _PresetCard extends StatelessWidget {
-  const _PresetCard({required this.look, required this.active, required this.onTap, required this.onLongPress, required this.onMore});
+  const _PresetCard({
+    required this.look,
+    required this.active,
+    required this.onTap,
+    required this.onLongPress,
+    required this.onMore,
+  });
 
   final PrismLook look;
   final bool active;
@@ -423,7 +610,9 @@ class _PresetCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final base = theme.copyWith(extensions: const []);
-    final styled = LookTheme.of(context)?.themeFor(look, base.brightness) ?? applyLook(base, look);
+    final styled =
+        LookTheme.of(context)?.themeFor(look, base.brightness) ??
+        applyLook(base, look);
     final card = look.element(LookElement.card);
     final button = look.element(LookElement.button);
     return Semantics(
@@ -438,7 +627,12 @@ class _PresetCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: prismCorners(context, 18),
-            border: Border.all(width: active ? 3 : 1, color: active ? theme.colorScheme.primary : theme.colorScheme.outlineVariant),
+            border: Border.all(
+              width: active ? 3 : 1,
+              color: active
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outlineVariant,
+            ),
           ),
           child: ClipRRect(
             borderRadius: prismCorners(context, 15),
@@ -451,7 +645,10 @@ class _PresetCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       if (look.background.isCustom)
-                        LookBackground(spec: look.background, dir: LookTheme.of(context)?.backgroundDir)
+                        LookBackground(
+                          spec: look.background,
+                          dir: LookTheme.of(context)?.backgroundDir,
+                        )
                       else
                         ColoredBox(color: styled.scaffoldBackgroundColor),
                       Padding(
@@ -462,9 +659,24 @@ class _PresetCard extends StatelessWidget {
                             Container(
                               height: 34,
                               decoration: BoxDecoration(
-                                color: card.color == null ? styled.cardColor : Color(card.color!).withValues(alpha: card.opacity ?? 1),
-                                borderRadius: prismCorners(context, (card.radius ?? 14) / 2),
-                                border: card.borderWidth == null || card.borderWidth == 0 ? null : Border.all(color: Color(card.borderColor ?? 0x33888888)),
+                                color: card.color == null
+                                    ? styled.cardColor
+                                    : Color(
+                                        card.color!,
+                                      ).withValues(alpha: card.opacity ?? 1),
+                                borderRadius: prismCorners(
+                                  context,
+                                  (card.radius ?? 14) / 2,
+                                ),
+                                border:
+                                    card.borderWidth == null ||
+                                        card.borderWidth == 0
+                                    ? null
+                                    : Border.all(
+                                        color: Color(
+                                          card.borderColor ?? 0x33888888,
+                                        ),
+                                      ),
                               ),
                             ),
                             const Spacer(),
@@ -474,11 +686,24 @@ class _PresetCard extends StatelessWidget {
                                 width: 54,
                                 height: 18,
                                 decoration: BoxDecoration(
-                                  color: Color(button.color ?? styled.colorScheme.primary.toARGB32()),
-                                  gradient: button.color2 == null || button.color == null
+                                  color: Color(
+                                    button.color ??
+                                        styled.colorScheme.primary.toARGB32(),
+                                  ),
+                                  gradient:
+                                      button.color2 == null ||
+                                          button.color == null
                                       ? null
-                                      : LinearGradient(colors: [Color(button.color!), Color(button.color2!)]),
-                                  borderRadius: prismCorners(context, (button.radius ?? 18) / 2),
+                                      : LinearGradient(
+                                          colors: [
+                                            Color(button.color!),
+                                            Color(button.color2!),
+                                          ],
+                                        ),
+                                  borderRadius: prismCorners(
+                                    context,
+                                    (button.radius ?? 18) / 2,
+                                  ),
                                 ),
                               ),
                             ),
@@ -498,10 +723,23 @@ class _PresetCard extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(look.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge),
                               Text(
-                                active ? l10n.apActive : (look.builtIn ? l10n.apBuiltIn : l10n.apYours),
-                                style: theme.textTheme.labelSmall?.copyWith(color: active ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
+                                look.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelLarge,
+                              ),
+                              Text(
+                                active
+                                    ? l10n.apActive
+                                    : (look.builtIn
+                                          ? l10n.apBuiltIn
+                                          : l10n.apYours),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: active
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
@@ -510,7 +748,10 @@ class _PresetCard extends StatelessWidget {
                       InkResponse(
                         onTap: onMore,
                         radius: 20,
-                        child: const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.more_vert_rounded, size: 20)),
+                        child: const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Icon(Icons.more_vert_rounded, size: 20),
+                        ),
                       ),
                     ],
                   ),

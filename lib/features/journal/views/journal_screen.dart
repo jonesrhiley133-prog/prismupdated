@@ -67,7 +67,8 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       topBar: PrismTopBar(
         title: l10n.navJournal,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'journal'), 
+        actions: [
+          FeatureDataAction(featureId: 'journal'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.journalNewEntry,
@@ -82,178 +83,179 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       body: _withTabs(
         context,
         async.when(
-        loading: () => const PrismLoadingState(),
-        error: (e, _) => Center(child: Text(l10n.errorWithDetail(e))),
-        data: (entries) {
-          if (entries.isEmpty) {
-            return ClampedBody(
-              child: EmptyState(
-                icon: Icon(AppIcons.navJournal),
-                title: l10n.journalEmptyTitle,
-                subtitle: l10n.journalEmptySubtitle,
-                actionLabel: l10n.journalNewEntry,
-                onAction: () => showJournalEditor(context),
-              ),
-            );
-          }
-          final stats = JournalStats.of(entries, DateTime.now());
-          final shown = [
-            for (final e in entries)
-              if (journalMatches(e, _search.text) &&
-                  (_filter != _JournalFilter.pinned || e.isPinned) &&
-                  (_filter != _JournalFilter.private || e.isPrivate) &&
-                  (_category == null ||
-                      e.str(JournalField.category) == _category) &&
-                  (_tag == null || e.tags.contains(_tag)) &&
-                  (_member == null || e.memberId == _member))
-                e,
-          ];
-          final pinned = [
-            for (final e in shown)
-              if (e.isPinned) e,
-          ];
-          final rest = [
-            for (final e in shown)
-              if (!e.isPinned) e,
-          ];
-          final locale = context.dateLocale;
-          final children = <Widget>[
-            TrackerStatGrid(
-              children: [
-                TrackerStatTile(
-                  label: l10n.journalStatEntries,
-                  value: '${stats.total}',
-                  icon: AppIcons.navJournal,
+          loading: () => const PrismLoadingState(),
+          error: (e, _) => Center(child: Text(l10n.errorWithDetail(e))),
+          data: (entries) {
+            if (entries.isEmpty) {
+              return ClampedBody(
+                child: EmptyState(
+                  icon: Icon(AppIcons.navJournal),
+                  title: l10n.journalEmptyTitle,
+                  subtitle: l10n.journalEmptySubtitle,
+                  actionLabel: l10n.journalNewEntry,
+                  onAction: () => showJournalEditor(context),
                 ),
-                TrackerStatTile(
-                  label: l10n.journalStatThisMonth,
-                  value: '${stats.thisMonth}',
-                  icon: AppIcons.calendarToday,
-                ),
-                TrackerStatTile(
-                  label: l10n.journalStatStreak(stats.longestStreak),
-                  value: l10n.journalDays(stats.currentStreak),
-                  icon: AppIcons.navAchievements,
-                ),
-                TrackerStatTile(
-                  label: l10n.journalStatMood,
-                  value: stats.averageMood30 == null
-                      ? '–'
-                      : stats.averageMood30!.toStringAsFixed(1),
-                  icon: AppIcons.heartOutline,
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            PrismTextField(
-              controller: _search,
-              hintText: l10n.journalSearch,
-              prefixIcon: Icon(AppIcons.search),
-              onChanged: (_) => setState(() {}),
-            ),
-            const SizedBox(height: 8),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+              );
+            }
+            final stats = JournalStats.of(entries, DateTime.now());
+            final shown = [
+              for (final e in entries)
+                if (journalMatches(e, _search.text) &&
+                    (_filter != _JournalFilter.pinned || e.isPinned) &&
+                    (_filter != _JournalFilter.private || e.isPrivate) &&
+                    (_category == null ||
+                        e.str(JournalField.category) == _category) &&
+                    (_tag == null || e.tags.contains(_tag)) &&
+                    (_member == null || e.memberId == _member))
+                  e,
+            ];
+            final pinned = [
+              for (final e in shown)
+                if (e.isPinned) e,
+            ];
+            final rest = [
+              for (final e in shown)
+                if (!e.isPinned) e,
+            ];
+            final locale = context.dateLocale;
+            final children = <Widget>[
+              TrackerStatGrid(
                 children: [
-                  for (final f in _JournalFilter.values)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: PrismChip(
-                        label: switch (f) {
-                          _JournalFilter.all => l10n.journalFilterAll,
-                          _JournalFilter.pinned => l10n.trackerPinned,
-                          _JournalFilter.private => l10n.trackerPrivate,
-                        },
-                        selected: _filter == f,
-                        onTap: () => setState(() => _filter = f),
-                      ),
-                    ),
-                  for (final c in categories)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: PrismChip(
-                        label: c.title,
-                        selected: _category == c.id,
-                        selectedColor: Color(
-                          c.integer(JournalField.color) ?? trackerPalette.first,
-                        ),
-                        onTap: () => setState(
-                          () => _category = _category == c.id ? null : c.id,
-                        ),
-                      ),
-                    ),
+                  TrackerStatTile(
+                    label: l10n.journalStatEntries,
+                    value: '${stats.total}',
+                    icon: AppIcons.navJournal,
+                  ),
+                  TrackerStatTile(
+                    label: l10n.journalStatThisMonth,
+                    value: '${stats.thisMonth}',
+                    icon: AppIcons.calendarToday,
+                  ),
+                  TrackerStatTile(
+                    label: l10n.journalStatStreak(stats.longestStreak),
+                    value: l10n.journalDays(stats.currentStreak),
+                    icon: AppIcons.navAchievements,
+                  ),
+                  TrackerStatTile(
+                    label: l10n.journalStatMood,
+                    value: stats.averageMood30 == null
+                        ? '–'
+                        : stats.averageMood30!.toStringAsFixed(1),
+                    icon: AppIcons.heartOutline,
+                  ),
                 ],
               ),
-            ),
-            TrackerMemberFilter(
-              value: _member,
-              onChanged: (m) => setState(() => _member = m),
-              onlyIds: {for (final e in entries) ?e.memberId},
-            ),
-            if (stats.topTags.isNotEmpty) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: 12),
+              PrismTextField(
+                controller: _search,
+                hintText: l10n.journalSearch,
+                prefixIcon: Icon(AppIcons.search),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 8),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    for (final (t, n) in stats.topTags)
+                    for (final f in _JournalFilter.values)
                       Padding(
                         padding: const EdgeInsets.only(right: 6),
                         child: PrismChip(
-                          label: '#$t · $n',
-                          selected: _tag == t,
-                          variant: PrismChipVariant.inline,
-                          onTap: () =>
-                              setState(() => _tag = _tag == t ? null : t),
+                          label: switch (f) {
+                            _JournalFilter.all => l10n.journalFilterAll,
+                            _JournalFilter.pinned => l10n.trackerPinned,
+                            _JournalFilter.private => l10n.trackerPrivate,
+                          },
+                          selected: _filter == f,
+                          onTap: () => setState(() => _filter = f),
+                        ),
+                      ),
+                    for (final c in categories)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: PrismChip(
+                          label: c.title,
+                          selected: _category == c.id,
+                          selectedColor: Color(
+                            c.integer(JournalField.color) ??
+                                trackerPalette.first,
+                          ),
+                          onTap: () => setState(
+                            () => _category = _category == c.id ? null : c.id,
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
-            ],
-            if (shown.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                child: Center(child: Text(l10n.journalNoMatches)),
+              TrackerMemberFilter(
+                value: _member,
+                onChanged: (m) => setState(() => _member = m),
+                onlyIds: {for (final e in entries) ?e.memberId},
               ),
-            if (pinned.isNotEmpty) ...[
-              TrackerLabel(l10n.trackerPinned),
-              for (final e in pinned) _EntryCard(entry: e, catById: catById),
-            ],
-          ];
-          String? month;
-          for (final e in rest) {
-            final d = e.occurredAt ?? e.createdAt;
-            final m = DateFormat.yMMMM(locale).format(d);
-            if (m != month) {
-              month = m;
-              children.add(TrackerLabel(m));
-            }
-            children.add(_EntryCard(entry: e, catById: catById));
-          }
-          return ListView(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              8,
-              16,
-              NavBarInset.of(context) + 24,
-            ),
-            children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: PrismTokens.contentMaxWidth,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: children,
+              if (stats.topTags.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (final (t, n) in stats.topTags)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: PrismChip(
+                            label: '#$t · $n',
+                            selected: _tag == t,
+                            variant: PrismChipVariant.inline,
+                            onTap: () =>
+                                setState(() => _tag = _tag == t ? null : t),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
+              ],
+              if (shown.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: Text(l10n.journalNoMatches)),
+                ),
+              if (pinned.isNotEmpty) ...[
+                TrackerLabel(l10n.trackerPinned),
+                for (final e in pinned) _EntryCard(entry: e, catById: catById),
+              ],
+            ];
+            String? month;
+            for (final e in rest) {
+              final d = e.occurredAt ?? e.createdAt;
+              final m = DateFormat.yMMMM(locale).format(d);
+              if (m != month) {
+                month = m;
+                children.add(TrackerLabel(m));
+              }
+              children.add(_EntryCard(entry: e, catById: catById));
+            }
+            return ListView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                8,
+                16,
+                NavBarInset.of(context) + 24,
               ),
-            ],
-          );
-        },
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: PrismTokens.contentMaxWidth,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: children,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

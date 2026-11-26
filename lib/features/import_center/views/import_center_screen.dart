@@ -83,9 +83,7 @@ class ImportCenterScreen extends ConsumerWidget {
       bodyPadding: EdgeInsets.zero,
       body: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: PrismTokens.contentMaxWidth,
-          ),
+          constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [

@@ -86,35 +86,32 @@ void main() {
     },
   );
 
-  test(
-    'round-trip preserves local-zone wall-clock components',
-    () async {
-      // Chat UI calls .hour/.day on message.timestamp without .toLocal();
-      // the converter must return local-zone to match Drift's old `dateTime()`,
-      // or every message shifts by the user's UTC offset.
-      final wall = DateTime(2026, 5, 23, 11, 30, 7, 100);
-      await dao.insertMessage(
-        ChatMessagesCompanion.insert(
-          id: 'msg-local',
-          content: 'local',
-          timestamp: wall,
-          conversationId: 'conv-local',
-        ),
-      );
+  test('round-trip preserves local-zone wall-clock components', () async {
+    // Chat UI calls .hour/.day on message.timestamp without .toLocal();
+    // the converter must return local-zone to match Drift's old `dateTime()`,
+    // or every message shifts by the user's UTC offset.
+    final wall = DateTime(2026, 5, 23, 11, 30, 7, 100);
+    await dao.insertMessage(
+      ChatMessagesCompanion.insert(
+        id: 'msg-local',
+        content: 'local',
+        timestamp: wall,
+        conversationId: 'conv-local',
+      ),
+    );
 
-      final read = await dao.getMessagesForConversation('conv-local');
-      expect(read, hasLength(1));
-      final got = read.single.timestamp;
-      expect(got.isUtc, isFalse, reason: 'must match Drift dateTime() zone');
-      expect(got.year, wall.year);
-      expect(got.month, wall.month);
-      expect(got.day, wall.day);
-      expect(got.hour, wall.hour);
-      expect(got.minute, wall.minute);
-      expect(got.second, wall.second);
-      expect(got.millisecond, wall.millisecond);
-    },
-  );
+    final read = await dao.getMessagesForConversation('conv-local');
+    expect(read, hasLength(1));
+    final got = read.single.timestamp;
+    expect(got.isUtc, isFalse, reason: 'must match Drift dateTime() zone');
+    expect(got.year, wall.year);
+    expect(got.month, wall.month);
+    expect(got.day, wall.day);
+    expect(got.hour, wall.hour);
+    expect(got.minute, wall.minute);
+    expect(got.second, wall.second);
+    expect(got.millisecond, wall.millisecond);
+  });
 
   test(
     'watchUnreadCount uses ms cutoff so sub-second messages are not dropped',

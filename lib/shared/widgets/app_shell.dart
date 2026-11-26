@@ -40,10 +40,14 @@ import 'package:prism_plurality/features/settings/providers/terminology_provider
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
-import 'package:prism_plurality/core/features/feature_registry.dart' show FeatureCategory, featureByTab, prismFeatures;
-import 'package:prism_plurality/core/features/feature_state.dart' show featureStatesProvider;
-import 'package:prism_plurality/core/app_icon/app_icon.dart' show appIconProvider, customAppIconProvider;
-import 'package:flutter/services.dart' show HardwareKeyboard, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
+import 'package:prism_plurality/core/features/feature_registry.dart'
+    show FeatureCategory, featureByTab, prismFeatures;
+import 'package:prism_plurality/core/features/feature_state.dart'
+    show featureStatesProvider;
+import 'package:prism_plurality/core/app_icon/app_icon.dart'
+    show appIconProvider, customAppIconProvider;
+import 'package:flutter/services.dart'
+    show HardwareKeyboard, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 import 'package:prism_plurality/shared/utils/desktop_breakpoint.dart';
 import 'package:prism_plurality/shared/utils/haptics.dart';
 import 'package:prism_plurality/shared/utils/nav_bar_layout.dart';
@@ -1277,7 +1281,12 @@ class _AppShellState extends ConsumerState<AppShell>
     // Wide web windows get a website layout (docked sidebar, wider content).
     final webWide = kIsWeb && isDesktop && width >= kWebDesktopMinWidth;
     PrismTokens.desktopWebContentWidth = webWide
-        ? (width - (_webSidebarCollapsed ? kWebSidebarCollapsedWidth : kWebSidebarWidth) - 96).clamp(PrismTokens.mobileContentMaxWidth, 1100.0)
+        ? (width -
+                  (_webSidebarCollapsed
+                      ? kWebSidebarCollapsedWidth
+                      : kWebSidebarWidth) -
+                  96)
+              .clamp(PrismTokens.mobileContentMaxWidth, 1100.0)
         : null;
 
     if (isDesktop) {
@@ -1297,33 +1306,49 @@ class _AppShellState extends ConsumerState<AppShell>
                   builder: (context, ref, _) {
                     final webTabs = ref.watch(webSidebarTabsProvider);
                     // -1 = the open page isn't a sidebar section: highlight nothing.
-                    final webIndex = webTabs.indexWhere((t) => t.branchIndex == widget.navigationShell.currentIndex);
+                    final webIndex = webTabs.indexWhere(
+                      (t) =>
+                          t.branchIndex == widget.navigationShell.currentIndex,
+                    );
                     return _WebDesktopFrame(
                       tabs: webTabs,
                       currentIndex: webIndex,
                       accentColor: accentColor,
                       collapsed: _webSidebarCollapsed,
-                      onToggleCollapsed: () => setState(() => _webSidebarCollapsed = !_webSidebarCollapsed),
-                      onTap: (index) => onTabSelected(webTabs[index], useHaptics: false),
-                      child: BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell),
+                      onToggleCollapsed: () => setState(
+                        () => _webSidebarCollapsed = !_webSidebarCollapsed,
+                      ),
+                      onTap: (index) =>
+                          onTabSelected(webTabs[index], useHaptics: false),
+                      child: BranchTransition(
+                        index: widget.navigationShell.currentIndex,
+                        child: widget.navigationShell,
+                      ),
                     );
                   },
                 )
               : Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Row(
-              children: [
-                _FloatingSidebar(
-                  tabs: configuredTabs,
-                  currentIndex: safeCurrentIndex,
-                  accentColor: accentColor,
-                  onTap: (index) =>
-                      onTabSelected(configuredTabs[index], useHaptics: false),
+                  resizeToAvoidBottomInset: false,
+                  body: Row(
+                    children: [
+                      _FloatingSidebar(
+                        tabs: configuredTabs,
+                        currentIndex: safeCurrentIndex,
+                        accentColor: accentColor,
+                        onTap: (index) => onTabSelected(
+                          configuredTabs[index],
+                          useHaptics: false,
+                        ),
+                      ),
+                      Expanded(
+                        child: BranchTransition(
+                          index: widget.navigationShell.currentIndex,
+                          child: widget.navigationShell,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Expanded(child: BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell)),
-              ],
-            ),
-          ),
         ),
       );
     } else {
@@ -1411,7 +1436,10 @@ class _AppShellState extends ConsumerState<AppShell>
             body: BackdropGroup(
               child: Stack(
                 children: [
-                  BranchTransition(index: widget.navigationShell.currentIndex, child: widget.navigationShell),
+                  BranchTransition(
+                    index: widget.navigationShell.currentIndex,
+                    child: widget.navigationShell,
+                  ),
 
                   if (!hideNavBar) ...[
                     // Gradient fade
@@ -1452,27 +1480,27 @@ class _AppShellState extends ConsumerState<AppShell>
                       bottom: navBarBottom,
                       child: RepaintBoundary(
                         child: _FloatingNavBar(
-                        key: _navBarKey,
-                        primaryTabs: mobileLayout.primaryTabs,
-                        primaryLabels: mobilePrimaryLabels,
-                        overflowTabs: mobileLayout.overflowTabs,
-                        overflowLabels: mobileOverflowLabels,
-                        overflowColumns: mobileLayout.spec.overflowColumns,
-                        overflowRows: mobileLayout.spec.overflowRows,
-                        rowHeight: mobileLayout.rowHeight,
-                        overflowRowHeight: mobileLayout.overflowRowHeight,
-                        labelVisibility: labelVisibility,
-                        labelStyleMode: labelStyleMode,
-                        currentIndex: safeCurrentIndex,
-                        accentColor: accentColor,
-                        onTap: (index) => onTabSelected(
-                          mobileLayout.allTabs[index],
-                          useHaptics: true,
+                          key: _navBarKey,
+                          primaryTabs: mobileLayout.primaryTabs,
+                          primaryLabels: mobilePrimaryLabels,
+                          overflowTabs: mobileLayout.overflowTabs,
+                          overflowLabels: mobileOverflowLabels,
+                          overflowColumns: mobileLayout.spec.overflowColumns,
+                          overflowRows: mobileLayout.spec.overflowRows,
+                          rowHeight: mobileLayout.rowHeight,
+                          overflowRowHeight: mobileLayout.overflowRowHeight,
+                          labelVisibility: labelVisibility,
+                          labelStyleMode: labelStyleMode,
+                          currentIndex: safeCurrentIndex,
+                          accentColor: accentColor,
+                          onTap: (index) => onTabSelected(
+                            mobileLayout.allTabs[index],
+                            useHaptics: true,
+                          ),
+                          onExpandedChanged: (expanded) {
+                            setState(() => _navExpanded = expanded);
+                          },
                         ),
-                        onExpandedChanged: (expanded) {
-                          setState(() => _navExpanded = expanded);
-                        },
-                      ),
                       ),
                     ),
                   ],
@@ -1642,7 +1670,10 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
   int? _slotsColumns;
 
   List<List<({int index, AppShellTab tab})?>> get _overflowRowSlots {
-    if (_slotsCache != null && identical(_slotsTabs, widget.overflowTabs) && _slotsColumns == widget.overflowColumns) return _slotsCache!;
+    if (_slotsCache != null &&
+        identical(_slotsTabs, widget.overflowTabs) &&
+        _slotsColumns == widget.overflowColumns)
+      return _slotsCache!;
     _slotsTabs = widget.overflowTabs;
     _slotsColumns = widget.overflowColumns;
     return _slotsCache = _computeOverflowRowSlots();
@@ -1871,7 +1902,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                           ),
                         ),
                       ),
-                      ),
+                    ),
                     // Subtle separator line between rows
                     if (t > 0)
                       Opacity(
@@ -2453,7 +2484,10 @@ class _NavGlass extends StatelessWidget {
     final blur = !reduced && (liveBlur || !android);
     if (blur) {
       return BackdropFilter.grouped(
-        filter: ImageFilter.blur(sigmaX: PrismTokens.glassBlurStrong, sigmaY: PrismTokens.glassBlurStrong),
+        filter: ImageFilter.blur(
+          sigmaX: PrismTokens.glassBlurStrong,
+          sigmaY: PrismTokens.glassBlurStrong,
+        ),
         child: child,
       );
     }
@@ -2842,7 +2876,9 @@ class _SidebarItemState extends State<_SidebarItem> {
               ),
             ),
             child: Row(
-              mainAxisAlignment: widget.compact ? MainAxisAlignment.center : MainAxisAlignment.start,
+              mainAxisAlignment: widget.compact
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               children: [
                 _maybeBadge(
                   tab: widget.tab,
@@ -2885,7 +2921,6 @@ class _SidebarItemState extends State<_SidebarItem> {
   }
 }
 
-
 // ───────────────────────── Web desktop layout ─────────────────────────
 
 /// Web windows at least this wide use the website layout.
@@ -2894,13 +2929,20 @@ const kWebSidebarWidth = 264.0;
 const kWebSidebarCollapsedWidth = 76.0;
 
 String _categoryLabel(BuildContext context, FeatureCategory c) => switch (c) {
-  FeatureCategory.system => context.l10n.localeName.startsWith('es') ? 'Sistema' : 'System',
-  FeatureCategory.tracking => context.l10n.localeName.startsWith('es') ? 'Seguimiento' : 'Tracking',
-  FeatureCategory.organization => context.l10n.localeName.startsWith('es') ? 'Organización' : 'Organize',
-  FeatureCategory.social => context.l10n.localeName.startsWith('es') ? 'Social' : 'Social',
-  FeatureCategory.knowledge => context.l10n.localeName.startsWith('es') ? 'Conocimiento' : 'Knowledge',
-  FeatureCategory.community => context.l10n.localeName.startsWith('es') ? 'Comunidad' : 'Community',
-  FeatureCategory.analytics => context.l10n.localeName.startsWith('es') ? 'Estadísticas' : 'Insights',
+  FeatureCategory.system =>
+    context.l10n.localeName.startsWith('es') ? 'Sistema' : 'System',
+  FeatureCategory.tracking =>
+    context.l10n.localeName.startsWith('es') ? 'Seguimiento' : 'Tracking',
+  FeatureCategory.organization =>
+    context.l10n.localeName.startsWith('es') ? 'Organización' : 'Organize',
+  FeatureCategory.social =>
+    context.l10n.localeName.startsWith('es') ? 'Social' : 'Social',
+  FeatureCategory.knowledge =>
+    context.l10n.localeName.startsWith('es') ? 'Conocimiento' : 'Knowledge',
+  FeatureCategory.community =>
+    context.l10n.localeName.startsWith('es') ? 'Comunidad' : 'Community',
+  FeatureCategory.analytics =>
+    context.l10n.localeName.startsWith('es') ? 'Estadísticas' : 'Insights',
 };
 
 /// Website frame for wide web windows: a docked, sectioned sidebar and a
@@ -2966,7 +3008,11 @@ class _WebDesktopFrameState extends ConsumerState<_WebDesktopFrame> {
     await showDialog<void>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.35),
-      builder: (_) => _CommandPalette(tabs: widget.tabs, onTap: widget.onTap, onRoute: (r) => GoRouter.of(context).go(r)),
+      builder: (_) => _CommandPalette(
+        tabs: widget.tabs,
+        onTap: widget.onTap,
+        onRoute: (r) => GoRouter.of(context).go(r),
+      ),
     );
     _paletteOpen = false;
   }
@@ -2988,7 +3034,11 @@ class _WebDesktopFrameState extends ConsumerState<_WebDesktopFrame> {
             onSearch: _palette,
             onTap: widget.onTap,
           ),
-          VerticalDivider(width: 1, thickness: 1, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+          VerticalDivider(
+            width: 1,
+            thickness: 1,
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
           Expanded(child: widget.child),
         ],
       ),
@@ -3021,7 +3071,8 @@ class _WebSidebar extends ConsumerWidget {
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final syncStatus = ref.watch(syncStatusProvider);
-    final showSyncBadge = syncStatus.hasQuarantinedItems || syncStatus.lastError != null;
+    final showSyncBadge =
+        syncStatus.hasQuarantinedItems || syncStatus.lastError != null;
     final habitsBadgeEnabled = ref.watch(habitsBadgeEnabledProvider);
     final dueCount = habitsBadgeEnabled ? ref.watch(dueHabitsCountProvider) : 0;
     final chatUnreadCount = ref.watch(unreadConversationCountProvider);
@@ -3033,7 +3084,9 @@ class _WebSidebar extends ConsumerWidget {
     Widget item(int i) => Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Tooltip(
-        message: collapsed ? tabs[i].localizedLabel(context, terminologyPlural: terms.plural) : '',
+        message: collapsed
+            ? tabs[i].localizedLabel(context, terminologyPlural: terms.plural)
+            : '',
         waitDuration: const Duration(milliseconds: 400),
         child: _SidebarItem(
           tab: tabs[i],
@@ -3068,10 +3121,23 @@ class _WebSidebar extends ConsumerWidget {
     final order = [...FeatureCategory.values, null];
 
     Widget header(String label) => collapsed
-        ? Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1, color: colors.outlineVariant.withValues(alpha: 0.5)))
+        ? Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Divider(
+              height: 1,
+              color: colors.outlineVariant.withValues(alpha: 0.5),
+            ),
+          )
         : Padding(
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 6),
-            child: Text(label.toUpperCase(), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 0.8, fontWeight: FontWeight.w700, color: colors.onSurfaceVariant.withValues(alpha: 0.75))),
+            child: Text(
+              label.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                letterSpacing: 0.8,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.75),
+              ),
+            ),
           );
 
     final width = collapsed ? kWebSidebarCollapsedWidth : kWebSidebarWidth;
@@ -3080,29 +3146,72 @@ class _WebSidebar extends ConsumerWidget {
       label: context.l10n.mainNavigation,
       child: Container(
         width: width,
-        color: Color.alphaBlend(accentColor.withValues(alpha: isDark ? 0.05 : 0.035), isDark ? colors.surfaceContainerLow : colors.surfaceContainer),
+        color: Color.alphaBlend(
+          accentColor.withValues(alpha: isDark ? 0.05 : 0.035),
+          isDark ? colors.surfaceContainerLow : colors.surfaceContainer,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Brand + system.
             Padding(
-              padding: EdgeInsets.fromLTRB(collapsed ? 0 : 18, 18, collapsed ? 0 : 10, 10),
+              padding: EdgeInsets.fromLTRB(
+                collapsed ? 0 : 18,
+                18,
+                collapsed ? 0 : 10,
+                10,
+              ),
               child: Row(
-                mainAxisAlignment: collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+                mainAxisAlignment: collapsed
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.start,
                 children: [
                   // The app icon chosen in Settings › Appearance.
-                  if (ref.watch(appIconProvider).value == 'custom' && ref.watch(customAppIconProvider).value != null)
-                    ClipRRect(borderRadius: prismCorners(context, 9), child: Image.memory(ref.watch(customAppIconProvider).value!, width: 34, height: 34, filterQuality: FilterQuality.medium))
+                  if (ref.watch(appIconProvider).value == 'custom' &&
+                      ref.watch(customAppIconProvider).value != null)
+                    ClipRRect(
+                      borderRadius: prismCorners(context, 9),
+                      child: Image.memory(
+                        ref.watch(customAppIconProvider).value!,
+                        width: 34,
+                        height: 34,
+                        filterQuality: FilterQuality.medium,
+                      ),
+                    )
                   else
-                    Image.asset('assets/app_icons/${ref.watch(appIconProvider).value ?? 'classic'}.png', width: 34, height: 34, filterQuality: FilterQuality.medium, errorBuilder: (_, _, _) => Image.asset('assets/app_icons/classic.png', width: 34, height: 34)),
+                    Image.asset(
+                      'assets/app_icons/${ref.watch(appIconProvider).value ?? 'classic'}.png',
+                      width: 34,
+                      height: 34,
+                      filterQuality: FilterQuality.medium,
+                      errorBuilder: (_, _, _) => Image.asset(
+                        'assets/app_icons/classic.png',
+                        width: 34,
+                        height: 34,
+                      ),
+                    ),
                   if (!collapsed) ...[
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Prism', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, height: 1.1)),
-                          if ((systemName ?? '').isNotEmpty) Text(systemName!, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant)),
+                          Text(
+                            'Prism',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              height: 1.1,
+                            ),
+                          ),
+                          if ((systemName ?? '').isNotEmpty)
+                            Text(
+                              systemName!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -3112,30 +3221,56 @@ class _WebSidebar extends ConsumerWidget {
             ),
             // Search / jump (Ctrl+K).
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: collapsed ? 14 : 12, vertical: 6),
-              child: _WebSearchButton(collapsed: collapsed, onTap: onSearch, label: es ? 'Buscar…' : 'Search Prism…'),
+              padding: EdgeInsets.symmetric(
+                horizontal: collapsed ? 14 : 12,
+                vertical: 6,
+              ),
+              child: _WebSearchButton(
+                collapsed: collapsed,
+                onTap: onSearch,
+                label: es ? 'Buscar…' : 'Search Prism…',
+              ),
             ),
             Expanded(
               child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: collapsed ? 12 : 10, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal: collapsed ? 12 : 10,
+                  vertical: 4,
+                ),
                 children: [
                   for (final i in home) item(i),
                   for (final c in order)
                     if (groups[c]?.isNotEmpty ?? false) ...[
-                      header(c == null ? (es ? 'Más' : 'More') : _categoryLabel(context, c)),
+                      header(
+                        c == null
+                            ? (es ? 'Más' : 'More')
+                            : _categoryLabel(context, c),
+                      ),
                       for (final i in groups[c]!) item(i),
                     ],
                 ],
               ),
             ),
-            Divider(height: 1, color: colors.outlineVariant.withValues(alpha: 0.5)),
+            Divider(
+              height: 1,
+              color: colors.outlineVariant.withValues(alpha: 0.5),
+            ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: collapsed ? 12 : 10, vertical: 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: collapsed ? 12 : 10,
+                vertical: 8,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final i in settings) item(i),
-                  _WebCollapseButton(collapsed: collapsed, onTap: onToggleCollapsed, label: collapsed ? (es ? 'Expandir menú' : 'Expand sidebar') : (es ? 'Contraer menú' : 'Collapse sidebar')),
+                  _WebCollapseButton(
+                    collapsed: collapsed,
+                    onTap: onToggleCollapsed,
+                    label: collapsed
+                        ? (es ? 'Expandir menú' : 'Expand sidebar')
+                        : (es ? 'Contraer menú' : 'Collapse sidebar'),
+                  ),
                 ],
               ),
             ),
@@ -3147,7 +3282,11 @@ class _WebSidebar extends ConsumerWidget {
 }
 
 class _WebSearchButton extends StatefulWidget {
-  const _WebSearchButton({required this.collapsed, required this.onTap, required this.label});
+  const _WebSearchButton({
+    required this.collapsed,
+    required this.onTap,
+    required this.label,
+  });
   final bool collapsed;
   final VoidCallback onTap;
   final String label;
@@ -3173,23 +3312,57 @@ class _WebSearchButtonState extends State<_WebSearchButton> {
           onTap: widget.onTap,
           child: Container(
             height: 38,
-            padding: EdgeInsets.symmetric(horizontal: widget.collapsed ? 0 : 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.collapsed ? 0 : 12,
+            ),
             decoration: BoxDecoration(
-              color: _hover ? colors.surfaceContainerHighest : colors.surfaceContainerHigh.withValues(alpha: 0.7),
-              borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(10)),
-              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.6)),
+              color: _hover
+                  ? colors.surfaceContainerHighest
+                  : colors.surfaceContainerHigh.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(
+                PrismShapes.of(context).radius(10),
+              ),
+              border: Border.all(
+                color: colors.outlineVariant.withValues(alpha: 0.6),
+              ),
             ),
             child: widget.collapsed
-                ? Icon(Icons.search_rounded, size: 18, color: colors.onSurfaceVariant)
+                ? Icon(
+                    Icons.search_rounded,
+                    size: 18,
+                    color: colors.onSurfaceVariant,
+                  )
                 : Row(
                     children: [
-                      Icon(Icons.search_rounded, size: 18, color: colors.onSurfaceVariant),
+                      Icon(
+                        Icons.search_rounded,
+                        size: 18,
+                        color: colors.onSurfaceVariant,
+                      ),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(widget.label, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant))),
+                      Expanded(
+                        child: Text(
+                          widget.label,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(borderRadius: prismCorners(context, 6), border: Border.all(color: colors.outlineVariant)),
-                        child: Text(isMac ? '⌘K' : 'Ctrl K', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: prismCorners(context, 6),
+                          border: Border.all(color: colors.outlineVariant),
+                        ),
+                        child: Text(
+                          isMac ? '⌘K' : 'Ctrl K',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -3201,7 +3374,11 @@ class _WebSearchButtonState extends State<_WebSearchButton> {
 }
 
 class _WebCollapseButton extends StatelessWidget {
-  const _WebCollapseButton({required this.collapsed, required this.onTap, required this.label});
+  const _WebCollapseButton({
+    required this.collapsed,
+    required this.onTap,
+    required this.label,
+  });
   final bool collapsed;
   final VoidCallback onTap;
   final String label;
@@ -3219,13 +3396,27 @@ class _WebCollapseButton extends StatelessWidget {
           child: SizedBox(
             height: 36,
             child: Row(
-              mainAxisAlignment: collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+              mainAxisAlignment: collapsed
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               children: [
                 if (!collapsed) const SizedBox(width: 12),
-                Icon(collapsed ? Icons.keyboard_double_arrow_right_rounded : Icons.keyboard_double_arrow_left_rounded, size: 18, color: colors.onSurfaceVariant),
+                Icon(
+                  collapsed
+                      ? Icons.keyboard_double_arrow_right_rounded
+                      : Icons.keyboard_double_arrow_left_rounded,
+                  size: 18,
+                  color: colors.onSurfaceVariant,
+                ),
                 if (!collapsed) ...[
                   const SizedBox(width: 10),
-                  Text(label, style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -3238,7 +3429,11 @@ class _WebCollapseButton extends StatelessWidget {
 
 /// Ctrl/⌘+K: type to jump to any section.
 class _CommandPalette extends ConsumerStatefulWidget {
-  const _CommandPalette({required this.tabs, required this.onTap, required this.onRoute});
+  const _CommandPalette({
+    required this.tabs,
+    required this.onTap,
+    required this.onRoute,
+  });
   final List<AppShellTab> tabs;
   final ValueChanged<int> onTap;
   final ValueChanged<String> onRoute;
@@ -3266,18 +3461,34 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
     final states = ref.watch(featureStatesProvider);
     final shownTabs = {for (final t in widget.tabs) t.id};
     // Sidebar sections first, then every other enabled feature.
-    final entries = <({String label, IconData icon, String? group, VoidCallback open})>[
-      for (var i = 0; i < widget.tabs.length; i++)
-        (
-          label: widget.tabs[i].localizedLabel(context, terminologyPlural: terms.plural),
-          icon: widget.tabs[i].icon,
-          group: featureByTab[widget.tabs[i].id] == null ? null : _categoryLabel(context, featureByTab[widget.tabs[i].id]!.category),
-          open: () => widget.onTap(i),
-        ),
-      for (final f in prismFeatures)
-        if (f.route != null && (states[f.id] ?? true) && !f.tabs.any(shownTabs.contains))
-          (label: es ? f.name.$2 : f.name.$1, icon: f.icon, group: _categoryLabel(context, f.category), open: () => widget.onRoute(f.route!)),
-    ];
+    final entries =
+        <({String label, IconData icon, String? group, VoidCallback open})>[
+          for (var i = 0; i < widget.tabs.length; i++)
+            (
+              label: widget.tabs[i].localizedLabel(
+                context,
+                terminologyPlural: terms.plural,
+              ),
+              icon: widget.tabs[i].icon,
+              group: featureByTab[widget.tabs[i].id] == null
+                  ? null
+                  : _categoryLabel(
+                      context,
+                      featureByTab[widget.tabs[i].id]!.category,
+                    ),
+              open: () => widget.onTap(i),
+            ),
+          for (final f in prismFeatures)
+            if (f.route != null &&
+                (states[f.id] ?? true) &&
+                !f.tabs.any(shownTabs.contains))
+              (
+                label: es ? f.name.$2 : f.name.$1,
+                icon: f.icon,
+                group: _categoryLabel(context, f.category),
+                open: () => widget.onRoute(f.route!),
+              ),
+        ];
     // Also match each section's full feature name ("Prism Social" → Social).
     String alias(int i) {
       if (i >= widget.tabs.length) return '';
@@ -3287,7 +3498,10 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
 
     final results = [
       for (var i = 0; i < entries.length; i++)
-        if (q.isEmpty || entries[i].label.toLowerCase().contains(q) || alias(i).contains(q)) i,
+        if (q.isEmpty ||
+            entries[i].label.toLowerCase().contains(q) ||
+            alias(i).contains(q))
+          i,
     ];
     if (_sel >= results.length) _sel = results.isEmpty ? 0 : results.length - 1;
     void go(int i) {
@@ -3302,12 +3516,25 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
         child: Material(
           color: colors.surfaceContainer,
           elevation: 12,
-          borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(16)),
+          borderRadius: BorderRadius.circular(
+            PrismShapes.of(context).radius(16),
+          ),
           clipBehavior: Clip.antiAlias,
           child: CallbackShortcuts(
             bindings: {
-              const SingleActivator(LogicalKeyboardKey.arrowDown): () => setState(() => _sel = (_sel + 1).clamp(0, results.isEmpty ? 0 : results.length - 1)),
-              const SingleActivator(LogicalKeyboardKey.arrowUp): () => setState(() => _sel = (_sel - 1).clamp(0, results.isEmpty ? 0 : results.length - 1)),
+              const SingleActivator(LogicalKeyboardKey.arrowDown): () =>
+                  setState(
+                    () => _sel = (_sel + 1).clamp(
+                      0,
+                      results.isEmpty ? 0 : results.length - 1,
+                    ),
+                  ),
+              const SingleActivator(LogicalKeyboardKey.arrowUp): () => setState(
+                () => _sel = (_sel - 1).clamp(
+                  0,
+                  results.isEmpty ? 0 : results.length - 1,
+                ),
+              ),
               const SingleActivator(LogicalKeyboardKey.enter): () {
                 if (results.isNotEmpty) go(results[_sel]);
               },
@@ -3320,7 +3547,10 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: Row(
                     children: [
-                      Icon(Icons.search_rounded, color: colors.onSurfaceVariant),
+                      Icon(
+                        Icons.search_rounded,
+                        color: colors.onSurfaceVariant,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
@@ -3332,13 +3562,20 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
                           },
                           style: theme.textTheme.titleMedium,
                           decoration: InputDecoration(
-                            hintText: context.l10n.localeName.startsWith('es') ? 'Ir a…' : 'Go to…',
+                            hintText: context.l10n.localeName.startsWith('es')
+                                ? 'Ir a…'
+                                : 'Go to…',
                             border: InputBorder.none,
                             isDense: true,
                           ),
                         ),
                       ),
-                      Text('Esc', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                      Text(
+                        'Esc',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -3350,7 +3587,9 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
                     children: [
                       for (final (n, i) in results.indexed)
                         Material(
-                          color: n == _sel ? colors.secondaryContainer : Colors.transparent,
+                          color: n == _sel
+                              ? colors.secondaryContainer
+                              : Colors.transparent,
                           borderRadius: prismCorners(context, 10),
                           child: InkWell(
                             borderRadius: prismCorners(context, 10),
@@ -3359,19 +3598,49 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
                               if (h) setState(() => _sel = n);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                               child: Row(
                                 children: [
-                                  Icon(entries[i].icon, size: 20, color: n == _sel ? colors.onSecondaryContainer : colors.onSurfaceVariant),
+                                  Icon(
+                                    entries[i].icon,
+                                    size: 20,
+                                    color: n == _sel
+                                        ? colors.onSecondaryContainer
+                                        : colors.onSurfaceVariant,
+                                  ),
                                   const SizedBox(width: 12),
-                                  Expanded(child: Text(entries[i].label, style: theme.textTheme.bodyLarge)),
-                                  if (entries[i].group case final g?) Text(g, style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                                  Expanded(
+                                    child: Text(
+                                      entries[i].label,
+                                      style: theme.textTheme.bodyLarge,
+                                    ),
+                                  ),
+                                  if (entries[i].group case final g?)
+                                    Text(
+                                      g,
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                    ),
                                 ],
                               ),
                             ),
                           ),
                         ),
-                      if (results.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(context.l10n.localeName.startsWith('es') ? 'Sin resultados' : 'No matches', style: theme.textTheme.bodyMedium)),
+                      if (results.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            context.l10n.localeName.startsWith('es')
+                                ? 'Sin resultados'
+                                : 'No matches',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -3383,7 +3652,6 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
     );
   }
 }
-
 
 /// Animates switching between main sections (nav bar, sidebar, search or a
 /// link into another section): the new section fades in and rises slightly.
@@ -3398,15 +3666,27 @@ class BranchTransition extends StatefulWidget {
   State<BranchTransition> createState() => _BranchTransitionState();
 }
 
-class _BranchTransitionState extends State<BranchTransition> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 260), value: 1);
-  late final Animation<double> _curve = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
-  late final Animation<Offset> _slide = Tween(begin: const Offset(0, 0.018), end: Offset.zero).animate(_curve);
+class _BranchTransitionState extends State<BranchTransition>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 260),
+    value: 1,
+  );
+  late final Animation<double> _curve = CurvedAnimation(
+    parent: _c,
+    curve: Curves.easeOutCubic,
+  );
+  late final Animation<Offset> _slide = Tween(
+    begin: const Offset(0, 0.018),
+    end: Offset.zero,
+  ).animate(_curve);
 
   @override
   void didUpdateWidget(BranchTransition old) {
     super.didUpdateWidget(old);
-    if (old.index != widget.index && !MediaQuery.of(context).disableAnimations) {
+    if (old.index != widget.index &&
+        !MediaQuery.of(context).disableAnimations) {
       _c.forward(from: 0);
     }
   }

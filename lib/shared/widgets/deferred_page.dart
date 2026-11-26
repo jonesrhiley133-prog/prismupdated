@@ -32,12 +32,10 @@ class _DeferredPageState extends State<DeferredPage> {
   void initState() {
     super.initState();
     if (_ready) return;
-    DeferredPage._loads
-        .putIfAbsent(widget.load, widget.load)
-        .then((_) {
-          DeferredPage._loaded.add(widget.load);
-          if (mounted) setState(() => _ready = true);
-        });
+    DeferredPage._loads.putIfAbsent(widget.load, widget.load).then((_) {
+      DeferredPage._loaded.add(widget.load);
+      if (mounted) setState(() => _ready = true);
+    });
   }
 
   @override

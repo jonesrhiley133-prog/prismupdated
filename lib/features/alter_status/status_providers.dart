@@ -3,11 +3,21 @@ import 'dart:async';
 import 'package:prism_plurality/features/alter_status/status_models.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
-final statusTypesProvider = Provider.family<List<StatusType>, String>((ref, lang) {
-  final custom = ref.watch(trackerKindProvider(TrackerKind.statusCustom)).value ?? const [];
+final statusTypesProvider = Provider.family<List<StatusType>, String>((
+  ref,
+  lang,
+) {
+  final custom =
+      ref.watch(trackerKindProvider(TrackerKind.statusCustom)).value ??
+      const [];
   return [
     for (final b in builtInStatuses)
-      StatusType(key: 'builtin:${b.id}', title: lang == 'es' ? b.es : b.en, iconKey: b.icon, color: b.color),
+      StatusType(
+        key: 'builtin:${b.id}',
+        title: lang == 'es' ? b.es : b.en,
+        iconKey: b.icon,
+        color: b.color,
+      ),
     for (final c in custom.reversed)
       StatusType(
         key: 'custom:${c.id}',
@@ -22,30 +32,41 @@ final statusTypesProvider = Provider.family<List<StatusType>, String>((ref, lang
 
 /// Type keys hidden from shared surfaces (Home, Headmates list).
 final hiddenStatusTypesProvider = Provider<Set<String>>((ref) {
-  final s = ref.watch(trackerKindProvider(TrackerKind.statusSettings)).value ?? const [];
+  final s =
+      ref.watch(trackerKindProvider(TrackerKind.statusSettings)).value ??
+      const [];
   return s.isEmpty ? const {} : s.first.strings('hidden').toSet();
 });
 
 /// Current, unexpired statuses by member id.
-final alterStatusesProvider = Provider.family<Map<String, AlterStatus>, String>((ref, lang) {
-  final now = DateTime.now();
-  final types = {for (final t in ref.watch(statusTypesProvider(lang))) t.key: t};
-  final out = <String, AlterStatus>{};
-  for (final r in ref.watch(trackerKindProvider(TrackerKind.statusCurrent)).value ?? const <TrackerRecord>[]) {
-    final mid = r.memberId;
-    if (mid == null || out.containsKey(mid)) continue;
-    final s = statusFromRecord(r, types);
-    if (s == null || s.isExpired(now)) continue;
-    out[mid] = s;
-  }
-  // Rebuild when the next status expires (no timer when nothing expires).
-  final next = [for (final s in out.values) ?s.expiresAt]..sort();
-  if (next.isNotEmpty) {
-    final t = Timer(next.first.difference(now) + const Duration(seconds: 1), ref.invalidateSelf);
-    ref.onDispose(t.cancel);
-  }
-  return out;
-});
+final alterStatusesProvider = Provider.family<Map<String, AlterStatus>, String>(
+  (ref, lang) {
+    final now = DateTime.now();
+    final types = {
+      for (final t in ref.watch(statusTypesProvider(lang))) t.key: t,
+    };
+    final out = <String, AlterStatus>{};
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.statusCurrent)).value ??
+            const <TrackerRecord>[]) {
+      final mid = r.memberId;
+      if (mid == null || out.containsKey(mid)) continue;
+      final s = statusFromRecord(r, types);
+      if (s == null || s.isExpired(now)) continue;
+      out[mid] = s;
+    }
+    // Rebuild when the next status expires (no timer when nothing expires).
+    final next = [for (final s in out.values) ?s.expiresAt]..sort();
+    if (next.isNotEmpty) {
+      final t = Timer(
+        next.first.difference(now) + const Duration(seconds: 1),
+        ref.invalidateSelf,
+      );
+      ref.onDispose(t.cancel);
+    }
+    return out;
+  },
+);
 
 AlterStatus? statusFromRecord(TrackerRecord r, Map<String, StatusType> types) {
   final key = r.str('type');
@@ -68,21 +89,25 @@ AlterStatus? statusFromRecord(TrackerRecord r, Map<String, StatusType> types) {
 }
 
 /// Statuses that may be shown on shared surfaces.
-final publicStatusesProvider = Provider.family<Map<String, AlterStatus>, String>((ref, lang) {
-  final hidden = ref.watch(hiddenStatusTypesProvider);
-  final all = ref.watch(alterStatusesProvider(lang));
-  return {
-    for (final e in all.entries)
-      if (!e.value.isPrivate && !hidden.contains(e.value.typeKey)) e.key: e.value,
-  };
-});
+final publicStatusesProvider =
+    Provider.family<Map<String, AlterStatus>, String>((ref, lang) {
+      final hidden = ref.watch(hiddenStatusTypesProvider);
+      final all = ref.watch(alterStatusesProvider(lang));
+      return {
+        for (final e in all.entries)
+          if (!e.value.isPrivate && !hidden.contains(e.value.typeKey))
+            e.key: e.value,
+      };
+    });
 
 class StatusActions {
   StatusActions(this.ref);
   final Ref ref;
   TrackerNotifier get _t => ref.read(trackerNotifierProvider.notifier);
 
-  List<TrackerRecord> get _current => ref.read(trackerKindProvider(TrackerKind.statusCurrent)).value ?? const [];
+  List<TrackerRecord> get _current =>
+      ref.read(trackerKindProvider(TrackerKind.statusCurrent)).value ??
+      const [];
 
   /// Sets [memberId]'s status; the previous one moves to history.
   Future<TrackerRecord> set({
@@ -107,7 +132,9 @@ class StatusActions {
       isPrivate: isPrivate,
       fields: {
         'type': type.key,
-        'activity': ?(activity == null || activity.trim().isEmpty ? null : activity.trim()),
+        'activity': ?(activity == null || activity.trim().isEmpty
+            ? null
+            : activity.trim()),
         'color': ?(color == type.color ? null : color),
         'icon': ?(iconKey == type.iconKey ? null : iconKey),
         'expiresAt': ?expiresAt?.toIso8601String(),
@@ -152,18 +179,39 @@ class StatusActions {
     );
   }
 
-  Future<void> saveCustom({TrackerRecord? editing, required String name, required String icon, required int color, String? description}) async {
+  Future<void> saveCustom({
+    TrackerRecord? editing,
+    required String name,
+    required String icon,
+    required int color,
+    String? description,
+  }) async {
     if (editing != null) {
-      await _t.save(editing.copyWith(title: name, body: description).withFields({'icon': icon, 'color': color}));
+      await _t.save(
+        editing.copyWith(title: name, body: description).withFields({
+          'icon': icon,
+          'color': color,
+        }),
+      );
     } else {
-      await _t.create(kind: TrackerKind.statusCustom, title: name, body: description, fields: {'icon': icon, 'color': color});
+      await _t.create(
+        kind: TrackerKind.statusCustom,
+        title: name,
+        body: description,
+        fields: {'icon': icon, 'color': color},
+      );
     }
   }
 
   Future<void> setHidden(Set<String> hidden) async {
-    final s = ref.read(trackerKindProvider(TrackerKind.statusSettings)).value ?? const [];
+    final s =
+        ref.read(trackerKindProvider(TrackerKind.statusSettings)).value ??
+        const [];
     if (s.isEmpty) {
-      await _t.create(kind: TrackerKind.statusSettings, fields: {'hidden': hidden.toList()});
+      await _t.create(
+        kind: TrackerKind.statusSettings,
+        fields: {'hidden': hidden.toList()},
+      );
     } else {
       await _t.save(s.first.withFields({'hidden': hidden.toList()}));
     }

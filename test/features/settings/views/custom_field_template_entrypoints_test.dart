@@ -113,7 +113,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1));
   });
 
-  testWidgets('field row long-press menu has Share as template', (tester) async {
+  testWidgets('field row long-press menu has Share as template', (
+    tester,
+  ) async {
     _useTallViewport(tester);
     final database = db.AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
@@ -131,7 +133,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1));
   });
 
-  testWidgets('tapping Share as template opens the share sheet', (tester) async {
+  testWidgets('tapping Share as template opens the share sheet', (
+    tester,
+  ) async {
     _useTallViewport(tester);
     final database = db.AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);

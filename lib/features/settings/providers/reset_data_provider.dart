@@ -101,7 +101,9 @@ final resetNativeKeysProvider = Provider<NativeResetKeys>((ref) {
 
 // dart:io's Platform throws in browsers, which used to stop Reset on the
 // web (including desktop browsers) before anything was deleted.
-final resetIsAndroidProvider = Provider<bool>((ref) => !kIsWeb && Platform.isAndroid);
+final resetIsAndroidProvider = Provider<bool>(
+  (ref) => !kIsWeb && Platform.isAndroid,
+);
 
 final resetRequiresRestartAfterLocalPairingWipeProvider = Provider<bool>(
   (ref) => !kIsWeb && Platform.isIOS,
@@ -709,7 +711,11 @@ class ResetDataNotifier extends AsyncNotifier<void> {
       _log('Sync teardown skipped on web: $e');
     }
     final db = ref.read(databaseProvider);
-    final rows = await db.customSelect("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get();
+    final rows = await db
+        .customSelect(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
+        )
+        .get();
     final tables = [for (final r in rows) r.read<String>('name')];
     await db.transaction(() async {
       for (final t in tables) {
@@ -731,7 +737,15 @@ class ResetDataNotifier extends AsyncNotifier<void> {
   /// repositories so the deletions sync — otherwise another device would
   /// quietly send the data back.
   bool _usesSyncedDelete(ResetCategory category) {
-    const synced = {ResetCategory.mood, ResetCategory.calendar, ResetCategory.locations, ResetCategory.work, ResetCategory.cycle, ResetCategory.contacts, ResetCategory.lifeTrackers};
+    const synced = {
+      ResetCategory.mood,
+      ResetCategory.calendar,
+      ResetCategory.locations,
+      ResetCategory.work,
+      ResetCategory.cycle,
+      ResetCategory.contacts,
+      ResetCategory.lifeTrackers,
+    };
     if (!synced.contains(category)) return false;
     try {
       return ref.read(syncEnabledProvider);
@@ -741,7 +755,10 @@ class ResetDataNotifier extends AsyncNotifier<void> {
   }
 
   Future<bool> _resetSyncedCategory(ResetCategory category) async {
-    Future<void> each<T>(Future<List<T>> Function() all, Future<void> Function(T) del) async {
+    Future<void> each<T>(
+      Future<List<T>> Function() all,
+      Future<void> Function(T) del,
+    ) async {
       for (final x in await all()) {
         await del(x);
       }

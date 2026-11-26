@@ -671,10 +671,10 @@ void main() {
         final settingsRepository = FakeSystemSettingsRepository();
         final syncNotifier = _StaticPluralKitSyncNotifier(
           const PluralKitSyncState(
-          isConnected: true,
-          directionConfirmed: true,
-          mappingAcknowledged: true,
-        ),
+            isConnected: true,
+            directionConfirmed: true,
+            mappingAcknowledged: true,
+          ),
           syncStateAfterManualSync: PluralKitSyncState(
             isConnected: true,
             directionConfirmed: true,
@@ -724,10 +724,10 @@ void main() {
           settingsRepository: settingsRepository,
           settingsStream: Stream.value(settingsRepository.settings),
           syncState: const PluralKitSyncState(
-          isConnected: true,
-          directionConfirmed: true,
-          mappingAcknowledged: true,
-        ),
+            isConnected: true,
+            directionConfirmed: true,
+            mappingAcknowledged: true,
+          ),
           bus: capture.bus,
         );
 
@@ -787,10 +787,10 @@ void main() {
           settingsRepository: settingsRepository,
           settingsStream: Stream.value(settingsRepository.settings),
           syncState: const PluralKitSyncState(
-          isConnected: true,
-          directionConfirmed: true,
-          mappingAcknowledged: true,
-        ),
+            isConnected: true,
+            directionConfirmed: true,
+            mappingAcknowledged: true,
+          ),
           bus: bus,
           router: router,
         );
@@ -842,69 +842,67 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('PluralKitSetupScreen token paste robustness', () {
-    testWidgets(
-      'strips internal whitespace and newlines before setToken',
-      (tester) async {
-        final settingsRepository = FakeSystemSettingsRepository();
-        final syncNotifier = _StaticPluralKitSyncNotifier(
-          const PluralKitSyncState(),
-        );
+    testWidgets('strips internal whitespace and newlines before setToken', (
+      tester,
+    ) async {
+      final settingsRepository = FakeSystemSettingsRepository();
+      final syncNotifier = _StaticPluralKitSyncNotifier(
+        const PluralKitSyncState(),
+      );
 
-        await _pumpScreen(
-          tester,
-          settingsRepository: settingsRepository,
-          settingsStream: Stream.value(settingsRepository.settings),
-          syncNotifier: syncNotifier,
-        );
+      await _pumpScreen(
+        tester,
+        settingsRepository: settingsRepository,
+        settingsStream: Stream.value(settingsRepository.settings),
+        syncNotifier: syncNotifier,
+      );
 
-        // A real-shaped 64-char token mangled the way PDF viewers and email
-        // clients mangle copies: leading/trailing space, internal newlines,
-        // tabs, and a CRLF.
-        final core = 'a' * 64;
-        final pasted =
-            '  ${core.substring(0, 20)}\n${core.substring(20, 40)}\t\r\n'
-            '${core.substring(40)}  ';
-        await tester.enterText(find.byType(TextField), pasted);
-        await tester.pump();
-        await tester.tap(find.text('Connect'));
-        await tester.pump();
-        await tester.pump();
+      // A real-shaped 64-char token mangled the way PDF viewers and email
+      // clients mangle copies: leading/trailing space, internal newlines,
+      // tabs, and a CRLF.
+      final core = 'a' * 64;
+      final pasted =
+          '  ${core.substring(0, 20)}\n${core.substring(20, 40)}\t\r\n'
+          '${core.substring(40)}  ';
+      await tester.enterText(find.byType(TextField), pasted);
+      await tester.pump();
+      await tester.tap(find.text('Connect'));
+      await tester.pump();
+      await tester.pump();
 
-        expect(syncNotifier.setTokenCallCount, 1);
-        expect(syncNotifier.lastSetTokenArg, core);
-      },
-    );
+      expect(syncNotifier.setTokenCallCount, 1);
+      expect(syncNotifier.lastSetTokenArg, core);
+    });
 
-    testWidgets(
-      'keeps the pasted token in the field when connect fails',
-      (tester) async {
-        final settingsRepository = FakeSystemSettingsRepository();
-        final syncNotifier = _StaticPluralKitSyncNotifier(
-          const PluralKitSyncState(),
-          setTokenSyncError: 'Invalid token — please check and try again.',
-        );
+    testWidgets('keeps the pasted token in the field when connect fails', (
+      tester,
+    ) async {
+      final settingsRepository = FakeSystemSettingsRepository();
+      final syncNotifier = _StaticPluralKitSyncNotifier(
+        const PluralKitSyncState(),
+        setTokenSyncError: 'Invalid token — please check and try again.',
+      );
 
-        await _pumpScreen(
-          tester,
-          settingsRepository: settingsRepository,
-          settingsStream: Stream.value(settingsRepository.settings),
-          syncNotifier: syncNotifier,
-        );
+      await _pumpScreen(
+        tester,
+        settingsRepository: settingsRepository,
+        settingsStream: Stream.value(settingsRepository.settings),
+        syncNotifier: syncNotifier,
+      );
 
-        const pasted = 'not-the-right-token';
-        await tester.enterText(find.byType(TextField), pasted);
-        await tester.pump();
-        await tester.tap(find.text('Connect'));
-        await tester.pump();
-        await tester.pump();
+      const pasted = 'not-the-right-token';
+      await tester.enterText(find.byType(TextField), pasted);
+      await tester.pump();
+      await tester.tap(find.text('Connect'));
+      await tester.pump();
+      await tester.pump();
 
-        expect(syncNotifier.setTokenCallCount, 1);
-        // The field must NOT be wiped on failure — the user can fix a typo
-        // instead of re-pasting from scratch.
-        final field = tester.widget<TextField>(find.byType(TextField));
-        expect(field.controller!.text, pasted);
-      },
-    );
+      expect(syncNotifier.setTokenCallCount, 1);
+      // The field must NOT be wiped on failure — the user can fix a typo
+      // instead of re-pasting from scratch.
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, pasted);
+    });
 
     testWidgets(
       'soft-warns on implausible token length but still allows submit',

@@ -74,8 +74,7 @@ class _SecureStorageStub {
 
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final List<List<PKSwitch>> switchPages;
 
   _FakeClient(this.switchPages);
@@ -316,7 +315,8 @@ void main() {
       expect(
         sessionA.endTime,
         isNull,
-        reason: 'The diff sweep must not end A\'s local-only session even '
+        reason:
+            'The diff sweep must not end A\'s local-only session even '
             'though A is absent from PK\'s current switch. If this fails, '
             'drop the pull-only "Co-front" option from Task 14.',
       );
@@ -341,20 +341,20 @@ void main() {
       expect(
         pkLinkedBSessions,
         isNotEmpty,
-        reason: 'importSwitchesAfterLink must create a PK-linked open session '
+        reason:
+            'importSwitchesAfterLink must create a PK-linked open session '
             'for B corresponding to the current PK switch.',
       );
 
       // A should have no PK-linked sessions (it wasn't in the switch).
       final pkLinkedASessions = allSessions.where(
-        (s) =>
-            s.memberId == 'local-a' &&
-            s.pluralkitUuid != null,
+        (s) => s.memberId == 'local-a' && s.pluralkitUuid != null,
       );
       expect(
         pkLinkedASessions,
         isEmpty,
-        reason: 'No PK-linked session should be created for A since A was '
+        reason:
+            'No PK-linked session should be created for A since A was '
             'not in the PK switch.',
       );
     },

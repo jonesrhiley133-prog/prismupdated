@@ -22,7 +22,22 @@ abstract final class SocialKind {
   static const storyView = 'story.view';
   static const highlight = 'story.highlight';
 
-  static const all = {post, comment, reaction, vote, follow, block, hide, report, profile, seen, media, story, storyView, highlight};
+  static const all = {
+    post,
+    comment,
+    reaction,
+    vote,
+    follow,
+    block,
+    hide,
+    report,
+    profile,
+    seen,
+    media,
+    story,
+    storyView,
+    highlight,
+  };
 }
 
 enum PostType { text, image, poll, question, media }
@@ -59,8 +74,10 @@ class Post {
   String get title => r.title;
   String get body => r.body ?? '';
   PostType get type => _enum(PostType.values, r.str('type'), PostType.text);
-  PostStatus get status => _enum(PostStatus.values, r.str('status'), PostStatus.published);
-  Audience get audience => _enum(Audience.values, r.str('audience'), Audience.everyone);
+  PostStatus get status =>
+      _enum(PostStatus.values, r.str('status'), PostStatus.published);
+  Audience get audience =>
+      _enum(Audience.values, r.str('audience'), Audience.everyone);
   List<String> get audienceIds => r.strings('audienceIds');
   List<String> get tags => r.tags;
   List<String> get images => r.strings('images');
@@ -74,14 +91,18 @@ class Post {
   String? get quoteOf => r.str('quoteOf');
   List<String> get pollOptions => r.strings('pollOptions');
   bool get pollMulti => r.flag('pollMulti');
-  DateTime? get pollCloses => r.integer('pollCloses') == null ? null : DateTime.fromMillisecondsSinceEpoch(r.integer('pollCloses')!);
+  DateTime? get pollCloses => r.integer('pollCloses') == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(r.integer('pollCloses')!);
 
   /// For question posts: who it is addressed to (null = anyone).
   String? get askedTo => r.str('askedTo');
   String? get contentWarning => r.str('cw');
   bool get pinned => r.isPinned;
   DateTime get publishedAt => r.occurredAt ?? r.createdAt;
-  DateTime? get editedAt => r.integer('editedAt') == null ? null : DateTime.fromMillisecondsSinceEpoch(r.integer('editedAt')!);
+  DateTime? get editedAt => r.integer('editedAt') == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(r.integer('editedAt')!);
 
   /// Published, or scheduled for a time that has passed.
   bool isLive(DateTime now) => switch (status) {
@@ -101,7 +122,9 @@ class Comment {
   String get body => r.body ?? '';
   String? get replyTo => r.str('replyTo');
   DateTime get at => r.createdAt;
-  DateTime? get editedAt => r.integer('editedAt') == null ? null : DateTime.fromMillisecondsSinceEpoch(r.integer('editedAt')!);
+  DateTime? get editedAt => r.integer('editedAt') == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(r.integer('editedAt')!);
 }
 
 /// Blog customisation for one alter.
@@ -154,7 +177,11 @@ class BlogProfile {
       titleFont: r.str('titleFont') ?? 'default',
       layout: r.str('layout') ?? 'cards',
       customReactions: r.strings('reactions'),
-      storyAudience: _enum(Audience.values, r.str('storyAudience'), Audience.everyone),
+      storyAudience: _enum(
+        Audience.values,
+        r.str('storyAudience'),
+        Audience.everyone,
+      ),
     );
   }
 
@@ -232,7 +259,8 @@ class StorySlide {
   final List<StorySticker> stickers;
   final int durationMs;
 
-  bool get isEmpty => image == null && video == null && text.trim().isEmpty && stickers.isEmpty;
+  bool get isEmpty =>
+      image == null && video == null && text.trim().isEmpty && stickers.isEmpty;
 
   StorySlide copyWith({
     String? image,
@@ -292,7 +320,9 @@ class StorySlide {
       textColor: j['fg'] is int ? j['fg'] as int : 0xFFFFFFFF,
       font: j['font'] is String ? j['font'] as String : 'default',
       align: j['align'] is String ? j['align'] as String : 'center',
-      textSize: (j['size'] is num ? (j['size'] as num).toDouble() : 28.0).clamp(12, 64).toDouble(),
+      textSize: (j['size'] is num ? (j['size'] as num).toDouble() : 28.0)
+          .clamp(12, 64)
+          .toDouble(),
       stickers: [
         if (j['stickers'] is List)
           for (final s in j['stickers'] as List) ?StorySticker.fromJson(s),
@@ -305,7 +335,13 @@ class StorySlide {
 /// An emoji, GIF or text sticker placed on a slide (x/y are fractions).
 @immutable
 class StorySticker {
-  const StorySticker({required this.content, this.x = 0.5, this.y = 0.5, this.scale = 1, this.kind = 'emoji'});
+  const StorySticker({
+    required this.content,
+    this.x = 0.5,
+    this.y = 0.5,
+    this.scale = 1,
+    this.kind = 'emoji',
+  });
 
   /// Emoji text, sticker text, or a media id for 'gif'.
   final String content;
@@ -316,10 +352,21 @@ class StorySticker {
   /// 'emoji', 'text' or 'gif'.
   final String kind;
 
-  StorySticker copyWith({double? x, double? y, double? scale}) =>
-      StorySticker(content: content, x: x ?? this.x, y: y ?? this.y, scale: scale ?? this.scale, kind: kind);
+  StorySticker copyWith({double? x, double? y, double? scale}) => StorySticker(
+    content: content,
+    x: x ?? this.x,
+    y: y ?? this.y,
+    scale: scale ?? this.scale,
+    kind: kind,
+  );
 
-  Map<String, Object?> toJson() => {'c': content, 'x': x, 'y': y, 's': scale, 'k': kind};
+  Map<String, Object?> toJson() => {
+    'c': content,
+    'x': x,
+    'y': y,
+    's': scale,
+    'k': kind,
+  };
 
   static StorySticker? fromJson(Object? j) {
     if (j is! Map || j['c'] is! String) return null;
@@ -345,11 +392,15 @@ class Story {
   String? get author => r.memberId;
   List<StorySlide> get slides {
     final raw = r.fields['slides'];
-    return [if (raw is List) for (final s in raw) StorySlide.fromJson(s)];
+    return [
+      if (raw is List)
+        for (final s in raw) StorySlide.fromJson(s),
+    ];
   }
 
   String? get trackId => r.str('trackId');
-  Audience get audience => _enum(Audience.values, r.str('audience'), Audience.everyone);
+  Audience get audience =>
+      _enum(Audience.values, r.str('audience'), Audience.everyone);
   List<String> get audienceIds => r.strings('audienceIds');
   DateTime get postedAt => r.occurredAt ?? r.createdAt;
   DateTime get expiresAt => postedAt.add(storyLifetime);
@@ -372,14 +423,21 @@ class Highlight {
 }
 
 /// Hashtags (#word) and @mentions found in text.
-final hashtagPattern = RegExp(r'(?<![\w#])#([\p{L}\p{N}_]{1,40})', unicode: true);
-final mentionPattern = RegExp(r'(?<![\w@])@([\p{L}\p{N}_.\-]{1,40})', unicode: true);
+final hashtagPattern = RegExp(
+  r'(?<![\w#])#([\p{L}\p{N}_]{1,40})',
+  unicode: true,
+);
+final mentionPattern = RegExp(
+  r'(?<![\w@])@([\p{L}\p{N}_.\-]{1,40})',
+  unicode: true,
+);
 
 List<String> extractTags(String text) => {
   for (final m in hashtagPattern.allMatches(text)) m.group(1)!.toLowerCase(),
 }.toList();
 
-String normalizeTag(String tag) => tag.trim().replaceAll(RegExp(r'^#+'), '').toLowerCase();
+String normalizeTag(String tag) =>
+    tag.trim().replaceAll(RegExp(r'^#+'), '').toLowerCase();
 
 /// Default reactions offered on posts, comments and stories.
 const defaultReactions = ['❤️', '😂', '😮', '😢', '🔥', '🫂', '👏', '✨'];

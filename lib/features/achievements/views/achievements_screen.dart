@@ -38,8 +38,12 @@ String achievementMetricLabel(AppLocalizations l10n, AchievementMetric m) =>
       AchievementMetric.cycleDays => l10n.achMetricCycle,
       AchievementMetric.placesVisited => l10n.achMetricPlaces,
       AchievementMetric.activeDays => l10n.achMetricActiveDays,
-      AchievementMetric.gamesPlayed => l10n.localeName.startsWith('es') ? 'Partidas jugadas' : 'Games played',
-      AchievementMetric.cozyMoments => l10n.localeName.startsWith('es') ? 'Momentos acogedores' : 'Cozy moments',
+      AchievementMetric.gamesPlayed =>
+        l10n.localeName.startsWith('es') ? 'Partidas jugadas' : 'Games played',
+      AchievementMetric.cozyMoments =>
+        l10n.localeName.startsWith('es')
+            ? 'Momentos acogedores'
+            : 'Cozy moments',
     };
 
 String achievementCategoryLabel(AppLocalizations l10n, AchievementCategory c) =>
@@ -236,8 +240,16 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
                           title: achievementTitle(l10n, p.def),
                           source: tr(context, 'Achievement', 'Logro'),
                           details: [
-                            (tr(context, 'Tier', 'Nivel'), '${p.def.tier.name[0].toUpperCase()}${p.def.tier.name.substring(1)}'),
-                            (tr(context, 'Unlocked', 'Desbloqueado'), DateFormat.yMMMd(context.dateLocale).format(p.unlockedAt!)),
+                            (
+                              tr(context, 'Tier', 'Nivel'),
+                              '${p.def.tier.name[0].toUpperCase()}${p.def.tier.name.substring(1)}',
+                            ),
+                            (
+                              tr(context, 'Unlocked', 'Desbloqueado'),
+                              DateFormat.yMMMd(
+                                context.dateLocale,
+                              ).format(p.unlockedAt!),
+                            ),
                           ],
                         ),
                       ],

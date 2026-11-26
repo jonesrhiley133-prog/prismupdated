@@ -17,9 +17,8 @@ import 'package:prism_plurality/features/pluralkit/services/pk_groups_importer.d
 import 'package:prism_plurality/features/pluralkit/services/pluralkit_client.dart';
 
 class _FakeMemberRepo implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _FakeMemberRepo(this.members);
   final List<domain.Member> members;
@@ -45,9 +44,11 @@ class _FakeMemberRepo implements MemberRepository {
 
   // Intentionally unimplemented — orchestrator never calls these in tests.
   @override
-  Future<void> clearPluralKitLink(String id) async => throw UnimplementedError();
+  Future<void> clearPluralKitLink(String id) async =>
+      throw UnimplementedError();
   @override
-  Future<void> createMember(domain.Member m) async => throw UnimplementedError();
+  Future<void> createMember(domain.Member m) async =>
+      throw UnimplementedError();
   @override
   Future<void> deleteMember(String id) async => throw UnimplementedError();
   @override
@@ -57,7 +58,8 @@ class _FakeMemberRepo implements MemberRepository {
   Future<void> stampDeletePushStartedAt(String id, int timestampMs) async =>
       throw UnimplementedError();
   @override
-  Future<void> updateMember(domain.Member m) async => throw UnimplementedError();
+  Future<void> updateMember(domain.Member m) async =>
+      throw UnimplementedError();
   @override
   Future<int> updateMemberFields(
     String id,
@@ -75,22 +77,26 @@ class _FakeMemberRepo implements MemberRepository {
   ) async => throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
   @override
-  Stream<List<domain.Member>> watchActiveMembers() => throw UnimplementedError();
+  Stream<List<domain.Member>> watchActiveMembers() =>
+      throw UnimplementedError();
   @override
   Stream<List<domain.Member>> watchAllMembers() => throw UnimplementedError();
   @override
-  Stream<domain.Member?> watchMemberById(String id) => throw UnimplementedError();
+  Stream<domain.Member?> watchMemberById(String id) =>
+      throw UnimplementedError();
   @override
   Stream<List<domain.Member>> watchMembersByIds(List<String> ids) =>
       throw UnimplementedError();
   @override
-  Future<({domain.Member member, bool wasCreated})> ensureUnknownSentinelMember() =>
-      throw UnimplementedError();
+  Future<({domain.Member member, bool wasCreated})>
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 /// Programmable PluralKit client. Each method records its calls so tests can
@@ -108,8 +114,7 @@ class _ProgrammableClient implements PluralKitClient {
   @override
   Future<void> addMembersToGroup(String groupRef, List<String> refs) async {
     addCalls.add((groupRef: groupRef, refs: refs));
-    final next =
-        addResponses.isEmpty ? null : addResponses.removeAt(0);
+    final next = addResponses.isEmpty ? null : addResponses.removeAt(0);
     if (next is Exception) throw next;
   }
 
@@ -119,8 +124,7 @@ class _ProgrammableClient implements PluralKitClient {
     List<String> refs,
   ) async {
     removeCalls.add((groupRef: groupRef, refs: refs));
-    final next =
-        removeResponses.isEmpty ? null : removeResponses.removeAt(0);
+    final next = removeResponses.isEmpty ? null : removeResponses.removeAt(0);
     if (next is Exception) throw next;
   }
 
@@ -138,18 +142,16 @@ class _ProgrammableClient implements PluralKitClient {
 }
 
 domain.Member _member(String id, {String? pkUuid}) => domain.Member(
-      id: id,
-      name: id,
-      createdAt: DateTime.utc(2026, 1, 1),
-      pluralkitUuid: pkUuid,
-    );
+  id: id,
+  name: id,
+  createdAt: DateTime.utc(2026, 1, 1),
+  pluralkitUuid: pkUuid,
+);
 
-Future<void> _seedGroup(
-  AppDatabase db, {
-  required String id,
-  String? pkUuid,
-}) {
-  return db.into(db.memberGroups).insert(
+Future<void> _seedGroup(AppDatabase db, {required String id, String? pkUuid}) {
+  return db
+      .into(db.memberGroups)
+      .insert(
         MemberGroupsCompanion.insert(
           id: id,
           name: id,
@@ -169,7 +171,9 @@ Future<void> _seedEntry(
   required String pendingPkOp,
   bool isDeleted = false,
 }) {
-  return db.into(db.memberGroupEntries).insert(
+  return db
+      .into(db.memberGroupEntries)
+      .insert(
         MemberGroupEntriesCompanion.insert(
           id: id,
           groupId: groupId,
@@ -182,13 +186,10 @@ Future<void> _seedEntry(
       );
 }
 
-Future<MemberGroupEntryRow?> _findEntry(
-  AppDatabase db,
-  String entryId,
-) async {
-  final rows =
-      await (db.select(db.memberGroupEntries)..where((e) => e.id.equals(entryId)))
-          .get();
+Future<MemberGroupEntryRow?> _findEntry(AppDatabase db, String entryId) async {
+  final rows = await (db.select(
+    db.memberGroupEntries,
+  )..where((e) => e.id.equals(entryId))).get();
   return rows.isEmpty ? null : rows.single;
 }
 
@@ -214,31 +215,33 @@ void main() {
   }
 
   group('pushPendingGroupOps direction gating', () {
-    test('pullOnly direction returns empty result and makes no PK calls',
-        () async {
-      buildImporter([_member('m1', pkUuid: 'pk-m1')]);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-      );
+    test(
+      'pullOnly direction returns empty result and makes no PK calls',
+      () async {
+        buildImporter([_member('m1', pkUuid: 'pk-m1')]);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+        );
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.pullOnly,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.pullOnly,
+        );
 
-      expect(result.added, 0);
-      expect(client.addCalls, isEmpty);
-      // Pending row must be untouched.
-      final entry = await _findEntry(db, 'e1');
-      expect(entry!.pendingPkOp, 'push_add');
-    });
+        expect(result.added, 0);
+        expect(client.addCalls, isEmpty);
+        // Pending row must be untouched.
+        final entry = await _findEntry(db, 'e1');
+        expect(entry!.pendingPkOp, 'push_add');
+      },
+    );
 
     test('disabled direction returns empty', () async {
       buildImporter([]);
@@ -253,51 +256,13 @@ void main() {
   });
 
   group('pushPendingGroupOps push_add bucket', () {
-    test('204 → guarded UPDATE clears pending; member is added to PK',
-        () async {
-      buildImporter([
-        _member('m1', pkUuid: 'pk-m1'),
-        _member('m2', pkUuid: 'pk-m2'),
-      ]);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-      );
-      await _seedEntry(
-        db,
-        id: 'e2',
-        groupId: 'g1',
-        memberId: 'm2',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m2',
-        pendingPkOp: 'push_add',
-      );
-
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
-
-      expect(result.added, 2);
-      expect(client.addCalls, hasLength(1));
-      expect(client.addCalls.single.groupRef, 'pk-g1');
-      expect(client.addCalls.single.refs.toSet(), {'pk-m1', 'pk-m2'});
-
-      // Both entries cleaned up to pending=none.
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
-      expect((await _findEntry(db, 'e2'))!.pendingPkOp, 'none');
-    });
-
     test(
-      '4xx + refetch shows member NOW in PK → cleanup as if 204',
+      '204 → guarded UPDATE clears pending; member is added to PK',
       () async {
-        buildImporter([_member('m1', pkUuid: 'pk-m1')]);
+        buildImporter([
+          _member('m1', pkUuid: 'pk-m1'),
+          _member('m2', pkUuid: 'pk-m2'),
+        ]);
         await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
         await _seedEntry(
           db,
@@ -308,20 +273,57 @@ void main() {
           pkMemberUuid: 'pk-m1',
           pendingPkOp: 'push_add',
         );
-
-        client.addResponses.add(const PluralKitApiError(400, 'bad request'));
-        client.getMembersResponses['pk-g1'] = ['pk-m1'];
+        await _seedEntry(
+          db,
+          id: 'e2',
+          groupId: 'g1',
+          memberId: 'm2',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m2',
+          pendingPkOp: 'push_add',
+        );
 
         final result = await importer.pushPendingGroupOps(
           client,
           PkSyncDirection.bidirectional,
         );
 
-        expect(result.added, 1);
-        expect(result.failed, 0);
+        expect(result.added, 2);
+        expect(client.addCalls, hasLength(1));
+        expect(client.addCalls.single.groupRef, 'pk-g1');
+        expect(client.addCalls.single.refs.toSet(), {'pk-m1', 'pk-m2'});
+
+        // Both entries cleaned up to pending=none.
         expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
+        expect((await _findEntry(db, 'e2'))!.pendingPkOp, 'none');
       },
     );
+
+    test('4xx + refetch shows member NOW in PK → cleanup as if 204', () async {
+      buildImporter([_member('m1', pkUuid: 'pk-m1')]);
+      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+      await _seedEntry(
+        db,
+        id: 'e1',
+        groupId: 'g1',
+        memberId: 'm1',
+        pkGroupUuid: 'pk-g1',
+        pkMemberUuid: 'pk-m1',
+        pendingPkOp: 'push_add',
+      );
+
+      client.addResponses.add(const PluralKitApiError(400, 'bad request'));
+      client.getMembersResponses['pk-g1'] = ['pk-m1'];
+
+      final result = await importer.pushPendingGroupOps(
+        client,
+        PkSyncDirection.bidirectional,
+      );
+
+      expect(result.added, 1);
+      expect(result.failed, 0);
+      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
+    });
 
     test(
       '4xx + refetch shows member NOT in PK → leave pending; per-entry failure',
@@ -407,36 +409,32 @@ void main() {
       expect(await _findEntry(db, 'e1'), isNull);
     });
 
-    test(
-      '4xx + refetch confirms member not in PK → DELETE (desired remove '
-      'satisfied)',
-      () async {
-        buildImporter([_member('m1', pkUuid: 'pk-m1')]);
-        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-        await _seedEntry(
-          db,
-          id: 'e1',
-          groupId: 'g1',
-          memberId: 'm1',
-          pkGroupUuid: 'pk-g1',
-          pkMemberUuid: 'pk-m1',
-          pendingPkOp: 'push_remove',
-          isDeleted: true,
-        );
+    test('4xx + refetch confirms member not in PK → DELETE (desired remove '
+        'satisfied)', () async {
+      buildImporter([_member('m1', pkUuid: 'pk-m1')]);
+      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+      await _seedEntry(
+        db,
+        id: 'e1',
+        groupId: 'g1',
+        memberId: 'm1',
+        pkGroupUuid: 'pk-g1',
+        pkMemberUuid: 'pk-m1',
+        pendingPkOp: 'push_remove',
+        isDeleted: true,
+      );
 
-        client.removeResponses
-            .add(const PluralKitApiError(400, 'not member'));
-        client.getMembersResponses['pk-g1'] = const <String>[];
+      client.removeResponses.add(const PluralKitApiError(400, 'not member'));
+      client.getMembersResponses['pk-g1'] = const <String>[];
 
-        final result = await importer.pushPendingGroupOps(
-          client,
-          PkSyncDirection.bidirectional,
-        );
+      final result = await importer.pushPendingGroupOps(
+        client,
+        PkSyncDirection.bidirectional,
+      );
 
-        expect(result.removed, 1);
-        expect(await _findEntry(db, 'e1'), isNull);
-      },
-    );
+      expect(result.removed, 1);
+      expect(await _findEntry(db, 'e1'), isNull);
+    });
   });
 
   group('pushPendingGroupOps pre-push compensation', () {
@@ -606,34 +604,28 @@ void main() {
       expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
     });
 
-    test(
-      'current member lost PK link but entry has stored snapshot → STILL '
-      'pushes (the historical edge is preserved)',
-      () async {
-        // Companion to the [P2] regression test in the "stored vs current"
-        // group: with a stored UUID, an unlinked current member doesn't
-        // strand — we know what to push.
-        buildImporter([_member('m1')]); // current: unlinked
-        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-        await _seedEntry(
-          db,
-          id: 'e1',
-          groupId: 'g1',
-          memberId: 'm1',
-          pkGroupUuid: 'pk-g1',
-          pkMemberUuid: 'pk-stored', // snapshot survives the unlink
-          pendingPkOp: 'push_add',
-        );
+    test('current member lost PK link but entry has stored snapshot → STILL '
+        'pushes (the historical edge is preserved)', () async {
+      // Companion to the [P2] regression test in the "stored vs current"
+      // group: with a stored UUID, an unlinked current member doesn't
+      // strand — we know what to push.
+      buildImporter([_member('m1')]); // current: unlinked
+      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+      await _seedEntry(
+        db,
+        id: 'e1',
+        groupId: 'g1',
+        memberId: 'm1',
+        pkGroupUuid: 'pk-g1',
+        pkMemberUuid: 'pk-stored', // snapshot survives the unlink
+        pendingPkOp: 'push_add',
+      );
 
-        await importer.pushPendingGroupOps(
-          client,
-          PkSyncDirection.bidirectional,
-        );
+      await importer.pushPendingGroupOps(client, PkSyncDirection.bidirectional);
 
-        expect(client.addCalls.single.refs, ['pk-stored']);
-        expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
-      },
-    );
+      expect(client.addCalls.single.refs, ['pk-stored']);
+      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
+    });
   });
 
   group('pushPendingGroupOps stored vs current PK UUIDs', () {
@@ -713,7 +705,8 @@ void main() {
         expect(
           client.addCalls.single.refs.toSet(),
           {'pk-m1-stored', 'pk-m2-current'},
-          reason: 'stored entry uses stored UUID; fallback entry uses '
+          reason:
+              'stored entry uses stored UUID; fallback entry uses '
               "the current member's pluralkitUuid",
         );
       },
@@ -721,8 +714,7 @@ void main() {
   });
 
   group('pushPendingGroupOps refetch 404', () {
-    test('PK group 404 during refetch → clear all pending in group',
-        () async {
+    test('PK group 404 during refetch → clear all pending in group', () async {
       buildImporter([_member('m1', pkUuid: 'pk-m1')]);
       await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
       await _seedEntry(
@@ -739,8 +731,11 @@ void main() {
       // M15a: the refetch 404 must carry code 20004
       // (group genuinely gone) to trigger terminal cleanup. A bare 404 is now
       // treated as transient — covered separately below.
-      client.getMembersResponses['pk-g1'] =
-          const PluralKitApiError(404, 'group gone', code: 20004);
+      client.getMembersResponses['pk-g1'] = const PluralKitApiError(
+        404,
+        'group gone',
+        code: 20004,
+      );
 
       final result = await importer.pushPendingGroupOps(
         client,
@@ -751,67 +746,67 @@ void main() {
       expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
     });
 
-    test(
-      'PK group 404 affects BOTH push_add and push_remove buckets in the '
-      'same group → push_remove tombstones still hard-delete cleanly even '
-      'when the add bucket runs first (2nd-pass review [P3])',
-      () async {
-        // Same gone group has both kinds of pending. Buckets are processed
-        // add-first (per implementation), so the add bucket's 404 path
-        // would clear push_remove pending first → the later remove bucket's
-        // guarded DELETE would miss → zombie. The shared terminal-cleanup
-        // helper hard-deletes push_remove tombstones BEFORE clearing.
-        buildImporter([
-          _member('m1', pkUuid: 'pk-m1'),
-          _member('m2', pkUuid: 'pk-m2'),
-        ]);
-        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-        await _seedEntry(
-          db,
-          id: 'eAdd',
-          groupId: 'g1',
-          memberId: 'm1',
-          pkGroupUuid: 'pk-g1',
-          pkMemberUuid: 'pk-m1',
-          pendingPkOp: 'push_add',
-        );
-        await _seedEntry(
-          db,
-          id: 'eRem',
-          groupId: 'g1',
-          memberId: 'm2',
-          pkGroupUuid: 'pk-g1',
-          pkMemberUuid: 'pk-m2',
-          pendingPkOp: 'push_remove',
-          isDeleted: true,
-        );
+    test('PK group 404 affects BOTH push_add and push_remove buckets in the '
+        'same group → push_remove tombstones still hard-delete cleanly even '
+        'when the add bucket runs first (2nd-pass review [P3])', () async {
+      // Same gone group has both kinds of pending. Buckets are processed
+      // add-first (per implementation), so the add bucket's 404 path
+      // would clear push_remove pending first → the later remove bucket's
+      // guarded DELETE would miss → zombie. The shared terminal-cleanup
+      // helper hard-deletes push_remove tombstones BEFORE clearing.
+      buildImporter([
+        _member('m1', pkUuid: 'pk-m1'),
+        _member('m2', pkUuid: 'pk-m2'),
+      ]);
+      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+      await _seedEntry(
+        db,
+        id: 'eAdd',
+        groupId: 'g1',
+        memberId: 'm1',
+        pkGroupUuid: 'pk-g1',
+        pkMemberUuid: 'pk-m1',
+        pendingPkOp: 'push_add',
+      );
+      await _seedEntry(
+        db,
+        id: 'eRem',
+        groupId: 'g1',
+        memberId: 'm2',
+        pkGroupUuid: 'pk-g1',
+        pkMemberUuid: 'pk-m2',
+        pendingPkOp: 'push_remove',
+        isDeleted: true,
+      );
 
-        client.addResponses
-            .add(const PluralKitApiError(404, 'group not found'));
-        client.removeResponses
-            .add(const PluralKitApiError(404, 'group not found'));
-        // Both refetches hit the same group, both 404 code 20004 (M15a).
-        client.getMembersResponses['pk-g1'] =
-            const PluralKitApiError(404, 'group gone', code: 20004);
+      client.addResponses.add(const PluralKitApiError(404, 'group not found'));
+      client.removeResponses.add(
+        const PluralKitApiError(404, 'group not found'),
+      );
+      // Both refetches hit the same group, both 404 code 20004 (M15a).
+      client.getMembersResponses['pk-g1'] = const PluralKitApiError(
+        404,
+        'group gone',
+        code: 20004,
+      );
 
-        await importer.pushPendingGroupOps(
-          client,
-          PkSyncDirection.bidirectional,
-        );
+      await importer.pushPendingGroupOps(client, PkSyncDirection.bidirectional);
 
-        // The push_remove tombstone must be hard-deleted regardless of
-        // which bucket ran first. Without the cross-bucket fix, the row
-        // would be left as soft-deleted-pending=none zombie.
-        expect(await _findEntry(db, 'eRem'), isNull,
-            reason: 'tombstone must be hard-deleted, not stranded as zombie');
-        // The push_add row stays active (gone PK group, no destructive
-        // local action), pending cleared.
-        final addRow = await _findEntry(db, 'eAdd');
-        expect(addRow, isNotNull);
-        expect(addRow!.isDeleted, isFalse);
-        expect(addRow.pendingPkOp, 'none');
-      },
-    );
+      // The push_remove tombstone must be hard-deleted regardless of
+      // which bucket ran first. Without the cross-bucket fix, the row
+      // would be left as soft-deleted-pending=none zombie.
+      expect(
+        await _findEntry(db, 'eRem'),
+        isNull,
+        reason: 'tombstone must be hard-deleted, not stranded as zombie',
+      );
+      // The push_add row stays active (gone PK group, no destructive
+      // local action), pending cleared.
+      final addRow = await _findEntry(db, 'eAdd');
+      expect(addRow, isNotNull);
+      expect(addRow!.isDeleted, isFalse);
+      expect(addRow.pendingPkOp, 'none');
+    });
 
     test(
       'PK group 404 during REMOVE-bucket refetch → hard-delete the tombstone '
@@ -848,8 +843,11 @@ void main() {
         // (M15a — group genuinely gone). Any add POSTs in this run must not
         // interfere.
         client.removeResponses.add(const PluralKitApiError(404, 'not found'));
-        client.getMembersResponses['pk-g1'] =
-            const PluralKitApiError(404, 'group gone', code: 20004);
+        client.getMembersResponses['pk-g1'] = const PluralKitApiError(
+          404,
+          'group gone',
+          code: 20004,
+        );
 
         final result = await importer.pushPendingGroupOps(
           client,
@@ -862,8 +860,11 @@ void main() {
         // Post-fix: DELETE runs first (still push_remove ∧ is_deleted=true),
         // THEN clearAllPendingPkOpForGroup tidies the rest.
         expect(result.removed, 1);
-        expect(await _findEntry(db, 'eRemove'), isNull,
-            reason: 'tombstone must be hard-deleted, not stranded');
+        expect(
+          await _findEntry(db, 'eRemove'),
+          isNull,
+          reason: 'tombstone must be hard-deleted, not stranded',
+        );
         // The cohabit push_add row had its pending cleared by the
         // clear-all step (group is gone, can't push to it).
         final cohabit = await _findEntry(db, 'eAddCohabit');
@@ -886,10 +887,14 @@ void main() {
         pendingPkOp: 'push_add',
       );
 
-      final f1 =
-          importer.pushPendingGroupOps(client, PkSyncDirection.bidirectional);
-      final f2 =
-          importer.pushPendingGroupOps(client, PkSyncDirection.bidirectional);
+      final f1 = importer.pushPendingGroupOps(
+        client,
+        PkSyncDirection.bidirectional,
+      );
+      final f2 = importer.pushPendingGroupOps(
+        client,
+        PkSyncDirection.bidirectional,
+      );
       final r1 = await f1;
       final r2 = await f2;
 
@@ -901,44 +906,46 @@ void main() {
   });
 
   group('pushPendingGroupOps mixed batch', () {
-    test('one group with both push_add and push_remove → two PK calls',
-        () async {
-      buildImporter([
-        _member('m1', pkUuid: 'pk-m1'),
-        _member('m2', pkUuid: 'pk-m2'),
-      ]);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'eAdd',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-      );
-      await _seedEntry(
-        db,
-        id: 'eRem',
-        groupId: 'g1',
-        memberId: 'm2',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m2',
-        pendingPkOp: 'push_remove',
-        isDeleted: true,
-      );
+    test(
+      'one group with both push_add and push_remove → two PK calls',
+      () async {
+        buildImporter([
+          _member('m1', pkUuid: 'pk-m1'),
+          _member('m2', pkUuid: 'pk-m2'),
+        ]);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'eAdd',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+        );
+        await _seedEntry(
+          db,
+          id: 'eRem',
+          groupId: 'g1',
+          memberId: 'm2',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m2',
+          pendingPkOp: 'push_remove',
+          isDeleted: true,
+        );
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      expect(result.added, 1);
-      expect(result.removed, 1);
-      expect(client.addCalls, hasLength(1));
-      expect(client.removeCalls, hasLength(1));
-      expect(await _findEntry(db, 'eRem'), isNull);
-      expect((await _findEntry(db, 'eAdd'))!.pendingPkOp, 'none');
-    });
+        expect(result.added, 1);
+        expect(result.removed, 1);
+        expect(client.addCalls, hasLength(1));
+        expect(client.removeCalls, hasLength(1));
+        expect(await _findEntry(db, 'eRem'), isNull);
+        expect((await _findEntry(db, 'eAdd'))!.pendingPkOp, 'none');
+      },
+    );
   });
 }

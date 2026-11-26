@@ -68,122 +68,118 @@ bool _skipFile(String path) =>
     path.endsWith('.g.dart') || path.endsWith('.freezed.dart');
 
 void main() {
-  test(
-    'UI renders member names via effectiveName, not raw .name',
-    () {
-      final libDir = Directory('lib');
-      expect(libDir.existsSync(), isTrue, reason: 'Run from app/ directory');
+  test('UI renders member names via effectiveName, not raw .name', () {
+    final libDir = Directory('lib');
+    expect(libDir.existsSync(), isTrue, reason: 'Run from app/ directory');
 
-      final violations = <String>[];
+    final violations = <String>[];
 
-      final files = libDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'))
-          .where((f) => !_skipFile(f.path));
+    final files = libDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart'))
+        .where((f) => !_skipFile(f.path));
 
-      for (final file in files) {
-        final rel = file.path.startsWith('./')
-            ? file.path.substring(2)
-            : file.path;
-        final lines = file.readAsLinesSync();
-        for (var i = 0; i < lines.length; i++) {
-          final line = lines[i];
-          final trimmed = line.trimLeft();
-          if (trimmed.startsWith('//') || trimmed.startsWith('import ')) {
-            continue;
-          }
-          // Already resolved, or deliberately canonical. The exemption marker
-          // counts on the line itself or as a comment directly above it.
-          if (line.contains('effectiveName')) continue;
-          final prev = i > 0 ? lines[i - 1] : '';
-          if (line.contains(_exemptMarker) || prev.contains(_exemptMarker)) {
-            continue;
-          }
-          if (_renderPatterns.any((p) => p.hasMatch(line))) {
-            violations.add('$rel:${i + 1}  ${trimmed.trim()}');
-          }
+    for (final file in files) {
+      final rel = file.path.startsWith('./')
+          ? file.path.substring(2)
+          : file.path;
+      final lines = file.readAsLinesSync();
+      for (var i = 0; i < lines.length; i++) {
+        final line = lines[i];
+        final trimmed = line.trimLeft();
+        if (trimmed.startsWith('//') || trimmed.startsWith('import ')) {
+          continue;
+        }
+        // Already resolved, or deliberately canonical. The exemption marker
+        // counts on the line itself or as a comment directly above it.
+        if (line.contains('effectiveName')) continue;
+        final prev = i > 0 ? lines[i - 1] : '';
+        if (line.contains(_exemptMarker) || prev.contains(_exemptMarker)) {
+          continue;
+        }
+        if (_renderPatterns.any((p) => p.hasMatch(line))) {
+          violations.add('$rel:${i + 1}  ${trimmed.trim()}');
         }
       }
+    }
 
-      if (violations.isNotEmpty) {
-        violations.sort();
-        fail(
-          'Found ${violations.length} UI site(s) rendering a member name via '
-          'raw `.name` instead of '
-          '`member.effectiveName(preferDisplayName: ...)`.\n\n'
-          'Fix: read `memberNamePreferDisplayProvider` (once per Consumer '
-          'build) and call `effectiveName`. If the canonical name is '
-          'intentional here (sync, search, an external PluralKit object, an '
-          'analytics axis, a frozen-at-send message), append a trailing '
-          '`// $_exemptMarker: <reason>` comment to the line.\n\n'
-          '${violations.join('\n')}',
-        );
-      }
-    },
-  );
+    if (violations.isNotEmpty) {
+      violations.sort();
+      fail(
+        'Found ${violations.length} UI site(s) rendering a member name via '
+        'raw `.name` instead of '
+        '`member.effectiveName(preferDisplayName: ...)`.\n\n'
+        'Fix: read `memberNamePreferDisplayProvider` (once per Consumer '
+        'build) and call `effectiveName`. If the canonical name is '
+        'intentional here (sync, search, an external PluralKit object, an '
+        'analytics axis, a frozen-at-send message), append a trailing '
+        '`// $_exemptMarker: <reason>` comment to the line.\n\n'
+        '${violations.join('\n')}',
+      );
+    }
+  });
 
   // `MemberChip` and `MemberCard` fall back to the canonical `member.name`
   // when `resolvedName` is omitted. That fallback is internal, so the `.name`
   // patterns above can't see it — a call that forgets `resolvedName` silently
   // ignores the display-name preference. Require it on every call.
-  test(
-    'MemberChip/MemberCard calls pass resolvedName',
-    () {
-      // `\b` so we match the real widget, not `_ResolvedMemberChip(` etc.
-      final widgetCall = RegExp(r'\b(?:MemberChip|MemberCard)\(');
-      final libDir = Directory('lib');
-      final files = libDir
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.dart'))
-          .where((f) => !_skipFile(f.path))
-          // Skip the files that DEFINE these widgets.
-          .where((f) =>
+  test('MemberChip/MemberCard calls pass resolvedName', () {
+    // `\b` so we match the real widget, not `_ResolvedMemberChip(` etc.
+    final widgetCall = RegExp(r'\b(?:MemberChip|MemberCard)\(');
+    final libDir = Directory('lib');
+    final files = libDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart'))
+        .where((f) => !_skipFile(f.path))
+        // Skip the files that DEFINE these widgets.
+        .where(
+          (f) =>
               !f.path.endsWith('member_chip.dart') &&
-              !f.path.endsWith('member_card.dart'));
+              !f.path.endsWith('member_card.dart'),
+        );
 
-      final violations = <String>[];
-      for (final file in files) {
-        final rel = file.path.startsWith('./')
-            ? file.path.substring(2)
-            : file.path;
-        final lines = file.readAsLinesSync();
-        for (var i = 0; i < lines.length; i++) {
-          final line = lines[i];
-          if (line.trimLeft().startsWith('//')) continue;
-          if (!widgetCall.hasMatch(line)) continue;
-          final prev = i > 0 ? lines[i - 1] : '';
-          if (line.contains(_exemptMarker) || prev.contains(_exemptMarker)) {
-            continue;
+    final violations = <String>[];
+    for (final file in files) {
+      final rel = file.path.startsWith('./')
+          ? file.path.substring(2)
+          : file.path;
+      final lines = file.readAsLinesSync();
+      for (var i = 0; i < lines.length; i++) {
+        final line = lines[i];
+        if (line.trimLeft().startsWith('//')) continue;
+        if (!widgetCall.hasMatch(line)) continue;
+        final prev = i > 0 ? lines[i - 1] : '';
+        if (line.contains(_exemptMarker) || prev.contains(_exemptMarker)) {
+          continue;
+        }
+        // Scan the call's argument window (to its closing paren, 25-line cap)
+        // for `resolvedName`.
+        var found = line.contains('resolvedName');
+        for (var j = i + 1; !found && j < lines.length && j <= i + 25; j++) {
+          if (lines[j].contains('resolvedName')) {
+            found = true;
+            break;
           }
-          // Scan the call's argument window (to its closing paren, 25-line cap)
-          // for `resolvedName`.
-          var found = line.contains('resolvedName');
-          for (var j = i + 1; !found && j < lines.length && j <= i + 25; j++) {
-            if (lines[j].contains('resolvedName')) {
-              found = true;
-              break;
-            }
-            if (lines[j].trimLeft().startsWith(')')) break;
-          }
-          if (!found) {
-            violations.add('$rel:${i + 1}  ${line.trimLeft()}');
-          }
+          if (lines[j].trimLeft().startsWith(')')) break;
+        }
+        if (!found) {
+          violations.add('$rel:${i + 1}  ${line.trimLeft()}');
         }
       }
+    }
 
-      if (violations.isNotEmpty) {
-        violations.sort();
-        fail(
-          'Found ${violations.length} MemberChip/MemberCard call(s) without '
-          '`resolvedName` — they fall back to the canonical `member.name`, '
-          'ignoring the display-name preference. Pass '
-          '`resolvedName: member.effectiveName(preferDisplayName: ...)` (or an '
-          'already-resolved name). If canonical is intentional, add a '
-          '`// $_exemptMarker: <reason>` comment.\n\n${violations.join('\n')}',
-        );
-      }
-    },
-  );
+    if (violations.isNotEmpty) {
+      violations.sort();
+      fail(
+        'Found ${violations.length} MemberChip/MemberCard call(s) without '
+        '`resolvedName` — they fall back to the canonical `member.name`, '
+        'ignoring the display-name preference. Pass '
+        '`resolvedName: member.effectiveName(preferDisplayName: ...)` (or an '
+        'already-resolved name). If canonical is intentional, add a '
+        '`// $_exemptMarker: <reason>` comment.\n\n${violations.join('\n')}',
+      );
+    }
+  });
 }

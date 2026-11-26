@@ -21,7 +21,13 @@ Color _suitColor(BuildContext context, TarotCard c) {
 
 /// A card face drawn with theme colours.
 class TarotCardTile extends StatelessWidget {
-  const TarotCardTile({super.key, required this.drawn, this.width = 120, this.onTap, this.faceDown = false});
+  const TarotCardTile({
+    super.key,
+    required this.drawn,
+    this.width = 120,
+    this.onTap,
+    this.faceDown = false,
+  });
   final DrawnCard drawn;
   final double width;
   final VoidCallback? onTap;
@@ -36,7 +42,9 @@ class TarotCardTile extends StatelessWidget {
     final h = width / 0.62;
     return Semantics(
       button: onTap != null,
-      label: faceDown ? tr(context, 'Face-down card', 'Carta boca abajo') : '${c.name.of(es)}${drawn.reversed ? (es ? ', invertida' : ', reversed') : ''}',
+      label: faceDown
+          ? tr(context, 'Face-down card', 'Carta boca abajo')
+          : '${c.name.of(es)}${drawn.reversed ? (es ? ', invertida' : ', reversed') : ''}',
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -47,32 +55,82 @@ class TarotCardTile extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [color.withValues(alpha: 0.26), theme.colorScheme.surfaceContainerHigh, color.withValues(alpha: 0.12)],
+              colors: [
+                color.withValues(alpha: 0.26),
+                theme.colorScheme.surfaceContainerHigh,
+                color.withValues(alpha: 0.12),
+              ],
             ),
-            border: Border.all(color: color.withValues(alpha: 0.55), width: 1.4),
+            border: Border.all(
+              color: color.withValues(alpha: 0.55),
+              width: 1.4,
+            ),
           ),
           child: ClipRRect(
             borderRadius: prismCorners(context, width * 0.1),
             child: Stack(
               children: [
-                Positioned.fill(child: StarField(count: 18, seed: c.id.hashCode, color: color)),
+                Positioned.fill(
+                  child: StarField(
+                    count: 18,
+                    seed: c.id.hashCode,
+                    color: color,
+                  ),
+                ),
                 if (faceDown)
-                  Center(child: Text('✦', style: TextStyle(fontSize: width * 0.35, color: color)))
+                  Center(
+                    child: Text(
+                      '✦',
+                      style: TextStyle(fontSize: width * 0.35, color: color),
+                    ),
+                  )
                 else
                   Padding(
                     padding: EdgeInsets.all(width * 0.08),
                     child: Column(
                       children: [
-                        Text(c.major ? (es ? 'ARCANO MAYOR' : 'MAJOR ARCANA') : c.suit!.title.of(es).toUpperCase(), style: TextStyle(fontSize: width * 0.065, letterSpacing: 1, color: color, fontWeight: FontWeight.w700)),
+                        Text(
+                          c.major
+                              ? (es ? 'ARCANO MAYOR' : 'MAJOR ARCANA')
+                              : c.suit!.title.of(es).toUpperCase(),
+                          style: TextStyle(
+                            fontSize: width * 0.065,
+                            letterSpacing: 1,
+                            color: color,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const Spacer(),
                         Transform.rotate(
                           angle: drawn.reversed ? math.pi : 0,
-                          child: Text(c.symbol(), style: TextStyle(fontSize: c.major ? width * 0.3 : width * 0.32, fontWeight: FontWeight.w800, color: color)),
+                          child: Text(
+                            c.symbol(),
+                            style: TextStyle(
+                              fontSize: c.major ? width * 0.3 : width * 0.32,
+                              fontWeight: FontWeight.w800,
+                              color: color,
+                            ),
+                          ),
                         ),
                         const Spacer(),
-                        Text(c.name.of(es), textAlign: TextAlign.center, maxLines: 2, style: TextStyle(fontSize: width * 0.095, fontWeight: FontWeight.w700, height: 1.15)),
+                        Text(
+                          c.name.of(es),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontSize: width * 0.095,
+                            fontWeight: FontWeight.w700,
+                            height: 1.15,
+                          ),
+                        ),
                         if (drawn.reversed)
-                          Text(es ? 'invertida' : 'reversed', style: TextStyle(fontSize: width * 0.075, color: theme.colorScheme.onSurfaceVariant)),
+                          Text(
+                            es ? 'invertida' : 'reversed',
+                            style: TextStyle(
+                              fontSize: width * 0.075,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -85,7 +143,11 @@ class TarotCardTile extends StatelessWidget {
   }
 }
 
-Future<void> showCardDetail(BuildContext context, DrawnCard d, {String? position}) => PrismSheet.show(
+Future<void> showCardDetail(
+  BuildContext context,
+  DrawnCard d, {
+  String? position,
+}) => PrismSheet.show(
   context: context,
   title: d.card.name.of(astroEs(context)),
   maxHeightFactor: 0.9,
@@ -100,24 +162,58 @@ Future<void> showCardDetail(BuildContext context, DrawnCard d, {String? position
       children: [
         Center(child: TarotCardTile(drawn: d, width: 130)),
         const SizedBox(height: 12),
-        if (position != null) Text(position, textAlign: TextAlign.center, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+        if (position != null)
+          Text(
+            position,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
         Text(
-          d.reversed ? tr(context, 'Reversed', 'Invertida') : tr(context, 'Upright', 'Derecha'),
+          d.reversed
+              ? tr(context, 'Reversed', 'Invertida')
+              : tr(context, 'Upright', 'Derecha'),
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12),
-        AstroCard(title: tr(context, 'Traditional meaning', 'Significado tradicional'), emoji: '📜', child: Text('${c.meaningOf(d.reversed, es)}\n\n${tr(context, 'Keywords', 'Palabras clave')}: ${keys.of(es)}', style: const TextStyle(height: 1.45))),
+        AstroCard(
+          title: tr(context, 'Traditional meaning', 'Significado tradicional'),
+          emoji: '📜',
+          child: Text(
+            '${c.meaningOf(d.reversed, es)}\n\n${tr(context, 'Keywords', 'Palabras clave')}: ${keys.of(es)}',
+            style: const TextStyle(height: 1.45),
+          ),
+        ),
         const SizedBox(height: 10),
-        AstroCard(title: tr(context, 'Relationships', 'Relaciones'), emoji: '❤️', child: Text(c.loveOf(d.reversed, es), style: const TextStyle(height: 1.45))),
+        AstroCard(
+          title: tr(context, 'Relationships', 'Relaciones'),
+          emoji: '❤️',
+          child: Text(
+            c.loveOf(d.reversed, es),
+            style: const TextStyle(height: 1.45),
+          ),
+        ),
         const SizedBox(height: 10),
-        AstroCard(title: tr(context, 'Personal growth', 'Crecimiento personal'), emoji: '🌱', child: Text(c.growthOf(d.reversed, es), style: const TextStyle(height: 1.45))),
+        AstroCard(
+          title: tr(context, 'Personal growth', 'Crecimiento personal'),
+          emoji: '🌱',
+          child: Text(
+            c.growthOf(d.reversed, es),
+            style: const TextStyle(height: 1.45),
+          ),
+        ),
         const SizedBox(height: 10),
         AstroCard(
           title: tr(context, 'Reflection', 'Reflexión'),
           emoji: '🪞',
           child: Text(
-            es ? '¿Dónde aparece hoy "${keys.es}" en tu vida?' : 'Where does "${keys.en}" show up in your life today?',
+            es
+                ? '¿Dónde aparece hoy "${keys.es}" en tu vida?'
+                : 'Where does "${keys.en}" show up in your life today?',
             style: const TextStyle(height: 1.45, fontStyle: FontStyle.italic),
           ),
         ),
@@ -166,7 +262,10 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
     final a = widget.access;
     final daily = dailyCard(a.member.id, DateTime.now());
     final history = ref.watch(tarotReadingsProvider(a.member.id));
-    final canSave = a.isOwner || a.visibility == AstroVisibility.system || a.visibility == AstroVisibility.shareable;
+    final canSave =
+        a.isOwner ||
+        a.visibility == AstroVisibility.system ||
+        a.visibility == AstroVisibility.shareable;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -179,26 +278,66 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
                 drawn: daily,
                 width: 104,
                 faceDown: !_dailyRevealed,
-                onTap: () => _dailyRevealed ? showCardDetail(context, daily) : setState(() => _dailyRevealed = true),
+                onTap: () => _dailyRevealed
+                    ? showCardDetail(context, daily)
+                    : setState(() => _dailyRevealed = true),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(tr(context, 'TODAY\'S CARD', 'CARTA DEL DÍA'), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1)),
+                    Text(
+                      tr(context, 'TODAY\'S CARD', 'CARTA DEL DÍA'),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        letterSpacing: 1.1,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     if (!_dailyRevealed) ...[
-                      Text(tr(context, 'Tap the card to turn it over.', 'Toca la carta para darle la vuelta.'), style: theme.textTheme.titleSmall),
+                      Text(
+                        tr(
+                          context,
+                          'Tap the card to turn it over.',
+                          'Toca la carta para darle la vuelta.',
+                        ),
+                        style: theme.textTheme.titleSmall,
+                      ),
                       const SizedBox(height: 4),
-                      Text(tr(context, 'It stays the same all day.', 'Será la misma todo el día.'), style: theme.textTheme.bodySmall),
+                      Text(
+                        tr(
+                          context,
+                          'It stays the same all day.',
+                          'Será la misma todo el día.',
+                        ),
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ] else ...[
-                      Text(daily.card.name.of(es), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-                      Text(daily.reversed ? tr(context, 'Reversed', 'Invertida') : tr(context, 'Upright', 'Derecha'), style: theme.textTheme.bodySmall),
+                      Text(
+                        daily.card.name.of(es),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        daily.reversed
+                            ? tr(context, 'Reversed', 'Invertida')
+                            : tr(context, 'Upright', 'Derecha'),
+                        style: theme.textTheme.bodySmall,
+                      ),
                       const SizedBox(height: 6),
-                      Text(daily.card.meaningOf(daily.reversed, es), maxLines: 4, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(height: 1.4)),
+                      Text(
+                        daily.card.meaningOf(daily.reversed, es),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(height: 1.4),
+                      ),
                       const SizedBox(height: 8),
-                      PrismButton(density: PrismControlDensity.compact, onPressed: () => showCardDetail(context, daily), label: tr(context, 'Full reading', 'Lectura completa')),
+                      PrismButton(
+                        density: PrismControlDensity.compact,
+                        onPressed: () => showCardDetail(context, daily),
+                        label: tr(context, 'Full reading', 'Lectura completa'),
+                      ),
                     ],
                   ],
                 ),
@@ -223,9 +362,27 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
           ],
         ),
         const SizedBox(height: 12),
-        PrismTextField(controller: _question, labelText: tr(context, 'Your question (optional)', 'Tu pregunta (opcional)')),
+        PrismTextField(
+          controller: _question,
+          labelText: tr(
+            context,
+            'Your question (optional)',
+            'Tu pregunta (opcional)',
+          ),
+        ),
         const SizedBox(height: 12),
-        PrismButton(label: _drawn == null ? tr(context, 'Draw ${_spread.positions.length} cards', 'Sacar ${_spread.positions.length} cartas') : tr(context, 'Draw again', 'Volver a sacar'), icon: PhosphorIcons.sparkle(), tone: PrismButtonTone.filled, onPressed: _draw),
+        PrismButton(
+          label: _drawn == null
+              ? tr(
+                  context,
+                  'Draw ${_spread.positions.length} cards',
+                  'Sacar ${_spread.positions.length} cartas',
+                )
+              : tr(context, 'Draw again', 'Volver a sacar'),
+          icon: PhosphorIcons.sparkle(),
+          tone: PrismButtonTone.filled,
+          onPressed: _draw,
+        ),
         if (_drawn != null) ...[
           const SizedBox(height: 16),
           Wrap(
@@ -237,13 +394,26 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('${_spread.positions[i].emoji} ${_spread.positions[i].label.of(es)}', style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      '${_spread.positions[i].emoji} ${_spread.positions[i].label.of(es)}',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     TarotCardTile(
                       drawn: d,
                       width: 96,
                       faceDown: i >= _revealed,
-                      onTap: () => i >= _revealed ? setState(() => _revealed = math.max(_revealed, i + 1)) : showCardDetail(context, d, position: _spread.positions[i].label.of(es)),
+                      onTap: () => i >= _revealed
+                          ? setState(
+                              () => _revealed = math.max(_revealed, i + 1),
+                            )
+                          : showCardDetail(
+                              context,
+                              d,
+                              position: _spread.positions[i].label.of(es),
+                            ),
                     ),
                   ],
                 ),
@@ -251,39 +421,69 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
           ),
           const SizedBox(height: 8),
           if (_revealed < _drawn!.length)
-            Center(child: PrismButton(density: PrismControlDensity.compact, onPressed: () => setState(() => _revealed = _drawn!.length), label: tr(context, 'Reveal all', 'Mostrar todas')))
+            Center(
+              child: PrismButton(
+                density: PrismControlDensity.compact,
+                onPressed: () => setState(() => _revealed = _drawn!.length),
+                label: tr(context, 'Reveal all', 'Mostrar todas'),
+              ),
+            )
           else ...[
             const SizedBox(height: 8),
-            PrismTextField(controller: _notes, labelText: tr(context, 'Notes or reflection', 'Notas o reflexión'), maxLines: 3),
+            PrismTextField(
+              controller: _notes,
+              labelText: tr(
+                context,
+                'Notes or reflection',
+                'Notas o reflexión',
+              ),
+              maxLines: 3,
+            ),
             const SizedBox(height: 10),
             PrismButton(
-              label: _saved ? tr(context, 'Saved', 'Guardada') : tr(context, 'Save reading', 'Guardar tirada'),
-              icon: _saved ? PhosphorIcons.check() : PhosphorIcons.bookmarkSimple(),
+              label: _saved
+                  ? tr(context, 'Saved', 'Guardada')
+                  : tr(context, 'Save reading', 'Guardar tirada'),
+              icon: _saved
+                  ? PhosphorIcons.check()
+                  : PhosphorIcons.bookmarkSimple(),
               enabled: !_saved && canSave,
               onPressed: () async {
-                await ref.read(astroActionsProvider).saveTarot(
-                  memberId: a.member.id,
-                  spread: _spread,
-                  cards: _drawn!,
-                  question: _question.text.trim(),
-                  notes: _notes.text.trim(),
-                  private: a.visibility == AstroVisibility.private || a.visibility == AstroVisibility.hidden,
-                );
+                await ref
+                    .read(astroActionsProvider)
+                    .saveTarot(
+                      memberId: a.member.id,
+                      spread: _spread,
+                      cards: _drawn!,
+                      question: _question.text.trim(),
+                      notes: _notes.text.trim(),
+                      private:
+                          a.visibility == AstroVisibility.private ||
+                          a.visibility == AstroVisibility.hidden,
+                    );
                 if (mounted) setState(() => _saved = true);
               },
             ),
           ],
         ],
         if (history.isNotEmpty) ...[
-          PrismSectionHeader(title: tr(context, 'SAVED READINGS', 'TIRADAS GUARDADAS')),
+          PrismSectionHeader(
+            title: tr(context, 'SAVED READINGS', 'TIRADAS GUARDADAS'),
+          ),
           PrismSurface(
             padding: EdgeInsets.zero,
             child: Column(
               children: [
                 for (final r in history.take(20))
                   PrismListRow(
-                    title: Text(r.question.isEmpty ? r.spread.name.of(es) : r.question),
-                    subtitle: Text('${DateFormat.yMMMd(context.dateLocale).format(r.when)} · ${r.cards.map((c) => c.card.name.of(es)).join(', ')}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                    title: Text(
+                      r.question.isEmpty ? r.spread.name.of(es) : r.question,
+                    ),
+                    subtitle: Text(
+                      '${DateFormat.yMMMd(context.dateLocale).format(r.when)} · ${r.cards.map((c) => c.card.name.of(es)).join(', ')}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     showChevron: true,
                     onTap: () => PrismSheet.show(
                       context: context,
@@ -293,7 +493,11 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
                         shrinkWrap: true,
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                         children: [
-                          if (r.question.isNotEmpty) Text(r.question, style: Theme.of(ctx).textTheme.titleSmall),
+                          if (r.question.isNotEmpty)
+                            Text(
+                              r.question,
+                              style: Theme.of(ctx).textTheme.titleSmall,
+                            ),
                           const SizedBox(height: 10),
                           Wrap(
                             spacing: 10,
@@ -304,21 +508,46 @@ class _TarotSectionState extends ConsumerState<TarotSection> {
                                 Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    if (i < r.spread.positions.length) Text(r.spread.positions[i].label.of(es), style: Theme.of(ctx).textTheme.labelSmall),
-                                    TarotCardTile(drawn: d, width: 84, onTap: () => showCardDetail(ctx, d, position: i < r.spread.positions.length ? r.spread.positions[i].label.of(es) : null)),
+                                    if (i < r.spread.positions.length)
+                                      Text(
+                                        r.spread.positions[i].label.of(es),
+                                        style: Theme.of(
+                                          ctx,
+                                        ).textTheme.labelSmall,
+                                      ),
+                                    TarotCardTile(
+                                      drawn: d,
+                                      width: 84,
+                                      onTap: () => showCardDetail(
+                                        ctx,
+                                        d,
+                                        position: i < r.spread.positions.length
+                                            ? r.spread.positions[i].label.of(es)
+                                            : null,
+                                      ),
+                                    ),
                                   ],
                                 ),
                             ],
                           ),
-                          if (r.notes.isNotEmpty) ...[const SizedBox(height: 12), AstroCard(child: Text(r.notes))],
+                          if (r.notes.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            AstroCard(child: Text(r.notes)),
+                          ],
                           const SizedBox(height: 12),
                           if (a.isOwner)
                             PrismButton(
-                              label: tr(ctx, 'Delete reading', 'Eliminar tirada'),
+                              label: tr(
+                                ctx,
+                                'Delete reading',
+                                'Eliminar tirada',
+                              ),
                               tone: PrismButtonTone.destructive,
                               icon: PhosphorIcons.trash(),
                               onPressed: () async {
-                                await ref.read(astroActionsProvider).delete(r.record);
+                                await ref
+                                    .read(astroActionsProvider)
+                                    .delete(r.record);
                                 if (ctx.mounted) Navigator.of(ctx).pop();
                               },
                             ),

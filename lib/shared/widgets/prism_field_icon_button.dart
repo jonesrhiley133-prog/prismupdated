@@ -57,14 +57,12 @@ class _PrismFieldIconButtonState extends State<PrismFieldIconButton> {
           duration: Anim.xs,
           child: GestureDetector(
             onTap: canPress ? widget.onPressed : null,
-            onTapDown: (_) { if (canPress) setState(() => _pressed = true); },
+            onTapDown: (_) {
+              if (canPress) setState(() => _pressed = true);
+            },
             onTapUp: (_) => setState(() => _pressed = false),
             onTapCancel: () => setState(() => _pressed = false),
-            child: Icon(
-              widget.icon,
-              size: widget.iconSize,
-              color: iconColor,
-            ),
+            child: Icon(widget.icon, size: widget.iconSize, color: iconColor),
           ),
         ),
       ),

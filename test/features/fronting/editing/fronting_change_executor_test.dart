@@ -378,7 +378,10 @@ void main() {
 
     setUp(() {
       db = AppDatabase(NativeDatabase.memory());
-      sessionRepo = DriftFrontingSessionRepository(db.frontingSessionsDao, null);
+      sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+      );
       commentsRepo = FakeFrontSessionCommentsRepository();
       executor = FrontingChangeExecutor(
         repository: sessionRepo,
@@ -392,8 +395,7 @@ void main() {
     });
 
     test('reparents comments timestamped inside the new range from '
-        'splitFromSessionId',
-        () async {
+        'splitFromSessionId', () async {
       // Original session [10:00, 16:00]. Delete the period [12:00, 14:00]
       // with leaveGap: the original is trimmed to [10:00, 12:00] and a new
       // session [14:00, 16:00] is created. Comments at 10:30 (pre-slice),
@@ -536,49 +538,53 @@ void main() {
       expect(commentsRepo.comments.map((c) => c.id), ['late']);
     });
 
-    test('reparentOrphansToSessionId moves orphans to the target session', () async {
-      // Simulates convertToUnknown on a straddle-start: Alice
-      // [10:00, 16:00] gets trimmed to [10:00, 14:00] and her after-slice
-      // comment moves to the Unknown session that was created up front.
-      final unknown = FrontingSession(
-        id: 'unknown-target',
-        startTime: DateTime(2026, 4, 1, 14),
-        endTime: DateTime(2026, 4, 1, 16),
-        memberId: 'unknown-member',
-      );
-      final alice = FrontingSession(
-        id: 'alice-s',
-        startTime: DateTime(2026, 4, 1, 10),
-        endTime: DateTime(2026, 4, 1, 16),
-        memberId: 'alice',
-      );
-      await sessionRepo.createSession(unknown);
-      await sessionRepo.createSession(alice);
-      await commentsRepo.createComment(
-        FrontSessionComment(
-          id: 'orphan',
-          sessionId: alice.id,
-          body: 'orphan',
-          timestamp: DateTime(2026, 4, 1, 15),
-          createdAt: DateTime(2026, 4, 1, 15),
-        ),
-      );
-
-      final result = await executor.execute([
-        UpdateSessionChange(
-          sessionId: alice.id,
-          patch: FrontingSessionPatch(
-            end: DateTime(2026, 4, 1, 14),
-            reparentOrphansToSessionId: unknown.id,
+    test(
+      'reparentOrphansToSessionId moves orphans to the target session',
+      () async {
+        // Simulates convertToUnknown on a straddle-start: Alice
+        // [10:00, 16:00] gets trimmed to [10:00, 14:00] and her after-slice
+        // comment moves to the Unknown session that was created up front.
+        final unknown = FrontingSession(
+          id: 'unknown-target',
+          startTime: DateTime(2026, 4, 1, 14),
+          endTime: DateTime(2026, 4, 1, 16),
+          memberId: 'unknown-member',
+        );
+        final alice = FrontingSession(
+          id: 'alice-s',
+          startTime: DateTime(2026, 4, 1, 10),
+          endTime: DateTime(2026, 4, 1, 16),
+          memberId: 'alice',
+        );
+        await sessionRepo.createSession(unknown);
+        await sessionRepo.createSession(alice);
+        await commentsRepo.createComment(
+          FrontSessionComment(
+            id: 'orphan',
+            sessionId: alice.id,
+            body: 'orphan',
+            timestamp: DateTime(2026, 4, 1, 15),
+            createdAt: DateTime(2026, 4, 1, 15),
           ),
-        ),
-      ]);
-      expect(result.isSuccess, isTrue);
+        );
 
-      final orphan =
-          commentsRepo.comments.firstWhere((c) => c.id == 'orphan');
-      expect(orphan.sessionId, unknown.id);
-    });
+        final result = await executor.execute([
+          UpdateSessionChange(
+            sessionId: alice.id,
+            patch: FrontingSessionPatch(
+              end: DateTime(2026, 4, 1, 14),
+              reparentOrphansToSessionId: unknown.id,
+            ),
+          ),
+        ]);
+        expect(result.isSuccess, isTrue);
+
+        final orphan = commentsRepo.comments.firstWhere(
+          (c) => c.id == 'orphan',
+        );
+        expect(orphan.sessionId, unknown.id);
+      },
+    );
 
     test('sliceReparentToSessionId routes split-slice comments to the '
         'target instead of deleting them', () async {
@@ -638,8 +644,9 @@ void main() {
 
       final byId = {for (final c in commentsRepo.comments) c.id: c.sessionId};
       // The 'after' comment lands on the new right-half (split reparent).
-      final rightHalf = (await sessionRepo.getAllSessions())
-          .firstWhere((s) => s.startTime == DateTime(2026, 4, 1, 14));
+      final rightHalf = (await sessionRepo.getAllSessions()).firstWhere(
+        (s) => s.startTime == DateTime(2026, 4, 1, 14),
+      );
       expect(byId['after'], rightHalf.id);
       // The 'slice' comment moves to the Unknown row — not deleted.
       expect(byId['slice'], unknown.id);

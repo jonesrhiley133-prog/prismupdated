@@ -18,7 +18,8 @@ void bindSyncedSetting(
   required void Function(void Function() onLocalChange) listenLocal,
 }) {
   Timer? debounce;
-  int stamp(Map<String, Object?>? j) => j?['modifiedAt'] is int ? j!['modifiedAt']! as int : 0;
+  int stamp(Map<String, Object?>? j) =>
+      j?['modifiedAt'] is int ? j!['modifiedAt']! as int : 0;
 
   Future<void> push() async {
     final mine = local();
@@ -38,7 +39,8 @@ void bindSyncedSetting(
         } on FormatException {
           theirs = null;
         }
-        if (theirs is Map<String, dynamic> && stamp(theirs) >= stamp(mine)) return;
+        if (theirs is Map<String, dynamic> && stamp(theirs) >= stamp(mine))
+          return;
         await notifier.save(r.copyWith(body: body));
       }
     } catch (_) {
@@ -57,7 +59,10 @@ void bindSyncedSetting(
     try {
       final theirs = jsonDecode(records.first.body ?? '');
       final mine = local();
-      if (theirs is Map<String, dynamic> && mine != null && stamp(theirs) > stamp(mine)) adopt(theirs);
+      if (theirs is Map<String, dynamic> &&
+          mine != null &&
+          stamp(theirs) > stamp(mine))
+        adopt(theirs);
     } on FormatException {
       // Ignore an unreadable blob.
     }
@@ -66,7 +71,11 @@ void bindSyncedSetting(
   // Start a few seconds after launch so settings sync never competes with
   // opening the database and the first screen.
   final start = Timer(const Duration(seconds: 4), () {
-    ref.listen(trackerKindProvider(kind), (_, _) => pull(), fireImmediately: true);
+    ref.listen(
+      trackerKindProvider(kind),
+      (_, _) => pull(),
+      fireImmediately: true,
+    );
     listenLocal(() {
       debounce?.cancel();
       debounce = Timer(const Duration(seconds: 1), () => unawaited(push()));

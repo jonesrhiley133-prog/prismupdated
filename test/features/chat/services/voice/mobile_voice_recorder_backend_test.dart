@@ -284,85 +284,88 @@ void main() {
       expect(fileStore.deletedPaths, contains(recorder.startedPath));
     });
 
-    test('raw bytes exceeding in-memory budget fail with budgetExceeded',
-        () async {
-      final clock = _MutableClock(DateTime(2026, 4, 15, 12));
-      final fileStore = FakeMobileVoiceRecorderFileStore();
-      final recorder = FakeMobileAudioRecorder();
-      final backend = MobileVoiceRecorderBackend(
-        platform: const FakeMobileVoiceRecorderPlatform.android(),
-        permissionGate: FakeMobileMicrophonePermissionGate.granted(),
-        audioSessionConfigurator: FakeMobileAudioSessionConfigurator(),
-        recorder: recorder,
-        remuxer: FakeMobileOggCafRemuxer(),
-        fileStore: fileStore,
-        now: clock.call,
-        maxInMemoryBytes: 4,
-      );
+    test(
+      'raw bytes exceeding in-memory budget fail with budgetExceeded',
+      () async {
+        final clock = _MutableClock(DateTime(2026, 4, 15, 12));
+        final fileStore = FakeMobileVoiceRecorderFileStore();
+        final recorder = FakeMobileAudioRecorder();
+        final backend = MobileVoiceRecorderBackend(
+          platform: const FakeMobileVoiceRecorderPlatform.android(),
+          permissionGate: FakeMobileMicrophonePermissionGate.granted(),
+          audioSessionConfigurator: FakeMobileAudioSessionConfigurator(),
+          recorder: recorder,
+          remuxer: FakeMobileOggCafRemuxer(),
+          fileStore: fileStore,
+          now: clock.call,
+          maxInMemoryBytes: 4,
+        );
 
-      await backend.start();
-      clock.advance(const Duration(seconds: 2));
-      recorder.emitAmplitude(-10);
-      fileStore.seedBytes(recorder.startedPath!, _validOggOpusBytes());
+        await backend.start();
+        clock.advance(const Duration(seconds: 2));
+        recorder.emitAmplitude(-10);
+        fileStore.seedBytes(recorder.startedPath!, _validOggOpusBytes());
 
-      await expectLater(
-        backend.stop(),
-        throwsA(
-          isA<VoiceRecorderBackendException>().having(
-            (error) => error.errorCode,
-            'errorCode',
-            VoiceRecorderErrorCode.budgetExceeded,
+        await expectLater(
+          backend.stop(),
+          throwsA(
+            isA<VoiceRecorderBackendException>().having(
+              (error) => error.errorCode,
+              'errorCode',
+              VoiceRecorderErrorCode.budgetExceeded,
+            ),
           ),
-        ),
-      );
-      expect(fileStore.deletedPaths, contains(recorder.startedPath));
-    });
+        );
+        expect(fileStore.deletedPaths, contains(recorder.startedPath));
+      },
+    );
 
-    test('post-remux bytes exceeding budget fail with budgetExceeded',
-        () async {
-      final clock = _MutableClock(DateTime(2026, 4, 15, 12));
-      final fileStore = FakeMobileVoiceRecorderFileStore();
-      final recorder = FakeMobileAudioRecorder();
-      final remuxer = FakeMobileOggCafRemuxer();
-      final cafBytes = _validCafOpusBytes();
-      // Budget larger than the CAF input but smaller than the remuxer output.
-      final backend = MobileVoiceRecorderBackend(
-        platform: const FakeMobileVoiceRecorderPlatform.iOS(),
-        permissionGate: FakeMobileMicrophonePermissionGate.granted(),
-        audioSessionConfigurator: FakeMobileAudioSessionConfigurator(),
-        recorder: recorder,
-        remuxer: remuxer,
-        fileStore: fileStore,
-        now: clock.call,
-        maxInMemoryBytes: cafBytes.length + 10,
-      );
+    test(
+      'post-remux bytes exceeding budget fail with budgetExceeded',
+      () async {
+        final clock = _MutableClock(DateTime(2026, 4, 15, 12));
+        final fileStore = FakeMobileVoiceRecorderFileStore();
+        final recorder = FakeMobileAudioRecorder();
+        final remuxer = FakeMobileOggCafRemuxer();
+        final cafBytes = _validCafOpusBytes();
+        // Budget larger than the CAF input but smaller than the remuxer output.
+        final backend = MobileVoiceRecorderBackend(
+          platform: const FakeMobileVoiceRecorderPlatform.iOS(),
+          permissionGate: FakeMobileMicrophonePermissionGate.granted(),
+          audioSessionConfigurator: FakeMobileAudioSessionConfigurator(),
+          recorder: recorder,
+          remuxer: remuxer,
+          fileStore: fileStore,
+          now: clock.call,
+          maxInMemoryBytes: cafBytes.length + 10,
+        );
 
-      await backend.start();
-      clock.advance(const Duration(seconds: 2));
-      recorder.emitAmplitude(-10);
-      fileStore.seedBytes(recorder.startedPath!, cafBytes);
-      // Produce oversized Ogg output that exceeds the budget.
-      final oversizedOgg = Uint8List.fromList([
-        ..._validOggOpusBytes(),
-        ...List<int>.filled(cafBytes.length + 20, 0),
-      ]);
-      remuxer.outputBytes = oversizedOgg;
+        await backend.start();
+        clock.advance(const Duration(seconds: 2));
+        recorder.emitAmplitude(-10);
+        fileStore.seedBytes(recorder.startedPath!, cafBytes);
+        // Produce oversized Ogg output that exceeds the budget.
+        final oversizedOgg = Uint8List.fromList([
+          ..._validOggOpusBytes(),
+          ...List<int>.filled(cafBytes.length + 20, 0),
+        ]);
+        remuxer.outputBytes = oversizedOgg;
 
-      await expectLater(
-        backend.stop(),
-        throwsA(
-          isA<VoiceRecorderBackendException>().having(
-            (error) => error.errorCode,
-            'errorCode',
-            VoiceRecorderErrorCode.budgetExceeded,
+        await expectLater(
+          backend.stop(),
+          throwsA(
+            isA<VoiceRecorderBackendException>().having(
+              (error) => error.errorCode,
+              'errorCode',
+              VoiceRecorderErrorCode.budgetExceeded,
+            ),
           ),
-        ),
-      );
-      expect(fileStore.deletedPaths, contains(recorder.startedPath));
-    });
+        );
+        expect(fileStore.deletedPaths, contains(recorder.startedPath));
+      },
+    );
 
-    test('iOS recording with non-CAF bytes fails with invalidFormat',
-        () async {
+    test('iOS recording with non-CAF bytes fails with invalidFormat', () async {
       final clock = _MutableClock(DateTime(2026, 4, 15, 12));
       final fileStore = FakeMobileVoiceRecorderFileStore();
       final recorder = FakeMobileAudioRecorder();
@@ -415,9 +418,7 @@ void main() {
       recorder.emitAmplitude(-10);
       fileStore.seedBytes(recorder.startedPath!, _validCafOpusBytes());
       // Return random non-Ogg bytes from remuxer.
-      remuxer.outputBytes = Uint8List.fromList(
-        List<int>.filled(64, 0xAB),
-      );
+      remuxer.outputBytes = Uint8List.fromList(List<int>.filled(64, 0xAB));
 
       await expectLater(
         backend.stop(),
@@ -499,10 +500,7 @@ void main() {
       // dispose() sets _isDisposed before cancel(), so cancel() throws
       // StateError from _ensureNotDisposed(). The recorder is still disposed
       // via _recorder.dispose() and post-dispose start() is blocked.
-      expect(
-        backend.start,
-        throwsA(isA<StateError>()),
-      );
+      expect(backend.start, throwsA(isA<StateError>()));
     });
 
     test('start failure from recorder cleans up', () async {

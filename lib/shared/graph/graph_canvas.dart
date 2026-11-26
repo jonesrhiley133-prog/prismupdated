@@ -266,10 +266,18 @@ class GraphCanvasState extends State<GraphCanvas> {
       }
       return;
     }
-    var rect = Rect.fromCenter(center: _posOf(widget.nodes.first), width: 1, height: 1);
+    var rect = Rect.fromCenter(
+      center: _posOf(widget.nodes.first),
+      width: 1,
+      height: 1,
+    );
     for (final n in widget.nodes) {
       rect = rect.expandToInclude(
-        Rect.fromCenter(center: _posOf(n), width: n.size + 80, height: n.size + 60),
+        Rect.fromCenter(
+          center: _posOf(n),
+          width: n.size + 80,
+          height: n.size + 60,
+        ),
       );
     }
     final scale = math
@@ -321,7 +329,10 @@ class GraphCanvasState extends State<GraphCanvas> {
     final ab = b - a;
     final len2 = ab.dx * ab.dx + ab.dy * ab.dy;
     if (len2 == 0) return (p - a).distance;
-    final t = (((p - a).dx * ab.dx + (p - a).dy * ab.dy) / len2).clamp(0.0, 1.0);
+    final t = (((p - a).dx * ab.dx + (p - a).dy * ab.dy) / len2).clamp(
+      0.0,
+      1.0,
+    );
     return (p - (a + ab * t)).distance;
   }
 
@@ -340,7 +351,8 @@ class GraphCanvasState extends State<GraphCanvas> {
         final positions = {for (final n in widget.nodes) n.id: _posOf(n)};
         return ClipRect(
           child: ColoredBox(
-            color: widget.background ?? theme.colorScheme.surfaceContainerLowest,
+            color:
+                widget.background ?? theme.colorScheme.surfaceContainerLowest,
             child: InteractiveViewer(
               transformationController: _controller,
               constrained: false,
@@ -389,7 +401,8 @@ class GraphCanvasState extends State<GraphCanvas> {
                         child: _NodeWidget(
                           node: n,
                           selected: widget.selectedNodeId == n.id,
-                          dimmed: widget.highlightIds.isNotEmpty &&
+                          dimmed:
+                              widget.highlightIds.isNotEmpty &&
                               !widget.highlightIds.contains(n.id),
                           onTap: widget.onNodeTap == null
                               ? null
@@ -578,7 +591,9 @@ class _EdgePainter extends CustomPainter {
       final path = Path()..moveTo(a.dx, a.dy);
       if (e.from == e.to) {
         final r = (sizes[e.from] ?? 56) * 0.6;
-        path.addOval(Rect.fromCircle(center: a + Offset(0, -r), radius: r * 0.6));
+        path.addOval(
+          Rect.fromCircle(center: a + Offset(0, -r), radius: r * 0.6),
+        );
       } else {
         path.quadraticBezierTo(ctrl.dx, ctrl.dy, b.dx, b.dy);
       }
@@ -592,7 +607,10 @@ class _EdgePainter extends CustomPainter {
           for (final m in path.computeMetrics()) {
             var d = 0.0;
             while (d < m.length) {
-              canvas.drawPath(m.extractPath(d, math.min(d + on, m.length)), paint);
+              canvas.drawPath(
+                m.extractPath(d, math.min(d + on, m.length)),
+                paint,
+              );
               d += on + off;
             }
           }
@@ -600,7 +618,9 @@ class _EdgePainter extends CustomPainter {
       if (e.directed && e.from != e.to) {
         final r = (sizes[e.to] ?? 56) / 2 + 4;
         final tangent = (b - ctrl);
-        final u = tangent.distance == 0 ? Offset.zero : tangent / tangent.distance;
+        final u = tangent.distance == 0
+            ? Offset.zero
+            : tangent / tangent.distance;
         final tip = b - u * r;
         final left = tip - u * 12 + Offset(-u.dy, u.dx) * 6;
         final right = tip - u * 12 - Offset(-u.dy, u.dx) * 6;
@@ -638,5 +658,7 @@ class _EdgePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_EdgePainter old) =>
-      old.edges != edges || old.positions != positions || old.showLabels != showLabels;
+      old.edges != edges ||
+      old.positions != positions ||
+      old.showLabels != showLabels;
 }

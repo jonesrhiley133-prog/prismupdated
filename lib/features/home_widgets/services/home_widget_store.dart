@@ -71,7 +71,9 @@ class HomeWidgetsState {
     if (j['defaults'] is Map<String, dynamic>) {
       for (final e in (j['defaults'] as Map<String, dynamic>).entries) {
         if (e.value is Map<String, dynamic>) {
-          defaults[e.key] = WidgetConfig.fromJson(e.value as Map<String, dynamic>);
+          defaults[e.key] = WidgetConfig.fromJson(
+            e.value as Map<String, dynamic>,
+          );
         }
       }
     }
@@ -99,7 +101,9 @@ class HomeWidgetsNotifier extends AsyncNotifier<HomeWidgetsState> {
       final raw = (await SharedPreferences.getInstance()).getString(_prefsKey);
       if (raw == null) return const HomeWidgetsState();
       final v = jsonDecode(raw);
-      return v is Map<String, dynamic> ? HomeWidgetsState.fromJson(v) : const HomeWidgetsState();
+      return v is Map<String, dynamic>
+          ? HomeWidgetsState.fromJson(v)
+          : const HomeWidgetsState();
     } on Exception {
       return const HomeWidgetsState();
     } on Error {
@@ -110,7 +114,10 @@ class HomeWidgetsNotifier extends AsyncNotifier<HomeWidgetsState> {
   Future<void> _save(HomeWidgetsState next) async {
     state = AsyncData(next);
     try {
-      await (await SharedPreferences.getInstance()).setString(_prefsKey, jsonEncode(next.toJson()));
+      await (await SharedPreferences.getInstance()).setString(
+        _prefsKey,
+        jsonEncode(next.toJson()),
+      );
     } on Exception {
       // Kept in memory for this session.
     }
@@ -118,18 +125,29 @@ class HomeWidgetsNotifier extends AsyncNotifier<HomeWidgetsState> {
 
   Future<HomeWidgetsState> _cur() async => state.value ?? await future;
 
-  List<String> _touch(List<String> recent, String type) => [type, ...recent.where((t) => t != type)].take(6).toList();
+  List<String> _touch(List<String> recent, String type) =>
+      [type, ...recent.where((t) => t != type)].take(6).toList();
 
   /// Saves the configuration of one placed widget.
   Future<void> saveConfig(int id, WidgetConfig cfg) async {
     final s = await _cur();
-    await _save(s.copyWith(configs: {...s.configs, id: cfg}, recent: _touch(s.recent, cfg.type)));
+    await _save(
+      s.copyWith(
+        configs: {...s.configs, id: cfg},
+        recent: _touch(s.recent, cfg.type),
+      ),
+    );
   }
 
   /// Saves the starting configuration for new widgets of a type.
   Future<void> saveDefault(WidgetConfig cfg) async {
     final s = await _cur();
-    await _save(s.copyWith(defaults: {...s.defaults, cfg.type: cfg}, recent: _touch(s.recent, cfg.type)));
+    await _save(
+      s.copyWith(
+        defaults: {...s.defaults, cfg.type: cfg},
+        recent: _touch(s.recent, cfg.type),
+      ),
+    );
   }
 
   Future<void> resetConfig(int? id, String type) async {
@@ -143,7 +161,16 @@ class HomeWidgetsNotifier extends AsyncNotifier<HomeWidgetsState> {
 
   Future<void> savePreset(WidgetConfig cfg) async {
     final s = await _cur();
-    await _save(s.copyWith(presets: [cfg, ...s.presets.where((p) => !(p.type == cfg.type && p.name == cfg.name))]));
+    await _save(
+      s.copyWith(
+        presets: [
+          cfg,
+          ...s.presets.where(
+            (p) => !(p.type == cfg.type && p.name == cfg.name),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> deletePreset(WidgetConfig cfg) async {
@@ -155,8 +182,18 @@ class HomeWidgetsNotifier extends AsyncNotifier<HomeWidgetsState> {
   Future<void> prune(Set<int> placed) async {
     final s = await _cur();
     if (s.configs.keys.every(placed.contains)) return;
-    await _save(s.copyWith(configs: {for (final e in s.configs.entries) if (placed.contains(e.key)) e.key: e.value}));
+    await _save(
+      s.copyWith(
+        configs: {
+          for (final e in s.configs.entries)
+            if (placed.contains(e.key)) e.key: e.value,
+        },
+      ),
+    );
   }
 }
 
-final homeWidgetsProvider = AsyncNotifierProvider<HomeWidgetsNotifier, HomeWidgetsState>(HomeWidgetsNotifier.new);
+final homeWidgetsProvider =
+    AsyncNotifierProvider<HomeWidgetsNotifier, HomeWidgetsState>(
+      HomeWidgetsNotifier.new,
+    );

@@ -116,50 +116,46 @@ void main() {
       expect(fields['muted_by_member_ids'], '["alice","bob"]');
     });
 
-    test(
-      'includes_all_members is NEVER in the helper field map '
-      '(sparse-field carve-out)',
-      () {
-        // Patch-style migration moved `includes_all_members` out of
-        // `_conversationFields` entirely. The sparse-emit contract
-        // (only include when true, for pre-v25 peers) is preserved by
-        // inline-emit logic in createConversation / setIncludesAllMembers
-        // / updateConversation transitions — see the carve-out section of
-        // docs/plans/2026-05-25-drift-repo-patch-update-migration.md.
-        // `diffSyncFields` iterates `next.entries`, so a field absent from
-        // `next` is never emitted even if it differs — the helper MUST
-        // omit it for both `true` and `false` values, and the inline-emit
-        // sites must restore the sparse contract.
-        final base = domain.Conversation(
-          id: 'conv-1',
-          createdAt: DateTime.utc(2026, 4, 27),
-          lastActivityAt: DateTime.utc(2026, 4, 27, 1),
-        );
+    test('includes_all_members is NEVER in the helper field map '
+        '(sparse-field carve-out)', () {
+      // Patch-style migration moved `includes_all_members` out of
+      // `_conversationFields` entirely. The sparse-emit contract
+      // (only include when true, for pre-v25 peers) is preserved by
+      // inline-emit logic in createConversation / setIncludesAllMembers
+      // / updateConversation transitions — see the carve-out section of
+      // docs/plans/2026-05-25-drift-repo-patch-update-migration.md.
+      // `diffSyncFields` iterates `next.entries`, so a field absent from
+      // `next` is never emitted even if it differs — the helper MUST
+      // omit it for both `true` and `false` values, and the inline-emit
+      // sites must restore the sparse contract.
+      final base = domain.Conversation(
+        id: 'conv-1',
+        createdAt: DateTime.utc(2026, 4, 27),
+        lastActivityAt: DateTime.utc(2026, 4, 27, 1),
+      );
 
-        expect(
-          repo.debugConversationFields(base).containsKey(
-            'includes_all_members',
-          ),
-          isFalse,
-          reason: 'helper must omit includes_all_members when false',
-        );
-        expect(
-          repo
-              .debugConversationFields(
-                base.copyWith(includesAllMembers: true),
-              )
-              .containsKey('includes_all_members'),
-          isFalse,
-          reason: 'helper must omit includes_all_members even when true; '
-              'the sparse emit moved to createConversation / '
-              'setIncludesAllMembers / updateConversation',
-        );
-      },
-    );
+      expect(
+        repo.debugConversationFields(base).containsKey('includes_all_members'),
+        isFalse,
+        reason: 'helper must omit includes_all_members when false',
+      );
+      expect(
+        repo
+            .debugConversationFields(base.copyWith(includesAllMembers: true))
+            .containsKey('includes_all_members'),
+        isFalse,
+        reason:
+            'helper must omit includes_all_members even when true; '
+            'the sparse emit moved to createConversation / '
+            'setIncludesAllMembers / updateConversation',
+      );
+    });
   });
 
   group('includesAllMembers round-trip', () {
-    Future<domain.Conversation> insert({required bool includesAllMembers}) async {
+    Future<domain.Conversation> insert({
+      required bool includesAllMembers,
+    }) async {
       final conversation = domain.Conversation(
         id: 'conv-1',
         createdAt: DateTime.utc(2026, 4, 27),
@@ -173,32 +169,40 @@ void main() {
       return conversation;
     }
 
-    test('createConversation persists the flag and read-back preserves it',
-        () async {
-      await insert(includesAllMembers: true);
+    test(
+      'createConversation persists the flag and read-back preserves it',
+      () async {
+        await insert(includesAllMembers: true);
 
-      final round = await repo.getConversationById('conv-1');
-      expect(round, isNotNull);
-      expect(round!.includesAllMembers, isTrue);
-      expect(
-        round.participantIds,
-        ['creator'],
-        reason: 'Everyone-groups still store the creator explicitly',
-      );
-    });
+        final round = await repo.getConversationById('conv-1');
+        expect(round, isNotNull);
+        expect(round!.includesAllMembers, isTrue);
+        expect(
+          round.participantIds,
+          ['creator'],
+          reason: 'Everyone-groups still store the creator explicitly',
+        );
+      },
+    );
 
     test('setIncludesAllMembers flips the flag in storage', () async {
       await insert(includesAllMembers: false);
-      expect((await repo.getConversationById('conv-1'))!.includesAllMembers,
-          isFalse);
+      expect(
+        (await repo.getConversationById('conv-1'))!.includesAllMembers,
+        isFalse,
+      );
 
       await repo.setIncludesAllMembers('conv-1', true);
-      expect((await repo.getConversationById('conv-1'))!.includesAllMembers,
-          isTrue);
+      expect(
+        (await repo.getConversationById('conv-1'))!.includesAllMembers,
+        isTrue,
+      );
 
       await repo.setIncludesAllMembers('conv-1', false);
-      expect((await repo.getConversationById('conv-1'))!.includesAllMembers,
-          isFalse);
+      expect(
+        (await repo.getConversationById('conv-1'))!.includesAllMembers,
+        isFalse,
+      );
     });
 
     test('setIncludesAllMembers leaves other fields untouched', () async {
@@ -314,43 +318,42 @@ void main() {
       expect(jsonDecode(row.mutedByMemberIds), ['bob']);
     });
 
-    test('null-clearing emits the null and writes it to the database',
-        () async {
-      await repo.createConversation(seed(title: 'had a title'));
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
-
-      await repo.updateConversation(seed(title: null));
-
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('title'), isTrue);
-      expect(patch['title'], isNull);
-
-      final row = await dao.getConversationById('conv-1');
-      expect(row!.title, isNull);
-    });
-
     test(
-      'silently no-ops on a tombstoned conversation (does not emit, '
-      'does not resurrect)',
+      'null-clearing emits the null and writes it to the database',
       () async {
-        await repo.createConversation(seed(title: 'before delete'));
-        await repo.deleteConversation('conv-1');
+        await repo.createConversation(seed(title: 'had a title'));
         final captured = <CapturedSyncOp>[];
         SyncRecordMixin.installCaptureSinkForTesting(captured.add);
         addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-        await repo.updateConversation(seed(title: 'attempted resurrect'));
+        await repo.updateConversation(seed(title: null));
 
-        expect(captured, isEmpty);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('title'), isTrue);
+        expect(patch['title'], isNull);
+
         final row = await dao.getConversationById('conv-1');
-        expect(row, isNotNull);
-        expect(row!.isDeleted, isTrue);
-        expect(row.title, 'before delete');
+        expect(row!.title, isNull);
       },
     );
+
+    test('silently no-ops on a tombstoned conversation (does not emit, '
+        'does not resurrect)', () async {
+      await repo.createConversation(seed(title: 'before delete'));
+      await repo.deleteConversation('conv-1');
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+
+      await repo.updateConversation(seed(title: 'attempted resurrect'));
+
+      expect(captured, isEmpty);
+      final row = await dao.getConversationById('conv-1');
+      expect(row, isNotNull);
+      expect(row!.isDeleted, isTrue);
+      expect(row.title, 'before delete');
+    });
 
     test('silently no-ops when the row does not exist', () async {
       final captured = <CapturedSyncOp>[];
@@ -424,7 +427,8 @@ void main() {
         expect(
           patch['includes_all_members'],
           isFalse,
-          reason: 'transition emit mirrors setIncludesAllMembers, which '
+          reason:
+              'transition emit mirrors setIncludesAllMembers, which '
               'emits false unconditionally',
         );
 

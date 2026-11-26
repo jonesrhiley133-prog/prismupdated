@@ -216,110 +216,107 @@ void main() {
   tearDown(storageStub.teardown);
 
   group('shared-switch deletion (H2, PK-authoritative)', () {
-    test(
-      'CONTINUING co-fronter absent from local rows is preserved: PK '
-      'snapshot [A,B,C], local rows only A@sw2 + C@sw2 (B entered at sw1) '
-      '→ deleting A PATCHes [B,C] in PK order',
-      () async {
-        // THE key regression: PK history sw1=[B], sw2=[A,B,C].
-        // Local canonical rows carry only ENTRANT switch uuids: B@sw1,
-        // A@sw2, C@sw2. A locally-derived sibling list for sw2 sees only C
-        // and would PATCH sw2 to [C] — removing B from sw2's full snapshot,
-        // i.e. B's PK timeline would show B leaving the front at sw2. The
-        // PK-authoritative remaining list must keep B.
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('CONTINUING co-fronter absent from local rows is preserved: PK '
+        'snapshot [A,B,C], local rows only A@sw2 + C@sw2 (B entered at sw1) '
+        '→ deleting A PATCHes [B,C] in PK order', () async {
+      // THE key regression: PK history sw1=[B], sw2=[A,B,C].
+      // Local canonical rows carry only ENTRANT switch uuids: B@sw1,
+      // A@sw2, C@sw2. A locally-derived sibling list for sw2 sees only C
+      // and would PATCH sw2 to [C] — removing B from sw2's full snapshot,
+      // i.e. B's PK timeline would show B leaving the front at sw2. The
+      // PK-authoritative remaining list must keep B.
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(db.membersDao, null);
-        await memberRepo.createMember(
-          _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
-        );
-        await memberRepo.createMember(
-          _member(localId: 'local-b', pkShortId: 'pkB', pkUuid: 'uuid-b'),
-        );
-        await memberRepo.createMember(
-          _member(localId: 'local-c', pkShortId: 'pkC', pkUuid: 'uuid-c'),
-        );
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(
+        _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
+      );
+      await memberRepo.createMember(
+        _member(localId: 'local-b', pkShortId: 'pkB', pkUuid: 'uuid-b'),
+      );
+      await memberRepo.createMember(
+        _member(localId: 'local-c', pkShortId: 'pkC', pkUuid: 'uuid-c'),
+      );
 
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
 
-        // B's row is anchored at the EARLIER switch (B continued fronting
-        // across sw2 — no local row links B to sw2).
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: 'row-b',
-            startTime: DateTime.utc(2026, 1, 1, 9),
-            memberId: 'local-b',
-            pluralkitUuid: _earlierSwitch,
-          ),
-        );
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: 'row-a',
-            startTime: DateTime.utc(2026, 1, 1, 10),
-            memberId: 'local-a',
-            pluralkitUuid: _sharedSwitch,
-          ),
-        );
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: 'row-c',
-            startTime: DateTime.utc(2026, 1, 1, 10),
-            memberId: 'local-c',
-            pluralkitUuid: _sharedSwitch,
-          ),
-        );
-        // User deletes A's row → intent stamped (pkSyncDao wired).
-        await sessionRepo.deleteSession('row-a');
+      // B's row is anchored at the EARLIER switch (B continued fronting
+      // across sw2 — no local row links B to sw2).
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: 'row-b',
+          startTime: DateTime.utc(2026, 1, 1, 9),
+          memberId: 'local-b',
+          pluralkitUuid: _earlierSwitch,
+        ),
+      );
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: 'row-a',
+          startTime: DateTime.utc(2026, 1, 1, 10),
+          memberId: 'local-a',
+          pluralkitUuid: _sharedSwitch,
+        ),
+      );
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: 'row-c',
+          startTime: DateTime.utc(2026, 1, 1, 10),
+          memberId: 'local-c',
+          pluralkitUuid: _sharedSwitch,
+        ),
+      );
+      // User deletes A's row → intent stamped (pkSyncDao wired).
+      await sessionRepo.deleteSession('row-a');
 
-        final client = _RecordingClient();
-        // PK's authoritative sw2 snapshot: ALL fronters, including the
-        // continuing B. Note 'PkA' — hids are case-insensitive on PK, so
-        // the departing-member subtraction must match case-insensitively.
-        client.switchSnapshots[_sharedSwitch] = PKSwitch(
-          id: _sharedSwitch,
-          timestamp: DateTime.utc(2026, 1, 1, 10),
-          members: const ['PkA', 'pkB', 'pkC'],
-        );
-        final service = _makeService(
-          db: db,
-          client: client,
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
+      final client = _RecordingClient();
+      // PK's authoritative sw2 snapshot: ALL fronters, including the
+      // continuing B. Note 'PkA' — hids are case-insensitive on PK, so
+      // the departing-member subtraction must match case-insensitively.
+      client.switchSnapshots[_sharedSwitch] = PKSwitch(
+        id: _sharedSwitch,
+        timestamp: DateTime.utc(2026, 1, 1, 10),
+        members: const ['PkA', 'pkB', 'pkC'],
+      );
+      final service = _makeService(
+        db: db,
+        client: client,
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
 
-        final pushed = await service.debugPushPendingSwitchDeletions(
-          client: client,
-        );
+      final pushed = await service.debugPushPendingSwitchDeletions(
+        client: client,
+      );
 
-        // No DELETE on the shared switch.
-        expect(client.deletedSwitches, isEmpty);
-        // PATCH removed only A; B (continuing, no local row at sw2) and C
-        // are both kept, in PK's order.
-        expect(client.patchedSwitches, hasLength(1));
-        expect(client.patchedSwitches.single.switchId, _sharedSwitch);
-        expect(
-          client.patchedSwitches.single.members,
-          ['pkB', 'pkC'],
-          reason: 'continuing co-fronter B must survive; PK order preserved',
-        );
-        expect(pushed, 1, reason: 'the member-removal counts as pushed');
+      // No DELETE on the shared switch.
+      expect(client.deletedSwitches, isEmpty);
+      // PATCH removed only A; B (continuing, no local row at sw2) and C
+      // are both kept, in PK's order.
+      expect(client.patchedSwitches, hasLength(1));
+      expect(client.patchedSwitches.single.switchId, _sharedSwitch);
+      expect(
+        client.patchedSwitches.single.members,
+        ['pkB', 'pkC'],
+        reason: 'continuing co-fronter B must survive; PK order preserved',
+      );
+      expect(pushed, 1, reason: 'the member-removal counts as pushed');
 
-        // Link cleared on A's tombstone; B's and C's live rows untouched.
-        final aRow = await sessionRepo.getSessionById('row-a');
-        expect(aRow!.pluralkitUuid, isNull);
-        final bRow = await sessionRepo.getSessionById('row-b');
-        expect(bRow!.isDeleted, isFalse);
-        expect(bRow.pluralkitUuid, _earlierSwitch);
-        final cRow = await sessionRepo.getSessionById('row-c');
-        expect(cRow!.isDeleted, isFalse);
-        expect(cRow.pluralkitUuid, _sharedSwitch);
-      },
-    );
+      // Link cleared on A's tombstone; B's and C's live rows untouched.
+      final aRow = await sessionRepo.getSessionById('row-a');
+      expect(aRow!.pluralkitUuid, isNull);
+      final bRow = await sessionRepo.getSessionById('row-b');
+      expect(bRow!.isDeleted, isFalse);
+      expect(bRow.pluralkitUuid, _earlierSwitch);
+      final cRow = await sessionRepo.getSessionById('row-c');
+      expect(cRow!.isDeleted, isFalse);
+      expect(cRow.pluralkitUuid, _sharedSwitch);
+    });
 
     test(
       'sole-fronter snapshot (no co-fronters on PK) still DELETEs the switch',
@@ -425,10 +422,16 @@ void main() {
         expect(client.patchedSwitches, isEmpty);
         expect(client.deletedSwitches, isEmpty);
         final row = await sessionRepo.getSessionById('row-transient');
-        expect(row!.pluralkitUuid, _sharedSwitch,
-            reason: 'a transient failure must not clear the link');
-        expect(row.deleteIntentEpoch, isNotNull,
-            reason: 'the queued deletion must survive for the next pass');
+        expect(
+          row!.pluralkitUuid,
+          _sharedSwitch,
+          reason: 'a transient failure must not clear the link',
+        );
+        expect(
+          row.deleteIntentEpoch,
+          isNotNull,
+          reason: 'the queued deletion must survive for the next pass',
+        );
       },
     );
 
@@ -500,70 +503,67 @@ void main() {
       expect(aRow!.pluralkitUuid, isNull);
     });
 
-    test(
-      'unresolvable departing member → fail-safe: clear link, never DELETE '
-      'or PATCH',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('unresolvable departing member → fail-safe: clear link, never DELETE '
+        'or PATCH', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        // The departing member exists locally but has NO pluralkit refs —
-        // we cannot tell which snapshot entry to subtract, so we must not
-        // write to PK at all (the snapshot may hold co-fronters).
-        final memberRepo = DriftMemberRepository(db.membersDao, null);
-        await memberRepo.createMember(
-          domain.Member(
-            id: 'local-a',
-            name: 'Member a',
-            emoji: '❔',
-            isActive: true,
-            createdAt: DateTime(2026, 1, 1),
-            // no pluralkitId / pluralkitUuid → unresolvable
-          ),
-        );
+      // The departing member exists locally but has NO pluralkit refs —
+      // we cannot tell which snapshot entry to subtract, so we must not
+      // write to PK at all (the snapshot may hold co-fronters).
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(
+        domain.Member(
+          id: 'local-a',
+          name: 'Member a',
+          emoji: '❔',
+          isActive: true,
+          createdAt: DateTime(2026, 1, 1),
+          // no pluralkitId / pluralkitUuid → unresolvable
+        ),
+      );
 
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
 
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: 'row-a',
-            startTime: DateTime.utc(2026, 1, 1, 10),
-            memberId: 'local-a',
-            pluralkitUuid: _sharedSwitch,
-          ),
-        );
-        await sessionRepo.deleteSession('row-a');
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: 'row-a',
+          startTime: DateTime.utc(2026, 1, 1, 10),
+          memberId: 'local-a',
+          pluralkitUuid: _sharedSwitch,
+        ),
+      );
+      await sessionRepo.deleteSession('row-a');
 
-        final client = _RecordingClient();
-        client.switchSnapshots[_sharedSwitch] = PKSwitch(
-          id: _sharedSwitch,
-          timestamp: DateTime.utc(2026, 1, 1, 10),
-          members: const ['pkA', 'pkB'],
-        );
-        final service = _makeService(
-          db: db,
-          client: client,
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
+      final client = _RecordingClient();
+      client.switchSnapshots[_sharedSwitch] = PKSwitch(
+        id: _sharedSwitch,
+        timestamp: DateTime.utc(2026, 1, 1, 10),
+        members: const ['pkA', 'pkB'],
+      );
+      final service = _makeService(
+        db: db,
+        client: client,
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
 
-        final pushed = await service.debugPushPendingSwitchDeletions(
-          client: client,
-        );
+      final pushed = await service.debugPushPendingSwitchDeletions(
+        client: client,
+      );
 
-        // Fail-safe: no PK write at all; local link cleared so we stop
-        // re-attempting; the switch is left intact for any co-fronters.
-        expect(client.deletedSwitches, isEmpty);
-        expect(client.patchedSwitches, isEmpty);
-        expect(pushed, 0);
-        final aRow = await sessionRepo.getSessionById('row-a');
-        expect(aRow!.pluralkitUuid, isNull);
-      },
-    );
+      // Fail-safe: no PK write at all; local link cleared so we stop
+      // re-attempting; the switch is left intact for any co-fronters.
+      expect(client.deletedSwitches, isEmpty);
+      expect(client.patchedSwitches, isEmpty);
+      expect(pushed, 0);
+      final aRow = await sessionRepo.getSessionById('row-a');
+      expect(aRow!.pluralkitUuid, isNull);
+    });
 
     test(
       'departing member not on the PK snapshot → already off PK: clear link, '

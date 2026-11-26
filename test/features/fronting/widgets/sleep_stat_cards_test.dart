@@ -27,9 +27,7 @@ FrontingSession _sleepSession({
 
 Widget _buildSubject(SleepStatsView view) {
   return ProviderScope(
-    overrides: [
-      sleepStatsProvider.overrideWith((ref) => Future.value(view)),
-    ],
+    overrides: [sleepStatsProvider.overrideWith((ref) => Future.value(view))],
     child: const MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: [Locale('en')],
@@ -133,7 +131,10 @@ void main() {
         _buildSubject(
           _statsWithLastNight(
             session: session,
-            avg7d: (count: 7, avgDuration: const Duration(hours: 7, minutes: 30)),
+            avg7d: (
+              count: 7,
+              avgDuration: const Duration(hours: 7, minutes: 30),
+            ),
           ),
         ),
       );
@@ -147,7 +148,9 @@ void main() {
       final session = _sleepSession(
         duration: const Duration(hours: 8, minutes: 12),
       );
-      await tester.pumpWidget(_buildSubject(_statsWithLastNight(session: session)));
+      await tester.pumpWidget(
+        _buildSubject(_statsWithLastNight(session: session)),
+      );
       await tester.pumpAndSettle();
 
       // toRoundedString() for 8h 12m → "8h 12m"
@@ -160,7 +163,10 @@ void main() {
         _buildSubject(
           _statsWithLastNight(
             session: session,
-            avg7d: (count: 7, avgDuration: const Duration(hours: 7, minutes: 45)),
+            avg7d: (
+              count: 7,
+              avgDuration: const Duration(hours: 7, minutes: 45),
+            ),
           ),
         ),
       );
@@ -175,7 +181,10 @@ void main() {
         _buildSubject(
           _statsWithLastNight(
             session: session,
-            avg7d: (count: 7, avgDuration: const Duration(hours: 7, minutes: 30)),
+            avg7d: (
+              count: 7,
+              avgDuration: const Duration(hours: 7, minutes: 30),
+            ),
             avg7dPrior: (
               count: 7,
               avgDuration: const Duration(hours: 7, minutes: 12),
@@ -195,7 +204,10 @@ void main() {
         _buildSubject(
           _statsWithLastNight(
             session: session,
-            avg7d: (count: 7, avgDuration: const Duration(hours: 7, minutes: 30)),
+            avg7d: (
+              count: 7,
+              avgDuration: const Duration(hours: 7, minutes: 30),
+            ),
           ),
         ),
       );
@@ -275,18 +287,21 @@ void main() {
   // ── Semantics ──────────────────────────────────────────────────────────────
 
   group('semantics', () {
-    testWidgets('last-night card has a semantic label mentioning "Last night"', (
-      tester,
-    ) async {
-      final session = _sleepSession(quality: SleepQuality.good);
-      await tester.pumpWidget(_buildSubject(_statsWithLastNight(session: session)));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'last-night card has a semantic label mentioning "Last night"',
+      (tester) async {
+        final session = _sleepSession(quality: SleepQuality.good);
+        await tester.pumpWidget(
+          _buildSubject(_statsWithLastNight(session: session)),
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        find.bySemanticsLabel(RegExp('Last night', caseSensitive: false)),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.bySemanticsLabel(RegExp('Last night', caseSensitive: false)),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('7d card has a semantic label mentioning "7-day"', (
       tester,
@@ -308,21 +323,24 @@ void main() {
       );
     });
 
-    testWidgets('excludeSemantics produces exactly one semantic node per card', (
-      tester,
-    ) async {
-      final session = _sleepSession();
-      await tester.pumpWidget(_buildSubject(_statsWithLastNight(session: session)));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'excludeSemantics produces exactly one semantic node per card',
+      (tester) async {
+        final session = _sleepSession();
+        await tester.pumpWidget(
+          _buildSubject(_statsWithLastNight(session: session)),
+        );
+        await tester.pumpAndSettle();
 
-      final handle = tester.ensureSemantics();
-      // With excludeSemantics: true, the Semantics wrapper merges its subtree
-      // into a single node — so exactly one match for "Last night".
-      expect(
-        find.bySemanticsLabel(RegExp('Last night', caseSensitive: false)),
-        findsOneWidget,
-      );
-      handle.dispose();
-    });
+        final handle = tester.ensureSemantics();
+        // With excludeSemantics: true, the Semantics wrapper merges its subtree
+        // into a single node — so exactly one match for "Last night".
+        expect(
+          find.bySemanticsLabel(RegExp('Last night', caseSensitive: false)),
+          findsOneWidget,
+        );
+        handle.dispose();
+      },
+    );
   });
 }

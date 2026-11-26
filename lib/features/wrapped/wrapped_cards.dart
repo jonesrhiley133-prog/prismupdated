@@ -850,7 +850,10 @@ class _VinylState extends State<_Vinyl> with SingleTickerProviderStateMixin {
       child: Container(
         width: widget.size * 0.34,
         height: widget.size * 0.34,
-        decoration: BoxDecoration(borderRadius: prismRound(context), color: widget.color),
+        decoration: BoxDecoration(
+          borderRadius: prismRound(context),
+          color: widget.color,
+        ),
         alignment: Alignment.center,
         child: Container(
           width: widget.size * 0.05,

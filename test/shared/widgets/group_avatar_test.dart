@@ -50,26 +50,25 @@ MemberGroup _makeGroup({
 
 void main() {
   group('GroupAvatar', () {
-    testWidgets('renders MemberAvatar with the group\'s avatar bytes when set', (
-      tester,
-    ) async {
-      final group = _makeGroup(avatarImageData: _kOnePxPng, emoji: null);
-      await tester.pumpWidget(
-        _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: false)),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'renders MemberAvatar with the group\'s avatar bytes when set',
+      (tester) async {
+        final group = _makeGroup(avatarImageData: _kOnePxPng, emoji: null);
+        await tester.pumpWidget(
+          _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: false)),
+        );
+        await tester.pumpAndSettle();
 
-      final avatar = tester.widget<MemberAvatar>(find.byType(MemberAvatar));
-      expect(avatar.avatarImageData, _kOnePxPng);
-    });
+        final avatar = tester.widget<MemberAvatar>(find.byType(MemberAvatar));
+        expect(avatar.avatarImageData, _kOnePxPng);
+      },
+    );
 
     testWidgets('renders MemberAvatar with the group\'s emoji when no avatar', (
       tester,
     ) async {
       final group = _makeGroup(emoji: '🌟', avatarImageData: null);
-      await tester.pumpWidget(
-        _wrap(GroupAvatar(group: group, size: 40)),
-      );
+      await tester.pumpWidget(_wrap(GroupAvatar(group: group, size: 40)));
       await tester.pump();
 
       final avatar = tester.widget<MemberAvatar>(find.byType(MemberAvatar));
@@ -81,9 +80,7 @@ void main() {
       'renders MemberAvatar with default emoji when neither avatar nor emoji set',
       (tester) async {
         final group = _makeGroup(emoji: null, avatarImageData: null);
-        await tester.pumpWidget(
-          _wrap(GroupAvatar(group: group, size: 40)),
-        );
+        await tester.pumpWidget(_wrap(GroupAvatar(group: group, size: 40)));
         await tester.pump();
 
         final avatar = tester.widget<MemberAvatar>(find.byType(MemberAvatar));
@@ -95,9 +92,7 @@ void main() {
       const override = Color(0xFF00FF00);
       final group = _makeGroup(colorHex: '#FF0000');
       await tester.pumpWidget(
-        _wrap(
-          GroupAvatar(group: group, size: 40, tintOverride: override),
-        ),
+        _wrap(GroupAvatar(group: group, size: 40, tintOverride: override)),
       );
       await tester.pump();
 
@@ -111,9 +106,7 @@ void main() {
         const override = Color(0xFF123456);
         final group = _makeGroup(colorHex: '#AABBCC');
         await tester.pumpWidget(
-          _wrap(
-            GroupAvatar(group: group, size: 40, tintOverride: override),
-          ),
+          _wrap(GroupAvatar(group: group, size: 40, tintOverride: override)),
         );
         await tester.pump();
 
@@ -128,9 +121,7 @@ void main() {
       (tester) async {
         final group = _makeGroup(avatarImageData: _kOnePxPng, emoji: '🌟');
         await tester.pumpWidget(
-          _wrap(
-            GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true),
-          ),
+          _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true)),
         );
         await tester.pumpAndSettle();
 
@@ -146,9 +137,7 @@ void main() {
     ) async {
       final group = _makeGroup(avatarImageData: _kOnePxPng, emoji: '🌟');
       await tester.pumpWidget(
-        _wrap(
-          GroupAvatar(group: group, size: 40, showEmojiOnAvatar: false),
-        ),
+        _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: false)),
       );
       await tester.pumpAndSettle();
 
@@ -158,9 +147,7 @@ void main() {
     testWidgets('emoji badge hidden when group has no emoji', (tester) async {
       final group = _makeGroup(avatarImageData: _kOnePxPng, emoji: null);
       await tester.pumpWidget(
-        _wrap(
-          GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true),
-        ),
+        _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true)),
       );
       await tester.pumpAndSettle();
 
@@ -172,14 +159,9 @@ void main() {
       (tester) async {
         // Regression: _blob decodes "" to Uint8List(0) instead of null.
         // GroupAvatar treats empty bytes the same as null (no avatar).
-        final group = _makeGroup(
-          avatarImageData: Uint8List(0),
-          emoji: '🌟',
-        );
+        final group = _makeGroup(avatarImageData: Uint8List(0), emoji: '🌟');
         await tester.pumpWidget(
-          _wrap(
-            GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true),
-          ),
+          _wrap(GroupAvatar(group: group, size: 40, showEmojiOnAvatar: true)),
         );
         await tester.pump();
 
@@ -193,9 +175,7 @@ void main() {
       tester,
     ) async {
       final group = _makeGroup(name: 'My Group');
-      await tester.pumpWidget(
-        _wrap(GroupAvatar(group: group, size: 40)),
-      );
+      await tester.pumpWidget(_wrap(GroupAvatar(group: group, size: 40)));
       await tester.pump();
 
       final avatar = tester.widget<MemberAvatar>(find.byType(MemberAvatar));

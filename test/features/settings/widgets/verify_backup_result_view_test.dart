@@ -57,7 +57,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('These words unlock this device'), findsOneWidget);
+      expect(
+        find.textContaining('These words unlock this device'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows masked phrase preview (first … last)', (tester) async {
@@ -175,9 +178,13 @@ void main() {
           return true;
         });
       }
+
       walk(allSemantics!.rootSemanticsNode!);
-      expect(foundLiveRegion, isTrue,
-          reason: 'Match headline should have liveRegion: true');
+      expect(
+        foundLiveRegion,
+        isTrue,
+        reason: 'Match headline should have liveRegion: true',
+      );
     });
   });
 
@@ -275,9 +282,13 @@ void main() {
           return true;
         });
       }
+
       walk(allSemantics!.rootSemanticsNode!);
-      expect(foundLiveRegion, isTrue,
-          reason: 'No-match headline should have liveRegion: true');
+      expect(
+        foundLiveRegion,
+        isTrue,
+        reason: 'No-match headline should have liveRegion: true',
+      );
     });
   });
 }

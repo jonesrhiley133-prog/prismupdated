@@ -1339,7 +1339,8 @@ class FlagInfoScreen extends ConsumerStatefulWidget {
 class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
   final _key = GlobalKey();
 
-  Future<Uint8List?> _png({double ratio = 4}) => captureBoundary(_key, pixelRatio: ratio);
+  Future<Uint8List?> _png({double ratio = 4}) =>
+      captureBoundary(_key, pixelRatio: ratio);
 
   Future<void> _save(
     Uint8List bytes,
@@ -1621,7 +1622,9 @@ class _FlagInfoScreenState extends ConsumerState<FlagInfoScreen> {
                     if (b == null) return;
                     final decoded = img.decodePng(b);
                     if (decoded == null) return;
-                    final rgba = decoded.convert(numChannels: 4).getBytes(order: img.ChannelOrder.rgba);
+                    final rgba = decoded
+                        .convert(numChannels: 4)
+                        .getBytes(order: img.ChannelOrder.rgba);
                     await _save(
                       encodeWebpLossless(decoded.width, decoded.height, rgba),
                       slug,

@@ -100,9 +100,7 @@ Future<AsyncValue<List<T>>> _previousDataState<T>(
     await first.timeout(
       const Duration(seconds: 5),
       onTimeout: () {
-        throw TimeoutException(
-          'previous-data helper initial data timed out',
-        );
+        throw TimeoutException('previous-data helper initial data timed out');
       },
     );
     late AsyncValue<List<T>> snapshot;
@@ -339,23 +337,20 @@ void main() {
     },
   );
 
-  test(
-    'real Drift failure releases submission guard for retry',
-    () async {
-      final submit = container.read(memberFrontActionBusyProvider.notifier);
-      notifier.failNextAdd = true;
-      await expectLater(
-        submit.submit(alice, MemberFrontAction.add),
-        throwsStateError,
-      );
-      expect(container.read(memberFrontActionBusyProvider), isFalse);
-      expect(await submit.submit(alice, MemberFrontAction.add), isTrue);
-      expect(notifier.adds, 2);
-      final rows = await sessions.getAllActiveSessionsUnfiltered();
-      expect(rows.where((row) => row.memberId == alice.id), hasLength(1));
-      expect(rows.any((row) => row.id == bobSession.id), isTrue);
-    },
-  );
+  test('real Drift failure releases submission guard for retry', () async {
+    final submit = container.read(memberFrontActionBusyProvider.notifier);
+    notifier.failNextAdd = true;
+    await expectLater(
+      submit.submit(alice, MemberFrontAction.add),
+      throwsStateError,
+    );
+    expect(container.read(memberFrontActionBusyProvider), isFalse);
+    expect(await submit.submit(alice, MemberFrontAction.add), isTrue);
+    expect(notifier.adds, 2);
+    final rows = await sessions.getAllActiveSessionsUnfiltered();
+    expect(rows.where((row) => row.memberId == alice.id), hasLength(1));
+    expect(rows.any((row) => row.id == bobSession.id), isTrue);
+  });
 
   test(
     'real Drift coalesced A ack allows legitimate A add after B-only',
@@ -410,54 +405,43 @@ void main() {
 
   for (final input in ['sessions', 'roster']) {
     for (final state in ['loading', 'error']) {
-      test(
-        '$input $state with previous data refuses dispatch',
-        () async {
-          final previousSessions = AsyncData<List<FrontingSession>>([
-            bobSession,
-          ]);
-          final previousRoster = AsyncData<List<Member>>([
-            alice,
-            bob,
-            protected,
-          ]);
-          final staleSessions = await _previousDataState(
-            previousSessions.requireValue,
-            loading: state == 'loading',
+      test('$input $state with previous data refuses dispatch', () async {
+        final previousSessions = AsyncData<List<FrontingSession>>([bobSession]);
+        final previousRoster = AsyncData<List<Member>>([alice, bob, protected]);
+        final staleSessions = await _previousDataState(
+          previousSessions.requireValue,
+          loading: state == 'loading',
+        );
+        final staleRoster = await _previousDataState(
+          previousRoster.requireValue,
+          loading: state == 'loading',
+        );
+        final isolated = ProviderContainer(
+          overrides: [
+            frontingSessionRepositoryProvider.overrideWithValue(sessions),
+            frontingNotifierProvider.overrideWith(_CountingNotifier.new),
+            activeSessionsProvider.overrideWithValue(
+              input == 'sessions' ? staleSessions : previousSessions,
+            ),
+            allMemberListProvider.overrideWithValue(
+              input == 'roster' ? staleRoster : previousRoster,
+            ),
+          ],
+        );
+        try {
+          final submit = isolated.read(memberFrontActionBusyProvider.notifier);
+          expect(await submit.submit(alice, MemberFrontAction.add), isFalse);
+          expect(
+            (isolated.read(frontingNotifierProvider.notifier)
+                    as _CountingNotifier)
+                .adds,
+            0,
           );
-          final staleRoster = await _previousDataState(
-            previousRoster.requireValue,
-            loading: state == 'loading',
-          );
-          final isolated = ProviderContainer(
-            overrides: [
-              frontingSessionRepositoryProvider.overrideWithValue(sessions),
-              frontingNotifierProvider.overrideWith(_CountingNotifier.new),
-              activeSessionsProvider.overrideWithValue(
-                input == 'sessions' ? staleSessions : previousSessions,
-              ),
-              allMemberListProvider.overrideWithValue(
-                input == 'roster' ? staleRoster : previousRoster,
-              ),
-            ],
-          );
-          try {
-            final submit = isolated.read(
-              memberFrontActionBusyProvider.notifier,
-            );
-            expect(await submit.submit(alice, MemberFrontAction.add), isFalse);
-            expect(
-              (isolated.read(frontingNotifierProvider.notifier)
-                      as _CountingNotifier)
-                  .adds,
-              0,
-            );
-            expect((await sessions.getAllActiveSessionsUnfiltered()).length, 1);
-          } finally {
-            isolated.dispose();
-          }
-        },
-      );
+          expect((await sessions.getAllActiveSessionsUnfiltered()).length, 1);
+        } finally {
+          isolated.dispose();
+        }
+      });
     }
   }
 

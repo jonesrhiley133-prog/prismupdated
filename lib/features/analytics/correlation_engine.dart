@@ -2,7 +2,15 @@ import 'dart:math' as math;
 
 /// One variable as a value per day (missing days are absent).
 class DailySeries {
-  DailySeries({required this.id, required this.group, required this.en, required this.es, required this.values, this.unit = '', this.zeroFill = false});
+  DailySeries({
+    required this.id,
+    required this.group,
+    required this.en,
+    required this.es,
+    required this.values,
+    this.unit = '',
+    this.zeroFill = false,
+  });
   final String id;
 
   /// Category for grouping in the picker (fronting, sleep, …).
@@ -46,7 +54,12 @@ class Correlation {
 
 /// Pearson correlation of mood with [s] over [days]. With [lag] = 1 the
 /// variable on day d is compared with mood on day d+1.
-Correlation? correlate(DailySeries mood, DailySeries s, List<DateTime> days, {int lag = 0}) {
+Correlation? correlate(
+  DailySeries mood,
+  DailySeries s,
+  List<DateTime> days, {
+  int lag = 0,
+}) {
   final xs = <double>[], ys = <double>[];
   for (final d in days) {
     final m = mood.at(lag == 0 ? d : DateTime(d.year, d.month, d.day + lag));
@@ -57,7 +70,8 @@ Correlation? correlate(DailySeries mood, DailySeries s, List<DateTime> days, {in
   }
   final n = xs.length;
   if (n < 3) return n == 0 ? null : Correlation(s, 0, n, 1);
-  final mx = xs.reduce((a, b) => a + b) / n, my = ys.reduce((a, b) => a + b) / n;
+  final mx = xs.reduce((a, b) => a + b) / n,
+      my = ys.reduce((a, b) => a + b) / n;
   var sxy = 0.0, sxx = 0.0, syy = 0.0;
   for (var i = 0; i < n; i++) {
     sxy += (xs[i] - mx) * (ys[i] - my);
@@ -82,7 +96,14 @@ double _phi(double x) => 0.5 * (1 + _erf(x / math.sqrt2));
 double _erf(double x) {
   // Abramowitz & Stegun 7.1.26.
   final t = 1 / (1 + 0.3275911 * x.abs());
-  final y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * math.exp(-x * x);
+  final y =
+      1 -
+      (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t -
+                      0.284496736) *
+                  t +
+              0.254829592) *
+          t *
+          math.exp(-x * x);
   return x >= 0 ? y : -y;
 }
 
@@ -93,11 +114,17 @@ Map<int, (double, int)> weekdayPattern(DailySeries mood) {
     final c = sums[d.weekday];
     sums[d.weekday] = ((c?.$1 ?? 0) + v, (c?.$2 ?? 0) + 1);
   });
-  return {for (final e in sums.entries) e.key: (e.value.$1 / e.value.$2, e.value.$2)};
+  return {
+    for (final e in sums.entries) e.key: (e.value.$1 / e.value.$2, e.value.$2),
+  };
 }
 
 /// Average mood on days with the variable above vs at/below its median.
-(double, double, int, int)? splitByMedian(DailySeries mood, DailySeries s, List<DateTime> days) {
+(double, double, int, int)? splitByMedian(
+  DailySeries mood,
+  DailySeries s,
+  List<DateTime> days,
+) {
   final pairs = <(double, double)>[];
   for (final d in days) {
     final m = mood.at(d), v = s.at(d);
@@ -106,8 +133,14 @@ Map<int, (double, int)> weekdayPattern(DailySeries mood) {
   if (pairs.length < 6) return null;
   final sorted = [for (final p in pairs) p.$1]..sort();
   final median = sorted[sorted.length ~/ 2];
-  final hi = [for (final p in pairs) if (p.$1 > median) p.$2];
-  final lo = [for (final p in pairs) if (p.$1 <= median) p.$2];
+  final hi = [
+    for (final p in pairs)
+      if (p.$1 > median) p.$2,
+  ];
+  final lo = [
+    for (final p in pairs)
+      if (p.$1 <= median) p.$2,
+  ];
   if (hi.isEmpty || lo.isEmpty) return null;
   double avg(List<double> l) => l.reduce((a, b) => a + b) / l.length;
   return (avg(hi), avg(lo), hi.length, lo.length);

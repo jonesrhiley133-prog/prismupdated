@@ -63,13 +63,39 @@ void main() {
   });
 
   test('accessory adjustments and picture fit survive saving', () {
-    const look = CompanionLook(hat: 'beanie', adjust: {'hat': AccessoryAdjust(dx: 4, dy: -3, scale: 1.4, rotation: 15, mirror: true, opacity: 0.6, layer: 2)});
+    const look = CompanionLook(
+      hat: 'beanie',
+      adjust: {
+        'hat': AccessoryAdjust(
+          dx: 4,
+          dy: -3,
+          scale: 1.4,
+          rotation: 15,
+          mirror: true,
+          opacity: 0.6,
+          layer: 2,
+        ),
+      },
+    );
     final back = CompanionLook.fromJson(look.toJson());
     final a = back.adjustOf('hat');
-    expect([a.dx, a.dy, a.scale, a.rotation, a.mirror, a.opacity, a.layer], [4, -3, 1.4, 15, true, 0.6, 2]);
+    expect(
+      [a.dx, a.dy, a.scale, a.rotation, a.mirror, a.opacity, a.layer],
+      [4, -3, 1.4, 15, true, 0.6, 2],
+    );
     expect(back.adjustOf('neck').isIdentity, isTrue);
-    const fit = ArtFit(x: 0.1, scale: 1.5, crop: 'circle', background: 'soft', headX: 40, neckY: 70);
+    const fit = ArtFit(
+      x: 0.1,
+      scale: 1.5,
+      crop: 'circle',
+      background: 'soft',
+      headX: 40,
+      neckY: 70,
+    );
     final f = ArtFit.fromJson(fit.toJson());
-    expect([f.x, f.scale, f.crop, f.background, f.headX, f.neckY], [0.1, 1.5, 'circle', 'soft', 40, 70]);
+    expect(
+      [f.x, f.scale, f.crop, f.background, f.headX, f.neckY],
+      [0.1, 1.5, 'circle', 'soft', 40, 70],
+    );
   });
 }

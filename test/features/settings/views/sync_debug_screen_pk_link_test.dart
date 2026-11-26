@@ -39,7 +39,9 @@ Widget _buildSubject({required GoRouter router}) {
 
 void main() {
   group('SyncDebugScreen PK cross-link', () {
-    testWidgets('renders a "View PluralKit sync log" cross-link', (tester) async {
+    testWidgets('renders a "View PluralKit sync log" cross-link', (
+      tester,
+    ) async {
       final router = GoRouter(
         initialLocation: '/settings/debug',
         routes: [
@@ -49,7 +51,8 @@ void main() {
           ),
           GoRoute(
             path: AppRoutePaths.settingsPluralkitSyncDebug,
-            builder: (_, _) => const Scaffold(body: Text('pk-sync-debug-route')),
+            builder: (_, _) =>
+                const Scaffold(body: Text('pk-sync-debug-route')),
           ),
         ],
       );
@@ -60,8 +63,9 @@ void main() {
       expect(find.text('View PluralKit sync log'), findsOneWidget);
     });
 
-    testWidgets('tapping the cross-link navigates to the PK sync debug route',
-        (tester) async {
+    testWidgets('tapping the cross-link navigates to the PK sync debug route', (
+      tester,
+    ) async {
       final router = GoRouter(
         initialLocation: '/settings/debug',
         routes: [
@@ -71,7 +75,8 @@ void main() {
           ),
           GoRoute(
             path: AppRoutePaths.settingsPluralkitSyncDebug,
-            builder: (_, _) => const Scaffold(body: Text('pk-sync-debug-route')),
+            builder: (_, _) =>
+                const Scaffold(body: Text('pk-sync-debug-route')),
           ),
         ],
       );

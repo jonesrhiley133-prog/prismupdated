@@ -5,7 +5,13 @@ enum CoCertainty { confirmed, uncertain, incomplete }
 
 /// A stretch of time when the same set of 2+ alters were recorded fronting.
 class CoFrontPeriod {
-  CoFrontPeriod(this.members, this.start, this.end, this.certainty, {this.ongoing = false});
+  CoFrontPeriod(
+    this.members,
+    this.start,
+    this.end,
+    this.certainty, {
+    this.ongoing = false,
+  });
   final Set<String> members;
   final DateTime start;
   DateTime end;
@@ -40,7 +46,9 @@ class CoFrontStats {
   final Map<DateTime, Duration> byDay;
   final Map<CoCertainty, Duration> certaintyTotals;
 
-  Duration get average => periods.isEmpty ? Duration.zero : Duration(seconds: total.inSeconds ~/ periods.length);
+  Duration get average => periods.isEmpty
+      ? Duration.zero
+      : Duration(seconds: total.inSeconds ~/ periods.length);
 }
 
 /// Finds co-fronting periods with a sweep over session start/end points.
@@ -59,7 +67,10 @@ List<CoFrontPeriod> findCoFronting(
   final n = now ?? DateTime.now();
   final events = <(DateTime, int, FrontingSession)>[];
   for (final s in sessions) {
-    if (s.isDeleted || s.sessionType != SessionType.normal || s.memberId == null) continue;
+    if (s.isDeleted ||
+        s.sessionType != SessionType.normal ||
+        s.memberId == null)
+      continue;
     var start = s.startTime;
     var end = s.endTime ?? n;
     if (end.isAfter(to)) end = to;
@@ -71,7 +82,9 @@ List<CoFrontPeriod> findCoFronting(
   }
   events.sort((a, b) {
     final c = a.$1.compareTo(b.$1);
-    return c != 0 ? c : a.$2.compareTo(b.$2); // ends before starts at the same instant
+    return c != 0
+        ? c
+        : a.$2.compareTo(b.$2); // ends before starts at the same instant
   });
   final active = <String, FrontingSession>{};
   final out = <CoFrontPeriod>[];
@@ -79,15 +92,31 @@ List<CoFrontPeriod> findCoFronting(
   for (final (t, kind, s) in events) {
     if (segStart != null && active.length >= 2 && t.isAfter(segStart)) {
       final members = {for (final x in active.values) x.memberId!};
-      final unsure = active.values.any((x) => x.confidence == FrontConfidence.unsure);
-      final stale = active.values.any((x) => x.endTime == null && n.difference(x.startTime) > const Duration(hours: 24));
-      final ongoing = active.values.any((x) => x.endTime == null) && !stale && !t.isBefore(to.subtract(const Duration(minutes: 1)));
-      final certainty = stale ? CoCertainty.incomplete : (unsure ? CoCertainty.uncertain : CoCertainty.confirmed);
+      final unsure = active.values.any(
+        (x) => x.confidence == FrontConfidence.unsure,
+      );
+      final stale = active.values.any(
+        (x) =>
+            x.endTime == null &&
+            n.difference(x.startTime) > const Duration(hours: 24),
+      );
+      final ongoing =
+          active.values.any((x) => x.endTime == null) &&
+          !stale &&
+          !t.isBefore(to.subtract(const Duration(minutes: 1)));
+      final certainty = stale
+          ? CoCertainty.incomplete
+          : (unsure ? CoCertainty.uncertain : CoCertainty.confirmed);
       final last = out.isEmpty ? null : out.last;
-      if (last != null && last.end == segStart && last.key == ((members.toList()..sort()).join('+')) && last.certainty == certainty) {
+      if (last != null &&
+          last.end == segStart &&
+          last.key == ((members.toList()..sort()).join('+')) &&
+          last.certainty == certainty) {
         last.end = t;
       } else {
-        out.add(CoFrontPeriod(members, segStart, t, certainty, ongoing: ongoing));
+        out.add(
+          CoFrontPeriod(members, segStart, t, certainty, ongoing: ongoing),
+        );
       }
     }
     if (kind == 1) {
@@ -97,7 +126,10 @@ List<CoFrontPeriod> findCoFronting(
     }
     segStart = t;
   }
-  return [for (final p in out) if (p.duration >= minDuration) p];
+  return [
+    for (final p in out)
+      if (p.duration >= minDuration) p,
+  ];
 }
 
 CoFrontStats summarize(List<CoFrontPeriod> periods) {
@@ -132,7 +164,8 @@ CoFrontStats summarize(List<CoFrontPeriod> periods) {
       final dayStart = DateTime(cur.year, cur.month, cur.day);
       final next = DateTime(cur.year, cur.month, cur.day + 1);
       final segEnd = p.end.isBefore(next) ? p.end : next;
-      byDay[dayStart] = (byDay[dayStart] ?? Duration.zero) + segEnd.difference(cur);
+      byDay[dayStart] =
+          (byDay[dayStart] ?? Duration.zero) + segEnd.difference(cur);
       cur = segEnd;
     }
     cert[p.certainty] = (cert[p.certainty] ?? Duration.zero) + d;

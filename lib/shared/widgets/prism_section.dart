@@ -36,7 +36,8 @@ class PrismSection extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontFamily: theme.textTheme.headlineLarge?.fontFamily,
                 fontWeight: FontWeight.w700,
-                letterSpacing: theme.textTheme.headlineLarge?.letterSpacing ?? 0,
+                letterSpacing:
+                    theme.textTheme.headlineLarge?.letterSpacing ?? 0,
               ),
             ),
           if (description != null) ...[

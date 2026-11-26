@@ -18,14 +18,18 @@ const String kPrismUpdateRepo = String.fromEnvironment('PRISM_UPDATE_REPO');
 
 /// Codeberg repository ("owner/name") with the same releases, used when
 /// GitHub can't be reached (`--dart-define=PRISM_UPDATE_CODEBERG=owner/name`).
-const String kPrismUpdateCodebergRepo = String.fromEnvironment('PRISM_UPDATE_CODEBERG');
+const String kPrismUpdateCodebergRepo = String.fromEnvironment(
+  'PRISM_UPDATE_CODEBERG',
+);
 
 /// Compares "a.b.c" versions; null when either can't be read.
 @visibleForTesting
 int? compareVersions(String a, String b) {
   List<int>? parts(String v) {
     final m = RegExp(r'(\d+)\.(\d+)\.(\d+)').firstMatch(v);
-    return m == null ? null : [for (var i = 1; i <= 3; i++) int.parse(m.group(i)!)];
+    return m == null
+        ? null
+        : [for (var i = 1; i <= 3; i++) int.parse(m.group(i)!)];
   }
 
   final x = parts(a), y = parts(b);
@@ -147,15 +151,14 @@ class AppUpdateService {
   static Future<int> _packageBuild() async =>
       int.tryParse((await PackageInfo.fromPlatform()).buildNumber) ?? 0;
 
-  static Future<String> _packageVersion() async => (await PackageInfo.fromPlatform()).version;
+  static Future<String> _packageVersion() async =>
+      (await PackageInfo.fromPlatform()).version;
 
   bool get _hasSource => repo.contains('/') || codebergRepo.contains('/');
 
   /// True on Android builds that were told where updates live.
   bool get isSupported =>
-      !kIsWeb &&
-      defaultTargetPlatform == TargetPlatform.android &&
-      _hasSource;
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android && _hasSource;
 
   Future<int> currentBuildNumber() => _currentBuild();
 
@@ -172,8 +175,14 @@ class AppUpdateService {
     // GitHub first, then Codeberg if GitHub is unreachable, rate-limited or
     // has nothing for us.
     for (final source in [
-      if (repo.contains('/')) Uri.https('api.github.com', '/repos/$repo/releases', {'per_page': '15'}),
-      if (codebergRepo.contains('/')) Uri.https('codeberg.org', '/api/v1/repos/$codebergRepo/releases', {'limit': '15'}),
+      if (repo.contains('/'))
+        Uri.https('api.github.com', '/repos/$repo/releases', {
+          'per_page': '15',
+        }),
+      if (codebergRepo.contains('/'))
+        Uri.https('codeberg.org', '/api/v1/repos/$codebergRepo/releases', {
+          'limit': '15',
+        }),
     ]) {
       try {
         final found = await _readReleases(source);
@@ -186,7 +195,8 @@ class AppUpdateService {
         firstError ??= e;
       }
     }
-    if (candidates == null) throw firstError ?? const AppUpdateException('network');
+    if (candidates == null)
+      throw firstError ?? const AppUpdateException('network');
     if (candidates.isEmpty) return null;
     final current = await _currentBuild();
     String currentVersion;
@@ -212,7 +222,13 @@ class AppUpdateService {
     final http.Response res;
     try {
       res = await _client
-          .get(url, headers: const {'Accept': 'application/json', 'Cache-Control': 'no-cache'})
+          .get(
+            url,
+            headers: const {
+              'Accept': 'application/json',
+              'Cache-Control': 'no-cache',
+            },
+          )
           .timeout(const Duration(seconds: 20));
     } on Exception catch (e) {
       throw AppUpdateException('network', '$e');
@@ -233,7 +249,10 @@ class AppUpdateService {
     return <AppUpdateInfo>[
       if (decoded is List)
         for (final r in decoded)
-          if (r is Map<String, dynamic> && r['draft'] != true && r['prerelease'] != true) ?parseReleaseJson(r),
+          if (r is Map<String, dynamic> &&
+              r['draft'] != true &&
+              r['prerelease'] != true)
+            ?parseReleaseJson(r),
       if (decoded is Map<String, dynamic>) ?parseReleaseJson(decoded),
     ];
   }
@@ -273,7 +292,8 @@ class AppUpdateService {
 
     Object? lastError;
     for (var attempt = 0; attempt < maxAttempts; attempt++) {
-      if (attempt > 0) await Future<void>.delayed(Duration(seconds: 2 * attempt));
+      if (attempt > 0)
+        await Future<void>.delayed(Duration(seconds: 2 * attempt));
       try {
         final done = await _downloadOnce(info, partial, onProgress);
         if (done) break;
@@ -287,7 +307,9 @@ class AppUpdateService {
         if (e.code != 'network' && e.code != 'download_failed') rethrow;
       }
       if (attempt == maxAttempts - 1) {
-        throw lastError is AppUpdateException ? lastError : const AppUpdateException('download_failed');
+        throw lastError is AppUpdateException
+            ? lastError
+            : const AppUpdateException('download_failed');
       }
     }
     partial.renameSync(file.path);
@@ -300,10 +322,15 @@ class AppUpdateService {
   }
 
   /// One request; returns true when the file is complete.
-  Future<bool> _downloadOnce(AppUpdateInfo info, File partial, void Function(double)? onProgress) async {
+  Future<bool> _downloadOnce(
+    AppUpdateInfo info,
+    File partial,
+    void Function(double)? onProgress,
+  ) async {
     final have = partial.existsSync() ? partial.lengthSync() : 0;
     if (info.sizeBytes > 0 && have == info.sizeBytes) return true;
-    if (info.sizeBytes > 0 && have > info.sizeBytes) throw const AppUpdateException('restart');
+    if (info.sizeBytes > 0 && have > info.sizeBytes)
+      throw const AppUpdateException('restart');
     final req = http.Request('GET', Uri.parse(info.apkUrl));
     if (have > 0) req.headers['Range'] = 'bytes=$have-';
     final http.StreamedResponse res;
@@ -322,14 +349,23 @@ class AppUpdateService {
     if (res.statusCode != 200 && !resumed) {
       throw AppUpdateException('download_failed', 'HTTP ${res.statusCode}');
     }
-    final total = info.sizeBytes > 0 ? info.sizeBytes : (resumed ? have + (res.contentLength ?? 0) : (res.contentLength ?? 0));
-    final sink = partial.openWrite(mode: resumed ? FileMode.append : FileMode.write);
+    final total = info.sizeBytes > 0
+        ? info.sizeBytes
+        : (resumed
+              ? have + (res.contentLength ?? 0)
+              : (res.contentLength ?? 0));
+    final sink = partial.openWrite(
+      mode: resumed ? FileMode.append : FileMode.write,
+    );
     var received = resumed ? have : 0;
     try {
-      await for (final chunk in res.stream.timeout(const Duration(seconds: 45))) {
+      await for (final chunk in res.stream.timeout(
+        const Duration(seconds: 45),
+      )) {
         sink.add(chunk);
         received += chunk.length;
-        if (total > 0) onProgress?.call((received / total).clamp(0, 1).toDouble());
+        if (total > 0)
+          onProgress?.call((received / total).clamp(0, 1).toDouble());
       }
       await sink.flush();
     } on Exception catch (e) {
@@ -337,7 +373,8 @@ class AppUpdateService {
       throw AppUpdateException('network', '$e');
     }
     await sink.close();
-    if (total > 0 && received < total) throw const AppUpdateException('network', 'incomplete');
+    if (total > 0 && received < total)
+      throw const AppUpdateException('network', 'incomplete');
     return true;
   }
 
@@ -364,5 +401,3 @@ class AppUpdateService {
     }
   }
 }
-
-

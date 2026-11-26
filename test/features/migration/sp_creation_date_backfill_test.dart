@@ -19,14 +19,14 @@ SpMember _spMember(String id, {String name = 'Member'}) =>
 
 /// Build a bare-minimum [SpExportData] with the given members.
 SpExportData _export(List<SpMember> members) => SpExportData(
-      members: members,
-      customFronts: const [],
-      frontHistory: const [],
-      groups: const [],
-      channels: const [],
-      messages: const [],
-      polls: const [],
-    );
+  members: members,
+  customFronts: const [],
+  frontHistory: const [],
+  groups: const [],
+  channels: const [],
+  messages: const [],
+  polls: const [],
+);
 
 /// Minimal [domain.Member] domain object for test seeding.
 domain.Member _member(
@@ -34,10 +34,10 @@ domain.Member _member(
   String name = 'Member',
   DateTime? createdAt,
 }) => domain.Member(
-      id: id,
-      name: name,
-      createdAt: createdAt ?? DateTime.utc(2024, 1, 1),
-    );
+  id: id,
+  name: name,
+  createdAt: createdAt ?? DateTime.utc(2024, 1, 1),
+);
 
 // =============================================================================
 // Fake MemberRepository that captures updateMemberFields calls
@@ -63,16 +63,16 @@ class _FakeMemberRepository implements MemberRepository {
     final member = _members[id];
     if (member == null) return 0;
     if (changedFields.containsKey('created_at')) {
-      _members[id] =
-          member.copyWith(createdAt: changedFields['created_at'] as DateTime);
+      _members[id] = member.copyWith(
+        createdAt: changedFields['created_at'] as DateTime,
+      );
     }
     return 1;
   }
 
   // ── Unused stubs ────────────────────────────────────────────────────────────
   @override
-  Future<List<domain.Member>> getAllMembers() async =>
-      _members.values.toList();
+  Future<List<domain.Member>> getAllMembers() async => _members.values.toList();
   @override
   Future<List<domain.Member>> getAllMembersIncludingDeleted() async =>
       _members.values.toList();
@@ -98,10 +98,13 @@ class _FakeMemberRepository implements MemberRepository {
       ids.map((id) => _members[id]).whereType<domain.Member>().toList();
   @override
   Stream<List<domain.Member>> watchMembersByIds(List<String> ids) {
-    final result =
-        ids.map((id) => _members[id]).whereType<domain.Member>().toList();
+    final result = ids
+        .map((id) => _members[id])
+        .whereType<domain.Member>()
+        .toList();
     return Stream.value(result);
   }
+
   @override
   Future<int> getCount() async => _members.length;
   @override
@@ -172,24 +175,26 @@ void main() {
   // ── Test cases ──────────────────────────────────────────────────────────────
 
   group('preview', () {
-    test('returns matches for SP members with valid ObjectIds and mappings',
-        () async {
-      // A valid 24-char MongoDB ObjectId whose first 4 bytes encode
-      // seconds since epoch (0x5F000000 = 2020-07-02T00:00:00Z).
-      const spId = '5f0000000000000000000000';
-      const prismId = 'prism-uuid-alice';
+    test(
+      'returns matches for SP members with valid ObjectIds and mappings',
+      () async {
+        // A valid 24-char MongoDB ObjectId whose first 4 bytes encode
+        // seconds since epoch (0x5F000000 = 2020-07-02T00:00:00Z).
+        const spId = '5f0000000000000000000000';
+        const prismId = 'prism-uuid-alice';
 
-      await insertMapping(spId, prismId);
-      memberRepo.seed(_member(prismId, name: 'Alice'));
+        await insertMapping(spId, prismId);
+        memberRepo.seed(_member(prismId, name: 'Alice'));
 
-      final preview = await service.preview(_export([_spMember(spId)]));
+        final preview = await service.preview(_export([_spMember(spId)]));
 
-      expect(preview.matches, hasLength(1));
-      expect(preview.unmatchedCount, 0);
-      expect(preview.matches.first.prismId, prismId);
-      expect(preview.matches.first.memberName, 'Alice');
-      expect(preview.matches.first.newCreatedAt.year, 2020);
-    });
+        expect(preview.matches, hasLength(1));
+        expect(preview.unmatchedCount, 0);
+        expect(preview.matches.first.prismId, prismId);
+        expect(preview.matches.first.memberName, 'Alice');
+        expect(preview.matches.first.newCreatedAt.year, 2020);
+      },
+    );
 
     test('returns zero matches when sp_id_map is empty', () async {
       const spId = '5f0000000000000000000000';
@@ -233,18 +238,20 @@ void main() {
       expect(preview.unmatchedCount, 1);
     });
 
-    test('skips members deleted from Prism (getMemberById returns null)',
-        () async {
-      const spId = '5f0000000000000000000000';
-      const prismId = 'prism-deleted';
-      await insertMapping(spId, prismId);
-      // Do NOT seed prismId in memberRepo → getMemberById returns null.
+    test(
+      'skips members deleted from Prism (getMemberById returns null)',
+      () async {
+        const spId = '5f0000000000000000000000';
+        const prismId = 'prism-deleted';
+        await insertMapping(spId, prismId);
+        // Do NOT seed prismId in memberRepo → getMemberById returns null.
 
-      final preview = await service.preview(_export([_spMember(spId)]));
+        final preview = await service.preview(_export([_spMember(spId)]));
 
-      expect(preview.matches, isEmpty);
-      expect(preview.unmatchedCount, 1);
-    });
+        expect(preview.matches, isEmpty);
+        expect(preview.unmatchedCount, 1);
+      },
+    );
 
     test('records currentCreatedAt from the stored member', () async {
       const spId = '5f0000000000000000000000';

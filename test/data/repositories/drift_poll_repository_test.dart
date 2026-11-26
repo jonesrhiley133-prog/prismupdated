@@ -81,17 +81,19 @@ void main() {
       expect(captured.single.fields.containsKey('is_deleted'), isFalse);
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.createPoll(makePoll());
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.createPoll(makePoll());
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updatePoll(makePoll());
+        await repo.updatePoll(makePoll());
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
       await repo.createPoll(
@@ -126,25 +128,25 @@ void main() {
       );
     });
 
-    test('null-clearing emits the null and writes it to the database',
-        () async {
-      await repo.createPoll(
-        makePoll(description: 'Original description'),
-      );
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'null-clearing emits the null and writes it to the database',
+      () async {
+        await repo.createPoll(makePoll(description: 'Original description'));
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updatePoll(makePoll(description: null));
+        await repo.updatePoll(makePoll(description: null));
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('description'), isTrue);
-      expect(patch['description'], isNull);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('description'), isTrue);
+        expect(patch['description'], isNull);
 
-      final row = await pollsDao.getPollById('p1');
-      expect(row!.description, isNull);
-    });
+        final row = await pollsDao.getPollById('p1');
+        expect(row!.description, isNull);
+      },
+    );
 
     test('silently no-ops on a tombstoned poll', () async {
       await repo.createPoll(makePoll());
@@ -250,8 +252,9 @@ void main() {
         expect(row.isAnonymous, isTrue);
         expect(row.allowsMultipleVotes, isTrue);
         expect(
-          row.expiresAt!
-              .isAtSameMomentAs(baseTime.add(const Duration(days: 14))),
+          row.expiresAt!.isAtSameMomentAs(
+            baseTime.add(const Duration(days: 14)),
+          ),
           isTrue,
         );
         expect(row.isClosed, isTrue);

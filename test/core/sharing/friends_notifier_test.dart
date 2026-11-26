@@ -74,9 +74,7 @@ void main() {
 
   test('subscription is cancelled when provider is disposed', () async {
     final container = ProviderContainer(
-      overrides: [
-        friendsRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [friendsRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 
@@ -93,15 +91,16 @@ void main() {
     container.invalidate(friendsProvider);
     await Future<void>.delayed(Duration.zero);
 
-    expect(fakeRepo.activeListeners, 0,
-        reason: 'Stream subscription should be cancelled on dispose');
+    expect(
+      fakeRepo.activeListeners,
+      0,
+      reason: 'Stream subscription should be cancelled on dispose',
+    );
   });
 
   test('rebuild does not leak additional subscriptions', () async {
     final container = ProviderContainer(
-      overrides: [
-        friendsRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [friendsRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 
@@ -115,17 +114,18 @@ void main() {
     container.invalidate(friendsProvider);
     await Future<void>.delayed(Duration.zero);
 
-    expect(fakeRepo.activeListeners, 1,
-        reason: 'Old subscription should be cancelled before new one starts');
+    expect(
+      fakeRepo.activeListeners,
+      1,
+      reason: 'Old subscription should be cancelled before new one starts',
+    );
 
     sub.close();
   });
 
   test('emitted records are converted to Friend models', () async {
     final container = ProviderContainer(
-      overrides: [
-        friendsRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [friendsRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 

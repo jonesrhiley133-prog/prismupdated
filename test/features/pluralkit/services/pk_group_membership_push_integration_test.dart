@@ -73,7 +73,8 @@ void main() {
           );
         }
         testGroupUuid = groups.first.uuid;
-        baselineGroupMembers = (groups.first.memberIds ?? const <String>[]).toSet();
+        baselineGroupMembers = (groups.first.memberIds ?? const <String>[])
+            .toSet();
         final allMembers = await client.getMembers();
         allMemberUuids = allMembers.map((m) => m.uuid).toList();
         if (allMemberUuids.length < 2) {
@@ -93,8 +94,7 @@ void main() {
         // test did. If any test left non-baseline members in the group, this
         // removes them.
         try {
-          final current =
-              (await client.getGroupMembers(testGroupUuid)).toSet();
+          final current = (await client.getGroupMembers(testGroupUuid)).toSet();
           final extras = current.difference(baselineGroupMembers).toList();
           if (extras.isNotEmpty) {
             await client.removeMembersFromGroup(testGroupUuid, extras);
@@ -128,8 +128,7 @@ void main() {
 
           await client.addMembersToGroup(testGroupUuid, [candidate]);
 
-          final after =
-              (await client.getGroupMembers(testGroupUuid)).toSet();
+          final after = (await client.getGroupMembers(testGroupUuid)).toSet();
           expect(after, contains(candidate));
         },
         timeout: const Timeout(Duration(minutes: 1)),
@@ -149,8 +148,7 @@ void main() {
           await client.addMembersToGroup(testGroupUuid, [candidate]);
           await client.removeMembersFromGroup(testGroupUuid, [candidate]);
 
-          final after =
-              (await client.getGroupMembers(testGroupUuid)).toSet();
+          final after = (await client.getGroupMembers(testGroupUuid)).toSet();
           expect(after, isNot(contains(candidate)));
         },
         timeout: const Timeout(Duration(minutes: 1)),
@@ -203,19 +201,23 @@ void main() {
             PkSyncDirection.bidirectional,
           );
 
-          expect(result.added, 1,
-              reason: 'orchestrator should report one successful add');
+          expect(
+            result.added,
+            1,
+            reason: 'orchestrator should report one successful add',
+          );
           expect(result.failed, 0);
 
           // PK side: the member is now in the group.
-          final after =
-              (await client.getGroupMembers(testGroupUuid)).toSet();
-          expect(after, contains(candidate),
-              reason: 'reporter\'s bug regression: local push_add must reach PK');
+          final after = (await client.getGroupMembers(testGroupUuid)).toSet();
+          expect(
+            after,
+            contains(candidate),
+            reason: 'reporter\'s bug regression: local push_add must reach PK',
+          );
 
           // Local side: pending cleared to none, row still active.
-          final stored =
-              (await db.select(db.memberGroupEntries).get()).single;
+          final stored = (await db.select(db.memberGroupEntries).get()).single;
           expect(stored.pendingPkOp, 'none');
           expect(stored.isDeleted, isFalse);
         },
@@ -267,19 +269,24 @@ void main() {
             PkSyncDirection.bidirectional,
           );
 
-          expect(result.removed, 1,
-              reason: 'orchestrator should report one successful remove');
+          expect(
+            result.removed,
+            1,
+            reason: 'orchestrator should report one successful remove',
+          );
           expect(result.failed, 0);
 
           // PK side: member gone.
-          final after =
-              (await client.getGroupMembers(testGroupUuid)).toSet();
+          final after = (await client.getGroupMembers(testGroupUuid)).toSet();
           expect(after, isNot(contains(candidate)));
 
           // Local side: row hard-deleted.
           final remaining = await db.select(db.memberGroupEntries).get();
-          expect(remaining, isEmpty,
-              reason: 'guarded DELETE should hard-remove the tombstone');
+          expect(
+            remaining,
+            isEmpty,
+            reason: 'guarded DELETE should hard-remove the tombstone',
+          );
         },
         timeout: const Timeout(Duration(minutes: 1)),
         skip: _skipAll ? _skipReason : false,
@@ -352,7 +359,9 @@ Future<String> _seedLocalGroup(
   required String id,
   required String pkUuid,
 }) async {
-  await db.into(db.memberGroups).insert(
+  await db
+      .into(db.memberGroups)
+      .insert(
         MemberGroupsCompanion.insert(
           id: id,
           name: id,
@@ -364,8 +373,10 @@ Future<String> _seedLocalGroup(
 }
 
 Future<String> _seedLocalMember(
-  MemberRepository repo,
-  {required String id, required String pkUuid}) async {
+  MemberRepository repo, {
+  required String id,
+  required String pkUuid,
+}) async {
   await repo.createMember(
     domain.Member(
       id: id,
@@ -387,7 +398,9 @@ Future<void> _seedPendingEntry(
   required String pendingPkOp,
   required bool isDeleted,
 }) {
-  return db.into(db.memberGroupEntries).insert(
+  return db
+      .into(db.memberGroupEntries)
+      .insert(
         MemberGroupEntriesCompanion.insert(
           id: id,
           groupId: groupId,

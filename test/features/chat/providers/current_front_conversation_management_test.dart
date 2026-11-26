@@ -508,11 +508,13 @@ void main() {
         );
         addTearDown(container.dispose);
 
-        await container.read(chatNotifierProvider.notifier).sendMessage(
-          conversationId: 'conv-1',
-          content: 'hello',
-          authorId: 'bob',
-        );
+        await container
+            .read(chatNotifierProvider.notifier)
+            .sendMessage(
+              conversationId: 'conv-1',
+              content: 'hello',
+              authorId: 'bob',
+            );
 
         expect(repo.conversations.single.archivedByMemberIds, ['alice']);
         expect(repo.conversations.single.archivedForEveryone, isTrue);

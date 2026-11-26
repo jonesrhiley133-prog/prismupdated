@@ -20,7 +20,8 @@ class GameResult {
   String? get challengeId => r.fields['challenge'] as String?;
   String? get nightId => r.fields['night'] as String?;
   DateTime get when => r.occurredAt ?? r.createdAt;
-  double? get ratio => score == null || max == null || max == 0 ? null : score! / max!;
+  double? get ratio =>
+      score == null || max == null || max == 0 ? null : score! / max!;
 }
 
 class GameChallenge {
@@ -29,15 +30,23 @@ class GameChallenge {
   String get gameId => r.title;
   String? get from => r.memberId;
   int get seed => (r.fields['seed'] as num?)?.toInt() ?? 0;
-  List<String> get to => [for (final v in (r.fields['to'] as List?) ?? const []) '$v'];
+  List<String> get to => [
+    for (final v in (r.fields['to'] as List?) ?? const []) '$v',
+  ];
   String get message => r.body ?? '';
-  Map<String, dynamic> get custom => (r.fields['custom'] as Map?)?.cast<String, dynamic>() ?? const {};
+  Map<String, dynamic> get custom =>
+      (r.fields['custom'] as Map?)?.cast<String, dynamic>() ?? const {};
   DateTime get when => r.createdAt;
 }
 
 /// Per-alter recreation profile: favourites and whether stats are hidden.
 class GameProfile {
-  const GameProfile({this.record, this.favorites = const [], this.hideStats = false, this.clues = const []});
+  const GameProfile({
+    this.record,
+    this.favorites = const [],
+    this.hideStats = false,
+    this.clues = const [],
+  });
   final TrackerRecord? record;
   final List<String> favorites;
   final bool hideStats;
@@ -45,36 +54,68 @@ class GameProfile {
   /// Clues an alter chose to share for Guess the Alter.
   final List<String> clues;
 
-  Map<String, Object?> get fields => {'favorites': favorites, 'hideStats': hideStats, 'clues': clues};
+  Map<String, Object?> get fields => {
+    'favorites': favorites,
+    'hideStats': hideStats,
+    'clues': clues,
+  };
 
   static GameProfile of(TrackerRecord? r) => GameProfile(
     record: r,
-    favorites: [for (final v in (r?.fields['favorites'] as List?) ?? const []) '$v'],
+    favorites: [
+      for (final v in (r?.fields['favorites'] as List?) ?? const []) '$v',
+    ],
     hideStats: r?.fields['hideStats'] == true,
     clues: [for (final v in (r?.fields['clues'] as List?) ?? const []) '$v'],
   );
 }
 
-final gameResultsProvider = Provider<List<GameResult>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameResult)).value ?? const <TrackerRecord>[]) GameResult(r)]);
+final gameResultsProvider = Provider<List<GameResult>>(
+  (ref) => [
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.gameResult)).value ??
+            const <TrackerRecord>[])
+      GameResult(r),
+  ],
+);
 
-final gameSavesProvider = Provider<List<TrackerRecord>>((ref) => ref.watch(trackerKindProvider(TrackerKind.gameSave)).value ?? const []);
+final gameSavesProvider = Provider<List<TrackerRecord>>(
+  (ref) =>
+      ref.watch(trackerKindProvider(TrackerKind.gameSave)).value ?? const [],
+);
 
-final gameChallengesProvider = Provider<List<GameChallenge>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameChallenge)).value ?? const <TrackerRecord>[]) GameChallenge(r)]);
+final gameChallengesProvider = Provider<List<GameChallenge>>(
+  (ref) => [
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.gameChallenge)).value ??
+            const <TrackerRecord>[])
+      GameChallenge(r),
+  ],
+);
 
 /// Profiles by member id ('' = the shared, no-alter profile).
 final gameProfilesProvider = Provider<Map<String, GameProfile>>((ref) {
-  final list = ref.watch(trackerKindProvider(TrackerKind.gameProfile)).value ?? const <TrackerRecord>[];
+  final list =
+      ref.watch(trackerKindProvider(TrackerKind.gameProfile)).value ??
+      const <TrackerRecord>[];
   return {for (final r in list.reversed) r.memberId ?? '': GameProfile.of(r)};
 });
 
 /// Who's playing by default: whoever fronts (never required).
-final gamePlayerDefaultProvider = Provider<String?>((ref) => ref.watch(currentFronterProvider).value?.id);
+final gamePlayerDefaultProvider = Provider<String?>(
+  (ref) => ref.watch(currentFronterProvider).value?.id,
+);
 
-final gameMembersProvider = Provider<List<Member>>((ref) => ref.watch(userVisibleMembersProvider).value ?? const []);
+final gameMembersProvider = Provider<List<Member>>(
+  (ref) => ref.watch(userVisibleMembersProvider).value ?? const [],
+);
 
 final gameNamesProvider = Provider<Map<String, String>>((ref) {
   final prefer = ref.watch(memberNamePreferDisplayProvider);
-  return {for (final m in ref.watch(gameMembersProvider)) m.id: m.effectiveName(preferDisplayName: prefer)};
+  return {
+    for (final m in ref.watch(gameMembersProvider))
+      m.id: m.effectiveName(preferDisplayName: prefer),
+  };
 });
 
 class GamesActions {
@@ -98,18 +139,41 @@ class GamesActions {
     memberId: memberId,
     amount: score,
     occurredAt: DateTime.now(),
-    fields: {'max': max, 'summary': summary, 'memorable': memorable, 'challenge': challengeId, 'night': nightId, 'details': details},
+    fields: {
+      'max': max,
+      'summary': summary,
+      'memorable': memorable,
+      'challenge': challengeId,
+      'night': nightId,
+      'details': details,
+    },
   );
 
-  TrackerRecord? saveFor(String gameId, String? memberId) => ref.read(gameSavesProvider).where((r) => r.title == gameId && r.memberId == memberId).firstOrNull;
+  TrackerRecord? saveFor(String gameId, String? memberId) => ref
+      .read(gameSavesProvider)
+      .where((r) => r.title == gameId && r.memberId == memberId)
+      .firstOrNull;
 
-  Future<void> writeSave(String gameId, String? memberId, Map<String, Object?> state, {int? seed}) async {
+  Future<void> writeSave(
+    String gameId,
+    String? memberId,
+    Map<String, Object?> state, {
+    int? seed,
+  }) async {
     final existing = saveFor(gameId, memberId);
     final fields = {'state': state, 'seed': seed};
     if (existing == null) {
-      await _t.create(kind: TrackerKind.gameSave, title: gameId, memberId: memberId, fields: fields, occurredAt: DateTime.now());
+      await _t.create(
+        kind: TrackerKind.gameSave,
+        title: gameId,
+        memberId: memberId,
+        fields: fields,
+        occurredAt: DateTime.now(),
+      );
     } else {
-      await _t.save(existing.copyWith(occurredAt: DateTime.now()).withFields(fields));
+      await _t.save(
+        existing.copyWith(occurredAt: DateTime.now()).withFields(fields),
+      );
     }
   }
 
@@ -136,16 +200,36 @@ class GamesActions {
     await _writeProfile(memberId, p, {...p.fields, 'clues': clues});
   }
 
-  Future<void> _writeProfile(String? memberId, GameProfile p, Map<String, Object?> fields) async {
+  Future<void> _writeProfile(
+    String? memberId,
+    GameProfile p,
+    Map<String, Object?> fields,
+  ) async {
     if (p.record == null) {
-      await _t.create(kind: TrackerKind.gameProfile, memberId: memberId, fields: fields);
+      await _t.create(
+        kind: TrackerKind.gameProfile,
+        memberId: memberId,
+        fields: fields,
+      );
     } else {
       await _t.save(p.record!.withFields(fields));
     }
   }
 
-  Future<TrackerRecord> createChallenge({required String gameId, required String? from, required List<String> to, required int seed, String message = '', Map<String, Object?>? custom}) =>
-      _t.create(kind: TrackerKind.gameChallenge, title: gameId, memberId: from, body: message, fields: {'seed': seed, 'to': to, 'custom': custom});
+  Future<TrackerRecord> createChallenge({
+    required String gameId,
+    required String? from,
+    required List<String> to,
+    required int seed,
+    String message = '',
+    Map<String, Object?>? custom,
+  }) => _t.create(
+    kind: TrackerKind.gameChallenge,
+    title: gameId,
+    memberId: from,
+    body: message,
+    fields: {'seed': seed, 'to': to, 'custom': custom},
+  );
 
   Future<void> delete(TrackerRecord r) => _t.delete(r.id);
 }
@@ -163,20 +247,36 @@ class AlterDot extends ConsumerWidget {
   final double size;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final m = ref.watch(gameMembersProvider).where((x) => x.id == memberId).firstOrNull;
+    final m = ref
+        .watch(gameMembersProvider)
+        .where((x) => x.id == memberId)
+        .firstOrNull;
     if (m == null) {
       return PrismCircleAvatar(
         radius: size / 2,
         child: Icon(PhosphorIcons.users(), size: size * 0.55),
       );
     }
-    return MemberAvatar(avatarImageData: m.avatarImageData, memberName: m.name, emoji: m.emoji, customColorEnabled: m.customColorEnabled, customColorHex: m.customColorHex, size: size);
+    return MemberAvatar(
+      avatarImageData: m.avatarImageData,
+      memberName: m.name,
+      emoji: m.emoji,
+      customColorEnabled: m.customColorEnabled,
+      customColorHex: m.customColorHex,
+      size: size,
+    );
   }
 }
 
 /// Opens a picker for one or more alters. Fronting doesn't limit who can be
 /// chosen; whoever fronts is just suggested first.
-Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<String> selected = const [], int max = 8, String? title}) {
+Future<List<String>?> pickAlters(
+  BuildContext context,
+  WidgetRef ref, {
+  List<String> selected = const [],
+  int max = 8,
+  String? title,
+}) {
   final members = ref.read(gameMembersProvider);
   final names = ref.read(gameNamesProvider);
   final fronter = ref.read(gamePlayerDefaultProvider);
@@ -208,9 +308,18 @@ Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<Stri
                       dense: true,
                       leading: AlterDot(m.id, size: 32),
                       title: Text(names[m.id] ?? m.name),
-                      subtitle: m.id == fronter ? Text(tr(ctx, 'Fronting now', 'Al frente ahora')) : null,
+                      subtitle: m.id == fronter
+                          ? Text(tr(ctx, 'Fronting now', 'Al frente ahora'))
+                          : null,
                       selected: picked.contains(m.id),
-                      trailing: picked.contains(m.id) ? Icon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill), color: Theme.of(ctx).colorScheme.primary) : null,
+                      trailing: picked.contains(m.id)
+                          ? Icon(
+                              PhosphorIcons.checkCircle(
+                                PhosphorIconsStyle.fill,
+                              ),
+                              color: Theme.of(ctx).colorScheme.primary,
+                            )
+                          : null,
                       onTap: () => set(() {
                         if (picked.contains(m.id)) {
                           picked.remove(m.id);
@@ -231,7 +340,13 @@ Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<Stri
               child: PrismButton(
                 tone: PrismButtonTone.filled,
                 expanded: true,
-                label: picked.isEmpty ? tr(ctx, 'Continue without choosing', 'Seguir sin elegir') : tr(ctx, 'Done (${picked.length})', 'Listo (${picked.length})'),
+                label: picked.isEmpty
+                    ? tr(ctx, 'Continue without choosing', 'Seguir sin elegir')
+                    : tr(
+                        ctx,
+                        'Done (${picked.length})',
+                        'Listo (${picked.length})',
+                      ),
                 onPressed: () => Navigator.of(ctx).pop(picked),
               ),
             ),
@@ -244,7 +359,12 @@ Future<List<String>?> pickAlters(BuildContext context, WidgetRef ref, {List<Stri
 
 /// A row of chosen alters with a change button.
 class AlterChips extends ConsumerWidget {
-  const AlterChips({super.key, required this.ids, required this.onTap, this.emptyLabel});
+  const AlterChips({
+    super.key,
+    required this.ids,
+    required this.onTap,
+    this.emptyLabel,
+  });
   final List<String> ids;
   final VoidCallback onTap;
   final String? emptyLabel;
@@ -257,7 +377,16 @@ class AlterChips extends ConsumerWidget {
       child: Row(
         children: [
           if (ids.isEmpty)
-            Expanded(child: Text(emptyLabel ?? tr(context, 'Anyone — tap to choose alters', 'Cualquiera: toca para elegir alters')))
+            Expanded(
+              child: Text(
+                emptyLabel ??
+                    tr(
+                      context,
+                      'Anyone — tap to choose alters',
+                      'Cualquiera: toca para elegir alters',
+                    ),
+              ),
+            )
           else
             Expanded(
               child: Wrap(
@@ -271,7 +400,10 @@ class AlterChips extends ConsumerWidget {
                       children: [
                         AlterDot(id, size: 24),
                         const SizedBox(width: 5),
-                        Text(names[id] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                        Text(
+                          names[id] ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ],
                     ),
                 ],
@@ -296,11 +428,19 @@ class CustomGame {
   String get title => r.title;
   String get base => '${r.fields['base'] ?? 'trivia_general'}';
   String get type => '${content['type'] ?? ''}';
-  Map<String, Object?> get content => (r.fields['content'] as Map?)?.cast<String, Object?>() ?? const {};
+  Map<String, Object?> get content =>
+      (r.fields['content'] as Map?)?.cast<String, Object?>() ?? const {};
   String? get creator => r.memberId;
 }
 
-final customGamesProvider = Provider<List<CustomGame>>((ref) => [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameCustom)).value ?? const <TrackerRecord>[]) CustomGame(r)]);
+final customGamesProvider = Provider<List<CustomGame>>(
+  (ref) => [
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.gameCustom)).value ??
+            const <TrackerRecord>[])
+      CustomGame(r),
+  ],
+);
 
 /// A planned or finished game night.
 class GameNight {
@@ -308,19 +448,31 @@ class GameNight {
   final TrackerRecord r;
   String get title => r.title;
   DateTime? get when => r.occurredAt;
-  List<String> get players => [for (final v in (r.fields['players'] as List?) ?? const []) '$v'];
-  List<String> get games => [for (final v in (r.fields['games'] as List?) ?? const []) '$v'];
+  List<String> get players => [
+    for (final v in (r.fields['players'] as List?) ?? const []) '$v',
+  ];
+  List<String> get games => [
+    for (final v in (r.fields['games'] as List?) ?? const []) '$v',
+  ];
 
   /// Index of the next game to play.
   int get progress => (r.fields['progress'] as num?)?.toInt() ?? 0;
   bool get coop => r.fields['coop'] == true;
-  String get status => '${r.fields['status'] ?? 'planned'}'; // planned | live | paused | done
+  String get status =>
+      '${r.fields['status'] ?? 'planned'}'; // planned | live | paused | done
   String? get calendarEventId => r.fields['calendar'] as String?;
   String get notes => r.body ?? '';
 }
 
 final gameNightsProvider = Provider<List<GameNight>>((ref) {
-  final list = [for (final r in ref.watch(trackerKindProvider(TrackerKind.gameNight)).value ?? const <TrackerRecord>[]) GameNight(r)];
-  list.sort((a, b) => (b.when ?? b.r.createdAt).compareTo(a.when ?? a.r.createdAt));
+  final list = [
+    for (final r
+        in ref.watch(trackerKindProvider(TrackerKind.gameNight)).value ??
+            const <TrackerRecord>[])
+      GameNight(r),
+  ];
+  list.sort(
+    (a, b) => (b.when ?? b.r.createdAt).compareTo(a.when ?? a.r.createdAt),
+  );
   return list;
 });

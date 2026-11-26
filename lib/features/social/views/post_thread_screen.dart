@@ -47,7 +47,12 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
     if (_editing != null) {
       await a.editComment(_editing!, text);
     } else {
-      await a.comment(actor: actor, targetId: targetId, body: text, replyTo: _replyTo?.id);
+      await a.comment(
+        actor: actor,
+        targetId: targetId,
+        body: text,
+        replyTo: _replyTo?.id,
+      );
     }
     _input.clear();
     setState(() {
@@ -67,18 +72,36 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
     if (post == null || !d.canSeePost(post, actor)) {
       return PrismPageScaffold(
         topBar: PrismTopBar(title: l10n.socPost, showBackButton: true),
-        body: Center(child: Text(post == null ? l10n.socPostGone : l10n.socPostHidden, textAlign: TextAlign.center)),
+        body: Center(
+          child: Text(
+            post == null ? l10n.socPostGone : l10n.socPostHidden,
+            textAlign: TextAlign.center,
+          ),
+        ),
       );
     }
     final shown = post.reblogOf != null ? (d.original(post) ?? post) : post;
     final comments = d.commentsOn[shown.id] ?? const <Comment>[];
-    final visible = [for (final c in comments) if (actor == null || c.author == null || (!d.isBlocked(actor, c.author!) && !d.isMuted(actor, c.author!))) c];
+    final visible = [
+      for (final c in comments)
+        if (actor == null ||
+            c.author == null ||
+            (!d.isBlocked(actor, c.author!) && !d.isMuted(actor, c.author!)))
+          c,
+    ];
     final children = <String?, List<Comment>>{};
     final ids = {for (final c in visible) c.id};
     for (final c in visible) {
-      (children[c.replyTo != null && ids.contains(c.replyTo) ? c.replyTo : null] ??= []).add(c);
+      (children[c.replyTo != null && ids.contains(c.replyTo)
+                  ? c.replyTo
+                  : null] ??=
+              [])
+          .add(c);
     }
-    final answers = [for (final s in d.sharesOf[shown.id] ?? const <Post>[]) if (s.quoteOf == shown.id && d.canSeePost(s, actor)) s];
+    final answers = [
+      for (final s in d.sharesOf[shown.id] ?? const <Post>[])
+        if (s.quoteOf == shown.id && d.canSeePost(s, actor)) s,
+    ];
 
     List<Widget> thread(String? parent, int depth) => [
       for (final c in children[parent] ?? const <Comment>[]) ...[
@@ -117,22 +140,39 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
               children: [
                 Center(
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                    constraints: BoxConstraints(
+                      maxWidth: PrismTokens.contentMaxWidth,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         PostCard(post: post, callbacks: cb, inDetail: true),
                         if (answers.isNotEmpty) ...[
-                          Text(shown.type == PostType.question ? l10n.socAnswersTitle : l10n.socQuotesTitle, style: theme.textTheme.titleSmall),
+                          Text(
+                            shown.type == PostType.question
+                                ? l10n.socAnswersTitle
+                                : l10n.socQuotesTitle,
+                            style: theme.textTheme.titleSmall,
+                          ),
                           const SizedBox(height: 6),
-                          for (final a in answers) PostCard(post: a, callbacks: cb, compact: true),
+                          for (final a in answers)
+                            PostCard(post: a, callbacks: cb, compact: true),
                         ],
-                        Text(l10n.socComments(visible.length), style: theme.textTheme.titleSmall),
+                        Text(
+                          l10n.socComments(visible.length),
+                          style: theme.textTheme.titleSmall,
+                        ),
                         const SizedBox(height: 6),
                         if (visible.isEmpty)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Text(l10n.socNoComments, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                            child: Text(
+                              l10n.socNoComments,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ),
                         ...thread(null, 0),
                       ],
@@ -146,10 +186,17 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
             top: false,
             child: Container(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              decoration: BoxDecoration(color: theme.colorScheme.surfaceContainer, border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant))),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainer,
+                border: Border(
+                  top: BorderSide(color: theme.colorScheme.outlineVariant),
+                ),
+              ),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+                  constraints: BoxConstraints(
+                    maxWidth: PrismTokens.contentMaxWidth,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -158,7 +205,11 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                _editing != null ? l10n.socEditingComment : l10n.socReplyingTo(alterName(d, _replyTo!.author, context)),
+                                _editing != null
+                                    ? l10n.socEditingComment
+                                    : l10n.socReplyingTo(
+                                        alterName(d, _replyTo!.author, context),
+                                      ),
                                 style: theme.textTheme.labelMedium,
                               ),
                             ),
@@ -181,7 +232,11 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
                             child: PrismTextField(
                               controller: _input,
                               focusNode: _focus,
-                              hintText: actor == null ? l10n.socPickAlter : l10n.socCommentAs(alterName(d, actor, context)),
+                              hintText: actor == null
+                                  ? l10n.socPickAlter
+                                  : l10n.socCommentAs(
+                                      alterName(d, actor, context),
+                                    ),
                               minLines: 1,
                               maxLines: 5,
                               enabled: actor != null,
@@ -189,7 +244,12 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          PrismButton(label: l10n.socSend, tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () => _send(shown.id)),
+                          PrismButton(
+                            label: l10n.socSend,
+                            tone: PrismButtonTone.filled,
+                            density: PrismControlDensity.compact,
+                            onPressed: () => _send(shown.id),
+                          ),
                         ],
                       ),
                     ],
@@ -205,7 +265,12 @@ class _PostThreadScreenState extends ConsumerState<PostThreadScreen> {
 }
 
 class _CommentTile extends ConsumerWidget {
-  const _CommentTile({required this.comment, required this.depth, required this.onReply, required this.onEdit});
+  const _CommentTile({
+    required this.comment,
+    required this.depth,
+    required this.onReply,
+    required this.onEdit,
+  });
 
   final Comment comment;
   final int depth;
@@ -223,12 +288,27 @@ class _CommentTile extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(left: indent, bottom: 8),
       child: Container(
-        decoration: depth == 0 ? null : BoxDecoration(border: Border(left: BorderSide(color: theme.colorScheme.outlineVariant, width: 2))),
+        decoration: depth == 0
+            ? null
+            : BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: theme.colorScheme.outlineVariant,
+                    width: 2,
+                  ),
+                ),
+              ),
         padding: EdgeInsets.only(left: depth == 0 ? 0 : 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AlterAvatar(memberId: comment.author, size: 30, onTap: comment.author == null ? null : () => openAlterBlog(context, comment.author!)),
+            AlterAvatar(
+              memberId: comment.author,
+              size: 30,
+              onTap: comment.author == null
+                  ? null
+                  : () => openAlterBlog(context, comment.author!),
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -237,23 +317,36 @@ class _CommentTile extends ConsumerWidget {
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: alterName(d, comment.author, context), style: theme.textTheme.labelLarge),
                         TextSpan(
-                          text: '  ${relativeTime(context, comment.at, now: d.now)}${comment.editedAt != null ? ' · ${l10n.socEdited}' : ''}',
-                          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                          text: alterName(d, comment.author, context),
+                          style: theme.textTheme.labelLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              '  ${relativeTime(context, comment.at, now: d.now)}${comment.editedAt != null ? ' · ${l10n.socEdited}' : ''}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 2),
-                  RichPostText(text: comment.body, style: theme.textTheme.bodyMedium, onTag: (t) => openTag(context, t)),
+                  RichPostText(
+                    text: comment.body,
+                    style: theme.textTheme.bodyMedium,
+                    onTag: (t) => openTag(context, t),
+                  ),
                   const SizedBox(height: 4),
                   Wrap(
                     spacing: 4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       ReactionBar(targetId: comment.id, dense: true),
-                      _Link(label: l10n.socReply, onTap: actor == null ? null : onReply),
+                      _Link(
+                        label: l10n.socReply,
+                        onTap: actor == null ? null : onReply,
+                      ),
                       if (mine) _Link(label: l10n.socEdit, onTap: onEdit),
                       if (mine)
                         _Link(
@@ -266,7 +359,10 @@ class _CommentTile extends ConsumerWidget {
                               cancelLabel: l10n.cancel,
                               destructive: true,
                             );
-                            if (ok) await ref.read(socialActionsProvider).deleteComment(comment);
+                            if (ok)
+                              await ref
+                                  .read(socialActionsProvider)
+                                  .deleteComment(comment);
                           },
                         ),
                     ],
@@ -294,9 +390,13 @@ class _Link extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Text(label, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     ),
   );
 }
-

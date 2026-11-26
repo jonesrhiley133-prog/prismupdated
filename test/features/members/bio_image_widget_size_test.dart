@@ -22,29 +22,28 @@ BioImageWidget _bioImage({
   required BioImageSize size,
   double? maxContentWidth,
   double? emBasis,
-}) =>
-    BioImageWidget(
-      mediaId: '',
-      encryptionKeyB64: '',
-      ciphertextHash: '',
-      plaintextHash: '',
-      blurhash: '',
-      width: 800,
-      height: 400,
-      memberName: 'Robin',
-      size: size,
-      overrideBytes: _kOnePxPng,
-      maxContentWidth: maxContentWidth,
-      emBasis: emBasis,
-    );
+}) => BioImageWidget(
+  mediaId: '',
+  encryptionKeyB64: '',
+  ciphertextHash: '',
+  plaintextHash: '',
+  blurhash: '',
+  width: 800,
+  height: 400,
+  memberName: 'Robin',
+  size: size,
+  overrideBytes: _kOnePxPng,
+  maxContentWidth: maxContentWidth,
+  emBasis: emBasis,
+);
 
 Widget _wrap(Widget child) => ProviderScope(
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: const [Locale('en')],
-        home: Scaffold(body: Center(child: child)),
-      ),
-    );
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: const [Locale('en')],
+    home: Scaffold(body: Center(child: child)),
+  ),
+);
 
 /// The [SizedBox] produced by `_sized()` — the one that directly wraps the
 /// image content. There may be other SizedBoxes deeper in the tree (e.g.
@@ -208,9 +207,7 @@ void main() {
     testWidgets('unset uses ConstrainedBox + AspectRatio, capped to maxHeight', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        _wrap(_bioImage(size: BioImageSize.unset)),
-      );
+      await tester.pumpWidget(_wrap(_bioImage(size: BioImageSize.unset)));
       await tester.pump();
 
       // Default path wraps in ConstrainedBox(maxHeight: 280) + AspectRatio(2.0),

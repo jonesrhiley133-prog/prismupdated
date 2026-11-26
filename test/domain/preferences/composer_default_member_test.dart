@@ -28,10 +28,14 @@ void main() {
   });
 
   test('fromStorage falls back to default for unknown/null values', () {
-    expect(ComposerDefaultMember.fromStorage(null),
-        ComposerDefaultMember.defaultValue);
-    expect(ComposerDefaultMember.fromStorage('bogus'),
-        ComposerDefaultMember.defaultValue);
+    expect(
+      ComposerDefaultMember.fromStorage(null),
+      ComposerDefaultMember.defaultValue,
+    );
+    expect(
+      ComposerDefaultMember.fromStorage('bogus'),
+      ComposerDefaultMember.defaultValue,
+    );
   });
 
   test('round-trips every enum value through its storage string', () {

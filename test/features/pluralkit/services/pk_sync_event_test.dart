@@ -85,11 +85,7 @@ void main() {
 
   group('PkSyncCompleted', () {
     test('toJson omits error when null', () {
-      const event = PkSyncCompleted(
-        durationMs: 1234,
-        pulled: 5,
-        pushed: 0,
-      );
+      const event = PkSyncCompleted(durationMs: 1234, pulled: 5, pushed: 0);
       expect(event.toJson(), {
         'kind': 'pkSyncCompleted',
         'duration_ms': 1234,
@@ -314,14 +310,11 @@ void main() {
 
   group('PkRateLimitHit', () {
     test('toJson', () {
-      expect(
-        const PkRateLimitHit(attempt: 2, backoffSeconds: 4).toJson(),
-        {
-          'kind': 'pkRateLimitHit',
-          'attempt': 2,
-          'backoff_secs': 4,
-        },
-      );
+      expect(const PkRateLimitHit(attempt: 2, backoffSeconds: 4).toJson(), {
+        'kind': 'pkRateLimitHit',
+        'attempt': 2,
+        'backoff_secs': 4,
+      });
     });
 
     test('summary', () {
@@ -397,7 +390,10 @@ void main() {
 
     test('toJson failed includes error', () {
       expect(
-        const PkAutoPollTick(outcome: 'failed', error: 'timeout').toJson()['error'],
+        const PkAutoPollTick(
+          outcome: 'failed',
+          error: 'timeout',
+        ).toJson()['error'],
         'timeout',
       );
     });
@@ -418,8 +414,10 @@ void main() {
 
     test('toJson skipped includes reason', () {
       expect(
-        const PkAutoPollTick(outcome: 'skipped', reason: 'recent_push')
-            .toJson()['reason'],
+        const PkAutoPollTick(
+          outcome: 'skipped',
+          reason: 'recent_push',
+        ).toJson()['reason'],
         'recent_push',
       );
     });
@@ -442,8 +440,9 @@ void main() {
   group('PkBackgroundSyncTick', () {
     test('toJson', () {
       expect(
-        const PkBackgroundSyncTick(taskName: 'com.prism.backgroundSync')
-            .toJson(),
+        const PkBackgroundSyncTick(
+          taskName: 'com.prism.backgroundSync',
+        ).toJson(),
         {
           'kind': 'pkBackgroundSyncTick',
           'task_name': 'com.prism.backgroundSync',
@@ -453,7 +452,9 @@ void main() {
 
     test('summary', () {
       expect(
-        const PkBackgroundSyncTick(taskName: 'com.prism.backgroundSync').summary,
+        const PkBackgroundSyncTick(
+          taskName: 'com.prism.backgroundSync',
+        ).summary,
         'Background sync tick: com.prism.backgroundSync',
       );
     });
@@ -475,10 +476,7 @@ void main() {
     });
 
     test('returns message unchanged when token is empty', () {
-      expect(
-        PkSyncEvent.redact('Failed: abc123tok', ''),
-        'Failed: abc123tok',
-      );
+      expect(PkSyncEvent.redact('Failed: abc123tok', ''), 'Failed: abc123tok');
     });
 
     test('returns message unchanged when token is not present', () {

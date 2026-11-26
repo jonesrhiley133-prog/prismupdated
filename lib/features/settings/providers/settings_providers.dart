@@ -1199,7 +1199,8 @@ NavLayout _watchNavLayout(Ref ref) {
   );
   // Hide tabs of features turned off in Settings › Features.
   final states = ref.watch(featureStatesProvider);
-  bool visible(AppShellTab t) => t.isRequired || (states[featureByTab[t.id]?.id] ?? true);
+  bool visible(AppShellTab t) =>
+      t.isRequired || (states[featureByTab[t.id]?.id] ?? true);
   final primary = layout.primary.where(visible).toList();
   final overflow = layout.overflow.where(visible).toList();
   if (primary.isEmpty && overflow.isNotEmpty) primary.add(overflow.removeAt(0));

@@ -37,7 +37,8 @@ class RemindersScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: context.l10n.remindersTitle,
         showBackButton: showBackButton,
-        actions: [FeatureDataAction(featureId: 'reminders'), 
+        actions: [
+          FeatureDataAction(featureId: 'reminders'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: context.l10n.remindersEmptyAction,

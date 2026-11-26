@@ -386,53 +386,58 @@ void main() {
       expect(n.date.millisecondsSinceEpoch, 1600000000000);
     });
 
-    test('SpNote date cascades: date → lastOperationTime → createdAt → now', () {
-      // date present: wins.
-      expect(
-        SpNote.fromJson({
-          '_id': 'n1',
-          'title': 'x',
-          'note': 'y',
-          'member': 'm1',
-          'date': 100,
-          'lastOperationTime': 200,
-          'createdAt': 300,
-        }).date.millisecondsSinceEpoch,
-        100,
-      );
-      // date missing: lastOperationTime wins.
-      expect(
-        SpNote.fromJson({
-          '_id': 'n1',
-          'title': 'x',
-          'note': 'y',
-          'member': 'm1',
-          'lastOperationTime': 200,
-          'createdAt': 300,
-        }).date.millisecondsSinceEpoch,
-        200,
-      );
-      // date + lastOperationTime missing: createdAt wins.
-      expect(
-        SpNote.fromJson({
-          '_id': 'n1',
-          'title': 'x',
-          'note': 'y',
-          'member': 'm1',
-          'createdAt': 300,
-        }).date.millisecondsSinceEpoch,
-        300,
-      );
-      // All three missing: falls back to the injected clock.
-      final fixedNow = DateTime.utc(2024, 5, 1);
-      expect(
-        SpNote.fromJson(
-          {'_id': 'n1', 'title': 'x', 'note': 'y', 'member': 'm1'},
-          now: () => fixedNow,
-        ).date,
-        fixedNow,
-      );
-    });
+    test(
+      'SpNote date cascades: date → lastOperationTime → createdAt → now',
+      () {
+        // date present: wins.
+        expect(
+          SpNote.fromJson({
+            '_id': 'n1',
+            'title': 'x',
+            'note': 'y',
+            'member': 'm1',
+            'date': 100,
+            'lastOperationTime': 200,
+            'createdAt': 300,
+          }).date.millisecondsSinceEpoch,
+          100,
+        );
+        // date missing: lastOperationTime wins.
+        expect(
+          SpNote.fromJson({
+            '_id': 'n1',
+            'title': 'x',
+            'note': 'y',
+            'member': 'm1',
+            'lastOperationTime': 200,
+            'createdAt': 300,
+          }).date.millisecondsSinceEpoch,
+          200,
+        );
+        // date + lastOperationTime missing: createdAt wins.
+        expect(
+          SpNote.fromJson({
+            '_id': 'n1',
+            'title': 'x',
+            'note': 'y',
+            'member': 'm1',
+            'createdAt': 300,
+          }).date.millisecondsSinceEpoch,
+          300,
+        );
+        // All three missing: falls back to the injected clock.
+        final fixedNow = DateTime.utc(2024, 5, 1);
+        expect(
+          SpNote.fromJson({
+            '_id': 'n1',
+            'title': 'x',
+            'note': 'y',
+            'member': 'm1',
+          }, now: () => fixedNow).date,
+          fixedNow,
+        );
+      },
+    );
 
     test('SpBoardMessage accepts Firebase Timestamp writtenAt', () {
       final bm = SpBoardMessage.fromJson({
@@ -475,22 +480,20 @@ void main() {
 
     test('Malformed Map without _seconds returns null / falls back', () {
       final fixedNow = DateTime.utc(2024, 1, 1);
-      final fh = SpFrontHistory.fromJson(
-        {'_id': 'fh1', 'member': 'mem1', 'startTime': <String, dynamic>{}},
-        now: () => fixedNow,
-      );
+      final fh = SpFrontHistory.fromJson({
+        '_id': 'fh1',
+        'member': 'mem1',
+        'startTime': <String, dynamic>{},
+      }, now: () => fixedNow);
       expect(fh.startTime, fixedNow);
 
-      final msg = SpMessage.fromJson(
-        {
-          '_id': 'msg1',
-          'message': 'x',
-          'writer': 'mem1',
-          'writtenAt': 1700000000000,
-          'updatedAt': <String, dynamic>{},
-        },
-        'ch1',
-      );
+      final msg = SpMessage.fromJson({
+        '_id': 'msg1',
+        'message': 'x',
+        'writer': 'mem1',
+        'writtenAt': 1700000000000,
+        'updatedAt': <String, dynamic>{},
+      }, 'ch1');
       expect(msg.updatedAt, isNull);
     });
   });
@@ -628,8 +631,10 @@ void main() {
   group('synthesizeSpCustomFieldsFromUserFields', () {
     test('null or empty input returns empty list', () {
       expect(synthesizeSpCustomFieldsFromUserFields(null), isEmpty);
-      expect(synthesizeSpCustomFieldsFromUserFields(<String, dynamic>{}),
-          isEmpty);
+      expect(
+        synthesizeSpCustomFieldsFromUserFields(<String, dynamic>{}),
+        isEmpty,
+      );
       expect(synthesizeSpCustomFieldsFromUserFields('not a map'), isEmpty);
     });
 
@@ -674,29 +679,31 @@ void main() {
       expect(out.firstWhere((f) => f.id == 'c').type, 0);
     });
 
-    test('SpParser uses synthesized defs when customFields collection is absent',
-        () {
-      final json = jsonEncode({
-        'users': [
-          {
-            '_id': 'u1',
-            'username': 'system',
-            'fields': {
-              'fld1': {'name': 'Likes', 'order': 0, 'type': 0},
-              'fld2': {'name': 'Dislikes', 'order': 1, 'type': 0},
+    test(
+      'SpParser uses synthesized defs when customFields collection is absent',
+      () {
+        final json = jsonEncode({
+          'users': [
+            {
+              '_id': 'u1',
+              'username': 'system',
+              'fields': {
+                'fld1': {'name': 'Likes', 'order': 0, 'type': 0},
+                'fld2': {'name': 'Dislikes', 'order': 1, 'type': 0},
+              },
             },
-          },
-        ],
-        'members': [],
-        'frontHistory': [],
-      });
-      final data = SpParser.parse(json);
-      expect(data.customFields, hasLength(2));
-      expect(
-        data.customFields.map((f) => f.name).toSet(),
-        {'Likes', 'Dislikes'},
-      );
-    });
+          ],
+          'members': [],
+          'frontHistory': [],
+        });
+        final data = SpParser.parse(json);
+        expect(data.customFields, hasLength(2));
+        expect(data.customFields.map((f) => f.name).toSet(), {
+          'Likes',
+          'Dislikes',
+        });
+      },
+    );
 
     test('Top-level customFields collection wins when both present', () {
       final json = jsonEncode({
@@ -731,10 +738,7 @@ void main() {
     });
 
     test('false when startTime is missing', () {
-      final fh = SpFrontHistory.fromJson({
-        '_id': 'fh1',
-        'member': 'm1',
-      });
+      final fh = SpFrontHistory.fromJson({'_id': 'fh1', 'member': 'm1'});
       expect(fh.wasStartTimeExplicit, isFalse);
     });
 
@@ -756,9 +760,7 @@ void main() {
     });
 
     test('false for fronters fallback entry without startTime', () {
-      final fh = SpFrontHistory.fromFrontersEntry({
-        '_id': 'mem-1',
-      });
+      final fh = SpFrontHistory.fromFrontersEntry({'_id': 'mem-1'});
       expect(fh.wasStartTimeExplicit, isFalse);
     });
   });
@@ -799,8 +801,7 @@ void main() {
         'startTime': 2000,
       });
       expect(a.id, b.id, reason: 'same member+startTime → same id');
-      expect(a.id, isNot(c.id),
-          reason: 'different startTime → different id');
+      expect(a.id, isNot(c.id), reason: 'different startTime → different id');
     });
 
     test('SpParser uses fronters fallback when frontHistory is empty', () {
@@ -866,12 +867,15 @@ void main() {
       expect(out['cf1'], 'val');
     });
 
-    test('Map<dynamic, dynamic> with non-string keys coerces keys to string', () {
-      final m = <dynamic, dynamic>{42: 'forty-two', 'cf1': 'val'};
-      final out = coerceSpInfoMap(m);
-      expect(out['42'], 'forty-two');
-      expect(out['cf1'], 'val');
-    });
+    test(
+      'Map<dynamic, dynamic> with non-string keys coerces keys to string',
+      () {
+        final m = <dynamic, dynamic>{42: 'forty-two', 'cf1': 'val'};
+        final out = coerceSpInfoMap(m);
+        expect(out['42'], 'forty-two');
+        expect(out['cf1'], 'val');
+      },
+    );
 
     test('null keys are dropped silently', () {
       final m = <dynamic, dynamic>{null: 'orphan', 'cf1': 'val'};
@@ -881,11 +885,7 @@ void main() {
     });
 
     test('SpMember.fromJson tolerates non-Map info without throwing', () {
-      final m = SpMember.fromJson({
-        '_id': 'm1',
-        'name': 'X',
-        'info': null,
-      });
+      final m = SpMember.fromJson({'_id': 'm1', 'name': 'X', 'info': null});
       expect(m.info, isEmpty);
 
       final m2 = SpMember.fromJson({
@@ -895,17 +895,14 @@ void main() {
       });
       expect(m2.info, isEmpty);
 
-      final m3 = SpMember.fromJson({
-        '_id': 'm3',
-        'name': 'Z',
-        'info': 'oops',
-      });
+      final m3 = SpMember.fromJson({'_id': 'm3', 'name': 'Z', 'info': 'oops'});
       expect(m3.info, isEmpty);
     });
   });
 
   group('rewriteSpMentions', () {
-    String? Function(String) resolveTo(String prismId) => (_) => prismId;
+    String? Function(String) resolveTo(String prismId) =>
+        (_) => prismId;
 
     test('empty/null input returns empty/null', () {
       expect(rewriteSpMentions('', (_) => 'p1'), '');
@@ -916,8 +913,10 @@ void main() {
 
     test('text without tokens returns unchanged', () {
       expect(rewriteSpMentions('hi there', (_) => 'p1'), 'hi there');
-      expect(rewriteSpMentions('looks @like a mention', (_) => 'p1'),
-          'looks @like a mention');
+      expect(
+        rewriteSpMentions('looks @like a mention', (_) => 'p1'),
+        'looks @like a mention',
+      );
     });
 
     test('single resolvable token is rewritten', () {
@@ -971,8 +970,7 @@ void main() {
     });
 
     test('does not match unrelated angle-bracket text', () {
-      expect(rewriteSpMentions('<#general> hi', (_) => 'p1'),
-          '<#general> hi');
+      expect(rewriteSpMentions('<#general> hi', (_) => 'p1'), '<#general> hi');
       expect(rewriteSpMentions('<@123>', (_) => 'p1'), '<@123>');
       expect(rewriteSpMentions('## @ ##', (_) => 'p1'), '## @ ##');
     });

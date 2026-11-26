@@ -112,10 +112,10 @@ void main() {
           groups.single.id,
         );
         expect(entries, hasLength(2));
-        expect(
-          entries.map((e) => e.pkMemberUuid).toSet(),
-          {_alphaUuid, _betaUuid},
-        );
+        expect(entries.map((e) => e.pkMemberUuid).toSet(), {
+          _alphaUuid,
+          _betaUuid,
+        });
 
         final sessions = await _sessions(db);
         expect(sessions, hasLength(3));

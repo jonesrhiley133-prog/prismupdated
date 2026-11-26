@@ -31,23 +31,23 @@ final _alice = _member('alice', 'Alice');
 const _allMembersLabel = 'All Headmates';
 
 MemberBoardPost _post(String id) => MemberBoardPost(
-      id: id,
-      authorId: 'alice',
-      audience: 'public',
-      body: 'Body of post $id',
-      createdAt: _now.subtract(Duration(hours: int.parse(id))),
-      writtenAt: _now.subtract(Duration(hours: int.parse(id))),
-    );
+  id: id,
+  authorId: 'alice',
+  audience: 'public',
+  body: 'Body of post $id',
+  createdAt: _now.subtract(Duration(hours: int.parse(id))),
+  writtenAt: _now.subtract(Duration(hours: int.parse(id))),
+);
 
 MemberBoardPost _editedPost(String id) => MemberBoardPost(
-      id: id,
-      authorId: 'alice',
-      audience: 'public',
-      body: 'Edited body $id',
-      createdAt: _now.subtract(Duration(hours: int.parse(id))),
-      writtenAt: _now.subtract(Duration(hours: int.parse(id))),
-      editedAt: _now.subtract(const Duration(minutes: 30)),
-    );
+  id: id,
+  authorId: 'alice',
+  audience: 'public',
+  body: 'Edited body $id',
+  createdAt: _now.subtract(Duration(hours: int.parse(id))),
+  writtenAt: _now.subtract(Duration(hours: int.parse(id))),
+  editedAt: _now.subtract(const Duration(minutes: 30)),
+);
 
 // ---------------------------------------------------------------------------
 // Fake notifiers
@@ -83,9 +83,7 @@ Widget _buildBoardsScreen({
         (ref) => Stream.value(const SystemSettings(boardsEnabled: true)),
       ),
       speakingAsProvider.overrideWith(_FakeSpeakingAsNotifier.new),
-      activeMembersProvider.overrideWith(
-        (ref) => Stream.value(activeMembers),
-      ),
+      activeMembersProvider.overrideWith((ref) => Stream.value(activeMembers)),
       currentFronterMemberIdsProvider.overrideWith(
         (ref) => activeMembers.map((m) => m.id).toList(growable: false),
       ),
@@ -96,17 +94,13 @@ Widget _buildBoardsScreen({
       memberByIdProvider.overrideWith(
         (ref, id) => Stream.value(
           activeMembers.cast<Member?>().firstWhere(
-                (m) => m?.id == id,
-                orElse: () => null,
-              ),
+            (m) => m?.id == id,
+            orElse: () => null,
+          ),
         ),
       ),
-      publicBoardFeedProvider.overrideWith(
-        (ref) => Stream.value(publicPosts),
-      ),
-      inboxBoardFeedProvider.overrideWith(
-        (ref) => Stream.value(const []),
-      ),
+      publicBoardFeedProvider.overrideWith((ref) => Stream.value(publicPosts)),
+      inboxBoardFeedProvider.overrideWith((ref) => Stream.value(const [])),
       publicBoardUnreadDotProvider.overrideWithValue(false),
       boardsTabBadgeProvider.overrideWithValue(0),
       boardsEnabledProvider.overrideWithValue(true),
@@ -121,7 +115,6 @@ Widget _buildBoardsScreen({
   );
 }
 
-
 Widget _buildSingleTile(
   MemberBoardPost post, {
   List<Member> allMembers = const [],
@@ -134,9 +127,9 @@ Widget _buildSingleTile(
       memberByIdProvider.overrideWith(
         (ref, id) => Stream.value(
           allMembers.cast<Member?>().firstWhere(
-                (m) => m?.id == id,
-                orElse: () => null,
-              ),
+            (m) => m?.id == id,
+            orElse: () => null,
+          ),
         ),
       ),
       memberBoardPostNotifierProvider.overrideWith(_FakeBoardPostNotifier.new),
@@ -147,11 +140,7 @@ Widget _buildSingleTile(
       home: Scaffold(
         body: Column(
           children: [
-            PostTile(
-              post: post,
-              viewerMember: null,
-              key: const Key('tile-0'),
-            ),
+            PostTile(post: post, viewerMember: null, key: const Key('tile-0')),
           ],
         ),
       ),
@@ -170,37 +159,36 @@ void main() {
 
   group('Accessibility — reduce motion', () {
     testWidgets(
-        'with MediaQuery.disableAnimations, screen renders without animation errors',
-        (tester) async {
-      // This verifies that disableAnimations=true does not throw.
-      tester.view.devicePixelRatio = 1.0;
+      'with MediaQuery.disableAnimations, screen renders without animation errors',
+      (tester) async {
+        // This verifies that disableAnimations=true does not throw.
+        tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(
-        MediaQuery(
-          data: const MediaQueryData(disableAnimations: true),
-          child: _buildBoardsScreen(
-            publicPosts: [_post('1'), _post('2')],
-            activeMembers: [_alice],
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: _buildBoardsScreen(
+              publicPosts: [_post('1'), _post('2')],
+              activeMembers: [_alice],
+            ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      expect(tester.takeException(), isNull);
-      expect(find.text('Public'), findsOneWidget);
-    });
+        expect(tester.takeException(), isNull);
+        expect(find.text('Public'), findsOneWidget);
+      },
+    );
   });
 
   group('Accessibility — dynamic type', () {
-    testWidgets(
-        '"edited" suffix remains visible at 200% text scale', (tester) async {
+    testWidgets('"edited" suffix remains visible at 200% text scale', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MediaQuery(
           data: const MediaQueryData(textScaler: TextScaler.linear(2.0)),
-          child: _buildSingleTile(
-            _editedPost('1'),
-            allMembers: [_alice],
-          ),
+          child: _buildSingleTile(_editedPost('1'), allMembers: [_alice]),
         ),
       );
       await tester.pump();
@@ -210,8 +198,9 @@ void main() {
       expect(find.text('edited'), findsOneWidget);
     });
 
-    testWidgets('segment labels remain visible at 200% text scale',
-        (tester) async {
+    testWidgets('segment labels remain visible at 200% text scale', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MediaQuery(
           data: const MediaQueryData(textScaler: TextScaler.linear(2.0)),
@@ -227,13 +216,11 @@ void main() {
   });
 
   group('Accessibility — keyboard navigation', () {
-    testWidgets(
-        'Tab key traverses through segment control buttons', (tester) async {
+    testWidgets('Tab key traverses through segment control buttons', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        _buildBoardsScreen(
-          publicPosts: [_post('1')],
-          activeMembers: [_alice],
-        ),
+        _buildBoardsScreen(publicPosts: [_post('1')], activeMembers: [_alice]),
       );
       await tester.pump();
 
@@ -246,9 +233,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets(
-        'Semantics: segment buttons are present as selectable items',
-        (tester) async {
+    testWidgets('Semantics: segment buttons are present as selectable items', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildBoardsScreen());
       await tester.pumpAndSettle();
 
@@ -259,32 +246,29 @@ void main() {
 
       // The Public segment is selected by default; the empty-state for the
       // public timeline (no posts) should be visible and accessible.
-      expect(
-        find.text('Nothing on the public timeline yet.'),
-        findsOneWidget,
-      );
+      expect(find.text('Nothing on the public timeline yet.'), findsOneWidget);
     });
 
     testWidgets(
-        'PostTile is marked as a button in semantics for screen readers',
-        (tester) async {
-      await tester.pumpWidget(
-        _buildSingleTile(_post('1'), allMembers: [_alice]),
-      );
-      await tester.pump();
+      'PostTile is marked as a button in semantics for screen readers',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildSingleTile(_post('1'), allMembers: [_alice]),
+        );
+        await tester.pump();
 
-      // The PostTile wraps its InkWell in Semantics(button: true).
-      // Find a semantics label that contains the post body text — the
-      // Semantics node with button=true will have this label.
-      expect(
-        find.bySemanticsLabel(RegExp(r'Body of post 1')),
-        findsWidgets,
-        reason: 'Semantics label must include post body text',
-      );
-    });
+        // The PostTile wraps its InkWell in Semantics(button: true).
+        // Find a semantics label that contains the post body text — the
+        // Semantics node with button=true will have this label.
+        expect(
+          find.bySemanticsLabel(RegExp(r'Body of post 1')),
+          findsWidgets,
+          reason: 'Semantics label must include post body text',
+        );
+      },
+    );
 
-    testWidgets(
-        'tapping Inbox segment reveals filter chip', (tester) async {
+    testWidgets('tapping Inbox segment reveals filter chip', (tester) async {
       // Tests tap-based segment navigation (arrow-key FocusNode wiring requires
       // physical key traversal beyond widget-test scope).
       await tester.pumpWidget(_buildBoardsScreen(activeMembers: [_alice]));
@@ -302,78 +286,72 @@ void main() {
 
   group('Accessibility — OLED visibility', () {
     testWidgets(
-        'post tile renders with visible content on dark/OLED background',
-        (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            systemSettingsProvider.overrideWith(
-              (ref) => Stream.value(const SystemSettings()),
-            ),
-            memberByIdProvider.overrideWith(
-              (ref, id) => Stream.value(
-                id == 'alice' ? _alice : null,
+      'post tile renders with visible content on dark/OLED background',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              systemSettingsProvider.overrideWith(
+                (ref) => Stream.value(const SystemSettings()),
               ),
-            ),
-            memberBoardPostNotifierProvider
-                .overrideWith(_FakeBoardPostNotifier.new),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: const [Locale('en')],
-            theme: ThemeData(
-              brightness: Brightness.dark,
-              colorScheme: const ColorScheme.dark(
-                surface: Color(0xFF000000), // OLED black
-                onSurface: Color(0xFFFFFFFF),
+              memberByIdProvider.overrideWith(
+                (ref, id) => Stream.value(id == 'alice' ? _alice : null),
               ),
-            ),
-            home: Scaffold(
-              backgroundColor: const Color(0xFF000000),
-              body: PostTile(
-                post: _post('1'),
-                viewerMember: null,
+              memberBoardPostNotifierProvider.overrideWith(
+                _FakeBoardPostNotifier.new,
+              ),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: const [Locale('en')],
+              theme: ThemeData(
+                brightness: Brightness.dark,
+                colorScheme: const ColorScheme.dark(
+                  surface: Color(0xFF000000), // OLED black
+                  onSurface: Color(0xFFFFFFFF),
+                ),
+              ),
+              home: Scaffold(
+                backgroundColor: const Color(0xFF000000),
+                body: PostTile(post: _post('1'), viewerMember: null),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      // Text content is rendered (no overflow or crash).
-      expect(find.textContaining('Body of post 1'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        // Text content is rendered (no overflow or crash).
+        expect(find.textContaining('Body of post 1'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 
   group('Accessibility — focus return', () {
     testWidgets(
-        'focus return after sheet dismiss: compose button remains tappable',
-        (tester) async {
-      // We test that after a sheet is shown and dismissed, the trigger
-      // button is still in the widget tree (focus return to it is handled
-      // by the sheet infrastructure).
-      await tester.pumpWidget(
-        _buildBoardsScreen(activeMembers: [_alice]),
-      );
-      await tester.pump();
+      'focus return after sheet dismiss: compose button remains tappable',
+      (tester) async {
+        // We test that after a sheet is shown and dismissed, the trigger
+        // button is still in the widget tree (focus return to it is handled
+        // by the sheet infrastructure).
+        await tester.pumpWidget(_buildBoardsScreen(activeMembers: [_alice]));
+        await tester.pump();
 
-      // The + add button in the top bar is still focusable/tappable.
-      final addButton = find.byTooltip('Add');
-      expect(addButton, findsOneWidget);
+        // The + add button in the top bar is still focusable/tappable.
+        final addButton = find.byTooltip('Add');
+        expect(addButton, findsOneWidget);
 
-      // Tapping it doesn't crash (even though the full compose sheet may fail
-      // to open without a full router context in tests).
-      // We just verify the button is interactive.
-      expect(tester.takeException(), isNull);
-    });
+        // Tapping it doesn't crash (even though the full compose sheet may fail
+        // to open without a full router context in tests).
+        // We just verify the button is interactive.
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 
   group('Accessibility — view-filter VoiceOver semantics', () {
     testWidgets('filter bar has explicit semantics label', (tester) async {
-      await tester.pumpWidget(
-        _buildBoardsScreen(activeMembers: [_alice]),
-      );
+      await tester.pumpWidget(_buildBoardsScreen(activeMembers: [_alice]));
       await tester.pump();
 
       // Switch to Inbox tab to reveal the filter bar.
@@ -382,10 +360,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
 
       // The filter button exposes the terminology-aware all-members label.
-      expect(
-        find.bySemanticsLabel(RegExp(_allMembersLabel)),
-        findsWidgets,
-      );
+      expect(find.bySemanticsLabel(RegExp(_allMembersLabel)), findsWidgets);
     });
   });
 }

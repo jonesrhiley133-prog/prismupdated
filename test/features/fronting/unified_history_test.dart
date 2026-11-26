@@ -26,27 +26,25 @@ FrontingSession _fronting({
   required DateTime start,
   DateTime? end,
   String? memberId,
-}) =>
-    FrontingSession(
-      id: 'fronting-${start.millisecondsSinceEpoch}',
-      startTime: start,
-      endTime: end,
-      memberId: memberId ?? 'member-1',
-      sessionType: SessionType.normal,
-    );
+}) => FrontingSession(
+  id: 'fronting-${start.millisecondsSinceEpoch}',
+  startTime: start,
+  endTime: end,
+  memberId: memberId ?? 'member-1',
+  sessionType: SessionType.normal,
+);
 
 FrontingSession _sleep({
   required DateTime start,
   DateTime? end,
   SleepQuality? quality,
-}) =>
-    FrontingSession(
-      id: 'sleep-${start.millisecondsSinceEpoch}',
-      startTime: start,
-      endTime: end,
-      sessionType: SessionType.sleep,
-      quality: quality,
-    );
+}) => FrontingSession(
+  id: 'sleep-${start.millisecondsSinceEpoch}',
+  startTime: start,
+  endTime: end,
+  sessionType: SessionType.sleep,
+  quality: quality,
+);
 
 void main() {
   group('groupSessionsByDay with mixed session types', () {
@@ -130,26 +128,29 @@ void main() {
       expect(groups[2].dayKey, '2026-03-30');
     });
 
-    test('mixed types with midnight split preserves session type on both slices',
-        () {
-      final sleepSession = _sleep(
-        start: DateTime(2026, 4, 2, 22, 30),
-        end: DateTime(2026, 4, 3, 6, 0),
-      );
+    test(
+      'mixed types with midnight split preserves session type on both slices',
+      () {
+        final sleepSession = _sleep(
+          start: DateTime(2026, 4, 2, 22, 30),
+          end: DateTime(2026, 4, 3, 6, 0),
+        );
 
-      final slices = splitAtMidnight(sleepSession);
+        final slices = splitAtMidnight(sleepSession);
 
-      expect(slices, hasLength(2));
-      expect(slices[0].session.isSleep, isTrue);
-      expect(slices[1].session.isSleep, isTrue);
-      expect(slices[0].session.sessionType, SessionType.sleep);
-      expect(slices[1].session.sessionType, SessionType.sleep);
-    });
+        expect(slices, hasLength(2));
+        expect(slices[0].session.isSleep, isTrue);
+        expect(slices[1].session.isSleep, isTrue);
+        expect(slices[0].session.sessionType, SessionType.sleep);
+        expect(slices[1].session.sessionType, SessionType.sleep);
+      },
+    );
   });
 
   group('DisplaySession.timeRangeString', () {
-    testWidgets('normal session with start and end shows formatted range',
-        (tester) async {
+    testWidgets('normal session with start and end shows formatted range', (
+      tester,
+    ) async {
       final context = await _testContext(tester);
       final session = _fronting(
         start: DateTime(2026, 4, 1, 9, 0),
@@ -170,9 +171,7 @@ void main() {
 
     testWidgets('active session with no end shows ongoing', (tester) async {
       final context = await _testContext(tester);
-      final session = _fronting(
-        start: DateTime(2026, 4, 1, 15, 0),
-      );
+      final session = _fronting(start: DateTime(2026, 4, 1, 15, 0));
 
       final display = DisplaySession(
         session: session,
@@ -184,8 +183,9 @@ void main() {
       expect(display.timeRangeString(context), contains('PM'));
     });
 
-    testWidgets('session that continues next day shows midnight end',
-        (tester) async {
+    testWidgets('session that continues next day shows midnight end', (
+      tester,
+    ) async {
       final context = await _testContext(tester);
       final session = _fronting(
         start: DateTime(2026, 4, 1, 23, 0),

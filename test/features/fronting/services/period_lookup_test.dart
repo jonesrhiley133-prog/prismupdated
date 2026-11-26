@@ -49,12 +49,14 @@ void main() {
       expect(result, same(p));
     });
 
-    test('picks the first matching period when multiple periods could match',
-        () {
-      final first = _period(['a', 'b']);
-      final second = _period(['a', 'b']);
-      final result = findPeriodBySessionIds([first, second], ['a', 'b']);
-      expect(result, same(first));
-    });
+    test(
+      'picks the first matching period when multiple periods could match',
+      () {
+        final first = _period(['a', 'b']);
+        final second = _period(['a', 'b']);
+        final result = findPeriodBySessionIds([first, second], ['a', 'b']);
+        expect(result, same(first));
+      },
+    );
   });
 }

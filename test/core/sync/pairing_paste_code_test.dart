@@ -108,28 +108,25 @@ void main() {
       },
     );
 
-    test(
-      'rejects a PGP-style block adjacent to the token',
-      () {
-        // A user with a PGP signature in their email may paste both. The
-        // signature is base64 and substantially longer than a pairing
-        // token; without structural validation it would beat the token
-        // in length sorting and decode to non-token bytes.
-        final original = _sampleTokenBytes();
-        final encoded = base64Encode(original);
-        // 256 base64 chars of arbitrary structure that decodes to 192 B
-        // — none of which is 0x01 at byte 0 with a consistent url_len.
-        final pgpLikeBlock = base64Encode(
-          Uint8List.fromList(List<int>.generate(192, (i) => (i * 31 + 7) & 0xff)),
-        );
+    test('rejects a PGP-style block adjacent to the token', () {
+      // A user with a PGP signature in their email may paste both. The
+      // signature is base64 and substantially longer than a pairing
+      // token; without structural validation it would beat the token
+      // in length sorting and decode to non-token bytes.
+      final original = _sampleTokenBytes();
+      final encoded = base64Encode(original);
+      // 256 base64 chars of arbitrary structure that decodes to 192 B
+      // — none of which is 0x01 at byte 0 with a consistent url_len.
+      final pgpLikeBlock = base64Encode(
+        Uint8List.fromList(List<int>.generate(192, (i) => (i * 31 + 7) & 0xff)),
+      );
 
-        final pasted =
-            '-----BEGIN PGP SIGNATURE-----\n$pgpLikeBlock\n-----END PGP SIGNATURE-----\n\n'
-            'Pairing code: $encoded';
+      final pasted =
+          '-----BEGIN PGP SIGNATURE-----\n$pgpLikeBlock\n-----END PGP SIGNATURE-----\n\n'
+          'Pairing code: $encoded';
 
-        expect(parsePastedPairingCode(pasted), original);
-      },
-    );
+      expect(parsePastedPairingCode(pasted), original);
+    });
 
     test('rejects structurally-shaped bytes with the wrong version', () {
       // Bytes that pass length validation but have version byte != 0x01

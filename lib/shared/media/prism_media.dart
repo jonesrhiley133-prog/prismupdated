@@ -14,7 +14,9 @@ import 'package:prism_plurality/features/social/services/social_media.dart';
 import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
     show SocialImage;
 import 'package:prism_plurality/features/social/widgets/video_tile.dart';
+import 'package:prism_plurality/shared/media/prism_originals.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 
 /// Picking and showing photos, videos and audio for the newer modules.
 /// Images sync (stored as media records); videos and audio stay on the
@@ -31,28 +33,84 @@ abstract final class PrismMedia {
     return dir;
   }
 
-  /// Returns a media id, or null if cancelled / unreadable.
+  /// Picks, crops (with Prism's one shared cropper) and stores an image.
+  /// Returns a media id, or null if cancelled / unreadable. The untouched
+  /// original is kept so [recropImage] can crop it again later.
   static Future<String?> pickImage(
     WidgetRef ref, {
     bool camera = false,
     String? owner,
+    PrismCropSpec spec = PrismCropSpec.free,
+    bool crop = true,
   }) async {
-    final x = await ImagePicker().pickImage(
-      source: camera ? ImageSource.camera : ImageSource.gallery,
+    final picked = await PrismImageCrop.pick(
+      ref.context,
+      spec: spec,
+      camera: camera,
+      allowCrop: crop,
     );
-    if (x == null) return null;
+    if (picked == null) return null;
     return ref
         .read(socialMediaStoreProvider)
-        .addImage(await x.readAsBytes(), owner: owner);
+        .addImage(picked.bytes, owner: owner, original: picked.originalId);
   }
 
-  static Future<List<String>> pickImages(WidgetRef ref, {String? owner}) async {
+  /// Re-crops an image you imported earlier, from its saved original.
+  /// Returns the new media id (the old record is left alone), or null.
+  static Future<String?> recropImage(
+    WidgetRef ref,
+    String mediaId, {
+    String? owner,
+    PrismCropSpec spec = PrismCropSpec.free,
+  }) async {
+    final orig = ref.read(socialMediaStoreProvider).originalOf(mediaId);
+    PrismPickedImage? picked;
+    if (orig != null && await PrismOriginals.exists(orig)) {
+      picked = await PrismImageCrop.recrop(ref.context, orig, spec: spec);
+    } else {
+      // Imported before originals were kept: crop what we have.
+      final current = ref.read(socialImageProvider(mediaId));
+      if (current == null) {
+        if (ref.context.mounted) {
+          PrismToast.error(
+            ref.context,
+            message: tr(
+              ref.context,
+              'This image isn\'t available to crop.',
+              'Esta imagen no está disponible para recortar.',
+            ),
+          );
+        }
+        return null;
+      }
+      picked = await PrismImageCrop.fromBytes(ref.context, current, spec: spec);
+    }
+    if (picked == null) return null;
+    return ref
+        .read(socialMediaStoreProvider)
+        .addImage(picked.bytes, owner: owner, original: picked.originalId);
+  }
+
+  /// Picks several images; each one goes through the shared cropper in turn
+  /// (cancel a crop to skip that image).
+  static Future<List<String>> pickImages(
+    WidgetRef ref, {
+    String? owner,
+    PrismCropSpec spec = PrismCropSpec.free,
+  }) async {
     final xs = await ImagePicker().pickMultiImage();
     final out = <String>[];
     for (final x in xs) {
+      if (!ref.context.mounted) break;
+      final picked = await PrismImageCrop.fromBytes(
+        ref.context,
+        await x.readAsBytes(),
+        spec: spec,
+      );
+      if (picked == null) continue;
       final id = await ref
           .read(socialMediaStoreProvider)
-          .addImage(await x.readAsBytes(), owner: owner);
+          .addImage(picked.bytes, owner: owner, original: picked.originalId);
       if (id != null) out.add(id);
     }
     return out;

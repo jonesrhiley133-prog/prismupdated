@@ -75,57 +75,60 @@ void main() {
   // `reconnecting`, runs the REAL `ffi.configureEngine`, retries onResume, and
   // recovers to `healthy`.
   // -------------------------------------------------------------------------
-  test('resume nudge recovers an unconfigured engine to healthy (real FFI)',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    ffi.PrismSyncHandle? handle;
-    try {
-      handle = await _createUnconfiguredHandle(relay);
-      final h = handle;
+  test(
+    'resume nudge recovers an unconfigured engine to healthy (real FFI)',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      ffi.PrismSyncHandle? handle;
+      try {
+        handle = await _createUnconfiguredHandle(relay);
+        final h = handle;
 
-      var health = SyncHealthState.healthy;
-      final logs = <String>[];
-      var triggered = 0;
+        var health = SyncHealthState.healthy;
+        final logs = <String>[];
+        var triggered = 0;
 
-      await runResumeSyncNudge(
-        onResume: () => ffi.onResume(handle: h),
-        configureEngine: () => ffi.configureEngine(handle: h),
-        triggerSync: () => triggered++,
-        takeLastPanic: ffi.takeLastPanic,
-        readHealth: () => health,
-        setHealth: (s) => health = s,
-        log: logs.add,
-      );
+        await runResumeSyncNudge(
+          onResume: () => ffi.onResume(handle: h),
+          configureEngine: () => ffi.configureEngine(handle: h),
+          triggerSync: () => triggered++,
+          takeLastPanic: ffi.takeLastPanic,
+          readHealth: () => health,
+          setHealth: (s) => health = s,
+          log: logs.add,
+        );
 
-      // Recovered: the retry-after-reconfigure path put us back to healthy.
-      expect(
-        health,
-        equals(SyncHealthState.healthy),
-        reason:
-            'an unconfigured engine must recover via configureEngine + retry, '
-            'never go destructive (health=$health, logs=$logs)',
-      );
-      // The first attempt genuinely failed before recovery (proves we didn't
-      // just no-op our way to "healthy").
-      expect(
-        logs,
-        isNotEmpty,
-        reason: 'the first onResume must have failed and been logged',
-      );
-      expect(
-        logs.first.toLowerCase(),
-        contains('configured'),
-        reason:
-            'the captured first-attempt failure should mention the engine not '
-            'being configured (was: ${logs.first})',
-      );
-      // markHealthy() ran, so a sync was kicked.
-      expect(triggered, greaterThan(0), reason: 'recovery kicks a sync');
-    } finally {
-      handle?.dispose();
-      relay.stop();
-    }
-  });
+        // Recovered: the retry-after-reconfigure path put us back to healthy.
+        expect(
+          health,
+          equals(SyncHealthState.healthy),
+          reason:
+              'an unconfigured engine must recover via configureEngine + retry, '
+              'never go destructive (health=$health, logs=$logs)',
+        );
+        // The first attempt genuinely failed before recovery (proves we didn't
+        // just no-op our way to "healthy").
+        expect(
+          logs,
+          isNotEmpty,
+          reason: 'the first onResume must have failed and been logged',
+        );
+        expect(
+          logs.first.toLowerCase(),
+          contains('configured'),
+          reason:
+              'the captured first-attempt failure should mention the engine not '
+              'being configured (was: ${logs.first})',
+        );
+        // markHealthy() ran, so a sync was kicked.
+        expect(triggered, greaterThan(0), reason: 'recovery kicks a sync');
+      } finally {
+        handle?.dispose();
+        relay.stop();
+      }
+    },
+  );
 
   // -------------------------------------------------------------------------
   // Case 2 — outage then restore.
@@ -135,79 +138,83 @@ void main() {
   // Restart the relay on the same URL+DB, run the nudge again: recover to
   // healthy.
   // -------------------------------------------------------------------------
-  test('resume nudge survives a relay outage and recovers on restore',
-      skip: e2eSkip(), () async {
-    final port = await findFreePort();
-    final dbPath = '${Directory.systemTemp.path}/'
-        'e2e_resume_outage_${DateTime.now().microsecondsSinceEpoch}.db';
+  test(
+    'resume nudge survives a relay outage and recovers on restore',
+    skip: e2eSkip(),
+    () async {
+      final port = await findFreePort();
+      final dbPath =
+          '${Directory.systemTemp.path}/'
+          'e2e_resume_outage_${DateTime.now().microsecondsSinceEpoch}.db';
 
-    var relay = await spawnRelay(port: port, dbPath: dbPath);
-    E2EDevice? a;
-    try {
-      a = await createDevice(relay);
-      await a.sync();
-      final dev = a;
+      var relay = await spawnRelay(port: port, dbPath: dbPath);
+      E2EDevice? a;
+      try {
+        a = await createDevice(relay);
+        await a.sync();
+        final dev = a;
 
-      var health = SyncHealthState.healthy;
-      final logs = <String>[];
+        var health = SyncHealthState.healthy;
+        final logs = <String>[];
 
-      // --- Outage: relay down, nudge must stay non-destructive. ---
-      relay.stop();
-      // Wait until the relay is ACTUALLY unreachable (not just sent a kill) so
-      // onResume fails deterministically instead of racing a still-closing
-      // socket — the source of load-dependent flakiness.
-      await _awaitRelayDown(relay.baseUrl);
+        // --- Outage: relay down, nudge must stay non-destructive. ---
+        relay.stop();
+        // Wait until the relay is ACTUALLY unreachable (not just sent a kill) so
+        // onResume fails deterministically instead of racing a still-closing
+        // socket — the source of load-dependent flakiness.
+        await _awaitRelayDown(relay.baseUrl);
 
-      await runResumeSyncNudge(
-        onResume: () => ffi.onResume(handle: dev.handle),
-        configureEngine: () => ffi.configureEngine(handle: dev.handle),
-        triggerSync: () {},
-        takeLastPanic: ffi.takeLastPanic,
-        readHealth: () => health,
-        setHealth: (s) => health = s,
-        log: logs.add,
-      );
+        await runResumeSyncNudge(
+          onResume: () => ffi.onResume(handle: dev.handle),
+          configureEngine: () => ffi.configureEngine(handle: dev.handle),
+          triggerSync: () {},
+          takeLastPanic: ffi.takeLastPanic,
+          readHealth: () => health,
+          setHealth: (s) => health = s,
+          log: logs.add,
+        );
 
-      expect(
-        health,
-        isNot(equals(SyncHealthState.disconnected)),
-        reason:
-            'a relay outage must NEVER push health to disconnected '
-            '(health=$health, logs=$logs)',
-      );
-      expect(
-        health,
-        anyOf(
+        expect(
+          health,
+          isNot(equals(SyncHealthState.disconnected)),
+          reason:
+              'a relay outage must NEVER push health to disconnected '
+              '(health=$health, logs=$logs)',
+        );
+        expect(
+          health,
+          anyOf(
+            equals(SyncHealthState.healthy),
+            equals(SyncHealthState.reconnecting),
+          ),
+          reason: 'outage leaves health healthy or transient reconnecting',
+        );
+
+        // --- Restore: same port + DB, nudge recovers to healthy. ---
+        relay = await spawnRelay(port: port, dbPath: dbPath);
+        await runResumeSyncNudge(
+          onResume: () => ffi.onResume(handle: dev.handle),
+          configureEngine: () => ffi.configureEngine(handle: dev.handle),
+          triggerSync: () {},
+          takeLastPanic: ffi.takeLastPanic,
+          readHealth: () => health,
+          setHealth: (s) => health = s,
+          log: logs.add,
+        );
+
+        expect(
+          health,
           equals(SyncHealthState.healthy),
-          equals(SyncHealthState.reconnecting),
-        ),
-        reason: 'outage leaves health healthy or transient reconnecting',
-      );
-
-      // --- Restore: same port + DB, nudge recovers to healthy. ---
-      relay = await spawnRelay(port: port, dbPath: dbPath);
-      await runResumeSyncNudge(
-        onResume: () => ffi.onResume(handle: dev.handle),
-        configureEngine: () => ffi.configureEngine(handle: dev.handle),
-        triggerSync: () {},
-        takeLastPanic: ffi.takeLastPanic,
-        readHealth: () => health,
-        setHealth: (s) => health = s,
-        log: logs.add,
-      );
-
-      expect(
-        health,
-        equals(SyncHealthState.healthy),
-        reason:
-            'once the relay is back, the nudge must recover to healthy '
-            '(health=$health, logs=$logs)',
-      );
-    } finally {
-      a?.dispose();
-      relay.stop();
-    }
-  });
+          reason:
+              'once the relay is back, the nudge must recover to healthy '
+              '(health=$health, logs=$logs)',
+        );
+      } finally {
+        a?.dispose();
+        relay.stop();
+      }
+    },
+  );
 
   // -------------------------------------------------------------------------
   // TEETH CHECK — proves the test distinguishes real recovery from a stuck
@@ -216,55 +223,58 @@ void main() {
   // `reconnecting`, NOT healthy. If this somehow went green, the case-1/case-2
   // "healthy" assertions would be tautological.
   // -------------------------------------------------------------------------
-  test('teeth: no-op reconfigure + persistent failure stays reconnecting',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    E2EDevice? a;
-    try {
-      a = await createDevice(relay);
-      final dev = a;
-      // Kill the relay so onResume keeps failing, and make configureEngine a
-      // no-op so the retry can't actually fix anything.
-      relay.stop();
-      await _awaitRelayDown(relay.baseUrl);
+  test(
+    'teeth: no-op reconfigure + persistent failure stays reconnecting',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      E2EDevice? a;
+      try {
+        a = await createDevice(relay);
+        final dev = a;
+        // Kill the relay so onResume keeps failing, and make configureEngine a
+        // no-op so the retry can't actually fix anything.
+        relay.stop();
+        await _awaitRelayDown(relay.baseUrl);
 
-      var health = SyncHealthState.healthy;
-      final logs = <String>[];
+        var health = SyncHealthState.healthy;
+        final logs = <String>[];
 
-      await runResumeSyncNudge(
-        onResume: () => ffi.onResume(handle: dev.handle),
-        configureEngine: () async {}, // no-op: cannot recover
-        triggerSync: () {},
-        takeLastPanic: ffi.takeLastPanic,
-        readHealth: () => health,
-        setHealth: (s) => health = s,
-        log: logs.add,
-      );
+        await runResumeSyncNudge(
+          onResume: () => ffi.onResume(handle: dev.handle),
+          configureEngine: () async {}, // no-op: cannot recover
+          triggerSync: () {},
+          takeLastPanic: ffi.takeLastPanic,
+          readHealth: () => health,
+          setHealth: (s) => health = s,
+          log: logs.add,
+        );
 
-      expect(
-        health,
-        equals(SyncHealthState.reconnecting),
-        reason:
-            'a persistent failure with a no-op reconfigure must land in '
-            'reconnecting — NOT healthy, NOT disconnected (health=$health, '
-            'logs=$logs)',
-      );
-      expect(
-        health,
-        isNot(equals(SyncHealthState.healthy)),
-        reason: 'must not falsely report healthy when nothing recovered',
-      );
-      // Both attempts failed → two failure log lines.
-      expect(
-        logs.length,
-        greaterThanOrEqualTo(2),
-        reason: 'both the initial and the retry onResume should have failed',
-      );
-    } finally {
-      a?.dispose();
-      relay.stop();
-    }
-  });
+        expect(
+          health,
+          equals(SyncHealthState.reconnecting),
+          reason:
+              'a persistent failure with a no-op reconfigure must land in '
+              'reconnecting — NOT healthy, NOT disconnected (health=$health, '
+              'logs=$logs)',
+        );
+        expect(
+          health,
+          isNot(equals(SyncHealthState.healthy)),
+          reason: 'must not falsely report healthy when nothing recovered',
+        );
+        // Both attempts failed → two failure log lines.
+        expect(
+          logs.length,
+          greaterThanOrEqualTo(2),
+          reason: 'both the initial and the retry onResume should have failed',
+        );
+      } finally {
+        a?.dispose();
+        relay.stop();
+      }
+    },
+  );
 }
 
 /// Wait until the relay at [baseUrl] is actually unreachable. A `stop()` sends a

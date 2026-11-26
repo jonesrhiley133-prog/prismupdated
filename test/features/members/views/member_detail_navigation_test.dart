@@ -745,7 +745,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // The footer sits below the profile sections; scroll to it.
-    await tester.scrollUntilVisible(find.text('Added May 1, 2026'), 400, scrollable: find.byType(Scrollable).last);
+    await tester.scrollUntilVisible(
+      find.text('Added May 1, 2026'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
     expect(find.text('Added May 1, 2026'), findsOneWidget);
     expect(find.text('Created May 1, 2026'), findsNothing);
 

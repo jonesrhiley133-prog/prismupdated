@@ -36,10 +36,12 @@ abstract class FrontingAnalytics with _$FrontingAnalytics {
     required int uniqueFronters,
     required double switchesPerDay,
     required List<MemberAnalytics> memberStats,
+
     /// System-wide median session length across the range. `Duration.zero`
     /// when there are no sessions.
     @Default(Duration.zero) Duration medianSession,
     @Default([]) List<CoFrontingPair> topCoFrontingPairs,
+
     /// Total clamped sleep time across the range. Sleep that overlaps a
     /// no-fronter window is already subtracted from [totalGapTime]; this
     /// exposes the underlying sleep total so UIs can surface it separately

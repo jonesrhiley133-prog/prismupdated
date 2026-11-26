@@ -12,7 +12,10 @@ const wouldYouRather = <(String, String)>[
   ('have a library that never ends', 'have a garden that grows anything'),
   ('time travel to the past', 'time travel to the future'),
   ('never feel cold again', 'never feel too hot again'),
-  ('have a theme song when you enter a room', 'have a narrator describing your day'),
+  (
+    'have a theme song when you enter a room',
+    'have a narrator describing your day',
+  ),
   ('be a famous chef', 'be a famous musician'),
   ('live where it\'s always autumn', 'live where it\'s always spring'),
   ('have a cozy cabin in the snow', 'have a cottage by the sea'),
@@ -28,7 +31,10 @@ const wouldYouRather = <(String, String)>[
   ('have a magic paintbrush', 'have a magic notebook'),
   ('sleep in a hammock under the stars', 'sleep in a blanket fort'),
   ('have unlimited books', 'have unlimited video games'),
-  ('meet your favourite fictional character', 'visit your favourite fictional world'),
+  (
+    'meet your favourite fictional character',
+    'visit your favourite fictional world',
+  ),
   ('always know the time without a clock', 'always know the way without a map'),
   ('bake the perfect cake', 'grow the perfect tomato'),
   ('have a pocket-sized friend', 'have a giant fluffy friend'),
@@ -277,10 +283,63 @@ const storyTwists = [
 ];
 
 const characterParts = <String, List<String>>{
-  'Name': ['Juniper', 'Bramble', 'Orion', 'Wren', 'Pip', 'Marlow', 'Saffron', 'Echo', 'Clover', 'Basil', 'Indigo', 'Rook', 'Fable', 'Sorrel', 'Nova'],
-  'Role': ['baker', 'cartographer', 'beekeeper', 'star-watcher', 'librarian', 'inventor', 'tea merchant', 'knight', 'gardener', 'musician', 'potion-maker', 'sailor'],
-  'Trait': ['gentle', 'stubborn', 'curious', 'dramatic', 'calm', 'mischievous', 'loyal', 'forgetful', 'brave', 'shy', 'cheerful', 'thoughtful'],
-  'Loves': ['rainy afternoons', 'old maps', 'honey cakes', 'thunderstorms', 'tiny frogs', 'riddles', 'knitting', 'music boxes', 'moonlit walks', 'collecting buttons'],
+  'Name': [
+    'Juniper',
+    'Bramble',
+    'Orion',
+    'Wren',
+    'Pip',
+    'Marlow',
+    'Saffron',
+    'Echo',
+    'Clover',
+    'Basil',
+    'Indigo',
+    'Rook',
+    'Fable',
+    'Sorrel',
+    'Nova',
+  ],
+  'Role': [
+    'baker',
+    'cartographer',
+    'beekeeper',
+    'star-watcher',
+    'librarian',
+    'inventor',
+    'tea merchant',
+    'knight',
+    'gardener',
+    'musician',
+    'potion-maker',
+    'sailor',
+  ],
+  'Trait': [
+    'gentle',
+    'stubborn',
+    'curious',
+    'dramatic',
+    'calm',
+    'mischievous',
+    'loyal',
+    'forgetful',
+    'brave',
+    'shy',
+    'cheerful',
+    'thoughtful',
+  ],
+  'Loves': [
+    'rainy afternoons',
+    'old maps',
+    'honey cakes',
+    'thunderstorms',
+    'tiny frogs',
+    'riddles',
+    'knitting',
+    'music boxes',
+    'moonlit walks',
+    'collecting buttons',
+  ],
   'Secret': [
     'can talk to moths',
     'is secretly royalty',
@@ -294,7 +353,20 @@ const characterParts = <String, List<String>>{
 };
 
 const creatureParts = <String, List<String>>{
-  'Body': ['fox', 'owl', 'turtle', 'cat', 'rabbit', 'whale', 'deer', 'frog', 'hedgehog', 'jellyfish', 'bear', 'snail'],
+  'Body': [
+    'fox',
+    'owl',
+    'turtle',
+    'cat',
+    'rabbit',
+    'whale',
+    'deer',
+    'frog',
+    'hedgehog',
+    'jellyfish',
+    'bear',
+    'snail',
+  ],
   'Feature': [
     'butterfly wings',
     'a glowing tail',
@@ -307,9 +379,35 @@ const creatureParts = <String, List<String>>{
     'tiny lanterns on its back',
     'a mane of flowers',
   ],
-  'Habitat': ['mossy forests', 'cloud tops', 'deep lakes', 'old libraries', 'moonlit meadows', 'warm kitchens', 'snowy peaks', 'coral reefs'],
-  'Diet': ['dewdrops', 'moonbeams', 'cinnamon buns', 'fallen petals', 'lost socks', 'starlight', 'honey', 'rain'],
-  'Power': ['makes flowers bloom', 'hums lullabies', 'turns invisible when shy', 'glows when happy', 'can find anything lost', 'brings gentle rain', 'knows everyone\'s favourite song'],
+  'Habitat': [
+    'mossy forests',
+    'cloud tops',
+    'deep lakes',
+    'old libraries',
+    'moonlit meadows',
+    'warm kitchens',
+    'snowy peaks',
+    'coral reefs',
+  ],
+  'Diet': [
+    'dewdrops',
+    'moonbeams',
+    'cinnamon buns',
+    'fallen petals',
+    'lost socks',
+    'starlight',
+    'honey',
+    'rain',
+  ],
+  'Power': [
+    'makes flowers bloom',
+    'hums lullabies',
+    'turns invisible when shy',
+    'glows when happy',
+    'can find anything lost',
+    'brings gentle rain',
+    'knows everyone\'s favourite song',
+  ],
 };
 
 /// Magnetic-poetry style word tiles.
@@ -386,19 +484,39 @@ const emojiCharades = <(String, String, List<String>)>[
   ('🦁👑', 'The Lion King', ['Royal zoo', 'Cat crown', 'Jungle Book']),
   ('⭐⚔️', 'Star Wars', ['Galaxy quest', 'Night battle', 'Star Trek']),
   ('❄️👸', 'Frozen', ['Snow White', 'Ice queen show', 'Winter ball']),
-  ('🧙‍♂️💍🌋', 'The Lord of the Rings', ['Harry Potter', 'Wizard wedding', 'Volcano trip']),
+  (
+    '🧙‍♂️💍🌋',
+    'The Lord of the Rings',
+    ['Harry Potter', 'Wizard wedding', 'Volcano trip'],
+  ),
   ('🕷️🧑', 'Spider-Man', ['Ant-Man', 'Bug hunter', 'Batman']),
-  ('🌧️☔🎤', 'Singin\' in the Rain', ['Rain dance', 'Storm song', 'Umbrella Academy']),
+  (
+    '🌧️☔🎤',
+    'Singin\' in the Rain',
+    ['Rain dance', 'Storm song', 'Umbrella Academy'],
+  ),
   ('🐟🔍', 'Finding Nemo', ['Fish market', 'Shark Tale', 'Fishing trip']),
   ('🏠🎈🎈', 'Up', ['Birthday party', 'Moving day', 'Balloon fair']),
-  ('🍫🏭', 'Charlie and the Chocolate Factory', ['Candy shop', 'Bake Off', 'Sweet dreams']),
+  (
+    '🍫🏭',
+    'Charlie and the Chocolate Factory',
+    ['Candy shop', 'Bake Off', 'Sweet dreams'],
+  ),
   ('🌙🌟', 'Twinkle twinkle', ['Night sky', 'Moon landing', 'Starry eyes']),
   ('🐝🦵', 'The bee\'s knees', ['Busy bee', 'Honey leg', 'Bee sting']),
-  ('🍰🚶', 'A piece of cake (a cakewalk)', ['Bakery run', 'Dessert walk', 'Cupcake parade']),
+  (
+    '🍰🚶',
+    'A piece of cake (a cakewalk)',
+    ['Bakery run', 'Dessert walk', 'Cupcake parade'],
+  ),
   ('🐘🛋️', 'Elephant in the room', ['Heavy sofa', 'Zoo lounge', 'Big nap']),
   ('☕🫖🇬🇧', 'Afternoon tea', ['Coffee break', 'Kettle on', 'Tea party UK']),
   ('🧊🔨', 'Break the ice', ['Ice cream', 'Cold hammer', 'Snow day']),
-  ('🌈🦄', 'Unicorns and rainbows', ['Pride parade', 'Magic horse', 'Rainbow road']),
+  (
+    '🌈🦄',
+    'Unicorns and rainbows',
+    ['Pride parade', 'Magic horse', 'Rainbow road'],
+  ),
   ('🐱🎩', 'The Cat in the Hat', ['Magic cat', 'Puss in Boots', 'Fancy pet']),
   ('🏴‍☠️💰🗺️', 'Treasure Island', ['Pirate party', 'Gold rush', 'Map quest']),
   ('🌹🐻', 'Beauty and the Beast', ['Rose garden', 'Teddy bear', 'Bear hug']),
@@ -406,35 +524,159 @@ const emojiCharades = <(String, String, List<String>)>[
 
 /// Mystery personality: clues → answer (fictional, public-domain style).
 const mysteryPersonalities = <(List<String>, String, List<String>)>[
-  (['Lives in a hole in the ground', 'Loves second breakfast', 'Goes on an unexpected journey'], 'Bilbo Baggins', ['Peter Pan', 'Paddington', 'Winnie-the-Pooh']),
-  (['Follows a white rabbit', 'Attends a very odd tea party', 'Grows and shrinks'], 'Alice', ['Dorothy', 'Wendy', 'Matilda']),
-  (['Lives at 221B Baker Street', 'Plays the violin', 'Brilliant at deduction'], 'Sherlock Holmes', ['Hercule Poirot', 'Dr Watson', 'Miss Marple']),
-  (['Never wants to grow up', 'Can fly', 'Has a fairy friend'], 'Peter Pan', ['Robin Hood', 'Pinocchio', 'Tom Sawyer']),
-  (['Loves honey', 'Lives in the Hundred Acre Wood', 'Best friends with Piglet'], 'Winnie-the-Pooh', ['Paddington', 'Baloo', 'Rupert Bear']),
-  (['Travels on a tornado', 'Wears silver (or ruby) slippers', 'Wants to go home'], 'Dorothy', ['Alice', 'Mary Poppins', 'Heidi']),
-  (['A wooden puppet', 'His nose grows', 'Wants to be a real boy'], 'Pinocchio', ['Gepetto', 'Peter Pan', 'The Tin Man']),
-  (['Steals from the rich', 'Lives in Sherwood Forest', 'Expert archer'], 'Robin Hood', ['King Arthur', 'Zorro', 'William Tell']),
-  (['A spider who writes words in her web', 'Saves a pig named Wilbur'], 'Charlotte', ['Anansi', 'Miss Spider', 'Arachne']),
-  (['A practically perfect nanny', 'Arrives with an umbrella', 'A spoonful of sugar helps'], 'Mary Poppins', ['Nanny McPhee', 'Matilda', 'Miss Honey']),
-  (['Created by a scientist', 'Brought to life with lightning', 'Often misunderstood'], 'Frankenstein\'s creature', ['Dracula', 'The Invisible Man', 'Dr Jekyll']),
-  (['A bear from darkest Peru', 'Loves marmalade', 'Wears a duffel coat'], 'Paddington', ['Pooh', 'Corduroy', 'Baloo']),
+  (
+    [
+      'Lives in a hole in the ground',
+      'Loves second breakfast',
+      'Goes on an unexpected journey',
+    ],
+    'Bilbo Baggins',
+    ['Peter Pan', 'Paddington', 'Winnie-the-Pooh'],
+  ),
+  (
+    [
+      'Follows a white rabbit',
+      'Attends a very odd tea party',
+      'Grows and shrinks',
+    ],
+    'Alice',
+    ['Dorothy', 'Wendy', 'Matilda'],
+  ),
+  (
+    [
+      'Lives at 221B Baker Street',
+      'Plays the violin',
+      'Brilliant at deduction',
+    ],
+    'Sherlock Holmes',
+    ['Hercule Poirot', 'Dr Watson', 'Miss Marple'],
+  ),
+  (
+    ['Never wants to grow up', 'Can fly', 'Has a fairy friend'],
+    'Peter Pan',
+    ['Robin Hood', 'Pinocchio', 'Tom Sawyer'],
+  ),
+  (
+    [
+      'Loves honey',
+      'Lives in the Hundred Acre Wood',
+      'Best friends with Piglet',
+    ],
+    'Winnie-the-Pooh',
+    ['Paddington', 'Baloo', 'Rupert Bear'],
+  ),
+  (
+    [
+      'Travels on a tornado',
+      'Wears silver (or ruby) slippers',
+      'Wants to go home',
+    ],
+    'Dorothy',
+    ['Alice', 'Mary Poppins', 'Heidi'],
+  ),
+  (
+    ['A wooden puppet', 'His nose grows', 'Wants to be a real boy'],
+    'Pinocchio',
+    ['Gepetto', 'Peter Pan', 'The Tin Man'],
+  ),
+  (
+    ['Steals from the rich', 'Lives in Sherwood Forest', 'Expert archer'],
+    'Robin Hood',
+    ['King Arthur', 'Zorro', 'William Tell'],
+  ),
+  (
+    ['A spider who writes words in her web', 'Saves a pig named Wilbur'],
+    'Charlotte',
+    ['Anansi', 'Miss Spider', 'Arachne'],
+  ),
+  (
+    [
+      'A practically perfect nanny',
+      'Arrives with an umbrella',
+      'A spoonful of sugar helps',
+    ],
+    'Mary Poppins',
+    ['Nanny McPhee', 'Matilda', 'Miss Honey'],
+  ),
+  (
+    [
+      'Created by a scientist',
+      'Brought to life with lightning',
+      'Often misunderstood',
+    ],
+    'Frankenstein\'s creature',
+    ['Dracula', 'The Invisible Man', 'Dr Jekyll'],
+  ),
+  (
+    ['A bear from darkest Peru', 'Loves marmalade', 'Wears a duffel coat'],
+    'Paddington',
+    ['Pooh', 'Corduroy', 'Baloo'],
+  ),
 ];
 
 const instruments = <(String, String, List<String>)>[
-  ('🎻 Played with a bow, sits under the chin', 'Violin', ['Cello', 'Guitar', 'Harp']),
+  (
+    '🎻 Played with a bow, sits under the chin',
+    'Violin',
+    ['Cello', 'Guitar', 'Harp'],
+  ),
   ('🎹 88 black and white keys', 'Piano', ['Organ', 'Accordion', 'Xylophone']),
   ('🎺 Brass, with three valves', 'Trumpet', ['Trombone', 'Tuba', 'Saxophone']),
-  ('🥁 Hit with sticks, keeps the beat', 'Drum kit', ['Tambourine', 'Maracas', 'Bongos']),
-  ('🎷 Curved metal body but a woodwind', 'Saxophone', ['Clarinet', 'Trumpet', 'Oboe']),
-  ('🪕 Round drum-like body, plucked strings', 'Banjo', ['Ukulele', 'Mandolin', 'Lute']),
-  ('🪈 Played by blowing across a hole', 'Flute', ['Recorder', 'Clarinet', 'Bagpipes']),
-  ('A brass instrument with a slide', 'Trombone', ['French horn', 'Tuba', 'Cornet']),
-  ('Large string instrument played sitting, between the knees', 'Cello', ['Viola', 'Double bass', 'Harp']),
-  ('Squeezed in and out, with buttons or keys', 'Accordion', ['Harmonica', 'Bagpipes', 'Concertina pipe']),
-  ('A small four-string instrument from Hawaii', 'Ukulele', ['Banjo', 'Mandolin', 'Violin']),
-  ('Metal bars struck with mallets, sounding bell-like', 'Glockenspiel', ['Drum', 'Triangle', 'Harp']),
-  ('Many strings plucked by hand, often in orchestras, with pedals', 'Harp', ['Lyre', 'Zither', 'Piano']),
-  ('Played by blowing into a bag with pipes', 'Bagpipes', ['Accordion', 'Flute', 'Oboe']),
+  (
+    '🥁 Hit with sticks, keeps the beat',
+    'Drum kit',
+    ['Tambourine', 'Maracas', 'Bongos'],
+  ),
+  (
+    '🎷 Curved metal body but a woodwind',
+    'Saxophone',
+    ['Clarinet', 'Trumpet', 'Oboe'],
+  ),
+  (
+    '🪕 Round drum-like body, plucked strings',
+    'Banjo',
+    ['Ukulele', 'Mandolin', 'Lute'],
+  ),
+  (
+    '🪈 Played by blowing across a hole',
+    'Flute',
+    ['Recorder', 'Clarinet', 'Bagpipes'],
+  ),
+  (
+    'A brass instrument with a slide',
+    'Trombone',
+    ['French horn', 'Tuba', 'Cornet'],
+  ),
+  (
+    'Large string instrument played sitting, between the knees',
+    'Cello',
+    ['Viola', 'Double bass', 'Harp'],
+  ),
+  (
+    'Squeezed in and out, with buttons or keys',
+    'Accordion',
+    ['Harmonica', 'Bagpipes', 'Concertina pipe'],
+  ),
+  (
+    'A small four-string instrument from Hawaii',
+    'Ukulele',
+    ['Banjo', 'Mandolin', 'Violin'],
+  ),
+  (
+    'Metal bars struck with mallets, sounding bell-like',
+    'Glockenspiel',
+    ['Drum', 'Triangle', 'Harp'],
+  ),
+  (
+    'Many strings plucked by hand, often in orchestras, with pedals',
+    'Harp',
+    ['Lyre', 'Zither', 'Piano'],
+  ),
+  (
+    'Played by blowing into a bag with pipes',
+    'Bagpipes',
+    ['Accordion', 'Flute', 'Oboe'],
+  ),
 ];
 
 const musicNotes = <(String, String)>[
@@ -512,7 +754,14 @@ const languagePairs = <String, List<(String, String)>>{
 
 /// Timeline sets: events in the right order (oldest first) with years.
 const timelines = <String, List<(String, int)>>{
-  'Inventions': [('Printing press with movable type', 1440), ('Telescope', 1608), ('Steam locomotive', 1804), ('Telephone', 1876), ('First powered aeroplane', 1903), ('World Wide Web', 1989)],
+  'Inventions': [
+    ('Printing press with movable type', 1440),
+    ('Telescope', 1608),
+    ('Steam locomotive', 1804),
+    ('Telephone', 1876),
+    ('First powered aeroplane', 1903),
+    ('World Wide Web', 1989),
+  ],
   'Space': [
     ('Sputnik 1 launched', 1957),
     ('First human in space', 1961),
@@ -577,7 +826,16 @@ const mapPlaces = <(String, String)>[
 ];
 
 /// Shape sorting: (shape, sides) — sort by number of sides.
-const shapesBySides = <(String, int)>[('Circle', 0), ('Triangle', 3), ('Square', 4), ('Pentagon', 5), ('Hexagon', 6), ('Heptagon', 7), ('Octagon', 8), ('Decagon', 10)];
+const shapesBySides = <(String, int)>[
+  ('Circle', 0),
+  ('Triangle', 3),
+  ('Square', 4),
+  ('Pentagon', 5),
+  ('Hexagon', 6),
+  ('Heptagon', 7),
+  ('Octagon', 8),
+  ('Decagon', 10),
+];
 
 /// Origami: steps in order for simple models.
 const origamiModels = <String, List<String>>{
@@ -668,15 +926,27 @@ const quotes = <(String, String)>[
   ('The best way out is always through.', 'Robert Frost'),
   ('Not all those who wander are lost.', 'J. R. R. Tolkien'),
   ('Act as if what you do makes a difference. It does.', 'William James'),
-  ('Kindness is the language which the deaf can hear and the blind can see.', 'Mark Twain'),
+  (
+    'Kindness is the language which the deaf can hear and the blind can see.',
+    'Mark Twain',
+  ),
   ('Little by little, one travels far.', 'Proverb'),
   ('Keep your face always toward the sunshine.', 'Walt Whitman'),
   ('Rest is not idleness.', 'John Lubbock'),
-  ('We are all in the gutter, but some of us are looking at the stars.', 'Oscar Wilde'),
-  ('Nothing is impossible; the word itself says "I\'m possible".', 'Audrey Hepburn'),
+  (
+    'We are all in the gutter, but some of us are looking at the stars.',
+    'Oscar Wilde',
+  ),
+  (
+    'Nothing is impossible; the word itself says "I\'m possible".',
+    'Audrey Hepburn',
+  ),
   ('Happiness depends upon ourselves.', 'Aristotle'),
   ('Adopt the pace of nature: her secret is patience.', 'Ralph Waldo Emerson'),
-  ('What we do for ourselves dies with us. What we do for others remains.', 'Albert Pike'),
+  (
+    'What we do for ourselves dies with us. What we do for others remains.',
+    'Albert Pike',
+  ),
   ('Wherever you go, go with all your heart.', 'Confucius'),
   ('A journey of a thousand miles begins with a single step.', 'Lao Tzu'),
   ('There is no friend as loyal as a book.', 'Ernest Hemingway'),
@@ -685,12 +955,24 @@ const quotes = <(String, String)>[
 /// Cozy activity suggestions for the roulette.
 const cozyActivities = <(String, String, int, bool)>[
   // (activity, emoji, minutes, group-friendly)
-  ('Make a warm drink and sit by a window', '☕', 10, false), ('Play a round of trivia together', '🧠', 10, true), ('Colour a mandala', '🌀', 15, false), ('Water the system garden', '🌱', 3, true),
+  ('Make a warm drink and sit by a window', '☕', 10, false),
+  ('Play a round of trivia together', '🧠', 10, true),
+  ('Colour a mandala', '🌀', 15, false),
+  ('Water the system garden', '🌱', 3, true),
   ('Write a letter to someone in the system', '💌', 10, false),
   ('Start a story chain', '📜', 15, true),
   ('Do a breathing exercise', '🫧', 4, false),
   ('Make a playlist for today\'s mood', '🎵', 15, false),
-  ('Solve a mini crossword', '✏️', 8, false), ('Build a sticker scene', '🖼️', 10, false), ('Play Would You Rather', '🤔', 10, true), ('Add to the gratitude jar', '🫙', 3, true),
-  ('Have a doodle session on the wall', '🖍️', 10, true), ('Read a few pages of a book', '📖', 20, false), ('Plan a game night', '🎲', 10, true), ('Do a Five-Letter Guess', '🔤', 5, false),
-  ('Look at old scrapbook pages', '📔', 10, true), ('Try a quick sudoku', '🔢', 15, false), ('Stretch like a cat', '🐈', 3, false), ('Answer a question card together', '🃏', 10, true),
+  ('Solve a mini crossword', '✏️', 8, false),
+  ('Build a sticker scene', '🖼️', 10, false),
+  ('Play Would You Rather', '🤔', 10, true),
+  ('Add to the gratitude jar', '🫙', 3, true),
+  ('Have a doodle session on the wall', '🖍️', 10, true),
+  ('Read a few pages of a book', '📖', 20, false),
+  ('Plan a game night', '🎲', 10, true),
+  ('Do a Five-Letter Guess', '🔤', 5, false),
+  ('Look at old scrapbook pages', '📔', 10, true),
+  ('Try a quick sudoku', '🔢', 15, false),
+  ('Stretch like a cat', '🐈', 3, false),
+  ('Answer a question card together', '🃏', 10, true),
 ];

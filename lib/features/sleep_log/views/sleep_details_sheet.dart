@@ -195,7 +195,10 @@ class _SleepDetailsState extends ConsumerState<SleepDetailsSheet> {
                 : '${fmt.format(s.startTime)} → ${fmt.format(s.endTime!)}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          RelatedRecordsSection(self: RecordRef(RecordRef.front, s.id), padding: const EdgeInsets.only(top: 8)),
+          RelatedRecordsSection(
+            self: RecordRef(RecordRef.front, s.id),
+            padding: const EdgeInsets.only(top: 8),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [

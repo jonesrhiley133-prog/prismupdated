@@ -90,68 +90,67 @@ void main() {
       expect(find.text('Save diagnostic report'), findsOneWidget);
     });
 
-    testWidgets('checklist shows data-present + key-unreadable from diagnostic', (
-      tester,
-    ) async {
-      final diag = SecureStorageDiagnostic(
-        recoveredVia: null,
-        slotOutcomes: const <String, String>{
-          DiagnosticSlotIds.appDbPrimary: 'cipher',
-          DiagnosticSlotIds.appDbSync: 'missing',
-        },
-        appDbState: DbStartupStateName.unrecoverable,
-      );
+    testWidgets(
+      'checklist shows data-present + key-unreadable from diagnostic',
+      (tester) async {
+        final diag = SecureStorageDiagnostic(
+          recoveredVia: null,
+          slotOutcomes: const <String, String>{
+            DiagnosticSlotIds.appDbPrimary: 'cipher',
+            DiagnosticSlotIds.appDbSync: 'missing',
+          },
+          appDbState: DbStartupStateName.unrecoverable,
+        );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResetRecoveryScreen(
-            mode: ResetRecoveryScreenMode.keychainUnreadable,
-            diagnostic: diag,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResetRecoveryScreen(
+              mode: ResetRecoveryScreenMode.keychainUnreadable,
+              diagnostic: diag,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        find.text('Encrypted data is on this device, locked'),
-        findsOneWidget,
-      );
-      expect(find.text('Encryption key can be read'), findsOneWidget);
+        expect(
+          find.text('Encrypted data is on this device, locked'),
+          findsOneWidget,
+        );
+        expect(find.text('Encryption key can be read'), findsOneWidget);
 
-      // Per-slot breakdown lives behind the Details expander.
-      expect(find.text('app_db_primary: cipher'), findsNothing);
-      await tester.tap(find.text('Details'));
-      await tester.pumpAndSettle();
-      expect(find.text('app_db_primary: cipher'), findsOneWidget);
-      expect(find.text('app_db_sync: missing'), findsOneWidget);
-    });
+        // Per-slot breakdown lives behind the Details expander.
+        expect(find.text('app_db_primary: cipher'), findsNothing);
+        await tester.tap(find.text('Details'));
+        await tester.pumpAndSettle();
+        expect(find.text('app_db_primary: cipher'), findsOneWidget);
+        expect(find.text('app_db_sync: missing'), findsOneWidget);
+      },
+    );
 
-    testWidgets('checklist reports no data when only the fresh key write failed', (
-      tester,
-    ) async {
-      final diag = SecureStorageDiagnostic(
-        recoveredVia: null,
-        slotOutcomes: const <String, String>{
-          DiagnosticSlotIds.appDbFresh: 'threw: write-failed (unknown)',
-        },
-        appDbState: DbStartupStateName.unrecoverable,
-      );
+    testWidgets(
+      'checklist reports no data when only the fresh key write failed',
+      (tester) async {
+        final diag = SecureStorageDiagnostic(
+          recoveredVia: null,
+          slotOutcomes: const <String, String>{
+            DiagnosticSlotIds.appDbFresh: 'threw: write-failed (unknown)',
+          },
+          appDbState: DbStartupStateName.unrecoverable,
+        );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResetRecoveryScreen(
-            mode: ResetRecoveryScreenMode.keychainUnreadable,
-            diagnostic: diag,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResetRecoveryScreen(
+              mode: ResetRecoveryScreenMode.keychainUnreadable,
+              diagnostic: diag,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(
-        find.text('No saved data found on this device'),
-        findsOneWidget,
-      );
-    });
+        expect(find.text('No saved data found on this device'), findsOneWidget);
+      },
+    );
 
     testWidgets('checklist reports unknown data state on a probe throw', (
       tester,
@@ -161,9 +160,7 @@ void main() {
       // know whether a DB file exists. Don't assert one way or the other.
       final diag = SecureStorageDiagnostic(
         recoveredVia: null,
-        slotOutcomes: const <String, String>{
-          'probe': 'threw: Exception: boom',
-        },
+        slotOutcomes: const <String, String>{'probe': 'threw: Exception: boom'},
         appDbState: DbStartupStateName.unrecoverable,
       );
 
@@ -407,31 +404,30 @@ void main() {
       expect(find.textContaining('Could not save or copy'), findsOneWidget);
     });
 
-    testWidgets(
-      'tapping "Try again after restarting" invokes the exit hook',
-      (tester) async {
-        var exitCalls = 0;
-        await tester.pumpWidget(
-          MaterialApp(
-            home: ResetRecoveryScreen(
-              mode: ResetRecoveryScreenMode.keychainUnreadable,
-              syncHistoryHintReader: () async => false,
-              appExit: () async {
-                exitCalls += 1;
-              },
-            ),
+    testWidgets('tapping "Try again after restarting" invokes the exit hook', (
+      tester,
+    ) async {
+      var exitCalls = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ResetRecoveryScreen(
+            mode: ResetRecoveryScreenMode.keychainUnreadable,
+            syncHistoryHintReader: () async => false,
+            appExit: () async {
+              exitCalls += 1;
+            },
           ),
-        );
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        await tester.tap(
-          find.widgetWithText(TextButton, 'Try again after restarting'),
-        );
-        await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(TextButton, 'Try again after restarting'),
+      );
+      await tester.pumpAndSettle();
 
-        expect(exitCalls, 1);
-      },
-    );
+      expect(exitCalls, 1);
+    });
   });
 
   group('keychainUnavailable mode', () {

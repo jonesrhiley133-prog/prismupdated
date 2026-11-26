@@ -32,14 +32,17 @@ void main() {
       expect(textFieldDefinition.configToJson(null), isNull);
     });
 
-    test('TextConfig(hideTitleOnProfile: true) → non-null map that round-trips', () {
-      const config = TextConfig(hideTitleOnProfile: true);
-      final json = textFieldDefinition.configToJson(config);
-      expect(json, isNotNull);
+    test(
+      'TextConfig(hideTitleOnProfile: true) → non-null map that round-trips',
+      () {
+        const config = TextConfig(hideTitleOnProfile: true);
+        final json = textFieldDefinition.configToJson(config);
+        expect(json, isNotNull);
 
-      final roundTripped = textFieldDefinition.configFromJson(json);
-      expect(roundTripped, isA<TextConfig>());
-      expect((roundTripped as TextConfig).hideTitleOnProfile, isTrue);
-    });
+        final roundTripped = textFieldDefinition.configFromJson(json);
+        expect(roundTripped, isA<TextConfig>());
+        expect((roundTripped as TextConfig).hideTitleOnProfile, isTrue);
+      },
+    );
   });
 }

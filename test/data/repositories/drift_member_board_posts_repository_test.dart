@@ -56,13 +56,15 @@ MemberBoardPost _post({
 
 /// Insert a minimal member row so boardLastReadAt can be written.
 Future<void> _insertMember(AppDatabase db, String memberId) async {
-  await db.into(db.members).insert(
-    MembersCompanion.insert(
-      id: memberId,
-      name: memberId,
-      createdAt: DateTime.utc(2026, 1, 1),
-    ),
-  );
+  await db
+      .into(db.members)
+      .insert(
+        MembersCompanion.insert(
+          id: memberId,
+          name: memberId,
+          createdAt: DateTime.utc(2026, 1, 1),
+        ),
+      );
 }
 
 void main() {
@@ -76,11 +78,7 @@ void main() {
     dao = db.memberBoardPostsDao;
     membersDao = db.membersDao;
     // null sync handle → syncRecord* calls are no-ops (handle == null short-circuits)
-    repo = DriftMemberBoardPostsRepository(
-      dao,
-      membersDao,
-      null,
-    );
+    repo = DriftMemberBoardPostsRepository(dao, membersDao, null);
   });
 
   tearDown(() => db.close());
@@ -349,14 +347,9 @@ void main() {
       expect(row.authorId, 'a_author');
     });
 
-    test('null-clearing emits null and writes null to the database',
-        () async {
+    test('null-clearing emits null and writes null to the database', () async {
       await repo.createPost(
-        _post(
-          id: 'p1',
-          authorId: 'a_author',
-          title: 'Original title',
-        ),
+        _post(id: 'p1', authorId: 'a_author', title: 'Original title'),
       );
       final captured = <CapturedSyncOp>[];
       SyncRecordMixin.installCaptureSinkForTesting(captured.add);
@@ -458,7 +451,9 @@ void main() {
 
     test('boardLastReadAt is recent (within 5s of now)', () async {
       await _insertMember(db, 'm1');
-      final before = DateTime.now().toUtc().subtract(const Duration(seconds: 1));
+      final before = DateTime.now().toUtc().subtract(
+        const Duration(seconds: 1),
+      );
       await repo.markInboxOpenedFor(['m1']);
       final after = DateTime.now().toUtc().add(const Duration(seconds: 5));
 
@@ -468,14 +463,17 @@ void main() {
       expect(ts.isBefore(after), isTrue);
     });
 
-    test('unknown member id does not throw (member not found is silently skipped)', () async {
-      // updateMemberFields returns 0 for missing/tombstoned rows;
-      // no exception expected for missing member.
-      await expectLater(
-        repo.markInboxOpenedFor(['no-such-member']),
-        completes,
-      );
-    });
+    test(
+      'unknown member id does not throw (member not found is silently skipped)',
+      () async {
+        // updateMemberFields returns 0 for missing/tombstoned rows;
+        // no exception expected for missing member.
+        await expectLater(
+          repo.markInboxOpenedFor(['no-such-member']),
+          completes,
+        );
+      },
+    );
 
     test('emits one {board_last_read_at} patch per active fronter', () async {
       await _insertMember(db, 'm1');
@@ -498,10 +496,7 @@ void main() {
         // is_deleted is stripped by the diff helper.
         expect(op.fields.containsKey('is_deleted'), isFalse);
       }
-      expect(
-        captured.map((op) => op.entityId).toSet(),
-        {'m1', 'm2'},
-      );
+      expect(captured.map((op) => op.entityId).toSet(), {'m1', 'm2'});
     });
 
     test('skips members whose boardLastReadAt is already >= now', () async {
@@ -516,14 +511,16 @@ void main() {
         isUtc: true,
       );
       final future = nowSec.add(const Duration(hours: 1));
-      await db.into(db.members).insert(
-        MembersCompanion.insert(
-          id: 'm1',
-          name: 'm1',
-          createdAt: DateTime.utc(2026, 1, 1),
-          boardLastReadAt: Value(future),
-        ),
-      );
+      await db
+          .into(db.members)
+          .insert(
+            MembersCompanion.insert(
+              id: 'm1',
+              name: 'm1',
+              createdAt: DateTime.utc(2026, 1, 1),
+              boardLastReadAt: Value(future),
+            ),
+          );
       await _insertMember(db, 'm2'); // boardLastReadAt: null
 
       final captured = <CapturedSyncOp>[];
@@ -542,40 +539,38 @@ void main() {
       expect(m1!.boardLastReadAt!.toUtc(), future);
     });
 
-    test(
-      'concurrent-call race: older now never regresses a newer stamp '
-      '(atomic conditional update)',
-      () async {
-        // Pin the race the conditional DAO update guards against. Simulate
-        // two callers arriving with reversed timing: the LATE-arriving
-        // call carries an OLDER `now` than what's already stored. Without
-        // the SQL-level conditional, that call would clobber the newer
-        // stamp.
-        final older = DateTime.utc(2026, 5, 25, 10, 0);
-        final newer = DateTime.utc(2026, 5, 25, 11, 0);
+    test('concurrent-call race: older now never regresses a newer stamp '
+        '(atomic conditional update)', () async {
+      // Pin the race the conditional DAO update guards against. Simulate
+      // two callers arriving with reversed timing: the LATE-arriving
+      // call carries an OLDER `now` than what's already stored. Without
+      // the SQL-level conditional, that call would clobber the newer
+      // stamp.
+      final older = DateTime.utc(2026, 5, 25, 10, 0);
+      final newer = DateTime.utc(2026, 5, 25, 11, 0);
 
-        await db.into(db.members).insert(
-          MembersCompanion.insert(
-            id: 'm1',
-            name: 'm1',
-            createdAt: DateTime.utc(2026, 1, 1),
-            boardLastReadAt: Value(newer),
-          ),
-        );
+      await db
+          .into(db.members)
+          .insert(
+            MembersCompanion.insert(
+              id: 'm1',
+              name: 'm1',
+              createdAt: DateTime.utc(2026, 1, 1),
+              boardLastReadAt: Value(newer),
+            ),
+          );
 
-        // Caller arrives late with an older `now` — write only if older.
-        final updatedIds = await membersDao.setBoardLastReadAtIfOlder(
-          ['m1'],
-          older,
-        );
+      // Caller arrives late with an older `now` — write only if older.
+      final updatedIds = await membersDao.setBoardLastReadAtIfOlder([
+        'm1',
+      ], older);
 
-        // The row should NOT be in the updated list (current is newer
-        // than `older`), and the stored value should still be `newer`.
-        expect(updatedIds, isEmpty);
-        final m1 = await membersDao.getMemberById('m1');
-        expect(m1!.boardLastReadAt!.toUtc(), newer);
-      },
-    );
+      // The row should NOT be in the updated list (current is newer
+      // than `older`), and the stored value should still be `newer`.
+      expect(updatedIds, isEmpty);
+      final m1 = await membersDao.getMemberById('m1');
+      expect(m1!.boardLastReadAt!.toUtc(), newer);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -706,94 +701,85 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('audience forward-compat fallback', () {
-    test(
-      'unknown audience value from peer applies as "public"',
-      () async {
-        final deviceB = _makeDb();
-        addTearDown(deviceB.close);
-        final adapterB = buildSyncAdapterWithCompletion(deviceB);
-        final entity = adapterB.adapter.entities.firstWhere(
-          (e) => e.tableName == 'member_board_posts',
-        );
+    test('unknown audience value from peer applies as "public"', () async {
+      final deviceB = _makeDb();
+      addTearDown(deviceB.close);
+      final adapterB = buildSyncAdapterWithCompletion(deviceB);
+      final entity = adapterB.adapter.entities.firstWhere(
+        (e) => e.tableName == 'member_board_posts',
+      );
 
-        // Simulate a future-version peer sending an unknown audience
-        await entity.applyFields('future-post', {
-          'target_member_id': null,
-          'author_id': 'a1',
-          'audience': 'something_new', // unknown value
-          'title': null,
-          'body': 'future body',
-          'created_at': '2026-01-01T00:00:00.000Z',
-          'written_at': '2026-01-01T00:00:00.000Z',
-          'edited_at': null,
-          'is_deleted': false,
-        });
+      // Simulate a future-version peer sending an unknown audience
+      await entity.applyFields('future-post', {
+        'target_member_id': null,
+        'author_id': 'a1',
+        'audience': 'something_new', // unknown value
+        'title': null,
+        'body': 'future body',
+        'created_at': '2026-01-01T00:00:00.000Z',
+        'written_at': '2026-01-01T00:00:00.000Z',
+        'edited_at': null,
+        'is_deleted': false,
+      });
 
-        final row = await deviceB.memberBoardPostsDao.getPostById('future-post');
-        expect(row, isNotNull);
-        // Unknown audience → treated as 'public' per locked forward-compat rule
-        expect(
-          row!.audience,
-          'public',
-          reason:
-              'Unknown audience from a future-version peer must be treated as "public"',
-        );
-      },
-    );
+      final row = await deviceB.memberBoardPostsDao.getPostById('future-post');
+      expect(row, isNotNull);
+      // Unknown audience → treated as 'public' per locked forward-compat rule
+      expect(
+        row!.audience,
+        'public',
+        reason:
+            'Unknown audience from a future-version peer must be treated as "public"',
+      );
+    });
 
-    test(
-      '"public" audience value passes through unchanged',
-      () async {
-        final deviceB = _makeDb();
-        addTearDown(deviceB.close);
-        final adapterB = buildSyncAdapterWithCompletion(deviceB);
-        final entity = adapterB.adapter.entities.firstWhere(
-          (e) => e.tableName == 'member_board_posts',
-        );
+    test('"public" audience value passes through unchanged', () async {
+      final deviceB = _makeDb();
+      addTearDown(deviceB.close);
+      final adapterB = buildSyncAdapterWithCompletion(deviceB);
+      final entity = adapterB.adapter.entities.firstWhere(
+        (e) => e.tableName == 'member_board_posts',
+      );
 
-        await entity.applyFields('pub-post', {
-          'target_member_id': null,
-          'author_id': null,
-          'audience': 'public',
-          'title': null,
-          'body': 'a public post',
-          'created_at': '2026-01-01T00:00:00.000Z',
-          'written_at': '2026-01-01T00:00:00.000Z',
-          'edited_at': null,
-          'is_deleted': false,
-        });
+      await entity.applyFields('pub-post', {
+        'target_member_id': null,
+        'author_id': null,
+        'audience': 'public',
+        'title': null,
+        'body': 'a public post',
+        'created_at': '2026-01-01T00:00:00.000Z',
+        'written_at': '2026-01-01T00:00:00.000Z',
+        'edited_at': null,
+        'is_deleted': false,
+      });
 
-        final row = await deviceB.memberBoardPostsDao.getPostById('pub-post');
-        expect(row!.audience, 'public');
-      },
-    );
+      final row = await deviceB.memberBoardPostsDao.getPostById('pub-post');
+      expect(row!.audience, 'public');
+    });
 
-    test(
-      '"private" audience value passes through unchanged',
-      () async {
-        final deviceB = _makeDb();
-        addTearDown(deviceB.close);
-        final adapterB = buildSyncAdapterWithCompletion(deviceB);
-        final entity = adapterB.adapter.entities.firstWhere(
-          (e) => e.tableName == 'member_board_posts',
-        );
+    test('"private" audience value passes through unchanged', () async {
+      final deviceB = _makeDb();
+      addTearDown(deviceB.close);
+      final adapterB = buildSyncAdapterWithCompletion(deviceB);
+      final entity = adapterB.adapter.entities.firstWhere(
+        (e) => e.tableName == 'member_board_posts',
+      );
 
-        await entity.applyFields('priv-post', {
-          'target_member_id': 'm1',
-          'author_id': 'a1',
-          'audience': 'private',
-          'title': null,
-          'body': 'a private post',
-          'created_at': '2026-01-01T00:00:00.000Z',
-          'written_at': '2026-01-01T00:00:00.000Z',
-          'edited_at': null,
-          'is_deleted': false,
-        });
+      await entity.applyFields('priv-post', {
+        'target_member_id': 'm1',
+        'author_id': 'a1',
+        'audience': 'private',
+        'title': null,
+        'body': 'a private post',
+        'created_at': '2026-01-01T00:00:00.000Z',
+        'written_at': '2026-01-01T00:00:00.000Z',
+        'edited_at': null,
+        'is_deleted': false,
+      });
 
-        final row = await deviceB.memberBoardPostsDao.getPostById('priv-post');
-        expect(row!.audience, 'private');
-      },
-    );
+      final row = await deviceB.memberBoardPostsDao.getPostById('priv-post');
+      expect(row!.audience, 'private');
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -812,7 +798,12 @@ void main() {
 
     test('watchInboxPaginated maps rows to domain MemberBoardPost', () async {
       await repo.createPost(
-        _post(id: 'p1', audience: 'private', body: 'inbox', targetMemberId: 'm1'),
+        _post(
+          id: 'p1',
+          audience: 'private',
+          body: 'inbox',
+          targetMemberId: 'm1',
+        ),
       );
       final posts = await repo.watchInboxPaginated(['m1']).first;
       expect(posts.length, 1);
@@ -820,14 +811,22 @@ void main() {
       expect(posts.first.id, 'p1');
     });
 
-    test('watchPublicForMemberPaginated maps rows to domain MemberBoardPost', () async {
-      await repo.createPost(
-        _post(id: 'p1', audience: 'public', body: 'member post', authorId: 'm1'),
-      );
-      final posts = await repo.watchPublicForMemberPaginated('m1').first;
-      expect(posts.length, 1);
-      expect(posts.first, isA<MemberBoardPost>());
-    });
+    test(
+      'watchPublicForMemberPaginated maps rows to domain MemberBoardPost',
+      () async {
+        await repo.createPost(
+          _post(
+            id: 'p1',
+            audience: 'public',
+            body: 'member post',
+            authorId: 'm1',
+          ),
+        );
+        final posts = await repo.watchPublicForMemberPaginated('m1').first;
+        expect(posts.length, 1);
+        expect(posts.first, isA<MemberBoardPost>());
+      },
+    );
 
     test('getPostById returns domain model', () async {
       await repo.createPost(_post(id: 'p1', body: 'fetch me'));

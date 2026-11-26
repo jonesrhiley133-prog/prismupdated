@@ -79,8 +79,12 @@ Future<void> _apply(
   List<Map<String, dynamic>> changes,
 ) async {
   final wrapped = buildSyncAdapterWithCompletion(db);
-  await applyRemoteChanges(db, wrapped.adapter, _eventFromChanges(changes),
-      strict: true);
+  await applyRemoteChanges(
+    db,
+    wrapped.adapter,
+    _eventFromChanges(changes),
+    strict: true,
+  );
 }
 
 void main() {
@@ -88,55 +92,71 @@ void main() {
   setUp(() => db = database.AppDatabase(NativeDatabase.memory()));
   tearDown(() => db.close());
 
-  test(
-      'F2 guard: a full-identity create under a redirected legacy id is NOT '
+  test('F2 guard: a full-identity create under a redirected legacy id is NOT '
       'folded onto the alias holder', () async {
     // Winner holds the PK member uuid-X; a peer op for the same member arrives
     // under "legacy" and is redirected onto the winner (alias legacy -> winner).
     await _apply(db, [
-      _memberChange('winner',
-          _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx')),
+      _memberChange(
+        'winner',
+        _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx'),
+      ),
     ]);
     await _apply(db, [
-      _memberChange('legacy',
-          _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx')),
+      _memberChange(
+        'legacy',
+        _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx'),
+      ),
     ]);
 
     // A FULL create for a DISTINCT member uuid-Y arrives under the still-aliased
     // "legacy" id. It carries its own identity, so it must NOT be retargeted onto
     // the winner (which would overwrite uuid-X with uuid-Y).
     await _apply(db, [
-      _memberChange('legacy',
-          _memberFields(name: 'Yara', pkUuid: 'uuid-Y', pkId: 'sy')),
+      _memberChange(
+        'legacy',
+        _memberFields(name: 'Yara', pkUuid: 'uuid-Y', pkId: 'sy'),
+      ),
     ]);
 
     final rows = await db.select(db.members).get();
     final byUuid = {
       for (final r in rows.where((r) => !r.isDeleted)) r.pluralkitUuid: r,
     };
-    expect(byUuid.containsKey('uuid-X'), isTrue,
-        reason: 'The winner (uuid-X) must survive intact, not be overwritten.');
+    expect(
+      byUuid.containsKey('uuid-X'),
+      isTrue,
+      reason: 'The winner (uuid-X) must survive intact, not be overwritten.',
+    );
     expect(byUuid['uuid-X']!.name, 'Xavier');
-    expect(byUuid.containsKey('uuid-Y'), isTrue,
-        reason: 'The distinct member uuid-Y must exist as its own row.');
+    expect(
+      byUuid.containsKey('uuid-Y'),
+      isTrue,
+      reason: 'The distinct member uuid-Y must exist as its own row.',
+    );
   });
 
-  test(
-      'F2 guard: a sparse edit does NOT clobber a holder that was relinked to a '
+  test('F2 guard: a sparse edit does NOT clobber a holder that was relinked to a '
       'different PK member', () async {
     await _apply(db, [
-      _memberChange('winner',
-          _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx')),
+      _memberChange(
+        'winner',
+        _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx'),
+      ),
     ]);
     await _apply(db, [
-      _memberChange('legacy',
-          _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx')),
+      _memberChange(
+        'legacy',
+        _memberFields(name: 'Xavier', pkUuid: 'uuid-X', pkId: 'sx'),
+      ),
     ]);
     // The winner row is relinked in place to a DIFFERENT PK member uuid-Y. The
     // alias legacy -> winner (recorded for uuid-X) is now stale.
     await _apply(db, [
-      _memberChange('winner',
-          _memberFields(name: 'Yara', pkUuid: 'uuid-Y', pkId: 'sy')),
+      _memberChange(
+        'winner',
+        _memberFields(name: 'Yara', pkUuid: 'uuid-Y', pkId: 'sy'),
+      ),
     ]);
 
     // A late SPARSE edit still addressed to the old legacy id must NOT be
@@ -145,11 +165,16 @@ void main() {
       _memberChange('legacy', <String, dynamic>{'name': 'StaleLateEdit'}),
     ]);
 
-    final winner = (await db.select(db.members).get())
-        .singleWhere((r) => r.id == 'winner');
-    expect(winner.name, 'Yara',
-        reason: 'The relinked member (uuid-Y) must not be clobbered by a stale '
-            'sparse edit addressed to the old legacy id.');
+    final winner = (await db.select(db.members).get()).singleWhere(
+      (r) => r.id == 'winner',
+    );
+    expect(
+      winner.name,
+      'Yara',
+      reason:
+          'The relinked member (uuid-Y) must not be clobbered by a stale '
+          'sparse edit addressed to the old legacy id.',
+    );
     expect(winner.pluralkitUuid, 'uuid-Y');
   });
 }

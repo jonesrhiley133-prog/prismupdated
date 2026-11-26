@@ -6,7 +6,8 @@ import 'package:prism_plurality/data/mappers/custom_field_mapper.dart';
 import 'package:prism_plurality/data/mappers/custom_field_value_mapper.dart';
 import 'package:prism_plurality/domain/models/custom_field.dart' as domain;
 import 'package:prism_plurality/domain/models/custom_field_type_config.dart';
-import 'package:prism_plurality/domain/models/custom_field_value.dart' as domain;
+import 'package:prism_plurality/domain/models/custom_field_value.dart'
+    as domain;
 
 import '../../helpers/mapper_test_helpers.dart';
 
@@ -51,8 +52,10 @@ void main() {
 
     test('toDomain maps all date precision values', () {
       for (final precision in domain.DatePrecision.values) {
-        final row =
-            makeDbCustomField(fieldType: 2, datePrecision: precision.index);
+        final row = makeDbCustomField(
+          fieldType: 2,
+          datePrecision: precision.index,
+        );
         final model = CustomFieldMapper.toDomain(row);
         expect(model.fieldType, domain.CustomFieldType.date);
         expect(model.datePrecision, precision);
@@ -235,8 +238,7 @@ void main() {
       expect(
         mapped.typeConfig,
         isNull,
-        reason:
-            'Unknown variant fails to parse cleanly; left null',
+        reason: 'Unknown variant fails to parse cleanly; left null',
       );
 
       final back = CustomFieldMapper.toCompanion(mapped);
@@ -367,9 +369,12 @@ void main() {
       expect(domain.CustomFieldType.longText.label, 'Long Text');
     });
 
-    test('values list has 5 types (back-compat fallback only; new types register via the registry)', () {
-      expect(domain.CustomFieldType.values.length, 5);
-    });
+    test(
+      'values list has 5 types (back-compat fallback only; new types register via the registry)',
+      () {
+        expect(domain.CustomFieldType.values.length, 5);
+      },
+    );
 
     test('isTextual identifies short and long text fields', () {
       expect(domain.CustomFieldType.text.isTextual, isTrue);

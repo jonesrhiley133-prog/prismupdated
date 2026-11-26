@@ -1002,69 +1002,66 @@ void main() {
       },
     );
 
-    test(
-      'successful import persists one outbox row per imported entity, '
-      'drained only after commit',
-      () async {
-        final now = DateTime(2026, 1, 15, 10).toUtc().toIso8601String();
-        final json = jsonEncode({
-          'formatVersion': '1.0',
-          'version': '1.0',
-          'appName': 'Prism Plurality',
-          'exportDate': now,
-          'totalRecords': 1,
-          'headmates': [
-            {
-              'id': 'm-ok',
-              'name': 'Imported',
-              'isActive': true,
-              'createdAt': now,
-              'displayOrder': 0,
-              'isAdmin': false,
-              'customColorEnabled': false,
-            },
-          ],
-          'frontSessions': [],
-          'sleepSessions': [],
-          'conversations': [
-            {
-              'id': 'conv-ok',
-              'createdAt': now,
-              'lastActivityAt': now,
-              'title': 'Chat',
-              'type': 'group',
-              'isDirectMessage': false,
-              'participantIds': <String>[],
-              'lastReadTimestamps': <String, dynamic>{},
-            },
-          ],
-          'messages': [],
-          'polls': [],
-          'pollOptions': [],
-          'systemSettings': [],
-          'habits': [],
-          'habitCompletions': [],
-        });
+    test('successful import persists one outbox row per imported entity, '
+        'drained only after commit', () async {
+      final now = DateTime(2026, 1, 15, 10).toUtc().toIso8601String();
+      final json = jsonEncode({
+        'formatVersion': '1.0',
+        'version': '1.0',
+        'appName': 'Prism Plurality',
+        'exportDate': now,
+        'totalRecords': 1,
+        'headmates': [
+          {
+            'id': 'm-ok',
+            'name': 'Imported',
+            'isActive': true,
+            'createdAt': now,
+            'displayOrder': 0,
+            'isAdmin': false,
+            'customColorEnabled': false,
+          },
+        ],
+        'frontSessions': [],
+        'sleepSessions': [],
+        'conversations': [
+          {
+            'id': 'conv-ok',
+            'createdAt': now,
+            'lastActivityAt': now,
+            'title': 'Chat',
+            'type': 'group',
+            'isDirectMessage': false,
+            'participantIds': <String>[],
+            'lastReadTimestamps': <String, dynamic>{},
+          },
+        ],
+        'messages': [],
+        'polls': [],
+        'pollOptions': [],
+        'systemSettings': [],
+        'habits': [],
+        'habitCompletions': [],
+      });
 
-        // No handle published, so the post-commit drain is a no-op deferral and
-        // the rows stay in the outbox for inspection — proving they are durable
-        // and were committed (not dispatched mid-transaction).
-        final result = await importService.importData(json);
-        expect(result.membersCreated, 1);
-        expect(result.conversationsCreated, 1);
+      // No handle published, so the post-commit drain is a no-op deferral and
+      // the rows stay in the outbox for inspection — proving they are durable
+      // and were committed (not dispatched mid-transaction).
+      final result = await importService.importData(json);
+      expect(result.membersCreated, 1);
+      expect(result.conversationsCreated, 1);
 
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        // One create op per imported entity (member + conversation), in import
-        // order (members are step 1, conversations follow).
-        expect(
-          rows.map((r) => '${r.opType}:${r.entityTable}/${r.entityId}'),
-          containsAllInOrder([
-            'create:members/m-ok',
-            'create:conversations/conv-ok',
-          ]),
-        );
-      },
-    );
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      // One create op per imported entity (member + conversation), in import
+      // order (members are step 1, conversations follow).
+      expect(
+        rows.map((r) => '${r.opType}:${r.entityTable}/${r.entityId}'),
+        containsAllInOrder([
+          'create:members/m-ok',
+          'create:conversations/conv-ok',
+        ]),
+      );
+    });
 
     test('never-paired device persists no outbox rows on import', () async {
       syncCredentialsPersisted.value = false;
@@ -1102,98 +1099,91 @@ void main() {
     Map<String, Object?> outboxRowFields(SyncOpOutboxRow row) =>
         jsonDecode(row.fieldsJson) as Map<String, Object?>;
 
-    test(
-      'media + board posts emit outbox create ops field-map-equal to the '
-      'repository builders',
-      () async {
-        final result = await importService.importData(
-          _mediaAndBoardExportJson(),
-        );
-        expect(result.mediaAttachmentsCreated, 2);
-        expect(result.memberBoardPostsCreated, 2);
+    test('media + board posts emit outbox create ops field-map-equal to the '
+        'repository builders', () async {
+      final result = await importService.importData(_mediaAndBoardExportJson());
+      expect(result.mediaAttachmentsCreated, 2);
+      expect(result.memberBoardPostsCreated, 2);
 
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        final byKey = {
-          for (final r in rows) '${r.entityTable}/${r.entityId}': r,
-        };
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      final byKey = {for (final r in rows) '${r.entityTable}/${r.entityId}': r};
 
-        // The message also reached the outbox, so a peer can resolve the
-        // attachment's `message_id` back to a real chat_messages row.
-        expect(byKey['chat_messages/msg-1'], isNotNull);
+      // The message also reached the outbox, so a peer can resolve the
+      // attachment's `message_id` back to a real chat_messages row.
+      expect(byKey['chat_messages/msg-1'], isNotNull);
 
-        // Media attachment: every wire field present and equal to what the
-        // repository's create path would emit for the same row.
-        final mediaRow = byKey['media_attachments/att-1'];
-        expect(mediaRow, isNotNull);
-        expect(mediaRow!.opType, 'create');
-        final expectedMediaFields =
-            DriftMediaAttachmentRepository.attachmentFields(
-          const MediaAttachment(
-            id: 'att-1',
-            messageId: 'msg-1',
-            memberId: 'm-1',
-            tag: 'inline',
-            mediaId: 'media-1',
-            mediaType: 'image',
-            encryptionKeyB64: 'key-b64',
-            contentHash: 'chash',
-            plaintextHash: 'phash',
-            mimeType: 'image/png',
-            sizeBytes: 1234,
-            width: 64,
-            height: 48,
-            durationMs: 0,
-            blurhash: 'bh',
-            waveformB64: '',
-            thumbnailMediaId: 'thumb-1',
-            sourceUrl: 'src',
-            previewUrl: 'prev',
-            isDeleted: false,
-          ),
-        );
-        expect(outboxRowFields(mediaRow), expectedMediaFields);
-        // The keys the plan calls out explicitly must be carried.
-        expect(expectedMediaFields['message_id'], 'msg-1');
-        expect(expectedMediaFields['media_id'], 'media-1');
-        expect(expectedMediaFields['encryption_key_b64'], 'key-b64');
-        expect(expectedMediaFields['content_hash'], 'chash');
-
-        // Tombstoned media attachment propagates as a tombstone, not a live
-        // row — the import must carry the row's real `is_deleted` rather than
-        // the always-live `create()` default, else a peer that deleted att-2
-        // resurrects it. (Symmetric with the board-post-2 assertion below.)
-        final deletedMediaRow = byKey['media_attachments/att-2'];
-        expect(deletedMediaRow, isNotNull);
-        expect(deletedMediaRow!.opType, 'create');
-        expect(outboxRowFields(deletedMediaRow)['is_deleted'], true);
-
-        // Board post (live): field-map-equal to postFields(...).
-        final postRow = byKey['member_board_posts/post-1'];
-        expect(postRow, isNotNull);
-        expect(postRow!.opType, 'create');
-        expect(
-          outboxRowFields(postRow),
-          DriftMemberBoardPostsRepository.postFields(
-            MemberBoardPost(
-              id: 'post-1',
-              targetMemberId: 'm-1',
-              authorId: 'm-1',
-              audience: 'public',
-              title: 'Hi',
-              body: 'a post',
-              createdAt: DateTime.parse('2026-01-15T10:00:00.000Z'),
-              writtenAt: DateTime.parse('2026-01-15T10:00:00.000Z'),
+      // Media attachment: every wire field present and equal to what the
+      // repository's create path would emit for the same row.
+      final mediaRow = byKey['media_attachments/att-1'];
+      expect(mediaRow, isNotNull);
+      expect(mediaRow!.opType, 'create');
+      final expectedMediaFields =
+          DriftMediaAttachmentRepository.attachmentFields(
+            const MediaAttachment(
+              id: 'att-1',
+              messageId: 'msg-1',
+              memberId: 'm-1',
+              tag: 'inline',
+              mediaId: 'media-1',
+              mediaType: 'image',
+              encryptionKeyB64: 'key-b64',
+              contentHash: 'chash',
+              plaintextHash: 'phash',
+              mimeType: 'image/png',
+              sizeBytes: 1234,
+              width: 64,
+              height: 48,
+              durationMs: 0,
+              blurhash: 'bh',
+              waveformB64: '',
+              thumbnailMediaId: 'thumb-1',
+              sourceUrl: 'src',
+              previewUrl: 'prev',
               isDeleted: false,
             ),
-          ),
-        );
+          );
+      expect(outboxRowFields(mediaRow), expectedMediaFields);
+      // The keys the plan calls out explicitly must be carried.
+      expect(expectedMediaFields['message_id'], 'msg-1');
+      expect(expectedMediaFields['media_id'], 'media-1');
+      expect(expectedMediaFields['encryption_key_b64'], 'key-b64');
+      expect(expectedMediaFields['content_hash'], 'chash');
 
-        // Tombstoned board post propagates as a tombstone, not a live row.
-        final deletedPostRow = byKey['member_board_posts/post-2'];
-        expect(deletedPostRow, isNotNull);
-        expect(outboxRowFields(deletedPostRow!)['is_deleted'], true);
-      },
-    );
+      // Tombstoned media attachment propagates as a tombstone, not a live
+      // row — the import must carry the row's real `is_deleted` rather than
+      // the always-live `create()` default, else a peer that deleted att-2
+      // resurrects it. (Symmetric with the board-post-2 assertion below.)
+      final deletedMediaRow = byKey['media_attachments/att-2'];
+      expect(deletedMediaRow, isNotNull);
+      expect(deletedMediaRow!.opType, 'create');
+      expect(outboxRowFields(deletedMediaRow)['is_deleted'], true);
+
+      // Board post (live): field-map-equal to postFields(...).
+      final postRow = byKey['member_board_posts/post-1'];
+      expect(postRow, isNotNull);
+      expect(postRow!.opType, 'create');
+      expect(
+        outboxRowFields(postRow),
+        DriftMemberBoardPostsRepository.postFields(
+          MemberBoardPost(
+            id: 'post-1',
+            targetMemberId: 'm-1',
+            authorId: 'm-1',
+            audience: 'public',
+            title: 'Hi',
+            body: 'a post',
+            createdAt: DateTime.parse('2026-01-15T10:00:00.000Z'),
+            writtenAt: DateTime.parse('2026-01-15T10:00:00.000Z'),
+            isDeleted: false,
+          ),
+        ),
+      );
+
+      // Tombstoned board post propagates as a tombstone, not a live row.
+      final deletedPostRow = byKey['member_board_posts/post-2'];
+      expect(deletedPostRow, isNotNull);
+      expect(outboxRowFields(deletedPostRow!)['is_deleted'], true);
+    });
 
     test(
       'schema-coverage sweep: every synced table importData writes also emits '
@@ -1231,53 +1221,51 @@ void main() {
       },
     );
 
-    test(
-      'two devices importing the same backup emit identical (id, fields) '
-      'create pairs (converge under LWW)',
-      () async {
-        // Import the same backup into two independent fresh DBs (two devices)
-        // and assert each emits the same media/board create op with a
-        // byte-identical field map. Identical ids + identical fields mean the
-        // ops are same-value LWW no-ops when they cross-replicate — peers
-        // converge with no duplicate rows. (Live-only rows: re-import dedup of
-        // soft-deleted media is a separate pre-existing concern, deferred to the
-        // reconciliation layer.)
-        Future<Map<String, String>> importInto(AppDatabase target) async {
-          final svc = _makeImport(target);
-          await svc.importData(_mediaAndBoardExportJson(liveOnly: true));
-          final rows = await target.syncOutboxDao.allInIdOrder();
-          return {
-            for (final r in rows
-                .where(
-                  (r) =>
-                      r.entityTable == 'media_attachments' ||
-                      r.entityTable == 'member_board_posts',
-                ))
-              '${r.entityTable}/${r.entityId}': r.fieldsJson,
-          };
-        }
+    test('two devices importing the same backup emit identical (id, fields) '
+        'create pairs (converge under LWW)', () async {
+      // Import the same backup into two independent fresh DBs (two devices)
+      // and assert each emits the same media/board create op with a
+      // byte-identical field map. Identical ids + identical fields mean the
+      // ops are same-value LWW no-ops when they cross-replicate — peers
+      // converge with no duplicate rows. (Live-only rows: re-import dedup of
+      // soft-deleted media is a separate pre-existing concern, deferred to the
+      // reconciliation layer.)
+      Future<Map<String, String>> importInto(AppDatabase target) async {
+        final svc = _makeImport(target);
+        await svc.importData(_mediaAndBoardExportJson(liveOnly: true));
+        final rows = await target.syncOutboxDao.allInIdOrder();
+        return {
+          for (final r in rows.where(
+            (r) =>
+                r.entityTable == 'media_attachments' ||
+                r.entityTable == 'member_board_posts',
+          ))
+            '${r.entityTable}/${r.entityId}': r.fieldsJson,
+        };
+      }
 
-        final emittedByA = await importInto(db);
-        final dbB = _makeDb();
-        addTearDown(() async {
-          debugDisposeOutboxDrainForTesting();
-          await dbB.close();
-        });
-        final emittedByB = await importInto(dbB);
+      final emittedByA = await importInto(db);
+      final dbB = _makeDb();
+      addTearDown(() async {
+        debugDisposeOutboxDrainForTesting();
+        await dbB.close();
+      });
+      final emittedByB = await importInto(dbB);
 
-        expect(emittedByA, isNotEmpty);
-        expect(emittedByA.keys, contains('media_attachments/att-1'));
-        expect(emittedByA.keys, contains('member_board_posts/post-1'));
-        // Same ids, byte-identical field maps on both devices → same-value LWW.
-        expect(emittedByB, equals(emittedByA));
-      },
-    );
+      expect(emittedByA, isNotEmpty);
+      expect(emittedByA.keys, contains('media_attachments/att-1'));
+      expect(emittedByA.keys, contains('member_board_posts/post-1'));
+      // Same ids, byte-identical field maps on both devices → same-value LWW.
+      expect(emittedByB, equals(emittedByA));
+    });
   });
 
   group('DataImportService.resolveBytes — plain JSON', () {
     test('unencrypted Prism JSON (has "formatVersion") is accepted', () {
       const raw = '{"formatVersion":"prism_v3","headmates":[]}';
-      final result = DataImportService.resolveBytes(Uint8List.fromList(utf8.encode(raw)));
+      final result = DataImportService.resolveBytes(
+        Uint8List.fromList(utf8.encode(raw)),
+      );
       expect(result.json, raw);
       expect(result.mediaBlobs, isEmpty);
     });

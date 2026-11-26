@@ -294,7 +294,10 @@ void main() {
             "SELECT COUNT(*) as c FROM media_attachments WHERE id LIKE 'stress-%'",
           )
           .getSingle();
-      expect(beforeMedia.read<int>('c'), _heavyProfileTestPreset.imageLibraryItems);
+      expect(
+        beforeMedia.read<int>('c'),
+        _heavyProfileTestPreset.imageLibraryItems,
+      );
 
       await generator.clearStressData();
 
@@ -306,7 +309,8 @@ void main() {
       expect(
         afterMedia.read<int>('c'),
         0,
-        reason: 'stress-img-* media_attachments must be removed by clearStressData',
+        reason:
+            'stress-img-* media_attachments must be removed by clearStressData',
       );
 
       final afterNotes = await db

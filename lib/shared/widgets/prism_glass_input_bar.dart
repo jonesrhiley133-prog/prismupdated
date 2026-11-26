@@ -33,7 +33,9 @@ class PrismGlassInputBar extends StatelessWidget {
     }
 
     return TintedGlassSurface(
-      borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(borderRadius)),
+      borderRadius: BorderRadius.circular(
+        PrismShapes.of(context).radius(borderRadius),
+      ),
       tint: tint,
       padding: padding,
       child: content,

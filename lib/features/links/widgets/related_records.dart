@@ -12,7 +12,11 @@ String shortDate(BuildContext context, DateTime? d) =>
 /// "Connected records" block for any detail page: lists links, opens the
 /// other record, and adds new links.
 class RelatedRecordsSection extends ConsumerWidget {
-  const RelatedRecordsSection({super.key, required this.self, this.padding = const EdgeInsets.only(top: 16)});
+  const RelatedRecordsSection({
+    super.key,
+    required this.self,
+    this.padding = const EdgeInsets.only(top: 16),
+  });
 
   final RecordRef self;
   final EdgeInsets padding;
@@ -21,7 +25,10 @@ class RelatedRecordsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final links = ref.watch(linksForRecordProvider(self.key));
     final cats = {
-      for (final c in ref.watch(linkCategoriesProvider(Localizations.localeOf(context).languageCode))) c.id: c,
+      for (final c in ref.watch(
+        linkCategoriesProvider(Localizations.localeOf(context).languageCode),
+      ))
+        c.id: c,
     };
     final theme = Theme.of(context);
     return Padding(
@@ -31,7 +38,11 @@ class RelatedRecordsSection extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(PhosphorIcons.linkSimple(), size: 18, color: theme.colorScheme.primary),
+              Icon(
+                PhosphorIcons.linkSimple(),
+                size: 18,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -49,9 +60,14 @@ class RelatedRecordsSection extends ConsumerWidget {
           const SizedBox(height: 6),
           if (links.isEmpty)
             Text(
-              tr(context, 'Nothing connected yet. Link moods, dreams, events, alters and more to see them together.',
-                  'Nada conectado aún. Enlaza ánimos, sueños, eventos, alters y más para verlos juntos.'),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              tr(
+                context,
+                'Nothing connected yet. Link moods, dreams, events, alters and more to see them together.',
+                'Nada conectado aún. Enlaza ánimos, sueños, eventos, alters y más para verlos juntos.',
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             )
           else
             for (final (link, info) in links)
@@ -89,8 +105,14 @@ class _LinkRow extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(info.isPrivate ? tr(context, 'Private record', 'Registro privado') : info.title,
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium),
+                Text(
+                  info.isPrivate
+                      ? tr(context, 'Private record', 'Registro privado')
+                      : info.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium,
+                ),
                 Text(
                   [
                     m.label(context),
@@ -99,10 +121,17 @@ class _LinkRow extends ConsumerWidget {
                   ].join(' · '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 if (link.note != null)
-                  Text(link.note!, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                  Text(
+                    link.note!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall,
+                  ),
               ],
             ),
           ),
@@ -145,16 +174,27 @@ class _LinkEditorState extends ConsumerState<_LinkEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final cats = ref.watch(linkCategoriesProvider(Localizations.localeOf(context).languageCode));
+    final cats = ref.watch(
+      linkCategoriesProvider(Localizations.localeOf(context).languageCode),
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CategoryChips(categories: cats, selected: _cat, onSelected: (c) => setState(() => _cat = c)),
+          CategoryChips(
+            categories: cats,
+            selected: _cat,
+            onSelected: (c) => setState(() => _cat = c),
+          ),
           const SizedBox(height: 12),
-          PrismTextField(controller: _note, labelText: tr(context, 'Note', 'Nota'), maxLines: 3, minLines: 1),
+          PrismTextField(
+            controller: _note,
+            labelText: tr(context, 'Note', 'Nota'),
+            maxLines: 3,
+            minLines: 1,
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -172,7 +212,13 @@ class _LinkEditorState extends ConsumerState<_LinkEditor> {
                 label: tr(context, 'Save', 'Guardar'),
                 tone: PrismButtonTone.filled,
                 onPressed: () async {
-                  await ref.read(linkActionsProvider).update(widget.link, category: _cat, note: _note.text.trim());
+                  await ref
+                      .read(linkActionsProvider)
+                      .update(
+                        widget.link,
+                        category: _cat,
+                        note: _note.text.trim(),
+                      );
                   if (context.mounted) Navigator.of(context).pop();
                 },
               ),
@@ -186,7 +232,12 @@ class _LinkEditorState extends ConsumerState<_LinkEditor> {
 
 /// Category chips with "+ New category".
 class CategoryChips extends ConsumerWidget {
-  const CategoryChips({super.key, required this.categories, required this.selected, required this.onSelected});
+  const CategoryChips({
+    super.key,
+    required this.categories,
+    required this.selected,
+    required this.onSelected,
+  });
   final List<LinkCategory> categories;
   final String? selected;
   final ValueChanged<String> onSelected;
@@ -209,10 +260,15 @@ class CategoryChips extends ConsumerWidget {
           selected: false,
           variant: PrismChipVariant.inline,
           onTap: () async {
-            final name = await promptText(context, tr(context, 'Category name', 'Nombre de la categoría'));
+            final name = await promptText(
+              context,
+              tr(context, 'Category name', 'Nombre de la categoría'),
+            );
             if (name == null || name.isEmpty) return;
             final palette = trackerPalette;
-            final rec = await ref.read(linkActionsProvider).addCategory(name, palette[categories.length % palette.length]);
+            final rec = await ref
+                .read(linkActionsProvider)
+                .addCategory(name, palette[categories.length % palette.length]);
             onSelected(rec.id);
           },
         ),
@@ -222,7 +278,13 @@ class CategoryChips extends ConsumerWidget {
 }
 
 /// Simple one-field prompt.
-Future<String?> promptText(BuildContext context, String title, {String? initial, String? hint, int maxLines = 1}) async {
+Future<String?> promptText(
+  BuildContext context,
+  String title, {
+  String? initial,
+  String? hint,
+  int maxLines = 1,
+}) async {
   final c = TextEditingController(text: initial);
   final ok = await PrismDialog.show<bool>(
     context: context,
@@ -236,7 +298,10 @@ Future<String?> promptText(BuildContext context, String title, {String? initial,
       onSubmitted: (_) => Navigator.of(ctx, rootNavigator: true).pop(true),
     ),
     actions: [
-      PrismButton(label: context.l10n.cancel, onPressed: () => Navigator.of(context, rootNavigator: true).pop(false)),
+      PrismButton(
+        label: context.l10n.cancel,
+        onPressed: () => Navigator.of(context, rootNavigator: true).pop(false),
+      ),
       PrismButton(
         label: context.l10n.save,
         tone: PrismButtonTone.filled,
@@ -250,10 +315,11 @@ Future<String?> promptText(BuildContext context, String title, {String? initial,
 }
 
 /// Searchable picker across every module; links the chosen records to [self].
-Future<void> showLinkPicker(BuildContext context, RecordRef self) => PrismSheet.showFullScreen(
-  context: context,
-  builder: (ctx, scroll) => _LinkPicker(self: self, scroll: scroll),
-);
+Future<void> showLinkPicker(BuildContext context, RecordRef self) =>
+    PrismSheet.showFullScreen(
+      context: context,
+      builder: (ctx, scroll) => _LinkPicker(self: self, scroll: scroll),
+    );
 
 class _LinkPicker extends ConsumerStatefulWidget {
   const _LinkPicker({required this.self, required this.scroll});
@@ -279,17 +345,24 @@ class _LinkPickerState extends ConsumerState<_LinkPicker> {
   @override
   Widget build(BuildContext context) {
     final catalog = ref.watch(recordCatalogProvider);
-    final existing = {for (final (_, i) in ref.watch(linksForRecordProvider(widget.self.key))) i.ref.key};
+    final existing = {
+      for (final (_, i) in ref.watch(linksForRecordProvider(widget.self.key)))
+        i.ref.key,
+    };
     final q = _q.text.trim().toLowerCase();
     final items = [
       for (final i in catalog.values)
         if (i.ref != widget.self &&
             (_module == null || i.module == _module) &&
-            (q.isEmpty || i.title.toLowerCase().contains(q) || (i.subtitle?.toLowerCase().contains(q) ?? false)))
+            (q.isEmpty ||
+                i.title.toLowerCase().contains(q) ||
+                (i.subtitle?.toLowerCase().contains(q) ?? false)))
           i,
     ]..sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
     final modules = {for (final i in catalog.values) i.module};
-    final cats = ref.watch(linkCategoriesProvider(Localizations.localeOf(context).languageCode));
+    final cats = ref.watch(
+      linkCategoriesProvider(Localizations.localeOf(context).languageCode),
+    );
     return TrackerEditorScaffold(
       title: tr(context, 'Connect records', 'Conectar registros'),
       canSave: _chosen.isNotEmpty,
@@ -316,7 +389,11 @@ class _LinkPickerState extends ConsumerState<_LinkPicker> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 6),
-                child: PrismChip(label: tr(context, 'All', 'Todo'), selected: _module == null, onTap: () => setState(() => _module = null)),
+                child: PrismChip(
+                  label: tr(context, 'All', 'Todo'),
+                  selected: _module == null,
+                  onTap: () => setState(() => _module = null),
+                ),
               ),
               for (final m in recordModules)
                 if (modules.contains(m.key))
@@ -326,7 +403,9 @@ class _LinkPickerState extends ConsumerState<_LinkPicker> {
                       label: m.label(context),
                       selected: _module == m.key,
                       selectedColor: m.color,
-                      onTap: () => setState(() => _module = _module == m.key ? null : m.key),
+                      onTap: () => setState(
+                        () => _module = _module == m.key ? null : m.key,
+                      ),
                     ),
                   ),
             ],
@@ -334,19 +413,35 @@ class _LinkPickerState extends ConsumerState<_LinkPicker> {
         ),
         const SizedBox(height: 10),
         TrackerLabel(tr(context, 'Relationship', 'Relación')),
-        CategoryChips(categories: cats, selected: _cat, onSelected: (c) => setState(() => _cat = c)),
+        CategoryChips(
+          categories: cats,
+          selected: _cat,
+          onSelected: (c) => setState(() => _cat = c),
+        ),
         const SizedBox(height: 10),
         if (items.isEmpty)
           Padding(
             padding: const EdgeInsets.all(24),
-            child: Center(child: Text(tr(context, 'No matching records', 'No hay registros que coincidan'))),
+            child: Center(
+              child: Text(
+                tr(
+                  context,
+                  'No matching records',
+                  'No hay registros que coincidan',
+                ),
+              ),
+            ),
           ),
         for (final i in items.take(300))
           _PickRow(
             info: i,
             linked: existing.contains(i.ref.key),
             chosen: _chosen.contains(i.ref.key),
-            onTap: () => setState(() => _chosen.contains(i.ref.key) ? _chosen.remove(i.ref.key) : _chosen.add(i.ref.key)),
+            onTap: () => setState(
+              () => _chosen.contains(i.ref.key)
+                  ? _chosen.remove(i.ref.key)
+                  : _chosen.add(i.ref.key),
+            ),
           ),
       ],
     );
@@ -354,7 +449,12 @@ class _LinkPickerState extends ConsumerState<_LinkPicker> {
 }
 
 class _PickRow extends StatelessWidget {
-  const _PickRow({required this.info, required this.linked, required this.chosen, required this.onTap});
+  const _PickRow({
+    required this.info,
+    required this.linked,
+    required this.chosen,
+    required this.onTap,
+  });
   final RecordInfo info;
   final bool linked;
   final bool chosen;
@@ -366,12 +466,24 @@ class _PickRow extends StatelessWidget {
     return PrismListRow(
       dense: true,
       leading: Icon(m.icon, color: m.color),
-      title: Text(info.isPrivate ? tr(context, 'Private record', 'Registro privado') : info.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        [m.label(context), if (info.date != null) shortDate(context, info.date), if (linked) tr(context, 'already linked', 'ya enlazado')].join(' · '),
+      title: Text(
+        info.isPrivate
+            ? tr(context, 'Private record', 'Registro privado')
+            : info.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
-      trailing: Icon(chosen ? AppIcons.checkCircle : AppIcons.addCircleOutline,
-          color: chosen ? Theme.of(context).colorScheme.primary : null),
+      subtitle: Text(
+        [
+          m.label(context),
+          if (info.date != null) shortDate(context, info.date),
+          if (linked) tr(context, 'already linked', 'ya enlazado'),
+        ].join(' · '),
+      ),
+      trailing: Icon(
+        chosen ? AppIcons.checkCircle : AppIcons.addCircleOutline,
+        color: chosen ? Theme.of(context).colorScheme.primary : null,
+      ),
       onTap: onTap,
     );
   }

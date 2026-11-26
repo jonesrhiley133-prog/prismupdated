@@ -34,12 +34,16 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
     out[r.key] = RecordInfo(
       ref: r,
       module: 'member',
-      title: m.emoji.trim().isEmpty || m.emoji == '❔' ? name : '${m.emoji} $name',
+      title: m.emoji.trim().isEmpty || m.emoji == '❔'
+          ? name
+          : '${m.emoji} $name',
       subtitle: m.pronouns,
       date: m.createdAt,
     );
   }
-  for (final s in ref.watch(linkableSessionsProvider).value ?? const <FrontingSession>[]) {
+  for (final s
+      in ref.watch(linkableSessionsProvider).value ??
+          const <FrontingSession>[]) {
     final r = RecordRef(RecordRef.front, s.id);
     final sleep = s.sessionType == SessionType.sleep;
     out[r.key] = RecordInfo(
@@ -56,7 +60,9 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
     out[r.key] = RecordInfo(
       ref: r,
       module: 'mood',
-      title: '${['😞', '🙁', '😐', '🙂', '😄'][(m.mood - 1).clamp(0, 4)]} ${m.emotions.take(3).join(', ')}'.trim(),
+      title:
+          '${['😞', '🙁', '😐', '🙂', '😄'][(m.mood - 1).clamp(0, 4)]} ${m.emotions.take(3).join(', ')}'
+              .trim(),
       subtitle: m.note,
       date: m.recordedAt,
       memberId: m.memberId,
@@ -85,9 +91,17 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
   for (final h in ref.watch(habitsProvider).value ?? const <Habit>[]) {
     habitNames[h.id] = h.name;
     final r = RecordRef(RecordRef.habit, h.id);
-    out[r.key] = RecordInfo(ref: r, module: 'habit', title: '${h.icon ?? ''} ${h.name}'.trim(), subtitle: h.description, date: h.createdAt, isPrivate: h.isPrivate);
+    out[r.key] = RecordInfo(
+      ref: r,
+      module: 'habit',
+      title: '${h.icon ?? ''} ${h.name}'.trim(),
+      subtitle: h.description,
+      date: h.createdAt,
+      isPrivate: h.isPrivate,
+    );
   }
-  final completions = [...?ref.watch(allCompletionsProvider).value]..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+  final completions = [...?ref.watch(allCompletionsProvider).value]
+    ..sort((a, b) => b.completedAt.compareTo(a.completedAt));
   for (final c in completions.take(600)) {
     final r = RecordRef(RecordRef.habitLog, c.id);
     out[r.key] = RecordInfo(
@@ -99,7 +113,8 @@ final recordCatalogProvider = Provider<Map<String, RecordInfo>>((ref) {
       memberId: c.completedByMemberId,
     );
   }
-  for (final t in ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[]) {
+  for (final t
+      in ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[]) {
     final module = moduleForKind(t.kind);
     if (module == null) continue;
     final r = RecordRef(RecordRef.rec, t.id);
@@ -158,7 +173,8 @@ class RecordLink {
 }
 
 final recordLinksProvider = Provider<List<RecordLink>>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.linkEdge)).value ?? const [];
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.linkEdge)).value ?? const [];
   return [for (final r in rows) ?RecordLink.from(r)];
 });
 
@@ -171,8 +187,13 @@ class LinkCategory {
   final TrackerRecord? record;
 }
 
-final linkCategoriesProvider = Provider.family<List<LinkCategory>, String>((ref, lang) {
-  final custom = ref.watch(trackerKindProvider(TrackerKind.linkCategory)).value ?? const [];
+final linkCategoriesProvider = Provider.family<List<LinkCategory>, String>((
+  ref,
+  lang,
+) {
+  final custom =
+      ref.watch(trackerKindProvider(TrackerKind.linkCategory)).value ??
+      const [];
   return [
     for (final c in builtInLinkCategories)
       LinkCategory(c.id, lang == 'es' ? c.es : c.en, c.color),
@@ -186,7 +207,10 @@ final linksForRecordProvider =
     Provider.family<List<(RecordLink, RecordInfo)>, String>((ref, key) {
       final self = RecordRef.parse(key);
       if (self == null) return const [];
-      final mine = [for (final l in ref.watch(recordLinksProvider)) if (l.a == self || l.b == self) l];
+      final mine = [
+        for (final l in ref.watch(recordLinksProvider))
+          if (l.a == self || l.b == self) l,
+      ];
       // Only build the full catalogue when there is something to show.
       if (mine.isEmpty) return const [];
       final catalog = ref.watch(recordCatalogProvider);
@@ -195,7 +219,10 @@ final linksForRecordProvider =
         final info = catalog[l.other(self).key];
         if (info != null) out.add((l, info));
       }
-      out.sort((x, y) => (y.$2.date ?? DateTime(0)).compareTo(x.$2.date ?? DateTime(0)));
+      out.sort(
+        (x, y) =>
+            (y.$2.date ?? DateTime(0)).compareTo(x.$2.date ?? DateTime(0)),
+      );
       return out;
     });
 
@@ -206,7 +233,12 @@ class LinkActions {
   TrackerNotifier get _t => ref.read(trackerNotifierProvider.notifier);
 
   /// Links [a] and [b]; returns false if that exact link already exists.
-  Future<bool> link(RecordRef a, RecordRef b, {String category = 'related', String? note}) async {
+  Future<bool> link(
+    RecordRef a,
+    RecordRef b, {
+    String category = 'related',
+    String? note,
+  }) async {
     if (a == b) return false;
     for (final l in ref.read(recordLinksProvider)) {
       final same = (l.a == a && l.b == b) || (l.a == b && l.b == a);
@@ -223,11 +255,12 @@ class LinkActions {
 
   Future<void> unlink(String linkId) => _t.delete(linkId, children: false);
 
-  Future<void> update(RecordLink l, {String? category, String? note}) => _t.save(
-    l.record
-        .copyWith(body: note ?? l.note)
-        .withFields({'cat': category ?? l.category}),
-  );
+  Future<void> update(RecordLink l, {String? category, String? note}) =>
+      _t.save(
+        l.record.copyWith(body: note ?? l.note).withFields({
+          'cat': category ?? l.category,
+        }),
+      );
 
   Future<TrackerRecord> addCategory(String name, int color) => _t.create(
     kind: TrackerKind.linkCategory,
@@ -242,21 +275,26 @@ class LinkActions {
     final catalog = ref.read(recordCatalogProvider);
     final repo = ref.read(frontingSessionRepositoryProvider);
     final allTracker = {
-      for (final r in await ref.read(trackerRecordRepositoryProvider).getAll()) r.id,
+      for (final r in await ref.read(trackerRecordRepositoryProvider).getAll())
+        r.id,
     };
     var removed = 0;
     Future<bool> exists(RecordRef r) async {
       if (catalog.containsKey(r.key)) return true;
       return switch (r.type) {
         RecordRef.front => (await repo.getSessionById(r.id)) != null,
-        RecordRef.habitLog => (await ref.read(habitRepositoryProvider).getCompletionById(r.id)) != null,
-        RecordRef.habit => (await ref.read(habitRepositoryProvider).getHabitById(r.id)) != null,
+        RecordRef.habitLog =>
+          (await ref.read(habitRepositoryProvider).getCompletionById(r.id)) !=
+              null,
+        RecordRef.habit =>
+          (await ref.read(habitRepositoryProvider).getHabitById(r.id)) != null,
         RecordRef.rec => allTracker.contains(r.id),
         _ => false,
       };
     }
 
-    final loaded = ref.read(allMembersProvider).hasValue &&
+    final loaded =
+        ref.read(allMembersProvider).hasValue &&
         ref.read(moodEntriesProvider).hasValue &&
         ref.read(savedLocationsProvider).hasValue &&
         ref.read(calendarEventsProvider).hasValue &&

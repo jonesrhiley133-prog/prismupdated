@@ -14,31 +14,28 @@ void main() {
     late Map<String, dynamic> esArb;
 
     setUpAll(() {
-      enArb = jsonDecode(File('lib/l10n/app_en.arb').readAsStringSync())
-          as Map<String, dynamic>;
-      esArb = jsonDecode(File('lib/l10n/app_es.arb').readAsStringSync())
-          as Map<String, dynamic>;
+      enArb =
+          jsonDecode(File('lib/l10n/app_en.arb').readAsStringSync())
+              as Map<String, dynamic>;
+      esArb =
+          jsonDecode(File('lib/l10n/app_es.arb').readAsStringSync())
+              as Map<String, dynamic>;
     });
 
     test('app_es.arb has every translatable key from app_en.arb', () {
-      final enKeys =
-          enArb.keys.where((k) => !k.startsWith('@')).toSet();
-      final esKeys =
-          esArb.keys.where((k) => !k.startsWith('@')).toSet();
+      final enKeys = enArb.keys.where((k) => !k.startsWith('@')).toSet();
+      final esKeys = esArb.keys.where((k) => !k.startsWith('@')).toSet();
       final missing = enKeys.difference(esKeys);
       expect(
         missing,
         isEmpty,
-        reason:
-            'Missing Spanish translations for: ${missing.toList()..sort()}',
+        reason: 'Missing Spanish translations for: ${missing.toList()..sort()}',
       );
     });
 
     test('app_es.arb has no orphaned keys missing from app_en.arb', () {
-      final enKeys =
-          enArb.keys.where((k) => !k.startsWith('@')).toSet();
-      final esKeys =
-          esArb.keys.where((k) => !k.startsWith('@')).toSet();
+      final enKeys = enArb.keys.where((k) => !k.startsWith('@')).toSet();
+      final esKeys = esArb.keys.where((k) => !k.startsWith('@')).toSet();
       final orphaned = esKeys.difference(enKeys);
       expect(
         orphaned,

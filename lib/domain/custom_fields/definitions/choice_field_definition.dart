@@ -27,7 +27,8 @@ TypedFieldValue _parse(String? raw) {
   if (raw == null || raw.isEmpty) return const ChoiceFieldValue();
   try {
     final json = jsonDecode(raw) as Map<String, dynamic>;
-    final options = (json['options'] as List?)?.cast<String>().toSet() ?? <String>{};
+    final options =
+        (json['options'] as List?)?.cast<String>().toSet() ?? <String>{};
     final other = json['other'] as String?;
     return ChoiceFieldValue(optionIds: options, other: other);
   } catch (_) {

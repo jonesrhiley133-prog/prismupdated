@@ -89,11 +89,7 @@ class _FakePkOneShotPushService implements PkOneShotPushService {
   Future<PKMember> pushSingleMember(String memberId) async {
     pushed.add(memberId);
     if (errorToThrow != null) throw errorToThrow!;
-    return PKMember(
-      id: 'pk-$memberId',
-      name: memberId,
-      uuid: 'uuid-$memberId',
-    );
+    return PKMember(id: 'pk-$memberId', name: memberId, uuid: 'uuid-$memberId');
   }
 
   @override
@@ -260,54 +256,52 @@ void main() {
     PrismToast.resetForTest();
   });
 
-  testWidgets(
-    'banner is not rendered when there is no current notice',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          controller: controller,
-          pushService: pushService,
-          repo: repo,
-          child: const PluralKitUnpushedMembersNoticeBanner(),
-        ),
-      );
-      await tester.pump();
+  testWidgets('banner is not rendered when there is no current notice', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        controller: controller,
+        pushService: pushService,
+        repo: repo,
+        child: const PluralKitUnpushedMembersNoticeBanner(),
+      ),
+    );
+    await tester.pump();
 
-      expect(find.text('Local members not on PluralKit'), findsNothing);
-      expect(find.byType(PluralKitUnpushedMembersNoticeBanner), findsOneWidget);
-    },
-  );
+    expect(find.text('Local members not on PluralKit'), findsNothing);
+    expect(find.byType(PluralKitUnpushedMembersNoticeBanner), findsOneWidget);
+  });
 
-  testWidgets(
-    'on mount, applyMembersSnapshot fires with correct inputs',
-    (tester) async {
-      final m1 = _member(id: 'm-1', name: 'Alice');
-      final m2 = _member(id: 'm-2', name: 'Bob');
+  testWidgets('on mount, applyMembersSnapshot fires with correct inputs', (
+    tester,
+  ) async {
+    final m1 = _member(id: 'm-1', name: 'Alice');
+    final m2 = _member(id: 'm-2', name: 'Bob');
 
-      await tester.pumpWidget(
-        _wrap(
-          controller: controller,
-          pushService: pushService,
-          repo: _FakeMemberRepository({'m-1': m1, 'm-2': m2}),
-          members: [m1, m2],
-          direction: PkSyncDirection.pullOnly,
-          mode: PkSyncMode.liveFrontsOnly,
-          child: const PluralKitUnpushedMembersNoticeBanner(),
-        ),
-      );
-      // initState fires listenManual + post-frame eager recompute.
-      await tester.pump();
-      await tester.pump();
+    await tester.pumpWidget(
+      _wrap(
+        controller: controller,
+        pushService: pushService,
+        repo: _FakeMemberRepository({'m-1': m1, 'm-2': m2}),
+        members: [m1, m2],
+        direction: PkSyncDirection.pullOnly,
+        mode: PkSyncMode.liveFrontsOnly,
+        child: const PluralKitUnpushedMembersNoticeBanner(),
+      ),
+    );
+    // initState fires listenManual + post-frame eager recompute.
+    await tester.pump();
+    await tester.pump();
 
-      expect(controller.applyCalls, isNotEmpty);
-      final call = controller.applyCalls.first;
-      expect(call.members.map((m) => m.id), ['m-1', 'm-2']);
-      expect(call.pkReady, isTrue);
-      // pushOnly direction has pushEnabled=true but mode liveFrontsOnly
-      // forces pushDisabled true. pullOnly has pushEnabled=false → also true.
-      expect(call.pushDisabled, isTrue);
-    },
-  );
+    expect(controller.applyCalls, isNotEmpty);
+    final call = controller.applyCalls.first;
+    expect(call.members.map((m) => m.id), ['m-1', 'm-2']);
+    expect(call.pkReady, isTrue);
+    // pushOnly direction has pushEnabled=true but mode liveFrontsOnly
+    // forces pushDisabled true. pullOnly has pushEnabled=false → also true.
+    expect(call.pushDisabled, isTrue);
+  });
 
   testWidgets(
     'flipping pkSyncDirection triggers a recompute with pushDisabled=false',
@@ -398,53 +392,52 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets(
-    '"Keep local" sets pluralkitSyncIgnored on the member',
-    (tester) async {
-      final m1 = _member(id: 'm-1', name: 'Alice');
-      final localRepo = _FakeMemberRepository({'m-1': m1});
-      controller = _FakeNoticeController(
-        initial: const PkUnpushedMembersNoticeState(
-          currentNotice: PkUnpushedMembersNotice(
-            refs: [PkUnpushedMemberRef(memberId: 'm-1', memberName: 'Alice')],
-          ),
+  testWidgets('"Keep local" sets pluralkitSyncIgnored on the member', (
+    tester,
+  ) async {
+    final m1 = _member(id: 'm-1', name: 'Alice');
+    final localRepo = _FakeMemberRepository({'m-1': m1});
+    controller = _FakeNoticeController(
+      initial: const PkUnpushedMembersNoticeState(
+        currentNotice: PkUnpushedMembersNotice(
+          refs: [PkUnpushedMemberRef(memberId: 'm-1', memberName: 'Alice')],
         ),
-      );
+      ),
+    );
 
-      await tester.pumpWidget(
-        _wrap(
-          controller: controller,
-          pushService: pushService,
-          repo: localRepo,
-          members: [m1],
-          child: const PluralKitUnpushedMembersNoticeBanner(),
-        ),
-      );
-      await tester.pump();
+    await tester.pumpWidget(
+      _wrap(
+        controller: controller,
+        pushService: pushService,
+        repo: localRepo,
+        members: [m1],
+        child: const PluralKitUnpushedMembersNoticeBanner(),
+      ),
+    );
+    await tester.pump();
 
-      await tester.tap(find.text('Review'));
-      await tester.pumpAndSettle();
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Keep local'), findsOneWidget);
-      await tester.tap(find.text('Keep local'));
-      await tester.pumpAndSettle();
+    expect(find.text('Keep local'), findsOneWidget);
+    await tester.tap(find.text('Keep local'));
+    await tester.pumpAndSettle();
 
-      expect(localRepo.updates, hasLength(1));
-      expect(localRepo.updates.single.id, 'm-1');
-      expect(localRepo.updates.single.pluralkitSyncIgnored, isTrue);
-      // PR 2 Part 1.7 site 9: routes through excludePluralKitSync (NOT
-      // generic updateMember). The fake's excludePluralKitSync impl also
-      // records to `updates` so the row assertions above still hold.
-      expect(
-        localRepo.excluded,
-        ['m-1'],
-        reason: '"Keep local" must route through excludePluralKitSync',
-      );
+    expect(localRepo.updates, hasLength(1));
+    expect(localRepo.updates.single.id, 'm-1');
+    expect(localRepo.updates.single.pluralkitSyncIgnored, isTrue);
+    // PR 2 Part 1.7 site 9: routes through excludePluralKitSync (NOT
+    // generic updateMember). The fake's excludePluralKitSync impl also
+    // records to `updates` so the row assertions above still hold.
+    expect(
+      localRepo.excluded,
+      ['m-1'],
+      reason: '"Keep local" must route through excludePluralKitSync',
+    );
 
-      // Drain PrismToast.success auto-dismiss timer (3s).
-      await tester.pump(const Duration(seconds: 5));
-    },
-  );
+    // Drain PrismToast.success auto-dismiss timer (3s).
+    await tester.pump(const Duration(seconds: 5));
+  });
 
   testWidgets('"Dismiss for now" calls dismiss(notice)', (tester) async {
     final m1 = _member(id: 'm-1', name: 'Alice');

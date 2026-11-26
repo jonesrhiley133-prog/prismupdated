@@ -251,23 +251,26 @@ void main() {
       expect(blocks.single.text, source);
     });
 
-    test('two tables separated by a blank line → two distinct table blocks', () {
-      const source =
-          '| a | b |\n| - | - |\n| c | d |\n'
-          '\n'
-          '| x | y |\n| - | - |\n| 1 | 2 |';
-      final blocks = splitMarkdownBlocks(source);
-      final tables = blocks.where((b) => b.isTable).toList();
-      expect(tables, hasLength(2));
-      expect(tables[0].table!.rows, [
-        ['a', 'b'],
-        ['c', 'd'],
-      ]);
-      expect(tables[1].table!.rows, [
-        ['x', 'y'],
-        ['1', '2'],
-      ]);
-    });
+    test(
+      'two tables separated by a blank line → two distinct table blocks',
+      () {
+        const source =
+            '| a | b |\n| - | - |\n| c | d |\n'
+            '\n'
+            '| x | y |\n| - | - |\n| 1 | 2 |';
+        final blocks = splitMarkdownBlocks(source);
+        final tables = blocks.where((b) => b.isTable).toList();
+        expect(tables, hasLength(2));
+        expect(tables[0].table!.rows, [
+          ['a', 'b'],
+          ['c', 'd'],
+        ]);
+        expect(tables[1].table!.rows, [
+          ['x', 'y'],
+          ['1', '2'],
+        ]);
+      },
+    );
 
     test('two tables WITHOUT blank line are merged into one table block', () {
       // Without a separator blank line, the second table's rows are absorbed as body.

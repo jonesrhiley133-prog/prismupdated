@@ -675,8 +675,10 @@ class PassportPageView extends ConsumerWidget {
                                                   ).colorScheme.primary,
                                                   width: 2,
                                                 ),
-                                                borderRadius:
-                                                    prismCorners(context, 8),
+                                                borderRadius: prismCorners(
+                                                  context,
+                                                  8,
+                                                ),
                                               )
                                             : null,
                                         child: element(e),

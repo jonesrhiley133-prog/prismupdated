@@ -79,8 +79,8 @@ void main() {
         return 'second';
       });
 
-    await first;
-    await time.nextDelayScheduled;
+      await first;
+      await time.nextDelayScheduled;
       expect(requestTimes, hasLength(1));
       expect(time.delays, [const Duration(milliseconds: 100)]);
 
@@ -173,7 +173,7 @@ void main() {
         return 'ok';
       });
 
-    await time.nextDelayScheduled;
+      await time.nextDelayScheduled;
       expect(attempts, 1);
       expect(time.delays, [const Duration(milliseconds: 400)]);
 

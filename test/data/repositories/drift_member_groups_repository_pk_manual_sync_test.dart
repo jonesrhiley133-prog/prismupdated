@@ -13,9 +13,8 @@ import 'package:prism_plurality/domain/models/member_group.dart' as domain;
 import 'package:prism_plurality/domain/repositories/member_repository.dart';
 
 class _FakeMemberRepository implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _FakeMemberRepository(this._membersById);
 
@@ -183,7 +182,10 @@ class _RecordingMemberGroupsRepository extends DriftMemberGroupsRepository {
   }
 
   @override
-  Future<void> syncRecordDeleteMulti(String table, List<String> entityIds) async {
+  Future<void> syncRecordDeleteMulti(
+    String table,
+    List<String> entityIds,
+  ) async {
     for (final entityId in entityIds) {
       deletes.add({'table': table, 'entityId': entityId});
     }

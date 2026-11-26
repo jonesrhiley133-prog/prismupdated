@@ -65,11 +65,13 @@ class _FakeMemberRepo implements MemberRepository {
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   @override
   Future<void> deleteMember(String id) async =>
@@ -516,10 +518,7 @@ void main() {
           .toList();
       expect(groupCreates, hasLength(1));
       expect(groupCreates.single['entityId'], gen1Id);
-      expect(
-        deletes.where((d) => d['table'] == 'member_groups'),
-        isEmpty,
-      );
+      expect(deletes.where((d) => d['table'] == 'member_groups'), isEmpty);
       expect(
         creates.any((c) => c['entityId'] == canonicalId),
         isFalse,
@@ -647,11 +646,12 @@ void main() {
       );
 
       // Pass 1: explicit re-import revives under the gen-1 incarnation.
-      final first = await importer.importGroups([group], overwriteMetadata: true);
+      final first = await importer.importGroups([
+        group,
+      ], overwriteMetadata: true);
       expect(first.groupsInserted, 1);
-      final aliasAfterRevive = await db.pkGroupSyncAliasesDao.getByLegacyEntityId(
-        gen1Id,
-      );
+      final aliasAfterRevive = await db.pkGroupSyncAliasesDao
+          .getByLegacyEntityId(gen1Id);
       expect(aliasAfterRevive, isNotNull);
 
       creates.clear();
@@ -662,10 +662,9 @@ void main() {
       // the existing-row update branch (overwriteMetadata forces a metadata
       // emit). It must NOT delete the gen-1 incarnation and must target the
       // live id.
-      final second = await importer.importGroups(
-        [group],
-        overwriteMetadata: true,
-      );
+      final second = await importer.importGroups([
+        group,
+      ], overwriteMetadata: true);
       expect(second.groupsInserted, 0);
       expect(second.groupsUpdated, 1);
 
@@ -1498,109 +1497,103 @@ void main() {
       memberIds: [pkMemberUuid],
     );
 
-    test(
-      'background pull over a peer tombstone (gate-tombstoned) performs no '
-      'upsert/emit, reports entriesSkippedTombstoned=1, and flips the local '
-      'tombstone to push_remove under the cohort gate',
-      () async {
-        await setPkGroupSyncV2Enabled(true);
-        await insertGroup(id: groupLocalId, pkUuid: pkGroupUuid);
-        // Peer-originated tombstone: soft-deleted, pending_pk_op='none'.
-        await insertEntry(
-          id: gen0EntryId,
-          groupId: groupLocalId,
-          memberId: 'local-f06',
-          pkGroupUuid: pkGroupUuid,
-          pkMemberUuid: pkMemberUuid,
-          isDeleted: true,
-          pendingPkOp: 'none',
-        );
+    test('background pull over a peer tombstone (gate-tombstoned) performs no '
+        'upsert/emit, reports entriesSkippedTombstoned=1, and flips the local '
+        'tombstone to push_remove under the cohort gate', () async {
+      await setPkGroupSyncV2Enabled(true);
+      await insertGroup(id: groupLocalId, pkUuid: pkGroupUuid);
+      // Peer-originated tombstone: soft-deleted, pending_pk_op='none'.
+      await insertEntry(
+        id: gen0EntryId,
+        groupId: groupLocalId,
+        memberId: 'local-f06',
+        pkGroupUuid: pkGroupUuid,
+        pkMemberUuid: pkMemberUuid,
+        isDeleted: true,
+        pendingPkOp: 'none',
+      );
 
-        final creates = <Map<String, Object?>>[];
-        final updates = <Map<String, Object?>>[];
-        final deletes = <Map<String, Object?>>[];
-        final importer = PkGroupsImporter(
-          db: db,
-          memberRepository: _FakeMemberRepo([
-            _member(id: 'local-f06', pkUuid: pkMemberUuid),
-          ]),
-          // Gate reports the gen-0 id as tombstoned (Rust field_versions),
-          // covering the drain-physical-delete case too.
-          tombstoneGate: _gateTombstoning({gen0EntryId}),
-          recordCreateOverride: (table, entityId, fields) async =>
-              creates.add({'table': table, 'entityId': entityId}),
-          recordUpdateOverride: (table, entityId, fields) async =>
-              updates.add({'table': table, 'entityId': entityId}),
-          recordDeleteOverride: (table, entityId) async =>
-              deletes.add({'table': table, 'entityId': entityId}),
-        );
+      final creates = <Map<String, Object?>>[];
+      final updates = <Map<String, Object?>>[];
+      final deletes = <Map<String, Object?>>[];
+      final importer = PkGroupsImporter(
+        db: db,
+        memberRepository: _FakeMemberRepo([
+          _member(id: 'local-f06', pkUuid: pkMemberUuid),
+        ]),
+        // Gate reports the gen-0 id as tombstoned (Rust field_versions),
+        // covering the drain-physical-delete case too.
+        tombstoneGate: _gateTombstoning({gen0EntryId}),
+        recordCreateOverride: (table, entityId, fields) async =>
+            creates.add({'table': table, 'entityId': entityId}),
+        recordUpdateOverride: (table, entityId, fields) async =>
+            updates.add({'table': table, 'entityId': entityId}),
+        recordDeleteOverride: (table, entityId) async =>
+            deletes.add({'table': table, 'entityId': entityId}),
+      );
 
-        // Background pull (overwriteMetadata defaults to false).
-        final result = await importer.importGroups([pkGroup]);
+      // Background pull (overwriteMetadata defaults to false).
+      final result = await importer.importGroups([pkGroup]);
 
-        expect(result.entriesSkippedTombstoned, 1);
-        expect(result.entriesInserted, 0);
-        // No entry op of any kind — the tombstone is honored.
-        expect(
-          creates.where((c) => c['table'] == 'member_group_entries'),
-          isEmpty,
-        );
-        expect(
-          updates.where((u) => u['table'] == 'member_group_entries'),
-          isEmpty,
-        );
-        expect(
-          deletes.where((d) => d['table'] == 'member_group_entries'),
-          isEmpty,
-        );
-        // Row stays soft-deleted; pending flipped to push_remove (cohort gate
-        // on) so the PK-token device converges PluralKit to the removal.
-        final row = await (db.select(
-          db.memberGroupEntries,
-        )..where((e) => e.id.equals(gen0EntryId))).getSingle();
-        expect(row.isDeleted, isTrue);
-        expect(row.pendingPkOp, 'push_remove');
-      },
-    );
+      expect(result.entriesSkippedTombstoned, 1);
+      expect(result.entriesInserted, 0);
+      // No entry op of any kind — the tombstone is honored.
+      expect(
+        creates.where((c) => c['table'] == 'member_group_entries'),
+        isEmpty,
+      );
+      expect(
+        updates.where((u) => u['table'] == 'member_group_entries'),
+        isEmpty,
+      );
+      expect(
+        deletes.where((d) => d['table'] == 'member_group_entries'),
+        isEmpty,
+      );
+      // Row stays soft-deleted; pending flipped to push_remove (cohort gate
+      // on) so the PK-token device converges PluralKit to the removal.
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals(gen0EntryId))).getSingle();
+      expect(row.isDeleted, isTrue);
+      expect(row.pendingPkOp, 'push_remove');
+    });
 
-    test(
-      'background pull does NOT flip pending to push_remove when the cohort '
-      'gate (pkGroupSyncV2Enabled) is off',
-      () async {
-        await setPkGroupSyncV2Enabled(false);
-        await insertGroup(id: groupLocalId, pkUuid: pkGroupUuid);
-        await insertEntry(
-          id: gen0EntryId,
-          groupId: groupLocalId,
-          memberId: 'local-f06',
-          pkGroupUuid: pkGroupUuid,
-          pkMemberUuid: pkMemberUuid,
-          isDeleted: true,
-          pendingPkOp: 'none',
-        );
+    test('background pull does NOT flip pending to push_remove when the cohort '
+        'gate (pkGroupSyncV2Enabled) is off', () async {
+      await setPkGroupSyncV2Enabled(false);
+      await insertGroup(id: groupLocalId, pkUuid: pkGroupUuid);
+      await insertEntry(
+        id: gen0EntryId,
+        groupId: groupLocalId,
+        memberId: 'local-f06',
+        pkGroupUuid: pkGroupUuid,
+        pkMemberUuid: pkMemberUuid,
+        isDeleted: true,
+        pendingPkOp: 'none',
+      );
 
-        final importer = PkGroupsImporter(
-          db: db,
-          memberRepository: _FakeMemberRepo([
-            _member(id: 'local-f06', pkUuid: pkMemberUuid),
-          ]),
-          tombstoneGate: _gateTombstoning({gen0EntryId}),
-        );
+      final importer = PkGroupsImporter(
+        db: db,
+        memberRepository: _FakeMemberRepo([
+          _member(id: 'local-f06', pkUuid: pkMemberUuid),
+        ]),
+        tombstoneGate: _gateTombstoning({gen0EntryId}),
+      );
 
-        final result = await importer.importGroups([pkGroup]);
+      final result = await importer.importGroups([pkGroup]);
 
-        expect(result.entriesSkippedTombstoned, 1);
-        final row = await (db.select(
-          db.memberGroupEntries,
-        )..where((e) => e.id.equals(gen0EntryId))).getSingle();
-        expect(row.isDeleted, isTrue);
-        expect(
-          row.pendingPkOp,
-          'none',
-          reason: 'push_remove adoption is behind the pkGroupSyncV2 gate',
-        );
-      },
-    );
+      expect(result.entriesSkippedTombstoned, 1);
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals(gen0EntryId))).getSingle();
+      expect(row.isDeleted, isTrue);
+      expect(
+        row.pendingPkOp,
+        'none',
+        reason: 'push_remove adoption is behind the pkGroupSyncV2 gate',
+      );
+    });
 
     test(
       'explicit user re-import revives under a freshly-minted incarnation: '
@@ -1637,10 +1630,9 @@ void main() {
         );
 
         // Explicit re-import => overwriteMetadata: true.
-        final result = await importer.importGroups(
-          [pkGroup],
-          overwriteMetadata: true,
-        );
+        final result = await importer.importGroups([
+          pkGroup,
+        ], overwriteMetadata: true);
 
         // Not counted as a skipped tombstone — it was revived.
         expect(result.entriesSkippedTombstoned, 0);
@@ -1712,7 +1704,8 @@ void main() {
         expect(
           result.entriesSkippedTombstoned,
           0,
-          reason: 'the push_remove skip is the pre-existing pending-op skip, '
+          reason:
+              'the push_remove skip is the pre-existing pending-op skip, '
               'not an F06 tombstone skip',
         );
         expect(
@@ -1777,7 +1770,8 @@ void main() {
         expect(
           (entryUpdate['fields'] as Map).containsKey('is_deleted'),
           isFalse,
-          reason: 'the revive UPDATE patch must omit is_deleted so per-field '
+          reason:
+              'the revive UPDATE patch must omit is_deleted so per-field '
               'LWW cannot resurrect a peer-deleted row',
         );
         // The update path is a revive, not a create.
@@ -1793,8 +1787,7 @@ void main() {
 
 class _StubClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final List<PKGroup> groups;
   _StubClient(this.groups);
   @override
@@ -1990,80 +1983,75 @@ void _stepFourTests({required AppDatabase Function() getDb}) {
     // per-field-LWW-on-revive regression test; F06 supersedes it because the
     // revive itself is now gone on background pull.) Uses the real
     // SyncRecordMixin capture pipeline, not the constructor override.
-    test(
-      'background pull does NOT revive a soft-deleted entry at the '
-      'deterministic id (F06 honors the tombstone, emits nothing)',
-      () async {
-        final db = getDb();
-        const pkGroupUuid = 'pk-g-revive';
-        const pkMemberUuid = 'pk-mem-revive';
-        final groupId = PkGroupsImporter.deriveGroupId(pkGroupUuid);
-        final entryId = PkGroupsImporter.deriveEntryId(
-          pkGroupUuid,
-          pkMemberUuid,
-        );
+    test('background pull does NOT revive a soft-deleted entry at the '
+        'deterministic id (F06 honors the tombstone, emits nothing)', () async {
+      final db = getDb();
+      const pkGroupUuid = 'pk-g-revive';
+      const pkMemberUuid = 'pk-mem-revive';
+      final groupId = PkGroupsImporter.deriveGroupId(pkGroupUuid);
+      final entryId = PkGroupsImporter.deriveEntryId(pkGroupUuid, pkMemberUuid);
 
-        await db
-            .into(db.memberGroups)
-            .insert(
-              MemberGroupsCompanion.insert(
-                id: groupId,
-                name: 'Revive',
-                createdAt: DateTime.utc(2026, 1, 1),
-                pluralkitUuid: const Value(pkGroupUuid),
-              ),
-            );
-        // Soft-deleted entry at the deterministic id — a local tombstone the
-        // gate-less importer treats as burned.
-        await db
-            .into(db.memberGroupEntries)
-            .insert(
-              MemberGroupEntriesCompanion.insert(
-                id: entryId,
-                groupId: groupId,
-                memberId: 'local-revive',
-                pkGroupUuid: const Value(pkGroupUuid),
-                pkMemberUuid: const Value(pkMemberUuid),
-                isDeleted: const Value(true),
-                pendingPkOp: const Value('push_add'),
-              ),
-            );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            MemberGroupsCompanion.insert(
+              id: groupId,
+              name: 'Revive',
+              createdAt: DateTime.utc(2026, 1, 1),
+              pluralkitUuid: const Value(pkGroupUuid),
+            ),
+          );
+      // Soft-deleted entry at the deterministic id — a local tombstone the
+      // gate-less importer treats as burned.
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
+            MemberGroupEntriesCompanion.insert(
+              id: entryId,
+              groupId: groupId,
+              memberId: 'local-revive',
+              pkGroupUuid: const Value(pkGroupUuid),
+              pkMemberUuid: const Value(pkMemberUuid),
+              isDeleted: const Value(true),
+              pendingPkOp: const Value('push_add'),
+            ),
+          );
 
-        final repo = _FakeMemberRepo([
-          _member(id: 'local-revive', pkUuid: pkMemberUuid),
-        ]);
-        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+      final repo = _FakeMemberRepo([
+        _member(id: 'local-revive', pkUuid: pkMemberUuid),
+      ]);
+      final importer = PkGroupsImporter(db: db, memberRepository: repo);
 
-        final captured = <CapturedSyncOp>[];
-        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-        await importer.importGroups([
-          const PKGroup(
-            id: 'gabcd',
-            uuid: pkGroupUuid,
-            name: 'Revive',
-            memberIds: [pkMemberUuid],
-          ),
-        ]);
+      await importer.importGroups([
+        const PKGroup(
+          id: 'gabcd',
+          uuid: pkGroupUuid,
+          name: 'Revive',
+          memberIds: [pkMemberUuid],
+        ),
+      ]);
 
-        // No membership op at all — the tombstone is honored.
-        final entryOps = captured
-            .where((op) => op.table == 'member_group_entries')
-            .toList();
-        expect(
-          entryOps,
-          isEmpty,
-          reason: 'Background pull must not emit a revive of a tombstoned '
-              'entry id (F06).',
-        );
-        // Row stays soft-deleted.
-        final row = await (db.select(
-          db.memberGroupEntries,
-        )..where((e) => e.id.equals(entryId))).getSingle();
-        expect(row.isDeleted, isTrue);
-      },
-    );
+      // No membership op at all — the tombstone is honored.
+      final entryOps = captured
+          .where((op) => op.table == 'member_group_entries')
+          .toList();
+      expect(
+        entryOps,
+        isEmpty,
+        reason:
+            'Background pull must not emit a revive of a tombstoned '
+            'entry id (F06).',
+      );
+      // Row stays soft-deleted.
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals(entryId))).getSingle();
+      expect(row.isDeleted, isTrue);
+    });
   });
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -2117,7 +2105,9 @@ void _stepFourTests({required AppDatabase Function() getDb}) {
         'PK UUID', () async {
       final db = getDb();
       // Seed: existing group + entry for the excluded local.
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.memberGroups)
+          .insert(
             MemberGroupsCompanion.insert(
               id: 'g-local',
               name: 'g-local',
@@ -2125,7 +2115,9 @@ void _stepFourTests({required AppDatabase Function() getDb}) {
               pluralkitUuid: const Value('pk-g-1'),
             ),
           );
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             MemberGroupEntriesCompanion.insert(
               id: 'e-1',
               groupId: 'g-local',
@@ -2175,7 +2167,9 @@ void _stepFourTests({required AppDatabase Function() getDb}) {
         'lists their UUID', () async {
       final db = getDb();
       // Seed: existing group, no entries yet.
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.memberGroups)
+          .insert(
             MemberGroupsCompanion.insert(
               id: 'g-local',
               name: 'g-local',
@@ -2210,19 +2204,18 @@ void _stepFourTests({required AppDatabase Function() getDb}) {
 
       final entries = await db.memberGroupsDao.entriesForGroup('g-local');
       final memberIds = entries.map((e) => e.memberId).toSet();
-      expect(memberIds, {'local-active'},
-          reason: 'excluded local must not be reattributed to the group');
+      expect(memberIds, {
+        'local-active',
+      }, reason: 'excluded local must not be reattributed to the group');
     });
   });
-
 }
 
 /// Minimal PluralKitClient stub for reattribute tests — only getGroups is
 /// invoked, everything else throws.
 class _ReattributeFakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   _ReattributeFakeClient(this._groups);
   final List<PKGroup> _groups;
 

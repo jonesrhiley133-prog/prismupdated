@@ -52,8 +52,10 @@ void main() {
   });
 
   group('debug-log summary lines', () {
-    SyncEventLogEntry entry(Map<String, dynamic> json) =>
-        SyncEventLogEntry(timestamp: DateTime(2026), event: SyncEvent.fromJson(json));
+    SyncEventLogEntry entry(Map<String, dynamic> json) => SyncEventLogEntry(
+      timestamp: DateTime(2026),
+      event: SyncEvent.fromJson(json),
+    );
 
     test('PullSenderStalled summary names the peer, reason, and counts', () {
       final summary = entry({

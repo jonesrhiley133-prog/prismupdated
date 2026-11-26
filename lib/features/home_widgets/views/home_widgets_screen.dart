@@ -37,7 +37,8 @@ class HomeWidgetsScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeWidgetsScreen> createState() => _HomeWidgetsScreenState();
 }
 
-class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with WidgetsBindingObserver {
+class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen>
+    with WidgetsBindingObserver {
   WidgetCategory? _category;
 
   @override
@@ -55,7 +56,8 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Coming back from the launcher after adding or removing a widget.
-    if (state == AppLifecycleState.resumed) ref.invalidate(placedWidgetsProvider);
+    if (state == AppLifecycleState.resumed)
+      ref.invalidate(placedWidgetsProvider);
   }
 
   @override
@@ -64,7 +66,8 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
     final theme = Theme.of(context);
     final platform = ref.watch(homeWidgetPlatformProvider);
     final async = ref.watch(homeWidgetsProvider);
-    final placed = ref.watch(placedWidgetsProvider).value ?? const <PlacedWidget>[];
+    final placed =
+        ref.watch(placedWidgetsProvider).value ?? const <PlacedWidget>[];
     final data = ref.watch(homeWidgetDataProvider);
     final dark = theme.brightness == Brightness.dark;
     return PrismPageScaffold(
@@ -75,8 +78,14 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
         loading: () => const PrismLoadingState(),
         error: (e, _) => Center(child: Text(l10n.errorWithDetail(e))),
         data: (state) {
-          final types = [for (final t in widgetCatalog) if (_category == null || t.category == _category) t];
-          final recent = [for (final r in state.recent) if (widgetCatalog.any((w) => w.key == r)) r];
+          final types = [
+            for (final t in widgetCatalog)
+              if (_category == null || t.category == _category) t,
+          ];
+          final recent = [
+            for (final r in state.recent)
+              if (widgetCatalog.any((w) => w.key == r)) r,
+          ];
 
           Future<void> pin(String type) async {
             final ok = await platform.pin(type);
@@ -96,38 +105,68 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                   actionsBelow: true,
                 ),
               ),
-            Text(l10n.hwIntro, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              l10n.hwIntro,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
 
             // ---- placed
             TrackerLabel(l10n.hwOnHomeScreen),
             if (placed.isEmpty)
-              PrismSurface(child: Text(l10n.hwNonePlaced, style: theme.textTheme.bodyMedium))
+              PrismSurface(
+                child: Text(
+                  l10n.hwNonePlaced,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              )
             else
               for (final w in placed)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: PrismSurface(
-                    onTap: () => context.push(AppRoutePaths.widgetStudio(w.type, id: w.id)),
+                    onTap: () => context.push(
+                      AppRoutePaths.widgetStudio(w.type, id: w.id),
+                    ),
                     child: Row(
                       children: [
-                        Text(widgetTypeInfo(w.type).emoji, style: const TextStyle(fontSize: 26)),
+                        Text(
+                          widgetTypeInfo(w.type).emoji,
+                          style: const TextStyle(fontSize: 26),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widgetTypeLabel(l10n, w.type), style: theme.textTheme.titleMedium),
+                              Text(
+                                widgetTypeLabel(l10n, w.type),
+                                style: theme.textTheme.titleMedium,
+                              ),
                               Text(
                                 [
-                                  switch (w.size) { 'small' => l10n.hwSizeSmall, 'medium' => l10n.hwSizeMedium, _ => l10n.hwSizeLarge },
-                                  if (state.configs.containsKey(w.id)) l10n.hwCustomized else l10n.hwUsingDefault,
+                                  switch (w.size) {
+                                    'small' => l10n.hwSizeSmall,
+                                    'medium' => l10n.hwSizeMedium,
+                                    _ => l10n.hwSizeLarge,
+                                  },
+                                  if (state.configs.containsKey(w.id))
+                                    l10n.hwCustomized
+                                  else
+                                    l10n.hwUsingDefault,
                                 ].join(' · '),
-                                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        Icon(AppIcons.tuneOutlined, color: theme.colorScheme.onSurfaceVariant),
+                        Icon(
+                          AppIcons.tuneOutlined,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ],
                     ),
                   ),
@@ -142,7 +181,8 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                 children: [
                   for (final r in recent)
                     PrismChip(
-                      label: '${widgetTypeInfo(r).emoji} ${widgetTypeLabel(l10n, r)}',
+                      label:
+                          '${widgetTypeInfo(r).emoji} ${widgetTypeLabel(l10n, r)}',
                       selected: false,
                       onTap: () => context.push(AppRoutePaths.widgetStudio(r)),
                     ),
@@ -156,9 +196,17 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
               spacing: 6,
               runSpacing: 6,
               children: [
-                PrismChip(label: l10n.hwOptAll, selected: _category == null, onTap: () => setState(() => _category = null)),
+                PrismChip(
+                  label: l10n.hwOptAll,
+                  selected: _category == null,
+                  onTap: () => setState(() => _category = null),
+                ),
                 for (final c in WidgetCategory.values)
-                  PrismChip(label: widgetCategoryLabel(l10n, c), selected: _category == c, onTap: () => setState(() => _category = c)),
+                  PrismChip(
+                    label: widgetCategoryLabel(l10n, c),
+                    selected: _category == c,
+                    onTap: () => setState(() => _category = c),
+                  ),
               ],
             ),
             const SizedBox(height: 10),
@@ -178,10 +226,15 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(widgetTypeLabel(l10n, t.key), style: theme.textTheme.titleMedium),
+                                Text(
+                                  widgetTypeLabel(l10n, t.key),
+                                  style: theme.textTheme.titleMedium,
+                                ),
                                 Text(
                                   widgetTypeDescription(l10n, t.key),
-                                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ],
                             ),
@@ -200,7 +253,12 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                                   padding: const EdgeInsets.only(right: 10),
                                   child: IgnorePointer(
                                     child: WidgetPreview(
-                                      model: buildWidgetModel(state.configFor(null, t.key), data, l10n, l10n.localeName),
+                                      model: buildWidgetModel(
+                                        state.configFor(null, t.key),
+                                        data,
+                                        l10n,
+                                        l10n.localeName,
+                                      ),
                                       config: state.configFor(null, t.key),
                                       data: data,
                                       size: size,
@@ -220,7 +278,8 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                           PrismButton(
                             label: l10n.hwCustomize,
                             density: PrismControlDensity.compact,
-                            onPressed: () => context.push(AppRoutePaths.widgetStudio(t.key)),
+                            onPressed: () =>
+                                context.push(AppRoutePaths.widgetStudio(t.key)),
                           ),
                           if (platform.isSupported)
                             PrismButton(
@@ -243,17 +302,29 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: PrismSurface(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     child: Row(
                       children: [
-                        Text(widgetTypeInfo(p.type).emoji, style: const TextStyle(fontSize: 20)),
+                        Text(
+                          widgetTypeInfo(p.type).emoji,
+                          style: const TextStyle(fontSize: 20),
+                        ),
                         const SizedBox(width: 10),
-                        Expanded(child: Text('${p.name} · ${widgetTypeLabel(l10n, p.type)}')),
+                        Expanded(
+                          child: Text(
+                            '${p.name} · ${widgetTypeLabel(l10n, p.type)}',
+                          ),
+                        ),
                         PrismButton(
                           label: l10n.delete,
                           density: PrismControlDensity.compact,
                           tone: PrismButtonTone.destructive,
-                          onPressed: () => ref.read(homeWidgetsProvider.notifier).deletePreset(p),
+                          onPressed: () => ref
+                              .read(homeWidgetsProvider.notifier)
+                              .deletePreset(p),
                         ),
                       ],
                     ),
@@ -267,18 +338,40 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (final (i, step) in [l10n.hwHowTo1, l10n.hwHowTo2, l10n.hwHowTo3, l10n.hwHowTo4, l10n.hwHowTo5].indexed)
+                  for (final (i, step) in [
+                    l10n.hwHowTo1,
+                    l10n.hwHowTo2,
+                    l10n.hwHowTo3,
+                    l10n.hwHowTo4,
+                    l10n.hwHowTo5,
+                  ].indexed)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(width: 24, child: Text('${i + 1}.', style: theme.textTheme.titleSmall)),
-                          Expanded(child: Text(step, style: theme.textTheme.bodyMedium)),
+                          SizedBox(
+                            width: 24,
+                            child: Text(
+                              '${i + 1}.',
+                              style: theme.textTheme.titleSmall,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              step,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  Text(l10n.hwQuickActionNote, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    l10n.hwQuickActionNote,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -289,8 +382,13 @@ class _HomeWidgetsScreenState extends ConsumerState<HomeWidgetsScreen> with Widg
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+                  constraints: BoxConstraints(
+                    maxWidth: PrismTokens.contentMaxWidth,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: children,
+                  ),
                 ),
               ),
             ],

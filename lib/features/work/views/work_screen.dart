@@ -43,7 +43,8 @@ class WorkScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.workTitle,
         showBackButton: showBackButton,
-        actions: [FeatureDataAction(featureId: 'work'), 
+        actions: [
+          FeatureDataAction(featureId: 'work'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.workNewJob,
@@ -306,7 +307,10 @@ class _JobTile extends ConsumerWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: color, borderRadius: prismRound(context)),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: prismRound(context),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

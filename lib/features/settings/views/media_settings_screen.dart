@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -671,7 +672,10 @@ class MediaSettingsScreen extends ConsumerWidget {
     }
 
     if (!context.mounted) return;
-    final imageBytes = bytes;
+    // Every source goes through the shared cropper.
+    final cropped = await PrismImageCrop.fromBytes(context, bytes);
+    if (cropped == null || !context.mounted) return;
+    final imageBytes = cropped.bytes;
 
     // Tag dialog with thumbnail preview. The dialog body owns its controllers
     // (see _AddToLibraryDialog) so they're disposed only when the route is
@@ -969,11 +973,8 @@ class MediaSettingsScreen extends ConsumerWidget {
     WidgetRef ref,
     MediaAttachment attachment,
   ) async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked == null || !context.mounted) return;
-
-    final bytes = await picked.readAsBytes();
-    if (!context.mounted) return;
+    final bytes = await PrismImageCrop.pickBytes(context);
+    if (bytes == null || !context.mounted) return;
 
     try {
       final mediaService = ref.read(mediaServiceProvider);

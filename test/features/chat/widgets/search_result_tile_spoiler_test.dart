@@ -20,87 +20,82 @@ void main() {
     return buffer.toString();
   }
 
-  testWidgets(
-    'SearchResultTile redacts ||spoiler|| spans in the snippet',
-    (tester) async {
-      final result = MessageSearchResult(
-        messageId: 'msg-1',
-        conversationId: 'conv-1',
-        snippet: 'hello ||secret||',
-        timestamp: DateTime(2026, 4, 20, 12),
-        authorName: 'Alice',
-        conversationTitle: 'General',
-      );
+  testWidgets('SearchResultTile redacts ||spoiler|| spans in the snippet', (
+    tester,
+  ) async {
+    final result = MessageSearchResult(
+      messageId: 'msg-1',
+      conversationId: 'conv-1',
+      snippet: 'hello ||secret||',
+      timestamp: DateTime(2026, 4, 20, 12),
+      authorName: 'Alice',
+      conversationTitle: 'General',
+    );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: SizedBox(
-                  width: 360,
-                  child: SearchResultTile(
-                    result: result,
-                    onTap: () {},
-                  ),
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 360,
+                child: SearchResultTile(result: result, onTap: () {}),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final rendered = renderedText(tester);
+
+    expect(rendered, contains('\u25AE'));
+    expect(rendered, isNot(contains('secret')));
+  });
+
+  testWidgets('SearchResultTile renders @[uuid] mentions as @MemberName', (
+    tester,
+  ) async {
+    const aliceId = '11111111-2222-3333-4444-555555555555';
+    final result = MessageSearchResult(
+      messageId: 'msg-mention',
+      conversationId: 'conv-1',
+      snippet: 'hey @[$aliceId] check this',
+      timestamp: DateTime(2026, 4, 20, 12),
+      authorName: 'Bob',
+      conversationTitle: 'General',
+    );
+
+    final alice = Member(
+      id: aliceId,
+      name: 'Alice',
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 360,
+                child: SearchResultTile(
+                  result: result,
+                  onTap: () {},
+                  authorMap: {aliceId: alice},
                 ),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
 
-      final rendered = renderedText(tester);
-
-      expect(rendered, contains('\u25AE'));
-      expect(rendered, isNot(contains('secret')));
-    },
-  );
-
-  testWidgets(
-    'SearchResultTile renders @[uuid] mentions as @MemberName',
-    (tester) async {
-      const aliceId = '11111111-2222-3333-4444-555555555555';
-      final result = MessageSearchResult(
-        messageId: 'msg-mention',
-        conversationId: 'conv-1',
-        snippet: 'hey @[$aliceId] check this',
-        timestamp: DateTime(2026, 4, 20, 12),
-        authorName: 'Bob',
-        conversationTitle: 'General',
-      );
-
-      final alice = Member(
-        id: aliceId,
-        name: 'Alice',
-        createdAt: DateTime(2026, 1, 1),
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: SizedBox(
-                  width: 360,
-                  child: SearchResultTile(
-                    result: result,
-                    onTap: () {},
-                    authorMap: {aliceId: alice},
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final rendered = renderedText(tester);
-      expect(rendered, contains('@Alice'));
-      expect(rendered, isNot(contains(aliceId)));
-      expect(rendered, isNot(contains('@[')));
-    },
-  );
+    final rendered = renderedText(tester);
+    expect(rendered, contains('@Alice'));
+    expect(rendered, isNot(contains(aliceId)));
+    expect(rendered, isNot(contains('@[')));
+  });
 
   testWidgets(
     'SearchResultTile renders unknown mention IDs as @Unknown, not raw UUID',
@@ -122,10 +117,7 @@ void main() {
               body: Center(
                 child: SizedBox(
                   width: 360,
-                  child: SearchResultTile(
-                    result: result,
-                    onTap: () {},
-                  ),
+                  child: SearchResultTile(result: result, onTap: () {}),
                 ),
               ),
             ),
@@ -160,10 +152,7 @@ void main() {
               body: Center(
                 child: SizedBox(
                   width: 360,
-                  child: SearchResultTile(
-                    result: result,
-                    onTap: () {},
-                  ),
+                  child: SearchResultTile(result: result, onTap: () {}),
                 ),
               ),
             ),

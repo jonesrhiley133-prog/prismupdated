@@ -56,7 +56,12 @@ FieldTemplate _templateFromDomain() {
     parentFieldId: 'g1',
     typeConfig: const ChoiceConfig(
       options: [
-        ChoiceOption(id: 'o1', label: 'Happy', colorHex: '#ff0000', sortOrder: 0),
+        ChoiceOption(
+          id: 'o1',
+          label: 'Happy',
+          colorHex: '#ff0000',
+          sortOrder: 0,
+        ),
         ChoiceOption(id: 'o2', label: 'Sad', colorHex: '#0000ff', sortOrder: 1),
       ],
     ),
@@ -110,7 +115,8 @@ void main() {
       // Flip a character in the middle of the payload.
       final payload = code.substring('PF1:'.length);
       final mid = payload.length ~/ 2;
-      final flipped = payload.substring(0, mid) +
+      final flipped =
+          payload.substring(0, mid) +
           (payload[mid] == 'A' ? 'B' : 'A') +
           payload.substring(mid + 1);
       final tampered = 'PF1:$flipped';
@@ -179,7 +185,8 @@ void main() {
     test('truncated payload that keeps prefix → corrupt', () {
       final code = codec.encode(_smallTemplate());
       // Keep prefix but truncate body enough to break gzip.
-      final truncated = 'PF1:${code.substring('PF1:'.length, 'PF1:'.length + 4)}';
+      final truncated =
+          'PF1:${code.substring('PF1:'.length, 'PF1:'.length + 4)}';
 
       expect(
         () => codec.decode(truncated),
@@ -251,7 +258,9 @@ void main() {
       final longName = 'A' * (kMaxFieldNameChars + 1);
       expect(
         () => codec.validateAndNormalize(
-          _makeTemplate([FieldTemplateEntry(name: longName, fieldTypeId: 'text')]),
+          _makeTemplate([
+            FieldTemplateEntry(name: longName, fieldTypeId: 'text'),
+          ]),
         ),
         throwsA(
           isA<FieldTemplateCodecException>().having(
@@ -315,8 +324,16 @@ void main() {
       final entries = [
         const FieldTemplateEntry(name: 'Root', fieldTypeId: 'group'),
         // Entry 1 is child of entry 0 AND parent of entry 2 → depth 2 → invalid.
-        const FieldTemplateEntry(name: 'Mid', fieldTypeId: 'group', parentIndex: 0),
-        const FieldTemplateEntry(name: 'Leaf', fieldTypeId: 'text', parentIndex: 1),
+        const FieldTemplateEntry(
+          name: 'Mid',
+          fieldTypeId: 'group',
+          parentIndex: 0,
+        ),
+        const FieldTemplateEntry(
+          name: 'Leaf',
+          fieldTypeId: 'text',
+          parentIndex: 1,
+        ),
       ];
       expect(
         () => codec.validateAndNormalize(_makeTemplate(entries)),
@@ -431,7 +448,11 @@ void main() {
       final entries = [
         const FieldTemplateEntry(name: 'Text', fieldTypeId: 'text'),
         // Tries to parent under a 'text' field (not a group) → promoted.
-        const FieldTemplateEntry(name: 'Child', fieldTypeId: 'text', parentIndex: 0),
+        const FieldTemplateEntry(
+          name: 'Child',
+          fieldTypeId: 'text',
+          parentIndex: 0,
+        ),
       ];
       final result = codec.validateAndNormalize(_makeTemplate(entries));
       expect(result.entries[1].parentIndex, isNull);
@@ -457,7 +478,11 @@ void main() {
     test('valid group parent is preserved', () {
       final entries = [
         const FieldTemplateEntry(name: 'MyGroup', fieldTypeId: 'group'),
-        const FieldTemplateEntry(name: 'Child', fieldTypeId: 'text', parentIndex: 0),
+        const FieldTemplateEntry(
+          name: 'Child',
+          fieldTypeId: 'text',
+          parentIndex: 0,
+        ),
       ];
       final result = codec.validateAndNormalize(_makeTemplate(entries));
       expect(result.entries[1].parentIndex, 0); // not promoted
@@ -571,66 +596,99 @@ void main() {
     FieldTemplate _makeTemplate(List<FieldTemplateEntry> entries) =>
         FieldTemplate(version: 1, entries: entries);
 
-    FieldTemplateEntry _choiceEntry(List<dynamic> options) => FieldTemplateEntry(
-      name: 'Choice',
-      fieldTypeId: 'choice',
-      compactConfig: {
-        'runtimeType': 'choice',
-        'options': options,
-        'allowsMultiple': false,
-        'allowsOther': false,
-      },
-    );
+    FieldTemplateEntry _choiceEntry(List<dynamic> options) =>
+        FieldTemplateEntry(
+          name: 'Choice',
+          fieldTypeId: 'choice',
+          compactConfig: {
+            'runtimeType': 'choice',
+            'options': options,
+            'allowsMultiple': false,
+            'allowsOther': false,
+          },
+        );
 
     test('option is not a Map (int in list) → invalid', () {
       expect(
-        () => codec.validateAndNormalize(_makeTemplate([_choiceEntry([123])])),
-        throwsA(isA<FieldTemplateCodecException>().having(
-          (e) => e.kind, 'kind', FieldTemplateCodecError.invalid,
-        )),
+        () => codec.validateAndNormalize(
+          _makeTemplate([
+            _choiceEntry([123]),
+          ]),
+        ),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
+        ),
       );
     });
 
     test('option label is non-String → invalid', () {
       expect(
         () => codec.validateAndNormalize(
-          _makeTemplate([_choiceEntry([{'label': 5}])]),
+          _makeTemplate([
+            _choiceEntry([
+              {'label': 5},
+            ]),
+          ]),
         ),
-        throwsA(isA<FieldTemplateCodecException>().having(
-          (e) => e.kind, 'kind', FieldTemplateCodecError.invalid,
-        )),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
+        ),
       );
     });
 
     test('option colorHex is non-String → invalid', () {
       expect(
         () => codec.validateAndNormalize(
-          _makeTemplate([_choiceEntry([{'label': 'x', 'colorHex': 7}])]),
+          _makeTemplate([
+            _choiceEntry([
+              {'label': 'x', 'colorHex': 7},
+            ]),
+          ]),
         ),
-        throwsA(isA<FieldTemplateCodecException>().having(
-          (e) => e.kind, 'kind', FieldTemplateCodecError.invalid,
-        )),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
+        ),
       );
     });
 
     test('option missing label field → invalid', () {
       expect(
         () => codec.validateAndNormalize(
-          _makeTemplate([_choiceEntry([<String, dynamic>{}])]),
+          _makeTemplate([
+            _choiceEntry([<String, dynamic>{}]),
+          ]),
         ),
-        throwsA(isA<FieldTemplateCodecException>().having(
-          (e) => e.kind, 'kind', FieldTemplateCodecError.invalid,
-        )),
+        throwsA(
+          isA<FieldTemplateCodecException>().having(
+            (e) => e.kind,
+            'kind',
+            FieldTemplateCodecError.invalid,
+          ),
+        ),
       );
     });
 
     test('well-formed option passes', () {
-      final result = codec.validateAndNormalize(_makeTemplate([
-        _choiceEntry([
-          {'label': 'Red', 'colorHex': '#ff0000'},
-          {'label': 'Blue'},
+      final result = codec.validateAndNormalize(
+        _makeTemplate([
+          _choiceEntry([
+            {'label': 'Red', 'colorHex': '#ff0000'},
+            {'label': 'Blue'},
+          ]),
         ]),
-      ]));
+      );
       expect(result.entries.length, 1);
     });
   });

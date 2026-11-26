@@ -136,7 +136,10 @@ class _DataImportSheetState extends ConsumerState<DataImportSheet> {
     final bytes = _fileBytes!;
     final pass = password;
     try {
-      final resolved = await DataImportService.resolveInBackground(bytes, password: pass);
+      final resolved = await DataImportService.resolveInBackground(
+        bytes,
+        password: pass,
+      );
       final service = ref.read(dataImportServiceProvider);
       final preview = service.parsePreview(resolved.json);
       if (!mounted) return;

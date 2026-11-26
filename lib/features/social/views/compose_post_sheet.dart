@@ -1,3 +1,4 @@
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +25,32 @@ import 'package:prism_plurality/shared/widgets/prism_toast.dart';
 
 /// Opens the composer. [quote] makes a quote post, [answer] answers a
 /// question (as a quote), [edit] edits an existing post or draft.
-Future<void> showComposePost(BuildContext context, {Post? quote, Post? edit, Post? answer, PostType? type}) => PrismSheet.showFullScreen<void>(
+Future<void> showComposePost(
+  BuildContext context, {
+  Post? quote,
+  Post? edit,
+  Post? answer,
+  PostType? type,
+}) => PrismSheet.showFullScreen<void>(
   context: context,
-  builder: (context, scroll) => ComposePostSheet(scroll: scroll, quote: quote ?? answer, edit: edit, isAnswer: answer != null, initialType: type),
+  builder: (context, scroll) => ComposePostSheet(
+    scroll: scroll,
+    quote: quote ?? answer,
+    edit: edit,
+    isAnswer: answer != null,
+    initialType: type,
+  ),
 );
 
 class ComposePostSheet extends ConsumerStatefulWidget {
-  const ComposePostSheet({super.key, required this.scroll, this.quote, this.edit, this.isAnswer = false, this.initialType});
+  const ComposePostSheet({
+    super.key,
+    required this.scroll,
+    this.quote,
+    this.edit,
+    this.isAnswer = false,
+    this.initialType,
+  });
 
   final ScrollController scroll;
   final Post? quote;
@@ -43,13 +63,22 @@ class ComposePostSheet extends ConsumerStatefulWidget {
 }
 
 class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
-  late PostType _type = widget.edit?.type ?? widget.initialType ?? PostType.text;
+  late PostType _type =
+      widget.edit?.type ?? widget.initialType ?? PostType.text;
   late final _title = TextEditingController(text: widget.edit?.title ?? '');
   late final _body = TextEditingController(text: widget.edit?.body ?? '');
-  late final _tags = TextEditingController(text: widget.edit?.tags.join(' ') ?? '');
-  late final _cw = TextEditingController(text: widget.edit?.contentWarning ?? '');
+  late final _tags = TextEditingController(
+    text: widget.edit?.tags.join(' ') ?? '',
+  );
+  late final _cw = TextEditingController(
+    text: widget.edit?.contentWarning ?? '',
+  );
   late final List<TextEditingController> _options = [
-    for (final o in (widget.edit?.pollOptions.isNotEmpty ?? false) ? widget.edit!.pollOptions : ['', '']) TextEditingController(text: o),
+    for (final o
+        in (widget.edit?.pollOptions.isNotEmpty ?? false)
+            ? widget.edit!.pollOptions
+            : ['', ''])
+      TextEditingController(text: o),
   ];
   late List<String> _images = [...?widget.edit?.images];
   late String? _video = widget.edit?.video;
@@ -66,7 +95,8 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
   void initState() {
     super.initState();
     final e = widget.edit;
-    if (e != null && e.status == PostStatus.scheduled) _schedule = e.publishedAt;
+    if (e != null && e.status == PostStatus.scheduled)
+      _schedule = e.publishedAt;
   }
 
   @override
@@ -80,10 +110,12 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
   bool get _valid {
     if (_author == null) return false;
     return switch (_type) {
-      PostType.text || PostType.question => _body.text.trim().isNotEmpty || _title.text.trim().isNotEmpty,
+      PostType.text || PostType.question =>
+        _body.text.trim().isNotEmpty || _title.text.trim().isNotEmpty,
       PostType.image => _images.isNotEmpty,
       PostType.media => _video != null || _images.isNotEmpty,
-      PostType.poll => _options.where((o) => o.text.trim().isNotEmpty).length >= 2,
+      PostType.poll =>
+        _options.where((o) => o.text.trim().isNotEmpty).length >= 2,
     };
   }
 
@@ -91,7 +123,19 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
     final l10n = context.l10n;
     final files = await ImagePicker().pickMultiImage(limit: 10);
     for (final f in files) {
-      final id = await ref.read(socialMediaStoreProvider).addImage(await f.readAsBytes(), owner: _author);
+      if (!mounted) return;
+      final cropped = await PrismImageCrop.fromBytes(
+        context,
+        await f.readAsBytes(),
+      );
+      if (cropped == null) continue;
+      final id = await ref
+          .read(socialMediaStoreProvider)
+          .addImage(
+            cropped.bytes,
+            owner: _author,
+            original: cropped.originalId,
+          );
       if (!mounted) return;
       if (id == null) {
         PrismToast.error(context, message: l10n.socImageUnreadable(f.name));
@@ -126,9 +170,21 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
     if (!_valid || _busy) return;
     setState(() => _busy = true);
     final a = ref.read(socialActionsProvider);
-    final tags = _tags.text.split(RegExp(r'[\s,]+')).map(normalizeTag).where((t) => t.isNotEmpty).toList();
-    final options = [for (final o in _options) if (o.text.trim().isNotEmpty) o.text.trim()];
-    final finalStatus = status == PostStatus.published && _schedule != null && _schedule!.isAfter(DateTime.now()) ? PostStatus.scheduled : status;
+    final tags = _tags.text
+        .split(RegExp(r'[\s,]+'))
+        .map(normalizeTag)
+        .where((t) => t.isNotEmpty)
+        .toList();
+    final options = [
+      for (final o in _options)
+        if (o.text.trim().isNotEmpty) o.text.trim(),
+    ];
+    final finalStatus =
+        status == PostStatus.published &&
+            _schedule != null &&
+            _schedule!.isAfter(DateTime.now())
+        ? PostStatus.scheduled
+        : status;
     try {
       final e = widget.edit;
       if (e != null) {
@@ -147,7 +203,9 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
       } else {
         await a.createPost(
           actor: _author!,
-          type: widget.quote != null && _type == PostType.question ? PostType.text : _type,
+          type: widget.quote != null && _type == PostType.question
+              ? PostType.text
+              : _type,
           title: _title.text.trim(),
           body: _body.text.trim(),
           tags: tags,
@@ -170,7 +228,9 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
         context,
         message: switch (finalStatus) {
           PostStatus.draft => l10n.socDraftSaved,
-          PostStatus.scheduled => l10n.socScheduledFor(MaterialLocalizations.of(context).formatMediumDate(_schedule!)),
+          PostStatus.scheduled => l10n.socScheduledFor(
+            MaterialLocalizations.of(context).formatMediumDate(_schedule!),
+          ),
           PostStatus.published => e == null ? l10n.socPosted : l10n.socSaved,
         },
       );
@@ -182,11 +242,29 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
 
   Future<void> _pickSchedule() async {
     final now = DateTime.now();
-    final date = await showPrismDatePicker(context: context, initialDate: _schedule ?? now, firstDate: now, lastDate: DateTime(now.year + 2));
+    final date = await showPrismDatePicker(
+      context: context,
+      initialDate: _schedule ?? now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 2),
+    );
     if (date == null || !mounted) return;
-    final time = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_schedule ?? now.add(const Duration(hours: 1))));
+    final time = await showPrismTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(
+        _schedule ?? now.add(const Duration(hours: 1)),
+      ),
+    );
     if (time == null) return;
-    setState(() => _schedule = DateTime(date.year, date.month, date.day, time.hour, time.minute));
+    setState(
+      () => _schedule = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      ),
+    );
   }
 
   @override
@@ -194,16 +272,27 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final d = ref.watch(socialDataProvider);
-    final members = (ref.watch(userVisibleMemberListProvider).value ?? const <Member>[]).where((m) => m.isActive).toList();
+    final members =
+        (ref.watch(userVisibleMemberListProvider).value ?? const <Member>[])
+            .where((m) => m.isActive)
+            .toList();
     final editing = widget.edit != null;
     final isDraft = editing && widget.edit!.status != PostStatus.published;
     return SafeArea(
       child: Column(
         children: [
           PrismSheetTopBar(
-            title: editing ? l10n.socEditPost : (widget.isAnswer ? l10n.socAnswerTitle : (widget.quote != null ? l10n.socQuote : l10n.socNewPost)),
+            title: editing
+                ? l10n.socEditPost
+                : (widget.isAnswer
+                      ? l10n.socAnswerTitle
+                      : (widget.quote != null
+                            ? l10n.socQuote
+                            : l10n.socNewPost)),
             trailing: PrismButton(
-              label: _schedule != null ? l10n.socSchedule : (editing && !isDraft ? l10n.save : l10n.socPost),
+              label: _schedule != null
+                  ? l10n.socSchedule
+                  : (editing && !isDraft ? l10n.save : l10n.socPost),
               tone: PrismButtonTone.filled,
               density: PrismControlDensity.compact,
               enabled: _valid && !_busy,
@@ -222,7 +311,9 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        _author == null ? l10n.socPickAlter : l10n.socPostingAs(alterName(d, _author, context)),
+                        _author == null
+                            ? l10n.socPickAlter
+                            : l10n.socPostingAs(alterName(d, _author, context)),
                         style: theme.textTheme.titleSmall,
                       ),
                     ),
@@ -231,7 +322,11 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                         label: l10n.socChange,
                         density: PrismControlDensity.compact,
                         onPressed: () async {
-                          final id = await pickAlter(context, ref, title: l10n.socWhoIsPosting);
+                          final id = await pickAlter(
+                            context,
+                            ref,
+                            title: l10n.socWhoIsPosting,
+                          );
                           if (id != null) setState(() => _author = id);
                         },
                       ),
@@ -261,14 +356,21 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                   Container(
                     margin: const EdgeInsets.only(top: 4, bottom: 4),
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(borderRadius: prismCorners(context, 12), border: Border.all(color: theme.colorScheme.outlineVariant)),
+                    decoration: BoxDecoration(
+                      borderRadius: prismCorners(context, 12),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant,
+                      ),
+                    ),
                     child: Row(
                       children: [
                         AlterAvatar(memberId: widget.quote!.author, size: 24),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            widget.quote!.body.isEmpty ? widget.quote!.title : widget.quote!.body,
+                            widget.quote!.body.isEmpty
+                                ? widget.quote!.title
+                                : widget.quote!.body,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall,
@@ -285,22 +387,39 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      PrismChip(label: l10n.socAnyone, selected: _askedTo == null, onTap: () => setState(() => _askedTo = null)),
+                      PrismChip(
+                        label: l10n.socAnyone,
+                        selected: _askedTo == null,
+                        onTap: () => setState(() => _askedTo = null),
+                      ),
                       for (final m in members)
-                        if (m.id != _author) PrismChip(label: m.name, selected: _askedTo == m.id, onTap: () => setState(() => _askedTo = m.id)),
+                        if (m.id != _author)
+                          PrismChip(
+                            label: m.name,
+                            selected: _askedTo == m.id,
+                            onTap: () => setState(() => _askedTo = m.id),
+                          ),
                     ],
                   ),
                   const SizedBox(height: 10),
                 ],
                 if (_type != PostType.question || widget.quote != null)
-                  PrismTextField(controller: _title, labelText: l10n.socTitleOptional, onChanged: (_) => setState(() {})),
+                  PrismTextField(
+                    controller: _title,
+                    labelText: l10n.socTitleOptional,
+                    onChanged: (_) => setState(() {}),
+                  ),
                 const SizedBox(height: 8),
                 PrismTextField(
                   controller: _body,
                   labelText: switch (_type) {
-                    PostType.question when widget.quote == null => l10n.socYourQuestion,
+                    PostType.question when widget.quote == null =>
+                      l10n.socYourQuestion,
                     PostType.image || PostType.media => l10n.socCaption,
-                    _ => widget.isAnswer ? l10n.socYourAnswer : l10n.socWhatsOnYourMind,
+                    _ =>
+                      widget.isAnswer
+                          ? l10n.socYourAnswer
+                          : l10n.socWhatsOnYourMind,
                   },
                   helperText: l10n.socBodyHelp,
                   minLines: 4,
@@ -315,15 +434,28 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                       padding: const EdgeInsets.only(top: 6),
                       child: Row(
                         children: [
-                          Expanded(child: PrismTextField(controller: _options[i], labelText: l10n.socOptionN(i + 1), onChanged: (_) => setState(() {}))),
+                          Expanded(
+                            child: PrismTextField(
+                              controller: _options[i],
+                              labelText: l10n.socOptionN(i + 1),
+                              onChanged: (_) => setState(() {}),
+                            ),
+                          ),
                           if (_options.length > 2)
                             Semantics(
                               button: true,
                               label: l10n.socRemoveOption,
                               excludeSemantics: true,
                               child: InkResponse(
-                                onTap: () => setState(() => _options.removeAt(i).dispose()),
-                                child: const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.remove_circle_outline_rounded)),
+                                onTap: () => setState(
+                                  () => _options.removeAt(i).dispose(),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Icon(
+                                    Icons.remove_circle_outline_rounded,
+                                  ),
+                                ),
                               ),
                             ),
                         ],
@@ -334,12 +466,24 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: PrismButton(label: l10n.socAddOption, density: PrismControlDensity.compact, onPressed: () => setState(() => _options.add(TextEditingController()))),
+                        child: PrismButton(
+                          label: l10n.socAddOption,
+                          density: PrismControlDensity.compact,
+                          onPressed: () => setState(
+                            () => _options.add(TextEditingController()),
+                          ),
+                        ),
                       ),
                     ),
-                  PrismSwitchRow(title: l10n.socPollMultiAllow, value: _pollMulti, onChanged: (v) => setState(() => _pollMulti = v)),
+                  PrismSwitchRow(
+                    title: l10n.socPollMultiAllow,
+                    value: _pollMulti,
+                    onChanged: (v) => setState(() => _pollMulti = v),
+                  ),
                 ],
-                if (_type == PostType.image || _type == PostType.media || _type == PostType.text) ...[
+                if (_type == PostType.image ||
+                    _type == PostType.media ||
+                    _type == PostType.text) ...[
                   const SizedBox(height: 12),
                   if (_images.isNotEmpty)
                     SizedBox(
@@ -358,7 +502,14 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                               padding: const EdgeInsets.only(right: 6),
                               child: Stack(
                                 children: [
-                                  ClipRRect(borderRadius: prismCorners(context, 10), child: SocialImage(id: id, width: 96, height: 96)),
+                                  ClipRRect(
+                                    borderRadius: prismCorners(context, 10),
+                                    child: SocialImage(
+                                      id: id,
+                                      width: 96,
+                                      height: 96,
+                                    ),
+                                  ),
                                   Positioned(
                                     right: 0,
                                     top: 0,
@@ -367,8 +518,20 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                                       label: l10n.socRemoveImage,
                                       excludeSemantics: true,
                                       child: InkResponse(
-                                        onTap: () => setState(() => _images = [..._images]..remove(id)),
-                                        child: const PrismCircleAvatar(radius: 12, backgroundColor: Colors.black54, child: Icon(Icons.close, size: 14, color: Colors.white)),
+                                        onTap: () => setState(
+                                          () =>
+                                              _images = [..._images]
+                                                ..remove(id),
+                                        ),
+                                        child: const PrismCircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.black54,
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 14,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -383,7 +546,12 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                     VideoTile(id: _video!),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: PrismButton(label: l10n.socRemoveVideo, density: PrismControlDensity.compact, tone: PrismButtonTone.destructive, onPressed: () => setState(() => _video = null)),
+                      child: PrismButton(
+                        label: l10n.socRemoveVideo,
+                        density: PrismControlDensity.compact,
+                        tone: PrismButtonTone.destructive,
+                        onPressed: () => setState(() => _video = null),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 6),
@@ -391,27 +559,58 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      if (!editing || _type != PostType.media) PrismButton(label: l10n.socAddImages, icon: Icons.add_photo_alternate_outlined, onPressed: _addImages),
-                      if (_type == PostType.media && _video == null && !editing) PrismButton(label: l10n.socAddVideo, icon: Icons.video_library_outlined, onPressed: _addVideo),
+                      if (!editing || _type != PostType.media)
+                        PrismButton(
+                          label: l10n.socAddImages,
+                          icon: Icons.add_photo_alternate_outlined,
+                          onPressed: _addImages,
+                        ),
+                      if (_type == PostType.media && _video == null && !editing)
+                        PrismButton(
+                          label: l10n.socAddVideo,
+                          icon: Icons.video_library_outlined,
+                          onPressed: _addVideo,
+                        ),
                     ],
                   ),
                   if (_type == PostType.media)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Text(l10n.socVideoNote, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                      child: Text(
+                        l10n.socVideoNote,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                 ],
                 const SizedBox(height: 12),
-                PrismTextField(controller: _tags, labelText: l10n.socTags, helperText: l10n.socTagsHelp),
-                PrismSwitchRow(title: l10n.socContentWarning, value: _useCw, onChanged: (v) => setState(() => _useCw = v)),
-                if (_useCw) PrismTextField(controller: _cw, labelText: l10n.socCwText),
+                PrismTextField(
+                  controller: _tags,
+                  labelText: l10n.socTags,
+                  helperText: l10n.socTagsHelp,
+                ),
+                PrismSwitchRow(
+                  title: l10n.socContentWarning,
+                  value: _useCw,
+                  onChanged: (v) => setState(() => _useCw = v),
+                ),
+                if (_useCw)
+                  PrismTextField(controller: _cw, labelText: l10n.socCwText),
                 const SizedBox(height: 12),
                 Text(l10n.socWhoCanSee, style: theme.textTheme.labelLarge),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
-                  children: [for (final a in Audience.values) PrismChip(label: audienceLabel(context, a), selected: _audience == a, onTap: () => setState(() => _audience = a))],
+                  children: [
+                    for (final a in Audience.values)
+                      PrismChip(
+                        label: audienceLabel(context, a),
+                        selected: _audience == a,
+                        onTap: () => setState(() => _audience = a),
+                      ),
+                  ],
                 ),
                 if (_audience == Audience.selected) ...[
                   const SizedBox(height: 6),
@@ -424,25 +623,51 @@ class _ComposePostSheetState extends ConsumerState<ComposePostSheet> {
                           PrismChip(
                             label: m.name,
                             selected: _audienceIds.contains(m.id),
-                            onTap: () => setState(() => _audienceIds = _audienceIds.contains(m.id) ? ([..._audienceIds]..remove(m.id)) : [..._audienceIds, m.id]),
+                            onTap: () => setState(
+                              () => _audienceIds = _audienceIds.contains(m.id)
+                                  ? ([..._audienceIds]..remove(m.id))
+                                  : [..._audienceIds, m.id],
+                            ),
                           ),
                     ],
                   ),
                 ],
                 const SizedBox(height: 4),
-                Text(l10n.socAudienceNote, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  l10n.socAudienceNote,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
                     PrismButton(
-                      label: _schedule == null ? l10n.socScheduleLater : l10n.socScheduledFor(MaterialLocalizations.of(context).formatMediumDate(_schedule!)),
+                      label: _schedule == null
+                          ? l10n.socScheduleLater
+                          : l10n.socScheduledFor(
+                              MaterialLocalizations.of(
+                                context,
+                              ).formatMediumDate(_schedule!),
+                            ),
                       icon: Icons.schedule_rounded,
                       onPressed: _pickSchedule,
                     ),
-                    if (_schedule != null) PrismButton(label: l10n.socPostNow, density: PrismControlDensity.compact, onPressed: () => setState(() => _schedule = null)),
-                    if (!editing || isDraft) PrismButton(label: l10n.socSaveDraft, icon: Icons.drafts_outlined, enabled: _valid && !_busy, onPressed: () => _submit(PostStatus.draft)),
+                    if (_schedule != null)
+                      PrismButton(
+                        label: l10n.socPostNow,
+                        density: PrismControlDensity.compact,
+                        onPressed: () => setState(() => _schedule = null),
+                      ),
+                    if (!editing || isDraft)
+                      PrismButton(
+                        label: l10n.socSaveDraft,
+                        icon: Icons.drafts_outlined,
+                        enabled: _valid && !_busy,
+                        onPressed: () => _submit(PostStatus.draft),
+                      ),
                   ],
                 ),
               ],

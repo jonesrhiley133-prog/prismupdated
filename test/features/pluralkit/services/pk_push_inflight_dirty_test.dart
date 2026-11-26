@@ -99,8 +99,10 @@ class _GatedClient implements PluralKitClient {
   }
 
   @override
-  Future<PKSwitch> createSwitch(List<String> memberIds,
-      {DateTime? timestamp}) async {
+  Future<PKSwitch> createSwitch(
+    List<String> memberIds, {
+    DateTime? timestamp,
+  }) async {
     createdSwitches.add(memberIds);
     // PK echoes the new front as SHORT ids.
     final shortIds = [for (final ref in memberIds) uuidToShortId[ref] ?? ref];
@@ -120,7 +122,8 @@ class _GatedClient implements PluralKitClient {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError(
-      'Unused by M9 dirty-flag tests: ${invocation.memberName}');
+    'Unused by M9 dirty-flag tests: ${invocation.memberName}',
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -200,7 +203,10 @@ void main() {
       );
 
       final gate = Completer<void>();
-      final client = _GatedClient(firstFrontersGate: gate, uuidToShortId: const {'uuid-a': 'pkA', 'uuid-b': 'pkB'});
+      final client = _GatedClient(
+        firstFrontersGate: gate,
+        uuidToShortId: const {'uuid-a': 'pkA', 'uuid-b': 'pkB'},
+      );
       final service = await _readyService(
         db: db,
         client: client,
@@ -234,13 +240,19 @@ void main() {
       // Exactly TWO createSwitch calls: the original (A) and ONE follow-up that
       // picked up the trailing change (A,B). Not three (no runaway loop), not
       // one (the trailing change was not dropped).
-      expect(client.createdSwitches, hasLength(2),
-          reason: 'one original push + exactly one follow-up for the trailing '
-              'change (2026-06 PK audit M9)');
+      expect(
+        client.createdSwitches,
+        hasLength(2),
+        reason:
+            'one original push + exactly one follow-up for the trailing '
+            'change (2026-06 PK audit M9)',
+      );
       // The follow-up pushed the LATEST set including B.
-      expect(client.createdSwitches.last.toSet(),
-          {'uuid-a', 'uuid-b'},
-          reason: 'follow-up reflects the trailing state (A,B), uuid-first');
+      expect(
+        client.createdSwitches.last.toSet(),
+        {'uuid-a', 'uuid-b'},
+        reason: 'follow-up reflects the trailing state (A,B), uuid-first',
+      );
     },
   );
 
@@ -274,56 +286,68 @@ void main() {
     await service.pushPendingSwitches();
     await Future<void>.delayed(const Duration(milliseconds: 10));
 
-    expect(client.createdSwitches, hasLength(1),
-        reason: 'no mid-flight trigger → exactly one run, no follow-up');
+    expect(
+      client.createdSwitches,
+      hasLength(1),
+      reason: 'no mid-flight trigger → exactly one run, no follow-up',
+    );
   });
 
-  test('M9: a mid-flight trigger on STABLE state terminates (no infinite loop)',
-      () async {
-    // Here the local state does NOT change between the two triggers. The
-    // follow-up must run at most once and then short-circuit (state already in
-    // sync), never re-trigger itself indefinitely.
-    final db = _makeDb();
-    addTearDown(db.close);
-    final memberRepo = DriftMemberRepository(db.membersDao, null);
-    await memberRepo.createMember(_member('local-a', 'pkA', 'uuid-a'));
-    final sessionRepo = DriftFrontingSessionRepository(
-      db.frontingSessionsDao,
-      null,
-      pkSyncDao: db.pluralKitSyncDao,
-    );
-    await sessionRepo.createSession(
-      domain_fs.FrontingSession(
-        id: 'row-a',
-        startTime: DateTime.utc(2026, 1, 1, 10),
-        memberId: 'local-a',
-      ),
-    );
+  test(
+    'M9: a mid-flight trigger on STABLE state terminates (no infinite loop)',
+    () async {
+      // Here the local state does NOT change between the two triggers. The
+      // follow-up must run at most once and then short-circuit (state already in
+      // sync), never re-trigger itself indefinitely.
+      final db = _makeDb();
+      addTearDown(db.close);
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(_member('local-a', 'pkA', 'uuid-a'));
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: 'row-a',
+          startTime: DateTime.utc(2026, 1, 1, 10),
+          memberId: 'local-a',
+        ),
+      );
 
-    final gate = Completer<void>();
-    final client = _GatedClient(firstFrontersGate: gate, uuidToShortId: const {'uuid-a': 'pkA'});
-    final service = await _readyService(
-      db: db,
-      client: client,
-      memberRepo: memberRepo,
-      sessionRepo: sessionRepo,
-    );
+      final gate = Completer<void>();
+      final client = _GatedClient(
+        firstFrontersGate: gate,
+        uuidToShortId: const {'uuid-a': 'pkA'},
+      );
+      final service = await _readyService(
+        db: db,
+        client: client,
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
 
-    final first = service.pushPendingSwitches();
-    await Future<void>.delayed(Duration.zero);
-    // Second trigger, but NO state change — follow-up will find PK already in
-    // sync after the first push and must not loop.
-    final second = service.pushPendingSwitches();
+      final first = service.pushPendingSwitches();
+      await Future<void>.delayed(Duration.zero);
+      // Second trigger, but NO state change — follow-up will find PK already in
+      // sync after the first push and must not loop.
+      final second = service.pushPendingSwitches();
 
-    gate.complete();
-    await first;
-    await second;
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+      gate.complete();
+      await first;
+      await second;
+      await Future<void>.delayed(const Duration(milliseconds: 20));
 
-    // At most one follow-up; the original created A, the follow-up finds PK
-    // already current and short-circuits (no second createSwitch).
-    expect(client.createdSwitches, hasLength(1),
-        reason: 'stable state → follow-up short-circuits, no second push, no '
-            'infinite loop');
-  });
+      // At most one follow-up; the original created A, the follow-up finds PK
+      // already current and short-circuits (no second createSwitch).
+      expect(
+        client.createdSwitches,
+        hasLength(1),
+        reason:
+            'stable state → follow-up short-circuits, no second push, no '
+            'infinite loop',
+      );
+    },
+  );
 }

@@ -51,7 +51,9 @@ PlacementReading readBody(
 }) {
   final p = planets[body]!;
   final s = signs[sign];
-  final title = es ? '${p.name.es} en ${s.name.es}' : '${p.name.en} in ${s.name.en}';
+  final title = es
+      ? '${p.name.es} en ${s.name.es}'
+      : '${p.name.en} in ${s.name.en}';
   final inSign = es
       ? 'En ${s.name.es}: esta posición se asocia tradicionalmente con ${s.keywords.es}. ${_cap(p.short.es)} tiende a expresarse ${s.style.es}.'
       : 'In ${s.name.en}: this placement is traditionally associated with ${s.keywords.en}. ${_cap(p.short.en)} tends to be expressed ${s.style.en}.';
@@ -84,7 +86,9 @@ PlacementReading readBody(
 PlacementReading readAngle(ChartPoint point, int sign, bool es) {
   final s = signs[sign];
   final asc = point == ChartPoint.ascendant;
-  final name = asc ? (es ? 'Ascendente' : 'Rising') : (es ? 'Medio Cielo' : 'Midheaven');
+  final name = asc
+      ? (es ? 'Ascendente' : 'Rising')
+      : (es ? 'Medio Cielo' : 'Midheaven');
   final title = es ? '$name en ${s.name.es}' : '$name in ${s.name.en}';
   final meaning = asc
       ? (es
@@ -156,15 +160,31 @@ String chartSummary(NatalChart chart, String name, bool es) {
   final moon = chart.moonCertain ? signs[chart.moonSign] : null;
   final rising = chart.risingSign == null ? null : signs[chart.risingSign!];
   if (es) {
-    parts.add('$name tiene el Sol en ${sun.name.es}${moon == null ? '' : ', la Luna en ${moon.name.es}'}${rising == null ? '' : ' y ascendente ${rising.name.es}'}.');
+    parts.add(
+      '$name tiene el Sol en ${sun.name.es}${moon == null ? '' : ', la Luna en ${moon.name.es}'}${rising == null ? '' : ' y ascendente ${rising.name.es}'}.',
+    );
     parts.add('El Sol en ${sun.name.es} se asocia con ${sun.keywords.es}.');
-    if (moon != null) parts.add('La Luna en ${moon.name.es} sugiere necesidades emocionales ligadas a ${moon.keywords.es}.');
-    if (rising != null) parts.add('Con ascendente ${rising.name.es}, la primera impresión suele ser de alguien que actúa ${rising.style.es}.');
+    if (moon != null)
+      parts.add(
+        'La Luna en ${moon.name.es} sugiere necesidades emocionales ligadas a ${moon.keywords.es}.',
+      );
+    if (rising != null)
+      parts.add(
+        'Con ascendente ${rising.name.es}, la primera impresión suele ser de alguien que actúa ${rising.style.es}.',
+      );
   } else {
-    parts.add('$name has the Sun in ${sun.name.en}${moon == null ? '' : ', the Moon in ${moon.name.en}'}${rising == null ? '' : ' and ${rising.name.en} rising'}.');
+    parts.add(
+      '$name has the Sun in ${sun.name.en}${moon == null ? '' : ', the Moon in ${moon.name.en}'}${rising == null ? '' : ' and ${rising.name.en} rising'}.',
+    );
     parts.add('A ${sun.name.en} Sun is associated with ${sun.keywords.en}.');
-    if (moon != null) parts.add('A ${moon.name.en} Moon suggests emotional needs tied to ${moon.keywords.en}.');
-    if (rising != null) parts.add('With ${rising.name.en} rising, first impressions often come across ${rising.style.en}.');
+    if (moon != null)
+      parts.add(
+        'A ${moon.name.en} Moon suggests emotional needs tied to ${moon.keywords.en}.',
+      );
+    if (rising != null)
+      parts.add(
+        'With ${rising.name.en} rising, first impressions often come across ${rising.style.en}.',
+      );
   }
   final bal = balanceOf(chart);
   final de = bal.dominantElement, dm = bal.dominantModality;

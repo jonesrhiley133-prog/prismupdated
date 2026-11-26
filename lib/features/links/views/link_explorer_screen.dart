@@ -46,7 +46,9 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
     final lang = Localizations.localeOf(context).languageCode;
     final catalog = ref.watch(recordCatalogProvider);
     final links = ref.watch(recordLinksProvider);
-    final cats = {for (final c in ref.watch(linkCategoriesProvider(lang))) c.id: c};
+    final cats = {
+      for (final c in ref.watch(linkCategoriesProvider(lang))) c.id: c,
+    };
     final q = _q.text.trim().toLowerCase();
     final visible = <RecordLink>[];
     final nodeIds = <String>{};
@@ -54,22 +56,45 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
       final a = catalog[l.a.key], b = catalog[l.b.key];
       if (a == null || b == null) continue;
       if (_cats.isNotEmpty && !_cats.contains(l.category)) continue;
-      if (_modules.isNotEmpty && !_modules.contains(a.module) && !_modules.contains(b.module)) continue;
+      if (_modules.isNotEmpty &&
+          !_modules.contains(a.module) &&
+          !_modules.contains(b.module))
+        continue;
       visible.add(l);
-      nodeIds..add(a.ref.key)..add(b.ref.key);
+      nodeIds
+        ..add(a.ref.key)
+        ..add(b.ref.key);
     }
     final match = q.isEmpty
         ? <String>{}
-        : {for (final k in nodeIds) if (catalog[k]!.title.toLowerCase().contains(q)) k};
+        : {
+            for (final k in nodeIds)
+              if (catalog[k]!.title.toLowerCase().contains(q)) k,
+          };
     final key = '${_layout.name}|${nodeIds.length}|${visible.length}';
     if (key != _layoutKey) {
       _layoutKey = key;
       final seed = [
-        for (final k in nodeIds) GraphNode(id: k, label: '', position: GraphCanvas.worldCenter, color: Colors.grey),
+        for (final k in nodeIds)
+          GraphNode(
+            id: k,
+            label: '',
+            position: GraphCanvas.worldCenter,
+            color: Colors.grey,
+          ),
       ];
-      final edges = [for (final l in visible) GraphEdge(id: l.id, from: l.a.key, to: l.b.key, color: Colors.grey)];
-      _positions = computeGraphLayout(_layout == GraphLayout.free ? GraphLayout.force : _layout, seed, edges);
-      WidgetsBinding.instance.addPostFrameCallback((_) => _canvas.currentState?.fit());
+      final edges = [
+        for (final l in visible)
+          GraphEdge(id: l.id, from: l.a.key, to: l.b.key, color: Colors.grey),
+      ];
+      _positions = computeGraphLayout(
+        _layout == GraphLayout.free ? GraphLayout.force : _layout,
+        seed,
+        edges,
+      );
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _canvas.currentState?.fit(),
+      );
     }
     final nodes = [
       for (final k in nodeIds)
@@ -84,7 +109,9 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
             color: m.color,
             icon: m.icon,
             size: i.module == 'member' ? 64 : 48,
-            shape: i.module == 'member' ? GraphNodeShape.circle : GraphNodeShape.rounded,
+            shape: i.module == 'member'
+                ? GraphNodeShape.circle
+                : GraphNodeShape.rounded,
           );
         }(),
     ];
@@ -94,7 +121,9 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
           id: l.id,
           from: l.a.key,
           to: l.b.key,
-          color: Color(cats[l.category]?.color ?? 0xFF8C8C8C).withValues(alpha: 0.8),
+          color: Color(
+            cats[l.category]?.color ?? 0xFF8C8C8C,
+          ).withValues(alpha: 0.8),
           label: cats[l.category]?.label,
         ),
     ];
@@ -104,10 +133,13 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
       topBar: PrismTopBar(
         title: tr(context, 'Connections explorer', 'Explorador de conexiones'),
         showBackButton: true,
-        actions: [FeatureDataAction(featureId: 'links'), 
+        actions: [
+          FeatureDataAction(featureId: 'links'),
           PrismTopBarAction(
             icon: _list ? PhosphorIcons.graph() : AppIcons.listView,
-            tooltip: _list ? tr(context, 'Map view', 'Vista de mapa') : tr(context, 'List view', 'Vista de lista'),
+            tooltip: _list
+                ? tr(context, 'Map view', 'Vista de mapa')
+                : tr(context, 'List view', 'Vista de lista'),
             onPressed: () => setState(() => _list = !_list),
           ),
         ],
@@ -119,7 +151,11 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: PrismTextField(
               controller: _q,
-              hintText: tr(context, 'Search connected records', 'Buscar registros conectados'),
+              hintText: tr(
+                context,
+                'Search connected records',
+                'Buscar registros conectados',
+              ),
               prefixIcon: Icon(AppIcons.search),
               onChanged: (_) => setState(() {}),
             ),
@@ -131,14 +167,19 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               children: [
                 for (final m in recordModules)
-                  if (modulesPresent.contains(m.key) || _modules.contains(m.key))
+                  if (modulesPresent.contains(m.key) ||
+                      _modules.contains(m.key))
                     Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: PrismChip(
                         label: m.label(context),
                         selected: _modules.contains(m.key),
                         selectedColor: m.color,
-                        onTap: () => setState(() => _modules.contains(m.key) ? _modules.remove(m.key) : _modules.add(m.key)),
+                        onTap: () => setState(
+                          () => _modules.contains(m.key)
+                              ? _modules.remove(m.key)
+                              : _modules.add(m.key),
+                        ),
                       ),
                     ),
                 for (final c in cats.values)
@@ -149,7 +190,11 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
                       variant: PrismChipVariant.inline,
                       selected: _cats.contains(c.id),
                       selectedColor: Color(c.color),
-                      onTap: () => setState(() => _cats.contains(c.id) ? _cats.remove(c.id) : _cats.add(c.id)),
+                      onTap: () => setState(
+                        () => _cats.contains(c.id)
+                            ? _cats.remove(c.id)
+                            : _cats.add(c.id),
+                      ),
                     ),
                   ),
               ],
@@ -159,7 +204,11 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
             child: visible.isEmpty
                 ? EmptyState(
                     icon: Icon(PhosphorIcons.graph()),
-                    title: tr(context, 'No connections yet', 'Aún no hay conexiones'),
+                    title: tr(
+                      context,
+                      'No connections yet',
+                      'Aún no hay conexiones',
+                    ),
                     subtitle: tr(
                       context,
                       'Open any journal entry, dream, meal, event or alter and tap “Connect” to link records together.',
@@ -167,7 +216,12 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
                     ),
                   )
                 : _list
-                ? _LinkList(links: visible, catalog: catalog, cats: cats, query: q)
+                ? _LinkList(
+                    links: visible,
+                    catalog: catalog,
+                    cats: cats,
+                    query: q,
+                  )
                 : Stack(
                     children: [
                       GraphCanvas(
@@ -182,11 +236,18 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
                             : {
                                 _selected!,
                                 for (final l in visible)
-                                  if (l.a.key == _selected) l.b.key else if (l.b.key == _selected) l.a.key,
+                                  if (l.a.key == _selected)
+                                    l.b.key
+                                  else if (l.b.key == _selected)
+                                    l.a.key,
                               },
-                        onNodeTap: (id) => setState(() => _selected = _selected == id ? null : id),
-                        onNodeMoved: (id, p) => setState(() => _positions[id] = p),
-                        onBackgroundTap: (_) => setState(() => _selected = null),
+                        onNodeTap: (id) => setState(
+                          () => _selected = _selected == id ? null : id,
+                        ),
+                        onNodeMoved: (id, p) =>
+                            setState(() => _positions[id] = p),
+                        onBackgroundTap: (_) =>
+                            setState(() => _selected = null),
                       ),
                       Positioned(
                         right: 12,
@@ -208,17 +269,32 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
                             onTap: () => openRecord(context, ref, selectedInfo),
                             child: Row(
                               children: [
-                                Icon(moduleFor(selectedInfo.module).icon, color: moduleFor(selectedInfo.module).color),
+                                Icon(
+                                  moduleFor(selectedInfo.module).icon,
+                                  color: moduleFor(selectedInfo.module).color,
+                                ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(selectedInfo.isPrivate ? '🔒' : selectedInfo.title, maxLines: 1, overflow: TextOverflow.ellipsis),
                                       Text(
-                                        tr(context, '${ref.read(linksForRecordProvider(selectedInfo.ref.key)).length} connections · tap to open',
-                                            '${ref.read(linksForRecordProvider(selectedInfo.ref.key)).length} conexiones · toca para abrir'),
-                                        style: Theme.of(context).textTheme.labelSmall,
+                                        selectedInfo.isPrivate
+                                            ? '🔒'
+                                            : selectedInfo.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        tr(
+                                          context,
+                                          '${ref.read(linksForRecordProvider(selectedInfo.ref.key)).length} connections · tap to open',
+                                          '${ref.read(linksForRecordProvider(selectedInfo.ref.key)).length} conexiones · toca para abrir',
+                                        ),
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall,
                                       ),
                                     ],
                                   ),
@@ -238,19 +314,36 @@ class _LinkExplorerScreenState extends ConsumerState<LinkExplorerScreen> {
 }
 
 class _CanvasControls extends StatelessWidget {
-  const _CanvasControls({required this.layout, required this.onLayout, required this.onFit, required this.onZoom});
+  const _CanvasControls({
+    required this.layout,
+    required this.onLayout,
+    required this.onFit,
+    required this.onZoom,
+  });
   final GraphLayout layout;
   final ValueChanged<GraphLayout> onLayout;
   final VoidCallback onFit;
   final ValueChanged<double> onZoom;
 
   @override
-  Widget build(BuildContext context) => GraphControls(layout: layout, onLayout: onLayout, onFit: onFit, onZoom: onZoom);
+  Widget build(BuildContext context) => GraphControls(
+    layout: layout,
+    onLayout: onLayout,
+    onFit: onFit,
+    onZoom: onZoom,
+  );
 }
 
 /// Zoom / fit / layout buttons shared by the node maps.
 class GraphControls extends StatelessWidget {
-  const GraphControls({super.key, required this.layout, required this.onLayout, required this.onFit, required this.onZoom, this.includeFree = false});
+  const GraphControls({
+    super.key,
+    required this.layout,
+    required this.onLayout,
+    required this.onFit,
+    required this.onZoom,
+    this.includeFree = false,
+  });
   final GraphLayout layout;
   final ValueChanged<GraphLayout> onLayout;
   final VoidCallback onFit;
@@ -273,9 +366,21 @@ class GraphControls extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(tooltip: tr(context, 'Zoom in', 'Acercar'), icon: Icon(PhosphorIcons.magnifyingGlassPlus()), onPressed: () => onZoom(1.25)),
-          IconButton(tooltip: tr(context, 'Zoom out', 'Alejar'), icon: Icon(PhosphorIcons.magnifyingGlassMinus()), onPressed: () => onZoom(0.8)),
-          IconButton(tooltip: tr(context, 'Fit to screen', 'Ajustar'), icon: Icon(PhosphorIcons.cornersOut()), onPressed: onFit),
+          IconButton(
+            tooltip: tr(context, 'Zoom in', 'Acercar'),
+            icon: Icon(PhosphorIcons.magnifyingGlassPlus()),
+            onPressed: () => onZoom(1.25),
+          ),
+          IconButton(
+            tooltip: tr(context, 'Zoom out', 'Alejar'),
+            icon: Icon(PhosphorIcons.magnifyingGlassMinus()),
+            onPressed: () => onZoom(0.8),
+          ),
+          IconButton(
+            tooltip: tr(context, 'Fit to screen', 'Ajustar'),
+            icon: Icon(PhosphorIcons.cornersOut()),
+            onPressed: onFit,
+          ),
           PrismPopupMenu<GraphLayout>(
             tooltip: tr(context, 'Layout', 'Diseño'),
             icon: PhosphorIcons.shapes(),
@@ -283,7 +388,11 @@ class GraphControls extends StatelessWidget {
             items: [
               for (final l in GraphLayout.values)
                 if (includeFree || l != GraphLayout.free)
-                  PrismMenuItem(value: l, label: label(context, l), icon: l == layout ? AppIcons.check : PhosphorIcons.circle()),
+                  PrismMenuItem(
+                    value: l,
+                    label: label(context, l),
+                    icon: l == layout ? AppIcons.check : PhosphorIcons.circle(),
+                  ),
             ],
           ),
         ],
@@ -293,7 +402,12 @@ class GraphControls extends StatelessWidget {
 }
 
 class _LinkList extends ConsumerWidget {
-  const _LinkList({required this.links, required this.catalog, required this.cats, required this.query});
+  const _LinkList({
+    required this.links,
+    required this.catalog,
+    required this.cats,
+    required this.query,
+  });
   final List<RecordLink> links;
   final Map<String, RecordInfo> catalog;
   final Map<String, LinkCategory> cats;
@@ -319,9 +433,19 @@ class _LinkList extends ConsumerWidget {
             onTap: () => openRecord(context, ref, x),
             child: Row(
               children: [
-                Icon(moduleFor(x.module).icon, size: 16, color: moduleFor(x.module).color),
+                Icon(
+                  moduleFor(x.module).icon,
+                  size: 16,
+                  color: moduleFor(x.module).color,
+                ),
                 const SizedBox(width: 6),
-                Expanded(child: Text(x.isPrivate ? '🔒' : x.title, maxLines: 2, overflow: TextOverflow.ellipsis)),
+                Expanded(
+                  child: Text(
+                    x.isPrivate ? '🔒' : x.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),
@@ -332,10 +456,22 @@ class _LinkList extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [end(a), Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Icon(PhosphorIcons.arrowsLeftRight(), size: 16)), end(b)]),
+              Row(
+                children: [
+                  end(a),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(PhosphorIcons.arrowsLeftRight(), size: 16),
+                  ),
+                  end(b),
+                ],
+              ),
               const SizedBox(height: 4),
               Text(
-                [cats[l.category]?.label ?? l.category, if (l.note != null) l.note!].join(' · '),
+                [
+                  cats[l.category]?.label ?? l.category,
+                  if (l.note != null) l.note!,
+                ].join(' · '),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
             ],

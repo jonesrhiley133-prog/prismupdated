@@ -6,7 +6,12 @@ import 'package:flutter/services.dart';
 /// A widget the user has placed on their home screen.
 @immutable
 class PlacedWidget {
-  const PlacedWidget({required this.id, required this.type, this.minWidth = 0, this.maxHeight = 0});
+  const PlacedWidget({
+    required this.id,
+    required this.type,
+    this.minWidth = 0,
+    this.maxHeight = 0,
+  });
 
   final int id;
   final String type;
@@ -26,8 +31,11 @@ typedef WidgetActionHandler = Future<void> Function(int id, String action);
 /// Bridge to the native AppWidget layer (Android only).
 class HomeWidgetPlatform {
   HomeWidgetPlatform({MethodChannel? channel, bool? supported})
-    : _channel = channel ?? const MethodChannel('com.prismplural.prism/widgets'),
-      isSupported = supported ?? (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
+    : _channel =
+          channel ?? const MethodChannel('com.prismplural.prism/widgets'),
+      isSupported =
+          supported ??
+          (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
 
   final MethodChannel _channel;
   final bool isSupported;
@@ -60,7 +68,9 @@ class HomeWidgetPlatform {
   Future<void> updateWidgets(Map<int, Map<String, Object?>> models) async {
     if (models.isEmpty) return;
     await _call<bool>('updateWidgets', {
-      'models': {for (final e in models.entries) '${e.key}': jsonEncode(e.value)},
+      'models': {
+        for (final e in models.entries) '${e.key}': jsonEncode(e.value),
+      },
     });
   }
 
@@ -73,7 +83,11 @@ class HomeWidgetPlatform {
       return [
         if (v is List)
           for (final x in v)
-            if (x is Map && x['action'] is String) (id: x['id'] is int ? x['id'] as int : -1, action: x['action'] as String),
+            if (x is Map && x['action'] is String)
+              (
+                id: x['id'] is int ? x['id'] as int : -1,
+                action: x['action'] as String,
+              ),
       ];
     } on FormatException {
       return const [];
@@ -83,13 +97,17 @@ class HomeWidgetPlatform {
   Future<({int id, String action})?> takePendingOpen() async {
     final raw = await _call<Map<Object?, Object?>>('takePendingOpen');
     if (raw == null || raw['action'] is! String) return null;
-    return (id: raw['id'] is int ? raw['id'] as int : -1, action: raw['action'] as String);
+    return (
+      id: raw['id'] is int ? raw['id'] as int : -1,
+      action: raw['action'] as String,
+    );
   }
 
   Future<bool> canPin() async => await _call<bool>('canPin') ?? false;
 
   /// Asks the launcher to add a widget (One UI shows its own confirmation).
-  Future<bool> pin(String type) async => await _call<bool>('pin', {'type': type}) ?? false;
+  Future<bool> pin(String type) async =>
+      await _call<bool>('pin', {'type': type}) ?? false;
 
   void setHandlers({
     required VoidCallback onWidgetsChanged,
@@ -100,7 +118,9 @@ class HomeWidgetPlatform {
     _channel.setMethodCallHandler((call) async {
       final args = call.arguments;
       final id = args is Map && args['id'] is int ? args['id'] as int : -1;
-      final action = args is Map && args['action'] is String ? args['action'] as String : '';
+      final action = args is Map && args['action'] is String
+          ? args['action'] as String
+          : '';
       switch (call.method) {
         case 'widgetsChanged':
           onWidgetsChanged();

@@ -1114,7 +1114,8 @@ class PluralKitSyncService {
   /// success (and check the write result), and on ANY validation failure (401
   /// or transport) leave the stored token and DB connection state untouched.
   Future<void> setToken(String token) async {
-    if (DemoMode.active) throw StateError('PluralKit is not available in Demo Mode');
+    if (DemoMode.active)
+      throw StateError('PluralKit is not available in Demo Mode');
     final trimmed = token.trim();
     debugPrint('[PK_SVC] setToken: trimmed length=${trimmed.length}');
     if (trimmed.isEmpty) {

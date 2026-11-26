@@ -365,10 +365,7 @@ double _eccentric(double m, double e) {
   }
   // Heliocentric → geocentric: add the Earth→Sun vector.
   final gx = hx + sun.x, gy = hy + sun.y, gz = hz;
-  return (
-    norm360(_atan2d(gy, gx)),
-    _atan2d(gz, math.sqrt(gx * gx + gy * gy)),
-  );
+  return (norm360(_atan2d(gy, gx)), _atan2d(gz, math.sqrt(gx * gx + gy * gy)));
 }
 
 /// Position of [body] at [utc], with daily motion.
@@ -395,8 +392,7 @@ double moonElongation(DateTime utc) =>
     norm360(longitudeOf(Body.moon, utc) - longitudeOf(Body.sun, utc));
 
 /// Fraction of the Moon's disc lit, 0–1.
-double moonIllumination(DateTime utc) =>
-    (1 - _cos(moonElongation(utc))) / 2;
+double moonIllumination(DateTime utc) => (1 - _cos(moonElongation(utc))) / 2;
 
 // ---------------------------------------------------------------------------
 // Angles and houses

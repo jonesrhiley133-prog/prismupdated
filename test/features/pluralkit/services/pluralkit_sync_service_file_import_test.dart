@@ -201,36 +201,46 @@ void main() {
     String name, {
     String? pluralkitUuid,
     bool ignored = false,
-  }) =>
-      memberRepo.createMember(
-        domain.Member(
-          id: id,
-          name: name,
-          createdAt: DateTime.utc(2026, 1, 1),
-          pluralkitUuid: pluralkitUuid,
-          pluralkitSyncIgnored: ignored,
-        ),
+  }) => memberRepo.createMember(
+    domain.Member(
+      id: id,
+      name: name,
+      createdAt: DateTime.utc(2026, 1, 1),
+      pluralkitUuid: pluralkitUuid,
+      pluralkitSyncIgnored: ignored,
+    ),
+  );
+
+  test(
+    'I1: links an unlinked same-name local instead of duplicating it',
+    () async {
+      await seedLocal(
+        'local-alice',
+        'Alice',
+      ); // e.g. from an SP import, no PK link
+
+      const export = PkFileExport(
+        system: PKSystem(id: 'sys1'),
+        members: [PKMember(id: 'aaaaa', uuid: 'u-alice', name: 'Alice')],
+        groups: [],
+        switches: [],
       );
+      await makeService().importFromFile(export);
 
-  test('I1: links an unlinked same-name local instead of duplicating it',
-      () async {
-    await seedLocal('local-alice', 'Alice'); // e.g. from an SP import, no PK link
-
-    const export = PkFileExport(
-      system: PKSystem(id: 'sys1'),
-      members: [PKMember(id: 'aaaaa', uuid: 'u-alice', name: 'Alice')],
-      groups: [],
-      switches: [],
-    );
-    await makeService().importFromFile(export);
-
-    final members = await db.membersDao.getAllMembers();
-    expect(members, hasLength(1), reason: 'I1: no duplicate Alice created');
-    expect(members.single.id, 'local-alice',
-        reason: 'adopted the existing local row, not a fresh uuid');
-    expect(members.single.pluralkitUuid, 'u-alice',
-        reason: 'the local is now linked to the PK identity');
-  });
+      final members = await db.membersDao.getAllMembers();
+      expect(members, hasLength(1), reason: 'I1: no duplicate Alice created');
+      expect(
+        members.single.id,
+        'local-alice',
+        reason: 'adopted the existing local row, not a fresh uuid',
+      );
+      expect(
+        members.single.pluralkitUuid,
+        'u-alice',
+        reason: 'the local is now linked to the PK identity',
+      );
+    },
+  );
 
   test('I1: matches case-insensitively when the exact case differs', () async {
     await seedLocal('local-sam', 'sam');
@@ -249,69 +259,90 @@ void main() {
     expect(members.single.pluralkitUuid, 'u-sam');
   });
 
-  test('I1: an AMBIGUOUS same-name match is not auto-adopted — creates fresh',
-      () async {
-    await seedLocal('alex-1', 'Alex');
-    await seedLocal('alex-2', 'Alex');
+  test(
+    'I1: an AMBIGUOUS same-name match is not auto-adopted — creates fresh',
+    () async {
+      await seedLocal('alex-1', 'Alex');
+      await seedLocal('alex-2', 'Alex');
 
-    const export = PkFileExport(
-      system: PKSystem(id: 'sys1'),
-      members: [PKMember(id: 'aaaaa', uuid: 'u-alex', name: 'Alex')],
-      groups: [],
-      switches: [],
-    );
-    await makeService().importFromFile(export);
+      const export = PkFileExport(
+        system: PKSystem(id: 'sys1'),
+        members: [PKMember(id: 'aaaaa', uuid: 'u-alex', name: 'Alex')],
+        groups: [],
+        switches: [],
+      );
+      await makeService().importFromFile(export);
 
-    final members = await db.membersDao.getAllMembers();
-    expect(members, hasLength(3),
-        reason: 'ambiguous → no guess; the PK member is a NEW row');
-    final linked = members.where((m) => m.pluralkitUuid == 'u-alex').toList();
-    expect(linked, hasLength(1));
-    expect(const ['alex-1', 'alex-2'], isNot(contains(linked.single.id)),
-        reason: 'neither existing Alex was arbitrarily linked');
-  });
-
-  test('I1: does not adopt a same-name local already linked to another PK id',
-      () async {
-    await seedLocal('linked-bob', 'Bob', pluralkitUuid: 'u-other');
-
-    const export = PkFileExport(
-      system: PKSystem(id: 'sys1'),
-      members: [PKMember(id: 'bbbbb', uuid: 'u-bob', name: 'Bob')],
-      groups: [],
-      switches: [],
-    );
-    await makeService().importFromFile(export);
-
-    final members = await db.membersDao.getAllMembers();
-    expect(members, hasLength(2),
-        reason: 'the PK-linked local is off-limits; PK Bob is a new row');
-    expect(members.firstWhere((m) => m.id == 'linked-bob').pluralkitUuid,
-        'u-other');
-    expect(members.where((m) => m.pluralkitUuid == 'u-bob'), hasLength(1));
-  });
-
-  test('I1: does not adopt a same-name local the user marked keep-local',
-      () async {
-    await seedLocal('ignored-cleo', 'Cleo', ignored: true);
-
-    const export = PkFileExport(
-      system: PKSystem(id: 'sys1'),
-      members: [PKMember(id: 'ccccc', uuid: 'u-cleo', name: 'Cleo')],
-      groups: [],
-      switches: [],
-    );
-    await makeService().importFromFile(export);
-
-    final members = await db.membersDao.getAllMembers();
-    expect(members, hasLength(2),
-        reason: 'a keep-local (ignored) member must not be silently re-linked');
-    expect(members.firstWhere((m) => m.id == 'ignored-cleo').pluralkitUuid,
-        isNull);
-  });
+      final members = await db.membersDao.getAllMembers();
+      expect(
+        members,
+        hasLength(3),
+        reason: 'ambiguous → no guess; the PK member is a NEW row',
+      );
+      final linked = members.where((m) => m.pluralkitUuid == 'u-alex').toList();
+      expect(linked, hasLength(1));
+      expect(
+        const ['alex-1', 'alex-2'],
+        isNot(contains(linked.single.id)),
+        reason: 'neither existing Alex was arbitrarily linked',
+      );
+    },
+  );
 
   test(
-      'F5: two same-name STALE-lease locals each adopt their own orphan '
+    'I1: does not adopt a same-name local already linked to another PK id',
+    () async {
+      await seedLocal('linked-bob', 'Bob', pluralkitUuid: 'u-other');
+
+      const export = PkFileExport(
+        system: PKSystem(id: 'sys1'),
+        members: [PKMember(id: 'bbbbb', uuid: 'u-bob', name: 'Bob')],
+        groups: [],
+        switches: [],
+      );
+      await makeService().importFromFile(export);
+
+      final members = await db.membersDao.getAllMembers();
+      expect(
+        members,
+        hasLength(2),
+        reason: 'the PK-linked local is off-limits; PK Bob is a new row',
+      );
+      expect(
+        members.firstWhere((m) => m.id == 'linked-bob').pluralkitUuid,
+        'u-other',
+      );
+      expect(members.where((m) => m.pluralkitUuid == 'u-bob'), hasLength(1));
+    },
+  );
+
+  test(
+    'I1: does not adopt a same-name local the user marked keep-local',
+    () async {
+      await seedLocal('ignored-cleo', 'Cleo', ignored: true);
+
+      const export = PkFileExport(
+        system: PKSystem(id: 'sys1'),
+        members: [PKMember(id: 'ccccc', uuid: 'u-cleo', name: 'Cleo')],
+        groups: [],
+        switches: [],
+      );
+      await makeService().importFromFile(export);
+
+      final members = await db.membersDao.getAllMembers();
+      expect(
+        members,
+        hasLength(2),
+        reason: 'a keep-local (ignored) member must not be silently re-linked',
+      );
+      expect(
+        members.firstWhere((m) => m.id == 'ignored-cleo').pluralkitUuid,
+        isNull,
+      );
+    },
+  );
+
+  test('F5: two same-name STALE-lease locals each adopt their own orphan '
       '(no last-write-wins duplicate)', () async {
     // Two interrupted create attempts for same-named members: both carry a
     // stale create lease (2026-01-01 is far older than the 10-min takeover).
@@ -343,16 +374,23 @@ void main() {
     final alexes = (await db.membersDao.getAllMembers())
         .where((m) => m.name == 'Alex')
         .toList();
-    expect(alexes, hasLength(2),
-        reason: 'F5: both locals adopted — no stranded duplicate minted');
-    expect(alexes.map((m) => m.id).toSet(), {'local-alex-1', 'local-alex-2'},
-        reason: 'the two pre-existing locals were adopted, not new rows');
-    expect(alexes.map((m) => m.pluralkitUuid).toSet(),
-        {'pk-alex-1', 'pk-alex-2'});
+    expect(
+      alexes,
+      hasLength(2),
+      reason: 'F5: both locals adopted — no stranded duplicate minted',
+    );
+    expect(
+      alexes.map((m) => m.id).toSet(),
+      {'local-alex-1', 'local-alex-2'},
+      reason: 'the two pre-existing locals were adopted, not new rows',
+    );
+    expect(alexes.map((m) => m.pluralkitUuid).toSet(), {
+      'pk-alex-1',
+      'pk-alex-2',
+    });
   });
 
-  test(
-      'F5: an all-fresh same-name pool still lets a DISTINCT second PK member '
+  test('F5: an all-fresh same-name pool still lets a DISTINCT second PK member '
       'be created (fresh candidate consumed on skip)', () async {
     // One local "Alex" with a FRESH lease (a peer is mid-POST). Two DISTINCT PK
     // "Alex" arrive: the first matches+skips (the peer's in-flight create), the
@@ -382,9 +420,13 @@ void main() {
     final alexes = (await db.membersDao.getAllMembers())
         .where((m) => m.name == 'Alex')
         .toList();
-    expect(alexes, hasLength(2),
-        reason: 'the fresh local is skipped (claimed by the peer) but the '
-            'distinct second PK Alex is still created');
+    expect(
+      alexes,
+      hasLength(2),
+      reason:
+          'the fresh local is skipped (claimed by the peer) but the '
+          'distinct second PK Alex is still created',
+    );
     expect(alexes.where((m) => m.pluralkitUuid == 'pk-alex-2'), hasLength(1));
   });
 }

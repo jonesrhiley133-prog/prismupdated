@@ -115,9 +115,10 @@ class _CountingClient implements PluralKitClient {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnimplementedError('Unused by mass-deletion breaker tests: '
-          '${invocation.memberName}');
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError(
+    'Unused by mass-deletion breaker tests: '
+    '${invocation.memberName}',
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -243,59 +244,59 @@ void main() {
   });
 
   group('mass-deletion breaker (member deletions)', () {
-    test(
-      'over-threshold candidates on an AUTOMATIC sync → zero PK deletes + '
-      'PkMassDeletionBlocked emitted',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('over-threshold candidates on an AUTOMATIC sync → zero PK deletes + '
+        'PkMassDeletionBlocked emitted', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(
-          db.membersDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
-        // One above the threshold.
-        await _seedDeletedLinkedMembers(
-          memberRepo,
-          kPkMassDeletionAutoThreshold + 1,
-        );
+      final memberRepo = DriftMemberRepository(
+        db.membersDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
+      // One above the threshold.
+      await _seedDeletedLinkedMembers(
+        memberRepo,
+        kPkMassDeletionAutoThreshold + 1,
+      );
 
-        final client = _CountingClient();
-        final (:service, :events) = _serviceWithCapture(
-          db: db,
-          client: client,
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
+      final client = _CountingClient();
+      final (:service, :events) = _serviceWithCapture(
+        db: db,
+        client: client,
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
 
-        final staleMessages = <String>[];
-        final deleted = await service.debugPushPendingMemberDeletions(
-          client: client,
-          onStaleLink: staleMessages.add,
-          allowMassDeletion: false, // unattended/automatic
-        );
+      final staleMessages = <String>[];
+      final deleted = await service.debugPushPendingMemberDeletions(
+        client: client,
+        onStaleLink: staleMessages.add,
+        allowMassDeletion: false, // unattended/automatic
+      );
 
-        expect(deleted, 0, reason: 'breaker bails before any delete');
-        expect(client.deletedMembers, isEmpty,
-            reason: 'no PK DELETE may fire on an over-threshold auto batch');
-        expect(staleMessages, isNotEmpty,
-            reason: 'the user is told via the stale-link channel');
-        final blocked = events.whereType<PkMassDeletionBlocked>().toList();
-        expect(blocked, hasLength(1));
-        expect(blocked.single.kind, 'members');
-        expect(blocked.single.threshold, kPkMassDeletionAutoThreshold);
-        expect(
-          blocked.single.candidateCount,
-          kPkMassDeletionAutoThreshold + 1,
-        );
-      },
-    );
+      expect(deleted, 0, reason: 'breaker bails before any delete');
+      expect(
+        client.deletedMembers,
+        isEmpty,
+        reason: 'no PK DELETE may fire on an over-threshold auto batch',
+      );
+      expect(
+        staleMessages,
+        isNotEmpty,
+        reason: 'the user is told via the stale-link channel',
+      );
+      final blocked = events.whereType<PkMassDeletionBlocked>().toList();
+      expect(blocked, hasLength(1));
+      expect(blocked.single.kind, 'members');
+      expect(blocked.single.threshold, kPkMassDeletionAutoThreshold);
+      expect(blocked.single.candidateCount, kPkMassDeletionAutoThreshold + 1);
+    });
 
     test(
       'at-or-below threshold on an AUTOMATIC sync → normal deletion proceeds',
@@ -314,7 +315,10 @@ void main() {
           pkSyncDao: db.pluralKitSyncDao,
         );
         // Exactly at the threshold → still allowed (breaker is strict `>`).
-        await _seedDeletedLinkedMembers(memberRepo, kPkMassDeletionAutoThreshold);
+        await _seedDeletedLinkedMembers(
+          memberRepo,
+          kPkMassDeletionAutoThreshold,
+        );
 
         final client = _CountingClient();
         final (:service, :events) = _serviceWithCapture(
@@ -329,8 +333,11 @@ void main() {
           allowMassDeletion: false,
         );
 
-        expect(deleted, kPkMassDeletionAutoThreshold,
-            reason: 'a batch at the threshold deletes normally');
+        expect(
+          deleted,
+          kPkMassDeletionAutoThreshold,
+          reason: 'a batch at the threshold deletes normally',
+        );
         expect(client.deletedMembers, hasLength(kPkMassDeletionAutoThreshold));
         expect(events.whereType<PkMassDeletionBlocked>(), isEmpty);
       },
@@ -372,8 +379,11 @@ void main() {
           allowMassDeletion: true,
         );
 
-        expect(deleted, kPkMassDeletionAutoThreshold + 5,
-            reason: 'confirmed manual destructive push deletes the whole batch');
+        expect(
+          deleted,
+          kPkMassDeletionAutoThreshold + 5,
+          reason: 'confirmed manual destructive push deletes the whole batch',
+        );
         expect(
           client.deletedMembers,
           hasLength(kPkMassDeletionAutoThreshold + 5),
@@ -384,64 +394,64 @@ void main() {
   });
 
   group('mass-deletion breaker (switch deletions)', () {
-    test(
-      'over-threshold candidates on an AUTOMATIC sync → zero PK calls + '
-      'PkMassDeletionBlocked(kind: switches) emitted',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('over-threshold candidates on an AUTOMATIC sync → zero PK calls + '
+        'PkMassDeletionBlocked(kind: switches) emitted', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(
-          db.membersDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
-        final client = _CountingClient();
-        // One above the threshold.
-        await _seedDeletedLinkedSessions(
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-          client: client,
-          count: kPkMassDeletionAutoThreshold + 1,
-        );
+      final memberRepo = DriftMemberRepository(
+        db.membersDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
+      final client = _CountingClient();
+      // One above the threshold.
+      await _seedDeletedLinkedSessions(
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+        client: client,
+        count: kPkMassDeletionAutoThreshold + 1,
+      );
 
-        final (:service, :events) = _serviceWithCapture(
-          db: db,
-          client: client,
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
+      final (:service, :events) = _serviceWithCapture(
+        db: db,
+        client: client,
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
 
-        final staleMessages = <String>[];
-        final deleted = await service.debugPushPendingSwitchDeletions(
-          client: client,
-          onStaleLink: staleMessages.add,
-          allowMassDeletion: false, // unattended/automatic
-        );
+      final staleMessages = <String>[];
+      final deleted = await service.debugPushPendingSwitchDeletions(
+        client: client,
+        onStaleLink: staleMessages.add,
+        allowMassDeletion: false, // unattended/automatic
+      );
 
-        expect(deleted, 0, reason: 'breaker bails before any PK mutation');
-        // ZERO PK calls of any kind — not even the pre-deletion snapshot GET.
-        expect(client.deletedSwitches, isEmpty);
-        expect(client.patchedSwitches, isEmpty);
-        expect(client.getSwitchCalls, isEmpty,
-            reason: 'the breaker fires before the per-candidate loop');
-        expect(staleMessages, isNotEmpty,
-            reason: 'the user is told via the stale-link channel');
-        final blocked = events.whereType<PkMassDeletionBlocked>().toList();
-        expect(blocked, hasLength(1));
-        expect(blocked.single.kind, 'switches');
-        expect(blocked.single.threshold, kPkMassDeletionAutoThreshold);
-        expect(
-          blocked.single.candidateCount,
-          kPkMassDeletionAutoThreshold + 1,
-        );
-      },
-    );
+      expect(deleted, 0, reason: 'breaker bails before any PK mutation');
+      // ZERO PK calls of any kind — not even the pre-deletion snapshot GET.
+      expect(client.deletedSwitches, isEmpty);
+      expect(client.patchedSwitches, isEmpty);
+      expect(
+        client.getSwitchCalls,
+        isEmpty,
+        reason: 'the breaker fires before the per-candidate loop',
+      );
+      expect(
+        staleMessages,
+        isNotEmpty,
+        reason: 'the user is told via the stale-link channel',
+      );
+      final blocked = events.whereType<PkMassDeletionBlocked>().toList();
+      expect(blocked, hasLength(1));
+      expect(blocked.single.kind, 'switches');
+      expect(blocked.single.threshold, kPkMassDeletionAutoThreshold);
+      expect(blocked.single.candidateCount, kPkMassDeletionAutoThreshold + 1);
+    });
 
     test(
       'at-or-below threshold on an AUTOMATIC sync → normal deletion proceeds',
@@ -480,13 +490,14 @@ void main() {
           allowMassDeletion: false,
         );
 
-        expect(deleted, kPkMassDeletionAutoThreshold,
-            reason: 'a batch at the threshold deletes normally (sole-fronter '
-                'snapshots → H2 DELETE branch)');
         expect(
-          client.deletedSwitches,
-          hasLength(kPkMassDeletionAutoThreshold),
+          deleted,
+          kPkMassDeletionAutoThreshold,
+          reason:
+              'a batch at the threshold deletes normally (sole-fronter '
+              'snapshots → H2 DELETE branch)',
         );
+        expect(client.deletedSwitches, hasLength(kPkMassDeletionAutoThreshold));
         expect(events.whereType<PkMassDeletionBlocked>(), isEmpty);
       },
     );

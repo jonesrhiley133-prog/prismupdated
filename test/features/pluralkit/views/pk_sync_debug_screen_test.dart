@@ -102,11 +102,7 @@ void main() {
         mode: 'fullSync',
       ),
       const PkTokenAuthFailed(),
-      const PkSyncCompleted(
-        durationMs: 123,
-        pulled: 2,
-        pushed: 0,
-      ),
+      const PkSyncCompleted(durationMs: 123, pulled: 2, pushed: 0),
     ];
 
     testWidgets('renders 3 tiles with localized "3 events" subtitle', (
@@ -118,37 +114,27 @@ void main() {
       expect(find.text('3 events'), findsOneWidget);
 
       // One tile per event.
-      expect(
-        find.textContaining('Sync started'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('PluralKit token rejected (auth)'),
-        findsOneWidget,
-      );
-      expect(
-        find.textContaining('Sync completed'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Sync started'), findsOneWidget);
+      expect(find.text('PluralKit token rejected (auth)'), findsOneWidget);
+      expect(find.textContaining('Sync completed'), findsOneWidget);
     });
 
-    testWidgets(
-      'error tile shows error-color icon; non-error tiles do not',
-      (tester) async {
-        await _pumpScreen(tester, events: events);
+    testWidgets('error tile shows error-color icon; non-error tiles do not', (
+      tester,
+    ) async {
+      await _pumpScreen(tester, events: events);
 
-        // Newest-first ordering — the third emitted event (Sync completed) is
-        // at the top, the auth-failed error is in the middle, the sync-started
-        // is at the bottom.
-        final errorIcons = find.byIcon(AppIcons.errorOutline);
-        // Only the auth-failed tile renders the error icon.
-        expect(errorIcons, findsOneWidget);
+      // Newest-first ordering — the third emitted event (Sync completed) is
+      // at the top, the auth-failed error is in the middle, the sync-started
+      // is at the bottom.
+      final errorIcons = find.byIcon(AppIcons.errorOutline);
+      // Only the auth-failed tile renders the error icon.
+      expect(errorIcons, findsOneWidget);
 
-        final BuildContext ctx = tester.element(errorIcons.first);
-        final Icon icon = tester.widget(errorIcons.first);
-        expect(icon.color, Theme.of(ctx).colorScheme.error);
-      },
-    );
+      final BuildContext ctx = tester.element(errorIcons.first);
+      final Icon icon = tester.widget(errorIcons.first);
+      expect(icon.color, Theme.of(ctx).colorScheme.error);
+    });
 
     testWidgets('tapping a tile expands the JSON drawer', (tester) async {
       await _pumpScreen(tester, events: events);
@@ -174,18 +160,16 @@ void main() {
 
       // Capture the clipboard data set by the copy action.
       String? clipboardText;
-      TestDefaultBinaryMessengerBinding
-          .instance.defaultBinaryMessenger
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (call) async {
-        if (call.method == 'Clipboard.setData') {
-          final args = call.arguments as Map<dynamic, dynamic>;
-          clipboardText = args['text'] as String?;
-        }
-        return null;
-      });
+            if (call.method == 'Clipboard.setData') {
+              final args = call.arguments as Map<dynamic, dynamic>;
+              clipboardText = args['text'] as String?;
+            }
+            return null;
+          });
       addTearDown(() {
-        TestDefaultBinaryMessengerBinding
-            .instance.defaultBinaryMessenger
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(SystemChannels.platform, null);
       });
 
@@ -217,18 +201,16 @@ void main() {
 
     testWidgets('tap copy with empty log is a no-op', (tester) async {
       String? clipboardText;
-      TestDefaultBinaryMessengerBinding
-          .instance.defaultBinaryMessenger
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (call) async {
-        if (call.method == 'Clipboard.setData') {
-          final args = call.arguments as Map<dynamic, dynamic>;
-          clipboardText = args['text'] as String?;
-        }
-        return null;
-      });
+            if (call.method == 'Clipboard.setData') {
+              final args = call.arguments as Map<dynamic, dynamic>;
+              clipboardText = args['text'] as String?;
+            }
+            return null;
+          });
       addTearDown(() {
-        TestDefaultBinaryMessengerBinding
-            .instance.defaultBinaryMessenger
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(SystemChannels.platform, null);
       });
 

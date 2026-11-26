@@ -5,9 +5,7 @@ import 'package:prism_plurality/features/chat/widgets/chat_markdown_editing_cont
 void main() {
   Widget buildApp(ChatMarkdownEditingController controller) {
     return MaterialApp(
-      home: Scaffold(
-        body: TextField(controller: controller),
-      ),
+      home: Scaffold(body: TextField(controller: controller)),
     );
   }
 
@@ -40,8 +38,7 @@ void main() {
     });
 
     testWidgets('plain text around spoiler renders 5 spans', (tester) async {
-      final controller =
-          ChatMarkdownEditingController(text: 'say ||hi|| ok');
+      final controller = ChatMarkdownEditingController(text: 'say ||hi|| ok');
       final children = await getSpanChildren(tester, controller);
 
       expect(children, isNotNull);
@@ -81,8 +78,9 @@ void main() {
       expect(content.style!.color, isNot(openMarker.style!.color));
     });
 
-    testWidgets('caching: same text returns identical children list',
-        (tester) async {
+    testWidgets('caching: same text returns identical children list', (
+      tester,
+    ) async {
       final controller = ChatMarkdownEditingController(text: '||secret||');
       await tester.pumpWidget(buildApp(controller));
       final context = tester.element(find.byType(TextField));
@@ -131,37 +129,40 @@ void main() {
     });
 
     testWidgets(
-        '**||hidden||** renders as dimmed bold markers wrapping tinted spoiler '
-        '(bold does NOT apply — matches Discord)', (tester) async {
-      final controller =
-          ChatMarkdownEditingController(text: '**||hidden||**');
-      final children = await getSpanChildren(tester, controller);
+      '**||hidden||** renders as dimmed bold markers wrapping tinted spoiler '
+      '(bold does NOT apply — matches Discord)',
+      (tester) async {
+        final controller = ChatMarkdownEditingController(
+          text: '**||hidden||**',
+        );
+        final children = await getSpanChildren(tester, controller);
 
-      expect(children, isNotNull);
-      // Expected layout:
-      //   [0] '**'     (plain baseStyle — bold skipped because inner
-      //                 spoiler was already matched)
-      //   [1] '||'     (dimmed spoiler marker)
-      //   [2] 'hidden' (tinted spoiler content, NOT bold)
-      //   [3] '||'     (dimmed spoiler marker)
-      //   [4] '**'     (plain baseStyle)
-      expect(children!.length, 5);
-      expect((children[0] as TextSpan).text, '**');
-      expect((children[1] as TextSpan).text, '||');
-      expect((children[2] as TextSpan).text, 'hidden');
-      expect((children[3] as TextSpan).text, '||');
-      expect((children[4] as TextSpan).text, '**');
+        expect(children, isNotNull);
+        // Expected layout:
+        //   [0] '**'     (plain baseStyle — bold skipped because inner
+        //                 spoiler was already matched)
+        //   [1] '||'     (dimmed spoiler marker)
+        //   [2] 'hidden' (tinted spoiler content, NOT bold)
+        //   [3] '||'     (dimmed spoiler marker)
+        //   [4] '**'     (plain baseStyle)
+        expect(children!.length, 5);
+        expect((children[0] as TextSpan).text, '**');
+        expect((children[1] as TextSpan).text, '||');
+        expect((children[2] as TextSpan).text, 'hidden');
+        expect((children[3] as TextSpan).text, '||');
+        expect((children[4] as TextSpan).text, '**');
 
-      // Content is spoiler-tinted, not bold.
-      final content = children[2] as TextSpan;
-      expect(content.style!.backgroundColor, isNotNull);
-      expect(content.style!.fontWeight, isNot(FontWeight.bold));
+        // Content is spoiler-tinted, not bold.
+        final content = children[2] as TextSpan;
+        expect(content.style!.backgroundColor, isNotNull);
+        expect(content.style!.fontWeight, isNot(FontWeight.bold));
 
-      // Outer '**' runs are plain text (no marker dimming, no bold styling).
-      final outerOpen = children[0] as TextSpan;
-      final outerClose = children[4] as TextSpan;
-      expect(outerOpen.style!.fontWeight, isNot(FontWeight.bold));
-      expect(outerClose.style!.fontWeight, isNot(FontWeight.bold));
-    });
+        // Outer '**' runs are plain text (no marker dimming, no bold styling).
+        final outerOpen = children[0] as TextSpan;
+        final outerClose = children[4] as TextSpan;
+        expect(outerOpen.style!.fontWeight, isNot(FontWeight.bold));
+        expect(outerClose.style!.fontWeight, isNot(FontWeight.bold));
+      },
+    );
   });
 }

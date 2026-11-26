@@ -8,10 +8,14 @@ import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
-import 'package:prism_plurality/features/astro/views/astro_integrations.dart' show AstroProfileModule;
-import 'package:prism_plurality/core/features/feature_state.dart' show featureEnabledProvider;
-import 'package:prism_plurality/features/games/core/games_data.dart' show gameProfilesProvider, gameResultsProvider;
-import 'package:prism_plurality/features/games/views/games_profile_view.dart' show AlterGamesProfile;
+import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
+    show AstroProfileModule;
+import 'package:prism_plurality/core/features/feature_state.dart'
+    show featureEnabledProvider;
+import 'package:prism_plurality/features/games/core/games_data.dart'
+    show gameProfilesProvider, gameResultsProvider;
+import 'package:prism_plurality/features/games/views/games_profile_view.dart'
+    show AlterGamesProfile;
 import 'package:prism_plurality/features/relationships/utils/relationships.dart';
 import 'package:prism_plurality/features/relationships/views/relationship_labels.dart';
 import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart';
@@ -28,12 +32,22 @@ int? memberHexColor(String? hex) {
 }
 
 /// Banner role text: "Host · Protector · Caretaker".
-String rolesLine(ProfileConfig cfg) => cfg.roles.where((r) => r.visible).map((r) => r.name).join(' · ');
+String rolesLine(ProfileConfig cfg) =>
+    cfg.roles.where((r) => r.visible).map((r) => r.name).join(' · ');
 
 TextStyle? studioFont(String font, TextStyle? base) => switch (font) {
-  'serif' => base?.copyWith(fontFamily: 'serif', fontFamilyFallback: const ['Georgia', 'Times New Roman']),
-  'mono' => base?.copyWith(fontFamily: 'monospace', fontFamilyFallback: const ['Courier New', 'Menlo']),
-  'rounded' => base?.copyWith(fontFamily: 'sans-serif-medium', letterSpacing: 0.3),
+  'serif' => base?.copyWith(
+    fontFamily: 'serif',
+    fontFamilyFallback: const ['Georgia', 'Times New Roman'],
+  ),
+  'mono' => base?.copyWith(
+    fontFamily: 'monospace',
+    fontFamilyFallback: const ['Courier New', 'Menlo'],
+  ),
+  'rounded' => base?.copyWith(
+    fontFamily: 'sans-serif-medium',
+    letterSpacing: 0.3,
+  ),
   'display' => base?.copyWith(fontWeight: FontWeight.w900, letterSpacing: 0.6),
   _ => base,
 };
@@ -43,7 +57,8 @@ class _Hexagon extends ShapeBorder {
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
   @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) => getOuterPath(rect);
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      getOuterPath(rect);
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
     final c = rect.center;
@@ -73,7 +88,15 @@ ShapeBorder avatarShape(String s) => switch (s) {
 /// Renders a member profile designed in Profile Studio. Used both for the
 /// live preview and on the member's profile page.
 class StudioProfileView extends ConsumerWidget {
-  const StudioProfileView({super.key, required this.member, required this.cfg, this.preview = false, this.showHeader = true, this.forceWide, this.inline = false});
+  const StudioProfileView({
+    super.key,
+    required this.member,
+    required this.cfg,
+    this.preview = false,
+    this.showHeader = true,
+    this.forceWide,
+    this.inline = false,
+  });
   final Member member;
   final ProfileConfig cfg;
   final bool preview;
@@ -86,25 +109,57 @@ class StudioProfileView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final base = Theme.of(context);
-    final accentInt = cfg.lookColor('accent') ?? (member.customColorEnabled ? memberHexColor(member.customColorHex) : null);
-    final accent = accentInt == null ? base.colorScheme.primary : Color(accentInt);
+    final accentInt =
+        cfg.lookColor('accent') ??
+        (member.customColorEnabled
+            ? memberHexColor(member.customColorHex)
+            : null);
+    final accent = accentInt == null
+        ? base.colorScheme.primary
+        : Color(accentInt);
     final bgMode = cfg.lookStr('bgMode', 'none');
-    final bg1 = Color(cfg.lookColor('bg1') ?? base.colorScheme.surface.toARGB32());
+    final bg1 = Color(
+      cfg.lookColor('bg1') ?? base.colorScheme.surface.toARGB32(),
+    );
     final bg2 = Color(cfg.lookColor('bg2') ?? bg1.toARGB32());
-    final dark = bgMode == 'none' ? base.brightness == Brightness.dark : Color.lerp(bg1, bg2, 0.5)!.computeLuminance() < 0.4;
+    final dark = bgMode == 'none'
+        ? base.brightness == Brightness.dark
+        : Color.lerp(bg1, bg2, 0.5)!.computeLuminance() < 0.4;
     final scheme = bgMode == 'none'
         ? base.colorScheme.copyWith(primary: accent)
-        : ColorScheme.fromSeed(seedColor: accent, brightness: dark ? Brightness.dark : Brightness.light).copyWith(primary: accent, surface: bg1);
-    final theme = base.copyWith(colorScheme: scheme, textTheme: bgMode == 'none' ? base.textTheme : base.textTheme.apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface));
+        : ColorScheme.fromSeed(
+            seedColor: accent,
+            brightness: dark ? Brightness.dark : Brightness.light,
+          ).copyWith(primary: accent, surface: bg1);
+    final theme = base.copyWith(
+      colorScheme: scheme,
+      textTheme: bgMode == 'none'
+          ? base.textTheme
+          : base.textTheme.apply(
+              bodyColor: scheme.onSurface,
+              displayColor: scheme.onSurface,
+            ),
+    );
 
     return Theme(
       data: theme,
       child: LayoutBuilder(
         builder: (context, box) {
           final wide = forceWide ?? box.maxWidth >= 700;
-          final layout = wide ? cfg.lookStr('layoutDesktop', cfg.lookStr('layout', 'cards')) : cfg.lookStr('layout', 'cards');
+          final layout = wide
+              ? cfg.lookStr('layoutDesktop', cfg.lookStr('layout', 'cards'))
+              : cfg.lookStr('layout', 'cards');
           final bgMedia = cfg.look('bgMedia') as String?;
-          final content = _Body(member: member, cfg: cfg, layout: layout, wide: wide, accent: accent, preview: preview, showHeader: showHeader, inline: inline);
+          final content = _Body(
+            member: member,
+            cfg: cfg,
+            layout: layout,
+            wide: wide,
+            accent: accent,
+            preview: preview,
+            showHeader: showHeader,
+            inline: inline,
+          );
           if (bgMode == 'none') return content;
           return ClipRRect(
             borderRadius: prismCorners(context, preview ? 20 : 24),
@@ -112,10 +167,24 @@ class StudioProfileView extends ConsumerWidget {
               children: [
                 Positioned.fill(
                   child: bgMode == 'image' && bgMedia != null
-                      ? Opacity(opacity: 0.55, child: PrismMediaView(id: bgMedia))
-                      : DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [bg1, bg2]))),
+                      ? Opacity(
+                          opacity: 0.55,
+                          child: PrismMediaView(id: bgMedia),
+                        )
+                      : DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [bg1, bg2],
+                            ),
+                          ),
+                        ),
                 ),
-                if (bgMode == 'image') Positioned.fill(child: ColoredBox(color: bg1.withValues(alpha: 0.45))),
+                if (bgMode == 'image')
+                  Positioned.fill(
+                    child: ColoredBox(color: bg1.withValues(alpha: 0.45)),
+                  ),
                 content,
               ],
             ),
@@ -127,7 +196,16 @@ class StudioProfileView extends ConsumerWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({required this.member, required this.cfg, required this.layout, required this.wide, required this.accent, required this.preview, required this.showHeader, this.inline = false});
+  const _Body({
+    required this.member,
+    required this.cfg,
+    required this.layout,
+    required this.wide,
+    required this.accent,
+    required this.preview,
+    required this.showHeader,
+    this.inline = false,
+  });
   final Member member;
   final ProfileConfig cfg;
   final String layout;
@@ -143,12 +221,20 @@ class _Body extends ConsumerWidget {
       for (final (id, visible) in cfg.modules)
         if (visible) ?_module(context, ref, id),
     ];
-    final identity = _Identity(member: member, cfg: cfg, accent: accent, inline: inline);
+    final identity = _Identity(
+      member: member,
+      cfg: cfg,
+      accent: accent,
+      inline: inline,
+    );
     final showIdentity = !inline || _hasIdentity(member, cfg, inline);
-    final header = showHeader ? StudioHeader(member: member, cfg: cfg, accent: accent) : const SizedBox.shrink();
+    final header = showHeader
+        ? StudioHeader(member: member, cfg: cfg, accent: accent)
+        : const SizedBox.shrink();
     final pad = EdgeInsets.all(preview ? 12 : 0);
 
-    Widget card(Widget child) => _Card(cfg: cfg, accent: accent, flat: layout == 'full', child: child);
+    Widget card(Widget child) =>
+        _Card(cfg: cfg, accent: accent, flat: layout == 'full', child: child);
 
     if (layout == 'sidebar' && wide) {
       return Padding(
@@ -161,9 +247,25 @@ class _Body extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: 260, child: showIdentity ? card(identity) : const SizedBox.shrink()),
+                SizedBox(
+                  width: 260,
+                  child: showIdentity
+                      ? card(identity)
+                      : const SizedBox.shrink(),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [for (final m in modules) Padding(padding: const EdgeInsets.only(bottom: 12), child: card(m))])),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final m in modules)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: card(m),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -182,7 +284,14 @@ class _Body extends ConsumerWidget {
               builder: (context, box) {
                 final cols = box.maxWidth >= 520 ? 2 : 1;
                 final w = (box.maxWidth - (cols - 1) * 12) / cols;
-                return Wrap(spacing: 12, runSpacing: 12, children: [if (showIdentity) SizedBox(width: w, child: card(identity)), for (final m in modules) SizedBox(width: w, child: card(m))]);
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    if (showIdentity) SizedBox(width: w, child: card(identity)),
+                    for (final m in modules) SizedBox(width: w, child: card(m)),
+                  ],
+                );
               },
             ),
           ],
@@ -197,7 +306,13 @@ class _Body extends ConsumerWidget {
           header,
           const SizedBox(height: 12),
           if (showIdentity) card(identity),
-          for (final m in modules) ...[if (layout == 'full') const Divider(height: 28) else const SizedBox(height: 12), card(m)],
+          for (final m in modules) ...[
+            if (layout == 'full')
+              const Divider(height: 28)
+            else
+              const SizedBox(height: 12),
+            card(m),
+          ],
         ],
       ),
     );
@@ -209,7 +324,16 @@ class _Body extends ConsumerWidget {
     Widget titled(String title, List<Widget> children) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(moduleLabel(context, id) == title ? title : title, style: studioFont(cfg.lookStr('font', 'standard'), theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: accent))),
+        Text(
+          moduleLabel(context, id) == title ? title : title,
+          style: studioFont(
+            cfg.lookStr('font', 'standard'),
+            theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: accent,
+            ),
+          ),
+        ),
         const SizedBox(height: 10),
         ...children,
       ],
@@ -225,9 +349,18 @@ class _Body extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(fieldLabel(context, field, labels), style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                fieldLabel(context, field, labels),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 6),
-              Wrap(spacing: 6, runSpacing: 6, children: [for (final v in items) _Tag(v, color: accent)]),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [for (final v in items) _Tag(v, color: accent)],
+              ),
             ],
           ),
         ),
@@ -239,14 +372,41 @@ class _Body extends ConsumerWidget {
         final desc = cfg.str('description');
         final bio = inline ? '' : (member.bio ?? '');
         if (desc.isEmpty && bio.isEmpty) return null;
-        return titled(moduleLabel(context, id), [if (desc.isNotEmpty) Text(desc, style: theme.textTheme.bodyLarge?.copyWith(height: 1.5)), if (bio.isNotEmpty && bio != desc) Padding(padding: EdgeInsets.only(top: desc.isEmpty ? 0 : 8), child: Text(bio, style: theme.textTheme.bodyMedium?.copyWith(height: 1.5)))]);
+        return titled(moduleLabel(context, id), [
+          if (desc.isNotEmpty)
+            Text(desc, style: theme.textTheme.bodyLarge?.copyWith(height: 1.5)),
+          if (bio.isNotEmpty && bio != desc)
+            Padding(
+              padding: EdgeInsets.only(top: desc.isEmpty ? 0 : 8),
+              child: Text(
+                bio,
+                style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+              ),
+            ),
+        ]);
       case 'interests':
-        final f = ['likes', 'dislikes', 'hobbies', 'favMusic', 'favMedia', 'favColors', 'favFoods'];
+        final f = [
+          'likes',
+          'dislikes',
+          'hobbies',
+          'favMusic',
+          'favMedia',
+          'favColors',
+          'favFoods',
+        ];
         if (f.every((x) => cfg.list(x).isEmpty)) return null;
         return titled(moduleLabel(context, id), [for (final x in f) chips(x)]);
       case 'personality':
         final traits = cfg.traits;
-        final f = ['strengths', 'weaknesses', 'habits', 'communication', 'boundaries', 'quotes', 'facts'];
+        final f = [
+          'strengths',
+          'weaknesses',
+          'habits',
+          'communication',
+          'boundaries',
+          'quotes',
+          'facts',
+        ];
         if (traits.isEmpty && f.every((x) => cfg.list(x).isEmpty)) return null;
         return titled(moduleLabel(context, id), [
           if (traits.isNotEmpty)
@@ -260,8 +420,33 @@ class _Body extends ConsumerWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          SizedBox(width: 110, child: Text(n, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                          Expanded(child: Row(children: [for (var i = 1; i <= 5; i++) Expanded(child: Container(height: 7, margin: const EdgeInsets.only(right: 3), decoration: BoxDecoration(borderRadius: prismCorners(context, 4), color: i <= l ? accent : accent.withValues(alpha: 0.15))))])),
+                          SizedBox(
+                            width: 110,
+                            child: Text(
+                              n,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                for (var i = 1; i <= 5; i++)
+                                  Expanded(
+                                    child: Container(
+                                      height: 7,
+                                      margin: const EdgeInsets.only(right: 3),
+                                      decoration: BoxDecoration(
+                                        borderRadius: prismCorners(context, 4),
+                                        color: i <= l
+                                            ? accent
+                                            : accent.withValues(alpha: 0.15),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -280,14 +465,30 @@ class _Body extends ConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 6,
             crossAxisSpacing: 6,
-            children: [for (final m in ids) ClipRRect(borderRadius: prismCorners(context, 10), child: PrismMediaView(id: m))],
+            children: [
+              for (final m in ids)
+                ClipRRect(
+                  borderRadius: prismCorners(context, 10),
+                  child: PrismMediaView(id: m),
+                ),
+            ],
           ),
         ]);
       case 'relationships':
-        final all = ref.watch(trackerKindProvider(TrackerKind.relationship)).value ?? const <TrackerRecord>[];
-        final mine = [for (final r in all) if (r.memberId == member.id || r.str(RelField.otherId) == member.id) r];
+        final all =
+            ref.watch(trackerKindProvider(TrackerKind.relationship)).value ??
+            const <TrackerRecord>[];
+        final mine = [
+          for (final r in all)
+            if (r.memberId == member.id || r.str(RelField.otherId) == member.id)
+              r,
+        ];
         if (mine.isEmpty) return null;
-        final index = {for (final m in ref.watch(allMemberListProvider).value ?? const <Member>[]) m.id: m};
+        final index = {
+          for (final m
+              in ref.watch(allMemberListProvider).value ?? const <Member>[])
+            m.id: m,
+        };
         final prefer = ref.watch(memberNamePreferDisplayProvider);
         return titled(moduleLabel(context, id), [
           for (final r in mine.take(8))
@@ -299,8 +500,15 @@ class _Body extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(() {
-                      final otherId = r.memberId == member.id ? r.str(RelField.otherId) : r.memberId;
-                      final other = index[otherId]?.effectiveName(preferDisplayName: prefer) ?? r.str(RelField.otherName) ?? '—';
+                      final otherId = r.memberId == member.id
+                          ? r.str(RelField.otherId)
+                          : r.memberId;
+                      final other =
+                          index[otherId]?.effectiveName(
+                            preferDisplayName: prefer,
+                          ) ??
+                          r.str(RelField.otherName) ??
+                          '—';
                       return '$other · ${relTypeLabel(context.l10n, r.str(RelField.type) ?? 'other')}';
                     }()),
                   ),
@@ -311,18 +519,66 @@ class _Body extends ConsumerWidget {
       case 'fronting':
         final prefs = cfg.str('frontPrefs');
         final co = cfg.list('coFronters');
-        final index = {for (final m in ref.watch(allMemberListProvider).value ?? const <Member>[]) m.id: m};
+        final index = {
+          for (final m
+              in ref.watch(allMemberListProvider).value ?? const <Member>[])
+            m.id: m,
+        };
         final prefer = ref.watch(memberNamePreferDisplayProvider);
-        final subs = ref.watch(subMembershipsProvider).where((m) => m.memberId == member.id).map((m) => m.subsystemId).toSet();
-        final subNames = [for (final s in ref.watch(subsystemsProvider)) if (subs.contains(s.id)) s.title];
+        final subs = ref
+            .watch(subMembershipsProvider)
+            .where((m) => m.memberId == member.id)
+            .map((m) => m.subsystemId)
+            .toSet();
+        final subNames = [
+          for (final s in ref.watch(subsystemsProvider))
+            if (subs.contains(s.id)) s.title,
+        ];
         return titled(moduleLabel(context, id), [
-          if (prefs.isNotEmpty) _Private(cfg: cfg, field: 'frontPrefs', child: Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(prefs))),
-          if (co.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 8), child: Wrap(spacing: 6, runSpacing: 6, children: [for (final c in co) if (index[c] case final m?) _Tag('⇄ ${m.effectiveName(preferDisplayName: prefer)}', color: accent)])),
-          if (subNames.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text('${tr(context, 'Subsystems', 'Subsistemas')}: ${subNames.join(', ')}', style: theme.textTheme.bodySmall)),
+          if (prefs.isNotEmpty)
+            _Private(
+              cfg: cfg,
+              field: 'frontPrefs',
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(prefs),
+              ),
+            ),
+          if (co.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final c in co)
+                    if (index[c] case final m?)
+                      _Tag(
+                        '⇄ ${m.effectiveName(preferDisplayName: prefer)}',
+                        color: accent,
+                      ),
+                ],
+              ),
+            ),
+          if (subNames.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                '${tr(context, 'Subsystems', 'Subsistemas')}: ${subNames.join(', ')}',
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
           if (!preview)
             Align(
               alignment: Alignment.centerLeft,
-              child: PrismButton(label: tr(context, 'Fronting history', 'Historial de frente'), icon: AppIcons.history, density: PrismControlDensity.compact, onPressed: () => context.push(AppRoutePaths.memberFrontingHistory(member.id))),
+              child: PrismButton(
+                label: tr(context, 'Fronting history', 'Historial de frente'),
+                icon: AppIcons.history,
+                density: PrismControlDensity.compact,
+                onPressed: () => context.push(
+                  AppRoutePaths.memberFrontingHistory(member.id),
+                ),
+              ),
             ),
         ]);
       case 'memories':
@@ -335,19 +591,46 @@ class _Body extends ConsumerWidget {
             for (final m in mem)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('${m['title'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)), if ('${m['body'] ?? ''}'.isNotEmpty) Text('${m['body']}', style: theme.textTheme.bodySmall?.copyWith(height: 1.45))]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${m['title'] ?? ''}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    if ('${m['body'] ?? ''}'.isNotEmpty)
+                      Text(
+                        '${m['body']}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          height: 1.45,
+                        ),
+                      ),
+                  ],
+                ),
               ),
           ]),
         );
       case 'custom':
-        final cards = cfg.records('custom').where((c) => c['hidden'] != true).toList();
+        final cards = cfg
+            .records('custom')
+            .where((c) => c['hidden'] != true)
+            .toList();
         if (cards.isEmpty) return null;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (final (i, c) in cards.indexed) ...[
               if (i > 0) const SizedBox(height: 16),
-              Text('${c['title'] ?? ''}', style: studioFont(cfg.lookStr('font', 'standard'), theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: accent))),
+              Text(
+                '${c['title'] ?? ''}',
+                style: studioFont(
+                  cfg.lookStr('font', 'standard'),
+                  theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: accent,
+                  ),
+                ),
+              ),
               const SizedBox(height: 6),
               Text('${c['body'] ?? ''}', style: const TextStyle(height: 1.5)),
             ],
@@ -361,12 +644,44 @@ class _Body extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: InkWell(
-                onTap: '${t['url'] ?? ''}'.isEmpty ? null : () => launchUrl(Uri.parse('${t['url']}'), mode: LaunchMode.externalApplication),
+                onTap: '${t['url'] ?? ''}'.isEmpty
+                    ? null
+                    : () => launchUrl(
+                        Uri.parse('${t['url']}'),
+                        mode: LaunchMode.externalApplication,
+                      ),
                 child: Row(
                   children: [
-                    Container(width: 34, height: 34, decoration: BoxDecoration(borderRadius: prismCorners(context, 8), color: accent.withValues(alpha: 0.18)), child: Icon(PhosphorIcons.musicNotes(), size: 17, color: accent)),
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        borderRadius: prismCorners(context, 8),
+                        color: accent.withValues(alpha: 0.18),
+                      ),
+                      child: Icon(
+                        PhosphorIcons.musicNotes(),
+                        size: 17,
+                        color: accent,
+                      ),
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('${t['title'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w600)), if ('${t['artist'] ?? ''}'.isNotEmpty) Text('${t['artist']}', style: theme.textTheme.bodySmall)])),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${t['title'] ?? ''}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          if ('${t['artist'] ?? ''}'.isNotEmpty)
+                            Text(
+                              '${t['artist']}',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -386,7 +701,8 @@ class _Body extends ConsumerWidget {
                   color: accent,
                   onTap: () {
                     final u = Uri.tryParse('${x['url'] ?? ''}');
-                    if (u != null && u.hasScheme) launchUrl(u, mode: LaunchMode.externalApplication);
+                    if (u != null && u.hasScheme)
+                      launchUrl(u, mode: LaunchMode.externalApplication);
                   },
                 ),
             ],
@@ -395,7 +711,26 @@ class _Body extends ConsumerWidget {
       case 'pinned':
         final p = cfg.str('pinned');
         if (p.isEmpty) return null;
-        return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(PhosphorIcons.pushPin(PhosphorIconsStyle.fill), size: 18, color: accent), const SizedBox(width: 10), Expanded(child: Text(p, style: theme.textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic, height: 1.5)))]);
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              PhosphorIcons.pushPin(PhosphorIconsStyle.fill),
+              size: 18,
+              color: accent,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                p,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        );
       case 'astro':
         // Shows only when this alter's astrology is visible to the viewer.
         if (!AstroProfileModule.visible(ref, member.id)) return null;
@@ -404,18 +739,49 @@ class _Body extends ConsumerWidget {
         // Optional: off by default, hidden when the alter hides their stats
         // or hasn't played anything yet.
         if (!ref.watch(featureEnabledProvider('games'))) return null;
-        if (ref.watch(gameProfilesProvider)[member.id]?.hideStats ?? false) return null;
-        if (!ref.watch(gameResultsProvider).any((r) => r.memberId == member.id)) return null;
-        return titled(moduleLabel(context, id), [AlterGamesProfile(memberId: member.id)]);
+        if (ref.watch(gameProfilesProvider)[member.id]?.hideStats ?? false)
+          return null;
+        if (!ref.watch(gameResultsProvider).any((r) => r.memberId == member.id))
+          return null;
+        return titled(moduleLabel(context, id), [
+          AlterGamesProfile(memberId: member.id),
+        ]);
       case 'journal':
-        final entries = (ref.watch(trackerKindProvider(TrackerKind.journalEntry)).value ?? const <TrackerRecord>[]).where((e) => e.memberId == member.id && !e.isPrivate).toList()
-          ..sort((a, b) => (b.occurredAt ?? b.createdAt).compareTo(a.occurredAt ?? a.createdAt));
+        final entries =
+            (ref.watch(trackerKindProvider(TrackerKind.journalEntry)).value ??
+                    const <TrackerRecord>[])
+                .where((e) => e.memberId == member.id && !e.isPrivate)
+                .toList()
+              ..sort(
+                (a, b) => (b.occurredAt ?? b.createdAt).compareTo(
+                  a.occurredAt ?? a.createdAt,
+                ),
+              );
         if (entries.isEmpty) return null;
         return titled(moduleLabel(context, id), [
           for (final e in entries.take(3))
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(e.title.isEmpty ? DateFormat.yMMMd(context.dateLocale).format(e.occurredAt ?? e.createdAt) : e.title, style: const TextStyle(fontWeight: FontWeight.w600)), if ((e.body ?? '').isNotEmpty) Text(e.body!, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall)]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    e.title.isEmpty
+                        ? DateFormat.yMMMd(
+                            context.dateLocale,
+                          ).format(e.occurredAt ?? e.createdAt)
+                        : e.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  if ((e.body ?? '').isNotEmpty)
+                    Text(
+                      e.body!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                ],
+              ),
             ),
         ]);
     }
@@ -424,7 +790,12 @@ class _Body extends ConsumerWidget {
 }
 
 class _Card extends StatelessWidget {
-  const _Card({required this.cfg, required this.accent, required this.child, this.flat = false});
+  const _Card({
+    required this.cfg,
+    required this.accent,
+    required this.child,
+    this.flat = false,
+  });
   final ProfileConfig cfg;
   final Color accent;
   final Widget child;
@@ -437,15 +808,28 @@ class _Card extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh.withValues(alpha: cfg.lookStr('bgMode', 'none') == 'none' ? 1 : 0.55),
+        color: scheme.surfaceContainerHigh.withValues(
+          alpha: cfg.lookStr('bgMode', 'none') == 'none' ? 1 : 0.55,
+        ),
         borderRadius: prismCorners(context, 18),
         border: switch (border) {
           'none' => null,
-          'double' => Border.all(color: accent.withValues(alpha: 0.6), width: 2.5),
+          'double' => Border.all(
+            color: accent.withValues(alpha: 0.6),
+            width: 2.5,
+          ),
           'glow' => Border.all(color: accent.withValues(alpha: 0.55)),
           _ => Border.all(color: scheme.outlineVariant),
         },
-        boxShadow: border == 'glow' ? [BoxShadow(color: accent.withValues(alpha: 0.3), blurRadius: 18, spreadRadius: -4)] : null,
+        boxShadow: border == 'glow'
+            ? [
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.3),
+                  blurRadius: 18,
+                  spreadRadius: -4,
+                ),
+              ]
+            : null,
       ),
       child: child,
     );
@@ -461,7 +845,14 @@ class _Tag extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     color: color.withValues(alpha: 0.12),
     shape: const StadiumBorder(),
-    child: InkWell(customBorder: const StadiumBorder(), onTap: onTap, child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), child: Text(label, style: const TextStyle(fontSize: 13)))),
+    child: InkWell(
+      customBorder: const StadiumBorder(),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Text(label, style: const TextStyle(fontSize: 13)),
+      ),
+    ),
   );
 }
 
@@ -472,12 +863,19 @@ class _Private extends StatelessWidget {
   final String field;
   final Widget child;
   @override
-  Widget build(BuildContext context) => PrivateReveal(isPrivate: cfg.privacyOf(field) == 'private', child: child);
+  Widget build(BuildContext context) =>
+      PrivateReveal(isPrivate: cfg.privacyOf(field) == 'private', child: child);
 }
 
 /// A role pill in its chosen colour and style.
 class RolePill extends StatelessWidget {
-  const RolePill({super.key, required this.role, required this.fallback, this.onTap, this.onDelete});
+  const RolePill({
+    super.key,
+    required this.role,
+    required this.fallback,
+    this.onTap,
+    this.onDelete,
+  });
   final ProfileRole role;
   final Color fallback;
   final VoidCallback? onTap;
@@ -492,9 +890,24 @@ class RolePill extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: prismCorners(context, 999),
-          color: solid ? c : (role.style == 'outline' ? Colors.transparent : c.withValues(alpha: 0.16)),
-          border: Border.all(color: c.withValues(alpha: role.style == 'soft' ? 0.35 : 0.9), width: role.style == 'outline' ? 1.5 : 1),
-          boxShadow: role.style == 'glow' ? [BoxShadow(color: c.withValues(alpha: 0.55), blurRadius: 12, spreadRadius: -2)] : null,
+          color: solid
+              ? c
+              : (role.style == 'outline'
+                    ? Colors.transparent
+                    : c.withValues(alpha: 0.16)),
+          border: Border.all(
+            color: c.withValues(alpha: role.style == 'soft' ? 0.35 : 0.9),
+            width: role.style == 'outline' ? 1.5 : 1,
+          ),
+          boxShadow: role.style == 'glow'
+              ? [
+                  BoxShadow(
+                    color: c.withValues(alpha: 0.55),
+                    blurRadius: 12,
+                    spreadRadius: -2,
+                  ),
+                ]
+              : null,
         ),
         child: Material(
           type: MaterialType.transparency,
@@ -506,10 +919,30 @@ class RolePill extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(role.name, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: solid ? on : Theme.of(context).colorScheme.onSurface)),
+                  Text(
+                    role.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: solid
+                          ? on
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   if (onDelete != null) ...[
                     const SizedBox(width: 2),
-                    InkWell(customBorder: prismCircleBorder(context), onTap: onDelete, child: Padding(padding: const EdgeInsets.all(3), child: Icon(PhosphorIcons.x(), size: 13, color: solid ? on : null))),
+                    InkWell(
+                      customBorder: prismCircleBorder(context),
+                      onTap: onDelete,
+                      child: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: Icon(
+                          PhosphorIcons.x(),
+                          size: 13,
+                          color: solid ? on : null,
+                        ),
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -523,7 +956,12 @@ class RolePill extends StatelessWidget {
 
 /// Banner, avatar, name, roles line, subtitle and status.
 class StudioHeader extends ConsumerWidget {
-  const StudioHeader({super.key, required this.member, required this.cfg, required this.accent});
+  const StudioHeader({
+    super.key,
+    required this.member,
+    required this.cfg,
+    required this.accent,
+  });
   final Member member;
   final ProfileConfig cfg;
   final Color accent;
@@ -540,30 +978,68 @@ class StudioHeader extends ConsumerWidget {
     final avatarMedia = cfg.look('avatarMedia') as String?;
     final shape = avatarShape(cfg.lookStr('avatarShape', 'circle'));
     final font = cfg.lookStr('font', 'standard');
-    final decorations = [for (final d in (cfg.look('decorations') as List?) ?? const []) if (d is String) d];
+    final decorations = [
+      for (final d in (cfg.look('decorations') as List?) ?? const [])
+        if (d is String) d,
+    ];
     final roles = rolesLine(cfg);
-    final cross = switch (align) { 'left' => CrossAxisAlignment.start, 'right' => CrossAxisAlignment.end, _ => CrossAxisAlignment.center };
-    final textAlign = switch (align) { 'left' => TextAlign.left, 'right' => TextAlign.right, _ => TextAlign.center };
+    final cross = switch (align) {
+      'left' => CrossAxisAlignment.start,
+      'right' => CrossAxisAlignment.end,
+      _ => CrossAxisAlignment.center,
+    };
+    final textAlign = switch (align) {
+      'left' => TextAlign.left,
+      'right' => TextAlign.right,
+      _ => TextAlign.center,
+    };
     final avatarSize = 92.0;
 
     Widget bannerImage() {
       if (bannerMedia != null) return PrismMediaView(id: bannerMedia);
       final bytes = member.profileHeaderImageData;
-      if (bytes != null) return Image.memory(bytes, fit: BoxFit.cover, alignment: Alignment(0, pos), gaplessPlayback: true);
-      return DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [accent, Color.lerp(accent, Colors.black, 0.55)!])));
+      if (bytes != null)
+        return Image.memory(
+          bytes,
+          fit: BoxFit.cover,
+          alignment: Alignment(0, pos),
+          gaplessPlayback: true,
+        );
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [accent, Color.lerp(accent, Colors.black, 0.55)!],
+          ),
+        ),
+      );
     }
 
     final avatar = Container(
       width: avatarSize,
       height: avatarSize,
-      decoration: ShapeDecoration(shape: shape, color: theme.colorScheme.surface, shadows: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 6)]),
+      decoration: ShapeDecoration(
+        shape: shape,
+        color: theme.colorScheme.surface,
+        shadows: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 6),
+        ],
+      ),
       padding: const EdgeInsets.all(4),
       child: ClipPath(
         clipper: ShapeBorderClipper(shape: shape),
         child: avatarMedia != null
             ? PrismMediaView(id: avatarMedia)
             : FittedBox(
-                child: MemberAvatar(avatarImageData: member.avatarImageData, memberName: member.effectiveName(preferDisplayName: prefer), emoji: member.emoji, customColorEnabled: member.customColorEnabled, customColorHex: member.customColorHex, size: avatarSize),
+                child: MemberAvatar(
+                  avatarImageData: member.avatarImageData,
+                  memberName: member.effectiveName(preferDisplayName: prefer),
+                  emoji: member.emoji,
+                  customColorEnabled: member.customColorEnabled,
+                  customColorHex: member.customColorHex,
+                  size: avatarSize,
+                ),
               ),
       ),
     );
@@ -587,16 +1063,45 @@ class StudioHeader extends ConsumerWidget {
                     fit: StackFit.expand,
                     children: [
                       bannerImage(),
-                      DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: overlay * 0.4), Colors.black.withValues(alpha: overlay)]))),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: overlay * 0.4),
+                              Colors.black.withValues(alpha: overlay),
+                            ],
+                          ),
+                        ),
+                      ),
                       if (roles.isNotEmpty)
                         Positioned(
                           left: 16,
                           right: 16,
                           bottom: 12,
-                          child: Text(roles, textAlign: textAlign, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, letterSpacing: 0.8, shadows: [Shadow(blurRadius: 8, color: Colors.black54)])),
+                          child: Text(
+                            roles,
+                            textAlign: textAlign,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                              shadows: [
+                                Shadow(blurRadius: 8, color: Colors.black54),
+                              ],
+                            ),
+                          ),
                         ),
                       for (final (i, d) in decorations.take(6).indexed)
-                        Positioned(left: (i.isEven ? 12.0 : null), right: (i.isOdd ? 12.0 : null), top: 10.0 + (i ~/ 2) * 28, child: Text(d, style: const TextStyle(fontSize: 20))),
+                        Positioned(
+                          left: (i.isEven ? 12.0 : null),
+                          right: (i.isOdd ? 12.0 : null),
+                          top: 10.0 + (i ~/ 2) * 28,
+                          child: Text(d, style: const TextStyle(fontSize: 20)),
+                        ),
                     ],
                   ),
                 ),
@@ -607,7 +1112,13 @@ class StudioHeader extends ConsumerWidget {
                 right: align == 'right' ? 16 : null,
                 child: align == 'center' ? const SizedBox.shrink() : avatar,
               ),
-              if (align == 'center') Positioned(top: height - avatarSize / 2, left: 0, right: 0, child: Center(child: avatar)),
+              if (align == 'center')
+                Positioned(
+                  top: height - avatarSize / 2,
+                  left: 0,
+                  right: 0,
+                  child: Center(child: avatar),
+                ),
             ],
           ),
         ),
@@ -615,25 +1126,50 @@ class StudioHeader extends ConsumerWidget {
         Text(
           member.effectiveName(preferDisplayName: prefer),
           textAlign: textAlign,
-          style: studioFont(font, theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+          style: studioFont(
+            font,
+            theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ),
-        if (cfg.str('subtitle').isNotEmpty) Text(cfg.str('subtitle'), textAlign: textAlign, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        if (cfg.str('subtitle').isNotEmpty)
+          Text(
+            cfg.str('subtitle'),
+            textAlign: textAlign,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         if (cfg.str('status').isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(borderRadius: prismCorners(context, 999), color: accent.withValues(alpha: 0.14)),
-              child: Text('💬 ${cfg.str('status')}', style: theme.textTheme.bodySmall),
+              decoration: BoxDecoration(
+                borderRadius: prismCorners(context, 999),
+                color: accent.withValues(alpha: 0.14),
+              ),
+              child: Text(
+                '💬 ${cfg.str('status')}',
+                style: theme.textTheme.bodySmall,
+              ),
             ),
           ),
         if (cfg.roles.any((r) => r.visible)) ...[
           const SizedBox(height: 10),
           Wrap(
-            alignment: switch (align) { 'left' => WrapAlignment.start, 'right' => WrapAlignment.end, _ => WrapAlignment.center },
+            alignment: switch (align) {
+              'left' => WrapAlignment.start,
+              'right' => WrapAlignment.end,
+              _ => WrapAlignment.center,
+            },
             spacing: 6,
             runSpacing: 6,
-            children: [for (final r in cfg.roles.where((r) => r.visible)) RolePill(role: r, fallback: accent)],
+            children: [
+              for (final r in cfg.roles.where((r) => r.visible))
+                RolePill(role: r, fallback: accent),
+            ],
           ),
         ],
       ],
@@ -644,7 +1180,13 @@ class StudioHeader extends ConsumerWidget {
 bool _hasIdentity(Member m, ProfileConfig cfg, bool inline) {
   bool t(String? v) => v != null && v.trim().isNotEmpty;
   return cfg.list('altNames').isNotEmpty ||
-      cfg.list('pronounSets').any((p) => p.trim().toLowerCase() != (m.pronouns ?? '').trim().toLowerCase()) ||
+      cfg
+          .list('pronounSets')
+          .any(
+            (p) =>
+                p.trim().toLowerCase() !=
+                (m.pronouns ?? '').trim().toLowerCase(),
+          ) ||
       (!inline && t(m.pronouns)) ||
       t(cfg.str('gender')) ||
       t(m.age) ||
@@ -657,7 +1199,12 @@ bool _hasIdentity(Member m, ProfileConfig cfg, bool inline) {
 }
 
 class _Identity extends ConsumerWidget {
-  const _Identity({required this.member, required this.cfg, required this.accent, this.inline = false});
+  const _Identity({
+    required this.member,
+    required this.cfg,
+    required this.accent,
+    this.inline = false,
+  });
   final Member member;
   final ProfileConfig cfg;
   final Color accent;
@@ -671,10 +1218,15 @@ class _Identity extends ConsumerWidget {
       'pronounSets' => {
         if (!inline) ?member.pronouns?.trim(),
         for (final p in cfg.list('pronounSets'))
-          if (p.trim().toLowerCase() != (member.pronouns ?? '').trim().toLowerCase()) p.trim(),
+          if (p.trim().toLowerCase() !=
+              (member.pronouns ?? '').trim().toLowerCase())
+            p.trim(),
       }.where((x) => x.isNotEmpty).join(' · '),
       'gender' => cfg.str('gender'),
-      'age' => [?member.age, if (cfg.str('ageRange').isNotEmpty) cfg.str('ageRange')].where((x) => x.trim().isNotEmpty).join(' · '),
+      'age' => [
+        ?member.age,
+        if (cfg.str('ageRange').isNotEmpty) cfg.str('ageRange'),
+      ].where((x) => x.trim().isNotEmpty).join(' · '),
       'birthday' => member.birthday ?? '',
       'species' => cfg.str('species'),
       'origin' => cfg.str('origin'),
@@ -688,7 +1240,14 @@ class _Identity extends ConsumerWidget {
     final internal = cfg.list('internalRoles');
     if (rows.isEmpty && tags.isEmpty && internal.isEmpty) {
       if (inline) return const SizedBox.shrink();
-      return Text(tr(context, 'No identity details yet.', 'Aún no hay detalles de identidad.'), style: theme.textTheme.bodySmall);
+      return Text(
+        tr(
+          context,
+          'No identity details yet.',
+          'Aún no hay detalles de identidad.',
+        ),
+        style: theme.textTheme.bodySmall,
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,7 +1261,12 @@ class _Identity extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(fieldLabel(context, f, labels), style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    fieldLabel(context, f, labels),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 2),
                   Text(v, style: theme.textTheme.bodyLarge),
                 ],
@@ -710,12 +1274,26 @@ class _Identity extends ConsumerWidget {
             ),
           ),
         if (internal.isNotEmpty) ...[
-          Text(fieldLabel(context, 'internalRoles', labels), style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            fieldLabel(context, 'internalRoles', labels),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 6),
-          Wrap(spacing: 6, runSpacing: 6, children: [for (final r in internal) _Tag(r, color: accent)]),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [for (final r in internal) _Tag(r, color: accent)],
+          ),
           const SizedBox(height: 10),
         ],
-        if (tags.isNotEmpty) Wrap(spacing: 6, runSpacing: 6, children: [for (final t in tags) _Tag('#$t', color: accent)]),
+        if (tags.isNotEmpty)
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [for (final t in tags) _Tag('#$t', color: accent)],
+          ),
       ],
     );
   }
@@ -730,7 +1308,15 @@ class StudioProfileSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cfg = ref.watch(memberProfileProvider(member.id));
     if (cfg == null) return const SizedBox.shrink();
-    return Padding(padding: const EdgeInsets.only(top: 16), child: StudioProfileView(member: member, cfg: cfg, showHeader: false, inline: true));
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: StudioProfileView(
+        member: member,
+        cfg: cfg,
+        showHeader: false,
+        inline: true,
+      ),
+    );
   }
 }
 
@@ -744,20 +1330,58 @@ class StudioHeaderExtras extends ConsumerWidget {
     final cfg = ref.watch(memberProfileProvider(member.id));
     if (cfg == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
-    final accent = cfg.lookColor('accent') == null ? theme.colorScheme.primary : Color(cfg.lookColor('accent')!);
+    final accent = cfg.lookColor('accent') == null
+        ? theme.colorScheme.primary
+        : Color(cfg.lookColor('accent')!);
     final roles = rolesLine(cfg);
     final visible = cfg.roles.where((r) => r.visible).toList();
-    if (roles.isEmpty && cfg.str('subtitle').isEmpty && cfg.str('status').isEmpty) return const SizedBox.shrink();
+    if (roles.isEmpty &&
+        cfg.str('subtitle').isEmpty &&
+        cfg.str('status').isEmpty)
+      return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Column(
         children: [
-          if (cfg.str('subtitle').isNotEmpty) Text(cfg.str('subtitle'), textAlign: TextAlign.center, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          if (roles.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Text(roles, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(letterSpacing: 0.6, fontWeight: FontWeight.w600))),
-          if (cfg.str('status').isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text('💬 ${cfg.str('status')}', textAlign: TextAlign.center, style: theme.textTheme.bodySmall)),
+          if (cfg.str('subtitle').isNotEmpty)
+            Text(
+              cfg.str('subtitle'),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          if (roles.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                roles,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  letterSpacing: 0.6,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          if (cfg.str('status').isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                '💬 ${cfg.str('status')}',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
           if (visible.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 6, children: [for (final r in visible) RolePill(role: r, fallback: accent)]),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final r in visible) RolePill(role: r, fallback: accent),
+              ],
+            ),
           ],
         ],
       ),

@@ -68,7 +68,8 @@ void main() {
       // Walk from each palette color and verify each step.
       for (var i = 0; i < kChoiceOptionPalette.length; i++) {
         final current = kChoiceOptionPalette[i];
-        final next = kChoiceOptionPalette[(i + 1) % kChoiceOptionPalette.length];
+        final next =
+            kChoiceOptionPalette[(i + 1) % kChoiceOptionPalette.length];
         expect(cycleChoicePaletteColor(current), equals(next));
       }
     });

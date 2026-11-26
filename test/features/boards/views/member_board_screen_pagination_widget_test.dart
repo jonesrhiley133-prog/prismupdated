@@ -131,7 +131,9 @@ void main() {
 
       // Grab the screen's controller off the CustomScrollView — find.byType
       // (Scrollable).first can resolve to a wrapping MaterialApp scrollable.
-      final csv = tester.widget<CustomScrollView>(find.byType(CustomScrollView));
+      final csv = tester.widget<CustomScrollView>(
+        find.byType(CustomScrollView),
+      );
       final controller = csv.controller!;
 
       final container = ProviderScope.containerOf(

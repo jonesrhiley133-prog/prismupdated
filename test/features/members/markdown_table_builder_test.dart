@@ -109,19 +109,22 @@ void main() {
       );
     });
 
-    test(':::plain round-trips to a borderless segment containing one table', () {
-      final md = buildTableMarkdown(
-        columns: 2,
-        rows: 2,
-        headerRow: true,
-        showBorders: false,
-      );
-      final segments = parseStyledSegments(md);
-      expect(segments.length, 1);
-      expect(segments.single.borderless, isTrue);
-      final blocks = splitMarkdownBlocks(segments.single.content);
-      expect(blocks.single.isTable, isTrue);
-    });
+    test(
+      ':::plain round-trips to a borderless segment containing one table',
+      () {
+        final md = buildTableMarkdown(
+          columns: 2,
+          rows: 2,
+          headerRow: true,
+          showBorders: false,
+        );
+        final segments = parseStyledSegments(md);
+        expect(segments.length, 1);
+        expect(segments.single.borderless, isTrue);
+        final blocks = splitMarkdownBlocks(segments.single.content);
+        expect(blocks.single.isTable, isTrue);
+      },
+    );
 
     test(':::#hex round-trips to a colored segment containing one table', () {
       final md = buildTableMarkdown(

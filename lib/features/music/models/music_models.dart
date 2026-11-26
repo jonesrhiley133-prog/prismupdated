@@ -2,7 +2,16 @@ import 'package:flutter/foundation.dart';
 
 /// Audio formats Prism offers in the file picker. Whether a given file
 /// actually plays depends on the device's decoders.
-const supportedAudioExtensions = ['mp3', 'm4a', 'aac', 'wav', 'ogg', 'oga', 'opus', 'flac'];
+const supportedAudioExtensions = [
+  'mp3',
+  'm4a',
+  'aac',
+  'wav',
+  'ogg',
+  'oga',
+  'opus',
+  'flac',
+];
 
 @immutable
 class Track {
@@ -86,26 +95,41 @@ class Track {
       album: j['album'] is String ? j['album'] as String : '',
       durationMs: j['durationMs'] is int ? j['durationMs'] as int : 0,
       art: j['art'] is String ? j['art'] as String : null,
-      addedAt: DateTime.fromMillisecondsSinceEpoch(j['addedAt'] is int ? j['addedAt'] as int : 0),
+      addedAt: DateTime.fromMillisecondsSinceEpoch(
+        j['addedAt'] is int ? j['addedAt'] as int : 0,
+      ),
       favorite: j['favorite'] == true,
       playCount: j['playCount'] is int ? j['playCount'] as int : 0,
-      lastPlayedAt: j['lastPlayedAt'] is int ? DateTime.fromMillisecondsSinceEpoch(j['lastPlayedAt'] as int) : null,
+      lastPlayedAt: j['lastPlayedAt'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(j['lastPlayedAt'] as int)
+          : null,
     );
   }
 }
 
 @immutable
 class Playlist {
-  const Playlist({required this.id, required this.name, this.trackIds = const []});
+  const Playlist({
+    required this.id,
+    required this.name,
+    this.trackIds = const [],
+  });
 
   final String id;
   final String name;
   final List<String> trackIds;
 
-  Playlist copyWith({String? name, List<String>? trackIds}) =>
-      Playlist(id: id, name: name ?? this.name, trackIds: trackIds ?? this.trackIds);
+  Playlist copyWith({String? name, List<String>? trackIds}) => Playlist(
+    id: id,
+    name: name ?? this.name,
+    trackIds: trackIds ?? this.trackIds,
+  );
 
-  Map<String, Object?> toJson() => {'id': id, 'name': name, 'trackIds': trackIds};
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'name': name,
+    'trackIds': trackIds,
+  };
 
   static Playlist? fromJson(Object? j) {
     if (j is! Map || j['id'] is! String) return null;
@@ -125,7 +149,12 @@ enum TrackSort { title, artist, album, recentlyAdded, mostPlayed }
 
 @immutable
 class MusicLibrary {
-  const MusicLibrary({this.tracks = const [], this.playlists = const [], this.recent = const [], this.plays = const []});
+  const MusicLibrary({
+    this.tracks = const [],
+    this.playlists = const [],
+    this.recent = const [],
+    this.plays = const [],
+  });
 
   final List<Track> tracks;
   final List<Playlist> playlists;
@@ -145,9 +174,16 @@ class MusicLibrary {
     return null;
   }
 
-  List<Track> resolve(Iterable<String> ids) => [for (final id in ids) ?track(id)];
+  List<Track> resolve(Iterable<String> ids) => [
+    for (final id in ids) ?track(id),
+  ];
 
-  MusicLibrary copyWith({List<Track>? tracks, List<Playlist>? playlists, List<String>? recent, List<(String, DateTime)>? plays}) => MusicLibrary(
+  MusicLibrary copyWith({
+    List<Track>? tracks,
+    List<Playlist>? playlists,
+    List<String>? recent,
+    List<(String, DateTime)>? plays,
+  }) => MusicLibrary(
     tracks: tracks ?? this.tracks,
     playlists: playlists ?? this.playlists,
     recent: recent ?? this.recent,
@@ -158,7 +194,9 @@ class MusicLibrary {
     'tracks': [for (final t in tracks) t.toJson()],
     'playlists': [for (final p in playlists) p.toJson()],
     'recent': recent,
-    'plays': [for (final (id, at) in plays) [id, at.millisecondsSinceEpoch]],
+    'plays': [
+      for (final (id, at) in plays) [id, at.millisecondsSinceEpoch],
+    ],
   };
 
   static MusicLibrary fromJson(Object? j) {
@@ -180,14 +218,22 @@ class MusicLibrary {
       plays: [
         if (j['plays'] is List)
           for (final p in j['plays'] as List)
-            if (p is List && p.length == 2 && p[0] is String && p[1] is num) (p[0] as String, DateTime.fromMillisecondsSinceEpoch((p[1] as num).toInt())),
+            if (p is List && p.length == 2 && p[0] is String && p[1] is num)
+              (
+                p[0] as String,
+                DateTime.fromMillisecondsSinceEpoch((p[1] as num).toInt()),
+              ),
       ],
     );
   }
 }
 
 /// Search (title, artist, album) and sort.
-List<Track> filterTracks(Iterable<Track> tracks, {String query = '', TrackSort sort = TrackSort.title}) {
+List<Track> filterTracks(
+  Iterable<Track> tracks, {
+  String query = '',
+  TrackSort sort = TrackSort.title,
+}) {
   final q = query.trim().toLowerCase();
   final list = [
     for (final t in tracks)
@@ -200,8 +246,14 @@ List<Track> filterTracks(Iterable<Track> tracks, {String query = '', TrackSort s
   int text(String a, String b) => a.toLowerCase().compareTo(b.toLowerCase());
   list.sort(switch (sort) {
     TrackSort.title => (a, b) => text(a.title, b.title),
-    TrackSort.artist => (a, b) => text(a.artist, b.artist) != 0 ? text(a.artist, b.artist) : text(a.title, b.title),
-    TrackSort.album => (a, b) => text(a.album, b.album) != 0 ? text(a.album, b.album) : text(a.title, b.title),
+    TrackSort.artist =>
+      (a, b) => text(a.artist, b.artist) != 0
+          ? text(a.artist, b.artist)
+          : text(a.title, b.title),
+    TrackSort.album =>
+      (a, b) => text(a.album, b.album) != 0
+          ? text(a.album, b.album)
+          : text(a.title, b.title),
     TrackSort.recentlyAdded => (a, b) => b.addedAt.compareTo(a.addedAt),
     TrackSort.mostPlayed => (a, b) => b.playCount.compareTo(a.playCount),
   });
@@ -277,10 +329,17 @@ class PlayerLook {
 
   static PlayerLook fromJson(Object? j) {
     if (j is! Map) return const PlayerLook();
-    double f(Object? v, double d) => (v is num ? v.toDouble() : d).clamp(0, 1).toDouble();
+    double f(Object? v, double d) =>
+        (v is num ? v.toDouble() : d).clamp(0, 1).toDouble();
     return PlayerLook(
-      layout: PlayerLayout.values.firstWhere((x) => x.name == j['layout'], orElse: () => PlayerLayout.bar),
-      placement: PlayerPlacement.values.firstWhere((x) => x.name == j['placement'], orElse: () => PlayerPlacement.bottom),
+      layout: PlayerLayout.values.firstWhere(
+        (x) => x.name == j['layout'],
+        orElse: () => PlayerLayout.bar,
+      ),
+      placement: PlayerPlacement.values.firstWhere(
+        (x) => x.name == j['placement'],
+        orElse: () => PlayerPlacement.bottom,
+      ),
       artworkBackground: j['artworkBackground'] != false,
       blurArtwork: j['blurArtwork'] != false,
       color: j['color'] is int ? j['color'] as int : null,
@@ -294,7 +353,14 @@ class PlayerLook {
 /// [original] is the order before shuffling so it can be restored.
 @immutable
 class PlayQueue {
-  const PlayQueue({this.items = const [], this.original = const [], this.index = 0, this.shuffle = false, this.repeat = RepeatMode.off, this.name});
+  const PlayQueue({
+    this.items = const [],
+    this.original = const [],
+    this.index = 0,
+    this.shuffle = false,
+    this.repeat = RepeatMode.off,
+    this.name,
+  });
 
   final List<String> items;
   final List<String> original;
@@ -305,10 +371,18 @@ class PlayQueue {
   /// Where the queue came from (playlist name, "Favorites" …).
   final String? name;
 
-  String? get current => index >= 0 && index < items.length ? items[index] : null;
+  String? get current =>
+      index >= 0 && index < items.length ? items[index] : null;
   bool get isEmpty => items.isEmpty;
 
-  PlayQueue _with({List<String>? items, List<String>? original, int? index, bool? shuffle, RepeatMode? repeat, String? name}) => PlayQueue(
+  PlayQueue _with({
+    List<String>? items,
+    List<String>? original,
+    int? index,
+    bool? shuffle,
+    RepeatMode? repeat,
+    String? name,
+  }) => PlayQueue(
     items: items ?? this.items,
     original: original ?? this.original,
     index: index ?? this.index,
@@ -318,34 +392,74 @@ class PlayQueue {
   );
 
   /// Starts a new queue at [start], keeping shuffle/repeat settings.
-  PlayQueue load(List<String> ids, {int start = 0, String? name, List<String> Function(List<String>)? shuffler}) {
+  PlayQueue load(
+    List<String> ids, {
+    int start = 0,
+    String? name,
+    List<String> Function(List<String>)? shuffler,
+  }) {
     if (ids.isEmpty) return PlayQueue(shuffle: shuffle, repeat: repeat);
     final s = start.clamp(0, ids.length - 1);
-    if (!shuffle) return PlayQueue(items: ids, original: ids, index: s, shuffle: false, repeat: repeat, name: name);
+    if (!shuffle)
+      return PlayQueue(
+        items: ids,
+        original: ids,
+        index: s,
+        shuffle: false,
+        repeat: repeat,
+        name: name,
+      );
     final rest = [...ids]..removeAt(s);
     final mixed = (shuffler ?? _shuffle)(rest);
-    return PlayQueue(items: [ids[s], ...mixed], original: ids, index: 0, shuffle: true, repeat: repeat, name: name);
+    return PlayQueue(
+      items: [ids[s], ...mixed],
+      original: ids,
+      index: 0,
+      shuffle: true,
+      repeat: repeat,
+      name: name,
+    );
   }
 
   static List<String> _shuffle(List<String> l) => [...l]..shuffle();
 
-  PlayQueue setShuffle(bool on, {List<String> Function(List<String>)? shuffler}) {
+  PlayQueue setShuffle(
+    bool on, {
+    List<String> Function(List<String>)? shuffler,
+  }) {
     if (on == shuffle) return this;
     final cur = current;
     if (cur == null) return _with(shuffle: on);
     if (on) {
       final rest = [...items]..removeAt(index);
-      return _with(items: [cur, ...(shuffler ?? _shuffle)(rest)], original: items, index: 0, shuffle: true);
+      return _with(
+        items: [cur, ...(shuffler ?? _shuffle)(rest)],
+        original: items,
+        index: 0,
+        shuffle: true,
+      );
     }
     // Back to the original order, staying on the current track.
-    final restored = [for (final id in original) if (items.contains(id)) id, for (final id in items) if (!original.contains(id)) id];
+    final restored = [
+      for (final id in original)
+        if (items.contains(id)) id,
+      for (final id in items)
+        if (!original.contains(id)) id,
+    ];
     final i = restored.indexOf(cur);
-    return _with(items: restored, original: restored, index: i < 0 ? 0 : i, shuffle: false);
+    return _with(
+      items: restored,
+      original: restored,
+      index: i < 0 ? 0 : i,
+      shuffle: false,
+    );
   }
 
   PlayQueue setRepeat(RepeatMode mode) => _with(repeat: mode);
 
-  PlayQueue cycleRepeat() => setRepeat(RepeatMode.values[(repeat.index + 1) % RepeatMode.values.length]);
+  PlayQueue cycleRepeat() => setRepeat(
+    RepeatMode.values[(repeat.index + 1) % RepeatMode.values.length],
+  );
 
   /// The queue after the current track finishes or the user skips.
   /// Returns null when playback should stop (end of queue, repeat off).
@@ -353,7 +467,8 @@ class PlayQueue {
     if (items.isEmpty) return null;
     if (auto && repeat == RepeatMode.one) return this;
     if (index + 1 < items.length) return _with(index: index + 1);
-    if (repeat == RepeatMode.all || (!auto && repeat == RepeatMode.one)) return _with(index: 0);
+    if (repeat == RepeatMode.all || (!auto && repeat == RepeatMode.one))
+      return _with(index: 0);
     return null;
   }
 
@@ -363,7 +478,8 @@ class PlayQueue {
     return repeat == RepeatMode.all ? _with(index: items.length - 1) : this;
   }
 
-  PlayQueue jumpTo(int i) => i < 0 || i >= items.length ? this : _with(index: i);
+  PlayQueue jumpTo(int i) =>
+      i < 0 || i >= items.length ? this : _with(index: i);
 
   /// Inserts [id] right after the current track.
   PlayQueue playNext(String id) {
@@ -372,7 +488,9 @@ class PlayQueue {
     return _with(items: next, original: [...original, id]);
   }
 
-  PlayQueue add(String id) => items.isEmpty ? load([id]) : _with(items: [...items, id], original: [...original, id]);
+  PlayQueue add(String id) => items.isEmpty
+      ? load([id])
+      : _with(items: [...items, id], original: [...original, id]);
 
   PlayQueue removeAt(int i) {
     if (i < 0 || i >= items.length) return this;
@@ -422,7 +540,11 @@ class PlayQueue {
 
   static PlayQueue fromJson(Object? j) {
     if (j is! Map) return const PlayQueue();
-    List<String> l(Object? v) => [if (v is List) for (final x in v) if (x is String) x];
+    List<String> l(Object? v) => [
+      if (v is List)
+        for (final x in v)
+          if (x is String) x,
+    ];
     final items = l(j['items']);
     final index = j['index'] is int ? j['index'] as int : 0;
     return PlayQueue(
@@ -430,7 +552,10 @@ class PlayQueue {
       original: l(j['original']).isEmpty ? items : l(j['original']),
       index: items.isEmpty ? 0 : index.clamp(0, items.length - 1),
       shuffle: j['shuffle'] == true,
-      repeat: RepeatMode.values.firstWhere((x) => x.name == j['repeat'], orElse: () => RepeatMode.off),
+      repeat: RepeatMode.values.firstWhere(
+        (x) => x.name == j['repeat'],
+        orElse: () => RepeatMode.off,
+      ),
       name: j['name'] is String ? j['name'] as String : null,
     );
   }

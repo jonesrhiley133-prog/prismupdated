@@ -7,7 +7,9 @@ import 'package:prism_plurality/data/sync/field_diff.dart';
 import 'package:prism_plurality/domain/models/calendar_event.dart' as domain;
 import 'package:prism_plurality/domain/repositories/calendar_repository.dart';
 
-class DriftCalendarRepository with SyncRecordMixin implements CalendarRepository {
+class DriftCalendarRepository
+    with SyncRecordMixin
+    implements CalendarRepository {
   DriftCalendarRepository(this._dao, this._syncHandle);
 
   final CalendarEventsDao _dao;
@@ -22,8 +24,9 @@ class DriftCalendarRepository with SyncRecordMixin implements CalendarRepository
   AppDatabase get syncOutboxDatabase => _dao.attachedDatabase;
 
   @override
-  Stream<List<domain.CalendarEvent>> watchAll() =>
-      _dao.watchAll().map((rows) => rows.map(CalendarEventMapper.toDomain).toList());
+  Stream<List<domain.CalendarEvent>> watchAll() => _dao.watchAll().map(
+    (rows) => rows.map(CalendarEventMapper.toDomain).toList(),
+  );
 
   @override
   Future<List<domain.CalendarEvent>> getAll() async =>
@@ -40,7 +43,11 @@ class DriftCalendarRepository with SyncRecordMixin implements CalendarRepository
   Future<void> create(domain.CalendarEvent event) async {
     await runSyncedWrite(() async {
       await _dao.create(CalendarEventMapper.toCompanion(event));
-      await syncRecordCreate(_table, event.id, CalendarEventMapper.syncFields(event));
+      await syncRecordCreate(
+        _table,
+        event.id,
+        CalendarEventMapper.syncFields(event),
+      );
     });
   }
 
@@ -54,7 +61,10 @@ class DriftCalendarRepository with SyncRecordMixin implements CalendarRepository
         CalendarEventMapper.syncFields(event),
       );
       if (changed.isEmpty) return;
-      await _dao.updateEvent(event.id, CalendarEventMapper.partialCompanion(changed));
+      await _dao.updateEvent(
+        event.id,
+        CalendarEventMapper.partialCompanion(changed),
+      );
       await syncRecordUpdate(_table, event.id, changed);
     });
   }

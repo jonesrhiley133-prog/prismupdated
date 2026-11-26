@@ -45,8 +45,18 @@ void main() {
         parentFieldId: 'g1',
         typeConfig: const ChoiceConfig(
           options: [
-            ChoiceOption(id: 'o1', label: 'Happy', colorHex: '#ff0000', sortOrder: 0),
-            ChoiceOption(id: 'o2', label: 'Sad', colorHex: '#0000ff', sortOrder: 1),
+            ChoiceOption(
+              id: 'o1',
+              label: 'Happy',
+              colorHex: '#ff0000',
+              sortOrder: 0,
+            ),
+            ChoiceOption(
+              id: 'o2',
+              label: 'Sad',
+              colorHex: '#0000ff',
+              sortOrder: 1,
+            ),
           ],
           allowsMultiple: true,
         ),
@@ -97,7 +107,11 @@ void main() {
       expect(opts.length, 2);
       final opt0 = opts[0] as Map<String, dynamic>;
       expect(opt0.containsKey('id'), isFalse, reason: 'id stripped');
-      expect(opt0.containsKey('sortOrder'), isFalse, reason: 'sortOrder stripped');
+      expect(
+        opt0.containsKey('sortOrder'),
+        isFalse,
+        reason: 'sortOrder stripped',
+      );
       expect(opt0['label'], 'Happy');
       expect(opt0['colorHex'], '#ff0000');
 
@@ -212,37 +226,43 @@ void main() {
       expect(fields[0].fieldTypeId, 'text');
     });
 
-    test('child whose parent is not in list is promoted (parentIndex null)', () {
-      final child = makeField(
-        id: 'child1',
-        name: 'Orphaned Child',
-        fieldTypeId: 'text',
-        fieldType: CustomFieldType.text,
-        parentFieldId: 'missing-parent-id',
-      );
+    test(
+      'child whose parent is not in list is promoted (parentIndex null)',
+      () {
+        final child = makeField(
+          id: 'child1',
+          name: 'Orphaned Child',
+          fieldTypeId: 'text',
+          fieldType: CustomFieldType.text,
+          parentFieldId: 'missing-parent-id',
+        );
 
-      final template = FieldTemplate.fromDomain([child]);
-      // Parent not in list → promoted to top-level
-      expect(template.entries[0].parentIndex, isNull);
+        final template = FieldTemplate.fromDomain([child]);
+        // Parent not in list → promoted to top-level
+        expect(template.entries[0].parentIndex, isNull);
 
-      final fields = template.toDomainFields();
-      expect(fields[0].parentFieldId, isNull);
-    });
+        final fields = template.toDomainFields();
+        expect(fields[0].parentFieldId, isNull);
+      },
+    );
 
-    test('omits hideTitleOnProfile:false and empty extra from compactConfig', () {
-      final field = makeField(
-        id: 'sc1',
-        name: 'Scale',
-        fieldTypeId: 'scale',
-        fieldType: CustomFieldType.text,
-        typeConfig: const ScaleConfig(hideTitleOnProfile: false),
-      );
+    test(
+      'omits hideTitleOnProfile:false and empty extra from compactConfig',
+      () {
+        final field = makeField(
+          id: 'sc1',
+          name: 'Scale',
+          fieldTypeId: 'scale',
+          fieldType: CustomFieldType.text,
+          typeConfig: const ScaleConfig(hideTitleOnProfile: false),
+        );
 
-      final template = FieldTemplate.fromDomain([field]);
-      final config = template.entries[0].compactConfig!;
-      expect(config.containsKey('hideTitleOnProfile'), isFalse);
-      expect(config.containsKey('extra'), isFalse);
-    });
+        final template = FieldTemplate.fromDomain([field]);
+        final config = template.entries[0].compactConfig!;
+        expect(config.containsKey('hideTitleOnProfile'), isFalse);
+        expect(config.containsKey('extra'), isFalse);
+      },
+    );
 
     test('preserves hideTitleOnProfile:true in compactConfig', () {
       final field = makeField(
@@ -283,38 +303,44 @@ void main() {
       expect(fields[0].fieldType, CustomFieldType.choice);
     });
 
-    test('unknown fieldTypeId falls back to text enum, preserves fieldTypeId', () {
-      const rawJson = '{"runtimeType":"mysteryType"}';
-      final field = makeField(
-        id: 'unk1',
-        name: 'Mystery',
-        fieldTypeId: 'mysteryType',
-        fieldType: CustomFieldType.text,
-        unknownTypeConfigRaw: rawJson,
-      );
+    test(
+      'unknown fieldTypeId falls back to text enum, preserves fieldTypeId',
+      () {
+        const rawJson = '{"runtimeType":"mysteryType"}';
+        final field = makeField(
+          id: 'unk1',
+          name: 'Mystery',
+          fieldTypeId: 'mysteryType',
+          fieldType: CustomFieldType.text,
+          unknownTypeConfigRaw: rawJson,
+        );
 
-      final template = FieldTemplate.fromDomain([field]);
-      final fields = template.toDomainFields();
-      expect(fields[0].fieldType, CustomFieldType.text); // fallback
-      expect(fields[0].fieldTypeId, 'mysteryType'); // preserved
-    });
+        final template = FieldTemplate.fromDomain([field]);
+        final fields = template.toDomainFields();
+        expect(fields[0].fieldType, CustomFieldType.text); // fallback
+        expect(fields[0].fieldTypeId, 'mysteryType'); // preserved
+      },
+    );
   });
 
   // ── Fix 4: datePrecision round-trip ─────────────────────────────────────────
 
   group('Fix4: datePrecision round-trip', () {
-    test('date field with year precision survives fromDomain→toDomainFields', () {
-      final field = makeField(
-        id: 'd1',
-        name: 'Birthday',
-        fieldTypeId: 'date',
-        fieldType: CustomFieldType.date,
-      ).copyWith(datePrecision: DatePrecision.year);
+    test(
+      'date field with year precision survives fromDomain→toDomainFields',
+      () {
+        final field = makeField(
+          id: 'd1',
+          name: 'Birthday',
+          fieldTypeId: 'date',
+          fieldType: CustomFieldType.date,
+        ).copyWith(datePrecision: DatePrecision.year);
 
-      final template = FieldTemplate.fromDomain([field]);
-      final fields = template.toDomainFields();
-      expect(fields[0].datePrecision, DatePrecision.year);
-    });
+        final template = FieldTemplate.fromDomain([field]);
+        final fields = template.toDomainFields();
+        expect(fields[0].datePrecision, DatePrecision.year);
+      },
+    );
 
     test('date field with timestamp precision survives round-trip', () {
       final field = makeField(
@@ -388,9 +414,7 @@ void main() {
         fieldType: CustomFieldType.choice,
         parentFieldId: 'g1',
         typeConfig: const ChoiceConfig(
-          options: [
-            ChoiceOption(id: 'o1', label: 'A', sortOrder: 0),
-          ],
+          options: [ChoiceOption(id: 'o1', label: 'A', sortOrder: 0)],
         ),
       );
 

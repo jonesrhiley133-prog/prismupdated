@@ -29,34 +29,37 @@ void main() {
       expect(displayContent, isNot(contains('secret')));
     });
 
-    test('mention + spoiler: mentions resolve BEFORE redaction (order matters)',
-        () {
-      // `redactSpoilers` clamps its block count to 8, so:
-      //   content = '||@[uuid]||'      (inner is 39 chars)
-      //   correct: resolve → redact   → 6 blocks (`@Alice` inner = 6)
-      //   reverse: redact  → resolve  → 8 blocks (clamp on the raw token)
-      // Swapping the calls produces a different-length string, so this
-      // assertion catches an ordering regression inside
-      // `buildTilePreviewContent`.
-      const memberId = '01234567-89ab-cdef-0123-456789abcdef';
-      const rawContent = '||@[$memberId]||';
-      final nameMap = <String, String>{memberId: 'Alice'};
+    test(
+      'mention + spoiler: mentions resolve BEFORE redaction (order matters)',
+      () {
+        // `redactSpoilers` clamps its block count to 8, so:
+        //   content = '||@[uuid]||'      (inner is 39 chars)
+        //   correct: resolve → redact   → 6 blocks (`@Alice` inner = 6)
+        //   reverse: redact  → resolve  → 8 blocks (clamp on the raw token)
+        // Swapping the calls produces a different-length string, so this
+        // assertion catches an ordering regression inside
+        // `buildTilePreviewContent`.
+        const memberId = '01234567-89ab-cdef-0123-456789abcdef';
+        const rawContent = '||@[$memberId]||';
+        final nameMap = <String, String>{memberId: 'Alice'};
 
-      final correct = buildTilePreviewContent(rawContent, nameMap);
-      expect(
-        correct,
-        '▮' * 6,
-        reason: 'mentions must resolve first so redaction clamps on the '
-            'display-length of `@Alice` (6), not the raw `@[uuid]` token',
-      );
+        final correct = buildTilePreviewContent(rawContent, nameMap);
+        expect(
+          correct,
+          '▮' * 6,
+          reason:
+              'mentions must resolve first so redaction clamps on the '
+              'display-length of `@Alice` (6), not the raw `@[uuid]` token',
+        );
 
-      final reversed = replaceMentionsWithNames(
-        redactSpoilers(rawContent),
-        nameMap,
-      );
-      expect(reversed, '▮' * 8);
-      expect(correct, isNot(equals(reversed)));
-    });
+        final reversed = replaceMentionsWithNames(
+          redactSpoilers(rawContent),
+          nameMap,
+        );
+        expect(reversed, '▮' * 8);
+        expect(correct, isNot(equals(reversed)));
+      },
+    );
 
     test('message without spoilers is unchanged', () {
       expect(
@@ -94,10 +97,7 @@ void main() {
     test('marker stripping composes with spoiler redaction', () {
       // `**inside**` lives outside a spoiler — should be stripped.
       // `||secret||` should be redacted to `▮▮▮▮▮▮`.
-      final result = buildTilePreviewContent(
-        '**inside** ||secret||',
-        const {},
-      );
+      final result = buildTilePreviewContent('**inside** ||secret||', const {});
       expect(result, 'inside ▮▮▮▮▮▮');
     });
 
@@ -106,10 +106,9 @@ void main() {
       // so a member whose display name contains `_`, `*`, or other
       // marker-ish characters survives the preview intact.
       const memberId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-      final result = buildTilePreviewContent(
-        'hi @[$memberId]!',
-        {memberId: 'A_B_C'},
-      );
+      final result = buildTilePreviewContent('hi @[$memberId]!', {
+        memberId: 'A_B_C',
+      });
       expect(result, 'hi @A_B_C!');
     });
 
@@ -117,10 +116,9 @@ void main() {
       // After strip + resolve, the spoiler should clamp on the visible
       // length of `@LongName` (9 chars) rather than the raw `@[uuid]`.
       const memberId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-      final result = buildTilePreviewContent(
-        '||@[$memberId]||',
-        {memberId: 'LongName'},
-      );
+      final result = buildTilePreviewContent('||@[$memberId]||', {
+        memberId: 'LongName',
+      });
       // `@LongName` is 9 chars but spoiler redaction clamps to a max of 8.
       expect(result, '▮' * 8);
     });
@@ -131,10 +129,9 @@ void main() {
       // the brackets+parens as a markdown link — if it does, the bracket
       // contents become text and the mention can no longer resolve.
       const memberId = '01234567-89ab-cdef-0123-456789abcdef';
-      final result = buildTilePreviewContent(
-        '@[$memberId](she/her) said hi',
-        {memberId: 'Alex'},
-      );
+      final result = buildTilePreviewContent('@[$memberId](she/her) said hi', {
+        memberId: 'Alex',
+      });
       expect(result, '@Alex(she/her) said hi');
     });
   });

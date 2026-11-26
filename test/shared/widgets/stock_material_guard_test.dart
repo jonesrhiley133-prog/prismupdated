@@ -75,7 +75,8 @@ const _warnOnly = <String, String>{
   r'\bDataTable\b': 'No Prism replacement yet',
   r'\bSlider\b(?!\w)': 'No Prism replacement yet',
   r'\bRangeSlider\b': 'No Prism replacement yet',
-  r'\bLinearProgressIndicator\b': 'No Prism replacement yet (determinate progress)',
+  r'\bLinearProgressIndicator\b':
+      'No Prism replacement yet (determinate progress)',
   r'\bBottomSheet\b(?!\w)': 'No Prism replacement yet (use PrismSheet)',
   r'\bChip\b(?!\w)': 'No Prism replacement yet (consider PrismChip)',
 };
@@ -115,8 +116,10 @@ final _allowlist = <String, Set<String>>{
 };
 
 /// Strip regex anchors for human-readable output.
-String _humanLabel(String pattern) =>
-    pattern.replaceAll(r'\b', '').replaceAll(r'(?!\w)', '').replaceAll(r'\(', '(');
+String _humanLabel(String pattern) => pattern
+    .replaceAll(r'\b', '')
+    .replaceAll(r'(?!\w)', '')
+    .replaceAll(r'\(', '(');
 
 bool _isExcluded(String path) =>
     path.endsWith('.g.dart') ||
@@ -143,13 +146,15 @@ void main() {
 
       for (final file in sourceFiles) {
         final content = file.readAsStringSync();
-        final relativePath =
-            file.path.startsWith('./') ? file.path.substring(2) : file.path;
+        final relativePath = file.path.startsWith('./')
+            ? file.path.substring(2)
+            : file.path;
 
         for (final entry in _banned.entries) {
           // Check allowlist.
-          if (_allowlist.entries.any((a) =>
-              relativePath.endsWith(a.key) && a.value.contains(entry.key))) {
+          if (_allowlist.entries.any(
+            (a) => relativePath.endsWith(a.key) && a.value.contains(entry.key),
+          )) {
             continue;
           }
 
@@ -184,8 +189,9 @@ void main() {
 
       for (final file in sourceFiles) {
         final content = file.readAsStringSync();
-        final relativePath =
-            file.path.startsWith('./') ? file.path.substring(2) : file.path;
+        final relativePath = file.path.startsWith('./')
+            ? file.path.substring(2)
+            : file.path;
 
         for (final entry in _warnOnly.entries) {
           final regex = RegExp(entry.key);

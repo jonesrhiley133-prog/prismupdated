@@ -63,7 +63,15 @@ void main() {
   });
 
   test('older saved elements without new fields still load', () {
-    final e = ScrapElement.fromJson({'id': 'x', 't': 'photo', 'x': .1, 'y': .1, 'w': .5, 'h': .5, 'z': 0})!;
+    final e = ScrapElement.fromJson({
+      'id': 'x',
+      't': 'photo',
+      'x': .1,
+      'y': .1,
+      'w': .5,
+      'h': .5,
+      'z': 0,
+    })!;
     expect(e.opacity, 1);
     expect(e.locked, isFalse);
     expect(e.opts, isEmpty);

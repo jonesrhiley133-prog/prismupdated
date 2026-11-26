@@ -322,38 +322,41 @@ void main() {
       },
     );
 
-    test('fronting edit does NOT surface overlap with sleep (data-loss guard)', () {
-      // Sleep and normal fronting are parallel timelines. Editing a front so it
-      // overlaps a sleep session must NOT surface that sleep as an overlap —
-      // doing so routed it into a silent trim/delete. Sleep 10pm-8am, front
-      // 8am-10am, front moved back to 6am so it covers part of sleep.
-      final sleep = makeSession(
-        id: 'sleep',
-        start: base, // 10pm
-        end: base.add(const Duration(hours: 10)), // 8am
-        memberId: null,
-        sessionType: SessionType.sleep,
-      );
-      final front = makeSession(
-        id: 'front',
-        start: base.add(const Duration(hours: 10)), // 8am
-        end: base.add(const Duration(hours: 12)), // 10am
-      );
+    test(
+      'fronting edit does NOT surface overlap with sleep (data-loss guard)',
+      () {
+        // Sleep and normal fronting are parallel timelines. Editing a front so it
+        // overlaps a sleep session must NOT surface that sleep as an overlap —
+        // doing so routed it into a silent trim/delete. Sleep 10pm-8am, front
+        // 8am-10am, front moved back to 6am so it covers part of sleep.
+        final sleep = makeSession(
+          id: 'sleep',
+          start: base, // 10pm
+          end: base.add(const Duration(hours: 10)), // 8am
+          memberId: null,
+          sessionType: SessionType.sleep,
+        );
+        final front = makeSession(
+          id: 'front',
+          start: base.add(const Duration(hours: 10)), // 8am
+          end: base.add(const Duration(hours: 12)), // 10am
+        );
 
-      final patch = FrontingSessionPatch(
-        start: base.add(const Duration(hours: 8)), // move to 6am
-      );
+        final patch = FrontingSessionPatch(
+          start: base.add(const Duration(hours: 8)), // move to 6am
+        );
 
-      final result = guard.validateEdit(
-        original: front,
-        patch: patch,
-        nearbySessions: [sleep, front],
-        timingMode: FrontingTimingMode.flexible,
-      );
+        final result = guard.validateEdit(
+          original: front,
+          patch: patch,
+          nearbySessions: [sleep, front],
+          timingMode: FrontingTimingMode.flexible,
+        );
 
-      expect(result.overlappingSessions, isEmpty);
-      expect(result.canSaveDirectly, isTrue);
-    });
+        expect(result.overlappingSessions, isEmpty);
+        expect(result.canSaveDirectly, isTrue);
+      },
+    );
 
     test('sleep edit does NOT surface overlap with fronting (mirror)', () {
       // Mirror of the above: editing a sleep session so it overruns an adjacent
@@ -385,46 +388,43 @@ void main() {
       expect(result.canSaveDirectly, isTrue);
     });
 
-    test(
-      'editing an open-ended front does NOT surface later sleep sessions '
-      '(mass-delete regression)',
-      () {
-        // The data-loss bug: an active (open-ended) front has a far-future
-        // effective end, so it "contained" EVERY sleep session that started
-        // after it — surfacing them all for trim, which deleted the user's
-        // entire sleep history on save. None must be surfaced now.
-        final front = makeSession(
-          id: 'front',
-          start: base,
-          end: null, // active / open-ended
-        );
-        final sleeps = [
-          for (var i = 1; i <= 30; i++)
-            makeSession(
-              id: 'sleep$i',
-              start: base.add(Duration(hours: i * 8)),
-              end: base.add(Duration(hours: i * 8 + 6)),
-              memberId: null,
-              sessionType: SessionType.sleep,
-            ),
-        ];
+    test('editing an open-ended front does NOT surface later sleep sessions '
+        '(mass-delete regression)', () {
+      // The data-loss bug: an active (open-ended) front has a far-future
+      // effective end, so it "contained" EVERY sleep session that started
+      // after it — surfacing them all for trim, which deleted the user's
+      // entire sleep history on save. None must be surfaced now.
+      final front = makeSession(
+        id: 'front',
+        start: base,
+        end: null, // active / open-ended
+      );
+      final sleeps = [
+        for (var i = 1; i <= 30; i++)
+          makeSession(
+            id: 'sleep$i',
+            start: base.add(Duration(hours: i * 8)),
+            end: base.add(Duration(hours: i * 8 + 6)),
+            memberId: null,
+            sessionType: SessionType.sleep,
+          ),
+      ];
 
-        // Edit the front's start earlier — the kind of edit Simon performed.
-        final patch = FrontingSessionPatch(
-          start: base.subtract(const Duration(hours: 1)),
-        );
+      // Edit the front's start earlier — the kind of edit Simon performed.
+      final patch = FrontingSessionPatch(
+        start: base.subtract(const Duration(hours: 1)),
+      );
 
-        final result = guard.validateEdit(
-          original: front,
-          patch: patch,
-          nearbySessions: [front, ...sleeps],
-          timingMode: FrontingTimingMode.flexible,
-        );
+      final result = guard.validateEdit(
+        original: front,
+        patch: patch,
+        nearbySessions: [front, ...sleeps],
+        timingMode: FrontingTimingMode.flexible,
+      );
 
-        expect(result.overlappingSessions, isEmpty);
-        expect(result.canSaveDirectly, isTrue);
-      },
-    );
+      expect(result.overlappingSessions, isEmpty);
+      expect(result.canSaveDirectly, isTrue);
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -698,69 +698,71 @@ void main() {
     final pStart = DateTime(2026, 5, 1, 14, 0);
     final pEnd = DateTime(2026, 5, 1, 15, 0);
 
-    test('classifies overlap / touching-previous / touching-next correctly',
-        () {
-      // Way-before (not touching), touching-previous, overlapping (straddle
-      // start), fully-inside, straddle-end, touching-next, way-after.
-      final far = makeSession(
-        id: 'far',
-        start: DateTime(2026, 5, 1, 10, 0),
-        end: DateTime(2026, 5, 1, 11, 0),
-      );
-      final prev = makeSession(
-        id: 'prev',
-        start: DateTime(2026, 5, 1, 13, 0),
-        end: pStart,
-      );
-      final straddleStart = makeSession(
-        id: 'straddleStart',
-        start: DateTime(2026, 5, 1, 13, 30),
-        end: DateTime(2026, 5, 1, 14, 30),
-      );
-      final inside = makeSession(
-        id: 'inside',
-        start: DateTime(2026, 5, 1, 14, 15),
-        end: DateTime(2026, 5, 1, 14, 45),
-      );
-      final straddleEnd = makeSession(
-        id: 'straddleEnd',
-        start: DateTime(2026, 5, 1, 14, 45),
-        end: DateTime(2026, 5, 1, 15, 30),
-      );
-      final next = makeSession(
-        id: 'next',
-        start: pEnd,
-        end: DateTime(2026, 5, 1, 16, 0),
-      );
-      final later = makeSession(
-        id: 'later',
-        start: DateTime(2026, 5, 1, 17, 0),
-        end: DateTime(2026, 5, 1, 18, 0),
-      );
+    test(
+      'classifies overlap / touching-previous / touching-next correctly',
+      () {
+        // Way-before (not touching), touching-previous, overlapping (straddle
+        // start), fully-inside, straddle-end, touching-next, way-after.
+        final far = makeSession(
+          id: 'far',
+          start: DateTime(2026, 5, 1, 10, 0),
+          end: DateTime(2026, 5, 1, 11, 0),
+        );
+        final prev = makeSession(
+          id: 'prev',
+          start: DateTime(2026, 5, 1, 13, 0),
+          end: pStart,
+        );
+        final straddleStart = makeSession(
+          id: 'straddleStart',
+          start: DateTime(2026, 5, 1, 13, 30),
+          end: DateTime(2026, 5, 1, 14, 30),
+        );
+        final inside = makeSession(
+          id: 'inside',
+          start: DateTime(2026, 5, 1, 14, 15),
+          end: DateTime(2026, 5, 1, 14, 45),
+        );
+        final straddleEnd = makeSession(
+          id: 'straddleEnd',
+          start: DateTime(2026, 5, 1, 14, 45),
+          end: DateTime(2026, 5, 1, 15, 30),
+        );
+        final next = makeSession(
+          id: 'next',
+          start: pEnd,
+          end: DateTime(2026, 5, 1, 16, 0),
+        );
+        final later = makeSession(
+          id: 'later',
+          start: DateTime(2026, 5, 1, 17, 0),
+          end: DateTime(2026, 5, 1, 18, 0),
+        );
 
-      final ctx = guard.getDeletePeriodContext(
-        periodStart: pStart,
-        periodEnd: pEnd,
-        isOngoing: false,
-        periodSessionIds: const {'straddleStart', 'inside', 'straddleEnd'},
-        allSessions: [
-          far,
-          prev,
-          straddleStart,
-          inside,
-          straddleEnd,
-          next,
-          later,
-        ],
-      );
+        final ctx = guard.getDeletePeriodContext(
+          periodStart: pStart,
+          periodEnd: pEnd,
+          isOngoing: false,
+          periodSessionIds: const {'straddleStart', 'inside', 'straddleEnd'},
+          allSessions: [
+            far,
+            prev,
+            straddleStart,
+            inside,
+            straddleEnd,
+            next,
+            later,
+          ],
+        );
 
-      expect(
-        ctx.sessionsInPeriod.map((s) => s.id),
-        unorderedEquals(['straddleStart', 'inside', 'straddleEnd']),
-      );
-      expect(ctx.previousSessions.map((s) => s.id), ['prev']);
-      expect(ctx.nextSessions.map((s) => s.id), ['next']);
-    });
+        expect(
+          ctx.sessionsInPeriod.map((s) => s.id),
+          unorderedEquals(['straddleStart', 'inside', 'straddleEnd']),
+        );
+        expect(ctx.previousSessions.map((s) => s.id), ['prev']);
+        expect(ctx.nextSessions.map((s) => s.id), ['next']);
+      },
+    );
 
     test('always-present session overlapping but not in periodSessionIds '
         'is left alone', () {
@@ -846,32 +848,25 @@ void main() {
       expect(ctx.nextSessions, isEmpty);
     });
 
-    test('availableStrategies: no previous, no straddler → only Unknown + Gap',
-        () {
-      final inside = makeSession(
-        id: 'inside',
-        start: pStart,
-        end: pEnd,
-      );
-      final ctx = guard.getDeletePeriodContext(
-        periodStart: pStart,
-        periodEnd: pEnd,
-        isOngoing: false,
-        periodSessionIds: const {'inside'},
-        allSessions: [inside],
-      );
-      expect(
-        ctx.availableStrategies,
-        [
+    test(
+      'availableStrategies: no previous, no straddler → only Unknown + Gap',
+      () {
+        final inside = makeSession(id: 'inside', start: pStart, end: pEnd);
+        final ctx = guard.getDeletePeriodContext(
+          periodStart: pStart,
+          periodEnd: pEnd,
+          isOngoing: false,
+          periodSessionIds: const {'inside'},
+          allSessions: [inside],
+        );
+        expect(ctx.availableStrategies, [
           FrontingDeleteStrategy.convertToUnknown,
           FrontingDeleteStrategy.leaveGap,
-        ],
-      );
-    });
+        ]);
+      },
+    );
 
-    test(
-        'availableStrategies: touching previous adds extendPrevious',
-        () {
+    test('availableStrategies: touching previous adds extendPrevious', () {
       final prev = makeSession(
         id: 'p',
         start: DateTime(2026, 5, 1, 13, 0),
@@ -885,29 +880,37 @@ void main() {
         periodSessionIds: const {'i'},
         allSessions: [prev, inside],
       );
-      expect(ctx.availableStrategies.first, FrontingDeleteStrategy.extendPrevious);
-      expect(ctx.availableStrategies, contains(FrontingDeleteStrategy.leaveGap));
-    });
-
-    test('availableStrategies: straddle-start (no touching prev) adds extendPrevious',
-        () {
-      final straddle = makeSession(
-        id: 's',
-        start: DateTime(2026, 5, 1, 13, 30),
-        end: DateTime(2026, 5, 1, 14, 30),
-      );
-      final ctx = guard.getDeletePeriodContext(
-        periodStart: pStart,
-        periodEnd: pEnd,
-        isOngoing: false,
-        periodSessionIds: const {'s'},
-        allSessions: [straddle],
+      expect(
+        ctx.availableStrategies.first,
+        FrontingDeleteStrategy.extendPrevious,
       );
       expect(
         ctx.availableStrategies,
-        contains(FrontingDeleteStrategy.extendPrevious),
+        contains(FrontingDeleteStrategy.leaveGap),
       );
     });
+
+    test(
+      'availableStrategies: straddle-start (no touching prev) adds extendPrevious',
+      () {
+        final straddle = makeSession(
+          id: 's',
+          start: DateTime(2026, 5, 1, 13, 30),
+          end: DateTime(2026, 5, 1, 14, 30),
+        );
+        final ctx = guard.getDeletePeriodContext(
+          periodStart: pStart,
+          periodEnd: pEnd,
+          isOngoing: false,
+          periodSessionIds: const {'s'},
+          allSessions: [straddle],
+        );
+        expect(
+          ctx.availableStrategies,
+          contains(FrontingDeleteStrategy.extendPrevious),
+        );
+      },
+    );
 
     test('ongoing period: caller must pass fresh periodEnd so a session '
         'that ended after derivation time classifies as fully-contained, '
@@ -977,13 +980,10 @@ void main() {
         ctx.availableStrategies,
         isNot(contains(FrontingDeleteStrategy.extendPrevious)),
       );
-      expect(
-        ctx.availableStrategies,
-        [
-          FrontingDeleteStrategy.convertToUnknown,
-          FrontingDeleteStrategy.leaveGap,
-        ],
-      );
+      expect(ctx.availableStrategies, [
+        FrontingDeleteStrategy.convertToUnknown,
+        FrontingDeleteStrategy.leaveGap,
+      ]);
     });
   });
 }

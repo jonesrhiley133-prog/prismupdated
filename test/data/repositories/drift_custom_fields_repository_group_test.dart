@@ -104,17 +104,20 @@ void main() {
     },
   );
 
-  test('createField succeeds when parent has no parent (depth-1 is ok)', () async {
-    final fieldA = _groupField(id: 'A');
-    final fieldB = _field(id: 'B', parentFieldId: 'A');
+  test(
+    'createField succeeds when parent has no parent (depth-1 is ok)',
+    () async {
+      final fieldA = _groupField(id: 'A');
+      final fieldB = _field(id: 'B', parentFieldId: 'A');
 
-    await repo.createField(fieldA);
-    // Must not throw.
-    await repo.createField(fieldB);
+      await repo.createField(fieldA);
+      // Must not throw.
+      await repo.createField(fieldB);
 
-    final found = await repo.getFieldById('B');
-    expect(found?.parentFieldId, 'A');
-  });
+      final found = await repo.getFieldById('B');
+      expect(found?.parentFieldId, 'A');
+    },
+  );
 
   // ── 2. Depth-1 enforcement on updateField ───────────────────────────────
 
@@ -312,11 +315,8 @@ void main() {
     },
   );
 
-  test(
-    'deleteField is idempotent for missing fields',
-    () async {
-      // Should not throw for an unknown id.
-      await repo.deleteField('nonexistent-id');
-    },
-  );
+  test('deleteField is idempotent for missing fields', () async {
+    // Should not throw for an unknown id.
+    await repo.deleteField('nonexistent-id');
+  });
 }

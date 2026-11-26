@@ -203,9 +203,8 @@ class _FakeClient implements PluralKitClient {
 // ---------------------------------------------------------------------------
 
 class _FakeMemberRepo implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   final Map<String, domain.Member> members = {};
   final List<String> linkCleared = [];
@@ -242,10 +241,7 @@ class _FakeMemberRepo implements MemberRepository {
     Map<String, dynamic> changedFields,
   ) async => throw UnimplementedError();
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = members[id];
     if (existing == null || existing.isDeleted) return 0;
     members[id] = existing.copyWith(
@@ -254,7 +250,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
       pluralkitSyncIgnored: false,
     );
     return 1;
@@ -273,7 +269,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
     );
     return 1;
   }
@@ -293,6 +289,7 @@ class _FakeMemberRepo implements MemberRepository {
     members[id] = existing.copyWith(pluralkitSyncIgnored: false);
     return 1;
   }
+
   @override
   Future<void> deleteMember(String id) async {
     final m = members[id];

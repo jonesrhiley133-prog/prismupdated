@@ -1,9 +1,9 @@
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:prism_plurality/features/accessibility/a11y_views.dart';
 import 'package:prism_plurality/features/music/models/music_models.dart';
@@ -41,9 +41,13 @@ Future<void> importMusic(BuildContext context, WidgetRef ref) async {
   }
   FilePickerResult? picked;
   try {
-    picked = await FilePicker.pickFiles(type: FileType.audio, allowMultiple: true);
+    picked = await FilePicker.pickFiles(
+      type: FileType.audio,
+      allowMultiple: true,
+    );
   } catch (_) {
-    if (context.mounted) PrismToast.error(context, message: l10n.musPickerFailed);
+    if (context.mounted)
+      PrismToast.error(context, message: l10n.musPickerFailed);
     return;
   }
   if (picked == null || !context.mounted) return;
@@ -52,7 +56,9 @@ Future<void> importMusic(BuildContext context, WidgetRef ref) async {
     PrismToast.error(context, message: l10n.musPickerFailed);
     return;
   }
-  final result = await ref.read(musicLibraryProvider.notifier).importFiles(paths);
+  final result = await ref
+      .read(musicLibraryProvider.notifier)
+      .importFiles(paths);
   if (!context.mounted) return;
   if (result.unsupported.isEmpty && result.failed.isEmpty) {
     PrismToast.success(context, message: l10n.musImported(result.added.length));
@@ -69,12 +75,20 @@ Future<void> importMusic(BuildContext context, WidgetRef ref) async {
           Text(l10n.musImported(result.added.length)),
           if (result.unsupported.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(l10n.musUnsupportedFormat(supportedAudioExtensions.map((e) => e.toUpperCase()).join(', ')), style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              l10n.musUnsupportedFormat(
+                supportedAudioExtensions.map((e) => e.toUpperCase()).join(', '),
+              ),
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             for (final n in result.unsupported) Text('• $n'),
           ],
           if (result.failed.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(l10n.musImportFailed, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              l10n.musImportFailed,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             for (final n in result.failed) Text('• $n'),
           ],
         ],
@@ -108,14 +122,24 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final async = ref.watch(musicLibraryProvider);
-    final player = ref.watch(musicControllerProvider.select((s) => (s.hasTrack, s.look.layout)));
+    final player = ref.watch(
+      musicControllerProvider.select((s) => (s.hasTrack, s.look.layout)),
+    );
     final showOpen = player.$1 && player.$2 == PlayerLayout.hidden;
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: l10n.musTitle,
         actions: [
-          PrismTopBarAction(icon: Icons.tune_rounded, tooltip: l10n.musPlayerLook, onPressed: () => showPlayerLookSheet(context)),
-          PrismTopBarAction(icon: Icons.add_rounded, tooltip: l10n.musImport, onPressed: () => importMusic(context, ref)),
+          PrismTopBarAction(
+            icon: Icons.tune_rounded,
+            tooltip: l10n.musPlayerLook,
+            onPressed: () => showPlayerLookSheet(context),
+          ),
+          PrismTopBarAction(
+            icon: Icons.add_rounded,
+            tooltip: l10n.musImport,
+            onPressed: () => importMusic(context, ref),
+          ),
         ],
       ),
       topBarMaxWidth: PrismTokens.contentMaxWidth,
@@ -127,7 +151,11 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
           final c = ref.read(musicControllerProvider.notifier);
           final List<Track> tracks = switch (_tab) {
             _Tab.songs => filterTracks(lib.tracks, query: _query, sort: _sort),
-            _Tab.favorites => filterTracks(lib.tracks.where((t) => t.favorite), query: _query, sort: _sort),
+            _Tab.favorites => filterTracks(
+              lib.tracks.where((t) => t.favorite),
+              query: _query,
+              sort: _sort,
+            ),
             _Tab.recent => lib.resolve(lib.recent),
             _Tab.playlists => const [],
           };
@@ -165,7 +193,11 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
                       for (final s in TrackSort.values)
                         Padding(
                           padding: const EdgeInsets.only(right: 6),
-                          child: PrismChip(label: _sortLabel(l10n, s), selected: _sort == s, onTap: () => setState(() => _sort = s)),
+                          child: PrismChip(
+                            label: _sortLabel(l10n, s),
+                            selected: _sort == s,
+                            onTap: () => setState(() => _sort = s),
+                          ),
                         ),
                     ],
                   ),
@@ -175,7 +207,11 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
               if (showOpen)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: PrismButton(label: l10n.musOpenPlayer, expanded: true, onPressed: () => openNowPlaying(ref)),
+                  child: PrismButton(
+                    label: l10n.musOpenPlayer,
+                    expanded: true,
+                    onPressed: () => openNowPlaying(ref),
+                  ),
                 ),
               if (tracks.isNotEmpty)
                 Padding(
@@ -185,27 +221,42 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
                       PrismButton(
                         label: l10n.musPlayAll,
                         tone: PrismButtonTone.filled,
-                        onPressed: () => c.playTracks([for (final t in tracks) t.id], name: queueName),
+                        onPressed: () => c.playTracks([
+                          for (final t in tracks) t.id,
+                        ], name: queueName),
                       ),
                       const SizedBox(width: 8),
                       PrismButton(
                         label: l10n.musShuffle,
                         onPressed: () {
-                          if (!ref.read(musicControllerProvider).queue.shuffle) c.toggleShuffle();
+                          if (!ref.read(musicControllerProvider).queue.shuffle)
+                            c.toggleShuffle();
                           final ids = [for (final t in tracks) t.id]..shuffle();
                           c.playTracks(ids, name: queueName);
                         },
                       ),
                       const Spacer(),
-                      Text(l10n.musSongCount(tracks.length), style: theme.textTheme.bodySmall),
+                      Text(
+                        l10n.musSongCount(tracks.length),
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ],
                   ),
                 ),
               if (lib.tracks.isEmpty)
                 _Empty(
                   title: l10n.musEmptyTitle,
-                  message: l10n.musEmptyMessage(supportedAudioExtensions.take(5).map((e) => e.toUpperCase()).join(', ')),
-                  action: PrismButton(label: l10n.musImport, tone: PrismButtonTone.filled, onPressed: () => importMusic(context, ref)),
+                  message: l10n.musEmptyMessage(
+                    supportedAudioExtensions
+                        .take(5)
+                        .map((e) => e.toUpperCase())
+                        .join(', '),
+                  ),
+                  action: PrismButton(
+                    label: l10n.musImport,
+                    tone: PrismButtonTone.filled,
+                    onPressed: () => importMusic(context, ref),
+                  ),
                 )
               else if (tracks.isEmpty)
                 _Empty(
@@ -218,7 +269,11 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
               for (var i = 0; i < tracks.length; i++)
                 TrackTile(
                   track: tracks[i],
-                  onTap: () => c.playTracks([for (final t in tracks) t.id], start: i, name: queueName),
+                  onTap: () => c.playTracks(
+                    [for (final t in tracks) t.id],
+                    start: i,
+                    name: queueName,
+                  ),
                 ),
             ],
             SizedBox(height: NavBarInset.of(context) + 96),
@@ -228,8 +283,13 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+                  constraints: BoxConstraints(
+                    maxWidth: PrismTokens.contentMaxWidth,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: children,
+                  ),
                 ),
               ),
             ],
@@ -254,12 +314,26 @@ class _Empty extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
       child: Column(
         children: [
-          Icon(Icons.library_music_rounded, size: 48, color: theme.colorScheme.primary),
+          Icon(
+            Icons.library_music_rounded,
+            size: 48,
+            color: theme.colorScheme.primary,
+          ),
           const SizedBox(height: 12),
-          Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           if (message != null) ...[
             const SizedBox(height: 6),
-            Text(message!, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              message!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
           if (action != null) ...[const SizedBox(height: 14), action!],
         ],
@@ -269,7 +343,12 @@ class _Empty extends StatelessWidget {
 }
 
 class TrackTile extends ConsumerWidget {
-  const TrackTile({super.key, required this.track, required this.onTap, this.trailing});
+  const TrackTile({
+    super.key,
+    required this.track,
+    required this.onTap,
+    this.trailing,
+  });
 
   final Track track;
   final VoidCallback onTap;
@@ -279,14 +358,23 @@ class TrackTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final current = ref.watch(musicControllerProvider.select((s) => s.currentId == track.id));
-    final playing = ref.watch(musicControllerProvider.select((s) => s.playing && s.currentId == track.id));
+    final current = ref.watch(
+      musicControllerProvider.select((s) => s.currentId == track.id),
+    );
+    final playing = ref.watch(
+      musicControllerProvider.select(
+        (s) => s.playing && s.currentId == track.id,
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: PrismSurface(
         padding: const EdgeInsets.fromLTRB(8, 8, 4, 8),
         tone: current ? PrismSurfaceTone.accent : PrismSurfaceTone.subtle,
-        semanticLabel: l10n.musTrackLabel(track.title, track.artist.isEmpty ? l10n.musUnknownArtist : track.artist),
+        semanticLabel: l10n.musTrackLabel(
+          track.title,
+          track.artist.isEmpty ? l10n.musUnknownArtist : track.artist,
+        ),
         onTap: onTap,
         child: Row(
           children: [
@@ -294,7 +382,12 @@ class TrackTile extends ConsumerWidget {
               alignment: Alignment.center,
               children: [
                 TrackArt(track: track),
-                if (playing) const Icon(Icons.graphic_eq_rounded, color: Colors.white, shadows: [Shadow(blurRadius: 6)]),
+                if (playing)
+                  const Icon(
+                    Icons.graphic_eq_rounded,
+                    color: Colors.white,
+                    shadows: [Shadow(blurRadius: 6)],
+                  ),
               ],
             ),
             const SizedBox(width: 10),
@@ -303,28 +396,42 @@ class TrackTile extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(track.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyLarge),
+                    Text(
+                      track.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     Text(
                       [
-                        track.artist.isEmpty ? l10n.musUnknownArtist : track.artist,
+                        track.artist.isEmpty
+                            ? l10n.musUnknownArtist
+                            : track.artist,
                         if (track.album.isNotEmpty) track.album,
-                        if (track.durationMs > 0) formatTrackTime(track.duration),
+                        if (track.durationMs > 0)
+                          formatTrackTime(track.duration),
                       ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
             PlayerButton(
-              icon: track.favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              icon: track.favorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
               label: track.favorite ? l10n.musUnfavorite : l10n.musFavorite,
               size: 40,
               iconSize: 20,
               color: track.favorite ? theme.colorScheme.primary : null,
-              onPressed: () => ref.read(musicLibraryProvider.notifier).toggleFavorite(track.id),
+              onPressed: () => ref
+                  .read(musicLibraryProvider.notifier)
+                  .toggleFavorite(track.id),
             ),
             trailing ??
                 PlayerButton(
@@ -341,10 +448,11 @@ class TrackTile extends ConsumerWidget {
   }
 }
 
-Future<void> showTrackMenu(BuildContext context, String trackId) => PrismSheet.show<void>(
-  context: context,
-  builder: (context) => _TrackMenu(trackId: trackId),
-);
+Future<void> showTrackMenu(BuildContext context, String trackId) =>
+    PrismSheet.show<void>(
+      context: context,
+      builder: (context) => _TrackMenu(trackId: trackId),
+    );
 
 class _TrackMenu extends ConsumerWidget {
   const _TrackMenu({required this.trackId});
@@ -359,7 +467,12 @@ class _TrackMenu extends ConsumerWidget {
     if (track == null) return const SizedBox.shrink();
     final c = ref.read(musicControllerProvider.notifier);
     final n = ref.read(musicLibraryProvider.notifier);
-    Widget item(IconData icon, String label, VoidCallback onTap, {bool destructive = false}) => _MenuRow(
+    Widget item(
+      IconData icon,
+      String label,
+      VoidCallback onTap, {
+      bool destructive = false,
+    }) => _MenuRow(
       icon: icon,
       label: label,
       destructive: destructive,
@@ -383,18 +496,44 @@ class _TrackMenu extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(track.title, style: Theme.of(context).textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
-                      if (track.artist.isNotEmpty) Text(track.artist, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        track.title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (track.artist.isNotEmpty)
+                        Text(
+                          track.artist,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          item(Icons.playlist_play_rounded, l10n.musPlayNext, () => c.playNext(trackId)),
-          item(Icons.queue_music_rounded, l10n.musAddToQueue, () => c.addToQueue(trackId)),
-          item(Icons.playlist_add_rounded, l10n.musAddToPlaylist, () => showAddToPlaylist(context, trackId)),
-          item(Icons.edit_rounded, l10n.musEditInfo, () => showTrackEditor(context, trackId)),
+          item(
+            Icons.playlist_play_rounded,
+            l10n.musPlayNext,
+            () => c.playNext(trackId),
+          ),
+          item(
+            Icons.queue_music_rounded,
+            l10n.musAddToQueue,
+            () => c.addToQueue(trackId),
+          ),
+          item(
+            Icons.playlist_add_rounded,
+            l10n.musAddToPlaylist,
+            () => showAddToPlaylist(context, trackId),
+          ),
+          item(
+            Icons.edit_rounded,
+            l10n.musEditInfo,
+            () => showTrackEditor(context, trackId),
+          ),
           item(Icons.delete_outline_rounded, l10n.musDeleteTrack, () async {
             final ok = await PrismDialog.confirm(
               context: context,
@@ -415,7 +554,12 @@ class _TrackMenu extends ConsumerWidget {
 }
 
 class _MenuRow extends StatelessWidget {
-  const _MenuRow({required this.icon, required this.label, required this.onTap, this.destructive = false});
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.destructive = false,
+  });
 
   final IconData icon;
   final String label;
@@ -425,7 +569,9 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = destructive ? theme.colorScheme.error : theme.colorScheme.onSurface;
+    final color = destructive
+        ? theme.colorScheme.error
+        : theme.colorScheme.onSurface;
     return Semantics(
       button: true,
       child: InkWell(
@@ -437,7 +583,12 @@ class _MenuRow extends StatelessWidget {
             children: [
               Icon(icon, color: color),
               const SizedBox(width: 14),
-              Expanded(child: Text(label, style: theme.textTheme.bodyLarge?.copyWith(color: color))),
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodyLarge?.copyWith(color: color),
+                ),
+              ),
             ],
           ),
         ),
@@ -446,49 +597,60 @@ class _MenuRow extends StatelessWidget {
   }
 }
 
-Future<void> showAddToPlaylist(BuildContext context, String trackId) => PrismSheet.show<void>(
-  context: context,
-  title: context.l10n.musAddToPlaylist,
-  builder: (context) => Consumer(
-    builder: (context, ref, _) {
-      final l10n = context.l10n;
-      final lib = ref.watch(musicLibraryProvider).value ?? const MusicLibrary();
-      final n = ref.read(musicLibraryProvider.notifier);
-      return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _MenuRow(
-              icon: Icons.add_rounded,
-              label: l10n.musNewPlaylist,
-              onTap: () async {
-                final name = await _askName(context, l10n.musNewPlaylist);
-                if (name == null) return;
-                await n.createPlaylist(name, trackIds: [trackId]);
-                if (context.mounted) Navigator.of(context).pop();
-              },
+Future<void> showAddToPlaylist(BuildContext context, String trackId) =>
+    PrismSheet.show<void>(
+      context: context,
+      title: context.l10n.musAddToPlaylist,
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final l10n = context.l10n;
+          final lib =
+              ref.watch(musicLibraryProvider).value ?? const MusicLibrary();
+          final n = ref.read(musicLibraryProvider.notifier);
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _MenuRow(
+                  icon: Icons.add_rounded,
+                  label: l10n.musNewPlaylist,
+                  onTap: () async {
+                    final name = await _askName(context, l10n.musNewPlaylist);
+                    if (name == null) return;
+                    await n.createPlaylist(name, trackIds: [trackId]);
+                    if (context.mounted) Navigator.of(context).pop();
+                  },
+                ),
+                for (final pl in lib.playlists)
+                  _MenuRow(
+                    icon: pl.trackIds.contains(trackId)
+                        ? Icons.check_rounded
+                        : Icons.queue_music_rounded,
+                    label: pl.name,
+                    onTap: () async {
+                      await n.addToPlaylist(pl.id, trackId);
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                        PrismToast.success(
+                          context,
+                          message: l10n.musAddedTo(pl.name),
+                        );
+                      }
+                    },
+                  ),
+              ],
             ),
-            for (final pl in lib.playlists)
-              _MenuRow(
-                icon: pl.trackIds.contains(trackId) ? Icons.check_rounded : Icons.queue_music_rounded,
-                label: pl.name,
-                onTap: () async {
-                  await n.addToPlaylist(pl.id, trackId);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                    PrismToast.success(context, message: l10n.musAddedTo(pl.name));
-                  }
-                },
-              ),
-          ],
-        ),
-      );
-    },
-  ),
-);
+          );
+        },
+      ),
+    );
 
-Future<String?> _askName(BuildContext context, String title, {String initial = ''}) async {
+Future<String?> _askName(
+  BuildContext context,
+  String title, {
+  String initial = '',
+}) async {
   final controller = TextEditingController(text: initial);
   final l10n = context.l10n;
   final ok = await PrismDialog.show<bool>(
@@ -497,14 +659,26 @@ Future<String?> _askName(BuildContext context, String title, {String initial = '
     builder: (context) => Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        PrismTextField(controller: controller, autofocus: true, labelText: l10n.musPlaylistName, onSubmitted: (_) => Navigator.of(context).pop(true)),
+        PrismTextField(
+          controller: controller,
+          autofocus: true,
+          labelText: l10n.musPlaylistName,
+          onSubmitted: (_) => Navigator.of(context).pop(true),
+        ),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            PrismButton(label: l10n.cancel, onPressed: () => Navigator.of(context).pop(false)),
+            PrismButton(
+              label: l10n.cancel,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
             const SizedBox(width: 8),
-            PrismButton(label: l10n.save, tone: PrismButtonTone.filled, onPressed: () => Navigator.of(context).pop(true)),
+            PrismButton(
+              label: l10n.save,
+              tone: PrismButtonTone.filled,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
           ],
         ),
       ],
@@ -535,7 +709,8 @@ class _Playlists extends ConsumerWidget {
           },
         ),
         const SizedBox(height: 10),
-        if (lib.playlists.isEmpty) _Empty(title: l10n.musNoPlaylists, message: l10n.musNoPlaylistsHelp),
+        if (lib.playlists.isEmpty)
+          _Empty(title: l10n.musNoPlaylists, message: l10n.musNoPlaylistsHelp),
         ReorderableListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -559,8 +734,16 @@ class _Playlists extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(pl.name, style: theme.textTheme.bodyLarge, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          Text(l10n.musSongCount(tracks.length), style: theme.textTheme.bodySmall),
+                          Text(
+                            pl.name,
+                            style: theme.textTheme.bodyLarge,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            l10n.musSongCount(tracks.length),
+                            style: theme.textTheme.bodySmall,
+                          ),
                         ],
                       ),
                     ),
@@ -568,7 +751,10 @@ class _Playlists extends ConsumerWidget {
                       index: i,
                       child: Semantics(
                         label: l10n.musReorder,
-                        child: const Padding(padding: EdgeInsets.all(10), child: Icon(Icons.drag_handle_rounded)),
+                        child: const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Icon(Icons.drag_handle_rounded),
+                        ),
                       ),
                     ),
                   ],
@@ -582,10 +768,12 @@ class _Playlists extends ConsumerWidget {
   }
 }
 
-Future<void> showPlaylist(BuildContext context, String playlistId) => PrismSheet.showFullScreen<void>(
-  context: context,
-  builder: (context, scroll) => _PlaylistSheet(playlistId: playlistId, scroll: scroll),
-);
+Future<void> showPlaylist(BuildContext context, String playlistId) =>
+    PrismSheet.showFullScreen<void>(
+      context: context,
+      builder: (context, scroll) =>
+          _PlaylistSheet(playlistId: playlistId, scroll: scroll),
+    );
 
 class _PlaylistSheet extends ConsumerWidget {
   const _PlaylistSheet({required this.playlistId, required this.scroll});
@@ -622,8 +810,13 @@ class _PlaylistSheet extends ConsumerWidget {
                 PrismButton(
                   label: l10n.musRename,
                   onPressed: () async {
-                    final name = await _askName(context, l10n.musRename, initial: pl.name);
-                    if (name != null) await n.updatePlaylist(pl.copyWith(name: name));
+                    final name = await _askName(
+                      context,
+                      l10n.musRename,
+                      initial: pl.name,
+                    );
+                    if (name != null)
+                      await n.updatePlaylist(pl.copyWith(name: name));
                   },
                 ),
                 PrismButton(
@@ -648,7 +841,10 @@ class _PlaylistSheet extends ConsumerWidget {
           ),
           Expanded(
             child: tracks.isEmpty
-                ? _Empty(title: l10n.musPlaylistEmpty, message: l10n.musPlaylistEmptyHelp)
+                ? _Empty(
+                    title: l10n.musPlaylistEmpty,
+                    message: l10n.musPlaylistEmptyHelp,
+                  )
                 : ReorderableListView.builder(
                     scrollController: scroll,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -673,8 +869,14 @@ class _PlaylistSheet extends ConsumerWidget {
                             size: 40,
                             iconSize: 20,
                             onPressed: () async {
-                              if (await confirmIfAsked(context, ref, title: l10n.musRemoveFromPlaylist)) {
-                                await n.updatePlaylist(pl.copyWith(trackIds: [...ids]..removeAt(i)));
+                              if (await confirmIfAsked(
+                                context,
+                                ref,
+                                title: l10n.musRemoveFromPlaylist,
+                              )) {
+                                await n.updatePlaylist(
+                                  pl.copyWith(trackIds: [...ids]..removeAt(i)),
+                                );
                               }
                             },
                           ),
@@ -682,7 +884,10 @@ class _PlaylistSheet extends ConsumerWidget {
                             index: i,
                             child: Semantics(
                               label: l10n.musReorder,
-                              child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.drag_handle_rounded)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(Icons.drag_handle_rounded),
+                              ),
                             ),
                           ),
                         ],
@@ -696,11 +901,12 @@ class _PlaylistSheet extends ConsumerWidget {
   }
 }
 
-Future<void> showTrackEditor(BuildContext context, String trackId) => PrismSheet.show<void>(
-  context: context,
-  title: context.l10n.musEditInfo,
-  builder: (context) => _TrackEditor(trackId: trackId),
-);
+Future<void> showTrackEditor(BuildContext context, String trackId) =>
+    PrismSheet.show<void>(
+      context: context,
+      title: context.l10n.musEditInfo,
+      builder: (context) => _TrackEditor(trackId: trackId),
+    );
 
 class _TrackEditor extends ConsumerStatefulWidget {
   const _TrackEditor({required this.trackId});
@@ -738,7 +944,12 @@ class _TrackEditorState extends ConsumerState<_TrackEditor> {
     if (track == null) return const SizedBox.shrink();
     final n = ref.read(musicLibraryProvider.notifier);
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        16 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -755,8 +966,11 @@ class _TrackEditorState extends ConsumerState<_TrackEditor> {
                       label: l10n.musChooseCover,
                       density: PrismControlDensity.compact,
                       onPressed: () async {
-                        final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1000, imageQuality: 88);
-                        if (f != null) await n.setArt(track.id, await f.readAsBytes());
+                        final f = await PrismImageCrop.pickBytes(
+                          context,
+                          spec: PrismCropSpec.square,
+                        );
+                        if (f != null) await n.setArt(track.id, f);
                       },
                     ),
                     if (track.art != null)
@@ -785,7 +999,11 @@ class _TrackEditorState extends ConsumerState<_TrackEditor> {
             onPressed: () async {
               final title = _title.text.trim();
               await n.updateTrack(
-                track.copyWith(title: title.isEmpty ? track.title : title, artist: _artist.text.trim(), album: _album.text.trim()),
+                track.copyWith(
+                  title: title.isEmpty ? track.title : title,
+                  artist: _artist.text.trim(),
+                  album: _album.text.trim(),
+                ),
               );
               if (context.mounted) Navigator.of(context).pop();
             },

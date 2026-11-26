@@ -80,10 +80,7 @@ void main() {
     const side = 8000;
     expect(side * side, greaterThan(AvatarNormalizer.maxSourcePixels));
     final huge = _jpegWithDeclaredDimensions(side, side);
-    expect(
-      () => AvatarNormalizer.normalize(huge),
-      throwsA(isA<StateError>()),
-    );
+    expect(() => AvatarNormalizer.normalize(huge), throwsA(isA<StateError>()));
   });
 
   // Regression: every member save (any field, not just avatar) used to re-run
@@ -175,7 +172,10 @@ void main() {
 
     // The animated GIF (index 2) re-encodes to a budget-fitting JPEG.
     expect(batch[2], isNotNull);
-    expect(batch[2]!.length, lessThanOrEqualTo(AvatarNormalizer.targetMaxBytes));
+    expect(
+      batch[2]!.length,
+      lessThanOrEqualTo(AvatarNormalizer.targetMaxBytes),
+    );
     expect(img.decodeJpg(batch[2]!), isNotNull);
     // Conforming JPEG (index 1) returns verbatim through the batch path.
     expect(_bytesEqual(batch[1]!, conformingJpeg), isTrue);

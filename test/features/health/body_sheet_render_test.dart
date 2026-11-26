@@ -25,25 +25,40 @@ void main() {
       final rec = ui.PictureRecorder();
       final c = Canvas(rec);
       c.scale(scale);
-      c.drawRect(Offset.zero & s.size, Paint()..color = const Color(0xFF1E1B22));
+      c.drawRect(
+        Offset.zero & s.size,
+        Paint()..color = const Color(0xFF1E1B22),
+      );
       c.drawPath(s.outline, Paint()..color = const Color(0xFF2E2A33));
       for (final sh in s.shapes) {
-        c.drawPath(sh.path, Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.5
-          ..color = Colors.purpleAccent.withValues(alpha: 0.5));
+        c.drawPath(
+          sh.path,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.5
+            ..color = Colors.purpleAccent.withValues(alpha: 0.5),
+        );
       }
       for (final d in s.details) {
-        c.drawPath(d, Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.8
-          ..color = Colors.white38);
+        c.drawPath(
+          d,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.8
+            ..color = Colors.white38,
+        );
       }
-      c.drawPath(s.outline, Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.4
-        ..color = Colors.white70);
-      final img = await rec.endRecording().toImage((s.size.width * scale).round(), (s.size.height * scale).round());
+      c.drawPath(
+        s.outline,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.4
+          ..color = Colors.white70,
+      );
+      final img = await rec.endRecording().toImage(
+        (s.size.width * scale).round(),
+        (s.size.height * scale).round(),
+      );
       final png = await img.toByteData(format: ui.ImageByteFormat.png);
       File('$dir/${v.name}.png').writeAsBytesSync(png!.buffer.asUint8List());
     }

@@ -27,7 +27,10 @@ class StatusDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color(status.color),
         borderRadius: prismRound(context),
-        border: Border.all(color: Theme.of(context).colorScheme.surface, width: 2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.surface,
+          width: 2,
+        ),
       ),
       child: Icon(status.icon, size: size * 0.55, color: Colors.white),
     ),
@@ -45,7 +48,10 @@ class StatusLine extends StatelessWidget {
     final theme = Theme.of(context);
     final until = status.expiresAt == null
         ? null
-        : tr(context, 'until ', 'hasta ') + DateFormat.MMMd(context.dateLocale).add_jm().format(status.expiresAt!);
+        : tr(context, 'until ', 'hasta ') +
+              DateFormat.MMMd(
+                context.dateLocale,
+              ).add_jm().format(status.expiresAt!);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -61,7 +67,9 @@ class StatusLine extends StatelessWidget {
             ].join(' · '),
             maxLines: compact ? 1 : 2,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
       ],
@@ -83,7 +91,10 @@ class MemberStatusPanel extends ConsumerWidget {
       onTap: () => showStatusEditor(context, memberId),
       child: Row(
         children: [
-          if (s != null) StatusDot(status: s, size: 22) else Icon(PhosphorIcons.circleDashed(), size: 22),
+          if (s != null)
+            StatusDot(status: s, size: 22)
+          else
+            Icon(PhosphorIcons.circleDashed(), size: 22),
           const SizedBox(width: 10),
           Expanded(
             child: s == null
@@ -97,10 +108,12 @@ class MemberStatusPanel extends ConsumerWidget {
   }
 }
 
-Future<void> showStatusEditor(BuildContext context, String memberId) => PrismSheet.showFullScreen(
-  context: context,
-  builder: (ctx, scroll) => _StatusEditor(memberId: memberId, scroll: scroll),
-);
+Future<void> showStatusEditor(BuildContext context, String memberId) =>
+    PrismSheet.showFullScreen(
+      context: context,
+      builder: (ctx, scroll) =>
+          _StatusEditor(memberId: memberId, scroll: scroll),
+    );
 
 class _StatusEditor extends ConsumerStatefulWidget {
   const _StatusEditor({required this.memberId, required this.scroll});
@@ -141,7 +154,9 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
   @override
   Widget build(BuildContext context) {
     final types = ref.watch(statusTypesProvider(_lang(context)));
-    final current = ref.watch(alterStatusesProvider(_lang(context)))[widget.memberId];
+    final current = ref.watch(
+      alterStatusesProvider(_lang(context)),
+    )[widget.memberId];
     if (!_init) {
       _init = true;
       if (current != null) {
@@ -177,7 +192,11 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
           children: [
             for (final t in types)
               PrismChip(
-                avatar: Icon(iconForKey(t.iconKey), size: 16, color: Color(t.color)),
+                avatar: Icon(
+                  iconForKey(t.iconKey),
+                  size: 16,
+                  color: Color(t.color),
+                ),
                 label: t.title,
                 selected: _type?.key == t.key,
                 selectedColor: Color(t.color),
@@ -193,21 +212,40 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
         ),
         if (_type != null) ...[
           const SizedBox(height: 16),
-          PrismTextField(controller: _title, labelText: tr(context, 'Status title', 'Título del estado')),
+          PrismTextField(
+            controller: _title,
+            labelText: tr(context, 'Status title', 'Título del estado'),
+          ),
           const SizedBox(height: 10),
-          PrismTextField(controller: _message, labelText: tr(context, 'Message (optional)', 'Mensaje (opcional)'), maxLines: 3, minLines: 1),
+          PrismTextField(
+            controller: _message,
+            labelText: tr(context, 'Message (optional)', 'Mensaje (opcional)'),
+            maxLines: 3,
+            minLines: 1,
+          ),
           const SizedBox(height: 10),
           PrismTextField(
             controller: _activity,
-            labelText: tr(context, 'Activity or current interest (optional)', 'Actividad o interés actual (opcional)'),
+            labelText: tr(
+              context,
+              'Activity or current interest (optional)',
+              'Actividad o interés actual (opcional)',
+            ),
             prefixIcon: Icon(PhosphorIcons.target()),
           ),
           const SizedBox(height: 14),
           TrackerLabel(tr(context, 'Colour', 'Color')),
-          ColorChoiceRow(value: _color, onChanged: (c) => setState(() => _color = c)),
+          ColorChoiceRow(
+            value: _color,
+            onChanged: (c) => setState(() => _color = c),
+          ),
           const SizedBox(height: 14),
           TrackerLabel(tr(context, 'Icon', 'Icono')),
-          IconChoiceGrid(value: _icon, color: _color == null ? null : Color(_color!), onChanged: (k) => setState(() => _icon = k)),
+          IconChoiceGrid(
+            value: _icon,
+            color: _color == null ? null : Color(_color!),
+            onChanged: (k) => setState(() => _icon = k),
+          ),
           const SizedBox(height: 14),
           TrackerLabel(tr(context, 'Clear after', 'Borrar después de')),
           Wrap(
@@ -226,15 +264,35 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
               PrismChip(
                 label: _customUntil == null
                     ? tr(context, 'Pick time…', 'Elegir hora…')
-                    : DateFormat.MMMd(context.dateLocale).add_jm().format(_customUntil!),
+                    : DateFormat.MMMd(
+                        context.dateLocale,
+                      ).add_jm().format(_customUntil!),
                 selected: _customUntil != null,
                 onTap: () async {
                   final now = DateTime.now();
-                  final d = await showPrismDatePicker(context: context, firstDate: now, lastDate: now.add(const Duration(days: 365)), initialDate: now);
+                  final d = await showPrismDatePicker(
+                    context: context,
+                    firstDate: now,
+                    lastDate: now.add(const Duration(days: 365)),
+                    initialDate: now,
+                  );
                   if (d == null || !context.mounted) return;
-                  final t = await showPrismTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(now.add(const Duration(hours: 1))));
+                  final t = await showPrismTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.fromDateTime(
+                      now.add(const Duration(hours: 1)),
+                    ),
+                  );
                   if (t == null) return;
-                  setState(() => _customUntil = DateTime(d.year, d.month, d.day, t.hour, t.minute));
+                  setState(
+                    () => _customUntil = DateTime(
+                      d.year,
+                      d.month,
+                      d.day,
+                      t.hour,
+                      t.minute,
+                    ),
+                  );
                 },
               ),
             ],
@@ -242,7 +300,11 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
           const SizedBox(height: 8),
           PrismSwitchRow(
             title: tr(context, 'Keep private', 'Mantener privado'),
-            subtitle: tr(context, 'Only shown on this alter’s profile, not on Home or lists.', 'Solo se muestra en el perfil de este alter, no en Inicio ni listas.'),
+            subtitle: tr(
+              context,
+              'Only shown on this alter’s profile, not on Home or lists.',
+              'Solo se muestra en el perfil de este alter, no en Inicio ni listas.',
+            ),
             value: _private,
             onChanged: (v) => setState(() => _private = v),
           ),
@@ -259,7 +321,11 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
           ],
           const SizedBox(height: 8),
           Text(
-            tr(context, 'Previous statuses are kept in the status history.', 'Los estados anteriores se guardan en el historial.'),
+            tr(
+              context,
+              'Previous statuses are kept in the status history.',
+              'Los estados anteriores se guardan en el historial.',
+            ),
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -273,28 +339,36 @@ class _StatusEditorState extends ConsumerState<_StatusEditor> {
     DateTime? until = _customUntil;
     if (until == null && _expiry != null) {
       final now = DateTime.now();
-      until = _expiry!.isNegative ? DateTime(now.year, now.month, now.day, 23, 59) : now.add(_expiry!);
+      until = _expiry!.isNegative
+          ? DateTime(now.year, now.month, now.day, 23, 59)
+          : now.add(_expiry!);
     }
-    await ref.read(statusActionsProvider).set(
-      memberId: widget.memberId,
-      type: t,
-      title: _title.text,
-      message: _message.text.trim().isEmpty ? null : _message.text.trim(),
-      activity: _activity.text,
-      color: _color,
-      iconKey: _icon,
-      expiresAt: until,
-      isPrivate: _private,
-    );
+    await ref
+        .read(statusActionsProvider)
+        .set(
+          memberId: widget.memberId,
+          type: t,
+          title: _title.text,
+          message: _message.text.trim().isEmpty ? null : _message.text.trim(),
+          activity: _activity.text,
+          color: _color,
+          iconKey: _icon,
+          expiresAt: until,
+          isPrivate: _private,
+        );
     if (mounted) Navigator.of(context).pop();
   }
 }
 
 IconData iconForKey(String k) => iconFor(k);
 
-Future<void> showCustomStatusEditor(BuildContext context, {TrackerRecord? editing}) => PrismSheet.showFullScreen(
+Future<void> showCustomStatusEditor(
+  BuildContext context, {
+  TrackerRecord? editing,
+}) => PrismSheet.showFullScreen(
   context: context,
-  builder: (ctx, scroll) => _CustomStatusEditor(editing: editing, scroll: scroll),
+  builder: (ctx, scroll) =>
+      _CustomStatusEditor(editing: editing, scroll: scroll),
 );
 
 class _CustomStatusEditor extends ConsumerStatefulWidget {
@@ -303,7 +377,8 @@ class _CustomStatusEditor extends ConsumerStatefulWidget {
   final ScrollController scroll;
 
   @override
-  ConsumerState<_CustomStatusEditor> createState() => _CustomStatusEditorState();
+  ConsumerState<_CustomStatusEditor> createState() =>
+      _CustomStatusEditorState();
 }
 
 class _CustomStatusEditorState extends ConsumerState<_CustomStatusEditor> {
@@ -322,33 +397,57 @@ class _CustomStatusEditorState extends ConsumerState<_CustomStatusEditor> {
   @override
   Widget build(BuildContext context) {
     return TrackerEditorScaffold(
-      title: widget.editing == null ? tr(context, 'New custom status', 'Nuevo estado personalizado') : tr(context, 'Edit status', 'Editar estado'),
+      title: widget.editing == null
+          ? tr(context, 'New custom status', 'Nuevo estado personalizado')
+          : tr(context, 'Edit status', 'Editar estado'),
       canSave: _name.text.trim().isNotEmpty,
       scrollController: widget.scroll,
       onSave: () async {
-        await ref.read(statusActionsProvider).saveCustom(
-          editing: widget.editing,
-          name: _name.text.trim(),
-          icon: _icon,
-          color: _color,
-          description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
-        );
+        await ref
+            .read(statusActionsProvider)
+            .saveCustom(
+              editing: widget.editing,
+              name: _name.text.trim(),
+              icon: _icon,
+              color: _color,
+              description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
+            );
         if (context.mounted) Navigator.of(context).pop();
       },
       children: [
         Center(
-          child: PrismCircleAvatar(radius: 32, backgroundColor: Color(_color), child: Icon(iconForKey(_icon), color: Colors.white, size: 28)),
+          child: PrismCircleAvatar(
+            radius: 32,
+            backgroundColor: Color(_color),
+            child: Icon(iconForKey(_icon), color: Colors.white, size: 28),
+          ),
         ),
         const SizedBox(height: 12),
-        PrismTextField(controller: _name, labelText: tr(context, 'Name', 'Nombre'), onChanged: (_) => setState(() {})),
+        PrismTextField(
+          controller: _name,
+          labelText: tr(context, 'Name', 'Nombre'),
+          onChanged: (_) => setState(() {}),
+        ),
         const SizedBox(height: 10),
-        PrismTextField(controller: _desc, labelText: tr(context, 'Description', 'Descripción'), maxLines: 3, minLines: 1),
+        PrismTextField(
+          controller: _desc,
+          labelText: tr(context, 'Description', 'Descripción'),
+          maxLines: 3,
+          minLines: 1,
+        ),
         const SizedBox(height: 14),
         TrackerLabel(tr(context, 'Colour', 'Color')),
-        ColorChoiceRow(value: _color, onChanged: (c) => setState(() => _color = c)),
+        ColorChoiceRow(
+          value: _color,
+          onChanged: (c) => setState(() => _color = c),
+        ),
         const SizedBox(height: 14),
         TrackerLabel(tr(context, 'Icon', 'Icono')),
-        IconChoiceGrid(value: _icon, color: Color(_color), onChanged: (k) => setState(() => _icon = k)),
+        IconChoiceGrid(
+          value: _icon,
+          color: Color(_color),
+          onChanged: (k) => setState(() => _icon = k),
+        ),
         if (widget.editing != null) ...[
           const SizedBox(height: 16),
           PrismButton(
@@ -358,14 +457,24 @@ class _CustomStatusEditorState extends ConsumerState<_CustomStatusEditor> {
             onPressed: () async {
               final ok = await PrismDialog.confirm(
                 context: context,
-                title: tr(context, 'Delete this custom status?', '¿Eliminar este estado personalizado?'),
-                message: tr(context, 'Alters currently using it keep their status text.', 'Los alters que lo usan conservan su texto.'),
+                title: tr(
+                  context,
+                  'Delete this custom status?',
+                  '¿Eliminar este estado personalizado?',
+                ),
+                message: tr(
+                  context,
+                  'Alters currently using it keep their status text.',
+                  'Los alters que lo usan conservan su texto.',
+                ),
                 destructive: true,
                 confirmLabel: tr(context, 'Delete', 'Eliminar'),
                 cancelLabel: context.l10n.cancel,
               );
               if (!ok) return;
-              await ref.read(trackerNotifierProvider.notifier).delete(widget.editing!.id, children: false);
+              await ref
+                  .read(trackerNotifierProvider.notifier)
+                  .delete(widget.editing!.id, children: false);
               if (context.mounted) Navigator.of(context).pop();
             },
           ),
@@ -383,9 +492,16 @@ class StatusesDashboardCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statuses = ref.watch(publicStatusesProvider(_lang(context)));
-    final members = {for (final m in ref.watch(activeMembersProvider).value ?? const <Member>[]) m.id: m};
+    final members = {
+      for (final m
+          in ref.watch(activeMembersProvider).value ?? const <Member>[])
+        m.id: m,
+    };
     final preferDisplay = ref.watch(memberNamePreferDisplayProvider);
-    final shown = [for (final e in statuses.entries) if (members.containsKey(e.key)) e];
+    final shown = [
+      for (final e in statuses.entries)
+        if (members.containsKey(e.key)) e,
+    ];
     final theme = Theme.of(context);
     return PrismSurface(
       onTap: onOpenAll,
@@ -394,16 +510,30 @@ class StatusesDashboardCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(PhosphorIcons.chatCircleDots(), color: theme.colorScheme.primary),
+              Icon(
+                PhosphorIcons.chatCircleDots(),
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 8),
-              Expanded(child: Text(tr(context, 'Statuses', 'Estados'), style: theme.textTheme.titleSmall)),
+              Expanded(
+                child: Text(
+                  tr(context, 'Statuses', 'Estados'),
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
               Icon(AppIcons.chevronRight, size: 18),
             ],
           ),
           const SizedBox(height: 8),
           if (shown.isEmpty)
-            Text(tr(context, 'No one has a status right now. Tap to set one.', 'Nadie tiene estado ahora. Toca para poner uno.'),
-                style: theme.textTheme.bodySmall)
+            Text(
+              tr(
+                context,
+                'No one has a status right now. Tap to set one.',
+                'Nadie tiene estado ahora. Toca para poner uno.',
+              ),
+              style: theme.textTheme.bodySmall,
+            )
           else
             for (final e in shown.take(6))
               InkWell(
@@ -417,13 +547,20 @@ class StatusesDashboardCard extends ConsumerWidget {
                         children: [
                           MemberAvatar(
                             avatarImageData: members[e.key]!.avatarImageData,
-                            memberName: members[e.key]!.effectiveName(preferDisplayName: preferDisplay),
+                            memberName: members[e.key]!.effectiveName(
+                              preferDisplayName: preferDisplay,
+                            ),
                             emoji: members[e.key]!.emoji,
-                            customColorEnabled: members[e.key]!.customColorEnabled,
+                            customColorEnabled:
+                                members[e.key]!.customColorEnabled,
                             customColorHex: members[e.key]!.customColorHex,
                             size: 32,
                           ),
-                          Positioned(right: -3, bottom: -3, child: StatusDot(status: e.value, size: 14)),
+                          Positioned(
+                            right: -3,
+                            bottom: -3,
+                            child: StatusDot(status: e.value, size: 14),
+                          ),
                         ],
                       ),
                       const SizedBox(width: 10),
@@ -431,7 +568,12 @@ class StatusesDashboardCard extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(members[e.key]!.effectiveName(preferDisplayName: preferDisplay), style: theme.textTheme.bodyMedium),
+                            Text(
+                              members[e.key]!.effectiveName(
+                                preferDisplayName: preferDisplay,
+                              ),
+                              style: theme.textTheme.bodyMedium,
+                            ),
                             StatusLine(status: e.value, compact: true),
                           ],
                         ),

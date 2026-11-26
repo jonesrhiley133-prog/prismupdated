@@ -37,31 +37,82 @@ class MapEdge {
 const _directionalStyles = {'parent', 'mentor', 'protective'};
 
 /// Edges for a view (pure, so it can be tested).
-List<MapEdge> mapEdges({required List<Rel> rels, required Set<String> alterIds, required RelSettings settings, required RelMapView view, String? focus, Set<String> hiddenCategories = const {}, bool hidePrivate = false}) {
+List<MapEdge> mapEdges({
+  required List<Rel> rels,
+  required Set<String> alterIds,
+  required RelSettings settings,
+  required RelMapView view,
+  String? focus,
+  Set<String> hiddenCategories = const {},
+  bool hidePrivate = false,
+}) {
   final out = <MapEdge>[];
   for (final r in rels) {
     final a = r.a, b = r.b;
-    if (a == null || b == null || !alterIds.contains(a) || !alterIds.contains(b)) continue;
+    if (a == null ||
+        b == null ||
+        !alterIds.contains(a) ||
+        !alterIds.contains(b))
+      continue;
     if (hidePrivate && r.private) continue;
-    var labels = [for (final l in r.labels) if (!hiddenCategories.contains(categoryOf(l, settings))) l];
+    var labels = [
+      for (final l in r.labels)
+        if (!hiddenCategories.contains(categoryOf(l, settings))) l,
+    ];
     labels = switch (view) {
-      RelMapView.family => [for (final l in labels) if (categoryOf(l, settings) == 'familial') l],
-      RelMapView.romantic => [for (final l in labels) if (categoryOf(l, settings) == 'romantic') l],
-      RelMapView.social => [for (final l in labels) if (categoryOf(l, settings) == 'platonic') l],
+      RelMapView.family => [
+        for (final l in labels)
+          if (categoryOf(l, settings) == 'familial') l,
+      ],
+      RelMapView.romantic => [
+        for (final l in labels)
+          if (categoryOf(l, settings) == 'romantic') l,
+      ],
+      RelMapView.social => [
+        for (final l in labels)
+          if (categoryOf(l, settings) == 'platonic') l,
+      ],
       _ => labels,
     };
     if (labels.isEmpty) continue;
-    if (view == RelMapView.individual && focus != null && !r.involves(focus)) continue;
+    if (view == RelMapView.individual && focus != null && !r.involves(focus))
+      continue;
     final styles = <String>[];
     for (final l in labels) {
-      final s = isComplicated(r) && l == labels.first && r.status == 'complicated' ? 'complicated' : styleOf(l, settings);
+      final s =
+          isComplicated(r) && l == labels.first && r.status == 'complicated'
+          ? 'complicated'
+          : styleOf(l, settings);
       if (!styles.contains(s)) styles.add(s);
     }
     final first = relLabelIndex[labels.first];
     // Directional labels are stored "A is B's X"; parent → child arrows point at B.
-    final dir = first != null && first.directional && _directionalStyles.contains(first.style) && const {'parent', 'grandparent', 'guardian', 'mentor', 'protector', 'caregiver'}.contains(first.key);
-    final inv = first != null && first.directional && const {'child', 'grandchild', 'ward', 'mentee', 'protected', 'dependent'}.contains(first.key);
-    out.add(inv ? MapEdge(r, b, a, styles, true) : MapEdge(r, a, b, styles, dir));
+    final dir =
+        first != null &&
+        first.directional &&
+        _directionalStyles.contains(first.style) &&
+        const {
+          'parent',
+          'grandparent',
+          'guardian',
+          'mentor',
+          'protector',
+          'caregiver',
+        }.contains(first.key);
+    final inv =
+        first != null &&
+        first.directional &&
+        const {
+          'child',
+          'grandchild',
+          'ward',
+          'mentee',
+          'protected',
+          'dependent',
+        }.contains(first.key);
+    out.add(
+      inv ? MapEdge(r, b, a, styles, true) : MapEdge(r, a, b, styles, dir),
+    );
   }
   return out;
 }
@@ -69,8 +120,14 @@ List<MapEdge> mapEdges({required List<Rel> rels, required Set<String> alterIds, 
 List<double> _layoutJob(Map<String, Object> job) {
   final nodes = (job['nodes']! as List).cast<String>();
   final edges = (job['edges']! as List).cast<List<Object?>>();
-  final res = networkLayout(nodes, [for (final e in edges) (e[0]! as String, e[1]! as String)]);
-  return [res.size.width, res.size.height, for (final n in nodes) ...[res.positions[n]!.dx, res.positions[n]!.dy]];
+  final res = networkLayout(nodes, [
+    for (final e in edges) (e[0]! as String, e[1]! as String),
+  ]);
+  return [
+    res.size.width,
+    res.size.height,
+    for (final n in nodes) ...[res.positions[n]!.dx, res.positions[n]!.dy],
+  ];
 }
 
 class RelationshipMap extends ConsumerStatefulWidget {
@@ -107,7 +164,9 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
   Size? _viewport;
   int _job = 0;
 
-  String get _posKey => widget.view == RelMapView.individual ? 'individual:${widget.focus}' : widget.view.name;
+  String get _posKey => widget.view == RelMapView.individual
+      ? 'individual:${widget.focus}'
+      : widget.view.name;
 
   @override
   void dispose() {
@@ -131,8 +190,15 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
   void resetView() {
     final l = _layout, vp = _viewport;
     if (l == null || vp == null) return;
-    final s = math.min(1.2, math.max(0.2, math.min(vp.width / l.size.width, vp.height / l.size.height)));
-    final dx = (vp.width - l.size.width * s) / 2, dy = (vp.height - l.size.height * s) / 2;
+    final s = math.min(
+      1.2,
+      math.max(
+        0.2,
+        math.min(vp.width / l.size.width, vp.height / l.size.height),
+      ),
+    );
+    final dx = (vp.width - l.size.width * s) / 2,
+        dy = (vp.height - l.size.height * s) / 2;
     _tc.value = Matrix4.identity()
       ..translateByDouble(dx, dy, 0, 1)
       ..scaleByDouble(s, s, 1, 1);
@@ -144,7 +210,12 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     if (p == null || vp == null) return;
     const s = 1.0;
     _tc.value = Matrix4.identity()
-      ..translateByDouble(vp.width / 2 - p.dx * s, vp.height / 2 - p.dy * s, 0, 1)
+      ..translateByDouble(
+        vp.width / 2 - p.dx * s,
+        vp.height / 2 - p.dy * s,
+        0,
+        1,
+      )
       ..scaleByDouble(s, s, 1, 1);
     setState(() {
       _selNode = id;
@@ -163,12 +234,20 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
 
   Offset? _pos(String id) => _manual[id] ?? _layout?.positions[id];
 
-  void _ensureLayout(List<String> nodes, List<MapEdge> edges, RelSettings settings) {
-    final sig = '${widget.view.name}|${widget.focus}|${nodes.join(',')}|${[for (final e in edges) '${e.a}-${e.b}'].join(',')}';
+  void _ensureLayout(
+    List<String> nodes,
+    List<MapEdge> edges,
+    RelSettings settings,
+  ) {
+    final sig =
+        '${widget.view.name}|${widget.focus}|${nodes.join(',')}|${[for (final e in edges) '${e.a}-${e.b}'].join(',')}';
     if (sig == _layoutKey) return;
     _layoutKey = sig;
     final saved = settings.positions[_posKey] ?? const {};
-    _manual = {for (final e in saved.entries) if (nodes.contains(e.key)) e.key: Offset(e.value.$1, e.value.$2)};
+    _manual = {
+      for (final e in saved.entries)
+        if (nodes.contains(e.key)) e.key: Offset(e.value.$1, e.value.$2),
+    };
     final job = ++_job;
     var sync = true;
     void done(RelLayoutResult r) {
@@ -194,14 +273,33 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
       case RelMapView.family:
         final fe = <(String, String, int)>[];
         for (final e in edges) {
-          final l = e.rel.labels.firstWhere((x) => categoryOf(x, settings) == 'familial', orElse: () => '');
-          final gen = const {'parent': 1, 'guardian': 1, 'grandparent': 2, 'aunt_uncle': 1, 'child': -1, 'ward': -1, 'grandchild': -2, 'niece_nephew': -1}[l] ?? 0;
+          final l = e.rel.labels.firstWhere(
+            (x) => categoryOf(x, settings) == 'familial',
+            orElse: () => '',
+          );
+          final gen =
+              const {
+                'parent': 1,
+                'guardian': 1,
+                'grandparent': 2,
+                'aunt_uncle': 1,
+                'child': -1,
+                'ward': -1,
+                'grandchild': -2,
+                'niece_nephew': -1,
+              }[l] ??
+              0;
           final ra = e.rel.a!, rb = e.rel.b!;
           fe.add(gen >= 0 ? (ra, rb, gen) : (rb, ra, -gen));
         }
         done(familyLayout(nodes, fe));
       case RelMapView.individual:
-        done(radialLayout(widget.focus ?? nodes.first, [for (final n in nodes) if (n != widget.focus) n]));
+        done(
+          radialLayout(widget.focus ?? nodes.first, [
+            for (final n in nodes)
+              if (n != widget.focus) n,
+          ]),
+        );
       default:
         final pairs = [for (final e in edges) (e.a, e.b)];
         if (nodes.length <= 60) {
@@ -209,10 +307,17 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
         } else {
           compute(_layoutJob, {
             'nodes': nodes,
-            'edges': [for (final p in pairs) [p.$1, p.$2]],
+            'edges': [
+              for (final p in pairs) [p.$1, p.$2],
+            ],
           }).then((v) {
             sync = false;
-            done(RelLayoutResult({for (var i = 0; i < nodes.length; i++) nodes[i]: Offset(v[2 + i * 2], v[3 + i * 2])}, Size(v[0], v[1])));
+            done(
+              RelLayoutResult({
+                for (var i = 0; i < nodes.length; i++)
+                  nodes[i]: Offset(v[2 + i * 2], v[3 + i * 2]),
+              }, Size(v[0], v[1])),
+            );
           });
         }
     }
@@ -241,7 +346,10 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     final ab = b - a;
     final len2 = ab.dx * ab.dx + ab.dy * ab.dy;
     if (len2 == 0) return (p - a).distance;
-    final t = (((p - a).dx * ab.dx + (p - a).dy * ab.dy) / len2).clamp(0.0, 1.0);
+    final t = (((p - a).dx * ab.dx + (p - a).dy * ab.dy) / len2).clamp(
+      0.0,
+      1.0,
+    );
     return (p - (a + ab * t)).distance;
   }
 
@@ -250,12 +358,33 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     final settings = ref.watch(relSettingsProvider);
     final alters = ref.watch(relAlterIndexProvider);
     final rels = ref.watch(relsProvider);
-    final edges = mapEdges(rels: rels, alterIds: alters.keys.toSet(), settings: settings, view: widget.view, focus: widget.focus, hiddenCategories: widget.hiddenCategories, hidePrivate: settings.hidePrivate);
-    final involved = {for (final e in edges) ...[e.a, e.b]};
+    final edges = mapEdges(
+      rels: rels,
+      alterIds: alters.keys.toSet(),
+      settings: settings,
+      view: widget.view,
+      focus: widget.focus,
+      hiddenCategories: widget.hiddenCategories,
+      hidePrivate: settings.hidePrivate,
+    );
+    final involved = {
+      for (final e in edges) ...[e.a, e.b],
+    };
     final nodes = switch (widget.view) {
-      RelMapView.network => [for (final m in alters.values) if (m.isActive || involved.contains(m.id)) m.id],
-      RelMapView.individual => [if (widget.focus != null && alters.containsKey(widget.focus)) widget.focus!, for (final id in involved) if (id != widget.focus) id],
-      _ => [for (final m in alters.values) if (involved.contains(m.id)) m.id],
+      RelMapView.network => [
+        for (final m in alters.values)
+          if (m.isActive || involved.contains(m.id)) m.id,
+      ],
+      RelMapView.individual => [
+        if (widget.focus != null && alters.containsKey(widget.focus))
+          widget.focus!,
+        for (final id in involved)
+          if (id != widget.focus) id,
+      ],
+      _ => [
+        for (final m in alters.values)
+          if (involved.contains(m.id)) m.id,
+      ],
     };
     final theme = Theme.of(context);
 
@@ -264,25 +393,55 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
         height: 200,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainer, borderRadius: prismCorners(context, PrismTokens.radiusMedium), border: Border.all(color: theme.colorScheme.outlineVariant)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainer,
+          borderRadius: prismCorners(context, PrismTokens.radiusMedium),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
         child: Text(
-          widget.view == RelMapView.individual ? tr(context, 'Choose an alter to see their connections.', 'Elige un alter para ver sus conexiones.') : tr(context, 'Nothing to show for this view yet.', 'Aún no hay nada que mostrar en esta vista.'),
+          widget.view == RelMapView.individual
+              ? tr(
+                  context,
+                  'Choose an alter to see their connections.',
+                  'Elige un alter para ver sus conexiones.',
+                )
+              : tr(
+                  context,
+                  'Nothing to show for this view yet.',
+                  'Aún no hay nada que mostrar en esta vista.',
+                ),
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       );
     }
 
     _ensureLayout(nodes, edges, settings);
     final layout = _layout;
-    final fronting = {for (final f in ref.watch(activeSessionsProvider).value ?? const <FrontingSession>[]) ?f.memberId};
-    final neighbours = _selNode == null ? const <String>{} : {for (final e in edges) if (e.a == _selNode || e.b == _selNode) ...[e.a, e.b]};
+    final fronting = {
+      for (final f
+          in ref.watch(activeSessionsProvider).value ??
+              const <FrontingSession>[])
+        ?f.memberId,
+    };
+    final neighbours = _selNode == null
+        ? const <String>{}
+        : {
+            for (final e in edges)
+              if (e.a == _selNode || e.b == _selNode) ...[e.a, e.b],
+          };
 
     return ClipRRect(
       borderRadius: prismCorners(context, PrismTokens.radiusMedium),
       child: Container(
         height: widget.height,
-        decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerLow, border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: prismCorners(context, PrismTokens.radiusMedium)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLow,
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+          borderRadius: prismCorners(context, PrismTokens.radiusMedium),
+        ),
         child: LayoutBuilder(
           builder: (context, box) {
             _viewport = Size(box.maxWidth, box.maxHeight);
@@ -315,7 +474,8 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
                                   selNode: _selNode,
                                   selEdge: _selEdge?.id,
                                   showLabels: settings.showLabels,
-                                  labelOf: (l) => labelText(context, l, settings),
+                                  labelOf: (l) =>
+                                      labelText(context, l, settings),
                                   textColor: theme.colorScheme.onSurface,
                                   bg: theme.colorScheme.surfaceContainerHigh,
                                 ),
@@ -334,7 +494,9 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
                                 showAvatar: settings.showAvatars,
                                 fronting: fronting.contains(id),
                                 selected: _selNode == id,
-                                faded: _selNode != null && !neighbours.contains(id),
+                                faded:
+                                    _selNode != null &&
+                                    !neighbours.contains(id),
                                 arrange: _arrange,
                                 onTap: () => setState(() {
                                   if (_selNode == id) {
@@ -346,7 +508,8 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
                                 }),
                                 onDoubleTap: () => widget.onOpenAlter?.call(id),
                                 onDrag: (d) => setState(() {
-                                  _manual[id] = (_pos(id) ?? Offset.zero) + d / scale;
+                                  _manual[id] =
+                                      (_pos(id) ?? Offset.zero) + d / scale;
                                   _dirty = true;
                                 }),
                                 onDragEnd: _savePositions,
@@ -372,7 +535,13 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
                   Positioned(
                     left: 8,
                     top: 8,
-                    child: _Badge(text: tr(context, 'Arrange mode: drag alters to move them', 'Modo organizar: arrastra los alters')),
+                    child: _Badge(
+                      text: tr(
+                        context,
+                        'Arrange mode: drag alters to move them',
+                        'Modo organizar: arrastra los alters',
+                      ),
+                    ),
                   ),
                 if (_selNode != null || _selEdge != null)
                   Positioned(
@@ -382,7 +551,13 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
                     child: _InfoBar(
                       node: _selNode == null ? null : alters[_selNode],
                       edge: _selEdge,
-                      connections: _selNode == null ? 0 : edges.where((e) => e.a == _selNode || e.b == _selNode).length,
+                      connections: _selNode == null
+                          ? 0
+                          : edges
+                                .where(
+                                  (e) => e.a == _selNode || e.b == _selNode,
+                                )
+                                .length,
                       alters: alters,
                       settings: settings,
                       onOpenAlter: widget.onOpenAlter,
@@ -407,13 +582,28 @@ class RelationshipMapState extends ConsumerState<RelationshipMap> {
     _dirty = false;
     final l = _layout;
     if (l == null) return;
-    final all = {for (final e in l.positions.entries) e.key: (_manual[e.key] ?? e.value)};
-    ref.read(relActionsProvider).savePositions(_posKey, {for (final e in all.entries) e.key: (e.value.dx, e.value.dy)});
+    final all = {
+      for (final e in l.positions.entries) e.key: (_manual[e.key] ?? e.value),
+    };
+    ref.read(relActionsProvider).savePositions(_posKey, {
+      for (final e in all.entries) e.key: (e.value.dx, e.value.dy),
+    });
   }
 }
 
 class _Node extends ConsumerWidget {
-  const _Node({required this.member, required this.showAvatar, required this.fronting, required this.selected, required this.faded, required this.arrange, required this.onTap, required this.onDoubleTap, required this.onDrag, required this.onDragEnd});
+  const _Node({
+    required this.member,
+    required this.showAvatar,
+    required this.fronting,
+    required this.selected,
+    required this.faded,
+    required this.arrange,
+    required this.onTap,
+    required this.onDoubleTap,
+    required this.onDrag,
+    required this.onDragEnd,
+  });
   final Member member;
   final bool showAvatar, fronting, selected, faded, arrange;
   final VoidCallback onTap, onDoubleTap, onDragEnd;
@@ -423,15 +613,46 @@ class _Node extends ConsumerWidget {
     final theme = Theme.of(context);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final name = member.effectiveName(preferDisplayName: prefer);
-    final role = ref.watch(memberProfileProvider(member.id))?.roles.where((r) => r.visible).firstOrNull?.name;
+    final role = ref
+        .watch(memberProfileProvider(member.id))
+        ?.roles
+        .where((r) => r.visible)
+        .firstOrNull
+        ?.name;
     final avatar = showAvatar
-        ? MemberAvatar(avatarImageData: member.avatarImageData, memberName: name, emoji: member.emoji, customColorEnabled: member.customColorEnabled, customColorHex: member.customColorHex, size: 40)
-        : PrismCircleAvatar(radius: 20, backgroundColor: theme.colorScheme.primaryContainer, child: Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.w700)));
+        ? MemberAvatar(
+            avatarImageData: member.avatarImageData,
+            memberName: name,
+            emoji: member.emoji,
+            customColorEnabled: member.customColorEnabled,
+            customColorHex: member.customColorHex,
+            size: 40,
+          )
+        : PrismCircleAvatar(
+            radius: 20,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Text(
+              name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+              style: TextStyle(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          );
     return Semantics(
       button: true,
-      label: [name, if (member.pronouns != null) member.pronouns!, ?role, if (fronting) tr(context, 'fronting', 'al frente')].join(', '),
+      label: [
+        name,
+        if (member.pronouns != null) member.pronouns!,
+        ?role,
+        if (fronting) tr(context, 'fronting', 'al frente'),
+      ].join(', '),
       child: Tooltip(
-        message: [name, if ((member.pronouns ?? '').isNotEmpty) member.pronouns!, ?role].join(' · '),
+        message: [
+          name,
+          if ((member.pronouns ?? '').isNotEmpty) member.pronouns!,
+          ?role,
+        ].join(' · '),
         waitDuration: const Duration(milliseconds: 400),
         child: GestureDetector(
           onTap: onTap,
@@ -448,19 +669,67 @@ class _Node extends ConsumerWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.surface, border: Border.all(color: selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant, width: selected ? 2.5 : 1)),
+                      decoration: BoxDecoration(
+                        borderRadius: prismRound(context),
+                        color: theme.colorScheme.surface,
+                        border: Border.all(
+                          color: selected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outlineVariant,
+                          width: selected ? 2.5 : 1,
+                        ),
+                      ),
                       child: avatar,
                     ),
-                    if (fronting) Positioned(right: 0, bottom: 0, child: Container(width: 11, height: 11, decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.tertiary, border: Border.all(color: theme.colorScheme.surface, width: 2)))),
+                    if (fronting)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 11,
+                          height: 11,
+                          decoration: BoxDecoration(
+                            borderRadius: prismRound(context),
+                            color: theme.colorScheme.tertiary,
+                            border: Border.all(
+                              color: theme.colorScheme.surface,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 3),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.85), borderRadius: prismCorners(context, 6)),
-                  child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface.withValues(alpha: 0.85),
+                    borderRadius: prismCorners(context, 6),
+                  ),
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-                if (role != null) Text(role, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(fontSize: 9.5, color: theme.colorScheme.onSurfaceVariant)),
+                if (role != null)
+                  Text(
+                    role,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontSize: 9.5,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -474,11 +743,25 @@ class _Node extends ConsumerWidget {
 List<double>? relDash(String style, String confidence) {
   if (style == 'complicated') return const [8, 6];
   if (style == 'unknown') return const [2, 5];
-  return switch (confidence) { 'developing' => const [10, 5], 'suspected' || 'uncertain' => const [3, 4], _ => null };
+  return switch (confidence) {
+    'developing' => const [10, 5],
+    'suspected' || 'uncertain' => const [3, 4],
+    _ => null,
+  };
 }
 
 class _EdgePainter extends CustomPainter {
-  _EdgePainter({required this.edges, required this.pos, required this.settings, required this.selNode, required this.selEdge, required this.showLabels, required this.labelOf, required this.textColor, required this.bg});
+  _EdgePainter({
+    required this.edges,
+    required this.pos,
+    required this.settings,
+    required this.selNode,
+    required this.selEdge,
+    required this.showLabels,
+    required this.labelOf,
+    required this.textColor,
+    required this.bg,
+  });
   final List<MapEdge> edges;
   final Map<String, Offset> pos;
   final RelSettings settings;
@@ -494,7 +777,9 @@ class _EdgePainter extends CustomPainter {
     for (final e in edges) {
       final a = pos[e.a], b = pos[e.b];
       if (a == null || b == null) continue;
-      final focused = selEdge == e.rel.id || (selNode != null && (e.a == selNode || e.b == selNode));
+      final focused =
+          selEdge == e.rel.id ||
+          (selNode != null && (e.a == selNode || e.b == selNode));
       final dimmed = (selNode != null || selEdge != null) && !focused;
       final d = b - a;
       final len = d.distance;
@@ -502,7 +787,9 @@ class _EdgePainter extends CustomPainter {
       final nrm = Offset(-d.dy / len, d.dx / len);
       for (var i = 0; i < e.styles.length; i++) {
         final off = nrm * ((i - (e.styles.length - 1) / 2) * 4.5);
-        final color = relColor(settings, e.styles[i]).withValues(alpha: dimmed ? 0.18 : (e.rel.confidence == 'outdated' ? 0.4 : 0.9));
+        final color = relColor(settings, e.styles[i]).withValues(
+          alpha: dimmed ? 0.18 : (e.rel.confidence == 'outdated' ? 0.4 : 0.9),
+        );
         final paint = Paint()
           ..color = color
           ..strokeWidth = focused ? 3 : 2
@@ -519,15 +806,41 @@ class _EdgePainter extends CustomPainter {
           final tip = p2;
           final u = d / len;
           final left = tip - u * 9 + nrm * 5, right = tip - u * 9 - nrm * 5;
-          canvas.drawPath(Path()..moveTo(tip.dx, tip.dy)..lineTo(left.dx, left.dy)..lineTo(right.dx, right.dy)..close(), Paint()..color = color);
+          canvas.drawPath(
+            Path()
+              ..moveTo(tip.dx, tip.dy)
+              ..lineTo(left.dx, left.dy)
+              ..lineTo(right.dx, right.dy)
+              ..close(),
+            Paint()..color = color,
+          );
         }
       }
       if (showLabels || focused) {
         final text = e.rel.labels.take(2).map(labelOf).join(' · ');
-        final tp = TextPainter(text: TextSpan(text: text, style: TextStyle(color: textColor, fontSize: 10.5, fontWeight: FontWeight.w600)), textDirection: TextDirection.ltr, maxLines: 1, ellipsis: '…')..layout(maxWidth: 160);
+        final tp = TextPainter(
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+          ellipsis: '…',
+        )..layout(maxWidth: 160);
         final mid = (a + b) / 2;
-        final r = Rect.fromCenter(center: mid, width: tp.width + 10, height: tp.height + 4);
-        canvas.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(6)), Paint()..color = bg.withValues(alpha: dimmed ? 0.3 : 0.95));
+        final r = Rect.fromCenter(
+          center: mid,
+          width: tp.width + 10,
+          height: tp.height + 4,
+        );
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(r, const Radius.circular(6)),
+          Paint()..color = bg.withValues(alpha: dimmed ? 0.3 : 0.95),
+        );
         tp.paint(canvas, Offset(r.left + 5, r.top + 2));
       }
     }
@@ -548,27 +861,72 @@ class _EdgePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_EdgePainter o) => o.edges != edges || o.pos != pos || o.selNode != selNode || o.selEdge != selEdge || o.showLabels != showLabels || o.settings != settings || o.textColor != textColor;
+  bool shouldRepaint(_EdgePainter o) =>
+      o.edges != edges ||
+      o.pos != pos ||
+      o.selNode != selNode ||
+      o.selEdge != selEdge ||
+      o.showLabels != showLabels ||
+      o.settings != settings ||
+      o.textColor != textColor;
 }
 
 class _MapControls extends StatelessWidget {
-  const _MapControls({required this.arrange, required this.onZoomIn, required this.onZoomOut, required this.onReset, required this.onRelayout, required this.onArrange});
+  const _MapControls({
+    required this.arrange,
+    required this.onZoomIn,
+    required this.onZoomOut,
+    required this.onReset,
+    required this.onRelayout,
+    required this.onArrange,
+  });
   final bool arrange;
   final VoidCallback onZoomIn, onZoomOut, onReset, onRelayout, onArrange;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    Widget b(IconData icon, String tip, VoidCallback f, {bool on = false}) => PrismTopBarAction(icon: icon, tooltip: tip, onPressed: f, tint: on ? theme.colorScheme.primary : null);
+    Widget b(IconData icon, String tip, VoidCallback f, {bool on = false}) =>
+        PrismTopBarAction(
+          icon: icon,
+          tooltip: tip,
+          onPressed: f,
+          tint: on ? theme.colorScheme.primary : null,
+        );
     return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.surface.withValues(alpha: 0.92), borderRadius: prismCorners(context, 12), border: Border.all(color: theme.colorScheme.outlineVariant)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.92),
+        borderRadius: prismCorners(context, 12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          b(PhosphorIcons.magnifyingGlassPlus(), tr(context, 'Zoom in', 'Acercar'), onZoomIn),
-          b(PhosphorIcons.magnifyingGlassMinus(), tr(context, 'Zoom out', 'Alejar'), onZoomOut),
-          b(PhosphorIcons.arrowsIn(), tr(context, 'Reset view', 'Restablecer vista'), onReset),
-          b(PhosphorIcons.handGrabbing(), tr(context, 'Arrange alters', 'Organizar alters'), onArrange, on: arrange),
-          b(PhosphorIcons.shuffleSimple(), tr(context, 'Recalculate layout', 'Recalcular diseño'), onRelayout),
+          b(
+            PhosphorIcons.magnifyingGlassPlus(),
+            tr(context, 'Zoom in', 'Acercar'),
+            onZoomIn,
+          ),
+          b(
+            PhosphorIcons.magnifyingGlassMinus(),
+            tr(context, 'Zoom out', 'Alejar'),
+            onZoomOut,
+          ),
+          b(
+            PhosphorIcons.arrowsIn(),
+            tr(context, 'Reset view', 'Restablecer vista'),
+            onReset,
+          ),
+          b(
+            PhosphorIcons.handGrabbing(),
+            tr(context, 'Arrange alters', 'Organizar alters'),
+            onArrange,
+            on: arrange,
+          ),
+          b(
+            PhosphorIcons.shuffleSimple(),
+            tr(context, 'Recalculate layout', 'Recalcular diseño'),
+            onRelayout,
+          ),
         ],
       ),
     );
@@ -583,14 +941,32 @@ class _Badge extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: prismCorners(context, 10)),
-      child: Text(text, style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onPrimaryContainer)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: prismCorners(context, 10),
+      ),
+      child: Text(
+        text,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onPrimaryContainer,
+        ),
+      ),
     );
   }
 }
 
 class _InfoBar extends ConsumerWidget {
-  const _InfoBar({required this.node, required this.edge, required this.connections, required this.alters, required this.settings, this.onOpenAlter, this.onOpenRel, this.onFocus, required this.onClose});
+  const _InfoBar({
+    required this.node,
+    required this.edge,
+    required this.connections,
+    required this.alters,
+    required this.settings,
+    this.onOpenAlter,
+    this.onOpenRel,
+    this.onFocus,
+    required this.onClose,
+  });
   final Member? node;
   final Rel? edge;
   final int connections;
@@ -604,24 +980,62 @@ class _InfoBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
-    String nm(String? id) => alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
+    String nm(String? id) =>
+        alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
     final n = node, e = edge;
     return Material(
       color: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: prismCorners(context, 14), side: BorderSide(color: theme.colorScheme.outlineVariant)),
+      shape: RoundedRectangleBorder(
+        borderRadius: prismCorners(context, 14),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
         child: Row(
           children: [
             Expanded(
               child: n != null
-                  ? Text('${n.effectiveName(preferDisplayName: prefer)} · ${tr(context, '$connections connections', '$connections conexiones')}', maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600))
-                  : Text('${nm(e!.a)} & ${nm(e.b)}: ${e.labels.map((l) => labelText(context, l, settings)).join(', ')}', maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                  ? Text(
+                      '${n.effectiveName(preferDisplayName: prefer)} · ${tr(context, '$connections connections', '$connections conexiones')}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : Text(
+                      '${nm(e!.a)} & ${nm(e.b)}: ${e.labels.map((l) => labelText(context, l, settings)).join(', ')}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
-            if (n != null && onFocus != null) PrismButton(label: tr(context, 'Focus', 'Enfocar'), density: PrismControlDensity.compact, onPressed: () => onFocus!(n.id)),
-            if (n != null && onOpenAlter != null) PrismButton(label: tr(context, 'Profile', 'Perfil'), density: PrismControlDensity.compact, onPressed: () => onOpenAlter!(n.id)),
-            if (e != null && onOpenRel != null) PrismButton(label: tr(context, 'Open', 'Abrir'), tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () => onOpenRel!(e)),
-            PrismTopBarAction(icon: AppIcons.close, tooltip: tr(context, 'Close', 'Cerrar'), onPressed: onClose),
+            if (n != null && onFocus != null)
+              PrismButton(
+                label: tr(context, 'Focus', 'Enfocar'),
+                density: PrismControlDensity.compact,
+                onPressed: () => onFocus!(n.id),
+              ),
+            if (n != null && onOpenAlter != null)
+              PrismButton(
+                label: tr(context, 'Profile', 'Perfil'),
+                density: PrismControlDensity.compact,
+                onPressed: () => onOpenAlter!(n.id),
+              ),
+            if (e != null && onOpenRel != null)
+              PrismButton(
+                label: tr(context, 'Open', 'Abrir'),
+                tone: PrismButtonTone.filled,
+                density: PrismControlDensity.compact,
+                onPressed: () => onOpenRel!(e),
+              ),
+            PrismTopBarAction(
+              icon: AppIcons.close,
+              tooltip: tr(context, 'Close', 'Cerrar'),
+              onPressed: onClose,
+            ),
           ],
         ),
       ),
@@ -631,7 +1045,13 @@ class _InfoBar extends ConsumerWidget {
 
 /// Accessible text alternative to the map.
 class RelationshipListView extends ConsumerWidget {
-  const RelationshipListView({super.key, required this.view, this.focus, this.hiddenCategories = const {}, this.onOpenRel});
+  const RelationshipListView({
+    super.key,
+    required this.view,
+    this.focus,
+    this.hiddenCategories = const {},
+    this.onOpenRel,
+  });
   final RelMapView view;
   final String? focus;
   final Set<String> hiddenCategories;
@@ -641,17 +1061,44 @@ class RelationshipListView extends ConsumerWidget {
     final settings = ref.watch(relSettingsProvider);
     final alters = ref.watch(relAlterIndexProvider);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
-    final edges = mapEdges(rels: ref.watch(relsProvider), alterIds: alters.keys.toSet(), settings: settings, view: view, focus: focus, hiddenCategories: hiddenCategories, hidePrivate: settings.hidePrivate);
-    String nm(String id) => alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
-    if (edges.isEmpty) return Padding(padding: const EdgeInsets.all(16), child: Text(tr(context, 'No connections in this view.', 'No hay conexiones en esta vista.')));
+    final edges = mapEdges(
+      rels: ref.watch(relsProvider),
+      alterIds: alters.keys.toSet(),
+      settings: settings,
+      view: view,
+      focus: focus,
+      hiddenCategories: hiddenCategories,
+      hidePrivate: settings.hidePrivate,
+    );
+    String nm(String id) =>
+        alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
+    if (edges.isEmpty)
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          tr(
+            context,
+            'No connections in this view.',
+            'No hay conexiones en esta vista.',
+          ),
+        ),
+      );
     return Column(
       children: [
         for (final e in edges)
           PrismListRow(
             dense: true,
-            leading: Container(width: 14, height: 4, color: relColor(settings, e.styles.first)),
-            title: Text('${nm(e.rel.a!)} ${e.directional ? '→' : '↔'} ${nm(e.rel.b!)}'),
-            subtitle: Text('${e.rel.labels.map((l) => labelText(context, l, settings)).join(', ')} · ${relConfidenceText(context, e.rel.confidence)}'),
+            leading: Container(
+              width: 14,
+              height: 4,
+              color: relColor(settings, e.styles.first),
+            ),
+            title: Text(
+              '${nm(e.rel.a!)} ${e.directional ? '→' : '↔'} ${nm(e.rel.b!)}',
+            ),
+            subtitle: Text(
+              '${e.rel.labels.map((l) => labelText(context, l, settings)).join(', ')} · ${relConfidenceText(context, e.rel.confidence)}',
+            ),
             showChevron: true,
             onTap: onOpenRel == null ? null : () => onOpenRel!(e.rel),
           ),

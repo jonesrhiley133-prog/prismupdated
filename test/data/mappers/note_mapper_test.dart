@@ -35,10 +35,7 @@ void main() {
     });
 
     test('toDomain handles null optional fields', () {
-      final row = makeDbNote(
-        colorHex: null,
-        memberId: null,
-      );
+      final row = makeDbNote(colorHex: null, memberId: null);
 
       final model = NoteMapper.toDomain(row);
       expect(model.colorHex, isNull);

@@ -12,21 +12,43 @@ typedef MilestoneDetail = (String label, String value);
 /// "Share to Social": never automatic. Shows a preview where the system picks
 /// which details to include, then opens the composer (audience, caption,
 /// post as system or alter).
-Future<void> shareToSocial(BuildContext context, WidgetRef ref, {required String title, required String source, List<MilestoneDetail> details = const []}) async {
+Future<void> shareToSocial(
+  BuildContext context,
+  WidgetRef ref, {
+  required String title,
+  required String source,
+  List<MilestoneDetail> details = const [],
+}) async {
   if (!ref.read(featureEnabledProvider('prismSocial'))) return;
   final me = ref.read(actingProvider);
   if (me == null) {
-    PrismToast.show(context, message: tr(context, 'Set up your Social profile first.', 'Primero configura tu perfil social.'), icon: AppIcons.navSocial);
+    PrismToast.show(
+      context,
+      message: tr(
+        context,
+        'Set up your Social profile first.',
+        'Primero configura tu perfil social.',
+      ),
+      icon: AppIcons.navSocial,
+    );
     await GoRouter.of(context).push(AppRoutePaths.prismSocial);
     return;
   }
-  final chosen = await PrismSheet.show<Map<String, Object?>>(context: context, title: tr(context, 'Share to Social', 'Compartir en Social'), builder: (ctx) => _Pick(title: title, source: source, details: details));
+  final chosen = await PrismSheet.show<Map<String, Object?>>(
+    context: context,
+    title: tr(context, 'Share to Social', 'Compartir en Social'),
+    builder: (ctx) => _Pick(title: title, source: source, details: details),
+  );
   if (chosen == null || !context.mounted) return;
   await showPostComposer(context, me, milestone: chosen);
 }
 
 class _Pick extends StatefulWidget {
-  const _Pick({required this.title, required this.source, required this.details});
+  const _Pick({
+    required this.title,
+    required this.source,
+    required this.details,
+  });
   final String title;
   final String source;
   final List<MilestoneDetail> details;
@@ -42,7 +64,8 @@ class _PickState extends State<_Pick> {
     'source': widget.source,
     'details': [
       for (var i = 0; i < widget.details.length; i++)
-        if (_on.contains(i)) {'label': widget.details[i].$1, 'value': widget.details[i].$2},
+        if (_on.contains(i))
+          {'label': widget.details[i].$1, 'value': widget.details[i].$2},
     ],
   };
 
@@ -54,7 +77,14 @@ class _PickState extends State<_Pick> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(tr(context, 'Only what you choose is shared. Nothing else from Prism leaves this screen.', 'Solo se comparte lo que elijas. Nada más de Prism sale de aquí.'), style: theme.textTheme.bodySmall),
+          Text(
+            tr(
+              context,
+              'Only what you choose is shared. Nothing else from Prism leaves this screen.',
+              'Solo se comparte lo que elijas. Nada más de Prism sale de aquí.',
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
           const SizedBox(height: 10),
           for (var i = 0; i < widget.details.length; i++)
             PrismSwitchRow(
@@ -65,11 +95,19 @@ class _PickState extends State<_Pick> {
               onChanged: (v) => setState(() => v ? _on.add(i) : _on.remove(i)),
             ),
           const SizedBox(height: 10),
-          Text(tr(context, 'Preview', 'Vista previa'), style: theme.textTheme.titleSmall),
+          Text(
+            tr(context, 'Preview', 'Vista previa'),
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 6),
           MilestoneCard(data: _data),
           const SizedBox(height: 14),
-          PrismButton(label: tr(context, 'Continue', 'Continuar'), tone: PrismButtonTone.filled, icon: PhosphorIcons.arrowRight(), onPressed: () => Navigator.of(context).pop(_data)),
+          PrismButton(
+            label: tr(context, 'Continue', 'Continuar'),
+            tone: PrismButtonTone.filled,
+            icon: PhosphorIcons.arrowRight(),
+            onPressed: () => Navigator.of(context).pop(_data),
+          ),
         ],
       ),
     );
@@ -78,13 +116,29 @@ class _PickState extends State<_Pick> {
 
 /// A small "Share to Social" button that hides itself when Social is off.
 class ShareToSocialButton extends ConsumerWidget {
-  const ShareToSocialButton({super.key, required this.title, required this.source, this.details = const []});
+  const ShareToSocialButton({
+    super.key,
+    required this.title,
+    required this.source,
+    this.details = const [],
+  });
   final String title;
   final String source;
   final List<MilestoneDetail> details;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!ref.watch(featureEnabledProvider('prismSocial'))) return const SizedBox.shrink();
-    return PrismTopBarAction(icon: PhosphorIcons.shareNetwork(), tooltip: tr(context, 'Share to Social', 'Compartir en Social'), onPressed: () => shareToSocial(context, ref, title: title, source: source, details: details));
+    if (!ref.watch(featureEnabledProvider('prismSocial')))
+      return const SizedBox.shrink();
+    return PrismTopBarAction(
+      icon: PhosphorIcons.shareNetwork(),
+      tooltip: tr(context, 'Share to Social', 'Compartir en Social'),
+      onPressed: () => shareToSocial(
+        context,
+        ref,
+        title: title,
+        source: source,
+        details: details,
+      ),
+    );
   }
 }

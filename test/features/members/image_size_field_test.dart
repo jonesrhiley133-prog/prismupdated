@@ -16,7 +16,9 @@ void main() {
       tester,
     ) async {
       ImageSizeSpec? spec;
-      await tester.pumpWidget(_wrap(ImageSizeField(onChanged: (s) => spec = s)));
+      await tester.pumpWidget(
+        _wrap(ImageSizeField(onChanged: (s) => spec = s)),
+      );
       await tester.pumpAndSettle();
 
       // No value field until a sizing mode is chosen.
@@ -29,7 +31,9 @@ void main() {
       tester,
     ) async {
       ImageSizeSpec? spec;
-      await tester.pumpWidget(_wrap(ImageSizeField(onChanged: (s) => spec = s)));
+      await tester.pumpWidget(
+        _wrap(ImageSizeField(onChanged: (s) => spec = s)),
+      );
 
       await tester.tap(find.text('px'));
       await tester.pumpAndSettle();
@@ -42,7 +46,9 @@ void main() {
 
     testWidgets('em mode emits an em fragment', (tester) async {
       ImageSizeSpec? spec;
-      await tester.pumpWidget(_wrap(ImageSizeField(onChanged: (s) => spec = s)));
+      await tester.pumpWidget(
+        _wrap(ImageSizeField(onChanged: (s) => spec = s)),
+      );
 
       await tester.tap(find.text('em'));
       await tester.pumpAndSettle();
@@ -56,7 +62,9 @@ void main() {
       tester,
     ) async {
       ImageSizeSpec? spec;
-      await tester.pumpWidget(_wrap(ImageSizeField(onChanged: (s) => spec = s)));
+      await tester.pumpWidget(
+        _wrap(ImageSizeField(onChanged: (s) => spec = s)),
+      );
 
       await tester.tap(find.text('px'));
       await tester.pumpAndSettle();

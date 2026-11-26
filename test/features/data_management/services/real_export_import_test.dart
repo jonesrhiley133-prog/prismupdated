@@ -27,62 +27,56 @@ import 'package:prism_plurality/data/repositories/drift_friends_repository.dart'
 import 'package:prism_plurality/features/data_management/services/data_import_service.dart';
 
 final _exportPath = Platform.environment['PRISM_TEST_EXPORT_PATH'] ?? '';
-final _exportPassword = Platform.environment['PRISM_TEST_EXPORT_PASSWORD'] ?? '';
+final _exportPassword =
+    Platform.environment['PRISM_TEST_EXPORT_PASSWORD'] ?? '';
 
 final _fileExists = _exportPath.isNotEmpty && File(_exportPath).existsSync();
 final _skip = (_exportPath.isEmpty || _exportPassword.isEmpty || !_fileExists)
     ? 'set PRISM_TEST_EXPORT_PATH and PRISM_TEST_EXPORT_PASSWORD env vars to run'
     : null;
 
-DataImportService _makeImport(AppDatabase db, Directory cacheDir) =>
-    DataImportService(
-      db: db,
-      memberRepository: DriftMemberRepository(db.membersDao, null),
-      frontingSessionRepository: DriftFrontingSessionRepository(
-        db.frontingSessionsDao,
-        null,
-      ),
-      conversationRepository: DriftConversationRepository(
-        db.conversationsDao,
-        null,
-      ),
-      chatMessageRepository: DriftChatMessageRepository(
-        db.chatMessagesDao,
-        null,
-      ),
-      pollRepository: DriftPollRepository(
-        db.pollsDao,
-        db.pollOptionsDao,
-        db.pollVotesDao,
-        null,
-      ),
-      systemSettingsRepository: DriftSystemSettingsRepository(
-        db.systemSettingsDao,
-        null,
-      ),
-      habitRepository: DriftHabitRepository(db.habitsDao, null),
-      pluralKitSyncDao: db.pluralKitSyncDao,
-      memberGroupsRepository: DriftMemberGroupsRepository(
-        db.memberGroupsDao,
-        null,
-      ),
-      customFieldsRepository: DriftCustomFieldsRepository(
-        db.customFieldsDao,
-        null,
-      ),
-      notesRepository: DriftNotesRepository(db.notesDao, null),
-      frontSessionCommentsRepository: DriftFrontSessionCommentsRepository(
-        db.frontSessionCommentsDao,
-        null,
-      ),
-      conversationCategoriesRepository: DriftConversationCategoriesRepository(
-        db.conversationCategoriesDao,
-        null,
-      ),
-      remindersRepository: DriftRemindersRepository(db.remindersDao, null),
-      friendsRepository: DriftFriendsRepository(db.friendsDao, null),
-      appSupportDirectoryProvider: () async => cacheDir,
-    );
+DataImportService _makeImport(
+  AppDatabase db,
+  Directory cacheDir,
+) => DataImportService(
+  db: db,
+  memberRepository: DriftMemberRepository(db.membersDao, null),
+  frontingSessionRepository: DriftFrontingSessionRepository(
+    db.frontingSessionsDao,
+    null,
+  ),
+  conversationRepository: DriftConversationRepository(
+    db.conversationsDao,
+    null,
+  ),
+  chatMessageRepository: DriftChatMessageRepository(db.chatMessagesDao, null),
+  pollRepository: DriftPollRepository(
+    db.pollsDao,
+    db.pollOptionsDao,
+    db.pollVotesDao,
+    null,
+  ),
+  systemSettingsRepository: DriftSystemSettingsRepository(
+    db.systemSettingsDao,
+    null,
+  ),
+  habitRepository: DriftHabitRepository(db.habitsDao, null),
+  pluralKitSyncDao: db.pluralKitSyncDao,
+  memberGroupsRepository: DriftMemberGroupsRepository(db.memberGroupsDao, null),
+  customFieldsRepository: DriftCustomFieldsRepository(db.customFieldsDao, null),
+  notesRepository: DriftNotesRepository(db.notesDao, null),
+  frontSessionCommentsRepository: DriftFrontSessionCommentsRepository(
+    db.frontSessionCommentsDao,
+    null,
+  ),
+  conversationCategoriesRepository: DriftConversationCategoriesRepository(
+    db.conversationCategoriesDao,
+    null,
+  ),
+  remindersRepository: DriftRemindersRepository(db.remindersDao, null),
+  friendsRepository: DriftFriendsRepository(db.friendsDao, null),
+  appSupportDirectoryProvider: () async => cacheDir,
+);
 
 void main() {
   group('real .prism export import', () {
@@ -103,76 +97,96 @@ void main() {
       await cacheDir.delete(recursive: true);
     });
 
-    test('decrypts successfully', () {
-      final bytes = File(_exportPath).readAsBytesSync();
-      final resolved = DataImportService.resolveBytes(
-        bytes,
-        password: _exportPassword,
-      );
-      expect(resolved.json, isNotEmpty);
-      expect(resolved.mediaBlobs, hasLength(6));
-    }, skip: _skip, timeout: const Timeout(Duration(minutes: 2)));
+    test(
+      'decrypts successfully',
+      () {
+        final bytes = File(_exportPath).readAsBytesSync();
+        final resolved = DataImportService.resolveBytes(
+          bytes,
+          password: _exportPassword,
+        );
+        expect(resolved.json, isNotEmpty);
+        expect(resolved.mediaBlobs, hasLength(6));
+      },
+      skip: _skip,
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
 
-    test('imports all records with correct counts', () async {
-      final bytes = File(_exportPath).readAsBytesSync();
-      final resolved = DataImportService.resolveBytes(
-        bytes,
-        password: _exportPassword,
-      );
-      final result = await importService.importData(
-        resolved.json,
-        mediaBlobs: resolved.mediaBlobs,
-      );
+    test(
+      'imports all records with correct counts',
+      () async {
+        final bytes = File(_exportPath).readAsBytesSync();
+        final resolved = DataImportService.resolveBytes(
+          bytes,
+          password: _exportPassword,
+        );
+        final result = await importService.importData(
+          resolved.json,
+          mediaBlobs: resolved.mediaBlobs,
+        );
 
-      expect(result.membersCreated, 8);
-      expect(result.frontSessionsCreated, 109);
-      expect(result.sleepSessionsCreated, 1);
-      expect(result.conversationsCreated, 5);
-      expect(result.messagesCreated, 139);
-      expect(result.pollsCreated, 2);
-      expect(result.pollOptionsCreated, 7);
-      expect(result.habitsCreated, 2);
-      expect(result.habitCompletionsCreated, 21);
-      expect(result.notesCreated, 2);
-      expect(result.mediaAttachmentsCreated, 13);
-    }, skip: _skip, timeout: const Timeout(Duration(minutes: 2)));
+        expect(result.membersCreated, 8);
+        expect(result.frontSessionsCreated, 109);
+        expect(result.sleepSessionsCreated, 1);
+        expect(result.conversationsCreated, 5);
+        expect(result.messagesCreated, 139);
+        expect(result.pollsCreated, 2);
+        expect(result.pollOptionsCreated, 7);
+        expect(result.habitsCreated, 2);
+        expect(result.habitCompletionsCreated, 21);
+        expect(result.notesCreated, 2);
+        expect(result.mediaAttachmentsCreated, 13);
+      },
+      skip: _skip,
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
 
-    test('media blobs cached to disk', () async {
-      final bytes = File(_exportPath).readAsBytesSync();
-      final resolved = DataImportService.resolveBytes(
-        bytes,
-        password: _exportPassword,
-      );
-      await importService.importData(
-        resolved.json,
-        mediaBlobs: resolved.mediaBlobs,
-      );
+    test(
+      'media blobs cached to disk',
+      () async {
+        final bytes = File(_exportPath).readAsBytesSync();
+        final resolved = DataImportService.resolveBytes(
+          bytes,
+          password: _exportPassword,
+        );
+        await importService.importData(
+          resolved.json,
+          mediaBlobs: resolved.mediaBlobs,
+        );
 
-      final mediaDir = Directory('${cacheDir.path}/prism_media');
-      expect(mediaDir.existsSync(), isTrue);
-      final cached = mediaDir.listSync().whereType<File>().toList();
-      expect(cached, hasLength(6));
-    }, skip: _skip, timeout: const Timeout(Duration(minutes: 2)));
+        final mediaDir = Directory('${cacheDir.path}/prism_media');
+        expect(mediaDir.existsSync(), isTrue);
+        final cached = mediaDir.listSync().whereType<File>().toList();
+        expect(cached, hasLength(6));
+      },
+      skip: _skip,
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
 
-    test('idempotent: second import creates zero duplicates', () async {
-      final bytes = File(_exportPath).readAsBytesSync();
-      final resolved = DataImportService.resolveBytes(
-        bytes,
-        password: _exportPassword,
-      );
-      await importService.importData(
-        resolved.json,
-        mediaBlobs: resolved.mediaBlobs,
-      );
-      final result2 = await importService.importData(
-        resolved.json,
-        mediaBlobs: resolved.mediaBlobs,
-      );
+    test(
+      'idempotent: second import creates zero duplicates',
+      () async {
+        final bytes = File(_exportPath).readAsBytesSync();
+        final resolved = DataImportService.resolveBytes(
+          bytes,
+          password: _exportPassword,
+        );
+        await importService.importData(
+          resolved.json,
+          mediaBlobs: resolved.mediaBlobs,
+        );
+        final result2 = await importService.importData(
+          resolved.json,
+          mediaBlobs: resolved.mediaBlobs,
+        );
 
-      expect(result2.membersCreated, 0);
-      expect(result2.frontSessionsCreated, 0);
-      expect(result2.messagesCreated, 0);
-      expect(result2.mediaAttachmentsCreated, 0);
-    }, skip: _skip, timeout: const Timeout(Duration(minutes: 3)));
+        expect(result2.membersCreated, 0);
+        expect(result2.frontSessionsCreated, 0);
+        expect(result2.messagesCreated, 0);
+        expect(result2.mediaAttachmentsCreated, 0);
+      },
+      skip: _skip,
+      timeout: const Timeout(Duration(minutes: 3)),
+    );
   });
 }

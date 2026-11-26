@@ -81,8 +81,12 @@ Future<void> _apply(
   List<Map<String, dynamic>> changes,
 ) async {
   final wrapped = buildSyncAdapterWithCompletion(db);
-  await applyRemoteChanges(db, wrapped.adapter, _eventFromChanges(changes),
-      strict: true);
+  await applyRemoteChanges(
+    db,
+    wrapped.adapter,
+    _eventFromChanges(changes),
+    strict: true,
+  );
 }
 
 void main() {
@@ -90,8 +94,7 @@ void main() {
   setUp(() => db = database.AppDatabase(NativeDatabase.memory()));
   tearDown(() => db.close());
 
-  test(
-      'F2: a sparse member op for a redirected legacy id lands on the winner, '
+  test('F2: a sparse member op for a redirected legacy id lands on the winner, '
       'not a duplicate orphan row', () async {
     const winnerId = 'local-member-A';
     const legacyId = 'legacy-member-B';
@@ -123,16 +126,30 @@ void main() {
     final rows = await db.select(db.members).get();
     final live = rows.where((r) => !r.isDeleted).toList();
 
-    expect(live.length, 1,
-        reason: 'The sparse edit must update the winner row, not create a '
-            'second orphan row at the redirected legacy id. Rows: '
-            '${rows.map((r) => '(${r.id}, ${r.name}, del=${r.isDeleted})').toList()}');
-    expect(live.single.id, winnerId,
-        reason: 'The surviving row should be the winner the legacy id was '
-            'redirected onto.');
-    expect(live.single.name, 'Renamed',
-        reason: 'The sparse rename should have landed on the winner row.');
-    expect(rows.where((r) => r.id == legacyId), isEmpty,
-        reason: 'No row should exist under the redirected legacy id.');
+    expect(
+      live.length,
+      1,
+      reason:
+          'The sparse edit must update the winner row, not create a '
+          'second orphan row at the redirected legacy id. Rows: '
+          '${rows.map((r) => '(${r.id}, ${r.name}, del=${r.isDeleted})').toList()}',
+    );
+    expect(
+      live.single.id,
+      winnerId,
+      reason:
+          'The surviving row should be the winner the legacy id was '
+          'redirected onto.',
+    );
+    expect(
+      live.single.name,
+      'Renamed',
+      reason: 'The sparse rename should have landed on the winner row.',
+    );
+    expect(
+      rows.where((r) => r.id == legacyId),
+      isEmpty,
+      reason: 'No row should exist under the redirected legacy id.',
+    );
   });
 }

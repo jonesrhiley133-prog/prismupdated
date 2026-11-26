@@ -16,9 +16,7 @@ import 'package:prism_plurality/l10n/app_localizations.dart';
 /// Helper to build a realistic Klipy API response body.
 Map<String, dynamic> _buildResponse(List<Map<String, dynamic>> items) {
   return {
-    'data': {
-      'data': items,
-    },
+    'data': {'data': items},
   };
 }
 
@@ -49,22 +47,20 @@ Map<String, dynamic> _gifItem({String id = '123', String title = 'funny cat'}) {
 /// needed for widget tests.
 Widget _buildTestWidget({required MockClient mockClient}) {
   return ProviderScope(
-      overrides: [
-        klipyServiceProvider.overrideWithValue(
-          AsyncValue.data(
-            KlipyService(
-              baseUrl: 'https://relay.example/v1/gifs',
-              httpClient: mockClient,
-            ),
+    overrides: [
+      klipyServiceProvider.overrideWithValue(
+        AsyncValue.data(
+          KlipyService(
+            baseUrl: 'https://relay.example/v1/gifs',
+            httpClient: mockClient,
           ),
         ),
-      ],
+      ),
+    ],
     child: const MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: [Locale('en')],
-      home: Scaffold(
-        body: GifPickerSheet(),
-      ),
+      home: Scaffold(body: GifPickerSheet()),
     ),
   );
 }
@@ -90,13 +86,11 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('GifPickerSheet widget structure', () {
-    testWidgets('renders search field and Powered by KLIPY attribution',
-        (tester) async {
+    testWidgets('renders search field and Powered by KLIPY attribution', (
+      tester,
+    ) async {
       final mockClient = MockClient((request) async {
-        return http.Response(
-          jsonEncode(_buildResponse([_gifItem()])),
-          200,
-        );
+        return http.Response(jsonEncode(_buildResponse([_gifItem()])), 200);
       });
 
       await tester.pumpWidget(_buildTestWidget(mockClient: mockClient));
@@ -114,10 +108,7 @@ void main() {
 
     testWidgets('renders GIFs title bar', (tester) async {
       final mockClient = MockClient((request) async {
-        return http.Response(
-          jsonEncode(_buildResponse([_gifItem()])),
-          200,
-        );
+        return http.Response(jsonEncode(_buildResponse([_gifItem()])), 200);
       });
 
       await tester.pumpWidget(_buildTestWidget(mockClient: mockClient));
@@ -141,9 +132,7 @@ void main() {
       expect(find.byType(PrismLoadingState), findsOneWidget);
 
       // Complete the future to avoid pending timers.
-      completer.complete(
-        http.Response(jsonEncode(_buildResponse([])), 200),
-      );
+      completer.complete(http.Response(jsonEncode(_buildResponse([])), 200));
       await tester.pumpAndSettle();
 
       await _cleanTearDown(tester);
@@ -155,15 +144,13 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('search interaction', () {
-    testWidgets('typing in search field triggers debounced query update',
-        (tester) async {
+    testWidgets('typing in search field triggers debounced query update', (
+      tester,
+    ) async {
       final requestUris = <Uri>[];
       final mockClient = MockClient((request) async {
         requestUris.add(request.url);
-        return http.Response(
-          jsonEncode(_buildResponse([_gifItem()])),
-          200,
-        );
+        return http.Response(jsonEncode(_buildResponse([_gifItem()])), 200);
       });
 
       await tester.pumpWidget(_buildTestWidget(mockClient: mockClient));

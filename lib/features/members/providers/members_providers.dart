@@ -89,7 +89,9 @@ final userVisibleMembersProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(activeMembersProvider);
   final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
+    (members) => members
+        .where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id))
+        .toList(),
   );
 });
 
@@ -102,7 +104,9 @@ final userVisibleAllMembersProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(allMembersProvider);
   final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
+    (members) => members
+        .where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id))
+        .toList(),
   );
 });
 
@@ -110,7 +114,9 @@ final userVisibleMemberListProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final async = ref.watch(activeMemberListProvider);
   final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
+    (members) => members
+        .where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id))
+        .toList(),
   );
 });
 
@@ -120,7 +126,9 @@ final userVisibleAllMemberListProvider = Provider<AsyncValue<List<Member>>>((
   final async = ref.watch(allMemberListProvider);
   final hidden = ref.watch(isolatedMembersProvider).ids;
   return async.whenData(
-    (members) => members.where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id)).toList(),
+    (members) => members
+        .where((m) => m.id != unknownSentinelMemberId && !hidden.contains(m.id))
+        .toList(),
   );
 });
 
@@ -128,7 +136,13 @@ final userVisibleAllMemberListProvider = Provider<AsyncValue<List<Member>>>((
 /// Unknown sentinel, for pickers that offer it).
 final pickableMemberListProvider = Provider<AsyncValue<List<Member>>>((ref) {
   final hidden = ref.watch(isolatedMembersProvider).ids;
-  return ref.watch(activeMemberListProvider).whenData((members) => hidden.isEmpty ? members : members.where((m) => !hidden.contains(m.id)).toList());
+  return ref
+      .watch(activeMemberListProvider)
+      .whenData(
+        (members) => hidden.isEmpty
+            ? members
+            : members.where((m) => !hidden.contains(m.id)).toList(),
+      );
 });
 
 /// Single member by ID.

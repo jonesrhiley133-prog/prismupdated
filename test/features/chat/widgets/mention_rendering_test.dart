@@ -47,10 +47,7 @@ void main() {
 
       // Verify split positions for span building
       expect(content.substring(0, matches[0].start), 'Before ');
-      expect(
-        content.substring(matches[0].end, matches[1].start),
-        ' middle ',
-      );
+      expect(content.substring(matches[0].end, matches[1].start), ' middle ');
       expect(content.substring(matches[1].end), ' after');
     });
 

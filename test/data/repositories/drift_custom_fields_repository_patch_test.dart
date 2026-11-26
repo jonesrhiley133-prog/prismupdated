@@ -110,8 +110,7 @@ void main() {
   });
 
   group('moveFieldToParent', () {
-    test('writes only parent_field_id on disk + emits only that key',
-        () async {
+    test('writes only parent_field_id on disk + emits only that key', () async {
       // Move top-1 into group-1
       await repo.moveFieldToParent('top-1', 'group-1');
 
@@ -123,22 +122,26 @@ void main() {
       expect(repo.updates.first.fields, {'parent_field_id': 'group-1'});
     });
 
-    test('null clears parent_field_id and propagates as explicit null',
-        () async {
-      await repo.moveFieldToParent('child-1', null);
+    test(
+      'null clears parent_field_id and propagates as explicit null',
+      () async {
+        await repo.moveFieldToParent('child-1', null);
 
-      final row = await database.customFieldsDao.getFieldById('child-1');
-      expect(row!.parentFieldId, isNull);
+        final row = await database.customFieldsDao.getFieldById('child-1');
+        expect(row!.parentFieldId, isNull);
 
-      expect(repo.updates, hasLength(1));
-      // Critical: key MUST be present, value MUST be null. Distinguishes
-      // 'clear parent' from 'leave parent alone' on the sync wire.
-      expect(repo.updates.first.fields.containsKey('parent_field_id'), isTrue);
-      expect(repo.updates.first.fields['parent_field_id'], isNull);
-    });
+        expect(repo.updates, hasLength(1));
+        // Critical: key MUST be present, value MUST be null. Distinguishes
+        // 'clear parent' from 'leave parent alone' on the sync wire.
+        expect(
+          repo.updates.first.fields.containsKey('parent_field_id'),
+          isTrue,
+        );
+        expect(repo.updates.first.fields['parent_field_id'], isNull);
+      },
+    );
 
-    test('throws InvalidFieldTypeException when target is non-group',
-        () async {
+    test('throws InvalidFieldTypeException when target is non-group', () async {
       // top-1 is a 'text' field, not a group
       await expectLater(
         () => repo.moveFieldToParent('child-1', 'top-1'),
@@ -148,19 +151,20 @@ void main() {
       expect(repo.updates, isEmpty);
     });
 
-    test('throws InvalidFieldTypeException when target does not exist',
-        () async {
-      await expectLater(
-        () => repo.moveFieldToParent('child-1', 'nonexistent-id'),
-        throwsA(isA<InvalidFieldTypeException>()),
-      );
-      expect(repo.updates, isEmpty);
-    });
+    test(
+      'throws InvalidFieldTypeException when target does not exist',
+      () async {
+        await expectLater(
+          () => repo.moveFieldToParent('child-1', 'nonexistent-id'),
+          throwsA(isA<InvalidFieldTypeException>()),
+        );
+        expect(repo.updates, isEmpty);
+      },
+    );
   });
 
   group('setFieldDatePrecision', () {
-    test('writes only date_precision on disk + emits only that key',
-        () async {
+    test('writes only date_precision on disk + emits only that key', () async {
       await repo.setFieldDatePrecision('child-1', DatePrecision.month);
 
       final row = await database.customFieldsDao.getFieldById('child-1');
@@ -168,8 +172,9 @@ void main() {
       expect(row.name, 'Subject'); // unchanged
 
       expect(repo.updates, hasLength(1));
-      expect(repo.updates.first.fields,
-          {'date_precision': DatePrecision.month.index});
+      expect(repo.updates.first.fields, {
+        'date_precision': DatePrecision.month.index,
+      });
     });
 
     test('null is emitted as explicit null', () async {
@@ -207,9 +212,9 @@ void main() {
       expect(repo.updates, hasLength(1));
       expect(repo.updates.first.fields.keys, ['type_config_json']);
       // And the value parses back through the codec
-      final decoded = jsonDecode(
-        repo.updates.first.fields['type_config_json'] as String,
-      ) as Map<String, dynamic>;
+      final decoded =
+          jsonDecode(repo.updates.first.fields['type_config_json'] as String)
+              as Map<String, dynamic>;
       expect(decoded['runtimeType'], 'slider');
     });
   });
@@ -218,21 +223,23 @@ void main() {
   // future fix flips the assertion and gains a regression gate.
 
   group('sync emission edge cases', () {
-    test('renameField to the current value is a no-op '
-        '(equality short-circuit prevents LWW clobber of concurrent edits)',
-        () async {
-      // child-1.name == 'Subject' from setUp.
-      await repo.renameField('child-1', 'Subject');
+    test(
+      'renameField to the current value is a no-op '
+      '(equality short-circuit prevents LWW clobber of concurrent edits)',
+      () async {
+        // child-1.name == 'Subject' from setUp.
+        await repo.renameField('child-1', 'Subject');
 
-      expect(
-        repo.updates,
-        isEmpty,
-        reason:
-            'Patch paths must short-circuit when the new value equals the '
-            'stored value — otherwise per-field LWW stamps a fresh HLC '
-            'and clobbers a peer\'s concurrent edit.',
-      );
-    });
+        expect(
+          repo.updates,
+          isEmpty,
+          reason:
+              'Patch paths must short-circuit when the new value equals the '
+              'stored value — otherwise per-field LWW stamps a fresh HLC '
+              'and clobbers a peer\'s concurrent edit.',
+        );
+      },
+    );
 
     test('moveFieldToParent to the current parent is a no-op', () async {
       // child-1.parentFieldId == 'group-1' from setUp.
@@ -247,17 +254,19 @@ void main() {
       );
     });
 
-    test('moveFieldToParent(null) on an already-top-level field is a no-op',
-        () async {
-      // top-1.parentFieldId == null from setUp.
-      await repo.moveFieldToParent('top-1', null);
+    test(
+      'moveFieldToParent(null) on an already-top-level field is a no-op',
+      () async {
+        // top-1.parentFieldId == null from setUp.
+        await repo.moveFieldToParent('top-1', null);
 
-      expect(
-        repo.updates,
-        isEmpty,
-        reason: 'Clearing parent on a top-level field must not emit.',
-      );
-    });
+        expect(
+          repo.updates,
+          isEmpty,
+          reason: 'Clearing parent on a top-level field must not emit.',
+        );
+      },
+    );
 
     test('setFieldDatePrecision to the current value is a no-op', () async {
       // First set a value, then re-set to the same value.
@@ -319,20 +328,21 @@ void main() {
     });
 
     test('recognized variant: codec re-encoding reorders extras and emits '
-        'a phantom type_config_json change on an unrelated updateField',
-        () async {
+        'a phantom type_config_json change on an unrelated updateField', () async {
       // Codec's toJson produces {...base, ...extras} — base fields first.
       // If the on-disk JSON had extras BEFORE the base keys (peer wrote them
       // that way), the re-encoding produces a different string → diff sees
       // type_config_json as changed → phantom sync emit.
-      const baseFieldsFirst = '{"runtimeType":"slider","mode":"labeled",'
+      const baseFieldsFirst =
+          '{"runtimeType":"slider","mode":"labeled",'
           '"min":0.0,"max":100.0,"step":null,"unit":null,'
           '"showTicks":false,"snapToPositions":false,'
           '"leftLabel":null,"centerLabel":null,"rightLabel":null,'
           '"trackColorLeft":null,"trackColorCenter":null,"trackColorRight":null,'
           '"presetId":null,'
           '"forwardCompatKey":"future-value"}';
-      const extrasFirst = '{"forwardCompatKey":"future-value",'
+      const extrasFirst =
+          '{"forwardCompatKey":"future-value",'
           '"runtimeType":"slider","mode":"labeled",'
           '"min":0.0,"max":100.0,"step":null,"unit":null,'
           '"showTicks":false,"snapToPositions":false,'
@@ -373,11 +383,9 @@ void main() {
       // to expect(emittedKeys, ['name']).
       expect(
         emittedKeys,
-        anyOf(
-          equals(['name']),
-          equals(['name', 'type_config_json']),
-        ),
-        reason: 'Documents whether the codec re-encoding produces a '
+        anyOf(equals(['name']), equals(['name', 'type_config_json'])),
+        reason:
+            'Documents whether the codec re-encoding produces a '
             'byte-identical string to on-disk when extras were stored '
             'in non-canonical order.',
       );
@@ -386,8 +394,7 @@ void main() {
     });
 
     test('edit-sheet patch path silently skips writeTypedConfig when '
-        'typeConfig becomes null (no clearTypedConfig path exists)',
-        () async {
+        'typeConfig becomes null (no clearTypedConfig path exists)', () async {
       // create_edit_field_sheet.dart guards writeTypedConfig with
       // `typeConfig != null`, so clearing a config in-place is dropped.
       // Locks the current behavior; flip to assert the on-disk gets
@@ -416,26 +423,29 @@ void main() {
   });
 
   group('soft-delete and tombstone semantics', () {
-    test('renameField on a soft-deleted row writes 0 and emits nothing',
-        () async {
-      // Soft-delete child-1
-      await repo.deleteField('child-1');
-      repo.updates.clear();
-      repo.creates.clear();
+    test(
+      'renameField on a soft-deleted row writes 0 and emits nothing',
+      () async {
+        // Soft-delete child-1
+        await repo.deleteField('child-1');
+        repo.updates.clear();
+        repo.creates.clear();
 
-      // Try to rename the tombstone via patch path
-      await repo.renameField('child-1', 'should-not-land');
+        // Try to rename the tombstone via patch path
+        await repo.renameField('child-1', 'should-not-land');
 
-      // Disk: row is still soft-deleted with original name (no update)
-      final row = await database.customFieldsDao
-          .getFieldByIdIncludingDeleted('child-1');
-      expect(row, isNotNull);
-      expect(row!.isDeleted, isTrue);
-      expect(row.name, 'Subject'); // unchanged from setUp
+        // Disk: row is still soft-deleted with original name (no update)
+        final row = await database.customFieldsDao.getFieldByIdIncludingDeleted(
+          'child-1',
+        );
+        expect(row, isNotNull);
+        expect(row!.isDeleted, isTrue);
+        expect(row.name, 'Subject'); // unchanged from setUp
 
-      // Sync: nothing emitted (affected=0 → _writePartial bailed)
-      expect(repo.updates, isEmpty);
-    });
+        // Sync: nothing emitted (affected=0 → _writePartial bailed)
+        expect(repo.updates, isEmpty);
+      },
+    );
 
     test('createFieldFromImport resurrects a tombstoned row instead of '
         'hitting the PK UNIQUE constraint', () async {
@@ -522,27 +532,28 @@ void main() {
       expect(repo.creates.first.entityId, 'imported-child');
     });
 
-    test('regular createField still throws on non-group parent (UI flow)',
-        () async {
-      final orphanChild = CustomField(
-        id: 'ui-created-child',
-        name: 'UI Child',
-        fieldType: CustomFieldType.text,
-        fieldTypeId: 'text',
-        parentFieldId: 'top-1', // non-group
-        createdAt: DateTime.utc(2026, 2, 2),
-      );
+    test(
+      'regular createField still throws on non-group parent (UI flow)',
+      () async {
+        final orphanChild = CustomField(
+          id: 'ui-created-child',
+          name: 'UI Child',
+          fieldType: CustomFieldType.text,
+          fieldTypeId: 'text',
+          parentFieldId: 'top-1', // non-group
+          createdAt: DateTime.utc(2026, 2, 2),
+        );
 
-      await expectLater(
-        () => repo.createField(orphanChild),
-        throwsA(isA<InvalidFieldTypeException>()),
-      );
-    });
+        await expectLater(
+          () => repo.createField(orphanChild),
+          throwsA(isA<InvalidFieldTypeException>()),
+        );
+      },
+    );
   });
 
   group('updateField (importer/replay path)', () {
-    test('diffs against existing row and emits only changed fields',
-        () async {
+    test('diffs against existing row and emits only changed fields', () async {
       final existing = await repo.getFieldById('child-1');
 
       // Caller intent: only the name changes. parentFieldId, typeConfig, etc.
@@ -566,19 +577,21 @@ void main() {
       expect(repo.updates, isEmpty);
     });
 
-    test('importer path: incoming snapshot with explicit parent change emits parent_field_id',
-        () async {
-      // Simulates a backup-restore scenario where the imported snapshot
-      // carries an authoritative parent_field_id that differs from the
-      // current DB value.
-      final existing = await repo.getFieldById('child-1');
-      final moved = existing!.copyWith(parentFieldId: null);
+    test(
+      'importer path: incoming snapshot with explicit parent change emits parent_field_id',
+      () async {
+        // Simulates a backup-restore scenario where the imported snapshot
+        // carries an authoritative parent_field_id that differs from the
+        // current DB value.
+        final existing = await repo.getFieldById('child-1');
+        final moved = existing!.copyWith(parentFieldId: null);
 
-      await repo.updateField(moved);
+        await repo.updateField(moved);
 
-      expect(repo.updates, hasLength(1));
-      expect(repo.updates.first.fields.keys, ['parent_field_id']);
-      expect(repo.updates.first.fields['parent_field_id'], isNull);
-    });
+        expect(repo.updates, hasLength(1));
+        expect(repo.updates.first.fields.keys, ['parent_field_id']);
+        expect(repo.updates.first.fields['parent_field_id'], isNull);
+      },
+    );
   });
 }

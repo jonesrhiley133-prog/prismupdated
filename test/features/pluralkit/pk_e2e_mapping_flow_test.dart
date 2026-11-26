@@ -39,25 +39,25 @@ void _installSecureStorageStub() {
   final store = <String, String?>{};
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-    const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-    (MethodCall call) async {
-      switch (call.method) {
-        case 'write':
-          store[call.arguments['key'] as String] =
-              call.arguments['value'] as String?;
-          return null;
-        case 'read':
-          return store[call.arguments['key'] as String];
-        case 'delete':
-          store.remove(call.arguments['key'] as String);
-          return null;
-        case 'containsKey':
-          return store.containsKey(call.arguments['key'] as String);
-        default:
-          return null;
-      }
-    },
-  );
+        const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+        (MethodCall call) async {
+          switch (call.method) {
+            case 'write':
+              store[call.arguments['key'] as String] =
+                  call.arguments['value'] as String?;
+              return null;
+            case 'read':
+              return store[call.arguments['key'] as String];
+            case 'delete':
+              store.remove(call.arguments['key'] as String);
+              return null;
+            case 'containsKey':
+              return store.containsKey(call.arguments['key'] as String);
+            default:
+              return null;
+          }
+        },
+      );
 }
 
 class _FakeMemberRepo implements MemberRepository {
@@ -85,10 +85,7 @@ class _FakeMemberRepo implements MemberRepository {
     Map<String, dynamic> changedFields,
   ) async => throw UnimplementedError();
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _byId[id];
     if (existing == null || existing.isDeleted) return 0;
     _byId[id] = existing.copyWith(
@@ -97,7 +94,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
       pluralkitSyncIgnored: false,
     );
     return 1;
@@ -116,7 +113,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
     );
     return 1;
   }
@@ -136,6 +133,7 @@ class _FakeMemberRepo implements MemberRepository {
     _byId[id] = existing.copyWith(pluralkitSyncIgnored: false);
     return 1;
   }
+
   @override
   Future<void> deleteMember(String id) async => _byId.remove(id);
   @override
@@ -153,8 +151,7 @@ class _FakeMemberRepo implements MemberRepository {
   Stream<List<domain.Member>> watchAllMembers() =>
       Stream.value(_byId.values.toList());
   @override
-  Stream<domain.Member?> watchMemberById(String id) =>
-      Stream.value(_byId[id]);
+  Stream<domain.Member?> watchMemberById(String id) => Stream.value(_byId[id]);
 
   @override
   Future<List<domain.Member>> getDeletedLinkedMembers() async => const [];
@@ -170,20 +167,20 @@ class _FakeMemberRepo implements MemberRepository {
   Future<void> clearCreatePushStartedAt(String id) async {}
   @override
   Future<({domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 class _NoopFrontingSessionRepo implements FrontingSessionRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError(
-      'Fronting repo not expected to be called: ${invocation.memberName}');
+    'Fronting repo not expected to be called: ${invocation.memberName}',
+  );
 }
 
 class _FakePkClient extends PluralKitClient {
   final List<PKMember> members;
   int createCallCount = 0;
-  _FakePkClient(this.members)
-      : super(token: 'fake', httpClient: http.Client());
+  _FakePkClient(this.members) : super(token: 'fake', httpClient: http.Client());
 
   @override
   Future<PKSystem> getSystem() async =>
@@ -211,13 +208,12 @@ class _FakePkClient extends PluralKitClient {
   void dispose() {}
 }
 
-domain.Member _local(String id, String name, {String? pkUuid}) =>
-    domain.Member(
-      id: id,
-      name: name,
-      createdAt: DateTime(2026),
-      pluralkitUuid: pkUuid,
-    );
+domain.Member _local(String id, String name, {String? pkUuid}) => domain.Member(
+  id: id,
+  name: name,
+  createdAt: DateTime(2026),
+  pluralkitUuid: pkUuid,
+);
 
 PKMember _pk(String id, String name) =>
     PKMember(id: id, uuid: 'pk-$id', name: name);
@@ -250,11 +246,13 @@ void main() {
       tokenOverride: 'fake',
     );
     await syncService.setToken('fake');
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      memberRepositoryProvider.overrideWithValue(repo),
-      pluralKitSyncServiceProvider.overrideWithValue(syncService),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        memberRepositoryProvider.overrideWithValue(repo),
+        pluralKitSyncServiceProvider.overrideWithValue(syncService),
+      ],
+    );
   }
 
   tearDown(() async {
@@ -271,20 +269,21 @@ void main() {
           for (var i = 0; i < names.length; i++) _local('l${i + 1}', names[i]),
         ],
         pkMembers: [
-          for (var i = 0; i < names.length; i++)
-            _pk('p${i + 1}', names[i]),
+          for (var i = 0; i < names.length; i++) _pk('p${i + 1}', names[i]),
         ],
       );
 
       // Build decisions.
-      final state =
-          await container.read(pkMappingControllerProvider.future);
+      final state = await container.read(pkMappingControllerProvider.future);
 
       // All 5 PK members must be auto-linked (exact-name matches).
       expect(state.decisionsByPkUuid, hasLength(5));
       for (final d in state.decisionsByPkUuid.values) {
-        expect(d, isA<PkLinkDecision>(),
-            reason: 'Every PK member should auto-link on exact name');
+        expect(
+          d,
+          isA<PkLinkDecision>(),
+          reason: 'Every PK member should auto-link on exact name',
+        );
       }
       // No locals in the push pool — all were consumed by link decisions.
       expect(state.decisionsByLocalId, isEmpty);
@@ -302,19 +301,26 @@ void main() {
       expect(failed, isEmpty, reason: 'Unexpected failures: $failed');
 
       // Every local now has a populated pluralkitUuid — no duplicates created.
-      expect(await repo.getCount(), 5,
-          reason: 'Total member count must stay 5 — zero duplicates');
+      expect(
+        await repo.getCount(),
+        5,
+        reason: 'Total member count must stay 5 — zero duplicates',
+      );
       final allMembers = await repo.getAllMembers();
       expect(
-        allMembers.every((m) =>
-            m.pluralkitUuid != null && m.pluralkitUuid!.isNotEmpty),
+        allMembers.every(
+          (m) => m.pluralkitUuid != null && m.pluralkitUuid!.isNotEmpty,
+        ),
         isTrue,
         reason: 'All 5 locals must be linked to a PK UUID',
       );
 
       // createMember must NOT have been called — nothing should be pushed to PK.
-      expect(client.createCallCount, 0,
-          reason: 'Linked locals must not trigger PK create calls');
+      expect(
+        client.createCallCount,
+        0,
+        reason: 'Linked locals must not trigger PK create calls',
+      );
 
       // Mapping acknowledged.
       expect(syncService.state.needsMapping, isFalse);
@@ -341,14 +347,17 @@ void main() {
         ],
       );
 
-      final state =
-          await container.read(pkMappingControllerProvider.future);
+      final state = await container.read(pkMappingControllerProvider.future);
       // All PK default to Import.
-      expect(state.decisionsByPkUuid.values.whereType<PkImportDecision>(),
-          hasLength(5));
+      expect(
+        state.decisionsByPkUuid.values.whereType<PkImportDecision>(),
+        hasLength(5),
+      );
       // All locals default to PushNew.
-      expect(state.decisionsByLocalId.values.whereType<PkPushNewDecision>(),
-          hasLength(5));
+      expect(
+        state.decisionsByLocalId.values.whereType<PkPushNewDecision>(),
+        hasLength(5),
+      );
 
       await container.read(pkMappingControllerProvider.notifier).apply();
 
@@ -360,8 +369,9 @@ void main() {
       // the UUID assigned by createMember).
       final allMembers = await repo.getAllMembers();
       expect(
-        allMembers.every((m) =>
-            m.pluralkitUuid != null && m.pluralkitUuid!.isNotEmpty),
+        allMembers.every(
+          (m) => m.pluralkitUuid != null && m.pluralkitUuid!.isNotEmpty,
+        ),
         isTrue,
       );
     },
@@ -371,17 +381,11 @@ void main() {
     'ambiguous names: two locals "Alex" + one PK "Alex" → Import + two PushNew',
     () async {
       await bootstrap(
-        locals: [
-          _local('l1', 'Alex'),
-          _local('l2', 'Alex'),
-        ],
-        pkMembers: [
-          _pk('p1', 'Alex'),
-        ],
+        locals: [_local('l1', 'Alex'), _local('l2', 'Alex')],
+        pkMembers: [_pk('p1', 'Alex')],
       );
 
-      final state =
-          await container.read(pkMappingControllerProvider.future);
+      final state = await container.read(pkMappingControllerProvider.future);
       // Matcher picks the first-exact-match local and auto-links; the other
       // "Alex" defaults to push-new. That satisfies "ambiguous names must not
       // silently link both" — only one link is created, the other local still
@@ -397,12 +401,14 @@ void main() {
       expect(linksFromPk.length, lessThanOrEqualTo(1));
       // Every local that wasn't linked must default to PushNew (not silently
       // imported or skipped).
-      final linkedLocalIds =
-          linksFromPk.map((l) => l.localMemberId).toSet();
+      final linkedLocalIds = linksFromPk.map((l) => l.localMemberId).toSet();
       for (final id in ['l1', 'l2']) {
         if (linkedLocalIds.contains(id)) continue;
-        expect(state.decisionsByLocalId[id], isA<PkPushNewDecision>(),
-            reason: 'Unlinked local $id must default to PushNew');
+        expect(
+          state.decisionsByLocalId[id],
+          isA<PkPushNewDecision>(),
+          reason: 'Unlinked local $id must default to PushNew',
+        );
       }
     },
   );

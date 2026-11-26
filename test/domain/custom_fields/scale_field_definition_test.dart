@@ -5,7 +5,10 @@ import 'package:prism_plurality/domain/models/typed_field_value.dart';
 void main() {
   group('scaleFieldDefinition metadata', () {
     test('id is "scale"', () => expect(scaleFieldDefinition.id, 'scale'));
-    test('legacyIntValue is 6', () => expect(scaleFieldDefinition.legacyIntValue, 6));
+    test(
+      'legacyIntValue is 6',
+      () => expect(scaleFieldDefinition.legacyIntValue, 6),
+    );
   });
 
   group('scaleFieldDefinition.valueParser', () {
@@ -60,10 +63,7 @@ void main() {
 
   group('scaleFieldDefinition.valueEncoder', () {
     test('empty ScaleFieldValue → ""', () {
-      expect(
-        scaleFieldDefinition.valueEncoder(const ScaleFieldValue()),
-        '',
-      );
+      expect(scaleFieldDefinition.valueEncoder(const ScaleFieldValue()), '');
     });
 
     test('ScaleFieldValue(step: 4) → "4"', () {
@@ -81,10 +81,7 @@ void main() {
     });
 
     test('ScaleFieldValue(step: null) → ""', () {
-      expect(
-        scaleFieldDefinition.valueEncoder(const ScaleFieldValue()),
-        '',
-      );
+      expect(scaleFieldDefinition.valueEncoder(const ScaleFieldValue()), '');
     });
   });
 
@@ -105,10 +102,7 @@ void main() {
 
     for (final input in inputs) {
       test('parser("$input") does not throw', () {
-        expect(
-          () => scaleFieldDefinition.valueParser(input),
-          returnsNormally,
-        );
+        expect(() => scaleFieldDefinition.valueParser(input), returnsNormally);
       });
     }
   });

@@ -23,17 +23,26 @@ final socialOnboardingProvider = Provider<void>((ref) {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getBool(_doneKey) ?? false) return;
       if (!settings.boardsEnabled) {
-        await ref.read(settingsNotifierProvider.notifier).updateFeatureToggle(boardsEnabled: true);
+        await ref
+            .read(settingsNotifierProvider.notifier)
+            .updateFeatureToggle(boardsEnabled: true);
       }
       final repo = ref.read(systemSettingsRepositoryProvider);
       final now = await repo.getSettings();
-      if (!now.navBarItems.contains('stories') && !now.navBarOverflowItems.contains('stories')) {
-        await repo.updateNavBarOverflowItems([...now.navBarOverflowItems, 'stories']);
+      if (!now.navBarItems.contains('stories') &&
+          !now.navBarOverflowItems.contains('stories')) {
+        await repo.updateNavBarOverflowItems([
+          ...now.navBarOverflowItems,
+          'stories',
+        ]);
       }
       final appPrefs = ref.read(appPreferenceRepositoryProvider);
       final widgets = await appPrefs.get(dashboardWidgetsPreference);
       if (!widgets.contains(DashboardWidgetId.stories)) {
-        await appPrefs.set(dashboardWidgetsPreference, [DashboardWidgetId.stories, ...widgets]);
+        await appPrefs.set(dashboardWidgetsPreference, [
+          DashboardWidgetId.stories,
+          ...widgets,
+        ]);
       }
       await prefs.setBool(_doneKey, true);
     } catch (_) {

@@ -7,18 +7,17 @@ import 'package:prism_plurality/domain/models/member_group.dart' as domain;
 
 void main() {
   // Local helper to build a MemberGroupRow with a custom sort_state string.
-  db.MemberGroupRow rowWithSortState(String sortStateJson) =>
-      db.MemberGroupRow(
-        id: 'g',
-        name: 'g',
-        displayOrder: 0,
-        groupType: 0,
-        createdAt: DateTime(2026, 1, 1),
-        isDeleted: false,
-        syncSuppressed: false,
-        sortState: sortStateJson,
-        syncGeneration: 0,
-      );
+  db.MemberGroupRow rowWithSortState(String sortStateJson) => db.MemberGroupRow(
+    id: 'g',
+    name: 'g',
+    displayOrder: 0,
+    groupType: 0,
+    createdAt: DateTime(2026, 1, 1),
+    isDeleted: false,
+    syncSuppressed: false,
+    sortState: sortStateJson,
+    syncGeneration: 0,
+  );
 
   group('GroupSortState shape', () {
     test('manualEmpty is mode=manual + empty order', () {

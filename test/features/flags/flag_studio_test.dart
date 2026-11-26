@@ -17,13 +17,41 @@ import 'package:prism_plurality/shared/theme/app_theme.dart';
 
 void main() {
   test('designs round-trip', () {
-    final d = FlagDesign(ratio: '1:2', shape: 'swallowtail', layers: [
-      FlagLayer(id: 'a', kind: 'layout', layout: 'nordic', colors: const [1, 2]),
-      const FlagLayer(id: 'b', kind: 'draw', colors: [3], stroke: 0.02, points: [Offset(0.1, 0.2), Offset(0.3, 0.4)]),
-      const FlagLayer(id: 'c', kind: 'vector', paths: [('M0 0 L1 0 L1 1 Z', 0xFF00FF00)]),
-    ]);
+    final d = FlagDesign(
+      ratio: '1:2',
+      shape: 'swallowtail',
+      layers: [
+        FlagLayer(
+          id: 'a',
+          kind: 'layout',
+          layout: 'nordic',
+          colors: const [1, 2],
+        ),
+        const FlagLayer(
+          id: 'b',
+          kind: 'draw',
+          colors: [3],
+          stroke: 0.02,
+          points: [Offset(0.1, 0.2), Offset(0.3, 0.4)],
+        ),
+        const FlagLayer(
+          id: 'c',
+          kind: 'vector',
+          paths: [('M0 0 L1 0 L1 1 Z', 0xFF00FF00)],
+        ),
+      ],
+    );
     final b = FlagDesign.fromJson(d.toJson());
-    expect([b.ratio, b.shape, b.layers.length, b.layers[1].points.length, b.layers[2].paths.first.$2], ['1:2', 'swallowtail', 3, 2, 0xFF00FF00]);
+    expect(
+      [
+        b.ratio,
+        b.shape,
+        b.layers.length,
+        b.layers[1].points.length,
+        b.layers[2].paths.first.$2,
+      ],
+      ['1:2', 'swallowtail', 3, 2, 0xFF00FF00],
+    );
   });
 
   test('SVG import reads shapes and ignores scripts and links', () {
@@ -54,17 +82,42 @@ void main() {
 
   testWidgets('studio, editor and info page open', (t) async {
     final now = DateTime(2026, 11, 20);
-    final seed = [TrackerRecord(id: 'f1', kind: TrackerKind.flag, title: 'Our flag', createdAt: now, modifiedAt: now).withFields({'design': flagTemplates['Starry canton']!.toJson(), 'assigned': ['system']})];
+    final seed = [
+      TrackerRecord(
+        id: 'f1',
+        kind: TrackerKind.flag,
+        title: 'Our flag',
+        createdAt: now,
+        modifiedAt: now,
+      ).withFields({
+        'design': flagTemplates['Starry canton']!.toJson(),
+        'assigned': ['system'],
+      }),
+    ];
     Widget app(Widget home) => ProviderScope(
       overrides: [
         trackerRecordsProvider.overrideWith((ref) => Stream.value(seed)),
-        userVisibleMembersProvider.overrideWithValue(const AsyncData(<Member>[])),
-        activeSessionsProvider.overrideWith((ref) => Stream.value(const <FrontingSession>[])),
+        userVisibleMembersProvider.overrideWithValue(
+          const AsyncData(<Member>[]),
+        ),
+        activeSessionsProvider.overrideWith(
+          (ref) => Stream.value(const <FrontingSession>[]),
+        ),
         currentFronterProvider.overrideWith((ref) => Stream.value(null)),
       ],
-      child: MaterialApp(theme: AppTheme.light(), localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, home: home),
+      child: MaterialApp(
+        theme: AppTheme.light(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: home,
+      ),
     );
-    for (final s in const <Widget>[FlagStudioScreen(), FlagEditorScreen(flagId: 'f1'), FlagInfoScreen(flagId: 'f1'), Scaffold(body: FlagStrip(owner: 'system'))]) {
+    for (final s in const <Widget>[
+      FlagStudioScreen(),
+      FlagEditorScreen(flagId: 'f1'),
+      FlagInfoScreen(flagId: 'f1'),
+      Scaffold(body: FlagStrip(owner: 'system')),
+    ]) {
       await t.pumpWidget(app(s));
       for (var i = 0; i < 4; i++) {
         await t.pump(const Duration(milliseconds: 100));
@@ -73,7 +126,14 @@ void main() {
     }
     await t.pumpWidget(app(const FlagEditorScreen(flagId: 'f1')));
     await t.pump(const Duration(milliseconds: 200));
-    for (final p in ['Layout', 'Symbols', 'Colours', 'Import', 'Flag', 'Layers']) {
+    for (final p in [
+      'Layout',
+      'Symbols',
+      'Colours',
+      'Import',
+      'Flag',
+      'Layers',
+    ]) {
       await t.tap(find.text(p).first);
       await t.pump(const Duration(milliseconds: 100));
       expect(t.takeException(), isNull, reason: p);

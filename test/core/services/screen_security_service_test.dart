@@ -17,12 +17,12 @@ void main() {
     setCalls = <bool>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      if (call.method == 'setSecureDisplay') {
-        final args = call.arguments as Map<dynamic, dynamic>;
-        setCalls.add(args['enabled'] as bool);
-      }
-      return null;
-    });
+          if (call.method == 'setSecureDisplay') {
+            final args = call.arguments as Map<dynamic, dynamic>;
+            setCalls.add(args['enabled'] as bool);
+          }
+          return null;
+        });
     ScreenSecurityService.debugResetForTests();
   });
 
@@ -70,9 +70,7 @@ void main() {
       expect(setCalls, [true]);
     });
 
-    test(
-        'enable() then global true issues only one on',
-        () async {
+    test('enable() then global true issues only one on', () async {
       await ScreenSecurityService.enable();
       await ScreenSecurityService.setGlobalEnabled(true);
       expect(setCalls, [true]);
@@ -85,14 +83,16 @@ void main() {
       expect(setCalls, [true]);
     });
 
-    test('platform turns off only when all refs and global drop to zero',
-        () async {
-      await ScreenSecurityService.enable();
-      await ScreenSecurityService.setGlobalEnabled(true);
-      await ScreenSecurityService.setGlobalEnabled(false);
-      await ScreenSecurityService.disable();
-      expect(setCalls, [true, false]);
-    });
+    test(
+      'platform turns off only when all refs and global drop to zero',
+      () async {
+        await ScreenSecurityService.enable();
+        await ScreenSecurityService.setGlobalEnabled(true);
+        await ScreenSecurityService.setGlobalEnabled(false);
+        await ScreenSecurityService.disable();
+        expect(setCalls, [true, false]);
+      },
+    );
 
     test('retries when the first platform call fails', () async {
       // Simulate the cold-boot race where main.dart calls
@@ -102,17 +102,17 @@ void main() {
       var callIndex = 0;
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
-        if (call.method == 'setSecureDisplay') {
-          final args = call.arguments as Map<dynamic, dynamic>;
-          final enabled = args['enabled'] as bool;
-          callIndex++;
-          if (callIndex == 1) {
-            throw MissingPluginException('not yet registered');
-          }
-          setCalls.add(enabled);
-        }
-        return null;
-      });
+            if (call.method == 'setSecureDisplay') {
+              final args = call.arguments as Map<dynamic, dynamic>;
+              final enabled = args['enabled'] as bool;
+              callIndex++;
+              if (callIndex == 1) {
+                throw MissingPluginException('not yet registered');
+              }
+              setCalls.add(enabled);
+            }
+            return null;
+          });
 
       await ScreenSecurityService.setGlobalEnabled(true);
       expect(setCalls, isEmpty, reason: 'first attempt failed, nothing cached');
@@ -137,36 +137,34 @@ void main() {
       return container;
     }
 
-    test('reading the controller with toggle ON applies setSecureDisplay(true)',
-        () async {
+    test(
+      'reading the controller with toggle ON applies setSecureDisplay(true)',
+      () async {
+        final container = await makeContainer(initial: true);
+        addTearDown(container.dispose);
+
+        container.read(screenPrivacyControllerProvider);
+        // Allow the async ref.listen callback to settle.
+        await Future<void>.delayed(Duration.zero);
+
+        expect(setCalls, [true]);
+      },
+    );
+
+    test('flipping the source provider OFF turns the platform OFF', () async {
       final container = await makeContainer(initial: true);
       addTearDown(container.dispose);
 
       container.read(screenPrivacyControllerProvider);
-      // Allow the async ref.listen callback to settle.
       await Future<void>.delayed(Duration.zero);
 
-      expect(setCalls, [true]);
-    });
-
-    test('flipping the source provider OFF turns the platform OFF',
-        () async {
-      final container = await makeContainer(initial: true);
-      addTearDown(container.dispose);
-
-      container.read(screenPrivacyControllerProvider);
-      await Future<void>.delayed(Duration.zero);
-
-      await container
-          .read(screenPrivacyEnabledProvider.notifier)
-          .set(false);
+      await container.read(screenPrivacyEnabledProvider.notifier).set(false);
       await Future<void>.delayed(Duration.zero);
 
       expect(setCalls, [true, false]);
     });
 
-    test('toggling true -> false -> true issues transitions only',
-        () async {
+    test('toggling true -> false -> true issues transitions only', () async {
       final container = await makeContainer(initial: false);
       addTearDown(container.dispose);
 
@@ -174,26 +172,19 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(setCalls, isEmpty);
 
-      await container
-          .read(screenPrivacyEnabledProvider.notifier)
-          .set(true);
+      await container.read(screenPrivacyEnabledProvider.notifier).set(true);
       await Future<void>.delayed(Duration.zero);
 
-      await container
-          .read(screenPrivacyEnabledProvider.notifier)
-          .set(false);
+      await container.read(screenPrivacyEnabledProvider.notifier).set(false);
       await Future<void>.delayed(Duration.zero);
 
-      await container
-          .read(screenPrivacyEnabledProvider.notifier)
-          .set(true);
+      await container.read(screenPrivacyEnabledProvider.notifier).set(true);
       await Future<void>.delayed(Duration.zero);
 
       expect(setCalls, [true, false, true]);
     });
 
-    test('disposing the container does NOT turn the platform off',
-        () async {
+    test('disposing the container does NOT turn the platform off', () async {
       final container = await makeContainer(initial: true);
       container.read(screenPrivacyControllerProvider);
       await Future<void>.delayed(Duration.zero);

@@ -19,7 +19,11 @@ void main() {
 
   group('parsePeriodIds', () {
     test('returns sorted ids regardless of url order', () {
-      expect(parsePeriodIds(Uri.parse('/period?id=c&id=a&id=b')), ['a', 'b', 'c']);
+      expect(parsePeriodIds(Uri.parse('/period?id=c&id=a&id=b')), [
+        'a',
+        'b',
+        'c',
+      ]);
     });
 
     test('handles missing query string', () {

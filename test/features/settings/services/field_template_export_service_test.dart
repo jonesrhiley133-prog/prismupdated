@@ -53,57 +53,50 @@ void main() {
   // unrelated top-level field X (displayOrder 1).
   Future<void> seedStandardFixture() async {
     // Group field
-    await repo.createField(makeField(
-      id: 'G',
-      name: 'Group G',
-      fieldTypeId: 'group',
-      displayOrder: 0,
-    ));
+    await repo.createField(
+      makeField(
+        id: 'G',
+        name: 'Group G',
+        fieldTypeId: 'group',
+        displayOrder: 0,
+      ),
+    );
     // Children — created with real parentFieldId so the repo keeps them
     // raw (no orphan-promotion). Use createFieldFromImport to bypass the
     // UI-flow depth check; it preserves parentFieldId verbatim.
-    await repo.createFieldFromImport(makeField(
-      id: 'C1',
-      name: 'Child 1',
-      parentFieldId: 'G',
-      displayOrder: 0,
-    ));
-    await repo.createFieldFromImport(makeField(
-      id: 'C2',
-      name: 'Child 2',
-      parentFieldId: 'G',
-      displayOrder: 1,
-    ));
-    await repo.createFieldFromImport(makeField(
-      id: 'C3',
-      name: 'Child 3',
-      parentFieldId: 'G',
-      displayOrder: 2,
-    ));
+    await repo.createFieldFromImport(
+      makeField(id: 'C1', name: 'Child 1', parentFieldId: 'G', displayOrder: 0),
+    );
+    await repo.createFieldFromImport(
+      makeField(id: 'C2', name: 'Child 2', parentFieldId: 'G', displayOrder: 1),
+    );
+    await repo.createFieldFromImport(
+      makeField(id: 'C3', name: 'Child 3', parentFieldId: 'G', displayOrder: 2),
+    );
     // Unrelated top-level field
-    await repo.createField(makeField(
-      id: 'X',
-      name: 'Unrelated',
-      displayOrder: 1,
-    ));
+    await repo.createField(
+      makeField(id: 'X', name: 'Unrelated', displayOrder: 1),
+    );
   }
 
   // ── buildTemplateForGroup ────────────────────────────────────────────
 
-  test('buildTemplateForGroup: 4 entries — group + 3 children, not X',
-      () async {
-    await seedStandardFixture();
+  test(
+    'buildTemplateForGroup: 4 entries — group + 3 children, not X',
+    () async {
+      await seedStandardFixture();
 
-    final tmpl = await service.buildTemplateForGroup('G');
+      final tmpl = await service.buildTemplateForGroup('G');
 
-    expect(tmpl.entries, hasLength(4));
-    final names = tmpl.entries.map((e) => e.name).toList();
-    expect(names, contains('Group G'));
-    expect(names, contains('Child 1'));
-    expect(names, contains('Child 2'));
-    expect(names, contains('Child 3'));
-    expect(names, isNot(contains('Unrelated')));
-  });
+      expect(tmpl.entries, hasLength(4));
+      final names = tmpl.entries.map((e) => e.name).toList();
+      expect(names, contains('Group G'));
+      expect(names, contains('Child 1'));
+      expect(names, contains('Child 2'));
+      expect(names, contains('Child 3'));
+      expect(names, isNot(contains('Unrelated')));
+    },
+  );
 
   test('buildTemplateForGroup: group is first entry', () async {
     await seedStandardFixture();
@@ -113,19 +106,24 @@ void main() {
     expect(tmpl.entries.first.name, 'Group G');
   });
 
-  test('buildTemplateForGroup: children parentIndex points at group (index 0)',
-      () async {
-    await seedStandardFixture();
+  test(
+    'buildTemplateForGroup: children parentIndex points at group (index 0)',
+    () async {
+      await seedStandardFixture();
 
-    final tmpl = await service.buildTemplateForGroup('G');
+      final tmpl = await service.buildTemplateForGroup('G');
 
-    // Entry 0 is the group (parentIndex null). Entries 1..3 are children.
-    expect(tmpl.entries[0].parentIndex, isNull);
-    for (final entry in tmpl.entries.skip(1)) {
-      expect(entry.parentIndex, 0,
-          reason: 'child ${entry.name} must point at index 0 (the group)');
-    }
-  });
+      // Entry 0 is the group (parentIndex null). Entries 1..3 are children.
+      expect(tmpl.entries[0].parentIndex, isNull);
+      for (final entry in tmpl.entries.skip(1)) {
+        expect(
+          entry.parentIndex,
+          0,
+          reason: 'child ${entry.name} must point at index 0 (the group)',
+        );
+      }
+    },
+  );
 
   test('buildTemplateForGroup: children ordered by displayOrder', () async {
     await seedStandardFixture();
@@ -152,12 +150,14 @@ void main() {
 
   test('buildTemplateForGroup: empty group yields 1 entry', () async {
     // Only the group, no children.
-    await repo.createField(makeField(
-      id: 'EmptyG',
-      name: 'Empty Group',
-      fieldTypeId: 'group',
-      displayOrder: 0,
-    ));
+    await repo.createField(
+      makeField(
+        id: 'EmptyG',
+        name: 'Empty Group',
+        fieldTypeId: 'group',
+        displayOrder: 0,
+      ),
+    );
 
     final tmpl = await service.buildTemplateForGroup('EmptyG');
 

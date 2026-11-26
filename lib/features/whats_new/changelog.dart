@@ -35,39 +35,102 @@ final List<ChangelogRelease> prismChangelog = [
     version: '0.43.1',
     date: DateTime(2026, 11, 25),
     features: const [
-      LocalizedText('Introduction cards: a symbol library with about 530 symbols and kaomoji — categories, search, favourites, your own collections and recents, with colour and size. Decorate the card front or type symbols into any field.', 'Tarjetas de presentación: biblioteca de unos 530 símbolos y kaomoji con categorías, búsqueda, favoritos, colecciones y recientes, con color y tamaño.'),
-      LocalizedText('Subsystem palettes: five colours with presets; nested subsystems can keep their own colours, match their parent, blend with it, or follow the app theme.', 'Paletas de subsistemas: cinco colores con preajustes; los subsistemas anidados pueden usar los suyos, los del padre, mezclarlos o seguir el tema.'),
-      LocalizedText('Built-in backgrounds now take on the accent colour of the alter whose profile you\'re viewing, keeping their texture. Choose alter accent, system accent, app theme, original, custom colour or gradient, and set the intensity.', 'Los fondos integrados toman el color de acento del alter cuyo perfil ves, conservando su textura. Elige el modo y la intensidad.'),
-      LocalizedText('Body Map: left and right side views, and colour themes (soft, four skin tones, outline only, high contrast).', 'Mapa corporal: vistas laterales izquierda y derecha, y temas de color.'),
+      LocalizedText(
+        'Introduction cards: a symbol library with about 530 symbols and kaomoji — categories, search, favourites, your own collections and recents, with colour and size. Decorate the card front or type symbols into any field.',
+        'Tarjetas de presentación: biblioteca de unos 530 símbolos y kaomoji con categorías, búsqueda, favoritos, colecciones y recientes, con color y tamaño.',
+      ),
+      LocalizedText(
+        'Subsystem palettes: five colours with presets; nested subsystems can keep their own colours, match their parent, blend with it, or follow the app theme.',
+        'Paletas de subsistemas: cinco colores con preajustes; los subsistemas anidados pueden usar los suyos, los del padre, mezclarlos o seguir el tema.',
+      ),
+      LocalizedText(
+        'Built-in backgrounds now take on the accent colour of the alter whose profile you\'re viewing, keeping their texture. Choose alter accent, system accent, app theme, original, custom colour or gradient, and set the intensity.',
+        'Los fondos integrados toman el color de acento del alter cuyo perfil ves, conservando su textura. Elige el modo y la intensidad.',
+      ),
+      LocalizedText(
+        'Body Map: left and right side views, and colour themes (soft, four skin tones, outline only, high contrast).',
+        'Mapa corporal: vistas laterales izquierda y derecha, y temas de color.',
+      ),
     ],
     fixes: const [
-      LocalizedText('Body Map: the figure is now drawn with natural proportions — the legs were too short for the body.', 'Mapa corporal: la figura tiene proporciones naturales; las piernas eran demasiado cortas.'),
-      LocalizedText('Who\'s There now fills the whole screen instead of leaving one side empty.', '¿Quién está? ahora ocupa toda la pantalla.'),
-      LocalizedText('Editing an introduction card no longer drops other settings saved on it.', 'Editar una tarjeta de presentación ya no borra otros ajustes guardados.'),
+      LocalizedText(
+        'Body Map: the figure is now drawn with natural proportions — the legs were too short for the body.',
+        'Mapa corporal: la figura tiene proporciones naturales; las piernas eran demasiado cortas.',
+      ),
+      LocalizedText(
+        'Who\'s There now fills the whole screen instead of leaving one side empty.',
+        '¿Quién está? ahora ocupa toda la pantalla.',
+      ),
+      LocalizedText(
+        'Editing an introduction card no longer drops other settings saved on it.',
+        'Editar una tarjeta de presentación ya no borra otros ajustes guardados.',
+      ),
     ],
   ),
   ChangelogRelease(
     version: '0.43.0',
     date: DateTime(2026, 11, 25),
     features: const [
-      LocalizedText('Experiences: a new tab bringing together Companions, Wallets, Flag Studio and Wrapped, with a memory of the day, featured passport and latest stamps.', 'Experiencias: una nueva pestaña con Compañeros, Carteras, Estudio de banderas y Wrapped, con el recuerdo del día, pasaporte destacado y últimos sellos.'),
-      LocalizedText('Wrapped: make recaps for any week, month, season, year or custom range — for the whole system, headmates, subsystems or companions. Play them as a story, restyle them in the studio, fix who did what, and export images, a PDF, a Bulletin Board post or a passport page.', 'Wrapped: crea resúmenes de cualquier semana, mes, estación, año o periodo, para todo el sistema, alters, subsistemas o compañeros. Reprodúcelos como historia, personalízalos, corrige quién hizo qué y expórtalos.'),
-      LocalizedText('Wallets: headmates build wallets holding ID cards, introduction cards and passports. Design two-sided personal/fictional ID cards (20 types, 14 template collections) with layers, snapping and undo; favourites, pins, folders, archive and a card on your profile.', 'Carteras: los alters crean carteras con tarjetas de identidad, de presentación y pasaportes. Diseña tarjetas personales/ficticias de dos caras (20 tipos, 14 colecciones) con capas, ajuste y deshacer.'),
-      LocalizedText('Flag Studio: design flags with stripes and layouts, shapes, a symbol library, freehand drawing, imported images and SVGs, proportions and outline shapes, versions and autosave. Add meanings, assign flags to headmates, preview them waving and export PNG, WebP, SVG or a project file.', 'Estudio de banderas: diseña banderas con franjas, formas, símbolos, dibujo libre, imágenes y SVG importados, versiones y guardado automático. Añade significados, asígnalas y exporta PNG, WebP, SVG o proyecto.'),
-      LocalizedText('Personality & voice: choose how Prism talks — 13 styles from Cozy to Sarcastic to Gamer, with sliders, presets, per-feature and per-headmate voices, and your own lines. Hard days always get a gentle voice. Settings › Appearance.', 'Personalidad y voz: elige cómo habla Prism — 13 estilos, con controles, preajustes, voces por función y por alter, y tus propias frases (en inglés por ahora).'),
-      LocalizedText('35 new companion species (Siamese, corgi, axolotl, frog, octopus, jellyfish, unicorn, ghost, living constellation…), and every species now has its own shape. Fine-tune where each accessory sits, adjust uploaded pictures, and enjoy species-specific reactions.', '35 nuevas especies de compañeros y cada una con su propia forma. Ajusta cada accesorio, encuadra imágenes subidas y disfruta reacciones según la especie.'),
-      LocalizedText('New peaceful sounds: thunderstorm, night crickets, morning birds, wind chimes, singing bowls, music box, gentle harp and dreamy pads.', 'Nuevos sonidos tranquilos: tormenta, grillos, pájaros, campanas de viento, cuencos, caja de música, arpa y pads.'),
-      LocalizedText('New Home cards: memory of the day, latest recap, passport stamps and companion habitat.', 'Nuevas tarjetas de Inicio: recuerdo del día, último resumen, sellos y hábitat.'),
+      LocalizedText(
+        'Experiences: a new tab bringing together Companions, Wallets, Flag Studio and Wrapped, with a memory of the day, featured passport and latest stamps.',
+        'Experiencias: una nueva pestaña con Compañeros, Carteras, Estudio de banderas y Wrapped, con el recuerdo del día, pasaporte destacado y últimos sellos.',
+      ),
+      LocalizedText(
+        'Wrapped: make recaps for any week, month, season, year or custom range — for the whole system, headmates, subsystems or companions. Play them as a story, restyle them in the studio, fix who did what, and export images, a PDF, a Bulletin Board post or a passport page.',
+        'Wrapped: crea resúmenes de cualquier semana, mes, estación, año o periodo, para todo el sistema, alters, subsistemas o compañeros. Reprodúcelos como historia, personalízalos, corrige quién hizo qué y expórtalos.',
+      ),
+      LocalizedText(
+        'Wallets: headmates build wallets holding ID cards, introduction cards and passports. Design two-sided personal/fictional ID cards (20 types, 14 template collections) with layers, snapping and undo; favourites, pins, folders, archive and a card on your profile.',
+        'Carteras: los alters crean carteras con tarjetas de identidad, de presentación y pasaportes. Diseña tarjetas personales/ficticias de dos caras (20 tipos, 14 colecciones) con capas, ajuste y deshacer.',
+      ),
+      LocalizedText(
+        'Flag Studio: design flags with stripes and layouts, shapes, a symbol library, freehand drawing, imported images and SVGs, proportions and outline shapes, versions and autosave. Add meanings, assign flags to headmates, preview them waving and export PNG, WebP, SVG or a project file.',
+        'Estudio de banderas: diseña banderas con franjas, formas, símbolos, dibujo libre, imágenes y SVG importados, versiones y guardado automático. Añade significados, asígnalas y exporta PNG, WebP, SVG o proyecto.',
+      ),
+      LocalizedText(
+        'Personality & voice: choose how Prism talks — 13 styles from Cozy to Sarcastic to Gamer, with sliders, presets, per-feature and per-headmate voices, and your own lines. Hard days always get a gentle voice. Settings › Appearance.',
+        'Personalidad y voz: elige cómo habla Prism — 13 estilos, con controles, preajustes, voces por función y por alter, y tus propias frases (en inglés por ahora).',
+      ),
+      LocalizedText(
+        '35 new companion species (Siamese, corgi, axolotl, frog, octopus, jellyfish, unicorn, ghost, living constellation…), and every species now has its own shape. Fine-tune where each accessory sits, adjust uploaded pictures, and enjoy species-specific reactions.',
+        '35 nuevas especies de compañeros y cada una con su propia forma. Ajusta cada accesorio, encuadra imágenes subidas y disfruta reacciones según la especie.',
+      ),
+      LocalizedText(
+        'New peaceful sounds: thunderstorm, night crickets, morning birds, wind chimes, singing bowls, music box, gentle harp and dreamy pads.',
+        'Nuevos sonidos tranquilos: tormenta, grillos, pájaros, campanas de viento, cuencos, caja de música, arpa y pads.',
+      ),
+      LocalizedText(
+        'New Home cards: memory of the day, latest recap, passport stamps and companion habitat.',
+        'Nuevas tarjetas de Inicio: recuerdo del día, último resumen, sellos y hábitat.',
+      ),
     ],
     improvements: const [
-      LocalizedText('Rain, wind and fire no longer sound like static: they are now synthesized from individual drops, gusts and crackles.', 'La lluvia, el viento y el fuego ya no suenan a estática.'),
-      LocalizedText('Signing out warns about recent changes that aren\'t backed up and opens a sign-in screen; data on your device is never deleted.', 'Cerrar sesión avisa de cambios sin copia y abre una pantalla de acceso; nunca se borran datos del dispositivo.'),
+      LocalizedText(
+        'Rain, wind and fire no longer sound like static: they are now synthesized from individual drops, gusts and crackles.',
+        'La lluvia, el viento y el fuego ya no suenan a estática.',
+      ),
+      LocalizedText(
+        'Signing out warns about recent changes that aren\'t backed up and opens a sign-in screen; data on your device is never deleted.',
+        'Cerrar sesión avisa de cambios sin copia y abre una pantalla de acceso; nunca se borran datos del dispositivo.',
+      ),
     ],
     fixes: const [
-      LocalizedText('Companions that looked identical (fox and wolf, hamster and bear, raccoon and red panda) now look like themselves.', 'Los compañeros que se veían idénticos ahora se distinguen.'),
-      LocalizedText('Glasses now sit on the eyes for slimes, spirits, crystals, clouds, stars and flames.', 'Las gafas ahora quedan sobre los ojos en todas las formas.'),
-      LocalizedText('Data reset on desktop and web works again, offers a backup first, and keeps synced deletions from coming back.', 'El restablecimiento de datos funciona de nuevo en escritorio y web.'),
-      LocalizedText('Pages that hit an error now show a recoverable screen instead of going black.', 'Las páginas con error muestran una pantalla recuperable en vez de quedarse en negro.'),
+      LocalizedText(
+        'Companions that looked identical (fox and wolf, hamster and bear, raccoon and red panda) now look like themselves.',
+        'Los compañeros que se veían idénticos ahora se distinguen.',
+      ),
+      LocalizedText(
+        'Glasses now sit on the eyes for slimes, spirits, crystals, clouds, stars and flames.',
+        'Las gafas ahora quedan sobre los ojos en todas las formas.',
+      ),
+      LocalizedText(
+        'Data reset on desktop and web works again, offers a backup first, and keeps synced deletions from coming back.',
+        'El restablecimiento de datos funciona de nuevo en escritorio y web.',
+      ),
+      LocalizedText(
+        'Pages that hit an error now show a recoverable screen instead of going black.',
+        'Las páginas con error muestran una pantalla recuperable en vez de quedarse en negro.',
+      ),
     ],
   ),
   ChangelogRelease(

@@ -6,11 +6,10 @@ import 'package:prism_plurality/shared/widgets/live_ticker.dart';
 /// Hidden shell sections keep their widgets mounted with tickers off. Live
 /// timers must stop ticking there and catch up the moment they show again.
 void main() {
-  Widget host({required bool visible, required Widget child}) =>
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: TickerMode(enabled: visible, child: child),
-      );
+  Widget host({required bool visible, required Widget child}) => Directionality(
+    textDirection: TextDirection.ltr,
+    child: TickerMode(enabled: visible, child: child),
+  );
 
   testWidgets('LiveTicker does not rebuild while hidden', (tester) async {
     var builds = 0;

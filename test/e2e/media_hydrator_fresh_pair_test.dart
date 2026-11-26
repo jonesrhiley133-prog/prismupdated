@@ -88,7 +88,9 @@ void main() {
         // a committed row in B's local Drift DB (its arrival via the snapshot is
         // covered by media_fresh_pair_test.dart). B's media cache is EMPTY.
         dbB = AppDatabase(NativeDatabase.memory());
-        await dbB.into(dbB.mediaAttachments).insert(
+        await dbB
+            .into(dbB.mediaAttachments)
+            .insert(
               MediaAttachmentsCompanion(
                 id: const Value('att-hydrate-e2e-1'),
                 messageId: const Value('msg-1'),
@@ -111,8 +113,11 @@ void main() {
 
         // Precondition: nothing in B's cache yet — the bug's symptom.
         final encFile = File(p.join(cacheB.path, '$mediaId.enc'));
-        expect(encFile.existsSync(), isFalse,
-            reason: 'fresh device starts with an empty media cache');
+        expect(
+          encFile.existsSync(),
+          isFalse,
+          reason: 'fresh device starts with an empty media cache',
+        );
         expect(await downloads.isCached(mediaId), isFalse);
 
         final hydrator = MediaHydrator(
@@ -142,8 +147,11 @@ void main() {
 
         // (2) The ciphertext is now in B's local cache — fetched purely by the
         //     background hydrator, with the UI never touched.
-        expect(encFile.existsSync(), isTrue,
-            reason: 'hydrator must write the .enc blob into the local cache');
+        expect(
+          encFile.existsSync(),
+          isTrue,
+          reason: 'hydrator must write the .enc blob into the local cache',
+        );
         expect(await downloads.isCached(mediaId), isTrue);
 
         // (3) And it's the *right*, usable blob: the cached ciphertext decrypts
@@ -155,8 +163,11 @@ void main() {
           expectedCiphertextHash: media.ciphertextHash,
           expectedPlaintextHash: media.plaintextHash,
         );
-        expect(roundTripped, equals(plaintext),
-            reason: 'hydrated blob must decrypt to the original media');
+        expect(
+          roundTripped,
+          equals(plaintext),
+          reason: 'hydrated blob must decrypt to the original media',
+        );
 
         hydrator.dispose();
       } finally {
@@ -208,7 +219,9 @@ void main() {
         b = await pairNewDevice(relay, a);
 
         dbB = AppDatabase(NativeDatabase.memory());
-        await dbB.into(dbB.mediaAttachments).insert(
+        await dbB
+            .into(dbB.mediaAttachments)
+            .insert(
               MediaAttachmentsCompanion(
                 id: const Value('att-ondemand-1'),
                 messageId: const Value('msg-1'),
@@ -237,8 +250,11 @@ void main() {
           ],
         );
 
-        expect(await downloads.isCached(mediaId), isFalse,
-            reason: 'precondition: blob is not local before the view renders');
+        expect(
+          await downloads.isCached(mediaId),
+          isFalse,
+          reason: 'precondition: blob is not local before the view renders',
+        );
 
         // This is the exact call every image widget makes to resolve its bytes.
         final params = (
@@ -253,8 +269,11 @@ void main() {
 
         // The hook returned the real, decrypted image — fetched on demand —
         // and cached it for next time.
-        expect(bytes, isNotNull,
-            reason: 'viewing an uncached image must fetch it from the relay');
+        expect(
+          bytes,
+          isNotNull,
+          reason: 'viewing an uncached image must fetch it from the relay',
+        );
         expect(bytes, equals(plaintext));
         expect(await downloads.isCached(mediaId), isTrue);
       } finally {

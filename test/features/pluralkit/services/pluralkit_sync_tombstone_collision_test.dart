@@ -101,8 +101,7 @@ class _SecureStorageStub {
 
 class _FakePluralKitClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   _FakePluralKitClient({required this.switchesToReturn});
 
   final List<PKSwitch> switchesToReturn;
@@ -413,8 +412,11 @@ void main() {
           'peer-synced delete — resurrecting it here would propagate back '
           'and abort the originating device\'s pending PK deletion',
     );
-    expect(row.deleteIntentEpoch, isNull,
-        reason: 'no intent stamp is added — intent stays device-local');
+    expect(
+      row.deleteIntentEpoch,
+      isNull,
+      reason: 'no intent stamp is added — intent stays device-local',
+    );
     expect(row.pluralkitUuid, 'X', reason: 'link left intact');
     expect(
       row.startTime.millisecondsSinceEpoch,
@@ -506,25 +508,35 @@ void main() {
 
     final row = await db.frontingSessionsDao.getSessionById(deterministicId);
     expect(row, isNotNull);
-    expect(row!.isDeleted, isTrue,
-        reason: 'F10: a tombstone is terminal — never revived in place');
+    expect(
+      row!.isDeleted,
+      isTrue,
+      reason: 'F10: a tombstone is terminal — never revived in place',
+    );
     expect(
       row.startTime.millisecondsSinceEpoch,
       DateTime(2026, 4, 1, 12).millisecondsSinceEpoch,
       reason: 'the preserved row is untouched (startTime not rewritten)',
     );
-    expect(result.tombstonePreservedCount, 1,
-        reason: 'F10: the corrective sweep counts the preserved tombstone');
+    expect(
+      result.tombstonePreservedCount,
+      1,
+      reason: 'F10: the corrective sweep counts the preserved tombstone',
+    );
 
     // No live row was created at the deterministic id, and no parallel live
     // row collides on (pluralkit_uuid, member_id) either — the burned id is
     // never written to again.
-    final liveRows = await (db.select(db.frontingSessions)
-          ..where((s) => s.isDeleted.equals(false)))
-        .get();
-    expect(liveRows, isEmpty,
-        reason: 'F10: in-place revival is forbidden; recovery needs a fresh '
-            'id, deferred to the reconciliation layer');
+    final liveRows = await (db.select(
+      db.frontingSessions,
+    )..where((s) => s.isDeleted.equals(false))).get();
+    expect(
+      liveRows,
+      isEmpty,
+      reason:
+          'F10: in-place revival is forbidden; recovery needs a fresh '
+          'id, deferred to the reconciliation layer',
+    );
   });
 
   test('link-cleared tombstone (canonicalization / zero-length-close '

@@ -61,7 +61,18 @@ const _poemStarts = [
   'In the garden of many hands…',
   'The moon forgot its way home…',
 ];
-const _associationStarts = ['Ocean', 'Blanket', 'Thunder', 'Garden', 'Lantern', 'Honey', 'Train', 'Winter', 'Library', 'Star'];
+const _associationStarts = [
+  'Ocean',
+  'Blanket',
+  'Thunder',
+  'Garden',
+  'Lantern',
+  'Honey',
+  'Train',
+  'Winter',
+  'Library',
+  'Star',
+];
 const _worldStarts = [
   'A world where it is always autumn',
   'An archipelago of floating islands',
@@ -70,46 +81,240 @@ const _worldStarts = [
   'A desert of glass and music',
   'A village on the back of a sleeping turtle',
 ];
-const _worldSections = ['Name & feel', 'Places', 'Peoples & creatures', 'Customs', 'Magic or tech', 'Stories'];
+const _worldSections = [
+  'Name & feel',
+  'Places',
+  'Peoples & creatures',
+  'Customs',
+  'Magic or tech',
+  'Stories',
+];
 
 SceneConfig _scene(String id) => switch (id) {
   'flower_arranging' => const SceneConfig(
     base: '🏺',
-    backgrounds: [(Color(0xFFFFF4E6), Color(0xFFFFE0CC)), (Color(0xFFEFF7F1), Color(0xFFD6EFE0)), (Color(0xFFF3EEFF), Color(0xFFE2D8FF))],
-    stickers: ['🌹', '🌷', '🌻', '🌼', '🌸', '💐', '🪻', '🌺', '🪷', '🌿', '🍃', '🌾', '🎀'],
+    backgrounds: [
+      (Color(0xFFFFF4E6), Color(0xFFFFE0CC)),
+      (Color(0xFFEFF7F1), Color(0xFFD6EFE0)),
+      (Color(0xFFF3EEFF), Color(0xFFE2D8FF)),
+    ],
+    stickers: [
+      '🌹',
+      '🌷',
+      '🌻',
+      '🌼',
+      '🌸',
+      '💐',
+      '🪻',
+      '🌺',
+      '🪷',
+      '🌿',
+      '🍃',
+      '🌾',
+      '🎀',
+    ],
   ),
   'tea_time' => const SceneConfig(
-    backgrounds: [(Color(0xFFFFF8EE), Color(0xFFE9D8C4)), (Color(0xFFEAF4F4), Color(0xFFCCE3DE)), (Color(0xFFFDEFF4), Color(0xFFF7D6E0))],
-    stickers: ['🫖', '☕', '🍵', '🧁', '🍰', '🍪', '🥐', '🍓', '🍋', '🍯', '🥄', '🌸', '🕯️', '🧈', '🥛'],
+    backgrounds: [
+      (Color(0xFFFFF8EE), Color(0xFFE9D8C4)),
+      (Color(0xFFEAF4F4), Color(0xFFCCE3DE)),
+      (Color(0xFFFDEFF4), Color(0xFFF7D6E0)),
+    ],
+    stickers: [
+      '🫖',
+      '☕',
+      '🍵',
+      '🧁',
+      '🍰',
+      '🍪',
+      '🥐',
+      '🍓',
+      '🍋',
+      '🍯',
+      '🥄',
+      '🌸',
+      '🕯️',
+      '🧈',
+      '🥛',
+    ],
   ),
   'room_decorator' => const SceneConfig(
-    backgrounds: [(Color(0xFFF6EFE7), Color(0xFFCDB49B)), (Color(0xFFE8EEF7), Color(0xFFB8C4D6)), (Color(0xFFEFE8F7), Color(0xFFC5B6D9))],
-    stickers: ['🛋️', '🛏️', '🪑', '🪴', '🖼️', '🕯️', '📚', '🧸', '🪞', '🛁', '💡', '🪟', '🧺', '🎸', '🐈', '🧶', '📻', '🕰️'],
+    backgrounds: [
+      (Color(0xFFF6EFE7), Color(0xFFCDB49B)),
+      (Color(0xFFE8EEF7), Color(0xFFB8C4D6)),
+      (Color(0xFFEFE8F7), Color(0xFFC5B6D9)),
+    ],
+    stickers: [
+      '🛋️',
+      '🛏️',
+      '🪑',
+      '🪴',
+      '🖼️',
+      '🕯️',
+      '📚',
+      '🧸',
+      '🪞',
+      '🛁',
+      '💡',
+      '🪟',
+      '🧺',
+      '🎸',
+      '🐈',
+      '🧶',
+      '📻',
+      '🕰️',
+    ],
   ),
   'terrarium' => const SceneConfig(
     base: '🫙',
-    backgrounds: [(Color(0xFFEFF7EE), Color(0xFFC9DFC4)), (Color(0xFFF2F0E6), Color(0xFFDCD3B8))],
-    stickers: ['🌱', '🌿', '🍄', '🪨', '🌵', '🪴', '🐌', '🐞', '🦋', '🌸', '🍀', '🪵', '🐸', '✨'],
+    backgrounds: [
+      (Color(0xFFEFF7EE), Color(0xFFC9DFC4)),
+      (Color(0xFFF2F0E6), Color(0xFFDCD3B8)),
+    ],
+    stickers: [
+      '🌱',
+      '🌿',
+      '🍄',
+      '🪨',
+      '🌵',
+      '🪴',
+      '🐌',
+      '🐞',
+      '🦋',
+      '🌸',
+      '🍀',
+      '🪵',
+      '🐸',
+      '✨',
+    ],
   ),
   'aquarium' => const SceneConfig(
-    backgrounds: [(Color(0xFFBDE8F5), Color(0xFF3A86C8)), (Color(0xFFCFF3EE), Color(0xFF2A9D8F)), (Color(0xFF6C7FD8), Color(0xFF1B2A6B))],
-    stickers: ['🐠', '🐟', '🐡', '🐙', '🦀', '🐚', '🪸', '🌿', '🪨', '🦑', '🐢', '🫧', '🐳', '🦐', '⭐'],
+    backgrounds: [
+      (Color(0xFFBDE8F5), Color(0xFF3A86C8)),
+      (Color(0xFFCFF3EE), Color(0xFF2A9D8F)),
+      (Color(0xFF6C7FD8), Color(0xFF1B2A6B)),
+    ],
+    stickers: [
+      '🐠',
+      '🐟',
+      '🐡',
+      '🐙',
+      '🦀',
+      '🐚',
+      '🪸',
+      '🌿',
+      '🪨',
+      '🦑',
+      '🐢',
+      '🫧',
+      '🐳',
+      '🦐',
+      '⭐',
+    ],
   ),
   'tiny_bakery' => const SceneConfig(
-    backgrounds: [(Color(0xFFFFF1E6), Color(0xFFFAD2C2)), (Color(0xFFFFFBEA), Color(0xFFF5E6B8))],
-    stickers: ['🎂', '🍰', '🧁', '🍩', '🍪', '🥧', '🍮', '🍓', '🍒', '🫐', '🍫', '🍬', '🌸', '🕯️', '✨', '🍋', '🥝'],
+    backgrounds: [
+      (Color(0xFFFFF1E6), Color(0xFFFAD2C2)),
+      (Color(0xFFFFFBEA), Color(0xFFF5E6B8)),
+    ],
+    stickers: [
+      '🎂',
+      '🍰',
+      '🧁',
+      '🍩',
+      '🍪',
+      '🥧',
+      '🍮',
+      '🍓',
+      '🍒',
+      '🫐',
+      '🍫',
+      '🍬',
+      '🌸',
+      '🕯️',
+      '✨',
+      '🍋',
+      '🥝',
+    ],
   ),
   'dream_landscape' => const SceneConfig(
-    backgrounds: [(Color(0xFFFFD6A5), Color(0xFFB8E0D2)), (Color(0xFF20264A), Color(0xFF6D5BA8)), (Color(0xFFCDE7FF), Color(0xFFFFF5D6)), (Color(0xFFFFC8DD), Color(0xFFBDE0FE))],
-    stickers: ['🏔️', '🌋', '🏝️', '🌳', '🌲', '🌴', '🏡', '🏰', '🌈', '☁️', '🌙', '⭐', '☀️', '🦋', '🐉', '🎈', '🌊', '🌸'],
+    backgrounds: [
+      (Color(0xFFFFD6A5), Color(0xFFB8E0D2)),
+      (Color(0xFF20264A), Color(0xFF6D5BA8)),
+      (Color(0xFFCDE7FF), Color(0xFFFFF5D6)),
+      (Color(0xFFFFC8DD), Color(0xFFBDE0FE)),
+    ],
+    stickers: [
+      '🏔️',
+      '🌋',
+      '🏝️',
+      '🌳',
+      '🌲',
+      '🌴',
+      '🏡',
+      '🏰',
+      '🌈',
+      '☁️',
+      '🌙',
+      '⭐',
+      '☀️',
+      '🦋',
+      '🐉',
+      '🎈',
+      '🌊',
+      '🌸',
+    ],
   ),
   'flower_press' => const SceneConfig(
-    backgrounds: [(Color(0xFFFBF7EF), Color(0xFFEDE3D1)), (Color(0xFFF5F0E8), Color(0xFFE4D9C8))],
-    stickers: ['🌸', '🌼', '🌺', '🪻', '🌷', '🍀', '🍁', '🍂', '🌿', '🌾', '🪷', '🌹', '🍃'],
+    backgrounds: [
+      (Color(0xFFFBF7EF), Color(0xFFEDE3D1)),
+      (Color(0xFFF5F0E8), Color(0xFFE4D9C8)),
+    ],
+    stickers: [
+      '🌸',
+      '🌼',
+      '🌺',
+      '🪻',
+      '🌷',
+      '🍀',
+      '🍁',
+      '🍂',
+      '🌿',
+      '🌾',
+      '🪷',
+      '🌹',
+      '🍃',
+    ],
   ),
   _ => const SceneConfig(
-    backgrounds: [(Color(0xFFDDEBFF), Color(0xFFF9F3E6)), (Color(0xFFFFE7D6), Color(0xFFFFF7EE)), (Color(0xFF1E2747), Color(0xFF52478A)), (Color(0xFFE6F4EA), Color(0xFFFFFFFF))],
-    stickers: ['🏠', '🌳', '🌷', '🐈', '🐕', '🦊', '🐇', '☀️', '🌙', '⭐', '☁️', '🌈', '🎈', '🧺', '🚲', '⛺', '🔥', '🦋', '🍄', '🎪'],
+    backgrounds: [
+      (Color(0xFFDDEBFF), Color(0xFFF9F3E6)),
+      (Color(0xFFFFE7D6), Color(0xFFFFF7EE)),
+      (Color(0xFF1E2747), Color(0xFF52478A)),
+      (Color(0xFFE6F4EA), Color(0xFFFFFFFF)),
+    ],
+    stickers: [
+      '🏠',
+      '🌳',
+      '🌷',
+      '🐈',
+      '🐕',
+      '🦊',
+      '🐇',
+      '☀️',
+      '🌙',
+      '⭐',
+      '☁️',
+      '🌈',
+      '🎈',
+      '🧺',
+      '🚲',
+      '⛺',
+      '🔥',
+      '🦋',
+      '🍄',
+      '🎪',
+    ],
   ),
 };
 
@@ -126,21 +331,46 @@ Widget buildGame(String id, GameSession s) {
     'trivia_animals' => QuizGame(session: s, bank: triviaBanks['animals']!),
     'trivia_music' => QuizGame(session: s, bank: triviaBanks['music']!),
     'trivia_movies' => QuizGame(session: s, bank: triviaBanks['movies']!),
-    'trivia_literature' => QuizGame(session: s, bank: triviaBanks['literature']!),
+    'trivia_literature' => QuizGame(
+      session: s,
+      bank: triviaBanks['literature']!,
+    ),
     'trivia_space' => QuizGame(session: s, bank: triviaBanks['space']!),
     'trivia_food' => QuizGame(session: s, bank: triviaBanks['food']!),
     'trivia_mythology' => QuizGame(session: s, bank: triviaBanks['mythology']!),
-    'trivia_technology' => QuizGame(session: s, bank: triviaBanks['technology']!),
+    'trivia_technology' => QuizGame(
+      session: s,
+      bank: triviaBanks['technology']!,
+    ),
     'trivia_art' => QuizGame(session: s, bank: triviaBanks['art']!),
     'trivia_sports' => QuizGame(session: s, bank: triviaBanks['sports']!),
     'trivia_language' => QuizGame(session: s, bank: triviaBanks['language']!),
     'trivia_nature' => QuizGame(session: s, bank: triviaBanks['nature']!),
-    'true_false' => QuizGame(session: s, bank: trueFalse, count: 15, askDifficulty: false, seconds: 8),
+    'true_false' => QuizGame(
+      session: s,
+      bank: trueFalse,
+      count: 15,
+      askDifficulty: false,
+      seconds: 8,
+    ),
     'guess_decade' => QuizGame(session: s, bank: decades, askDifficulty: false),
-    'mystery_fact' => QuizGame(session: s, bank: mysteryFacts, askDifficulty: false),
-    'trivia_marathon' => QuizGame(session: s, bank: allTrivia(), count: 20, marathon: true),
+    'mystery_fact' => QuizGame(
+      session: s,
+      bank: mysteryFacts,
+      askDifficulty: false,
+    ),
+    'trivia_marathon' => QuizGame(
+      session: s,
+      bank: allTrivia(),
+      count: 20,
+      marathon: true,
+    ),
     // B — Words
-    'word_scramble' => TypeWordGame(session: s, words: hintedWords, mode: TypeMode.scramble),
+    'word_scramble' => TypeWordGame(
+      session: s,
+      words: hintedWords,
+      mode: TypeMode.scramble,
+    ),
     'hangman' => HangmanGame(session: s, words: hintedWords),
     'word_search' => WordSearchGame(session: s, themes: searchThemes),
     'mini_crossword' => MiniCrosswordGame(session: s, clues: crosswordClues),
@@ -150,34 +380,70 @@ Widget buildGame(String id, GameSession s) {
     'anagram' => WithDictionary(
       builder: (w) => AnagramGame(session: s, words: w),
     ),
-    'missing_letters' => TypeWordGame(session: s, words: hintedWords, mode: TypeMode.missing),
-    'word_association' => SharedTextGame(session: s, starters: _associationStarts, oneWord: true),
-    'category_sprint' => CategoryGame(session: s, categories: categories, alphabet: false),
-    'alphabet_challenge' => CategoryGame(session: s, categories: categories, alphabet: true),
+    'missing_letters' => TypeWordGame(
+      session: s,
+      words: hintedWords,
+      mode: TypeMode.missing,
+    ),
+    'word_association' => SharedTextGame(
+      session: s,
+      starters: _associationStarts,
+      oneWord: true,
+    ),
+    'category_sprint' => CategoryGame(
+      session: s,
+      categories: categories,
+      alphabet: false,
+    ),
+    'alphabet_challenge' => CategoryGame(
+      session: s,
+      categories: categories,
+      alphabet: true,
+    ),
     'synonym_match' => MatchPairsGame(session: s, pairs: synonyms),
     'antonym_match' => MatchPairsGame(session: s, pairs: antonyms),
-    'definition_detective' => QuizGame(session: s, askDifficulty: false, bank: _fromPairs(definitions, (w, d) => d, (w, d) => w)),
+    'definition_detective' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: _fromPairs(definitions, (w, d) => d, (w, d) => w),
+    ),
     'rhyme_time' => QuizGame(
       session: s,
       askDifficulty: false,
       bank: [
-        for (final (w, r, decoys) in rhymes) Q('Which word rhymes with "$w"?', [r, ...decoys]),
+        for (final (w, r, decoys) in rhymes)
+          Q('Which word rhymes with "$w"?', [r, ...decoys]),
       ],
     ),
     'hidden_word' => HiddenWordGame(session: s, puzzles: hiddenWords),
     'five_letter' => WithDictionary(
-      builder: (w) => FiveLetterGame(session: s, answers: fiveLetterAnswers, words: w),
+      builder: (w) =>
+          FiveLetterGame(session: s, answers: fiveLetterAnswers, words: w),
     ),
-    'sentence_builder' => OrderingGame(session: s, rounds: 5, prompt: 'Tap the words in order to build the sentence.', sets: [for (final x in sentences) ('', x.split(' '))]),
+    'sentence_builder' => OrderingGame(
+      session: s,
+      rounds: 5,
+      prompt: 'Tap the words in order to build the sentence.',
+      sets: [for (final x in sentences) ('', x.split(' '))],
+    ),
     'word_chain' => WithDictionary(
       builder: (w) => WordChainGame(session: s, words: w),
     ),
-    'vocabulary_quest' => QuizGame(session: s, askDifficulty: false, bank: _fromPairs(vocabulary, (w, m) => 'What does "$w" mean?', (w, m) => m)),
+    'vocabulary_quest' => QuizGame(
+      session: s,
+      askDifficulty: false,
+      bank: _fromPairs(
+        vocabulary,
+        (w, m) => 'What does "$w" mean?',
+        (w, m) => m,
+      ),
+    ),
     'finish_phrase' => QuizGame(
       session: s,
       askDifficulty: false,
       bank: [
-        for (final (start, end, decoys) in phrases) Q('$start …', [end, ...decoys]),
+        for (final (start, end, decoys) in phrases)
+          Q('$start …', [end, ...decoys]),
       ],
     ),
     // C — Logic
@@ -195,7 +461,12 @@ Widget buildGame(String id, GameSession s) {
     'number_merge' => MergeGame(session: s),
     'tile_matching' => TileMatchGame(session: s),
     'pipe_connector' => PipeGame(session: s),
-    'shape_sorting' => OrderingGame(session: s, rounds: 4, prompt: 'Order the shapes from fewest sides to most (a circle has none).', sets: _shapeSets(s)),
+    'shape_sorting' => OrderingGame(
+      session: s,
+      rounds: 4,
+      prompt: 'Order the shapes from fewest sides to most (a circle has none).',
+      sets: _shapeSets(s),
+    ),
     'color_sequence' => ColorPatternGame(session: s),
     'balance_puzzle' => GeneratedQuiz(session: s, make: _balance),
     'mini_jigsaw' => JigsawGame(session: s),
@@ -203,9 +474,19 @@ Widget buildGame(String id, GameSession s) {
     'light_switch' => LightsGame(session: s),
     // D — Cozy
     'coloring_book' => ColoringGame(session: s),
-    'sticker_scene' => StickerSceneGame(session: s, config: _scene('sticker_scene')),
+    'sticker_scene' => StickerSceneGame(
+      session: s,
+      config: _scene('sticker_scene'),
+    ),
     'zen_garden' => DrawGame(session: s, zen: true),
-    'flower_arranging' || 'tea_time' || 'room_decorator' || 'terrarium' || 'aquarium' || 'tiny_bakery' || 'dream_landscape' || 'flower_press' => StickerSceneGame(session: s, config: _scene(id)),
+    'flower_arranging' ||
+    'tea_time' ||
+    'room_decorator' ||
+    'terrarium' ||
+    'aquarium' ||
+    'tiny_bakery' ||
+    'dream_landscape' ||
+    'flower_press' => StickerSceneGame(session: s, config: _scene(id)),
     'cloud_watching' => CloudsGame(session: s),
     'star_connect' => StarConnectGame(session: s),
     'mandala' => DrawGame(session: s, symmetry: 8),
@@ -214,7 +495,12 @@ Widget buildGame(String id, GameSession s) {
     'mood_palette' => MoodPaletteGame(session: s),
     'outfit_creator' => OutfitGame(session: s),
     'friendship_bracelet' => BraceletGame(session: s),
-    'origami' => OrderingGame(session: s, rounds: 2, prompt: 'Put the folding steps in order.', sets: [for (final e in origamiModels.entries) (e.key, e.value)]),
+    'origami' => OrderingGame(
+      session: s,
+      rounds: 2,
+      prompt: 'Put the folding steps in order.',
+      sets: [for (final e in origamiModels.entries) (e.key, e.value)],
+    ),
     // E — Memory
     'memory_match' => MemoryMatchGame(session: s),
     'sequence_recall' => ColorSequenceGame(session: s, symbols: true),
@@ -227,15 +513,38 @@ Widget buildGame(String id, GameSession s) {
     'quick_observation' => RecallGame(session: s, kind: RecallKind.observe),
     'shopping_list' => RecallGame(session: s, kind: RecallKind.shopping),
     // F — Social
-    'would_you_rather' => PromptDeckGame(session: s, mode: DeckMode.choice, choices: wouldYouRather, choiceLabel: 'Would you rather…'),
-    'never_have_i_ever' => PromptDeckGame(session: s, mode: DeckMode.haveNot, prompts: neverHaveIEver),
+    'would_you_rather' => PromptDeckGame(
+      session: s,
+      mode: DeckMode.choice,
+      choices: wouldYouRather,
+      choiceLabel: 'Would you rather…',
+    ),
+    'never_have_i_ever' => PromptDeckGame(
+      session: s,
+      mode: DeckMode.haveNot,
+      prompts: neverHaveIEver,
+    ),
     'two_truths' => TwoTruthsGame(session: s),
     'guess_alter' => GuessAlterGame(session: s),
     'who_knows_me' => KnowMeGame(session: s, questions: _knowMeQuestions),
-    'this_or_that' => PromptDeckGame(session: s, mode: DeckMode.choice, choices: thisOrThat, count: 15),
-    'truth_or_dare' => PromptDeckGame(session: s, mode: DeckMode.truthDare, prompts: cozyTruths, dares: cozyDares),
+    'this_or_that' => PromptDeckGame(
+      session: s,
+      mode: DeckMode.choice,
+      choices: thisOrThat,
+      count: 15,
+    ),
+    'truth_or_dare' => PromptDeckGame(
+      session: s,
+      mode: DeckMode.truthDare,
+      prompts: cozyTruths,
+      dares: cozyDares,
+    ),
     'guess_drawing' => GuessDrawingGame(session: s, prompts: drawingPrompts),
-    'story_chain' => SharedTextGame(session: s, starters: storyStarts, hideEarlier: true),
+    'story_chain' => SharedTextGame(
+      session: s,
+      starters: storyStarts,
+      hideEarlier: true,
+    ),
     'emoji_charades' => QuizGame(
       session: s,
       askDifficulty: false,
@@ -244,28 +553,52 @@ Widget buildGame(String id, GameSession s) {
         for (final (e, a, decoys) in emojiCharades) Q(e, [a, ...decoys]),
       ],
     ),
-    'collab_poetry' => SharedTextGame(session: s, starters: _poemStarts, hint: 'Add a line to the poem'),
+    'collab_poetry' => SharedTextGame(
+      session: s,
+      starters: _poemStarts,
+      hint: 'Add a line to the poem',
+    ),
     'guess_favorite' => KnowMeGame(session: s, questions: _favoriteQuestions),
     'friendship_bingo' => BingoGame(session: s, squares: friendshipBingo),
-    'conversation_roulette' => PromptDeckGame(session: s, mode: DeckMode.prompt, prompts: conversationStarters, writeAnswers: true),
+    'conversation_roulette' => PromptDeckGame(
+      session: s,
+      mode: DeckMode.prompt,
+      prompts: conversationStarters,
+      writeAnswers: true,
+    ),
     'mystery_personality' => QuizGame(
       session: s,
       askDifficulty: false,
       bank: [
-        for (final (clues, a, decoys) in mysteryPersonalities) Q(clues.join(' · '), [a, ...decoys]),
+        for (final (clues, a, decoys) in mysteryPersonalities)
+          Q(clues.join(' · '), [a, ...decoys]),
       ],
     ),
     // G — Creative & learning
     'build_story' => GeneratorGame(
       session: s,
       title: 'Your story seed',
-      parts: const {'Who': storyCharacters, 'Where': storyPlaces, 'Twist': storyTwists},
-      compose: (p) => 'Once upon a time, ${p['Who']} lived in ${p['Where']}… ${p['Twist']}.',
+      parts: const {
+        'Who': storyCharacters,
+        'Where': storyPlaces,
+        'Twist': storyTwists,
+      },
+      compose: (p) =>
+          'Once upon a time, ${p['Who']} lived in ${p['Where']}… ${p['Twist']}.',
       notesHint: 'Write your story here',
     ),
-    'character_creator' => GeneratorGame(session: s, title: 'A new character', parts: characterParts, notesHint: 'Name, backstory, quirks…'),
+    'character_creator' => GeneratorGame(
+      session: s,
+      title: 'A new character',
+      parts: characterParts,
+      notesHint: 'Name, backstory, quirks…',
+    ),
     'comic_maker' => ComicGame(session: s),
-    'drawing_prompt_jar' => PromptJarGame(session: s, prompts: drawingPrompts, emoji: '🫙'),
+    'drawing_prompt_jar' => PromptJarGame(
+      session: s,
+      prompts: drawingPrompts,
+      emoji: '🫙',
+    ),
     'poetry_generator' => PoetryGame(session: s, words: poetryWords),
     'name_instrument' => QuizGame(
       session: s,
@@ -275,7 +608,14 @@ Widget buildGame(String id, GameSession s) {
       ],
     ),
     'rhythm_repeat' => RhythmGame(session: s),
-    'music_notes' => MatchPairsGame(session: s, pairs: musicNotes, perRound: 4, rounds: 2, leftLabel: 'Symbol', rightLabel: 'Meaning'),
+    'music_notes' => MatchPairsGame(
+      session: s,
+      pairs: musicNotes,
+      perRound: 4,
+      rounds: 2,
+      leftLabel: 'Symbol',
+      rightLabel: 'Meaning',
+    ),
     'math_sprint' => GeneratedQuiz(session: s, make: _math, seconds: 15),
     'spelling' => QuizGame(session: s, bank: spelling, askDifficulty: false),
     'language_match' => LanguageMatch(session: s),
@@ -285,12 +625,22 @@ Widget buildGame(String id, GameSession s) {
       rounds: 3,
       prompt: 'Oldest at the top, newest at the bottom.',
       sets: [
-        for (final e in timelines.entries) (e.key, [for (final x in e.value) x.$1]),
+        for (final e in timelines.entries)
+          (e.key, [for (final x in e.value) x.$1]),
       ],
       reveal: _yearOf,
     ),
-    'invent_creature' => GeneratorGame(session: s, title: 'A brand-new creature', parts: creatureParts, notesHint: 'Name it, describe its habitat and habits…'),
-    'worldbuilder' => SharedTextGame(session: s, starters: _worldStarts, sections: _worldSections),
+    'invent_creature' => GeneratorGame(
+      session: s,
+      title: 'A brand-new creature',
+      parts: creatureParts,
+      notesHint: 'Name it, describe its habitat and habits…',
+    ),
+    'worldbuilder' => SharedTextGame(
+      session: s,
+      starters: _worldStarts,
+      sections: _worldSections,
+    ),
     _ => Center(child: Text('Unknown game: $id')),
   };
 }
@@ -306,13 +656,19 @@ String _yearOf(String event) {
 
 /// Questions from pairs: the prompt and the answer come from each pair; the
 /// other three options are answers from other pairs.
-List<Q> _fromPairs(List<(String, String)> pairs, String Function(String, String) prompt, String Function(String, String) answer) {
+List<Q> _fromPairs(
+  List<(String, String)> pairs,
+  String Function(String, String) prompt,
+  String Function(String, String) answer,
+) {
   final answers = [for (final (a, b) in pairs) answer(a, b)];
   return [
     for (var i = 0; i < pairs.length; i++)
       Q(prompt(pairs[i].$1, pairs[i].$2), [
         answers[i],
-        ...[for (var k = 1; k <= 3; k++) answers[(i + k * 3) % answers.length]].where((x) => x != answers[i]).toSet().take(3),
+        ...[
+          for (var k = 1; k <= 3; k++) answers[(i + k * 3) % answers.length],
+        ].where((x) => x != answers[i]).toSet().take(3),
       ]),
   ];
 }
@@ -322,7 +678,8 @@ List<(String, List<String>)> _shapeSets(GameSession s) {
   return [
     for (var i = 0; i < 6; i++)
       () {
-        final pick = shuffled(shapesBySides, rng).take(5).toList()..sort((a, b) => a.$2.compareTo(b.$2));
+        final pick = shuffled(shapesBySides, rng).take(5).toList()
+          ..sort((a, b) => a.$2.compareTo(b.$2));
         return ('', [for (final x in pick) x.$1]);
       }(),
   ];
@@ -332,13 +689,22 @@ Q _math(math.Random r, int d) {
   switch (d) {
     case 1:
       final a = r.nextInt(15) + 1, b = r.nextInt(15) + 1;
-      return r.nextBool() ? Q('$a + $b = ?', numberOptions(a + b, r), '', 1) : Q('${a + b} − $b = ?', numberOptions(a, r), '', 1);
+      return r.nextBool()
+          ? Q('$a + $b = ?', numberOptions(a + b, r), '', 1)
+          : Q('${a + b} − $b = ?', numberOptions(a, r), '', 1);
     case 2:
       final a = r.nextInt(11) + 2, b = r.nextInt(11) + 2;
-      return r.nextBool() ? Q('$a × $b = ?', numberOptions(a * b, r, spread: 8), '', 2) : Q('${a * b} ÷ $b = ?', numberOptions(a, r), '', 2);
+      return r.nextBool()
+          ? Q('$a × $b = ?', numberOptions(a * b, r, spread: 8), '', 2)
+          : Q('${a * b} ÷ $b = ?', numberOptions(a, r), '', 2);
     default:
       final a = r.nextInt(9) + 2, b = r.nextInt(9) + 2, c = r.nextInt(20) + 1;
-      return Q('$a × $b + $c = ?', numberOptions(a * b + c, r, spread: 9), 'Multiply first, then add.', 3);
+      return Q(
+        '$a × $b + $c = ?',
+        numberOptions(a * b + c, r, spread: 9),
+        'Multiply first, then add.',
+        3,
+      );
   }
 }
 
@@ -346,12 +712,22 @@ Q _sequence(math.Random r, int d) {
   if (d == 1) {
     final start = r.nextInt(10) + 1, step = r.nextInt(5) + 2;
     final seq = [for (var i = 0; i < 5; i++) start + step * i];
-    return Q('${seq.take(4).join(', ')}, ?', numberOptions(seq[4], r), 'Add $step each time.', 1);
+    return Q(
+      '${seq.take(4).join(', ')}, ?',
+      numberOptions(seq[4], r),
+      'Add $step each time.',
+      1,
+    );
   }
   if (d == 2) {
     final start = r.nextInt(4) + 1, k = r.nextInt(2) + 2;
     final seq = [for (var i = 0; i < 5; i++) start * math.pow(k, i).toInt()];
-    return Q('${seq.take(4).join(', ')}, ?', numberOptions(seq[4], r, spread: seq[4] ~/ 4 + 2), 'Multiply by $k each time.', 2);
+    return Q(
+      '${seq.take(4).join(', ')}, ?',
+      numberOptions(seq[4], r, spread: seq[4] ~/ 4 + 2),
+      'Multiply by $k each time.',
+      2,
+    );
   }
   switch (r.nextInt(3)) {
     case 0:
@@ -360,18 +736,33 @@ Q _sequence(math.Random r, int d) {
       while (seq.length < 6) {
         seq.add(seq[seq.length - 1] + seq[seq.length - 2]);
       }
-      return Q('${seq.take(5).join(', ')}, ?', numberOptions(seq[5], r), 'Each number is the sum of the two before it.', 3);
+      return Q(
+        '${seq.take(5).join(', ')}, ?',
+        numberOptions(seq[5], r),
+        'Each number is the sum of the two before it.',
+        3,
+      );
     case 1:
       final off = r.nextInt(4);
       final seq = [for (var i = 1; i <= 5; i++) (i + off) * (i + off)];
-      return Q('${seq.take(4).join(', ')}, ?', numberOptions(seq[4], r, spread: 6), 'Square numbers.', 3);
+      return Q(
+        '${seq.take(4).join(', ')}, ?',
+        numberOptions(seq[4], r, spread: 6),
+        'Square numbers.',
+        3,
+      );
     default:
       final start = r.nextInt(10) + 2;
       final seq = [start];
       for (var i = 1; i < 5; i++) {
         seq.add(seq.last + i * 2);
       }
-      return Q('${seq.take(4).join(', ')}, ?', numberOptions(seq[4], r), 'The gap grows by 2 each time.', 3);
+      return Q(
+        '${seq.take(4).join(', ')}, ?',
+        numberOptions(seq[4], r),
+        'The gap grows by 2 each time.',
+        3,
+      );
   }
 }
 
@@ -395,9 +786,17 @@ Q _pattern(math.Random r, int d) {
       [0, 1, 0, 2],
     ][r.nextInt(4)],
   };
-  final seq = [for (var i = 0; i < shapes.length * 2 + 1; i++) syms[shapes[i % shapes.length]]];
+  final seq = [
+    for (var i = 0; i < shapes.length * 2 + 1; i++)
+      syms[shapes[i % shapes.length]],
+  ];
   final answer = seq.removeLast();
-  return Q('${seq.join(' ')}  ?', [answer, ...syms.where((x) => x != answer).take(3)], 'The pattern repeats every ${shapes.length}.', d);
+  return Q(
+    '${seq.join(' ')}  ?',
+    [answer, ...syms.where((x) => x != answer).take(3)],
+    'The pattern repeats every ${shapes.length}.',
+    d,
+  );
 }
 
 Q _oddOneOut(math.Random r, int d) {
@@ -405,7 +804,12 @@ Q _oddOneOut(math.Random r, int d) {
   final main = categories[keys[0]]!, other = categories[keys[1]]!;
   final three = shuffled(main, r).take(3).toList();
   final odd = other[r.nextInt(other.length)];
-  return Q('Which one doesn\'t belong?  ${shuffled([...three, odd], r).join(' · ')}', [odd, ...three], 'The others are all ${keys[0].toLowerCase()}.', d);
+  return Q(
+    'Which one doesn\'t belong?  ${shuffled([...three, odd], r).join(' · ')}',
+    [odd, ...three],
+    'The others are all ${keys[0].toLowerCase()}.',
+    d,
+  );
 }
 
 Q _balance(math.Random r, int d) {
@@ -413,10 +817,20 @@ Q _balance(math.Random r, int d) {
   final pick = shuffled(items, r);
   final a = r.nextInt(5) + 1 + d, b = r.nextInt(5) + 1;
   if (d == 1) {
-    return Q('${pick[0]} + ${pick[0]} = ${a * 2}\n${pick[0]} = ?', numberOptions(a, r), 'Half of ${a * 2} is $a.', 1);
+    return Q(
+      '${pick[0]} + ${pick[0]} = ${a * 2}\n${pick[0]} = ?',
+      numberOptions(a, r),
+      'Half of ${a * 2} is $a.',
+      1,
+    );
   }
   if (d == 2) {
-    return Q('${pick[0]} + ${pick[0]} = ${a * 2}\n${pick[0]} + ${pick[1]} = ${a + b}\n${pick[1]} = ?', numberOptions(b, r), '${pick[0]} is $a, so ${pick[1]} is ${a + b} − $a = $b.', 2);
+    return Q(
+      '${pick[0]} + ${pick[0]} = ${a * 2}\n${pick[0]} + ${pick[1]} = ${a + b}\n${pick[1]} = ?',
+      numberOptions(b, r),
+      '${pick[0]} is $a, so ${pick[1]} is ${a + b} − $a = $b.',
+      2,
+    );
   }
   final c = r.nextInt(4) + 1;
   return Q(
@@ -445,12 +859,18 @@ class _LanguageMatchState extends State<LanguageMatch> {
           children: [
             GamePrompt(tr(context, 'Pick a language', 'Elige un idioma')),
             const SizedBox(height: 10),
-            for (final l in languagePairs.keys) OptionTile(label: l, onTap: () => setState(() => _lang = l)),
+            for (final l in languagePairs.keys)
+              OptionTile(label: l, onTap: () => setState(() => _lang = l)),
           ],
         ),
       );
     }
-    return MatchPairsGame(session: widget.session, pairs: languagePairs[_lang]!, leftLabel: _lang, rightLabel: 'English');
+    return MatchPairsGame(
+      session: widget.session,
+      pairs: languagePairs[_lang]!,
+      leftLabel: _lang,
+      rightLabel: 'English',
+    );
   }
 }
 
@@ -499,8 +919,17 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
               onTap: onTap == null ? null : () => onTap(i),
               child: Container(
                 alignment: Alignment.center,
-                decoration: BoxDecoration(color: gameplayColors[v[i]].$1, borderRadius: prismCorners(context, 6)),
-                child: Text(gameplayColors[v[i]].$3, style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 14)),
+                decoration: BoxDecoration(
+                  color: gameplayColors[v[i]].$1,
+                  borderRadius: prismCorners(context, 6),
+                ),
+                child: Text(
+                  gameplayColors[v[i]].$3,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 14,
+                  ),
+                ),
               ),
             ),
           ),
@@ -510,16 +939,27 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
 
   @override
   Widget build(BuildContext context) {
-    final done = List.generate(_target.length, (i) => _target[i] == _mine[i]).every((x) => x);
+    final done = List.generate(
+      _target.length,
+      (i) => _target[i] == _mine[i],
+    ).every((x) => x);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GameProgress(current: _round + 1, total: 5, trailing: tr(context, '$_moves taps', '$_moves toques')),
+        GameProgress(
+          current: _round + 1,
+          total: 5,
+          trailing: tr(context, '$_moves taps', '$_moves toques'),
+        ),
         GamePanel(
           child: Column(
             children: [
               Text(
-                tr(context, 'Copy the pattern on the left. Tap a cell to change its colour.', 'Copia el patrón de la izquierda. Toca una casilla para cambiar su color.'),
+                tr(
+                  context,
+                  'Copy the pattern on the left. Tap a cell to change its colour.',
+                  'Copia el patrón de la izquierda. Toca una casilla para cambiar su color.',
+                ),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -544,13 +984,28 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
               if (done)
                 GameActions(
                   children: [
-                    Text(tr(context, '✓ Matched!', '✓ ¡Igual!'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                    Text(
+                      tr(context, '✓ Matched!', '✓ ¡Igual!'),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
                     PrismButton(
                       tone: PrismButtonTone.filled,
-                      label: _round + 1 >= 5 ? tr(context, 'Finish', 'Terminar') : tr(context, 'Next pattern', 'Siguiente patrón'),
+                      label: _round + 1 >= 5
+                          ? tr(context, 'Finish', 'Terminar')
+                          : tr(context, 'Next pattern', 'Siguiente patrón'),
                       onPressed: () {
                         if (_round + 1 >= 5) {
-                          widget.session.finish(GameOutcome(score: 5, max: 5, summary: tr(context, '5 patterns in $_moves taps', '5 patrones en $_moves toques')));
+                          widget.session.finish(
+                            GameOutcome(
+                              score: 5,
+                              max: 5,
+                              summary: tr(
+                                context,
+                                '5 patterns in $_moves taps',
+                                '5 patrones en $_moves toques',
+                              ),
+                            ),
+                          );
                         } else {
                           setState(() {
                             _round++;
@@ -578,36 +1033,74 @@ class _ColorPatternGameState extends State<ColorPatternGame> {
 ///         memory | deck | flashcards | personality
 Widget buildCustom(GameSession s) {
   final c = s.custom!;
-  List<String> strings(String k) => [for (final v in (c[k] as List?) ?? const []) '$v'.trim()].where((x) => x.isNotEmpty).toList();
+  List<String> strings(String k) => [
+    for (final v in (c[k] as List?) ?? const []) '$v'.trim(),
+  ].where((x) => x.isNotEmpty).toList();
   List<(String, String)> pairs(String k) => [
     for (final v in (c[k] as List?) ?? const [])
-      if (v is Map && '${v['a'] ?? ''}'.trim().isNotEmpty && '${v['b'] ?? ''}'.trim().isNotEmpty) ('${v['a']}'.trim(), '${v['b']}'.trim()),
+      if (v is Map &&
+          '${v['a'] ?? ''}'.trim().isNotEmpty &&
+          '${v['b'] ?? ''}'.trim().isNotEmpty)
+        ('${v['a']}'.trim(), '${v['b']}'.trim()),
   ];
   switch (c['type']) {
     case 'trivia':
     case 'friendship':
       final qs = [
         for (final v in (c['questions'] as List?) ?? const [])
-          if (v is Map && (v['options'] as List?) != null && (v['options'] as List).length >= 2) Q('${v['q']}', [for (final o in v['options'] as List) '$o'], '${v['explain'] ?? ''}'),
+          if (v is Map &&
+              (v['options'] as List?) != null &&
+              (v['options'] as List).length >= 2)
+            Q('${v['q']}', [
+              for (final o in v['options'] as List) '$o',
+            ], '${v['explain'] ?? ''}'),
       ];
       if (qs.isEmpty) return const _EmptyCustom();
-      return QuizGame(session: s, bank: qs, count: qs.length, askDifficulty: false);
+      return QuizGame(
+        session: s,
+        bank: qs,
+        count: qs.length,
+        askDifficulty: false,
+      );
     case 'choice':
       final p = pairs('pairs');
       if (p.isEmpty) return const _EmptyCustom();
-      return PromptDeckGame(session: s, mode: DeckMode.choice, choices: p, count: p.length);
+      return PromptDeckGame(
+        session: s,
+        mode: DeckMode.choice,
+        choices: p,
+        count: p.length,
+      );
     case 'wordsearch':
-      final w = strings('words').map((x) => x.toUpperCase().replaceAll(RegExp('[^A-Z]'), '')).where((x) => x.length >= 3 && x.length <= 10).toList();
+      final w = strings('words')
+          .map((x) => x.toUpperCase().replaceAll(RegExp('[^A-Z]'), ''))
+          .where((x) => x.length >= 3 && x.length <= 10)
+          .toList();
       if (w.length < 3) return const _EmptyCustom();
-      return WordSearchGame(session: s, themes: {'${c['title'] ?? 'Custom'}': w});
+      return WordSearchGame(
+        session: s,
+        themes: {'${c['title'] ?? 'Custom'}': w},
+      );
     case 'crossword':
       final p = pairs('clues');
       if (p.length < 2) return const _EmptyCustom();
-      return MiniCrosswordGame(session: s, clues: {for (final (a, b) in p) a.toUpperCase().replaceAll(RegExp('[^A-Z]'), ''): b});
+      return MiniCrosswordGame(
+        session: s,
+        clues: {
+          for (final (a, b) in p)
+            a.toUpperCase().replaceAll(RegExp('[^A-Z]'), ''): b,
+        },
+      );
     case 'bingo':
       final sq = strings('squares');
       if (sq.isEmpty) return const _EmptyCustom();
-      return BingoGame(session: s, squares: [for (var i = 0; sq.length + i < 25; i++) sq[i % sq.length], ...sq]);
+      return BingoGame(
+        session: s,
+        squares: [
+          for (var i = 0; sq.length + i < 25; i++) sq[i % sq.length],
+          ...sq,
+        ],
+      );
     case 'memory':
       final p = pairs('pairs');
       if (p.length < 2) return const _EmptyCustom();
@@ -615,11 +1108,21 @@ Widget buildCustom(GameSession s) {
     case 'deck':
       final pr = strings('prompts');
       if (pr.isEmpty) return const _EmptyCustom();
-      return PromptDeckGame(session: s, mode: DeckMode.prompt, prompts: pr, writeAnswers: true, count: pr.length);
+      return PromptDeckGame(
+        session: s,
+        mode: DeckMode.prompt,
+        prompts: pr,
+        writeAnswers: true,
+        count: pr.length,
+      );
     case 'flashcards':
       final p = pairs('pairs');
       if (p.length < 2) return const _EmptyCustom();
-      return MatchPairsGame(session: s, pairs: p, rounds: (p.length / 5).ceil());
+      return MatchPairsGame(
+        session: s,
+        pairs: p,
+        rounds: (p.length / 5).ceil(),
+      );
     case 'personality':
       return PersonalityQuizGame(session: s);
   }
@@ -631,7 +1134,11 @@ class _EmptyCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GamePanel(
     child: Text(
-      tr(context, 'This custom game needs a bit more content. Edit it in Create to add more.', 'Este juego personalizado necesita más contenido. Edítalo en Crear.'),
+      tr(
+        context,
+        'This custom game needs a bit more content. Edit it in Create to add more.',
+        'Este juego personalizado necesita más contenido. Edítalo en Crear.',
+      ),
       textAlign: TextAlign.center,
     ),
   );
@@ -647,7 +1154,10 @@ class PersonalityQuizGame extends StatefulWidget {
 }
 
 class _PersonalityQuizGameState extends State<PersonalityQuizGame> {
-  late final List<String> _results = [for (final v in (widget.session.custom?['results'] as List?) ?? const []) '$v'];
+  late final List<String> _results = [
+    for (final v in (widget.session.custom?['results'] as List?) ?? const [])
+      '$v',
+  ];
   late final List<(String, List<(String, int)>)> _qs = [
     for (final v in (widget.session.custom?['questions'] as List?) ?? const [])
       if (v is Map)
@@ -682,8 +1192,16 @@ class _PersonalityQuizGameState extends State<PersonalityQuizGame> {
                   onTap: () {
                     _tally[r] = (_tally[r] ?? 0) + 1;
                     if (_i + 1 >= _qs.length) {
-                      final best = _tally.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
-                      widget.session.finish(GameOutcome(summary: _results[best.clamp(0, _results.length - 1)], memorable: _results[best.clamp(0, _results.length - 1)]));
+                      final best = _tally.entries
+                          .reduce((a, b) => a.value >= b.value ? a : b)
+                          .key;
+                      widget.session.finish(
+                        GameOutcome(
+                          summary: _results[best.clamp(0, _results.length - 1)],
+                          memorable:
+                              _results[best.clamp(0, _results.length - 1)],
+                        ),
+                      );
                     } else {
                       setState(() => _i++);
                     }

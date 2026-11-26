@@ -12,20 +12,22 @@ void main() {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        doodlesProvider.overrideWithValue(const []),
-        gameNamesProvider.overrideWithValue(const {}),
-        gameMembersProvider.overrideWithValue(const []),
-        cozyMeProvider.overrideWithValue(null),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const DoodleWallScreen(),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          doodlesProvider.overrideWithValue(const []),
+          gameNamesProvider.overrideWithValue(const {}),
+          gameMembersProvider.overrideWithValue(const []),
+          cozyMeProvider.overrideWithValue(null),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const DoodleWallScreen(),
+        ),
       ),
-    ));
+    );
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 300));
     }

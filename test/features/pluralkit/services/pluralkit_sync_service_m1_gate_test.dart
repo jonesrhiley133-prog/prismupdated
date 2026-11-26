@@ -225,78 +225,44 @@ void main() {
       },
     );
 
-    test('pollFrontersOnly no-ops while a pull is in flight (defect d)', () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-      final capture = PkSyncEventBusCapture();
-      final client = _GatedClient();
-      final service = _makeService(db: db, client: client, bus: capture.bus);
-      await _connect(service);
+    test(
+      'pollFrontersOnly no-ops while a pull is in flight (defect d)',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
+        final capture = PkSyncEventBusCapture();
+        final client = _GatedClient();
+        final service = _makeService(db: db, client: client, bus: capture.bus);
+        await _connect(service);
 
-      client.holdGetSystem = Completer<void>();
-      final winner = service.syncRecentData();
-      await _pumpUntil(() => client.getSystemEntered >= 1);
+        client.holdGetSystem = Completer<void>();
+        final winner = service.syncRecentData();
+        await _pumpUntil(() => client.getSystemEntered >= 1);
 
-      // Pre-fix, the poll passed the bare isSyncing CHECK in this window
-      // (the winner held the gate but the poll never claimed anything) and
-      // ran a second sweep against the same rows.
-      final outcome = await service.pollFrontersOnly();
-      expect(outcome, PkPollOutcome.skipped);
-      expect(
-        client.getCurrentFrontersCallCount,
-        0,
-        reason: 'a busy poll must bail before touching the network',
-      );
+        // Pre-fix, the poll passed the bare isSyncing CHECK in this window
+        // (the winner held the gate but the poll never claimed anything) and
+        // ran a second sweep against the same rows.
+        final outcome = await service.pollFrontersOnly();
+        expect(outcome, PkPollOutcome.skipped);
+        expect(
+          client.getCurrentFrontersCallCount,
+          0,
+          reason: 'a busy poll must bail before touching the network',
+        );
 
-      client.holdGetSystem!.complete();
-      await winner;
+        client.holdGetSystem!.complete();
+        await winner;
 
-      // After the pull releases the gate, polling works again (and is a
-      // healthy skip here because the fake reports no current fronters).
-      final after = await service.pollFrontersOnly();
-      expect(after, PkPollOutcome.skipped);
-      expect(client.getCurrentFrontersCallCount, 1);
-    });
-
-    test('importFromFile is rejected while a pull is in flight (defect c)', () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-      final capture = PkSyncEventBusCapture();
-      final client = _GatedClient();
-      final memberRepo = FakeMemberRepository();
-      final service = PluralKitSyncService(
-        memberRepository: memberRepo,
-        frontingSessionRepository: FakeFrontingSessionRepository(),
-        syncDao: db.pluralKitSyncDao,
-        bus: capture.bus,
-        secureStorage: const FlutterSecureStorage(),
-        clientFactory: (_) => client,
-      );
-      await _connect(service);
-
-      client.holdGetSystem = Completer<void>();
-      final winner = service.syncRecentData();
-      await _pumpUntil(() => client.getSystemEntered >= 1);
-
-      // Pre-fix this method had NO guard at all and would import members
-      // concurrently with the in-flight sweep.
-      final result = await service.importFromFile(_export(switches: 2));
-      expect(result.membersImported, 0);
-      expect(result.groupsImported, 0);
-      expect(result.switchesSkipped, 2);
-      expect(
-        await memberRepo.getAllMembers(),
-        isEmpty,
-        reason: 'a busy file import must not write any members',
-      );
-
-      client.holdGetSystem!.complete();
-      await winner;
-    });
+        // After the pull releases the gate, polling works again (and is a
+        // healthy skip here because the fake reports no current fronters).
+        final after = await service.pollFrontersOnly();
+        expect(after, PkPollOutcome.skipped);
+        expect(client.getCurrentFrontersCallCount, 1);
+      },
+    );
 
     test(
-      'importFromFileWithToken returns the busy sentinel while a pull is in '
-      'flight',
+      'importFromFile is rejected while a pull is in flight (defect c)',
       () async {
         final db = _makeDb();
         addTearDown(db.close);
@@ -317,47 +283,81 @@ void main() {
         final winner = service.syncRecentData();
         await _pumpUntil(() => client.getSystemEntered >= 1);
 
-        final result = await service.importFromFileWithToken(
-          _export(switches: 1),
-        );
+        // Pre-fix this method had NO guard at all and would import members
+        // concurrently with the in-flight sweep.
+        final result = await service.importFromFile(_export(switches: 2));
         expect(result.membersImported, 0);
-        expect(result.frontingImported, isFalse);
-        expect(result.canonicalizationSafe, isFalse);
-        expect(await memberRepo.getAllMembers(), isEmpty);
-
-        client.holdGetSystem!.complete();
-        await winner;
-      },
-    );
-
-    test(
-      'importMembersOnly and performOneTimeFullImport throw while a pull is '
-      'in flight',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
-        final capture = PkSyncEventBusCapture();
-        final client = _GatedClient();
-        final service = _makeService(db: db, client: client, bus: capture.bus);
-        await _connect(service);
-
-        client.holdGetSystem = Completer<void>();
-        final winner = service.syncRecentData();
-        await _pumpUntil(() => client.getSystemEntered >= 1);
-
-        await expectLater(
-          service.importMembersOnly(),
-          throwsA(isA<StateError>()),
-        );
-        await expectLater(
-          service.performOneTimeFullImport(token: 'other-token'),
-          throwsA(isA<StateError>()),
+        expect(result.groupsImported, 0);
+        expect(result.switchesSkipped, 2);
+        expect(
+          await memberRepo.getAllMembers(),
+          isEmpty,
+          reason: 'a busy file import must not write any members',
         );
 
         client.holdGetSystem!.complete();
         await winner;
       },
     );
+
+    test('importFromFileWithToken returns the busy sentinel while a pull is in '
+        'flight', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
+      final capture = PkSyncEventBusCapture();
+      final client = _GatedClient();
+      final memberRepo = FakeMemberRepository();
+      final service = PluralKitSyncService(
+        memberRepository: memberRepo,
+        frontingSessionRepository: FakeFrontingSessionRepository(),
+        syncDao: db.pluralKitSyncDao,
+        bus: capture.bus,
+        secureStorage: const FlutterSecureStorage(),
+        clientFactory: (_) => client,
+      );
+      await _connect(service);
+
+      client.holdGetSystem = Completer<void>();
+      final winner = service.syncRecentData();
+      await _pumpUntil(() => client.getSystemEntered >= 1);
+
+      final result = await service.importFromFileWithToken(
+        _export(switches: 1),
+      );
+      expect(result.membersImported, 0);
+      expect(result.frontingImported, isFalse);
+      expect(result.canonicalizationSafe, isFalse);
+      expect(await memberRepo.getAllMembers(), isEmpty);
+
+      client.holdGetSystem!.complete();
+      await winner;
+    });
+
+    test('importMembersOnly and performOneTimeFullImport throw while a pull is '
+        'in flight', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
+      final capture = PkSyncEventBusCapture();
+      final client = _GatedClient();
+      final service = _makeService(db: db, client: client, bus: capture.bus);
+      await _connect(service);
+
+      client.holdGetSystem = Completer<void>();
+      final winner = service.syncRecentData();
+      await _pumpUntil(() => client.getSystemEntered >= 1);
+
+      await expectLater(
+        service.importMembersOnly(),
+        throwsA(isA<StateError>()),
+      );
+      await expectLater(
+        service.performOneTimeFullImport(token: 'other-token'),
+        throwsA(isA<StateError>()),
+      );
+
+      client.holdGetSystem!.complete();
+      await winner;
+    });
 
     test('a failed pull releases the gate (no permanent lockout)', () async {
       final db = _makeDb();

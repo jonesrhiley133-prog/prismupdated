@@ -231,38 +231,39 @@ void main() {
       expect(reminder.isActive, isTrue);
     });
 
-    test('repeated timer maps to scheduled trigger with intervalDays and timeOfDay', () {
-      final data = _makeExportData(
-        repeatedTimers: [
-          const SpRepeatedTimer(
-            id: 'rt1',
-            name: 'Daily Log',
-            message: 'Write your log',
-            intervalDays: 1,
-            timeOfDay: '09:00',
-            enabled: true,
-          ),
-        ],
-      );
+    test(
+      'repeated timer maps to scheduled trigger with intervalDays and timeOfDay',
+      () {
+        final data = _makeExportData(
+          repeatedTimers: [
+            const SpRepeatedTimer(
+              id: 'rt1',
+              name: 'Daily Log',
+              message: 'Write your log',
+              intervalDays: 1,
+              timeOfDay: '09:00',
+              enabled: true,
+            ),
+          ],
+        );
 
-      final mapper = SpMapper();
-      final result = mapper.mapAll(data);
+        final mapper = SpMapper();
+        final result = mapper.mapAll(data);
 
-      expect(result.reminders, hasLength(1));
-      final reminder = result.reminders.first;
-      expect(reminder.trigger, domain.ReminderTrigger.scheduled);
-      expect(reminder.name, 'Daily Log');
-      expect(reminder.message, 'Write your log');
-      expect(reminder.intervalDays, 1);
-      expect(reminder.timeOfDay, '09:00');
-      expect(reminder.isActive, isTrue);
-    });
+        expect(result.reminders, hasLength(1));
+        final reminder = result.reminders.first;
+        expect(reminder.trigger, domain.ReminderTrigger.scheduled);
+        expect(reminder.name, 'Daily Log');
+        expect(reminder.message, 'Write your log');
+        expect(reminder.intervalDays, 1);
+        expect(reminder.timeOfDay, '09:00');
+        expect(reminder.isActive, isTrue);
+      },
+    );
 
     test('empty name defaults to Imported Timer', () {
       final data = _makeExportData(
-        automatedTimers: [
-          const SpAutomatedTimer(id: 'at1', name: ''),
-        ],
+        automatedTimers: [const SpAutomatedTimer(id: 'at1', name: '')],
       );
 
       final mapper = SpMapper();
@@ -275,11 +276,7 @@ void main() {
     test('null message falls back to name', () {
       final data = _makeExportData(
         automatedTimers: [
-          const SpAutomatedTimer(
-            id: 'at1',
-            name: 'My Timer',
-            message: null,
-          ),
+          const SpAutomatedTimer(id: 'at1', name: 'My Timer', message: null),
         ],
       );
 
@@ -292,11 +289,7 @@ void main() {
     test('disabled automated timer maps to inactive reminder', () {
       final data = _makeExportData(
         automatedTimers: [
-          const SpAutomatedTimer(
-            id: 'at1',
-            name: 'Off',
-            enabled: false,
-          ),
+          const SpAutomatedTimer(id: 'at1', name: 'Off', enabled: false),
         ],
       );
 
@@ -309,11 +302,7 @@ void main() {
     test('disabled repeated timer maps to inactive reminder', () {
       final data = _makeExportData(
         repeatedTimers: [
-          const SpRepeatedTimer(
-            id: 'rt1',
-            name: 'Off',
-            enabled: false,
-          ),
+          const SpRepeatedTimer(id: 'rt1', name: 'Off', enabled: false),
         ],
       );
 
@@ -329,9 +318,7 @@ void main() {
           const SpAutomatedTimer(id: 'at1', name: 'Auto 1'),
           const SpAutomatedTimer(id: 'at2', name: 'Auto 2'),
         ],
-        repeatedTimers: [
-          const SpRepeatedTimer(id: 'rt1', name: 'Rep 1'),
-        ],
+        repeatedTimers: [const SpRepeatedTimer(id: 'rt1', name: 'Rep 1')],
       );
 
       final mapper = SpMapper();
@@ -353,9 +340,7 @@ void main() {
 
     test('type=0 member target resolves to Prism member ID', () {
       final data = _makeExportData(
-        members: const [
-          SpMember(id: 'sp-alex', name: 'Alex'),
-        ],
+        members: const [SpMember(id: 'sp-alex', name: 'Alex')],
         automatedTimers: const [
           SpAutomatedTimer(
             id: 'at-alex',
@@ -377,9 +362,7 @@ void main() {
 
     test('type=1 custom front resolves to custom-front tagged member', () {
       final data = _makeExportData(
-        customFronts: const [
-          SpCustomFront(id: 'sp-cf1', name: 'At work'),
-        ],
+        customFronts: const [SpCustomFront(id: 'sp-cf1', name: 'At work')],
         automatedTimers: const [
           SpAutomatedTimer(
             id: 'at-cf',
@@ -394,8 +377,11 @@ void main() {
       final result = mapper.mapAll(data);
 
       final cfPrismId = mapper.memberIdMap['sp-cf1'];
-      expect(cfPrismId, isNotNull,
-          reason: 'custom front should share _memberIdMap with members');
+      expect(
+        cfPrismId,
+        isNotNull,
+        reason: 'custom front should share _memberIdMap with members',
+      );
       expect(result.reminders, hasLength(1));
       expect(result.reminders.first.targetMemberId, cfPrismId);
     });
@@ -459,8 +445,9 @@ void main() {
       final result = mapper.mapAll(data);
 
       expect(
-        result.warnings
-            .any((w) => w.contains('fire only when Prism is running')),
+        result.warnings.any(
+          (w) => w.contains('fire only when Prism is running'),
+        ),
         isTrue,
       );
     });

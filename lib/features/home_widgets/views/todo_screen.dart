@@ -46,12 +46,14 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
   Future<void> _add() async {
     final title = _title.text.trim();
     if (title.isEmpty) return;
-    await ref.read(trackerNotifierProvider.notifier).create(
-      kind: todoKind,
-      title: title,
-      occurredAt: _due,
-      memberId: _memberTouched ? _memberId : currentFronterId(ref),
-    );
+    await ref
+        .read(trackerNotifierProvider.notifier)
+        .create(
+          kind: todoKind,
+          title: title,
+          occurredAt: _due,
+          memberId: _memberTouched ? _memberId : currentFronterId(ref),
+        );
     _title.clear();
     setState(() => _due = null);
   }
@@ -60,17 +62,25 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final all = ref.watch(trackerKindProvider(todoKind)).value ?? const <TrackerRecord>[];
-    final members = {for (final m in ref.watch(allMembersProvider).value ?? const []) m.id: m};
-    final items = [for (final t in all) if (_filter == null || t.memberId == _filter) t]
-      ..sort((a, b) {
-        if (a.flag('done') != b.flag('done')) return a.flag('done') ? 1 : -1;
-        final ad = a.occurredAt, bd = b.occurredAt;
-        if (ad == null && bd == null) return b.createdAt.compareTo(a.createdAt);
-        if (ad == null) return 1;
-        if (bd == null) return -1;
-        return ad.compareTo(bd);
-      });
+    final all =
+        ref.watch(trackerKindProvider(todoKind)).value ??
+        const <TrackerRecord>[];
+    final members = {
+      for (final m in ref.watch(allMembersProvider).value ?? const []) m.id: m,
+    };
+    final items =
+        [
+          for (final t in all)
+            if (_filter == null || t.memberId == _filter) t,
+        ]..sort((a, b) {
+          if (a.flag('done') != b.flag('done')) return a.flag('done') ? 1 : -1;
+          final ad = a.occurredAt, bd = b.occurredAt;
+          if (ad == null && bd == null)
+            return b.createdAt.compareTo(a.createdAt);
+          if (ad == null) return 1;
+          if (bd == null) return -1;
+          return ad.compareTo(bd);
+        });
     final notifier = ref.read(trackerNotifierProvider.notifier);
     final fmt = MaterialLocalizations.of(context);
     return PrismPageScaffold(
@@ -82,7 +92,9 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: PrismTokens.contentMaxWidth),
+              constraints: BoxConstraints(
+                maxWidth: PrismTokens.contentMaxWidth,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -101,7 +113,9 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                         const SizedBox(height: 8),
                         TrackerMemberPicker(
                           label: l10n.hwTaskFor,
-                          value: _memberTouched ? _memberId : currentFronterId(ref),
+                          value: _memberTouched
+                              ? _memberId
+                              : currentFronterId(ref),
                           onChanged: (v) => setState(() {
                             _memberTouched = true;
                             _memberId = v;
@@ -114,7 +128,9 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                           children: [
                             Builder(
                               builder: (anchor) => PrismButton(
-                                label: _due == null ? l10n.hwDueDate : fmt.formatMediumDate(_due!),
+                                label: _due == null
+                                    ? l10n.hwDueDate
+                                    : fmt.formatMediumDate(_due!),
                                 onPressed: () async {
                                   final now = DateTime.now();
                                   final d = await showPrismDatePicker(
@@ -128,31 +144,51 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                 },
                               ),
                             ),
-                            PrismButton(label: l10n.add, tone: PrismButtonTone.filled, onPressed: _add),
+                            PrismButton(
+                              label: l10n.add,
+                              tone: PrismButtonTone.filled,
+                              onPressed: _add,
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TrackerMemberFilter(value: _filter, onChanged: (v) => setState(() => _filter = v)),
+                  TrackerMemberFilter(
+                    value: _filter,
+                    onChanged: (v) => setState(() => _filter = v),
+                  ),
                   const SizedBox(height: 8),
                   if (items.isEmpty)
                     Padding(
                       padding: const EdgeInsets.all(32),
-                      child: Text(l10n.hwNoTasks, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
+                      child: Text(
+                        l10n.hwNoTasks,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge,
+                      ),
                     ),
                   for (final TrackerRecord t in items)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: PrismSurface(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        onTap: () => notifier.save(t.withFields({'done': !t.flag('done')})),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        onTap: () => notifier.save(
+                          t.withFields({'done': !t.flag('done')}),
+                        ),
                         child: Row(
                           children: [
                             Icon(
-                              t.flag('done') ? AppIcons.checkCircle : AppIcons.radioButtonUnchecked,
-                              color: t.flag('done') ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                              t.flag('done')
+                                  ? AppIcons.checkCircle
+                                  : AppIcons.radioButtonUnchecked,
+                              color: t.flag('done')
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                             const SizedBox(width: 10),
                             Expanded(
@@ -162,17 +198,29 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                                   Text(
                                     t.title,
                                     style: theme.textTheme.bodyLarge?.copyWith(
-                                      decoration: t.flag('done') ? TextDecoration.lineThrough : null,
-                                      color: t.flag('done') ? theme.colorScheme.onSurfaceVariant : null,
+                                      decoration: t.flag('done')
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: t.flag('done')
+                                          ? theme.colorScheme.onSurfaceVariant
+                                          : null,
                                     ),
                                   ),
-                                  if (t.occurredAt != null || members[t.memberId] != null)
+                                  if (t.occurredAt != null ||
+                                      members[t.memberId] != null)
                                     Text(
                                       [
-                                        if (members[t.memberId] != null) members[t.memberId]!.name,
-                                        if (t.occurredAt != null) fmt.formatMediumDate(t.occurredAt!),
+                                        if (members[t.memberId] != null)
+                                          members[t.memberId]!.name,
+                                        if (t.occurredAt != null)
+                                          fmt.formatMediumDate(t.occurredAt!),
                                       ].join(' · '),
-                                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
                                 ],
                               ),
@@ -182,7 +230,13 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                               density: PrismControlDensity.compact,
                               tone: PrismButtonTone.destructive,
                               onPressed: () async {
-                                if (await confirmIfAsked(context, ref, title: l10n.delete, message: t.title)) await notifier.delete(t.id);
+                                if (await confirmIfAsked(
+                                  context,
+                                  ref,
+                                  title: l10n.delete,
+                                  message: t.title,
+                                ))
+                                  await notifier.delete(t.id);
                               },
                             ),
                           ],

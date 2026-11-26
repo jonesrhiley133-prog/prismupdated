@@ -25,69 +25,77 @@ void main() {
     RustLib.dispose();
   });
 
-  test('concurrent edits to the same field converge across devices (LWW)',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    E2EDevice? a, b;
-    try {
-      a = await createDevice(relay);
-      b = await pairNewDevice(relay, a);
+  test(
+    'concurrent edits to the same field converge across devices (LWW)',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      E2EDevice? a, b;
+      try {
+        a = await createDevice(relay);
+        b = await pairNewDevice(relay, a);
 
-      // Shared baseline both devices have.
-      await ffi.recordCreate(
-        handle: a.handle,
-        table: 'members',
-        entityId: 'lww-1',
-        fieldsJson: '{"name":"init"}',
-      );
-      await a.sync();
-      await b.sync();
+        // Shared baseline both devices have.
+        await ffi.recordCreate(
+          handle: a.handle,
+          table: 'members',
+          entityId: 'lww-1',
+          fieldsJson: '{"name":"init"}',
+        );
+        await a.sync();
+        await b.sync();
 
-      // CONCURRENT edit: each writes 'name' before seeing the other's write.
-      await ffi.recordUpdate(
-        handle: a.handle,
-        table: 'members',
-        entityId: 'lww-1',
-        changedFieldsJson: '{"name":"from-A"}',
-      );
-      await ffi.recordUpdate(
-        handle: b.handle,
-        table: 'members',
-        entityId: 'lww-1',
-        changedFieldsJson: '{"name":"from-B"}',
-      );
+        // CONCURRENT edit: each writes 'name' before seeing the other's write.
+        await ffi.recordUpdate(
+          handle: a.handle,
+          table: 'members',
+          entityId: 'lww-1',
+          changedFieldsJson: '{"name":"from-A"}',
+        );
+        await ffi.recordUpdate(
+          handle: b.handle,
+          table: 'members',
+          entityId: 'lww-1',
+          changedFieldsJson: '{"name":"from-B"}',
+        );
 
-      // Exchange both ways and settle.
-      await a.sync();
-      await b.sync();
-      await a.sync();
-      await b.sync();
+        // Exchange both ways and settle.
+        await a.sync();
+        await b.sync();
+        await a.sync();
+        await b.sync();
 
-      // Both devices converge to the SAME winning value (LWW tiebreak), read
-      // from each device's merged state. Values are JSON-encoded (quoted).
-      final aVal = await ffi.readFieldValue(
-        handle: a.handle,
-        table: 'members',
-        entityId: 'lww-1',
-        field: 'name',
-      );
-      final bVal = await ffi.readFieldValue(
-        handle: b.handle,
-        table: 'members',
-        entityId: 'lww-1',
-        field: 'name',
-      );
-      expect(aVal, isNotNull, reason: 'A has a merged value for the field');
-      expect(aVal, equals(bVal), reason: 'A and B must converge (A=$aVal B=$bVal)');
-      expect(
-        ['"from-A"', '"from-B"'],
-        contains(aVal),
-        reason: 'the converged value is one of the two real writes (was: $aVal)',
-      );
-    } finally {
-      a?.dispose();
-      b?.dispose();
-      relay.stop();
-    }
-  });
+        // Both devices converge to the SAME winning value (LWW tiebreak), read
+        // from each device's merged state. Values are JSON-encoded (quoted).
+        final aVal = await ffi.readFieldValue(
+          handle: a.handle,
+          table: 'members',
+          entityId: 'lww-1',
+          field: 'name',
+        );
+        final bVal = await ffi.readFieldValue(
+          handle: b.handle,
+          table: 'members',
+          entityId: 'lww-1',
+          field: 'name',
+        );
+        expect(aVal, isNotNull, reason: 'A has a merged value for the field');
+        expect(
+          aVal,
+          equals(bVal),
+          reason: 'A and B must converge (A=$aVal B=$bVal)',
+        );
+        expect(
+          ['"from-A"', '"from-B"'],
+          contains(aVal),
+          reason:
+              'the converged value is one of the two real writes (was: $aVal)',
+        );
+      } finally {
+        a?.dispose();
+        b?.dispose();
+        relay.stop();
+      }
+    },
+  );
 }

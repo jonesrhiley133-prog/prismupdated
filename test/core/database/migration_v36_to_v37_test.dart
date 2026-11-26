@@ -35,9 +35,7 @@ Future<File> _seedV32Db(String name, {required bool dropColumn}) async {
   final rawDb = raw.sqlite3.open(dbFile.path);
   try {
     if (dropColumn) {
-      rawDb.execute(
-        'ALTER TABLE member_group_entries DROP COLUMN created_at',
-      );
+      rawDb.execute('ALTER TABLE member_group_entries DROP COLUMN created_at');
     }
     rawDb.execute('PRAGMA user_version = 32');
   } finally {
@@ -59,8 +57,9 @@ void main() {
       addTearDown(upgraded.close);
       await upgraded.customSelect('SELECT 1').get();
 
-      final version =
-          await upgraded.customSelect('PRAGMA user_version').getSingle();
+      final version = await upgraded
+          .customSelect('PRAGMA user_version')
+          .getSingle();
       expect(version.read<int>('user_version'), greaterThanOrEqualTo(37));
 
       final cols = await upgraded
@@ -77,8 +76,11 @@ void main() {
             variables: [const Variable<String>('e1')],
           )
           .getSingle();
-      expect(row.read<int?>('created_at'), isNotNull,
-          reason: 'v37 migration must backfill existing rows (H6b)');
+      expect(
+        row.read<int?>('created_at'),
+        isNotNull,
+        reason: 'v37 migration must backfill existing rows (H6b)',
+      );
     });
 
     test('idempotent: skips cleanly when the column already exists', () async {

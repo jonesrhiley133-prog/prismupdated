@@ -250,9 +250,10 @@ NavBarLabelVisibility navBarLabelVisibilityFor(
   NavBarLabelDisplayMode mode,
   bool revealWhenExpanded,
 ) => switch (mode) {
-  NavBarLabelDisplayMode.iconsOnly => revealWhenExpanded
-      ? NavBarLabelVisibility.whenExpanded
-      : NavBarLabelVisibility.never,
+  NavBarLabelDisplayMode.iconsOnly =>
+    revealWhenExpanded
+        ? NavBarLabelVisibility.whenExpanded
+        : NavBarLabelVisibility.never,
   _ => NavBarLabelVisibility.always,
 };
 

@@ -19,10 +19,21 @@ class SectionSwitcher extends StatefulWidget {
   State<SectionSwitcher> createState() => _SectionSwitcherState();
 }
 
-class _SectionSwitcherState extends State<SectionSwitcher> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: Anim.md, value: 1);
-  late final Animation<double> _fade = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
-  late final Animation<Offset> _slide = Tween(begin: const Offset(0, 0.02), end: Offset.zero).animate(_fade);
+class _SectionSwitcherState extends State<SectionSwitcher>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: Anim.md,
+    value: 1,
+  );
+  late final Animation<double> _fade = CurvedAnimation(
+    parent: _c,
+    curve: Curves.easeOutCubic,
+  );
+  late final Animation<Offset> _slide = Tween(
+    begin: const Offset(0, 0.02),
+    end: Offset.zero,
+  ).animate(_fade);
 
   @override
   void didUpdateWidget(SectionSwitcher old) {

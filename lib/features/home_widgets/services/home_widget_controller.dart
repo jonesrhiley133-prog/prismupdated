@@ -32,7 +32,9 @@ import 'package:prism_plurality/features/trackers/providers/tracker_providers.da
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/l10n/app_localizations.dart';
 
-final homeWidgetPlatformProvider = Provider<HomeWidgetPlatform>((ref) => HomeWidgetPlatform());
+final homeWidgetPlatformProvider = Provider<HomeWidgetPlatform>(
+  (ref) => HomeWidgetPlatform(),
+);
 
 AppLocalizations _l10n() {
   try {
@@ -60,10 +62,17 @@ Future<String?> _avatar(String memberId, HomeWidgetData d) async {
     final codec = await ui.instantiateImageCodec(bytes, targetWidth: 96);
     final frame = await codec.getNextFrame();
     final rec = ui.PictureRecorder();
-    final side = frame.image.width < frame.image.height ? frame.image.width : frame.image.height;
+    final side = frame.image.width < frame.image.height
+        ? frame.image.width
+        : frame.image.height;
     Canvas(rec).drawImageRect(
       frame.image,
-      Rect.fromLTWH((frame.image.width - side) / 2, (frame.image.height - side) / 2, side.toDouble(), side.toDouble()),
+      Rect.fromLTWH(
+        (frame.image.width - side) / 2,
+        (frame.image.height - side) / 2,
+        side.toDouble(),
+        side.toDouble(),
+      ),
       const Rect.fromLTWH(0, 0, 96, 96),
       Paint()..filterQuality = FilterQuality.medium,
     );
@@ -76,7 +85,12 @@ Future<String?> _avatar(String memberId, HomeWidgetData d) async {
 }
 
 /// Mini picture of a headspace map, drawn from its areas and connections.
-Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required bool hidePrivate, required int textColor}) async {
+Future<String?> renderHeadspaceMap(
+  String mapId,
+  HomeWidgetData d, {
+  required bool hidePrivate,
+  required int textColor,
+}) async {
   try {
     final areas = [
       for (final a in d.kind(TrackerKind.headspaceArea))
@@ -90,10 +104,15 @@ Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required boo
     }
     bounds = bounds.inflate(24);
     const w = 480, h = 300;
-    final scale = (w / bounds.width) < (h / bounds.height) ? w / bounds.width : h / bounds.height;
+    final scale = (w / bounds.width) < (h / bounds.height)
+        ? w / bounds.width
+        : h / bounds.height;
     final rec = ui.PictureRecorder();
     final canvas = Canvas(rec)
-      ..translate((w - bounds.width * scale) / 2, (h - bounds.height * scale) / 2)
+      ..translate(
+        (w - bounds.width * scale) / 2,
+        (h - bounds.height * scale) / 2,
+      )
       ..scale(scale)
       ..translate(-bounds.left, -bounds.top);
     final line = Paint()
@@ -102,7 +121,8 @@ Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required boo
       ..style = PaintingStyle.stroke;
     for (final l in d.kind(TrackerKind.headspaceLink)) {
       final a = rects[l.str(HsField.from)], b = rects[l.str(HsField.to)];
-      if (l.parentId == mapId && a != null && b != null) canvas.drawLine(a.center, b.center, line);
+      if (l.parentId == mapId && a != null && b != null)
+        canvas.drawLine(a.center, b.center, line);
     }
     for (final a in areas) {
       final r = rects[a.id]!;
@@ -110,7 +130,10 @@ Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required boo
       final shape = a.str(HsField.shape);
       final rr = shape == 'circle'
           ? RRect.fromRectAndRadius(r, Radius.circular(r.shortestSide / 2))
-          : RRect.fromRectAndRadius(r, Radius.circular(shape == 'rect' ? 4 : 18));
+          : RRect.fromRectAndRadius(
+              r,
+              Radius.circular(shape == 'rect' ? 4 : 18),
+            );
       canvas.drawRRect(rr, Paint()..color = color.withValues(alpha: 0.85));
       final tp = TextPainter(
         text: TextSpan(
@@ -126,7 +149,13 @@ Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required boo
         maxLines: 2,
         ellipsis: '…',
       )..layout(maxWidth: r.width - 8);
-      tp.paint(canvas, Offset(r.left + (r.width - tp.width) / 2, r.top + (r.height - tp.height) / 2));
+      tp.paint(
+        canvas,
+        Offset(
+          r.left + (r.width - tp.width) / 2,
+          r.top + (r.height - tp.height) / 2,
+        ),
+      );
     }
     return _png(rec.endRecording(), w, h);
   } catch (_) {
@@ -135,7 +164,11 @@ Future<String?> renderHeadspaceMap(String mapId, HomeWidgetData d, {required boo
 }
 
 /// Adds avatars and pictures to a model built by [buildWidgetModel].
-Future<Json> enrichWidgetModel(Json model, WidgetConfig cfg, HomeWidgetData d) async {
+Future<Json> enrichWidgetModel(
+  Json model,
+  WidgetConfig cfg,
+  HomeWidgetData d,
+) async {
   Future<void> avatar(Object? node) async {
     if (node is! Map<String, Object?>) return;
     final id = node.remove('memberId');
@@ -176,7 +209,10 @@ class HomeWidgetController {
   HomeWidgetPlatform get _platform => ref.read(homeWidgetPlatformProvider);
 
   /// Coalesces bursts of data changes into one widget refresh.
-  void schedule({bool force = false, Duration delay = const Duration(milliseconds: 1500)}) {
+  void schedule({
+    bool force = false,
+    Duration delay = const Duration(milliseconds: 1500),
+  }) {
     if (!_platform.isSupported) return;
     if (force) _sent.clear();
     _debounce?.cancel();
@@ -195,13 +231,21 @@ class HomeWidgetController {
       final data = ref.read(homeWidgetDataProvider);
       final store = ref.read(homeWidgetsProvider).value;
       if (data == null || store == null) return;
-      unawaited(ref.read(homeWidgetsProvider.notifier).prune({for (final p in placed) p.id}));
+      unawaited(
+        ref.read(homeWidgetsProvider.notifier).prune({
+          for (final p in placed) p.id,
+        }),
+      );
       _sent.removeWhere((id, _) => !placed.any((p) => p.id == id));
       final l10n = _l10n();
       final out = <int, Json>{};
       for (final w in placed) {
         final cfg = store.configFor(w.id, w.type);
-        final model = await enrichWidgetModel(buildWidgetModel(cfg, data, l10n, l10n.localeName), cfg, data);
+        final model = await enrichWidgetModel(
+          buildWidgetModel(cfg, data, l10n, l10n.localeName),
+          cfg,
+          data,
+        );
         final encoded = jsonEncode(model);
         if (_sent[w.id] == encoded) continue;
         _sent[w.id] = encoded;
@@ -227,11 +271,14 @@ class HomeWidgetController {
         case 'quickfront' when parts.length > 1:
           final member = parts[1];
           final active = ref.read(activeSessionsProvider).value ?? const [];
-          final fronting = active.any((s) => s.memberId == member && !s.isSleep);
+          final fronting = active.any(
+            (s) => s.memberId == member && !s.isSleep,
+          );
           final n = ref.read(frontingNotifierProvider.notifier);
           if (fronting) {
             await n.endFronting([member]);
-          } else if (ref.read(quickFrontDefaultBehaviorProvider) == FrontStartBehavior.replace) {
+          } else if (ref.read(quickFrontDefaultBehaviorProvider) ==
+              FrontStartBehavior.replace) {
             await n.replaceFronting([member]);
           } else {
             await n.startFronting([member]);
@@ -240,10 +287,15 @@ class HomeWidgetController {
           final mood = int.tryParse(parts[1]);
           if (mood != null && mood >= 1 && mood <= 5) {
             final data = ref.read(homeWidgetDataProvider);
-            final fronters = [...?data?.activeSessions]..sort((a, b) => b.startTime.compareTo(a.startTime));
+            final fronters = [...?data?.activeSessions]
+              ..sort((a, b) => b.startTime.compareTo(a.startTime));
             await ref
                 .read(moodNotifierProvider.notifier)
-                .create(mood: mood, intensity: 3, memberId: fronters.firstOrNull?.memberId);
+                .create(
+                  mood: mood,
+                  intensity: 3,
+                  memberId: fronters.firstOrNull?.memberId,
+                );
           }
         case 'location' when parts.length > 1:
           final n = ref.read(locationsNotifierProvider.notifier);
@@ -254,15 +306,19 @@ class HomeWidgetController {
             await n.startSession(parts[1]);
           }
         case 'todo' when parts.length > 1:
-          final records = ref.read(trackerRecordsProvider).value ?? const <TrackerRecord>[];
+          final records =
+              ref.read(trackerRecordsProvider).value ?? const <TrackerRecord>[];
           final item = records.where((r) => r.id == parts[1]).firstOrNull;
           if (item != null) {
-            await ref.read(trackerNotifierProvider.notifier).save(item.withFields({'done': !item.flag('done')}));
+            await ref
+                .read(trackerNotifierProvider.notifier)
+                .save(item.withFields({'done': !item.flag('done')}));
           }
         case 'sleep' when parts.length > 1:
           final n = ref.read(sleepNotifierProvider.notifier);
           if (parts[1] == 'start') {
-            if (ref.read(activeSleepSessionProvider).value == null) await n.startSleep();
+            if (ref.read(activeSleepSessionProvider).value == null)
+              await n.startSleep();
           } else if (parts[1] == 'end' && parts.length > 2) {
             await n.endSleep(parts[2]);
           }
@@ -273,7 +329,8 @@ class HomeWidgetController {
     schedule(force: true, delay: const Duration(milliseconds: 400));
   }
 
-  BuildContext? get _context => ref.read(routerProvider).routerDelegate.navigatorKey.currentContext;
+  BuildContext? get _context =>
+      ref.read(routerProvider).routerDelegate.navigatorKey.currentContext;
 
   /// A tap that brings Prism to the front on a screen or editor.
   Future<void> open(int id, String action) async {
@@ -284,7 +341,12 @@ class HomeWidgetController {
     if (action.startsWith('route:')) {
       final path = action.substring(6);
       // Overlay screens are pushed; tab destinations are switched to.
-      const pushed = ['/session/', '/sleep/session/', AppRoutePaths.todos, AppRoutePaths.homeWidgets];
+      const pushed = [
+        '/session/',
+        '/sleep/session/',
+        AppRoutePaths.todos,
+        AppRoutePaths.homeWidgets,
+      ];
       if (pushed.any(path.startsWith)) {
         unawaited(router.push(path));
       } else {
@@ -296,7 +358,13 @@ class HomeWidgetController {
       final wid = int.tryParse(action.substring(10)) ?? id;
       final placed = await _platform.listWidgets();
       final type = placed.where((p) => p.id == wid).firstOrNull?.type;
-      unawaited(router.push(type == null ? AppRoutePaths.homeWidgets : AppRoutePaths.widgetStudio(type, id: wid)));
+      unawaited(
+        router.push(
+          type == null
+              ? AppRoutePaths.homeWidgets
+              : AppRoutePaths.widgetStudio(type, id: wid),
+        ),
+      );
       schedule(force: true, delay: const Duration(milliseconds: 200));
       return;
     }
@@ -312,7 +380,10 @@ class HomeWidgetController {
       case 'todo:new':
         unawaited(router.push('${AppRoutePaths.todos}?new=1'));
       case 'event:new':
-        await showEditEventSheet(context, initialStart: DateTime.now().add(const Duration(hours: 1)));
+        await showEditEventSheet(
+          context,
+          initialStart: DateTime.now().add(const Duration(hours: 1)),
+        );
       case 'finance:new':
         await showTxnEditor(context);
       case 'fitness:new':
@@ -340,12 +411,15 @@ class HasPlacedWidgets extends Notifier<bool> {
   bool build() => false;
 
   Future<void> refresh() async {
-    final any = (await ref.read(homeWidgetPlatformProvider).listWidgets()).isNotEmpty;
+    final any =
+        (await ref.read(homeWidgetPlatformProvider).listWidgets()).isNotEmpty;
     if (ref.mounted && state != any) state = any;
   }
 }
 
-final hasPlacedWidgetsProvider = NotifierProvider<HasPlacedWidgets, bool>(HasPlacedWidgets.new);
+final hasPlacedWidgetsProvider = NotifierProvider<HasPlacedWidgets, bool>(
+  HasPlacedWidgets.new,
+);
 
 /// Keep alive from the app root: wires up widget taps.
 final homeWidgetListenerProvider = Provider<void>((ref) {
@@ -355,7 +429,10 @@ final homeWidgetListenerProvider = Provider<void>((ref) {
   platform.setHandlers(
     onWidgetsChanged: () {
       unawaited(ref.read(hasPlacedWidgetsProvider.notifier).refresh());
-      controller.schedule(force: true, delay: const Duration(milliseconds: 300));
+      controller.schedule(
+        force: true,
+        delay: const Duration(milliseconds: 300),
+      );
     },
     onDataAction: controller.runDataAction,
     onOpen: controller.open,
@@ -376,8 +453,15 @@ final homeWidgetListenerProvider = Provider<void>((ref) {
 final homeWidgetSyncProvider = Provider<void>((ref) {
   if (!ref.watch(hasPlacedWidgetsProvider)) return;
   final controller = ref.watch(homeWidgetControllerProvider);
-  ref.listen(homeWidgetDataProvider, (_, _) => controller.schedule(), fireImmediately: true);
-  ref.listen(homeWidgetsProvider, (_, _) => controller.schedule(delay: const Duration(milliseconds: 250)));
+  ref.listen(
+    homeWidgetDataProvider,
+    (_, _) => controller.schedule(),
+    fireImmediately: true,
+  );
+  ref.listen(
+    homeWidgetsProvider,
+    (_, _) => controller.schedule(delay: const Duration(milliseconds: 250)),
+  );
   // Relative times ("5 min ago", countdowns) move even when data does not.
   final tick = Timer.periodic(const Duration(minutes: 15), (_) {
     ref.invalidate(homeWidgetDataProvider);

@@ -40,7 +40,8 @@ class LocationsScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.locationsTitle,
         showBackButton: showBackButton,
-        actions: [FeatureDataAction(featureId: 'locations'), 
+        actions: [
+          FeatureDataAction(featureId: 'locations'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.locationsNewTitle,

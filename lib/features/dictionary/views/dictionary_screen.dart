@@ -10,7 +10,8 @@ import 'package:prism_plurality/features/dictionary/utils/dictionary_import.dart
 import 'package:prism_plurality/features/dictionary/views/dictionary_import_flow.dart';
 import 'package:prism_plurality/features/dictionary/views/term_editor_sheet.dart';
 import 'package:prism_plurality/features/dictionary/widgets/term_flags.dart';
-import 'package:prism_plurality/features/dictionary/importer/universal_import_screen.dart' show ImportJobBanner;
+import 'package:prism_plurality/features/dictionary/importer/universal_import_screen.dart'
+    show ImportJobBanner;
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/trackers/widgets/tracker_widgets.dart';
@@ -81,7 +82,8 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
       topBar: PrismTopBar(
         title: l10n.navDictionary,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'dictionary'), 
+        actions: [
+          FeatureDataAction(featureId: 'dictionary'),
           PrismTopBarAction(
             icon: AppIcons.navImport,
             tooltip: l10n.dictImportTitle,
@@ -104,14 +106,19 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
             return ClampedBody(
               child: Column(
                 children: [
-                  const Padding(padding: EdgeInsets.fromLTRB(16, 8, 16, 0), child: ImportJobBanner()),
-                  Expanded(child: EmptyState(
-                icon: Icon(AppIcons.navDictionary),
-                title: l10n.dictEmptyTitle,
-                subtitle: l10n.dictEmptySubtitle,
-                actionLabel: l10n.dictImportTitle,
-                onAction: () => openDictionaryImport(context),
-              )),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: ImportJobBanner(),
+                  ),
+                  Expanded(
+                    child: EmptyState(
+                      icon: Icon(AppIcons.navDictionary),
+                      title: l10n.dictEmptyTitle,
+                      subtitle: l10n.dictEmptySubtitle,
+                      actionLabel: l10n.dictImportTitle,
+                      onAction: () => openDictionaryImport(context),
+                    ),
+                  ),
                 ],
               ),
             );

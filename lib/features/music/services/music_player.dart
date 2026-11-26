@@ -44,13 +44,18 @@ class JustAudioEngine implements AudioEngine {
   Future<void> _configure() async {
     try {
       // Music category: pauses for calls, ducks for navigation prompts.
-      await (await AudioSession.instance).configure(const AudioSessionConfiguration.music());
+      await (await AudioSession.instance).configure(
+        const AudioSessionConfiguration.music(),
+      );
     } catch (_) {}
   }
 
   @override
   Future<Duration?> load(String path, {Duration position = Duration.zero}) =>
-      _player.setFilePath(path, initialPosition: position == Duration.zero ? null : position);
+      _player.setFilePath(
+        path,
+        initialPosition: position == Duration.zero ? null : position,
+      );
   @override
   Future<void> play() async => unawaited(_player.play());
   @override
@@ -71,8 +76,9 @@ class JustAudioEngine implements AudioEngine {
   @override
   Stream<bool> get playingStream => _player.playingStream;
   @override
-  Stream<void> get completedStream =>
-      _player.processingStateStream.where((s) => s == ProcessingState.completed);
+  Stream<void> get completedStream => _player.processingStateStream.where(
+    (s) => s == ProcessingState.completed,
+  );
   @override
   Future<void> dispose() => _player.dispose();
 }
@@ -94,7 +100,10 @@ class PerfAudioEngine implements AudioEngine {
   Duration _at = Duration.zero;
 
   @override
-  Future<Duration?> load(String path, {Duration position = Duration.zero}) async {
+  Future<Duration?> load(
+    String path, {
+    Duration position = Duration.zero,
+  }) async {
     _at = position;
     return const Duration(minutes: 30);
   }
@@ -142,7 +151,9 @@ class PerfAudioEngine implements AudioEngine {
 class MediaControlsPlatform {
   MediaControlsPlatform({MethodChannel? channel, bool? supported})
     : _channel = channel ?? const MethodChannel('com.prismplural.prism/music'),
-      isSupported = supported ?? (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
+      isSupported =
+          supported ??
+          (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
 
   final MethodChannel _channel;
   final bool isSupported;
@@ -185,17 +196,26 @@ class MediaControlsPlatform {
     }
   }
 
-  void setHandler(Future<void> Function(String action, int? positionMs) onAction) {
+  void setHandler(
+    Future<void> Function(String action, int? positionMs) onAction,
+  ) {
     if (!isSupported) return;
     _channel.setMethodCallHandler((call) async {
       final args = call.arguments;
-      await onAction(call.method, args is Map && args['positionMs'] is int ? args['positionMs'] as int : null);
+      await onAction(
+        call.method,
+        args is Map && args['positionMs'] is int
+            ? args['positionMs'] as int
+            : null,
+      );
       return null;
     });
   }
 }
 
-final mediaControlsProvider = Provider<MediaControlsPlatform>((ref) => MediaControlsPlatform());
+final mediaControlsProvider = Provider<MediaControlsPlatform>(
+  (ref) => MediaControlsPlatform(),
+);
 
 @immutable
 class MusicState {
@@ -282,13 +302,16 @@ class MusicController extends Notifier<MusicState> {
     return const MusicState();
   }
 
-  MusicLibrary get _lib => ref.read(musicLibraryProvider).value ?? const MusicLibrary();
+  MusicLibrary get _lib =>
+      ref.read(musicLibraryProvider).value ?? const MusicLibrary();
 
   // ------------------------------------------------------------ persistence
 
   Future<void> _restore() async {
     try {
-      final raw = (await SharedPreferences.getInstance()).getString(_sessionKey);
+      final raw = (await SharedPreferences.getInstance()).getString(
+        _sessionKey,
+      );
       if (raw == null) return;
       final j = jsonDecode(raw);
       if (j is! Map) return;
@@ -299,8 +322,14 @@ class MusicController extends Notifier<MusicState> {
       for (final id in q.items.toSet()) {
         if (lib.track(id) == null) q = q.removeTrack(id);
       }
-      _resumeAt = Duration(milliseconds: j['positionMs'] is int ? j['positionMs'] as int : 0);
-      final volume = (j['volume'] is num ? (j['volume'] as num).toDouble() : 1.0).clamp(0.0, 1.0);
+      _resumeAt = Duration(
+        milliseconds: j['positionMs'] is int ? j['positionMs'] as int : 0,
+      );
+      final volume =
+          (j['volume'] is num ? (j['volume'] as num).toDouble() : 1.0).clamp(
+            0.0,
+            1.0,
+          );
       // Only adopt the saved session if nothing started playing meanwhile.
       if (state.queue.isEmpty) {
         state = state.copyWith(
@@ -318,12 +347,17 @@ class MusicController extends Notifier<MusicState> {
 
   void _saveSoon() {
     _persist?.cancel();
-    _persist = Timer(const Duration(milliseconds: 400), () => unawaited(_saveNow()));
+    _persist = Timer(
+      const Duration(milliseconds: 400),
+      () => unawaited(_saveNow()),
+    );
   }
 
   void _savePosition({bool force = false}) {
     final now = DateTime.now();
-    if (!force && now.difference(_lastPositionSave) < const Duration(seconds: 5)) return;
+    if (!force &&
+        now.difference(_lastPositionSave) < const Duration(seconds: 5))
+      return;
     _lastPositionSave = now;
     unawaited(_saveNow());
   }
@@ -334,7 +368,8 @@ class MusicController extends Notifier<MusicState> {
         _sessionKey,
         jsonEncode({
           'queue': state.queue.toJson(),
-          'positionMs': (state.loaded ? _engine.position : _resumeAt).inMilliseconds,
+          'positionMs':
+              (state.loaded ? _engine.position : _resumeAt).inMilliseconds,
           'volume': state.volume,
           'look': state.look.toJson(),
         }),
@@ -349,22 +384,40 @@ class MusicController extends Notifier<MusicState> {
 
   Stream<Duration> get positionStream => _engine.positionStream;
 
-  Future<bool> _loadCurrent({Duration position = Duration.zero, bool autoplay = true}) async {
+  Future<bool> _loadCurrent({
+    Duration position = Duration.zero,
+    bool autoplay = true,
+  }) async {
     final token = ++_loadToken;
     final track = _lib.track(state.currentId);
-    final dir = ref.read(musicDirPathProvider) ?? (await ref.read(musicDirProvider.future)).path;
+    final dir =
+        ref.read(musicDirPathProvider) ??
+        (await ref.read(musicDirProvider.future)).path;
     if (track == null) return false;
     final path = trackFilePath(dir, track);
-    state = state.copyWith(loaded: false, durationMs: track.durationMs, clearError: true);
+    state = state.copyWith(
+      loaded: false,
+      durationMs: track.durationMs,
+      clearError: true,
+    );
     try {
-      if (!kIsWeb && !File(path).existsSync()) throw const FileSystemException('missing');
+      if (!kIsWeb && !File(path).existsSync())
+        throw const FileSystemException('missing');
       final d = await _engine.load(path, position: position);
-      if (token != _loadToken) return false; // a newer request replaced this one
-      state = state.copyWith(loaded: true, durationMs: d?.inMilliseconds ?? track.durationMs);
+      if (token != _loadToken)
+        return false; // a newer request replaced this one
+      state = state.copyWith(
+        loaded: true,
+        durationMs: d?.inMilliseconds ?? track.durationMs,
+      );
       _resumeAt = Duration.zero;
       if (autoplay) {
         await _engine.play();
-        unawaited(ref.read(musicLibraryProvider.notifier).markPlayed(track.id, durationMs: d?.inMilliseconds));
+        unawaited(
+          ref
+              .read(musicLibraryProvider.notifier)
+              .markPlayed(track.id, durationMs: d?.inMilliseconds),
+        );
         _announce(track);
       }
       _pushControls();
@@ -392,9 +445,15 @@ class MusicController extends Notifier<MusicState> {
   }
 
   /// Replaces the queue and starts playing at [start].
-  Future<void> playTracks(List<String> ids, {int start = 0, String? name}) async {
+  Future<void> playTracks(
+    List<String> ids, {
+    int start = 0,
+    String? name,
+  }) async {
     if (ids.isEmpty) return;
-    state = state.copyWith(queue: state.queue.load(ids, start: start, name: name));
+    state = state.copyWith(
+      queue: state.queue.load(ids, start: start, name: name),
+    );
     await _loadCurrent();
   }
 
@@ -521,7 +580,10 @@ class MusicController extends Notifier<MusicState> {
     await _engine.stop();
     _resumeAt = Duration.zero;
     state = MusicState(
-      queue: PlayQueue(shuffle: state.queue.shuffle, repeat: state.queue.repeat),
+      queue: PlayQueue(
+        shuffle: state.queue.shuffle,
+        repeat: state.queue.repeat,
+      ),
       volume: state.volume,
       look: state.look,
     );
@@ -540,15 +602,17 @@ class MusicController extends Notifier<MusicState> {
     final t = _lib.track(state.currentId);
     if (t == null) return;
     unawaited(
-      ref.read(mediaControlsProvider).update(
-        title: t.title,
-        artist: t.artist,
-        album: t.album,
-        artPath: trackArtPath(ref.read(musicDirPathProvider), t),
-        playing: state.playing,
-        positionMs: position.inMilliseconds,
-        durationMs: state.durationMs,
-      ),
+      ref
+          .read(mediaControlsProvider)
+          .update(
+            title: t.title,
+            artist: t.artist,
+            album: t.album,
+            artPath: trackArtPath(ref.read(musicDirPathProvider), t),
+            playing: state.playing,
+            positionMs: position.inMilliseconds,
+            durationMs: state.durationMs,
+          ),
     );
   }
 
@@ -572,7 +636,9 @@ class MusicController extends Notifier<MusicState> {
   }
 }
 
-final musicControllerProvider = NotifierProvider<MusicController, MusicState>(MusicController.new);
+final musicControllerProvider = NotifierProvider<MusicController, MusicState>(
+  MusicController.new,
+);
 
 /// Playback position for progress bars. Separate from [MusicState] so the
 /// rest of the UI does not rebuild several times a second.

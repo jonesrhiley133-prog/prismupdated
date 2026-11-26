@@ -158,7 +158,11 @@ void main() {
       await db
           .into(db.memberGroupEntries)
           .insert(
-            pkFixtureEntry(id: 'plain-entry', groupId: 'group-a', memberId: 'member-a'),
+            pkFixtureEntry(
+              id: 'plain-entry',
+              groupId: 'group-a',
+              memberId: 'member-a',
+            ),
           );
       await db
           .into(db.memberGroupEntries)

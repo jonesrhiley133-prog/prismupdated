@@ -96,13 +96,15 @@ void main() {
         'no repair', () async {
       final db = await makeDb();
       // Seed the referenced member so the row is a healthy fronting session.
-      await db.into(db.members).insert(
-        database.MembersCompanion.insert(
-          id: 'm1',
-          name: 'Alpha',
-          createdAt: DateTime.utc(2026, 1, 1),
-        ),
-      );
+      await db
+          .into(db.members)
+          .insert(
+            database.MembersCompanion.insert(
+              id: 'm1',
+              name: 'Alpha',
+              createdAt: DateTime.utc(2026, 1, 1),
+            ),
+          );
       final syncAdapter = buildSyncAdapterWithCompletion(db);
       final fronting = syncAdapter.adapter.entities.singleWhere(
         (e) => e.tableName == 'fronting_sessions',
@@ -124,28 +126,31 @@ void main() {
       expect(await repairRows(db), isEmpty);
     });
 
-    test('a sleep row (session_type=1) with NULL member_id is left as-is', () async {
-      final db = await makeDb();
-      final syncAdapter = buildSyncAdapterWithCompletion(db);
-      final fronting = syncAdapter.adapter.entities.singleWhere(
-        (e) => e.tableName == 'fronting_sessions',
-      );
+    test(
+      'a sleep row (session_type=1) with NULL member_id is left as-is',
+      () async {
+        final db = await makeDb();
+        final syncAdapter = buildSyncAdapterWithCompletion(db);
+        final fronting = syncAdapter.adapter.entities.singleWhere(
+          (e) => e.tableName == 'fronting_sessions',
+        );
 
-      syncAdapter.beginSyncBatch();
-      await fronting.applyFields('sleep-remote', {
-        ...baseFields(),
-        'session_type': 1,
-        'member_id': null,
-      });
-      await syncAdapter.completeSyncBatch();
+        syncAdapter.beginSyncBatch();
+        await fronting.applyFields('sleep-remote', {
+          ...baseFields(),
+          'session_type': 1,
+          'member_id': null,
+        });
+        await syncAdapter.completeSyncBatch();
 
-      final row = await db
-          .customSelect(
-            "SELECT member_id FROM fronting_sessions WHERE id = 'sleep-remote'",
-          )
-          .getSingle();
-      expect(row.read<String?>('member_id'), isNull);
-      expect(await repairRows(db), isEmpty);
-    });
+        final row = await db
+            .customSelect(
+              "SELECT member_id FROM fronting_sessions WHERE id = 'sleep-remote'",
+            )
+            .getSingle();
+        expect(row.read<String?>('member_id'), isNull);
+        expect(await repairRows(db), isEmpty);
+      },
+    );
   });
 }

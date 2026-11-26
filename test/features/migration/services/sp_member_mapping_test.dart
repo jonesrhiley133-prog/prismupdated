@@ -62,30 +62,33 @@ void main() {
       everyElement(SpMemberMatchConfidence.ambiguous),
     );
     expect(
-      suggestions.every((s) => s.candidates.map((m) => m.id).contains('local-a')),
+      suggestions.every(
+        (s) => s.candidates.map((m) => m.id).contains('local-a'),
+      ),
       isTrue,
     );
   });
 
-  test('two local members with one pkId make the SP row ambiguous, not new', () {
-    final suggestions = const SpMemberMatcher().suggest(
-      spMembers: const [
-        SpMember(id: 'sp-pk', name: 'Remote', pkId: 'abcde'),
-      ],
-      localMembers: [
-        _member(id: 'local-x', name: 'Xavier', pluralkitId: 'abcde'),
-        _member(id: 'local-y', name: 'Yolanda', pluralkitId: 'abcde'),
-      ],
-    );
+  test(
+    'two local members with one pkId make the SP row ambiguous, not new',
+    () {
+      final suggestions = const SpMemberMatcher().suggest(
+        spMembers: const [SpMember(id: 'sp-pk', name: 'Remote', pkId: 'abcde')],
+        localMembers: [
+          _member(id: 'local-x', name: 'Xavier', pluralkitId: 'abcde'),
+          _member(id: 'local-y', name: 'Yolanda', pluralkitId: 'abcde'),
+        ],
+      );
 
-    final match = suggestions.single;
-    expect(match.suggestedLocal, isNull);
-    expect(match.confidence, SpMemberMatchConfidence.ambiguous);
-    expect(
-      match.candidates.map((m) => m.id),
-      containsAll(<String>['local-x', 'local-y']),
-    );
-  });
+      final match = suggestions.single;
+      expect(match.suggestedLocal, isNull);
+      expect(match.confidence, SpMemberMatchConfidence.ambiguous);
+      expect(
+        match.candidates.map((m) => m.id),
+        containsAll(<String>['local-x', 'local-y']),
+      );
+    },
+  );
 
   test('unique PluralKit id still auto-links without ambiguity', () {
     final suggestions = const SpMemberMatcher().suggest(
@@ -101,21 +104,24 @@ void main() {
     expect(match.candidates, isEmpty);
   });
 
-  test('a member with no candidate matches imports as new without a prompt', () {
-    final suggestions = const SpMemberMatcher().suggest(
-      spMembers: const [
-        SpMember(id: 'sp-new', name: 'Nobody', pkId: 'zzzzz'),
-      ],
-      localMembers: [
-        _member(id: 'local-a', name: 'Alice', pluralkitId: 'abcde'),
-      ],
-    );
+  test(
+    'a member with no candidate matches imports as new without a prompt',
+    () {
+      final suggestions = const SpMemberMatcher().suggest(
+        spMembers: const [
+          SpMember(id: 'sp-new', name: 'Nobody', pkId: 'zzzzz'),
+        ],
+        localMembers: [
+          _member(id: 'local-a', name: 'Alice', pluralkitId: 'abcde'),
+        ],
+      );
 
-    final match = suggestions.single;
-    expect(match.suggestedLocal, isNull);
-    expect(match.confidence, SpMemberMatchConfidence.none);
-    expect(match.candidates, isEmpty);
-  });
+      final match = suggestions.single;
+      expect(match.suggestedLocal, isNull);
+      expect(match.confidence, SpMemberMatchConfidence.none);
+      expect(match.candidates, isEmpty);
+    },
+  );
 
   test(
     'ignores colliding persisted mappings instead of reusing a local twice',

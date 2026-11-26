@@ -49,7 +49,8 @@ class ResetDataScreen extends ConsumerWidget {
         children: [
           PrismSection(
             title: 'Settings & looks',
-            description: 'These keep all your records. Nothing synced is deleted.',
+            description:
+                'These keep all your records. Nothing synced is deleted.',
             child: PrismGroupedSectionCard(
               child: Column(
                 children: [
@@ -57,7 +58,8 @@ class ResetDataScreen extends ConsumerWidget {
                     icon: Icons.tune,
                     iconColor: Colors.blueGrey,
                     title: 'App preferences',
-                    subtitle: 'Settings stored on this device (launch screen, notifications choices, layout). Your records, appearance and account stay.',
+                    subtitle:
+                        'Settings stored on this device (launch screen, notifications choices, layout). Your records, appearance and account stay.',
                     onTap: () => _resetPreferences(context, ref),
                   ),
                   const Divider(height: 1, indent: 60, endIndent: 12),
@@ -65,7 +67,8 @@ class ResetDataScreen extends ConsumerWidget {
                     icon: Icons.palette_outlined,
                     iconColor: Colors.purple,
                     title: 'Appearance & themes',
-                    subtitle: 'Back to the default Prism look. Saved looks and per-page themes are removed; records stay.',
+                    subtitle:
+                        'Back to the default Prism look. Saved looks and per-page themes are removed; records stay.',
                     onTap: () => _resetAppearance(context, ref),
                   ),
                   const Divider(height: 1, indent: 60, endIndent: 12),
@@ -73,7 +76,8 @@ class ResetDataScreen extends ConsumerWidget {
                     icon: Icons.extension_outlined,
                     iconColor: Colors.indigo,
                     title: 'One feature\'s data',
-                    subtitle: 'Pick a feature in Settings › Features to reset just its data, with a recovery window.',
+                    subtitle:
+                        'Pick a feature in Settings › Features to reset just its data, with a recovery window.',
                     onTap: () => context.push(AppRoutePaths.settingsFeatures),
                   ),
                   const Divider(height: 1, indent: 60, endIndent: 12),
@@ -81,7 +85,8 @@ class ResetDataScreen extends ConsumerWidget {
                     icon: Icons.cloud_off_outlined,
                     iconColor: Colors.lightBlue,
                     title: 'Cloud backups',
-                    subtitle: 'Delete backups or your whole account from Account & backup. This device\'s data stays.',
+                    subtitle:
+                        'Delete backups or your whole account from Account & backup. This device\'s data stays.',
                     onTap: () => context.push(AppRoutePaths.account),
                   ),
                 ],
@@ -268,12 +273,25 @@ class ResetDataScreen extends ConsumerWidget {
     final pick = await PrismDialog.show<String>(
       context: context,
       title: 'Make a backup first?',
-      message: 'A backup lets you undo this later by importing it. Deleted data can\'t be recovered otherwise.',
+      message:
+          'A backup lets you undo this later by importing it. Deleted data can\'t be recovered otherwise.',
       builder: (_) => const SizedBox.shrink(),
       actions: [
-        PrismButton(label: 'Cancel', onPressed: () => Navigator.of(context, rootNavigator: true).pop('cancel')),
-        PrismButton(label: 'Back up first', onPressed: () => Navigator.of(context, rootNavigator: true).pop('backup')),
-        PrismButton(label: 'Continue', tone: PrismButtonTone.destructive, onPressed: () => Navigator.of(context, rootNavigator: true).pop('go')),
+        PrismButton(
+          label: 'Cancel',
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: true).pop('cancel'),
+        ),
+        PrismButton(
+          label: 'Back up first',
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: true).pop('backup'),
+        ),
+        PrismButton(
+          label: 'Continue',
+          tone: PrismButtonTone.destructive,
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop('go'),
+        ),
       ],
     );
     if (pick == 'backup' && context.mounted) {
@@ -284,7 +302,14 @@ class ResetDataScreen extends ConsumerWidget {
   }
 
   Future<void> _resetPreferences(BuildContext context, WidgetRef ref) async {
-    final ok = await PrismDialog.confirm(context: context, title: 'Reset app preferences?', message: 'Device settings go back to their defaults. Records, appearance, accounts and synced data are kept.', confirmLabel: 'Reset preferences', destructive: true);
+    final ok = await PrismDialog.confirm(
+      context: context,
+      title: 'Reset app preferences?',
+      message:
+          'Device settings go back to their defaults. Records, appearance, accounts and synced data are kept.',
+      confirmLabel: 'Reset preferences',
+      destructive: true,
+    );
     if (!ok) return;
     final prefs = await SharedPreferences.getInstance();
     for (final k in prefs.getKeys().toList()) {
@@ -293,11 +318,21 @@ class ResetDataScreen extends ConsumerWidget {
     }
     if (!context.mounted) return;
     if (kIsWeb) return reloadWebPage();
-    PrismToast.show(context, message: 'Preferences reset. Some take effect the next time Prism opens.');
+    PrismToast.show(
+      context,
+      message: 'Preferences reset. Some take effect the next time Prism opens.',
+    );
   }
 
   Future<void> _resetAppearance(BuildContext context, WidgetRef ref) async {
-    final ok = await PrismDialog.confirm(context: context, title: 'Reset appearance?', message: 'Prism goes back to its default look. Saved looks and page themes are removed. Records are kept.', confirmLabel: 'Reset appearance', destructive: true);
+    final ok = await PrismDialog.confirm(
+      context: context,
+      title: 'Reset appearance?',
+      message:
+          'Prism goes back to its default look. Saved looks and page themes are removed. Records are kept.',
+      confirmLabel: 'Reset appearance',
+      destructive: true,
+    );
     if (!ok) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('appearance.state.v1');

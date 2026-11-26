@@ -78,79 +78,76 @@ void main() {
   }
 
   group('replaceMedia (library image bytes swap)', () {
-    test(
-      'updates media metadata in place: same id + tag, new media fields, '
-      'still exactly one row',
-      () async {
-        final original = makeLibraryImage();
-        await repo.create(original);
+    test('updates media metadata in place: same id + tag, new media fields, '
+        'still exactly one row', () async {
+      final original = makeLibraryImage();
+      await repo.create(original);
 
-        await repo.replaceMedia(
-          original.id,
-          original.copyWith(
-            mediaId: 'media-new',
-            encryptionKeyB64: 'key-new',
-            contentHash: 'chash-new',
-            plaintextHash: 'phash-new',
-            mimeType: 'image/png',
-            sizeBytes: 2048,
-            width: 200,
-            height: 150,
-            blurhash: 'LBLD-new',
-          ),
-        );
+      await repo.replaceMedia(
+        original.id,
+        original.copyWith(
+          mediaId: 'media-new',
+          encryptionKeyB64: 'key-new',
+          contentHash: 'chash-new',
+          plaintextHash: 'phash-new',
+          mimeType: 'image/png',
+          sizeBytes: 2048,
+          width: 200,
+          height: 150,
+          blurhash: 'LBLD-new',
+        ),
+      );
 
-        final row = await dao.getById(original.id);
-        expect(row, isNotNull);
+      final row = await dao.getById(original.id);
+      expect(row, isNotNull);
 
-        // Same identity: id + tag are unchanged so references still resolve.
-        expect(row!.id, original.id);
-        expect(row.tag, original.tag);
+      // Same identity: id + tag are unchanged so references still resolve.
+      expect(row!.id, original.id);
+      expect(row.tag, original.tag);
 
-        // New media bytes/metadata took effect.
-        expect(row.mediaId, 'media-new');
-        expect(row.encryptionKeyB64, 'key-new');
-        expect(row.contentHash, 'chash-new');
-        expect(row.plaintextHash, 'phash-new');
-        expect(row.mimeType, 'image/png');
-        expect(row.sizeBytes, 2048);
-        expect(row.width, 200);
-        expect(row.height, 150);
-        expect(row.blurhash, 'LBLD-new');
+      // New media bytes/metadata took effect.
+      expect(row.mediaId, 'media-new');
+      expect(row.encryptionKeyB64, 'key-new');
+      expect(row.contentHash, 'chash-new');
+      expect(row.plaintextHash, 'phash-new');
+      expect(row.mimeType, 'image/png');
+      expect(row.sizeBytes, 2048);
+      expect(row.width, 200);
+      expect(row.height, 150);
+      expect(row.blurhash, 'LBLD-new');
 
-        // No PK collision / no duplicate insert: exactly one row for this id.
-        final matching =
-            (await dao.getAll()).where((r) => r.id == original.id).toList();
-        expect(matching, hasLength(1));
-      },
-    );
+      // No PK collision / no duplicate insert: exactly one row for this id.
+      final matching = (await dao.getAll())
+          .where((r) => r.id == original.id)
+          .toList();
+      expect(matching, hasLength(1));
+    });
 
-    test(
-      'preserves sourceUrl when the caller passes the prior value through '
-      'copyWith (matches _replaceImage in media_settings_screen)',
-      () async {
-        final original =
-            makeLibraryImage(sourceUrl: 'https://cdn.example/avatar.png');
-        await repo.create(original);
+    test('preserves sourceUrl when the caller passes the prior value through '
+        'copyWith (matches _replaceImage in media_settings_screen)', () async {
+      final original = makeLibraryImage(
+        sourceUrl: 'https://cdn.example/avatar.png',
+      );
+      await repo.create(original);
 
-        // The real caller does attachment.copyWith(mediaId: ..., blurhash: ...)
-        // and never touches sourceUrl, so the original provenance flows in.
-        await repo.replaceMedia(
-          original.id,
-          original.copyWith(mediaId: 'media-new', blurhash: 'LBLD-new'),
-        );
+      // The real caller does attachment.copyWith(mediaId: ..., blurhash: ...)
+      // and never touches sourceUrl, so the original provenance flows in.
+      await repo.replaceMedia(
+        original.id,
+        original.copyWith(mediaId: 'media-new', blurhash: 'LBLD-new'),
+      );
 
-        final row = await dao.getById(original.id);
-        expect(row!.sourceUrl, 'https://cdn.example/avatar.png');
-      },
-    );
+      final row = await dao.getById(original.id);
+      expect(row!.sourceUrl, 'https://cdn.example/avatar.png');
+    });
 
     test(
       'sourceUrl is whatever data.sourceUrl is — the repo writes it verbatim '
       '(does not force-preserve the stored value)',
       () async {
-        final original =
-            makeLibraryImage(sourceUrl: 'https://cdn.example/original.png');
+        final original = makeLibraryImage(
+          sourceUrl: 'https://cdn.example/original.png',
+        );
         await repo.create(original);
 
         // If a caller supplied a different sourceUrl, the repo would write it.
@@ -168,38 +165,40 @@ void main() {
       },
     );
 
-    test('emits exactly one sync record, as an update (not a second create)',
-        () async {
-      final original = makeLibraryImage();
-      await repo.create(original);
+    test(
+      'emits exactly one sync record, as an update (not a second create)',
+      () async {
+        final original = makeLibraryImage();
+        await repo.create(original);
 
-      // Start capturing only after create(), so we observe just the replace.
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+        // Start capturing only after create(), so we observe just the replace.
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.replaceMedia(
-        original.id,
-        original.copyWith(
-          mediaId: 'media-new',
-          contentHash: 'chash-new',
-          plaintextHash: 'phash-new',
-          sizeBytes: 2048,
-          blurhash: 'LBLD-new',
-        ),
-      );
+        await repo.replaceMedia(
+          original.id,
+          original.copyWith(
+            mediaId: 'media-new',
+            contentHash: 'chash-new',
+            plaintextHash: 'phash-new',
+            sizeBytes: 2048,
+            blurhash: 'LBLD-new',
+          ),
+        );
 
-      expect(captured, hasLength(1));
-      final op = captured.single;
-      expect(op.opType, SyncRecordOpType.update);
-      expect(op.table, 'media_attachments');
-      expect(op.entityId, original.id);
-      // The repo emits a fixed media-field set on replace.
-      expect(op.fields['media_id'], 'media-new');
-      expect(op.fields['content_hash'], 'chash-new');
-      expect(op.fields['plaintext_hash'], 'phash-new');
-      expect(op.fields['size_bytes'], 2048);
-      expect(op.fields['blurhash'], 'LBLD-new');
-    });
+        expect(captured, hasLength(1));
+        final op = captured.single;
+        expect(op.opType, SyncRecordOpType.update);
+        expect(op.table, 'media_attachments');
+        expect(op.entityId, original.id);
+        // The repo emits a fixed media-field set on replace.
+        expect(op.fields['media_id'], 'media-new');
+        expect(op.fields['content_hash'], 'chash-new');
+        expect(op.fields['plaintext_hash'], 'phash-new');
+        expect(op.fields['size_bytes'], 2048);
+        expect(op.fields['blurhash'], 'LBLD-new');
+      },
+    );
   });
 }

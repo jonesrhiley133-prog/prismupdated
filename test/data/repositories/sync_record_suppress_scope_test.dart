@@ -105,32 +105,36 @@ void main() {
     expect(outer.map((o) => o.entityId), ['captured']);
   });
 
-  test('nested suppressAndCapture routes inner ops to the inner sink only',
-      () async {
-    final e = _Emitter();
-    final outer = <CapturedSyncOp>[];
-    final inner = <CapturedSyncOp>[];
+  test(
+    'nested suppressAndCapture routes inner ops to the inner sink only',
+    () async {
+      final e = _Emitter();
+      final outer = <CapturedSyncOp>[];
+      final inner = <CapturedSyncOp>[];
 
-    await SyncRecordMixin.suppressAndCapture(() async {
-      await e.syncRecordCreate('values', 'outer', {});
       await SyncRecordMixin.suppressAndCapture(() async {
-        await e.syncRecordCreate('values', 'inner', {});
-      }, inner.add);
-    }, outer.add);
+        await e.syncRecordCreate('values', 'outer', {});
+        await SyncRecordMixin.suppressAndCapture(() async {
+          await e.syncRecordCreate('values', 'inner', {});
+        }, inner.add);
+      }, outer.add);
 
-    expect(outer.map((o) => o.entityId), ['outer']);
-    expect(inner.map((o) => o.entityId), ['inner']);
-  });
+      expect(outer.map((o) => o.entityId), ['outer']);
+      expect(inner.map((o) => o.entityId), ['inner']);
+    },
+  );
 
-  test('a throwing body propagates and the suppression zone still exits',
-      () async {
-    expect(SyncRecordMixin.isSuppressed, isFalse);
-    await expectLater(
-      SyncRecordMixin.suppressAndCapture(() async {
-        throw StateError('boom');
-      }, (_) {}),
-      throwsStateError,
-    );
-    expect(SyncRecordMixin.isSuppressed, isFalse, reason: 'zone torn down');
-  });
+  test(
+    'a throwing body propagates and the suppression zone still exits',
+    () async {
+      expect(SyncRecordMixin.isSuppressed, isFalse);
+      await expectLater(
+        SyncRecordMixin.suppressAndCapture(() async {
+          throw StateError('boom');
+        }, (_) {}),
+        throwsStateError,
+      );
+      expect(SyncRecordMixin.isSuppressed, isFalse, reason: 'zone torn down');
+    },
+  );
 }

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:prism_plurality/features/appearance/views/look_controls.dart';
 import 'package:prism_plurality/features/members/utils/member_profile_header_resolver.dart';
@@ -50,7 +50,10 @@ class AlterBlogScreen extends ConsumerWidget {
     final viewer = ref.watch(socialActorProvider);
     final m = d.members[memberId];
     if (m == null) {
-      return PrismPageScaffold(topBar: PrismTopBar(title: l10n.socBlog, showBackButton: true), body: Center(child: Text(l10n.socUnknownAlter)));
+      return PrismPageScaffold(
+        topBar: PrismTopBar(title: l10n.socBlog, showBackButton: true),
+        body: Center(child: Text(l10n.socUnknownAlter)),
+      );
     }
     final profile = d.profile(memberId);
     final isMe = viewer == memberId;
@@ -59,9 +62,14 @@ class AlterBlogScreen extends ConsumerWidget {
     final followers = d.followers[memberId]?.length ?? 0;
     final following = d.following[memberId]?.length ?? 0;
     final banner = blogBannerBytes(ref, d, memberId);
-    final accent = profile.accent == null ? theme.colorScheme.primary : Color(profile.accent!);
+    final accent = profile.accent == null
+        ? theme.colorScheme.primary
+        : Color(profile.accent!);
     final active = d.activeStories(viewer)[memberId] ?? const <Story>[];
-    final highlights = d.highlightsOf(memberId).where((h) => h.storyIds.any(d.stories.containsKey)).toList();
+    final highlights = d
+        .highlightsOf(memberId)
+        .where((h) => h.storyIds.any(d.stories.containsKey))
+        .toList();
     final cb = socialCallbacks(context);
     final bg = profile.background == null ? null : Color(profile.background!);
 
@@ -83,10 +91,30 @@ class AlterBlogScreen extends ConsumerWidget {
                       Positioned.fill(
                         bottom: 40,
                         child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(20),
+                          ),
                           child: banner != null
-                              ? Image.memory(banner, fit: BoxFit.cover, alignment: Alignment(profile.bannerX, profile.bannerY), gaplessPlayback: true, excludeFromSemantics: true)
-                              : DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [accent, accent.withValues(alpha: 0.4)]))),
+                              ? Image.memory(
+                                  banner,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment(
+                                    profile.bannerX,
+                                    profile.bannerY,
+                                  ),
+                                  gaplessPlayback: true,
+                                  excludeFromSemantics: true,
+                                )
+                              : DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        accent,
+                                        accent.withValues(alpha: 0.4),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                         ),
                       ),
                       Positioned(
@@ -95,8 +123,12 @@ class AlterBlogScreen extends ConsumerWidget {
                         child: AlterAvatar(
                           memberId: memberId,
                           size: 84,
-                          ring: active.isEmpty ? null : active.any((s) => !d.hasSeen(s.id, viewer)),
-                          onTap: active.isEmpty ? null : () => openStories(context, [memberId]),
+                          ring: active.isEmpty
+                              ? null
+                              : active.any((s) => !d.hasSeen(s.id, viewer)),
+                          onTap: active.isEmpty
+                              ? null
+                              : () => openStories(context, [memberId]),
                         ),
                       ),
                     ],
@@ -107,16 +139,54 @@ class AlterBlogScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(m.name, style: _titleStyle(theme, profile).copyWith(color: accent)),
-                      if (m.pronouns?.isNotEmpty ?? false) Text(m.pronouns!, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                      if (profile.bio.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 8), child: RichPostText(text: profile.bio, onTag: (t) => openTag(context, t))),
+                      Text(
+                        m.name,
+                        style: _titleStyle(
+                          theme,
+                          profile,
+                        ).copyWith(color: accent),
+                      ),
+                      if (m.pronouns?.isNotEmpty ?? false)
+                        Text(
+                          m.pronouns!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      if (profile.bio.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: RichPostText(
+                            text: profile.bio,
+                            onTag: (t) => openTag(context, t),
+                          ),
+                        ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 16,
                         children: [
-                          _Stat(label: l10n.socPostsN(posts.length), onTap: null),
-                          _Stat(label: l10n.socFollowersN(followers), onTap: () => _people(context, ref, l10n.socFollowersTitle, d.followers[memberId]?.toList() ?? const [])),
-                          _Stat(label: l10n.socFollowingN(following), onTap: () => _people(context, ref, l10n.socFollowingTitle, d.following[memberId]?.keys.toList() ?? const [])),
+                          _Stat(
+                            label: l10n.socPostsN(posts.length),
+                            onTap: null,
+                          ),
+                          _Stat(
+                            label: l10n.socFollowersN(followers),
+                            onTap: () => _people(
+                              context,
+                              ref,
+                              l10n.socFollowersTitle,
+                              d.followers[memberId]?.toList() ?? const [],
+                            ),
+                          ),
+                          _Stat(
+                            label: l10n.socFollowingN(following),
+                            onTap: () => _people(
+                              context,
+                              ref,
+                              l10n.socFollowingTitle,
+                              d.following[memberId]?.keys.toList() ?? const [],
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -125,25 +195,63 @@ class AlterBlogScreen extends ConsumerWidget {
                         runSpacing: 8,
                         children: [
                           if (isMe) ...[
-                            PrismButton(label: l10n.socCustomizeBlog, icon: Icons.brush_outlined, onPressed: () => showBlogEditor(context, memberId)),
-                            PrismButton(label: l10n.socNewPost, tone: PrismButtonTone.filled, icon: Icons.edit_rounded, onPressed: () => showComposePost(context)),
-                            PrismButton(label: l10n.stoAddStory, icon: Icons.add_circle_outline_rounded, onPressed: () => openStoryComposer(context, memberId)),
+                            PrismButton(
+                              label: l10n.socCustomizeBlog,
+                              icon: Icons.brush_outlined,
+                              onPressed: () =>
+                                  showBlogEditor(context, memberId),
+                            ),
+                            PrismButton(
+                              label: l10n.socNewPost,
+                              tone: PrismButtonTone.filled,
+                              icon: Icons.edit_rounded,
+                              onPressed: () => showComposePost(context),
+                            ),
+                            PrismButton(
+                              label: l10n.stoAddStory,
+                              icon: Icons.add_circle_outline_rounded,
+                              onPressed: () =>
+                                  openStoryComposer(context, memberId),
+                            ),
                           ] else if (viewer != null) ...[
                             PrismButton(
-                              label: d.follows(viewer, memberId) ? l10n.socUnfollow : l10n.socFollow,
-                              tone: d.follows(viewer, memberId) ? PrismButtonTone.outlined : PrismButtonTone.filled,
+                              label: d.follows(viewer, memberId)
+                                  ? l10n.socUnfollow
+                                  : l10n.socFollow,
+                              tone: d.follows(viewer, memberId)
+                                  ? PrismButtonTone.outlined
+                                  : PrismButtonTone.filled,
                               enabled: !blocked,
-                              onPressed: () => ref.read(socialActionsProvider).toggleFollow(actor: viewer, target: memberId),
+                              onPressed: () => ref
+                                  .read(socialActionsProvider)
+                                  .toggleFollow(
+                                    actor: viewer,
+                                    target: memberId,
+                                  ),
                             ),
                             PrismButton(
-                              label: d.isMuted(viewer, memberId) ? l10n.socUnmuteShort : l10n.socMuteShort,
-                              onPressed: () => ref.read(socialActionsProvider).toggleBlock(actor: viewer, target: memberId, mode: 'mute'),
+                              label: d.isMuted(viewer, memberId)
+                                  ? l10n.socUnmuteShort
+                                  : l10n.socMuteShort,
+                              onPressed: () => ref
+                                  .read(socialActionsProvider)
+                                  .toggleBlock(
+                                    actor: viewer,
+                                    target: memberId,
+                                    mode: 'mute',
+                                  ),
                             ),
                             PrismButton(
-                              label: d.blocked[viewer]?.containsKey(memberId) ?? false ? l10n.socUnblockShort : l10n.socBlockShort,
+                              label:
+                                  d.blocked[viewer]?.containsKey(memberId) ??
+                                      false
+                                  ? l10n.socUnblockShort
+                                  : l10n.socBlockShort,
                               tone: PrismButtonTone.destructive,
                               onPressed: () async {
-                                final isBlocked = d.blocked[viewer]?.containsKey(memberId) ?? false;
+                                final isBlocked =
+                                    d.blocked[viewer]?.containsKey(memberId) ??
+                                    false;
                                 if (!isBlocked) {
                                   final ok = await PrismDialog.confirm(
                                     context: context,
@@ -155,25 +263,62 @@ class AlterBlogScreen extends ConsumerWidget {
                                   );
                                   if (!ok) return;
                                 }
-                                await ref.read(socialActionsProvider).toggleBlock(actor: viewer, target: memberId);
+                                await ref
+                                    .read(socialActionsProvider)
+                                    .toggleBlock(
+                                      actor: viewer,
+                                      target: memberId,
+                                    );
                               },
                             ),
                           ],
                         ],
                       ),
-                      if (viewer != null && !isMe && d.follows(memberId, viewer))
-                        Padding(padding: const EdgeInsets.only(top: 6), child: Text(l10n.socFollowsYou, style: theme.textTheme.labelMedium?.copyWith(color: accent))),
+                      if (viewer != null &&
+                          !isMe &&
+                          d.follows(memberId, viewer))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            l10n.socFollowsYou,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: accent,
+                            ),
+                          ),
+                        ),
                       if (highlights.isNotEmpty || isMe) ...[
                         const SizedBox(height: 14),
-                        HighlightsRow(memberId: memberId, highlights: highlights, editable: isMe),
+                        HighlightsRow(
+                          memberId: memberId,
+                          highlights: highlights,
+                          editable: isMe,
+                        ),
                       ],
                       const SizedBox(height: 14),
                       if (blocked)
-                        Padding(padding: const EdgeInsets.all(24), child: Text(l10n.socBlockedBlog, textAlign: TextAlign.center))
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            l10n.socBlockedBlog,
+                            textAlign: TextAlign.center,
+                          ),
+                        )
                       else if (posts.isEmpty)
-                        Padding(padding: const EdgeInsets.all(24), child: Text(l10n.socNoPostsYet, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium))
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            l10n.socNoPostsYet,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        )
                       else
-                        for (final p in posts) PostCard(post: p, callbacks: cb, compact: profile.layout == 'compact'),
+                        for (final p in posts)
+                          PostCard(
+                            post: p,
+                            callbacks: cb,
+                            compact: profile.layout == 'compact',
+                          ),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -196,14 +341,22 @@ class AlterBlogScreen extends ConsumerWidget {
   static TextStyle _titleStyle(ThemeData theme, BlogProfile p) {
     final base = theme.textTheme.headlineSmall ?? const TextStyle(fontSize: 24);
     return switch (p.titleFont) {
-      'serif' => base.copyWith(fontFamily: 'serif', fontWeight: FontWeight.w600),
+      'serif' => base.copyWith(
+        fontFamily: 'serif',
+        fontWeight: FontWeight.w600,
+      ),
       'mono' => base.copyWith(fontFamily: 'monospace'),
       'bold' => base.copyWith(fontWeight: FontWeight.w900),
       _ => base.copyWith(fontWeight: FontWeight.w700),
     };
   }
 
-  Future<void> _people(BuildContext context, WidgetRef ref, String title, List<String> ids) => PrismSheet.show<void>(
+  Future<void> _people(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    List<String> ids,
+  ) => PrismSheet.show<void>(
     context: context,
     title: title,
     builder: (sheet) {
@@ -214,7 +367,11 @@ class AlterBlogScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (ids.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(context.l10n.socNobodyYet)),
+            if (ids.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(context.l10n.socNobodyYet),
+              ),
             for (final id in ids)
               InkWell(
                 borderRadius: prismCorners(context, 12),
@@ -224,7 +381,13 @@ class AlterBlogScreen extends ConsumerWidget {
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Row(children: [AlterAvatar(memberId: id, size: 36), const SizedBox(width: 10), Text(alterName(d, id, context))]),
+                  child: Row(
+                    children: [
+                      AlterAvatar(memberId: id, size: 36),
+                      const SizedBox(width: 10),
+                      Text(alterName(d, id, context)),
+                    ],
+                  ),
                 ),
               ),
           ],
@@ -245,14 +408,22 @@ class _Stat extends StatelessWidget {
     child: InkWell(
       onTap: onTap,
       borderRadius: prismCorners(context, 8),
-      child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(label, style: Theme.of(context).textTheme.labelLarge)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+      ),
     ),
   );
 }
 
 /// Story highlight circles, grouped by category.
 class HighlightsRow extends ConsumerWidget {
-  const HighlightsRow({super.key, required this.memberId, required this.highlights, required this.editable});
+  const HighlightsRow({
+    super.key,
+    required this.memberId,
+    required this.highlights,
+    required this.editable,
+  });
   final String memberId;
   final List<Highlight> highlights;
   final bool editable;
@@ -273,7 +444,11 @@ class HighlightsRow extends ConsumerWidget {
         Text(l10n.stoHighlights, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
         for (final k in keys.isEmpty ? [''] : keys) ...[
-          if (k.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: 4), child: Text(k, style: theme.textTheme.labelMedium)),
+          if (k.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(k, style: theme.textTheme.labelMedium),
+            ),
           SizedBox(
             height: 92,
             child: ListView(
@@ -290,18 +465,33 @@ class HighlightsRow extends ConsumerWidget {
                         excludeSemantics: true,
                         child: GestureDetector(
                           onTap: () => openHighlight(context, h),
-                          onLongPress: editable ? () => editHighlight(context, ref, h) : null,
+                          onLongPress: editable
+                              ? () => editHighlight(context, ref, h)
+                              : null,
                           child: Column(
                             children: [
                               Container(
                                 width: 60,
                                 height: 60,
                                 padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
-                                child: PrismClipRound(child: _HighlightCover(h: h, d: d)),
+                                decoration: BoxDecoration(
+                                  borderRadius: prismRound(context),
+                                  border: Border.all(
+                                    color: theme.colorScheme.outlineVariant,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: PrismClipRound(
+                                  child: _HighlightCover(h: h, d: d),
+                                ),
                               ),
                               const SizedBox(height: 4),
-                              Text(h.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall),
+                              Text(
+                                h.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall,
+                              ),
                             ],
                           ),
                         ),
@@ -322,11 +512,20 @@ class HighlightsRow extends ConsumerWidget {
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: BoxDecoration(borderRadius: prismRound(context), border: Border.all(color: theme.colorScheme.outlineVariant, width: 2)),
+                              decoration: BoxDecoration(
+                                borderRadius: prismRound(context),
+                                border: Border.all(
+                                  color: theme.colorScheme.outlineVariant,
+                                  width: 2,
+                                ),
+                              ),
                               child: const Icon(Icons.add_rounded),
                             ),
                             const SizedBox(height: 4),
-                            Text(l10n.stoNew, style: theme.textTheme.labelSmall),
+                            Text(
+                              l10n.stoNew,
+                              style: theme.textTheme.labelSmall,
+                            ),
                           ],
                         ),
                       ),
@@ -349,17 +548,30 @@ class _HighlightCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (h.cover != null) return SocialImage(id: h.cover!);
-    final first = h.storyIds.map((id) => d.stories[id]).whereType<Story>().firstOrNull;
+    final first = h.storyIds
+        .map((id) => d.stories[id])
+        .whereType<Story>()
+        .firstOrNull;
     final slide = first?.slides.firstOrNull;
     if (slide?.image != null) return SocialImage(id: slide!.image!);
-    return ColoredBox(color: Color(slide?.background ?? 0xFF5C6BC0), child: const Icon(Icons.auto_awesome_rounded, color: Colors.white));
+    return ColoredBox(
+      color: Color(slide?.background ?? 0xFF5C6BC0),
+      child: const Icon(Icons.auto_awesome_rounded, color: Colors.white),
+    );
   }
 }
 
-Future<void> newHighlight(BuildContext context, WidgetRef ref, String memberId) async {
+Future<void> newHighlight(
+  BuildContext context,
+  WidgetRef ref,
+  String memberId,
+) async {
   final l10n = context.l10n;
   final d = ref.read(socialDataProvider);
-  final pool = [...d.archive(memberId), ...(d.activeStories(memberId)[memberId] ?? const <Story>[])];
+  final pool = [
+    ...d.archive(memberId),
+    ...(d.activeStories(memberId)[memberId] ?? const <Story>[]),
+  ];
   if (pool.isEmpty) {
     PrismToast.show(context, message: l10n.stoNoStoriesForHighlight);
     return;
@@ -375,16 +587,28 @@ Future<void> newHighlight(BuildContext context, WidgetRef ref, String memberId) 
           children: [
             PrismSheetTopBar(
               title: l10n.stoNewHighlight,
-              trailing: PrismButton(label: l10n.save, tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () => Navigator.of(sheet).pop(true)),
+              trailing: PrismButton(
+                label: l10n.save,
+                tone: PrismButtonTone.filled,
+                density: PrismControlDensity.compact,
+                onPressed: () => Navigator.of(sheet).pop(true),
+              ),
             ),
             Expanded(
               child: ListView(
                 controller: scroll,
                 padding: const EdgeInsets.all(16),
                 children: [
-                  PrismTextField(controller: title, labelText: l10n.stoHighlightName),
+                  PrismTextField(
+                    controller: title,
+                    labelText: l10n.stoHighlightName,
+                  ),
                   const SizedBox(height: 8),
-                  PrismTextField(controller: category, labelText: l10n.stoCategory, helperText: l10n.stoCategoryHelp),
+                  PrismTextField(
+                    controller: category,
+                    labelText: l10n.stoCategory,
+                    helperText: l10n.stoCategoryHelp,
+                  ),
                   const SizedBox(height: 12),
                   Text(l10n.stoPickStories),
                   const SizedBox(height: 8),
@@ -394,15 +618,39 @@ Future<void> newHighlight(BuildContext context, WidgetRef ref, String memberId) 
                     children: [
                       for (final s in pool)
                         GestureDetector(
-                          onTap: () => setSheet(() => picked.contains(s.id) ? picked.remove(s.id) : picked.add(s.id)),
+                          onTap: () => setSheet(
+                            () => picked.contains(s.id)
+                                ? picked.remove(s.id)
+                                : picked.add(s.id),
+                          ),
                           child: Semantics(
                             selected: picked.contains(s.id),
                             button: true,
-                            label: MaterialLocalizations.of(context).formatMediumDate(s.postedAt),
+                            label: MaterialLocalizations.of(
+                              context,
+                            ).formatMediumDate(s.postedAt),
                             child: Stack(
                               children: [
-                                SizedBox(width: 72, height: 120, child: ClipRRect(borderRadius: prismCorners(context, 10), child: StorySlideView(slide: s.slides.first, mini: true))),
-                                if (picked.contains(s.id)) const Positioned(right: 4, top: 4, child: Icon(Icons.check_circle_rounded, color: Colors.white)),
+                                SizedBox(
+                                  width: 72,
+                                  height: 120,
+                                  child: ClipRRect(
+                                    borderRadius: prismCorners(context, 10),
+                                    child: StorySlideView(
+                                      slide: s.slides.first,
+                                      mini: true,
+                                    ),
+                                  ),
+                                ),
+                                if (picked.contains(s.id))
+                                  const Positioned(
+                                    right: 4,
+                                    top: 4,
+                                    child: Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -422,7 +670,12 @@ Future<void> newHighlight(BuildContext context, WidgetRef ref, String memberId) 
   for (final s in pool.where((s) => picked.contains(s.id))) {
     if (!s.archived) await a.setStoryArchived(s, true);
   }
-  await a.createHighlight(owner: memberId, title: title.text, category: category.text, storyIds: picked.toList());
+  await a.createHighlight(
+    owner: memberId,
+    title: title.text,
+    category: category.text,
+    storyIds: picked.toList(),
+  );
 }
 
 Future<void> editHighlight(BuildContext context, WidgetRef ref, Highlight h) {
@@ -442,7 +695,13 @@ Future<void> editHighlight(BuildContext context, WidgetRef ref, Highlight h) {
             label: l10n.stoRename,
             onTap: () async {
               Navigator.of(sheet).pop();
-              final t = await askText(context, title: l10n.stoRename, label: l10n.stoHighlightName, initial: h.title, maxLines: 1);
+              final t = await askText(
+                context,
+                title: l10n.stoRename,
+                label: l10n.stoHighlightName,
+                initial: h.title,
+                maxLines: 1,
+              );
               if (t != null) await a.updateHighlight(h, title: t);
             },
           ),
@@ -451,7 +710,13 @@ Future<void> editHighlight(BuildContext context, WidgetRef ref, Highlight h) {
             label: l10n.stoSetCategory,
             onTap: () async {
               Navigator.of(sheet).pop();
-              final t = await askText(context, title: l10n.stoCategory, label: l10n.stoCategory, initial: h.category, maxLines: 1);
+              final t = await askText(
+                context,
+                title: l10n.stoCategory,
+                label: l10n.stoCategory,
+                initial: h.category,
+                maxLines: 1,
+              );
               if (t != null) await a.updateHighlight(h, category: t);
             },
           ),
@@ -460,9 +725,14 @@ Future<void> editHighlight(BuildContext context, WidgetRef ref, Highlight h) {
             label: l10n.stoSetCover,
             onTap: () async {
               Navigator.of(sheet).pop();
-              final f = await ImagePicker().pickImage(source: ImageSource.gallery);
+              final f = await PrismImageCrop.pick(
+                context,
+                spec: PrismCropSpec.square,
+              );
               if (f == null) return;
-              final id = await ref.read(socialMediaStoreProvider).addImage(await f.readAsBytes(), owner: h.owner);
+              final id = await ref
+                  .read(socialMediaStoreProvider)
+                  .addImage(f.bytes, owner: h.owner, original: f.originalId);
               if (id != null) await a.updateHighlight(h, cover: id);
             },
           ),
@@ -481,10 +751,12 @@ Future<void> editHighlight(BuildContext context, WidgetRef ref, Highlight h) {
   );
 }
 
-Future<void> showBlogEditor(BuildContext context, String memberId) => PrismSheet.showFullScreen<void>(
-  context: context,
-  builder: (context, scroll) => _BlogEditor(memberId: memberId, scroll: scroll),
-);
+Future<void> showBlogEditor(BuildContext context, String memberId) =>
+    PrismSheet.showFullScreen<void>(
+      context: context,
+      builder: (context, scroll) =>
+          _BlogEditor(memberId: memberId, scroll: scroll),
+    );
 
 class _BlogEditor extends ConsumerStatefulWidget {
   const _BlogEditor({required this.memberId, required this.scroll});
@@ -498,7 +770,9 @@ class _BlogEditor extends ConsumerStatefulWidget {
 class _BlogEditorState extends ConsumerState<_BlogEditor> {
   late BlogProfile _p = ref.read(socialDataProvider).profile(widget.memberId);
   late final _bio = TextEditingController(text: _p.bio);
-  late final _reactions = TextEditingController(text: _p.customReactions.join(' '));
+  late final _reactions = TextEditingController(
+    text: _p.customReactions.join(' '),
+  );
 
   @override
   void dispose() {
@@ -512,7 +786,13 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final d = ref.watch(socialDataProvider);
-    final banner = _p.banner != null ? ref.watch(socialImageProvider(_p.banner!)) : (d.members[widget.memberId] == null ? null : resolveMemberProfileHeader(d.members[widget.memberId]!).activeImageData);
+    final banner = _p.banner != null
+        ? ref.watch(socialImageProvider(_p.banner!))
+        : (d.members[widget.memberId] == null
+              ? null
+              : resolveMemberProfileHeader(
+                  d.members[widget.memberId]!,
+                ).activeImageData);
     return SafeArea(
       child: Column(
         children: [
@@ -523,8 +803,20 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
               tone: PrismButtonTone.filled,
               density: PrismControlDensity.compact,
               onPressed: () async {
-                final reactions = _reactions.text.split(RegExp(r'\s+')).where((x) => x.isNotEmpty).take(12).toList();
-                await ref.read(socialActionsProvider).saveProfile(widget.memberId, _p.copyWith(bio: _bio.text.trim(), customReactions: reactions));
+                final reactions = _reactions.text
+                    .split(RegExp(r'\s+'))
+                    .where((x) => x.isNotEmpty)
+                    .take(12)
+                    .toList();
+                await ref
+                    .read(socialActionsProvider)
+                    .saveProfile(
+                      widget.memberId,
+                      _p.copyWith(
+                        bio: _bio.text.trim(),
+                        customReactions: reactions,
+                      ),
+                    );
                 if (context.mounted) Navigator.of(context).pop();
               },
             ),
@@ -541,7 +833,8 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
                   x: _p.bannerX,
                   y: _p.bannerY,
                   height: 140,
-                  onChanged: (x, y) => setState(() => _p = _p.copyWith(bannerX: x, bannerY: y)),
+                  onChanged: (x, y) =>
+                      setState(() => _p = _p.copyWith(bannerX: x, bannerY: y)),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -551,22 +844,69 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
                     PrismButton(
                       label: l10n.socChooseBanner,
                       onPressed: () async {
-                        final f = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        final f = await PrismImageCrop.pick(
+                          context,
+                          spec: PrismCropSpec.banner,
+                        );
                         if (f == null) return;
-                        final id = await ref.read(socialMediaStoreProvider).addImage(await f.readAsBytes(), owner: widget.memberId);
-                        if (id != null) setState(() => _p = _p.copyWith(banner: id, bannerX: 0, bannerY: 0));
+                        final id = await ref
+                            .read(socialMediaStoreProvider)
+                            .addImage(
+                              f.bytes,
+                              owner: widget.memberId,
+                              original: f.originalId,
+                            );
+                        if (id != null)
+                          setState(
+                            () => _p = _p.copyWith(
+                              banner: id,
+                              bannerX: 0,
+                              bannerY: 0,
+                            ),
+                          );
                       },
                     ),
                     if (_p.banner != null)
-                      PrismButton(label: l10n.socUseProfileBanner, tone: PrismButtonTone.outlined, onPressed: () => setState(() => _p = _p.copyWith(clearBanner: true))),
+                      PrismButton(
+                        label: l10n.socUseProfileBanner,
+                        tone: PrismButtonTone.outlined,
+                        onPressed: () =>
+                            setState(() => _p = _p.copyWith(clearBanner: true)),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(l10n.socBannerHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  l10n.socBannerHelp,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 14),
-                PrismTextField(controller: _bio, labelText: l10n.socBio, minLines: 2, maxLines: 6),
-                ColorChoiceRow(label: l10n.socAccent, value: _p.accent, onChanged: (v) => setState(() => _p = v == null ? _p.copyWith(clearAccent: true) : _p.copyWith(accent: v))),
-                ColorChoiceRow(label: l10n.socBlogBackground, value: _p.background, onChanged: (v) => setState(() => _p = v == null ? _p.copyWith(clearBackground: true) : _p.copyWith(background: v))),
+                PrismTextField(
+                  controller: _bio,
+                  labelText: l10n.socBio,
+                  minLines: 2,
+                  maxLines: 6,
+                ),
+                ColorChoiceRow(
+                  label: l10n.socAccent,
+                  value: _p.accent,
+                  onChanged: (v) => setState(
+                    () => _p = v == null
+                        ? _p.copyWith(clearAccent: true)
+                        : _p.copyWith(accent: v),
+                  ),
+                ),
+                ColorChoiceRow(
+                  label: l10n.socBlogBackground,
+                  value: _p.background,
+                  onChanged: (v) => setState(
+                    () => _p = v == null
+                        ? _p.copyWith(clearBackground: true)
+                        : _p.copyWith(background: v),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Text(l10n.socTitleFont, style: theme.textTheme.labelLarge),
                 const SizedBox(height: 6),
@@ -575,9 +915,15 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
                   children: [
                     for (final f in const ['default', 'bold', 'serif', 'mono'])
                       PrismChip(
-                        label: switch (f) { 'bold' => l10n.socFontBold, 'serif' => l10n.hwFontSerif, 'mono' => l10n.hwFontMono, _ => l10n.apDefault },
+                        label: switch (f) {
+                          'bold' => l10n.socFontBold,
+                          'serif' => l10n.hwFontSerif,
+                          'mono' => l10n.hwFontMono,
+                          _ => l10n.apDefault,
+                        },
                         selected: _p.titleFont == f,
-                        onTap: () => setState(() => _p = _p.copyWith(titleFont: f)),
+                        onTap: () =>
+                            setState(() => _p = _p.copyWith(titleFont: f)),
                       ),
                   ],
                 ),
@@ -585,14 +931,27 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
                 Text(l10n.socLayout, style: theme.textTheme.labelLarge),
                 const SizedBox(height: 6),
                 PrismSegmentedControl<String>(
-                  segments: [PrismSegment(value: 'cards', label: l10n.socLayoutCards), PrismSegment(value: 'compact', label: l10n.socLayoutCompact)],
+                  segments: [
+                    PrismSegment(value: 'cards', label: l10n.socLayoutCards),
+                    PrismSegment(
+                      value: 'compact',
+                      label: l10n.socLayoutCompact,
+                    ),
+                  ],
                   selected: _p.layout,
                   onChanged: (v) => setState(() => _p = _p.copyWith(layout: v)),
                 ),
                 const SizedBox(height: 12),
-                PrismTextField(controller: _reactions, labelText: l10n.socCustomReactions, helperText: l10n.socCustomReactionsHelp),
+                PrismTextField(
+                  controller: _reactions,
+                  labelText: l10n.socCustomReactions,
+                  helperText: l10n.socCustomReactionsHelp,
+                ),
                 const SizedBox(height: 12),
-                Text(l10n.stoDefaultAudience, style: theme.textTheme.labelLarge),
+                Text(
+                  l10n.stoDefaultAudience,
+                  style: theme.textTheme.labelLarge,
+                ),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 6,
@@ -600,7 +959,13 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
                   children: [
                     for (final a in Audience.values)
                       if (a != Audience.selected)
-                        PrismChip(label: audienceLabel(context, a), selected: _p.storyAudience == a, onTap: () => setState(() => _p = _p.copyWith(storyAudience: a))),
+                        PrismChip(
+                          label: audienceLabel(context, a),
+                          selected: _p.storyAudience == a,
+                          onTap: () => setState(
+                            () => _p = _p.copyWith(storyAudience: a),
+                          ),
+                        ),
                   ],
                 ),
               ],
@@ -614,7 +979,14 @@ class _BlogEditorState extends ConsumerState<_BlogEditor> {
 
 /// Drag a banner to choose which part shows (also used on Headmates).
 class BannerPositioner extends StatelessWidget {
-  const BannerPositioner({super.key, required this.bytes, required this.x, required this.y, required this.onChanged, this.height = 120});
+  const BannerPositioner({
+    super.key,
+    required this.bytes,
+    required this.x,
+    required this.y,
+    required this.onChanged,
+    this.height = 120,
+  });
 
   final Uint8List? bytes;
   final double x;
@@ -629,7 +1001,10 @@ class BannerPositioner extends StatelessWidget {
     if (bytes == null) {
       return Container(
         height: height,
-        decoration: BoxDecoration(borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHighest),
+        decoration: BoxDecoration(
+          borderRadius: prismCorners(context, 14),
+          color: theme.colorScheme.surfaceContainerHighest,
+        ),
         alignment: Alignment.center,
         child: Text(l10n.socNoBanner, style: theme.textTheme.bodySmall),
       );
@@ -641,20 +1016,53 @@ class BannerPositioner extends StatelessWidget {
       onDecrease: () => onChanged(x, (y - 0.1).clamp(-1, 1)),
       child: LayoutBuilder(
         builder: (context, box) => GestureDetector(
-          onPanUpdate: (dd) => onChanged((x - dd.delta.dx / box.maxWidth * 2).clamp(-1, 1), (y - dd.delta.dy / height * 2).clamp(-1, 1)),
+          onPanUpdate: (dd) => onChanged(
+            (x - dd.delta.dx / box.maxWidth * 2).clamp(-1, 1),
+            (y - dd.delta.dy / height * 2).clamp(-1, 1),
+          ),
           child: ClipRRect(
             borderRadius: prismCorners(context, 14),
             child: Stack(
               children: [
-                Image.memory(bytes!, height: height, width: double.infinity, fit: BoxFit.cover, alignment: Alignment(x, y), gaplessPlayback: true),
+                Image.memory(
+                  bytes!,
+                  height: height,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  alignment: Alignment(x, y),
+                  gaplessPlayback: true,
+                ),
                 Positioned(
                   right: 8,
                   bottom: 8,
                   child: DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.black54, borderRadius: prismCorners(context, 12)),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: prismCorners(context, 12),
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.open_with_rounded, size: 14, color: Colors.white), const SizedBox(width: 4), Text(l10n.socDragToPosition, style: const TextStyle(color: Colors.white, fontSize: 11))]),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.open_with_rounded,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.socDragToPosition,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -666,4 +1074,3 @@ class BannerPositioner extends StatelessWidget {
     );
   }
 }
-

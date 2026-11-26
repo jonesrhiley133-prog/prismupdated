@@ -51,19 +51,27 @@ void main() {
     held = {'a', 'b'}; // c not held
     present = {'b'}; // b already on relay
     final pushed = await build().run();
-    expect(uploaded, ['a'], reason: 'a is held + absent; b present; c not held');
+    expect(uploaded, [
+      'a',
+    ], reason: 'a is held + absent; b present; c not held');
     expect(pushed, 1);
   });
 
-  test('skips a chunk it cannot confirm via batch-exists (no blind push)',
-      () async {
-    candidates = [ref('a'), ref('b')];
-    held = {'a', 'b'};
-    batchError = Exception('no handle');
-    final pushed = await build().run();
-    expect(uploaded, isEmpty, reason: 'can\'t confirm presence ⇒ push nothing');
-    expect(pushed, 0);
-  });
+  test(
+    'skips a chunk it cannot confirm via batch-exists (no blind push)',
+    () async {
+      candidates = [ref('a'), ref('b')];
+      held = {'a', 'b'};
+      batchError = Exception('no handle');
+      final pushed = await build().run();
+      expect(
+        uploaded,
+        isEmpty,
+        reason: 'can\'t confirm presence ⇒ push nothing',
+      );
+      expect(pushed, 0);
+    },
+  );
 
   test('dedupes by mediaId, preserving priority order', () async {
     // Thumbnail-first ordering with the same id appearing twice.

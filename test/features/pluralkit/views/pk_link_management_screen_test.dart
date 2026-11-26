@@ -57,16 +57,15 @@ domain.Member _local(
   String? pkId,
   String? pkDisplayName,
   bool excluded = false,
-}) =>
-    domain.Member(
-      id: id,
-      name: name,
-      createdAt: DateTime(2026, 1, 1),
-      pluralkitUuid: pkUuid,
-      pluralkitId: pkId,
-      pluralkitDisplayName: pkDisplayName,
-      pluralkitSyncIgnored: excluded,
-    );
+}) => domain.Member(
+  id: id,
+  name: name,
+  createdAt: DateTime(2026, 1, 1),
+  pluralkitUuid: pkUuid,
+  pluralkitId: pkId,
+  pluralkitDisplayName: pkDisplayName,
+  pluralkitSyncIgnored: excluded,
+);
 
 PKMember _pk(String uuid, String name, {String? id, String? displayName}) =>
     PKMember(
@@ -92,8 +91,9 @@ PkLinkManagementState _state({
     pkMembersByUuid: isConnected
         ? {for (final pk in pkMembers) pk.uuid: pk}
         : const {},
-    pkMembersById:
-        isConnected ? {for (final pk in pkMembers) pk.id: pk} : const {},
+    pkMembersById: isConnected
+        ? {for (final pk in pkMembers) pk.id: pk}
+        : const {},
   );
 }
 
@@ -189,83 +189,82 @@ void main() {
       },
     );
 
-    testWidgets(
-      'empty state shows when no section has rows',
-      (tester) async {
-        _useTallViewport(tester);
-        // Only a Prism-only member — none of the three sections render.
-        final locals = [_local('l-dana', 'Dana')];
+    testWidgets('empty state shows when no section has rows', (tester) async {
+      _useTallViewport(tester);
+      // Only a Prism-only member — none of the three sections render.
+      final locals = [_local('l-dana', 'Dana')];
 
-        final repo = FakeMemberRepository()..seed(locals);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: locals, pkMembers: const []),
-        );
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      final repo = FakeMemberRepository()..seed(locals);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: locals, pkMembers: const []),
+      );
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        // pkMappingEmptyTitle is reused per plan's empty-state copy.
-        expect(find.textContaining('Nothing to map'), findsOneWidget);
-      },
-    );
+      // pkMappingEmptyTitle is reused per plan's empty-state copy.
+      expect(find.textContaining('Nothing to map'), findsOneWidget);
+    });
   });
 
   group('PkLinkManagementScreen — actions', () {
-    testWidgets(
-      'Exclude tap on a synced row calls excludePluralKitSync',
-      (tester) async {
-        _useTallViewport(tester);
-        final pkAlice = _pk('pk-alice', 'Alice');
-        final alice =
-            _local('l-alice', 'Alice', pkUuid: 'pk-alice', pkId: 'aliceid');
-        final repo = FakeMemberRepository()..seed([alice]);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: [alice], pkMembers: [pkAlice]),
-        );
+    testWidgets('Exclude tap on a synced row calls excludePluralKitSync', (
+      tester,
+    ) async {
+      _useTallViewport(tester);
+      final pkAlice = _pk('pk-alice', 'Alice');
+      final alice = _local(
+        'l-alice',
+        'Alice',
+        pkUuid: 'pk-alice',
+        pkId: 'aliceid',
+      );
+      final repo = FakeMemberRepository()..seed([alice]);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: [alice], pkMembers: [pkAlice]),
+      );
 
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        await tester.tap(
-          find.byKey(const ValueKey('pkLinkManagementExcludeButton-l-alice')),
-        );
-        await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('pkLinkManagementExcludeButton-l-alice')),
+      );
+      await tester.pumpAndSettle();
 
-        // The fake repo flips sync_ignored true; verify via repo state.
-        final after = await repo.getMemberById('l-alice');
-        expect(after, isNotNull);
-        expect(after!.pluralkitSyncIgnored, isTrue);
-        expect(
-          controller.refreshCount,
-          greaterThanOrEqualTo(1),
-          reason: 'screen refreshes after the exclude write',
-        );
-      },
-    );
+      // The fake repo flips sync_ignored true; verify via repo state.
+      final after = await repo.getMemberById('l-alice');
+      expect(after, isNotNull);
+      expect(after!.pluralkitSyncIgnored, isTrue);
+      expect(
+        controller.refreshCount,
+        greaterThanOrEqualTo(1),
+        reason: 'screen refreshes after the exclude write',
+      );
+    });
 
-    testWidgets(
-      'Resume tap on an excluded row calls resumePluralKitSync',
-      (tester) async {
-        _useTallViewport(tester);
-        final bob = _local('l-bob', 'Bob', pkUuid: 'pk-bob', excluded: true);
-        final repo = FakeMemberRepository()..seed([bob]);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: [bob], pkMembers: const []),
-        );
+    testWidgets('Resume tap on an excluded row calls resumePluralKitSync', (
+      tester,
+    ) async {
+      _useTallViewport(tester);
+      final bob = _local('l-bob', 'Bob', pkUuid: 'pk-bob', excluded: true);
+      final repo = FakeMemberRepository()..seed([bob]);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: [bob], pkMembers: const []),
+      );
 
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        await tester.tap(
-          find.byKey(const ValueKey('pkLinkManagementResumeButton-l-bob')),
-        );
-        await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('pkLinkManagementResumeButton-l-bob')),
+      );
+      await tester.pumpAndSettle();
 
-        final after = await repo.getMemberById('l-bob');
-        expect(after, isNotNull);
-        expect(after!.pluralkitSyncIgnored, isFalse);
-        expect(controller.refreshCount, greaterThanOrEqualTo(1));
-      },
-    );
+      final after = await repo.getMemberById('l-bob');
+      expect(after, isNotNull);
+      expect(after!.pluralkitSyncIgnored, isFalse);
+      expect(controller.refreshCount, greaterThanOrEqualTo(1));
+    });
   });
 
   group('PkLinkManagementScreen — offline edge case', () {
@@ -321,35 +320,26 @@ void main() {
       expect(label, 'Not linked');
     });
 
-    test(
-      'search label for an excluded-linked local with PK fetch returns '
-      '"Excluded — was linked to <pkName>"',
-      () {
-        final pkAlice = _pk('pk-alice', 'Alice');
-        final state = _state(
-          locals: const [],
-          pkMembers: [pkAlice],
-        );
-        final m = _local(
-          'm',
-          'Excluded Alice',
-          pkUuid: 'pk-alice',
-          excluded: true,
-        );
-        final label = pkLinkManagementSearchLabelFor(l10n, m, state: state);
-        expect(label, 'Excluded — was linked to Alice');
-      },
-    );
+    test('search label for an excluded-linked local with PK fetch returns '
+        '"Excluded — was linked to <pkName>"', () {
+      final pkAlice = _pk('pk-alice', 'Alice');
+      final state = _state(locals: const [], pkMembers: [pkAlice]);
+      final m = _local(
+        'm',
+        'Excluded Alice',
+        pkUuid: 'pk-alice',
+        excluded: true,
+      );
+      final label = pkLinkManagementSearchLabelFor(l10n, m, state: state);
+      expect(label, 'Excluded — was linked to Alice');
+    });
 
-    test(
-      'search label for an unresolved-link local returns the '
-      '"Linked to <pkId> (not in current system)" form',
-      () {
-        final m = _local('m', 'Carol', pkId: 'stale');
-        final label = pkLinkManagementSearchLabelFor(l10n, m);
-        expect(label, 'Linked to stale (not in current system)');
-      },
-    );
+    test('search label for an unresolved-link local returns the '
+        '"Linked to <pkId> (not in current system)" form', () {
+      final m = _local('m', 'Carol', pkId: 'stale');
+      final label = pkLinkManagementSearchLabelFor(l10n, m);
+      expect(label, 'Linked to stale (not in current system)');
+    });
 
     test(
       'search label for a resolved synced local returns "Linked to <pkName>"',
@@ -364,69 +354,75 @@ void main() {
   });
 
   group('PkLinkManagementScreen — Change link on Synced rows', () {
-    testWidgets(
-      'Synced row renders both Change link and Exclude buttons',
-      (tester) async {
-        _useTallViewport(tester);
-        final pkAlice = _pk('pk-alice', 'Alice');
-        // Add an unmapped PK candidate so Change link is enabled.
-        final pkSpare = _pk('pk-spare', 'Spare');
-        final alice =
-            _local('l-alice', 'Alice', pkUuid: 'pk-alice', pkId: 'aliceid');
-        final repo = FakeMemberRepository()..seed([alice]);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: [alice], pkMembers: [pkAlice, pkSpare]),
-        );
+    testWidgets('Synced row renders both Change link and Exclude buttons', (
+      tester,
+    ) async {
+      _useTallViewport(tester);
+      final pkAlice = _pk('pk-alice', 'Alice');
+      // Add an unmapped PK candidate so Change link is enabled.
+      final pkSpare = _pk('pk-spare', 'Spare');
+      final alice = _local(
+        'l-alice',
+        'Alice',
+        pkUuid: 'pk-alice',
+        pkId: 'aliceid',
+      );
+      final repo = FakeMemberRepository()..seed([alice]);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: [alice], pkMembers: [pkAlice, pkSpare]),
+      );
 
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        final changeLink = tester.widget<PrismButton>(
-          find.byKey(
-            const ValueKey('pkLinkManagementChangeLinkButton-l-alice'),
-          ),
-        );
-        expect(changeLink.enabled, isTrue);
-        expect(changeLink.label, 'Change link');
+      final changeLink = tester.widget<PrismButton>(
+        find.byKey(const ValueKey('pkLinkManagementChangeLinkButton-l-alice')),
+      );
+      expect(changeLink.enabled, isTrue);
+      expect(changeLink.label, 'Change link');
 
-        // Exclude button remains under the same key as before.
-        expect(
-          find.byKey(const ValueKey('pkLinkManagementExcludeButton-l-alice')),
-          findsOneWidget,
-        );
-      },
-    );
+      // Exclude button remains under the same key as before.
+      expect(
+        find.byKey(const ValueKey('pkLinkManagementExcludeButton-l-alice')),
+        findsOneWidget,
+      );
+    });
 
-    testWidgets(
-      'Change link is disabled when offline (isConnected: false)',
-      (tester) async {
-        _useTallViewport(tester);
-        final alice =
-            _local('l-alice', 'Alice', pkUuid: 'pk-alice', pkId: 'aliceid');
-        final repo = FakeMemberRepository()..seed([alice]);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: [alice], isConnected: false),
-        );
+    testWidgets('Change link is disabled when offline (isConnected: false)', (
+      tester,
+    ) async {
+      _useTallViewport(tester);
+      final alice = _local(
+        'l-alice',
+        'Alice',
+        pkUuid: 'pk-alice',
+        pkId: 'aliceid',
+      );
+      final repo = FakeMemberRepository()..seed([alice]);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: [alice], isConnected: false),
+      );
 
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        final changeLink = tester.widget<PrismButton>(
-          find.byKey(
-            const ValueKey('pkLinkManagementChangeLinkButton-l-alice'),
-          ),
-        );
-        expect(changeLink.enabled, isFalse);
-      },
-    );
+      final changeLink = tester.widget<PrismButton>(
+        find.byKey(const ValueKey('pkLinkManagementChangeLinkButton-l-alice')),
+      );
+      expect(changeLink.enabled, isFalse);
+    });
 
     testWidgets(
       'Change link is disabled on fetch error (isConnected: true, fetchError set)',
       (tester) async {
         _useTallViewport(tester);
         final pkAlice = _pk('pk-alice', 'Alice');
-        final alice =
-            _local('l-alice', 'Alice', pkUuid: 'pk-alice', pkId: 'aliceid');
+        final alice = _local(
+          'l-alice',
+          'Alice',
+          pkUuid: 'pk-alice',
+          pkId: 'aliceid',
+        );
         final repo = FakeMemberRepository()..seed([alice]);
         // Build state directly so we can set fetchError — the _state() helper
         // doesn't expose it. isConnected stays true so the Synced row still
@@ -461,42 +457,43 @@ void main() {
       },
     );
 
-    testWidgets(
-      'tap → empty unmapped roster shows the no-candidates toast',
-      (tester) async {
-        _useTallViewport(tester);
-        addTearDown(PrismToast.resetForTest);
-        // Synced local + the only PK member is the one it's already linked to,
-        // so unmappedPkMembers is empty. Tap Change link must short-circuit
-        // to a toast before the picker opens.
-        final pkAlice = _pk('pk-alice', 'Alice');
-        final alice =
-            _local('l-alice', 'Alice', pkUuid: 'pk-alice', pkId: 'aliceid');
-        final repo = FakeMemberRepository()..seed([alice]);
-        final controller = _FakePkLinkManagementController(
-          _state(locals: [alice], pkMembers: [pkAlice]),
-        );
+    testWidgets('tap → empty unmapped roster shows the no-candidates toast', (
+      tester,
+    ) async {
+      _useTallViewport(tester);
+      addTearDown(PrismToast.resetForTest);
+      // Synced local + the only PK member is the one it's already linked to,
+      // so unmappedPkMembers is empty. Tap Change link must short-circuit
+      // to a toast before the picker opens.
+      final pkAlice = _pk('pk-alice', 'Alice');
+      final alice = _local(
+        'l-alice',
+        'Alice',
+        pkUuid: 'pk-alice',
+        pkId: 'aliceid',
+      );
+      final repo = FakeMemberRepository()..seed([alice]);
+      final controller = _FakePkLinkManagementController(
+        _state(locals: [alice], pkMembers: [pkAlice]),
+      );
 
-        await tester.pumpWidget(_wrap(controller: controller, repo: repo));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_wrap(controller: controller, repo: repo));
+      await tester.pumpAndSettle();
 
-        await tester.tap(
-          find.byKey(
-            const ValueKey('pkLinkManagementChangeLinkButton-l-alice'),
-          ),
-        );
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(
+        find.byKey(const ValueKey('pkLinkManagementChangeLinkButton-l-alice')),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
-        expect(
-          find.textContaining('No unmapped PluralKit members'),
-          findsOneWidget,
-        );
+      expect(
+        find.textContaining('No unmapped PluralKit members'),
+        findsOneWidget,
+      );
 
-        PrismToast.dismiss();
-        await tester.pump();
-      },
-    );
+      PrismToast.dismiss();
+      await tester.pump();
+    });
 
     testWidgets(
       'tap → pick PK target → confirm dialog renders with both names; '
@@ -538,10 +535,7 @@ void main() {
 
         // Confirm dialog names both sides — title mentions the local, body
         // mentions the current PK member (Alice).
-        expect(
-          find.text('Change PluralKit link for Alice?'),
-          findsOneWidget,
-        );
+        expect(find.text('Change PluralKit link for Alice?'), findsOneWidget);
         expect(
           find.textContaining('Currently linked to Alice'),
           findsOneWidget,

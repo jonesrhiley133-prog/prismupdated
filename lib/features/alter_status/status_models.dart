@@ -58,7 +58,14 @@ class AlterStatus {
 
 /// A selectable status type (built-in or custom).
 class StatusType {
-  const StatusType({required this.key, required this.title, required this.iconKey, required this.color, this.description, this.record});
+  const StatusType({
+    required this.key,
+    required this.title,
+    required this.iconKey,
+    required this.color,
+    this.description,
+    this.record,
+  });
   final String key;
   final String title;
   final String iconKey;

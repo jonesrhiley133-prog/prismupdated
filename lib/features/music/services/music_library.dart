@@ -26,15 +26,22 @@ final musicDirProvider = FutureProvider<Directory>((ref) async {
 });
 
 /// Synchronous access once resolved (null on web or before first load).
-final musicDirPathProvider = Provider<String?>((ref) => ref.watch(musicDirProvider).value?.path);
+final musicDirPathProvider = Provider<String?>(
+  (ref) => ref.watch(musicDirProvider).value?.path,
+);
 
 String trackFilePath(String dir, Track t) => p.join(dir, 'files', t.file);
-String? trackArtPath(String? dir, Track? t) => dir == null || t?.art == null ? null : p.join(dir, 'art', t!.art!);
+String? trackArtPath(String? dir, Track? t) =>
+    dir == null || t?.art == null ? null : p.join(dir, 'art', t!.art!);
 
 /// Result of an import: what was added and what could not be.
 @immutable
 class ImportResult {
-  const ImportResult({this.added = const [], this.unsupported = const [], this.failed = const []});
+  const ImportResult({
+    this.added = const [],
+    this.unsupported = const [],
+    this.failed = const [],
+  });
 
   final List<Track> added;
 
@@ -46,7 +53,14 @@ class ImportResult {
 }
 
 /// Tags read from an audio file.
-typedef TrackTags = ({String? title, String? artist, String? album, int? durationMs, Uint8List? art, String? artMime});
+typedef TrackTags = ({
+  String? title,
+  String? artist,
+  String? album,
+  int? durationMs,
+  Uint8List? art,
+  String? artMime,
+});
 
 typedef TagReader = TrackTags Function(File file);
 
@@ -64,13 +78,21 @@ TrackTags readTrackTags(File file) {
     );
   } catch (_) {
     // Unreadable or missing tags: the track still imports by file name.
-    return (title: null, artist: null, album: null, durationMs: null, art: null, artMime: null);
+    return (
+      title: null,
+      artist: null,
+      album: null,
+      durationMs: null,
+      art: null,
+      artMime: null,
+    );
   }
 }
 
 final tagReaderProvider = Provider<TagReader>((ref) => readTrackTags);
 
-String _titleFromFileName(String name) => p.basenameWithoutExtension(name).replaceAll(RegExp(r'[_]+'), ' ').trim();
+String _titleFromFileName(String name) =>
+    p.basenameWithoutExtension(name).replaceAll(RegExp(r'[_]+'), ' ').trim();
 
 class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
   late Directory _dir;
@@ -148,7 +170,9 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
           Track(
             id: id,
             file: fileName,
-            title: (tags.title?.trim().isNotEmpty ?? false) ? tags.title!.trim() : _titleFromFileName(name),
+            title: (tags.title?.trim().isNotEmpty ?? false)
+                ? tags.title!.trim()
+                : _titleFromFileName(name),
             artist: tags.artist?.trim() ?? '',
             album: tags.album?.trim() ?? '',
             durationMs: tags.durationMs ?? 0,
@@ -160,13 +184,16 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
         failed.add(name);
       }
     }
-    if (added.isNotEmpty) await _save(lib.copyWith(tracks: [...lib.tracks, ...added]));
+    if (added.isNotEmpty)
+      await _save(lib.copyWith(tracks: [...lib.tracks, ...added]));
     return ImportResult(added: added, unsupported: unsupported, failed: failed);
   }
 
   Future<void> updateTrack(Track t) async {
     final lib = await _cur();
-    await _save(lib.copyWith(tracks: [for (final x in lib.tracks) x.id == t.id ? t : x]));
+    await _save(
+      lib.copyWith(tracks: [for (final x in lib.tracks) x.id == t.id ? t : x]),
+    );
   }
 
   Future<void> toggleFavorite(String id) async {
@@ -202,7 +229,12 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
       lib.copyWith(
         tracks: [for (final x in lib.tracks) x.id == id ? updated : x],
         recent: [id, ...lib.recent.where((r) => r != id)].take(50).toList(),
-        plays: [...lib.plays.skip(lib.plays.length >= 5000 ? lib.plays.length - 4999 : 0), (id, DateTime.now())],
+        plays: [
+          ...lib.plays.skip(
+            lib.plays.length >= 5000 ? lib.plays.length - 4999 : 0,
+          ),
+          (id, DateTime.now()),
+        ],
       ),
     );
   }
@@ -211,21 +243,41 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
     final lib = await _cur();
     final t = lib.track(id);
     if (t == null) return;
-    for (final f in [p.join(_dir.path, 'files', t.file), if (t.art != null) p.join(_dir.path, 'art', t.art!)]) {
+    for (final f in [
+      p.join(_dir.path, 'files', t.file),
+      if (t.art != null) p.join(_dir.path, 'art', t.art!),
+    ]) {
       try {
         await File(f).delete();
       } catch (_) {}
     }
     await _save(
       lib.copyWith(
-        tracks: [for (final x in lib.tracks) if (x.id != id) x],
-        playlists: [for (final pl in lib.playlists) pl.copyWith(trackIds: [for (final x in pl.trackIds) if (x != id) x])],
-        recent: [for (final r in lib.recent) if (r != id) r],
+        tracks: [
+          for (final x in lib.tracks)
+            if (x.id != id) x,
+        ],
+        playlists: [
+          for (final pl in lib.playlists)
+            pl.copyWith(
+              trackIds: [
+                for (final x in pl.trackIds)
+                  if (x != id) x,
+              ],
+            ),
+        ],
+        recent: [
+          for (final r in lib.recent)
+            if (r != id) r,
+        ],
       ),
     );
   }
 
-  Future<Playlist> createPlaylist(String name, {List<String> trackIds = const []}) async {
+  Future<Playlist> createPlaylist(
+    String name, {
+    List<String> trackIds = const [],
+  }) async {
     final lib = await _cur();
     final pl = Playlist(id: _uuid.v4(), name: name.trim(), trackIds: trackIds);
     await _save(lib.copyWith(playlists: [...lib.playlists, pl]));
@@ -234,12 +286,23 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
 
   Future<void> updatePlaylist(Playlist pl) async {
     final lib = await _cur();
-    await _save(lib.copyWith(playlists: [for (final x in lib.playlists) x.id == pl.id ? pl : x]));
+    await _save(
+      lib.copyWith(
+        playlists: [for (final x in lib.playlists) x.id == pl.id ? pl : x],
+      ),
+    );
   }
 
   Future<void> deletePlaylist(String id) async {
     final lib = await _cur();
-    await _save(lib.copyWith(playlists: [for (final x in lib.playlists) if (x.id != id) x]));
+    await _save(
+      lib.copyWith(
+        playlists: [
+          for (final x in lib.playlists)
+            if (x.id != id) x,
+        ],
+      ),
+    );
   }
 
   Future<void> reorderPlaylists(int from, int to) async {
@@ -256,11 +319,16 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibrary> {
       lib.copyWith(
         playlists: [
           for (final x in lib.playlists)
-            x.id == playlistId && !x.trackIds.contains(trackId) ? x.copyWith(trackIds: [...x.trackIds, trackId]) : x,
+            x.id == playlistId && !x.trackIds.contains(trackId)
+                ? x.copyWith(trackIds: [...x.trackIds, trackId])
+                : x,
         ],
       ),
     );
   }
 }
 
-final musicLibraryProvider = AsyncNotifierProvider<MusicLibraryNotifier, MusicLibrary>(MusicLibraryNotifier.new);
+final musicLibraryProvider =
+    AsyncNotifierProvider<MusicLibraryNotifier, MusicLibrary>(
+      MusicLibraryNotifier.new,
+    );

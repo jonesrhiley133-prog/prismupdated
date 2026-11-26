@@ -29,9 +29,7 @@ void main() {
 
   test('throws when avatar output bytes are not decodable', () {
     expect(
-      () => encodeAvatarOutputForStorage(
-        Uint8List.fromList([1, 2, 3, 4]),
-      ),
+      () => encodeAvatarOutputForStorage(Uint8List.fromList([1, 2, 3, 4])),
       throwsStateError,
     );
   });

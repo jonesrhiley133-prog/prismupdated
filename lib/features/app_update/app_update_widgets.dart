@@ -60,7 +60,9 @@ class AppUpdateCard extends ConsumerStatefulWidget {
 }
 
 class _AppUpdateCardState extends ConsumerState<AppUpdateCard> {
-  late final Future<PackageInfo?> _installed = PackageInfo.fromPlatform().then<PackageInfo?>((p) => p).catchError((Object _) => null);
+  late final Future<PackageInfo?> _installed = PackageInfo.fromPlatform()
+      .then<PackageInfo?>((p) => p)
+      .catchError((Object _) => null);
 
   @override
   void initState() {
@@ -71,8 +73,15 @@ class _AppUpdateCardState extends ConsumerState<AppUpdateCard> {
       if (!mounted) return;
       final n = ref.read(appUpdateNotifierProvider.notifier);
       final s = ref.read(appUpdateNotifierProvider);
-      final stale = s.lastChecked == null || DateTime.now().difference(s.lastChecked!) > const Duration(minutes: 1);
-      if (n.isSupported && stale && !s.busy && s.phase != AppUpdatePhase.available) n.check();
+      final stale =
+          s.lastChecked == null ||
+          DateTime.now().difference(s.lastChecked!) >
+              const Duration(minutes: 1);
+      if (n.isSupported &&
+          stale &&
+          !s.busy &&
+          s.phase != AppUpdatePhase.available)
+        n.check();
     });
   }
 
@@ -160,7 +169,9 @@ class _AppUpdateCardState extends ConsumerState<AppUpdateCard> {
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     l10n.appUpdateInstalled(p.version, p.buildNumber),
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               },

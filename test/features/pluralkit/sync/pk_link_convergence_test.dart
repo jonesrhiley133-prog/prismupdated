@@ -170,8 +170,7 @@ class _Merger {
   /// Apply [ops] onto [target]. Ops are applied in HLC order so the
   /// "latest HLC seen" tracking is monotonic.
   Future<void> mergeInto(_Device target, List<_Op> ops) async {
-    final sorted = List<_Op>.of(ops)
-      ..sort((a, b) => a.hlc.compareTo(b.hlc));
+    final sorted = List<_Op>.of(ops)..sort((a, b) => a.hlc.compareTo(b.hlc));
     for (final op in sorted) {
       switch (op.opType) {
         case SyncRecordOpType.create:
@@ -435,16 +434,21 @@ void main() {
       // B's view pre-merge: sync_ignored=false. A production guard like
       // _doPushPendingSwitches' map build would happily include this
       // member's PK ID. We accept this as the "one final push" hazard.
-      final bRowPreMerge =
-          await deviceB.db.membersDao.getMemberByIdRow('shared');
-      expect(bRowPreMerge!.pluralkitSyncIgnored, isFalse,
-          reason: 'pre-merge B still thinks member is sync-enabled');
+      final bRowPreMerge = await deviceB.db.membersDao.getMemberByIdRow(
+        'shared',
+      );
+      expect(
+        bRowPreMerge!.pluralkitSyncIgnored,
+        isFalse,
+        reason: 'pre-merge B still thinks member is sync-enabled',
+      );
 
       // Phase 2: merge.
       await merger.mergeInto(deviceB, deviceA.captured);
 
-      final bRowPostMerge =
-          await deviceB.db.membersDao.getMemberByIdRow('shared');
+      final bRowPostMerge = await deviceB.db.membersDao.getMemberByIdRow(
+        'shared',
+      );
       expect(
         bRowPostMerge!.pluralkitSyncIgnored,
         isTrue,
@@ -482,10 +486,14 @@ void main() {
       // Merge A's exclude onto B. B's row is now sync_ignored=true with
       // merger tracking HLC 10 for the sync_ignored field.
       await merger.mergeInto(deviceB, deviceA.captured);
-      final bRowPostMerge =
-          await deviceB.db.membersDao.getMemberByIdRow('shared');
-      expect(bRowPostMerge!.pluralkitSyncIgnored, isTrue,
-          reason: 'B has applied A\'s exclude');
+      final bRowPostMerge = await deviceB.db.membersDao.getMemberByIdRow(
+        'shared',
+      );
+      expect(
+        bRowPostMerge!.pluralkitSyncIgnored,
+        isTrue,
+        reason: 'B has applied A\'s exclude',
+      );
 
       // T2 > T1: B's user picks M as Link target via manage screen.
       // applyPluralKitLink force-injects sync_ignored=false; diff against
@@ -504,8 +512,11 @@ void main() {
 
       final aRow = await deviceA.db.membersDao.getMemberByIdRow('shared');
       final bRow = await deviceB.db.membersDao.getMemberByIdRow('shared');
-      expect(aRow!.pluralkitSyncIgnored, isFalse,
-          reason: 'B\'s later Link wins over A\'s earlier Exclude');
+      expect(
+        aRow!.pluralkitSyncIgnored,
+        isFalse,
+        reason: 'B\'s later Link wins over A\'s earlier Exclude',
+      );
       expect(bRow!.pluralkitSyncIgnored, isFalse);
       expect(aRow.pluralkitUuid, 'pk-uuid-B');
       expect(bRow.pluralkitUuid, 'pk-uuid-B');

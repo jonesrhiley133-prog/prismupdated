@@ -180,8 +180,11 @@ Future<List<domain_member.Member>> _seedLocalMembersFromPk(
   PluralKitClient client,
 ) async {
   final pkMembers = await client.getMembers();
-  expect(pkMembers, isNotEmpty,
-      reason: 'PK account must have members for these tests');
+  expect(
+    pkMembers,
+    isNotEmpty,
+    reason: 'PK account must have members for these tests',
+  );
   final repo = DriftMemberRepository(db.membersDao, null);
   final results = <domain_member.Member>[];
   for (final pk in pkMembers) {
@@ -255,10 +258,14 @@ void main() {
             if (m.name.startsWith(_kPrefix)) {
               try {
                 await client.deleteMember(m.id);
-              } catch (_) {/* ignore */}
+              } catch (_) {
+                /* ignore */
+              }
             }
           }
-        } catch (_) {/* ignore */}
+        } catch (_) {
+          /* ignore */
+        }
 
         client.dispose();
         sharedHttpClient.close();
@@ -288,35 +295,53 @@ void main() {
 
           // Step 1: setToken with the live token.
           await service.setToken(_token);
-          expect(service.state.isConnected, isTrue,
-              reason: 'After setToken, isConnected must be true');
-          expect(service.state.needsDirection, isTrue,
-              reason: 'Fresh system after setToken must require direction');
-          expect(service.state.canAutoSync, isFalse,
-              reason: 'canAutoSync must remain false until both flags set');
+          expect(
+            service.state.isConnected,
+            isTrue,
+            reason: 'After setToken, isConnected must be true',
+          );
+          expect(
+            service.state.needsDirection,
+            isTrue,
+            reason: 'Fresh system after setToken must require direction',
+          );
+          expect(
+            service.state.canAutoSync,
+            isFalse,
+            reason: 'canAutoSync must remain false until both flags set',
+          );
 
           // Step 2: confirmDirection.
           await service.confirmDirection();
           expect(service.state.directionConfirmed, isTrue);
           expect(service.state.needsDirection, isFalse);
-          expect(service.state.needsMapping, isTrue,
-              reason: 'After confirmDirection, needsMapping must be true');
+          expect(
+            service.state.needsMapping,
+            isTrue,
+            reason: 'After confirmDirection, needsMapping must be true',
+          );
           expect(service.state.canAutoSync, isFalse);
 
           // Step 3: acknowledgeMapping.
           await service.acknowledgeMapping();
           expect(service.state.mappingAcknowledged, isTrue);
           expect(service.state.needsMapping, isFalse);
-          expect(service.state.canAutoSync, isTrue,
-              reason: 'After acknowledgeMapping, canAutoSync must be true');
+          expect(
+            service.state.canAutoSync,
+            isTrue,
+            reason: 'After acknowledgeMapping, canAutoSync must be true',
+          );
 
           // Verify all of this was persisted.
           final row = await db.pluralKitSyncDao.getSyncState();
           expect(row.isConnected, isTrue);
           expect(row.directionConfirmed, isTrue);
           expect(row.mappingAcknowledged, isTrue);
-          expect(row.systemId, isNotNull,
-              reason: 'setToken must record the resolved PK system ID');
+          expect(
+            row.systemId,
+            isNotNull,
+            reason: 'setToken must record the resolved PK system ID',
+          );
         },
         timeout: const Timeout(Duration(minutes: 3)),
         skip: _skipAll ? _skipReason : false,
@@ -332,8 +357,11 @@ void main() {
           final service = _makeService(db);
           await _seedPostWizardState(service, db);
           final locals = await _seedLocalMembersFromPk(db, client);
-          expect(locals.length, greaterThanOrEqualTo(2),
-              reason: 'Need at least 2 members for this test');
+          expect(
+            locals.length,
+            greaterThanOrEqualTo(2),
+            reason: 'Need at least 2 members for this test',
+          );
 
           // Pick the first two members.
           final picked = locals.take(2).toList();
@@ -345,13 +373,19 @@ void main() {
             at,
           );
 
-          expect(sw, isNotNull,
-              reason: 'pushOverrideSwitch must return a PKSwitch on success');
+          expect(
+            sw,
+            isNotNull,
+            reason: 'pushOverrideSwitch must return a PKSwitch on success',
+          );
           _created.switchIds.add(sw!.id);
 
           // Member set on the returned switch must contain both picked PK IDs.
-          expect(sw.members.toSet(), pickedPkIds,
-              reason: 'New PK switch must contain exactly the picked members');
+          expect(
+            sw.members.toSet(),
+            pickedPkIds,
+            reason: 'New PK switch must contain exactly the picked members',
+          );
 
           // Cursor advancement is the caller's job (PkMappingController), but
           // verify the helper works end-to-end: advance and read it back.
@@ -394,15 +428,17 @@ void main() {
           expect(locals, isNotEmpty);
 
           // Step 1: push a non-empty switch so the current fronter is set.
-          final seedAt = DateTime.now()
-              .toUtc()
-              .subtract(const Duration(seconds: 2));
-          final seedSw = await service.pushOverrideSwitch(
-            [locals.first.id],
-            seedAt,
+          final seedAt = DateTime.now().toUtc().subtract(
+            const Duration(seconds: 2),
           );
-          expect(seedSw, isNotNull,
-              reason: 'Setup: seed switch must succeed before clearing');
+          final seedSw = await service.pushOverrideSwitch([
+            locals.first.id,
+          ], seedAt);
+          expect(
+            seedSw,
+            isNotNull,
+            reason: 'Setup: seed switch must succeed before clearing',
+          );
           _created.switchIds.add(seedSw!.id);
 
           // Step 2: push an empty switch to clear the front. This is the
@@ -410,12 +446,18 @@ void main() {
           final at = DateTime.now().toUtc();
           final sw = await service.pushOverrideSwitch(const [], at);
 
-          expect(sw, isNotNull,
-              reason: 'Empty-set push must still return a PKSwitch (C1)');
+          expect(
+            sw,
+            isNotNull,
+            reason: 'Empty-set push must still return a PKSwitch (C1)',
+          );
           _created.switchIds.add(sw!.id);
 
-          expect(sw.members, isEmpty,
-              reason: 'Empty-set push must create a switch with no members');
+          expect(
+            sw.members,
+            isEmpty,
+            reason: 'Empty-set push must create a switch with no members',
+          );
 
           // Cursor helper still works with an empty switch.
           await service.advanceImportCursorPast(
@@ -468,10 +510,7 @@ void main() {
           // Push an override with a single member, capture the switch.
           final picked = locals.first;
           final at = DateTime.now().toUtc();
-          final sw = await service.pushOverrideSwitch(
-            [picked.id],
-            at,
-          );
+          final sw = await service.pushOverrideSwitch([picked.id], at);
           expect(sw, isNotNull);
           _created.switchIds.add(sw!.id);
 
@@ -502,14 +541,15 @@ void main() {
             ),
           );
 
-          final sessionsBefore =
-              await db.frontingSessionsDao.getAllSessions();
+          final sessionsBefore = await db.frontingSessionsDao.getAllSessions();
           final picksBefore = sessionsBefore
-              .where((s) =>
-                  s.memberId == picked.id && s.pluralkitUuid == sw.id)
+              .where((s) => s.memberId == picked.id && s.pluralkitUuid == sw.id)
               .length;
-          expect(picksBefore, 1,
-              reason: 'Setup: exactly one override session must exist');
+          expect(
+            picksBefore,
+            1,
+            reason: 'Setup: exactly one override session must exist',
+          );
 
           // Run an incremental sync. The override switch must NOT cause a
           // second local session to be created — either because the cursor
@@ -517,11 +557,9 @@ void main() {
           // existing session.
           await service.syncRecentData();
 
-          final sessionsAfter =
-              await db.frontingSessionsDao.getAllSessions();
+          final sessionsAfter = await db.frontingSessionsDao.getAllSessions();
           final picksAfter = sessionsAfter
-              .where((s) =>
-                  s.memberId == picked.id && s.pluralkitUuid == sw.id)
+              .where((s) => s.memberId == picked.id && s.pluralkitUuid == sw.id)
               .length;
           expect(
             picksAfter,
@@ -563,8 +601,11 @@ void main() {
           final key = PkPrefsKeys.firstSyncDeferred(system.id);
           await prefs.setBool(key, true);
 
-          expect(prefs.getBool(key), isTrue,
-              reason: 'Prefs flag must be set to true');
+          expect(
+            prefs.getBool(key),
+            isTrue,
+            reason: 'Prefs flag must be set to true',
+          );
 
           // We deliberately do NOT call syncRecentData / performFullImport /
           // pushPendingSwitches here. After deferBootstrap, the bootstrap is
@@ -582,8 +623,7 @@ void main() {
           expect(
             members,
             isEmpty,
-            reason:
-                'No members must be imported when bootstrap is deferred.',
+            reason: 'No members must be imported when bootstrap is deferred.',
           );
 
           // The setup is still complete from the state-machine perspective:

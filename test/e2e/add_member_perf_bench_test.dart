@@ -36,13 +36,11 @@ String _avatarB64(int rawBytes) {
   }
   return base64Encode(bytes);
 }
+
 /// The real member field shape (mirrors DriftMemberRepository.memberFields):
 /// ~36 fields, with the avatar carried inline as base64. [avatarRaw] = 0 means
 /// no avatar. [fieldCount] lets us shrink the map to isolate the "x F" factor.
-Map<String, dynamic> _memberFields({
-  required int avatarRaw,
-  int? fieldCount,
-}) {
+Map<String, dynamic> _memberFields({required int avatarRaw, int? fieldCount}) {
   final full = <String, dynamic>{
     'name': 'Bench Member',
     'pronouns': 'they/them',
@@ -83,9 +81,7 @@ Map<String, dynamic> _memberFields({
   };
   if (fieldCount == null) return full;
   // Keep the avatar field plus the first (fieldCount-1) others.
-  final out = <String, dynamic>{
-    'avatar_image_data': full['avatar_image_data'],
-  };
+  final out = <String, dynamic>{'avatar_image_data': full['avatar_image_data']};
   for (final e in full.entries) {
     if (out.length >= fieldCount) break;
     out[e.key] = e.value;
@@ -207,7 +203,9 @@ void main() {
       // ── Report ───────────────────────────────────────────────────────
       String ms(int us) => (us / 1000).toStringAsFixed(2);
       final b = StringBuffer()
-        ..writeln('\n================ ADD-MEMBER FFI EMIT BENCH ================')
+        ..writeln(
+          '\n================ ADD-MEMBER FFI EMIT BENCH ================',
+        )
         ..writeln('(median / p90 / max per recordCreate, $reps reps each)\n')
         ..writeln('#2  AVATAR SIZE SWEEP — full ~36-field member op:');
       for (final e in avatarSweep.entries) {

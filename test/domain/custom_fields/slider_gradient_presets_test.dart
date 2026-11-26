@@ -9,9 +9,9 @@ void main() {
     });
 
     test('palette category has six presets', () {
-      final palette = kSliderGradientPresets.where(
-        (p) => p.category == SliderGradientCategory.palette,
-      ).toList();
+      final palette = kSliderGradientPresets
+          .where((p) => p.category == SliderGradientCategory.palette)
+          .toList();
       expect(palette.length, 6);
     });
 
@@ -32,15 +32,18 @@ void main() {
       expect(preset.rightHex, '#8FAA9A');
     });
 
-    test('lookupGradientPreset("palette-rose-dusk") returns the correct entry', () {
-      final preset = lookupGradientPreset('palette-rose-dusk');
-      expect(preset, isNotNull);
-      expect(preset!.id, 'palette-rose-dusk');
-      expect(preset.category, SliderGradientCategory.palette);
-      expect(preset.leftHex, '#F4B89E');
-      expect(preset.centerHex, '#D17A8E');
-      expect(preset.rightHex, '#5B4378');
-    });
+    test(
+      'lookupGradientPreset("palette-rose-dusk") returns the correct entry',
+      () {
+        final preset = lookupGradientPreset('palette-rose-dusk');
+        expect(preset, isNotNull);
+        expect(preset!.id, 'palette-rose-dusk');
+        expect(preset.category, SliderGradientCategory.palette);
+        expect(preset.leftHex, '#F4B89E');
+        expect(preset.centerHex, '#D17A8E');
+        expect(preset.rightHex, '#5B4378');
+      },
+    );
 
     test('lookupGradientPreset("nonexistent") returns null', () {
       expect(lookupGradientPreset('nonexistent'), isNull);
@@ -91,17 +94,20 @@ void main() {
       expect(result, isNot(right));
     });
 
-    test('chooses the shorter hue path (red to cyan goes via green, not purple)', () {
-      // Red = hue 0°, cyan = hue 180°. Difference = 180°, shorter path is
-      // through green (90° midpoint) rather than purple/yellow.
-      const red = Color(0xFFFF0000); // hue 0°
-      const cyan = Color(0xFF00FFFF); // hue 180°
-      final mid = lerpHsl(red, cyan, 0.5);
-      final hsl = HSLColor.fromColor(mid);
-      // The midpoint hue should be around 90° (green/yellow-green), not 270° (purple).
-      // Since abs(180-0)=180 (not >180), we take the direct path 0→180 → mid=90°.
-      expect(hsl.hue, closeTo(90.0, 15.0));
-    });
+    test(
+      'chooses the shorter hue path (red to cyan goes via green, not purple)',
+      () {
+        // Red = hue 0°, cyan = hue 180°. Difference = 180°, shorter path is
+        // through green (90° midpoint) rather than purple/yellow.
+        const red = Color(0xFFFF0000); // hue 0°
+        const cyan = Color(0xFF00FFFF); // hue 180°
+        final mid = lerpHsl(red, cyan, 0.5);
+        final hsl = HSLColor.fromColor(mid);
+        // The midpoint hue should be around 90° (green/yellow-green), not 270° (purple).
+        // Since abs(180-0)=180 (not >180), we take the direct path 0→180 → mid=90°.
+        expect(hsl.hue, closeTo(90.0, 15.0));
+      },
+    );
 
     test('shorter hue path: avoids muddy midpoint for red→blue via purple', () {
       // Red hue=0°, Blue hue=240°. Diff=240>180, so short path goes via 360→300
@@ -169,46 +175,55 @@ void main() {
     });
 
     // ── 2-color: byte-identical to old sliderGradientStops(a, null, b) ───
-    test('2-color output is byte-identical to sliderGradientStops(a, null, b)', () {
-      final expected = sliderGradientStops(red, null, blue);
-      final actual = sliderGradientStopsFromList([red, blue]);
-      expect(actual.length, expected.length);
-      for (var i = 0; i < expected.length; i++) {
-        expect(
-          actual[i].toARGB32(),
-          equals(expected[i].toARGB32()),
-          reason: 'stop $i differs',
-        );
-      }
-    });
+    test(
+      '2-color output is byte-identical to sliderGradientStops(a, null, b)',
+      () {
+        final expected = sliderGradientStops(red, null, blue);
+        final actual = sliderGradientStopsFromList([red, blue]);
+        expect(actual.length, expected.length);
+        for (var i = 0; i < expected.length; i++) {
+          expect(
+            actual[i].toARGB32(),
+            equals(expected[i].toARGB32()),
+            reason: 'stop $i differs',
+          );
+        }
+      },
+    );
 
     // ── 3-color: byte-identical to old sliderGradientStops(a, b, c) ──────
-    test('3-color output is byte-identical to sliderGradientStops(a, b, c)', () {
-      final expected = sliderGradientStops(red, green, blue);
-      final actual = sliderGradientStopsFromList([red, green, blue]);
-      expect(actual.length, expected.length);
-      for (var i = 0; i < expected.length; i++) {
-        expect(
-          actual[i].toARGB32(),
-          equals(expected[i].toARGB32()),
-          reason: 'stop $i differs',
-        );
-      }
-    });
+    test(
+      '3-color output is byte-identical to sliderGradientStops(a, b, c)',
+      () {
+        final expected = sliderGradientStops(red, green, blue);
+        final actual = sliderGradientStopsFromList([red, green, blue]);
+        expect(actual.length, expected.length);
+        for (var i = 0; i < expected.length; i++) {
+          expect(
+            actual[i].toARGB32(),
+            equals(expected[i].toARGB32()),
+            reason: 'stop $i differs',
+          );
+        }
+      },
+    );
 
     // ── 4-color ───────────────────────────────────────────────────────────
-    test('4-color: 16 stops, endpoints exact, each input at even 1/3 positions', () {
-      final stops = sliderGradientStopsFromList([red, green, blue, yellow]);
-      // (4-1)*5 + 1 = 16
-      expect(stops.length, 16);
-      expect(stops.first.toARGB32(), red.toARGB32());
-      expect(stops.last.toARGB32(), yellow.toARGB32());
-      // Segment boundaries land at indices 0, 5, 10, 15
-      expect(stops[0].toARGB32(), red.toARGB32());
-      expect(stops[5].toARGB32(), green.toARGB32());
-      expect(stops[10].toARGB32(), blue.toARGB32());
-      expect(stops[15].toARGB32(), yellow.toARGB32());
-    });
+    test(
+      '4-color: 16 stops, endpoints exact, each input at even 1/3 positions',
+      () {
+        final stops = sliderGradientStopsFromList([red, green, blue, yellow]);
+        // (4-1)*5 + 1 = 16
+        expect(stops.length, 16);
+        expect(stops.first.toARGB32(), red.toARGB32());
+        expect(stops.last.toARGB32(), yellow.toARGB32());
+        // Segment boundaries land at indices 0, 5, 10, 15
+        expect(stops[0].toARGB32(), red.toARGB32());
+        expect(stops[5].toARGB32(), green.toARGB32());
+        expect(stops[10].toARGB32(), blue.toARGB32());
+        expect(stops[15].toARGB32(), yellow.toARGB32());
+      },
+    );
 
     test('4-color: sliderGradientStopPositions is evenly spaced 0..1', () {
       final stops = sliderGradientStopsFromList([red, green, blue, yellow]);
@@ -222,21 +237,30 @@ void main() {
     });
 
     // ── 5-color ───────────────────────────────────────────────────────────
-    test('5-color: 21 stops, endpoints exact, input colors at segment boundaries', () {
-      final colors = [red, green, blue, yellow, cyan];
-      final stops = sliderGradientStopsFromList(colors);
-      // (5-1)*5 + 1 = 21
-      expect(stops.length, 21);
-      expect(stops.first.toARGB32(), red.toARGB32());
-      expect(stops.last.toARGB32(), cyan.toARGB32());
-      // Boundaries: 0, 5, 10, 15, 20
-      expect(stops[5].toARGB32(), green.toARGB32());
-      expect(stops[10].toARGB32(), blue.toARGB32());
-      expect(stops[15].toARGB32(), yellow.toARGB32());
-    });
+    test(
+      '5-color: 21 stops, endpoints exact, input colors at segment boundaries',
+      () {
+        final colors = [red, green, blue, yellow, cyan];
+        final stops = sliderGradientStopsFromList(colors);
+        // (5-1)*5 + 1 = 21
+        expect(stops.length, 21);
+        expect(stops.first.toARGB32(), red.toARGB32());
+        expect(stops.last.toARGB32(), cyan.toARGB32());
+        // Boundaries: 0, 5, 10, 15, 20
+        expect(stops[5].toARGB32(), green.toARGB32());
+        expect(stops[10].toARGB32(), blue.toARGB32());
+        expect(stops[15].toARGB32(), yellow.toARGB32());
+      },
+    );
 
     test('5-color: sliderGradientStopPositions is evenly spaced 0..1', () {
-      final stops = sliderGradientStopsFromList([red, green, blue, yellow, cyan]);
+      final stops = sliderGradientStopsFromList([
+        red,
+        green,
+        blue,
+        yellow,
+        cyan,
+      ]);
       final positions = sliderGradientStopPositions(stops);
       expect(positions.first, 0.0);
       expect(positions.last, 1.0);
@@ -247,24 +271,32 @@ void main() {
     });
 
     // ── 6-color ───────────────────────────────────────────────────────────
-    test('6-color: 26 stops, endpoints exact, input colors at segment boundaries', () {
-      final colors = [red, green, blue, yellow, cyan, magenta];
-      final stops = sliderGradientStopsFromList(colors);
-      // (6-1)*5 + 1 = 26
-      expect(stops.length, 26);
-      expect(stops.first.toARGB32(), red.toARGB32());
-      expect(stops.last.toARGB32(), magenta.toARGB32());
-      // Boundaries: 0, 5, 10, 15, 20, 25
-      expect(stops[5].toARGB32(), green.toARGB32());
-      expect(stops[10].toARGB32(), blue.toARGB32());
-      expect(stops[15].toARGB32(), yellow.toARGB32());
-      expect(stops[20].toARGB32(), cyan.toARGB32());
-    });
+    test(
+      '6-color: 26 stops, endpoints exact, input colors at segment boundaries',
+      () {
+        final colors = [red, green, blue, yellow, cyan, magenta];
+        final stops = sliderGradientStopsFromList(colors);
+        // (6-1)*5 + 1 = 26
+        expect(stops.length, 26);
+        expect(stops.first.toARGB32(), red.toARGB32());
+        expect(stops.last.toARGB32(), magenta.toARGB32());
+        // Boundaries: 0, 5, 10, 15, 20, 25
+        expect(stops[5].toARGB32(), green.toARGB32());
+        expect(stops[10].toARGB32(), blue.toARGB32());
+        expect(stops[15].toARGB32(), yellow.toARGB32());
+        expect(stops[20].toARGB32(), cyan.toARGB32());
+      },
+    );
 
     test('6-color: sliderGradientStopPositions is evenly spaced 0..1', () {
-      final stops = sliderGradientStopsFromList(
-        [red, green, blue, yellow, cyan, magenta],
-      );
+      final stops = sliderGradientStopsFromList([
+        red,
+        green,
+        blue,
+        yellow,
+        cyan,
+        magenta,
+      ]);
       final positions = sliderGradientStopPositions(stops);
       expect(positions.first, 0.0);
       expect(positions.last, 1.0);

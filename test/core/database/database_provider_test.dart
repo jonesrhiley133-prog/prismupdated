@@ -579,7 +579,8 @@ void main() {
         expect(
           report.state,
           DbStartupState.keychainUnavailable,
-          reason: 'a transiently-unreadable keychain must not condemn an '
+          reason:
+              'a transiently-unreadable keychain must not condemn an '
               'intact on-disk DB to the destructive reset path',
         );
         expect(report.keyInMemory, isNull);
@@ -589,68 +590,63 @@ void main() {
       },
     );
 
-    test(
-      'unknown-classified slot reads (keychain locked) on an intact DB must '
-      'NOT be unrecoverable',
-      () async {
-        final hex = _hexKeyForByte(0x2e);
-        final dbPath = '${tempDir.path}/prism.db';
-        _createEncryptedDb(dbPath, hex, userVersion: 30);
-        storageStub.store[kDatabaseKeyStorageKey] = hex;
+    test('unknown-classified slot reads (keychain locked) on an intact DB must '
+        'NOT be unrecoverable', () async {
+      final hex = _hexKeyForByte(0x2e);
+      final dbPath = '${tempDir.path}/prism.db';
+      _createEncryptedDb(dbPath, hex, userVersion: 30);
+      storageStub.store[kDatabaseKeyStorageKey] = hex;
 
-        // errSecInteractionNotAllowed (-25308): keychain not yet unlocked at
-        // boot. Classified `unknown` → NOT retried → currently treated as
-        // "missing" → unrecoverable. One queued throw is enough (no retry).
-        for (final slot in [
-          kDatabaseKeyStorageKey,
-          kSyncDatabaseKeyStorageKey,
-          '${kSyncDatabaseKeyStorageKey}_staging',
-          '${kDatabaseKeyStorageKey}_staging',
-        ]) {
-          storageStub.throwOnReadKeyQueue[slot] = [_keychainLockedException()];
-        }
+      // errSecInteractionNotAllowed (-25308): keychain not yet unlocked at
+      // boot. Classified `unknown` → NOT retried → currently treated as
+      // "missing" → unrecoverable. One queued throw is enough (no retry).
+      for (final slot in [
+        kDatabaseKeyStorageKey,
+        kSyncDatabaseKeyStorageKey,
+        '${kSyncDatabaseKeyStorageKey}_staging',
+        '${kDatabaseKeyStorageKey}_staging',
+      ]) {
+        storageStub.throwOnReadKeyQueue[slot] = [_keychainLockedException()];
+      }
 
-        final report = await probeAppDatabaseStartup(
-          directory: tempDir,
-          degradedStateService: degradedStateService,
-        );
+      final report = await probeAppDatabaseStartup(
+        directory: tempDir,
+        degradedStateService: degradedStateService,
+      );
 
-        expect(report.state, DbStartupState.keychainUnavailable);
-      },
-    );
+      expect(report.state, DbStartupState.keychainUnavailable);
+    });
 
-    test(
-      'macOS data-protection -50 with key only in DPK must NOT be '
-      'unrecoverable',
-      () async {
-        // The "Prism Dev" flap: the data-protection keychain throws errSecParam
-        // (-50). safeSecureRead reroutes to the legacy login keychain, which
-        // does NOT have the key, and currently returns a clean `missing` —
-        // erasing the signal that we never actually read the real (DPK) slot.
-        debugForceMacSecureStorageEntitlementFallback = true;
-        final hex = _hexKeyForByte(0x3f);
-        final dbPath = '${tempDir.path}/prism.db';
-        _createEncryptedDb(dbPath, hex, userVersion: 30);
-        storageStub
-          ..isolateLegacyStore = true
-          ..throwOnPrimaryRead = _macInvalidParameterException();
-        // The real key lives in the data-protection ("primary") store.
-        storageStub.store[kDatabaseKeyStorageKey] = hex;
-        // Legacy keychain is empty — nothing to fall back to.
+    test('macOS data-protection -50 with key only in DPK must NOT be '
+        'unrecoverable', () async {
+      // The "Prism Dev" flap: the data-protection keychain throws errSecParam
+      // (-50). safeSecureRead reroutes to the legacy login keychain, which
+      // does NOT have the key, and currently returns a clean `missing` —
+      // erasing the signal that we never actually read the real (DPK) slot.
+      debugForceMacSecureStorageEntitlementFallback = true;
+      final hex = _hexKeyForByte(0x3f);
+      final dbPath = '${tempDir.path}/prism.db';
+      _createEncryptedDb(dbPath, hex, userVersion: 30);
+      storageStub
+        ..isolateLegacyStore = true
+        ..throwOnPrimaryRead = _macInvalidParameterException();
+      // The real key lives in the data-protection ("primary") store.
+      storageStub.store[kDatabaseKeyStorageKey] = hex;
+      // Legacy keychain is empty — nothing to fall back to.
 
-        final report = await probeAppDatabaseStartup(
-          directory: tempDir,
-          degradedStateService: degradedStateService,
-        );
+      final report = await probeAppDatabaseStartup(
+        directory: tempDir,
+        degradedStateService: degradedStateService,
+      );
 
-        expect(
-          report.state,
-          DbStartupState.keychainUnavailable,
-          reason: 'a data-protection-keychain read error that falls back to an '
-              'empty legacy keychain is "could not read", not "key absent"',
-        );
-      },
-    );
+      expect(
+        report.state,
+        DbStartupState.keychainUnavailable,
+        reason:
+            'a data-protection-keychain read error that falls back to an '
+            'empty legacy keychain is "could not read", not "key absent"',
+      );
+    });
   });
 
   // ---------------------------------------------------------------------------

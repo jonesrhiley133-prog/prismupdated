@@ -268,7 +268,8 @@ class _BodyMapCanvasState extends State<BodyMapCanvas> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: theme.colorScheme.inverseSurface,
-                                  borderRadius: prismCorners(context, 
+                                  borderRadius: prismCorners(
+                                    context,
                                     PrismTokens.radiusSmall,
                                   ),
                                 ),

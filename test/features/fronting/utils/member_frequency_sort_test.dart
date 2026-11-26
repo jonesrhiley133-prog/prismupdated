@@ -3,11 +3,11 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/fronting/utils/member_frequency_sort.dart';
 
 Member _member(String id, {int displayOrder = 0}) => Member(
-      id: id,
-      name: id,
-      createdAt: DateTime(2026),
-      displayOrder: displayOrder,
-    );
+  id: id,
+  name: id,
+  createdAt: DateTime(2026),
+  displayOrder: displayOrder,
+);
 
 void main() {
   group('sortMembersByFrequency', () {
@@ -60,7 +60,9 @@ void main() {
 
     test('defaults to take=4', () {
       final members = List.generate(6, (i) => _member('m$i'));
-      final counts = {for (final m in members) m.id: 6 - int.parse(m.id.substring(1))};
+      final counts = {
+        for (final m in members) m.id: 6 - int.parse(m.id.substring(1)),
+      };
 
       final result = sortMembersByFrequency(members, counts);
 

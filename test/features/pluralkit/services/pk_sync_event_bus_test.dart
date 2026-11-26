@@ -12,23 +12,26 @@ void main() {
     setUp(resetPkBusMainIsolateForTest);
     tearDown(resetPkBusMainIsolateForTest);
 
-    test('emit after markPkBusMainIsolate() delivers to stream listeners',
-        () async {
-      markPkBusMainIsolate();
-      final bus = PkSyncEventBus();
-      addTearDown(bus.dispose);
+    test(
+      'emit after markPkBusMainIsolate() delivers to stream listeners',
+      () async {
+        markPkBusMainIsolate();
+        final bus = PkSyncEventBus();
+        addTearDown(bus.dispose);
 
-      final event = _evt('A');
-      final completer = Completer<PkSyncEvent>();
-      final sub = bus.stream.listen(completer.complete);
-      addTearDown(sub.cancel);
+        final event = _evt('A');
+        final completer = Completer<PkSyncEvent>();
+        final sub = bus.stream.listen(completer.complete);
+        addTearDown(sub.cancel);
 
-      bus.emit(event);
+        bus.emit(event);
 
-      final received = await completer.future
-          .timeout(const Duration(seconds: 1));
-      expect(received, same(event));
-    });
+        final received = await completer.future.timeout(
+          const Duration(seconds: 1),
+        );
+        expect(received, same(event));
+      },
+    );
 
     test('emit is a silent no-op when not marked as main isolate', () async {
       final bus = PkSyncEventBus();
@@ -110,22 +113,27 @@ void main() {
       );
     });
 
-    test('pkSyncEventBusProvider returns a working bus and disposes it',
-        () async {
-      markPkBusMainIsolate();
-      final container = ProviderContainer();
-      final bus = container.read(pkSyncEventBusProvider);
+    test(
+      'pkSyncEventBusProvider returns a working bus and disposes it',
+      () async {
+        markPkBusMainIsolate();
+        final container = ProviderContainer();
+        final bus = container.read(pkSyncEventBusProvider);
 
-      final received = <PkSyncEvent>[];
-      final sub = bus.stream.listen(received.add);
-      addTearDown(sub.cancel);
+        final received = <PkSyncEvent>[];
+        final sub = bus.stream.listen(received.add);
+        addTearDown(sub.cancel);
 
-      bus.emit(_evt('via-provider'));
-      await Future<void>.delayed(Duration.zero);
-      expect(received.length, 1);
+        bus.emit(_evt('via-provider'));
+        await Future<void>.delayed(Duration.zero);
+        expect(received.length, 1);
 
-      container.dispose();
-      expect(() => bus.emit(_evt('after-container-dispose')), returnsNormally);
-    });
+        container.dispose();
+        expect(
+          () => bus.emit(_evt('after-container-dispose')),
+          returnsNormally,
+        );
+      },
+    );
   });
 }

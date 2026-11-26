@@ -10,7 +10,9 @@ import 'package:prism_plurality/features/astro/engine/ephemeris.dart';
 void main() {
   final ref =
       jsonDecode(
-            File('test/features/astro/ephemeris_reference.json').readAsStringSync(),
+            File(
+              'test/features/astro/ephemeris_reference.json',
+            ).readAsStringSync(),
           )
           as Map<String, dynamic>;
 
@@ -79,8 +81,14 @@ void main() {
   });
 
   test('retrograde detection: Mercury retrograde on 2019-07-20', () {
-    expect(positionOf(Body.mercury, DateTime.utc(2019, 7, 20)).retrograde, isTrue);
-    expect(positionOf(Body.mercury, DateTime.utc(2019, 9, 1)).retrograde, isFalse);
+    expect(
+      positionOf(Body.mercury, DateTime.utc(2019, 7, 20)).retrograde,
+      isTrue,
+    );
+    expect(
+      positionOf(Body.mercury, DateTime.utc(2019, 9, 1)).retrograde,
+      isFalse,
+    );
   });
 
   test('Chiron is roughly right (Aries in 2020, Pisces in 2012)', () {

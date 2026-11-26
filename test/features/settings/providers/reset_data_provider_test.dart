@@ -3326,86 +3326,86 @@ class _ResetHarness {
 
     await db
         .into(db.savedLocations)
-      .insert(
-        SavedLocationsCompanion.insert(
-          id: 'loc1',
-          name: 'Home',
-          emoji: const Value('🏠'),
-          colorHex: const Value('#336699'),
-          address: const Value('1 Main St'),
-          notes: const Value('n'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          SavedLocationsCompanion.insert(
+            id: 'loc1',
+            name: 'Home',
+            emoji: const Value('🏠'),
+            colorHex: const Value('#336699'),
+            address: const Value('1 Main St'),
+            notes: const Value('n'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
     await db
         .into(db.locationSessions)
-      .insert(
-        LocationSessionsCompanion.insert(
-          id: 'ls1',
-          locationId: 'loc1',
-          startedAt: now,
-          endedAt: Value(now.add(const Duration(seconds: 61))),
-          note: const Value('n'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          LocationSessionsCompanion.insert(
+            id: 'ls1',
+            locationId: 'loc1',
+            startedAt: now,
+            endedAt: Value(now.add(const Duration(seconds: 61))),
+            note: const Value('n'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
     await db
         .into(db.jobs)
-      .insert(
-        JobsCompanion.insert(
-          id: 'job1',
-          name: 'Cafe',
-          colorHex: const Value('#336699'),
-          notes: const Value('n'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          JobsCompanion.insert(
+            id: 'job1',
+            name: 'Cafe',
+            colorHex: const Value('#336699'),
+            notes: const Value('n'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
     await db
         .into(db.workSessions)
-      .insert(
-        WorkSessionsCompanion.insert(
-          id: 'ws1',
-          jobId: 'job1',
-          startedAt: now,
-          endedAt: Value(now.add(const Duration(seconds: 3601))),
-          memberId: const Value('m1'),
-          note: const Value('n'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          WorkSessionsCompanion.insert(
+            id: 'ws1',
+            jobId: 'job1',
+            startedAt: now,
+            endedAt: Value(now.add(const Duration(seconds: 3601))),
+            memberId: const Value('m1'),
+            note: const Value('n'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
 
     await db
         .into(db.cycleEntries)
-      .insert(
-        CycleEntriesCompanion.insert(
-          id: 'cy1',
-          date: '2026-01-01',
-          symptoms: const Value('["cramps"]'),
-          note: const Value('n'),
-          memberId: const Value('member-1'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          CycleEntriesCompanion.insert(
+            id: 'cy1',
+            date: '2026-01-01',
+            symptoms: const Value('["cramps"]'),
+            note: const Value('n'),
+            memberId: const Value('member-1'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
     await db
         .into(db.contacts)
-      .insert(
-        ContactsCompanion.insert(
-          id: 'ct1',
-          displayName: 'Sam',
-          phones: const Value('["+1555"]'),
-          emails: const Value('["s@example.com"]'),
-          birthday: const Value('1990-04-02'),
-          notes: const Value('n'),
-          externalId: const Value('x1'),
-          createdAt: now,
-          modifiedAt: now,
-        ),
-      );
+        .insert(
+          ContactsCompanion.insert(
+            id: 'ct1',
+            displayName: 'Sam',
+            phones: const Value('["+1555"]'),
+            emails: const Value('["s@example.com"]'),
+            birthday: const Value('1990-04-02'),
+            notes: const Value('n'),
+            externalId: const Value('x1'),
+            createdAt: now,
+            modifiedAt: now,
+          ),
+        );
     await db
         .into(db.trackerRecords)
         .insert(

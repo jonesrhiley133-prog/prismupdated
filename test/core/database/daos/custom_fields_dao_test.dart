@@ -26,16 +26,19 @@ void main() {
         ),
       );
 
-  Future<void> insertValue(String id, {bool isDeleted = false}) =>
-      db.customFieldsDao.upsertValue(
-        CustomFieldValuesCompanion.insert(
-          id: id,
-          customFieldId: 'field-1',
-          memberId: 'member-$id', // unique per value to avoid (field,member) constraint
-          value: 'v',
-          isDeleted: Value(isDeleted),
-        ),
-      );
+  Future<void> insertValue(
+    String id, {
+    bool isDeleted = false,
+  }) => db.customFieldsDao.upsertValue(
+    CustomFieldValuesCompanion.insert(
+      id: id,
+      customFieldId: 'field-1',
+      memberId:
+          'member-$id', // unique per value to avoid (field,member) constraint
+      value: 'v',
+      isDeleted: Value(isDeleted),
+    ),
+  );
 
   // ── getNonDeletedFieldIds ────────────────────────────────────────────────────
 
@@ -208,61 +211,63 @@ void main() {
       expect(c!.id, 'det-c');
     });
 
-    test('resolution stays correct across the 500-row lookup chunk boundary',
-        () async {
-      // Pre-seed one adopt case and one burned id, both in the third chunk.
-      await db.customFieldsDao.upsertValue(
-        CustomFieldValuesCompanion.insert(
-          id: 'zz-active-0700',
-          customFieldId: 'field-1',
-          memberId: 'member-0700',
-          value: 'live',
-        ),
-      );
-      await db.customFieldsDao.upsertValue(
-        CustomFieldValuesCompanion.insert(
-          id: 'target-0800',
-          customFieldId: 'field-1',
-          memberId: 'member-0800',
-          value: 'old',
-        ),
-      );
-      await db.customFieldsDao.deleteValue('target-0800');
-
-      final rows = [
-        for (var i = 0; i < 1100; i++)
+    test(
+      'resolution stays correct across the 500-row lookup chunk boundary',
+      () async {
+        // Pre-seed one adopt case and one burned id, both in the third chunk.
+        await db.customFieldsDao.upsertValue(
           CustomFieldValuesCompanion.insert(
-            id: 'target-${i.toString().padLeft(4, '0')}',
+            id: 'zz-active-0700',
             customFieldId: 'field-1',
-            memberId: 'member-${i.toString().padLeft(4, '0')}',
-            value: 'v$i',
+            memberId: 'member-0700',
+            value: 'live',
           ),
-      ];
-      final written = await db.customFieldsDao.reconcileValuesFromImport(
-        rows,
-        mintFreshId: () => 'fresh-0800',
-      );
+        );
+        await db.customFieldsDao.upsertValue(
+          CustomFieldValuesCompanion.insert(
+            id: 'target-0800',
+            customFieldId: 'field-1',
+            memberId: 'member-0800',
+            value: 'old',
+          ),
+        );
+        await db.customFieldsDao.deleteValue('target-0800');
 
-      expect(written.length, 1100);
-      expect(written[0], 'target-0000');
-      expect(written[499], 'target-0499');
-      expect(written[500], 'target-0500');
-      expect(written[700], 'zz-active-0700');
-      expect(written[800], 'fresh-0800');
-      expect(written[1099], 'target-1099');
-      final active = await (db.select(db.customFieldValues)
-            ..where((v) => v.isDeleted.equals(false)))
-          .get();
-      expect(active.length, 1100);
-      expect(
-        active.singleWhere((r) => r.memberId == 'member-0700').value,
-        'v700',
-      );
-      expect(
-        active.singleWhere((r) => r.memberId == 'member-0800').id,
-        'fresh-0800',
-      );
-    });
+        final rows = [
+          for (var i = 0; i < 1100; i++)
+            CustomFieldValuesCompanion.insert(
+              id: 'target-${i.toString().padLeft(4, '0')}',
+              customFieldId: 'field-1',
+              memberId: 'member-${i.toString().padLeft(4, '0')}',
+              value: 'v$i',
+            ),
+        ];
+        final written = await db.customFieldsDao.reconcileValuesFromImport(
+          rows,
+          mintFreshId: () => 'fresh-0800',
+        );
+
+        expect(written.length, 1100);
+        expect(written[0], 'target-0000');
+        expect(written[499], 'target-0499');
+        expect(written[500], 'target-0500');
+        expect(written[700], 'zz-active-0700');
+        expect(written[800], 'fresh-0800');
+        expect(written[1099], 'target-1099');
+        final active = await (db.select(
+          db.customFieldValues,
+        )..where((v) => v.isDeleted.equals(false))).get();
+        expect(active.length, 1100);
+        expect(
+          active.singleWhere((r) => r.memberId == 'member-0700').value,
+          'v700',
+        );
+        expect(
+          active.singleWhere((r) => r.memberId == 'member-0800').id,
+          'fresh-0800',
+        );
+      },
+    );
 
     test('duplicate (field, member) inputs over a burned id collapse onto one '
         'minted row, last value wins', () async {
@@ -302,7 +307,10 @@ void main() {
       final result = await db.customFieldsDao.softDeleteAllCustomFieldData();
 
       // Returned IDs match the rows that were active before the call
-      expect(result.fieldIds.toSet(), equals({'f-active-1', 'f-active-2', 'field-1'}));
+      expect(
+        result.fieldIds.toSet(),
+        equals({'f-active-1', 'f-active-2', 'field-1'}),
+      );
       expect(result.valueIds.toSet(), equals({'v-active-1', 'v-active-2'}));
 
       // Query ALL rows including tombstones
@@ -312,12 +320,18 @@ void main() {
       expect(allFields, isNotEmpty);
       expect(allValues, isNotEmpty);
       for (final row in allFields) {
-        expect(row.isDeleted, isTrue,
-            reason: 'field ${row.id} should be tombstoned');
+        expect(
+          row.isDeleted,
+          isTrue,
+          reason: 'field ${row.id} should be tombstoned',
+        );
       }
       for (final row in allValues) {
-        expect(row.isDeleted, isTrue,
-            reason: 'value ${row.id} should be tombstoned');
+        expect(
+          row.isDeleted,
+          isTrue,
+          reason: 'value ${row.id} should be tombstoned',
+        );
       }
     });
 
@@ -333,7 +347,8 @@ void main() {
       expect(first.fieldIds, isNotEmpty);
       expect(first.valueIds, isNotEmpty);
 
-      final second = await db.customFieldsDao.softDeleteAllCustomFieldData(); // second call
+      final second = await db.customFieldsDao
+          .softDeleteAllCustomFieldData(); // second call
       // Second call finds nothing active — empty lists
       expect(second.fieldIds.isEmpty, isTrue);
       expect(second.valueIds.isEmpty, isTrue);

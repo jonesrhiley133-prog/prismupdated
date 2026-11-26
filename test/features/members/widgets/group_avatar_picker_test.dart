@@ -74,24 +74,25 @@ void main() {
       expect(find.byIcon(AppIcons.cameraAlt), findsOneWidget);
     });
 
-    testWidgets('remove × badge is visible when avatarImageData is non-null and non-empty', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrap(
-          GroupAvatarPicker(
-            avatarImageData: _kOnePxPng,
-            emoji: null,
-            showEmojiOnAvatar: false,
-            onPickImage: () {},
-            onRemoveImage: () {},
+    testWidgets(
+      'remove × badge is visible when avatarImageData is non-null and non-empty',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrap(
+            GroupAvatarPicker(
+              avatarImageData: _kOnePxPng,
+              emoji: null,
+              showEmojiOnAvatar: false,
+              onPickImage: () {},
+              onRemoveImage: () {},
+            ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      expect(find.byIcon(AppIcons.close), findsOneWidget);
-    });
+        expect(find.byIcon(AppIcons.close), findsOneWidget);
+      },
+    );
 
     testWidgets('remove × badge is hidden when avatarImageData is null', (
       tester,

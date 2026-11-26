@@ -4,14 +4,16 @@ import 'package:prism_plurality/shared/utils/markdown_cursor_insert.dart';
 
 void main() {
   group('insertMarkdownAtCursor', () {
-    test('inserts at a collapsed cursor and moves the caret after the insert',
-        () {
-      final c = TextEditingController(text: 'abcd');
-      c.selection = const TextSelection.collapsed(offset: 2);
-      insertMarkdownAtCursor(c, 'XY');
-      expect(c.text, 'abXYcd');
-      expect(c.selection.baseOffset, 4);
-    });
+    test(
+      'inserts at a collapsed cursor and moves the caret after the insert',
+      () {
+        final c = TextEditingController(text: 'abcd');
+        c.selection = const TextSelection.collapsed(offset: 2);
+        insertMarkdownAtCursor(c, 'XY');
+        expect(c.text, 'abXYcd');
+        expect(c.selection.baseOffset, 4);
+      },
+    );
 
     test('replaces the selected range', () {
       final c = TextEditingController(text: 'abcd');

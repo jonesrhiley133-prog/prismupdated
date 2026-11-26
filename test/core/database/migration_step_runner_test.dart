@@ -57,8 +57,7 @@ Future<Map<String, Set<String>>> _schemaFingerprint(AppDatabase db) async {
 
 void main() {
   group('F20 migration step-runner', () {
-    test(
-        'wedged install: a partial ADD COLUMN + table-create stamped at a stale '
+    test('wedged install: a partial ADD COLUMN + table-create stamped at a stale '
         'version completes the chain with no duplicate-column / table-exists '
         'error', () async {
       final dbFile = await _seedCurrentDb('prism_f20_wedged_');
@@ -83,21 +82,23 @@ void main() {
       // Must not throw on open.
       await upgraded.customSelect('SELECT 1').get();
 
-      final version =
-          await upgraded.customSelect('PRAGMA user_version').getSingle();
+      final version = await upgraded
+          .customSelect('PRAGMA user_version')
+          .getSingle();
       expect(
         version.read<int>('user_version'),
         AppDatabase.currentSchemaVersion,
       );
       // The already-present columns/tables survive and the chain reaches head.
-      expect(await _columns(upgraded, 'member_groups'),
-          contains('sync_generation'));
+      expect(
+        await _columns(upgraded, 'member_groups'),
+        contains('sync_generation'),
+      );
       expect(await _tables(upgraded), contains('sync_op_outbox'));
       expect(await _tables(upgraded), contains('pk_identity_sync_aliases'));
     });
 
-    test(
-        'per-step stamping: a kill mid-chain leaves user_version at the last '
+    test('per-step stamping: a kill mid-chain leaves user_version at the last '
         'completed step, and re-opening completes the chain', () async {
       final dbFile = await _seedCurrentDb('prism_f20_stamp_');
 
@@ -135,8 +136,9 @@ void main() {
       // DDL nor its PRAGMA landed.
       final afterCrash = raw.sqlite3.open(dbFile.path);
       try {
-        final ver =
-            afterCrash.select('PRAGMA user_version').first['user_version'];
+        final ver = afterCrash
+            .select('PRAGMA user_version')
+            .first['user_version'];
         expect(ver, 37);
         // The failing step's column/table did not land.
         final cols = afterCrash
@@ -157,78 +159,87 @@ void main() {
       final resumed = AppDatabase(NativeDatabase(dbFile));
       addTearDown(resumed.close);
       await resumed.customSelect('SELECT 1').get();
-      final version =
-          await resumed.customSelect('PRAGMA user_version').getSingle();
+      final version = await resumed
+          .customSelect('PRAGMA user_version')
+          .getSingle();
       expect(
         version.read<int>('user_version'),
         AppDatabase.currentSchemaVersion,
       );
-      expect(await _columns(resumed, 'member_groups'),
-          contains('sync_generation'));
+      expect(
+        await _columns(resumed, 'member_groups'),
+        contains('sync_generation'),
+      );
       expect(await _tables(resumed), contains('pk_identity_sync_aliases'));
       expect(await _tables(resumed), contains('sync_op_outbox'));
     });
 
     test(
-        'idempotency sweep: re-running the chain from every step boundary over '
-        'an already-current-shaped DB is a no-op with an identical schema',
-        () async {
-      // One looped test over the data-driven step list: for each step `from`,
-      // rewind a current-shaped DB to that version and open twice. The first
-      // open runs the chain (every applicable step's idempotency guard fires
-      // against already-present DDL); the second open re-runs it after another
-      // rewind, and the resulting schema must be byte-for-byte identical with
-      // no throw on either pass.
-      final probe = await _seedCurrentDb('prism_f20_bounds_');
-      final probeDb = AppDatabase(NativeDatabase(probe));
-      final froms = probeDb.debugMigrationStepBounds
-          .map((b) => b.$1)
-          .toSet()
-          .toList()
-        ..sort();
-      await probeDb.close();
+      'idempotency sweep: re-running the chain from every step boundary over '
+      'an already-current-shaped DB is a no-op with an identical schema',
+      () async {
+        // One looped test over the data-driven step list: for each step `from`,
+        // rewind a current-shaped DB to that version and open twice. The first
+        // open runs the chain (every applicable step's idempotency guard fires
+        // against already-present DDL); the second open re-runs it after another
+        // rewind, and the resulting schema must be byte-for-byte identical with
+        // no throw on either pass.
+        final probe = await _seedCurrentDb('prism_f20_bounds_');
+        final probeDb = AppDatabase(NativeDatabase(probe));
+        final froms =
+            probeDb.debugMigrationStepBounds.map((b) => b.$1).toSet().toList()
+              ..sort();
+        await probeDb.close();
 
-      for (final from in froms) {
-        final dbFile = await _seedCurrentDb('prism_f20_sweep_${from}_');
+        for (final from in froms) {
+          final dbFile = await _seedCurrentDb('prism_f20_sweep_${from}_');
 
-        Future<void> rewind() async {
-          final rawDb = raw.sqlite3.open(dbFile.path);
-          try {
-            rawDb.execute('PRAGMA user_version = $from');
-          } finally {
-            rawDb.close();
+          Future<void> rewind() async {
+            final rawDb = raw.sqlite3.open(dbFile.path);
+            try {
+              rawDb.execute('PRAGMA user_version = $from');
+            } finally {
+              rawDb.close();
+            }
           }
+
+          await rewind();
+          final first = AppDatabase(NativeDatabase(dbFile));
+          await first.customSelect('SELECT 1').get();
+          final firstSchema = await _schemaFingerprint(first);
+          final firstVersion =
+              (await first.customSelect('PRAGMA user_version').getSingle())
+                  .read<int>('user_version');
+          await first.close();
+
+          await rewind();
+          final second = AppDatabase(NativeDatabase(dbFile));
+          // The whole point of the step runner: re-running already-applied steps must not
+          // throw "duplicate column name" / "table already exists".
+          await second.customSelect('SELECT 1').get();
+          final secondSchema = await _schemaFingerprint(second);
+          final secondVersion =
+              (await second.customSelect('PRAGMA user_version').getSingle())
+                  .read<int>('user_version');
+          await second.close();
+
+          expect(
+            firstVersion,
+            AppDatabase.currentSchemaVersion,
+            reason: 'first open from v$from should reach head',
+          );
+          expect(
+            secondVersion,
+            AppDatabase.currentSchemaVersion,
+            reason: 're-open from v$from should reach head',
+          );
+          expect(
+            secondSchema,
+            firstSchema,
+            reason: 'schema must be identical after re-running from v$from',
+          );
         }
-
-        await rewind();
-        final first = AppDatabase(NativeDatabase(dbFile));
-        await first.customSelect('SELECT 1').get();
-        final firstSchema = await _schemaFingerprint(first);
-        final firstVersion = (await first
-                .customSelect('PRAGMA user_version')
-                .getSingle())
-            .read<int>('user_version');
-        await first.close();
-
-        await rewind();
-        final second = AppDatabase(NativeDatabase(dbFile));
-        // The whole point of the step runner: re-running already-applied steps must not
-        // throw "duplicate column name" / "table already exists".
-        await second.customSelect('SELECT 1').get();
-        final secondSchema = await _schemaFingerprint(second);
-        final secondVersion = (await second
-                .customSelect('PRAGMA user_version')
-                .getSingle())
-            .read<int>('user_version');
-        await second.close();
-
-        expect(firstVersion, AppDatabase.currentSchemaVersion,
-            reason: 'first open from v$from should reach head');
-        expect(secondVersion, AppDatabase.currentSchemaVersion,
-            reason: 're-open from v$from should reach head');
-        expect(secondSchema, firstSchema,
-            reason: 'schema must be identical after re-running from v$from');
-      }
-    });
+      },
+    );
   });
 }

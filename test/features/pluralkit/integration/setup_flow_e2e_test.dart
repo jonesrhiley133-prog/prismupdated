@@ -27,7 +27,8 @@ import 'package:prism_plurality/core/database/daos/pluralkit_sync_dao.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/database/database_providers.dart';
 import 'package:prism_plurality/core/mutations/mutation_runner.dart';
-import 'package:prism_plurality/domain/models/fronting_session.dart' as fronting;
+import 'package:prism_plurality/domain/models/fronting_session.dart'
+    as fronting;
 import 'package:prism_plurality/domain/models/member.dart' as domain;
 import 'package:prism_plurality/domain/repositories/fronting_session_repository.dart';
 import 'package:prism_plurality/domain/repositories/member_repository.dart';
@@ -80,8 +81,7 @@ void _installSecureStorageStub() {
 
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final String _systemId;
   final List<PKMember> _members;
 
@@ -92,13 +92,14 @@ class _FakeClient implements PluralKitClient {
   PKSwitch? currentFrontersResult;
 
   _FakeClient(this._systemId, {List<PKMember> members = const []})
-      : _members = members;
+    : _members = members;
 
   @override
   String get currentToken => 'fake-token';
 
   @override
-  Future<PKSystem> getSystem() async => PKSystem(id: _systemId, name: 'Test System');
+  Future<PKSystem> getSystem() async =>
+      PKSystem(id: _systemId, name: 'Test System');
 
   @override
   Future<List<PKMember>> getMembers() async => _members;
@@ -121,8 +122,10 @@ class _FakeClient implements PluralKitClient {
   }
 
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async =>
-      const [];
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async => const [];
 
   @override
   Future<PKMember> getMember(String memberRef) => throw UnimplementedError();
@@ -139,15 +142,13 @@ class _FakeClient implements PluralKitClient {
   Future<PKSwitch> updateSwitch(
     String switchId, {
     required DateTime timestamp,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<PKSwitch> updateSwitchMembers(
     String switchId,
     List<String> memberIds,
-  ) =>
-      throw UnimplementedError();
+  ) => throw UnimplementedError();
 
   @override
   Future<void> deleteSwitch(String switchId) => throw UnimplementedError();
@@ -165,18 +166,14 @@ class _FakeClient implements PluralKitClient {
   Future<List<String>> getGroupMembers(String groupRef) async => const [];
 
   @override
-  Future<void> addMembersToGroup(
-    String groupRef,
-    List<String> memberRefs,
-  ) =>
+  Future<void> addMembersToGroup(String groupRef, List<String> memberRefs) =>
       throw UnimplementedError();
 
   @override
   Future<void> removeMembersFromGroup(
     String groupRef,
     List<String> memberRefs,
-  ) =>
-      throw UnimplementedError();
+  ) => throw UnimplementedError();
 
   @override
   void dispose() {}
@@ -219,10 +216,7 @@ class _FakeMemberRepo implements MemberRepository {
   ) async => throw UnimplementedError();
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _byId[id];
     if (existing == null || existing.isDeleted) return 0;
     _byId[id] = existing.copyWith(
@@ -231,7 +225,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
       pluralkitSyncIgnored: false,
     );
     return 1;
@@ -250,7 +244,7 @@ class _FakeMemberRepo implements MemberRepository {
       pluralkitId: patch['pluralkit_id'] as String? ?? existing.pluralkitId,
       pluralkitDisplayName:
           patch['pluralkit_display_name'] as String? ??
-              existing.pluralkitDisplayName,
+          existing.pluralkitDisplayName,
     );
     return 1;
   }
@@ -283,7 +277,9 @@ class _FakeMemberRepo implements MemberRepository {
 
   @override
   Stream<List<domain.Member>> watchMembersByIds(List<String> ids) =>
-      Stream.value(ids.map((id) => _byId[id]).whereType<domain.Member>().toList());
+      Stream.value(
+        ids.map((id) => _byId[id]).whereType<domain.Member>().toList(),
+      );
 
   @override
   Stream<List<domain.Member>> watchActiveMembers() =>
@@ -327,10 +323,11 @@ class _TrackingFrontingSessionRepo implements FrontingSessionRepository {
   final List<fronting.FrontingSession> createdSessions = [];
 
   _TrackingFrontingSessionRepo(List<fronting.FrontingSession> initial)
-      : _sessions = List.of(initial);
+    : _sessions = List.of(initial);
 
   @override
-  Future<List<fronting.FrontingSession>> getAllActiveSessionsUnfiltered() async =>
+  Future<List<fronting.FrontingSession>>
+  getAllActiveSessionsUnfiltered() async =>
       _sessions.where((s) => s.endTime == null && !s.isDeleted).toList();
 
   @override
@@ -338,10 +335,12 @@ class _TrackingFrontingSessionRepo implements FrontingSessionRepository {
       _sessions.where((s) => s.endTime == null && !s.isDeleted).toList();
 
   @override
-  Future<List<fronting.FrontingSession>> getAllSessions() async => List.of(_sessions);
+  Future<List<fronting.FrontingSession>> getAllSessions() async =>
+      List.of(_sessions);
 
   @override
-  Future<List<fronting.FrontingSession>> getFrontingSessions() async => const [];
+  Future<List<fronting.FrontingSession>> getFrontingSessions() async =>
+      const [];
 
   @override
   Future<List<fronting.FrontingSession>> getDeletedLinkedSessions() async =>
@@ -375,7 +374,10 @@ class _TrackingFrontingSessionRepo implements FrontingSessionRepository {
 
   @override
   Future<fronting.FrontingSession?> getSessionById(String id) async =>
-      _sessions.firstWhere((s) => s.id == id, orElse: () => throw StateError('not found'));
+      _sessions.firstWhere(
+        (s) => s.id == id,
+        orElse: () => throw StateError('not found'),
+      );
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError(
@@ -479,14 +481,13 @@ domain.Member _localMember(
   String name, {
   String? pkUuid,
   String? pkId,
-}) =>
-    domain.Member(
-      id: id,
-      name: name,
-      createdAt: DateTime(2026),
-      pluralkitUuid: pkUuid,
-      pluralkitId: pkId,
-    );
+}) => domain.Member(
+  id: id,
+  name: name,
+  createdAt: DateTime(2026),
+  pluralkitUuid: pkUuid,
+  pluralkitId: pkId,
+);
 
 fronting.FrontingSession _activeSession(String id, String memberId) =>
     fronting.FrontingSession(
@@ -568,22 +569,31 @@ void main() {
 
       // Step 1: setToken
       await svc.setToken('test-token');
-      expect(svc.state.needsDirection, isTrue,
-          reason: 'After setToken with fresh system, needsDirection must be true');
+      expect(
+        svc.state.needsDirection,
+        isTrue,
+        reason: 'After setToken with fresh system, needsDirection must be true',
+      );
       expect(svc.state.canAutoSync, isFalse);
 
       // Step 2: confirmDirection
       await svc.confirmDirection();
-      expect(svc.state.needsMapping, isTrue,
-          reason: 'After confirmDirection, needsMapping must be true');
+      expect(
+        svc.state.needsMapping,
+        isTrue,
+        reason: 'After confirmDirection, needsMapping must be true',
+      );
       expect(svc.state.needsDirection, isFalse);
       expect(svc.state.canAutoSync, isFalse);
 
       // Step 3: acknowledgeMapping (simulates the mapping screen's apply
       // completion path when sets match → PkMappingApplyOutcomeApplied)
       await svc.acknowledgeMapping();
-      expect(svc.state.canAutoSync, isTrue,
-          reason: 'After acknowledgeMapping, canAutoSync must be true');
+      expect(
+        svc.state.canAutoSync,
+        isTrue,
+        reason: 'After acknowledgeMapping, canAutoSync must be true',
+      );
       expect(svc.state.needsMapping, isFalse);
       expect(svc.state.needsDirection, isFalse);
 
@@ -667,8 +677,11 @@ void main() {
       // Step 1: setToken + confirmDirection (puts us into needsMapping)
       await svc.setToken('test-token');
       await svc.confirmDirection();
-      expect(svc.state.needsMapping, isTrue,
-          reason: 'Precondition: must be in needsMapping after confirmDirection');
+      expect(
+        svc.state.needsMapping,
+        isTrue,
+        reason: 'Precondition: must be in needsMapping after confirmDirection',
+      );
 
       // Set bidirectional direction so disagreement is actionable.
       await container
@@ -687,17 +700,24 @@ void main() {
       expect(
         outcome,
         isA<PkMappingApplyOutcomeNeedsFronterResolution>(),
-        reason: 'Disagreement (Alice local vs Bob PK) must produce NeedsFronterResolution',
+        reason:
+            'Disagreement (Alice local vs Bob PK) must produce NeedsFronterResolution',
       );
-      expect(svc.bootstrapRan, isFalse,
-          reason: 'Bootstrap must NOT run before fronter resolution');
+      expect(
+        svc.bootstrapRan,
+        isFalse,
+        reason: 'Bootstrap must NOT run before fronter resolution',
+      );
 
       final resolution = outcome as PkMappingApplyOutcomeNeedsFronterResolution;
       // Local set has Alice (l1) fronting.
       expect(resolution.localFronterMemberIds, contains('l1'));
       // PK projected set: bbbbb → Bob (l2) via the just-applied PkLinkDecision.
-      expect(resolution.pkFronterMemberIds, contains('l2'),
-          reason: 'bbbbb must map to l2 through the Bob PkLinkDecision');
+      expect(
+        resolution.pkFronterMemberIds,
+        contains('l2'),
+        reason: 'bbbbb must map to l2 through the Bob PkLinkDecision',
+      );
       expect(resolution.direction, PkSyncDirection.bidirectional);
 
       // Step 3: applyFronterResolution — user picks co-front (both Alice + Bob).
@@ -725,14 +745,18 @@ void main() {
       // Assert: exactly one open session per chosen member at end.
       final finalActive = await frontingRepo.getAllActiveSessionsUnfiltered();
       final activeMemberIds = finalActive.map((s) => s.memberId).toSet();
-      expect(activeMemberIds, containsAll(['l1', 'l2']),
-          reason: 'Both Alice and Bob must have exactly one open session');
+      expect(
+        activeMemberIds,
+        containsAll(['l1', 'l2']),
+        reason: 'Both Alice and Bob must have exactly one open session',
+      );
 
       // Assert: PK push happened (pushOverrideSwitch was called).
       expect(
         svc.pushOverrideSwitchCallCount,
         equals(1),
-        reason: 'pushOverrideSwitch must be called once for bidirectional + non-empty chosen set',
+        reason:
+            'pushOverrideSwitch must be called once for bidirectional + non-empty chosen set',
       );
       expect(
         svc.lastPushOverrideMemberIds,
@@ -744,7 +768,8 @@ void main() {
       expect(
         svc.advanceCursorCallCount,
         equals(1),
-        reason: 'advanceImportCursorPast must be called once after successful push',
+        reason:
+            'advanceImportCursorPast must be called once after successful push',
       );
       expect(
         svc.lastAdvanceCursorArgs?.switchId,
@@ -759,7 +784,8 @@ void main() {
       expect(
         svc.lastAdvanceCursorArgs?.timestamp,
         equals(DateTime.utc(2026, 1, 1, 12)),
-        reason: "Cursor timestamp must be PK's stored timestamp, not local "
+        reason:
+            "Cursor timestamp must be PK's stored timestamp, not local "
             'DateTime.now(). See bug media heal.',
       );
 
@@ -771,8 +797,11 @@ void main() {
       );
 
       // Assert: state is now canAutoSync (mapping was acknowledged by apply()).
-      expect(svc.state.canAutoSync, isTrue,
-          reason: 'apply() acknowledged mapping → canAutoSync after resolution');
+      expect(
+        svc.state.canAutoSync,
+        isTrue,
+        reason: 'apply() acknowledged mapping → canAutoSync after resolution',
+      );
     },
   );
 
@@ -822,8 +851,12 @@ void main() {
       expect(svc.state.isConnected, isTrue);
       expect(svc.state.directionConfirmed, isTrue);
       expect(svc.state.mappingAcknowledged, isTrue);
-      expect(svc.state.canAutoSync, isTrue,
-          reason: 'Same-system reconnect must skip the wizard and be canAutoSync immediately');
+      expect(
+        svc.state.canAutoSync,
+        isTrue,
+        reason:
+            'Same-system reconnect must skip the wizard and be canAutoSync immediately',
+      );
       expect(svc.state.needsDirection, isFalse);
       expect(svc.state.needsMapping, isFalse);
 
@@ -918,25 +951,39 @@ void main() {
       expect(
         outcome,
         isA<PkMappingApplyOutcomeNeedsFronterResolution>(),
-        reason: 'Precondition: disagreement must produce NeedsFronterResolution',
+        reason:
+            'Precondition: disagreement must produce NeedsFronterResolution',
       );
       // apply() has acknowledged the mapping — so needsMapping should be false.
-      expect(svc.state.needsMapping, isFalse,
-          reason: 'apply() calls acknowledgeMapping regardless of outcome');
-      expect(svc.state.canAutoSync, isTrue,
-          reason: 'mapping acknowledged → canAutoSync is already true before deferBootstrap');
+      expect(
+        svc.state.needsMapping,
+        isFalse,
+        reason: 'apply() calls acknowledgeMapping regardless of outcome',
+      );
+      expect(
+        svc.state.canAutoSync,
+        isTrue,
+        reason:
+            'mapping acknowledged → canAutoSync is already true before deferBootstrap',
+      );
 
       // Reset bootstrap count so we can confirm deferBootstrap adds zero calls.
       final bootstrapBeforeDefer = svc.bootstrapRan;
-      expect(bootstrapBeforeDefer, isFalse,
-          reason: 'Bootstrap must not have run before deferBootstrap');
+      expect(
+        bootstrapBeforeDefer,
+        isFalse,
+        reason: 'Bootstrap must not have run before deferBootstrap',
+      );
 
       // Action: call deferBootstrap() instead of applyFronterResolution.
       await ctrl.deferBootstrap();
 
       // Assert: canAutoSync remains true.
-      expect(svc.state.canAutoSync, isTrue,
-          reason: 'canAutoSync must remain true after deferBootstrap');
+      expect(
+        svc.state.canAutoSync,
+        isTrue,
+        reason: 'canAutoSync must remain true after deferBootstrap',
+      );
 
       // Assert: SharedPreferences flag set for this systemId.
       final prefs = await SharedPreferences.getInstance();
@@ -973,12 +1020,7 @@ void main() {
       // Alice is unlinked and will get a PkLinkDecision auto-suggested.
       final memberRepo = _FakeMemberRepo([
         _localMember('l1', 'Alice'),
-        _localMember(
-          'l2',
-          'Bob',
-          pkUuid: 'pk-uuid-bob',
-          pkId: 'bbbbb',
-        ),
+        _localMember('l2', 'Bob', pkUuid: 'pk-uuid-bob', pkId: 'bbbbb'),
       ]);
 
       // PK has both members. The fake's getMembers() returns the full list;

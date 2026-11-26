@@ -5,25 +5,16 @@ import 'package:prism_plurality/features/chat/utils/markdown_utils.dart';
 void main() {
   const uuid = '11111111-2222-3333-4444-555555555555';
 
-  Member makeMember(String name) => Member(
-        id: uuid,
-        name: name,
-        createdAt: DateTime(2026, 4, 16),
-      );
+  Member makeMember(String name) =>
+      Member(id: uuid, name: name, createdAt: DateTime(2026, 4, 16));
 
   group('stripMarkdownMarkers — leaves mentions intact', () {
     test('strips bold but leaves @[uuid] token', () {
-      expect(
-        stripMarkdownMarkers('**hi** @[$uuid]'),
-        'hi @[$uuid]',
-      );
+      expect(stripMarkdownMarkers('**hi** @[$uuid]'), 'hi @[$uuid]');
     });
 
     test('strips leading `-#` but leaves mention token on the same line', () {
-      expect(
-        stripMarkdownMarkers('-# noted @[$uuid]'),
-        'noted @[$uuid]',
-      );
+      expect(stripMarkdownMarkers('-# noted @[$uuid]'), 'noted @[$uuid]');
     });
 
     test('strips link label, leaves mention token', () {
@@ -41,10 +32,7 @@ void main() {
   group('stripMarkdownMarkers — flanking rules', () {
     test('does not strip intra-word underscores', () {
       // `snake_case_value` is a literal identifier, not emphasis.
-      expect(
-        stripMarkdownMarkers('snake_case_value'),
-        'snake_case_value',
-      );
+      expect(stripMarkdownMarkers('snake_case_value'), 'snake_case_value');
     });
 
     test('does not strip asterisks with whitespace neighbors', () {
@@ -57,14 +45,8 @@ void main() {
     test('still strips well-formed emphasis', () {
       expect(stripMarkdownMarkers('*italic*'), 'italic');
       expect(stripMarkdownMarkers('_italic_'), 'italic');
-      expect(
-        stripMarkdownMarkers('hi *world* bye'),
-        'hi world bye',
-      );
-      expect(
-        stripMarkdownMarkers('hi _world_ bye'),
-        'hi world bye',
-      );
+      expect(stripMarkdownMarkers('hi *world* bye'), 'hi world bye');
+      expect(stripMarkdownMarkers('hi _world_ bye'), 'hi world bye');
     });
 
     test('handles bold + emphasis combos without over-stripping', () {
@@ -79,27 +61,15 @@ void main() {
       // Dart's `\w` is ASCII-only — Cyrillic, Greek, CJK letters wouldn't
       // count as word chars under a naive flanking rule. Unicode-aware
       // `\p{L}\p{N}_` keeps these identifiers literal.
-      expect(
-        stripMarkdownMarkers('привет_мир_знач'),
-        'привет_мир_знач',
-      );
-      expect(
-        stripMarkdownMarkers('日本語_テスト_値'),
-        '日本語_テスト_値',
-      );
-      expect(
-        stripMarkdownMarkers('Ω_λ_φ'),
-        'Ω_λ_φ',
-      );
+      expect(stripMarkdownMarkers('привет_мир_знач'), 'привет_мир_знач');
+      expect(stripMarkdownMarkers('日本語_テスト_値'), '日本語_テスト_値');
+      expect(stripMarkdownMarkers('Ω_λ_φ'), 'Ω_λ_φ');
     });
 
     test('strips well-formed underscore emphasis in non-Latin scripts', () {
       // When `_` IS true emphasis (whitespace flanking), it strips even
       // around non-Latin text.
-      expect(
-        stripMarkdownMarkers('hi _мир_ bye'),
-        'hi мир bye',
-      );
+      expect(stripMarkdownMarkers('hi _мир_ bye'), 'hi мир bye');
     });
   });
 
@@ -174,24 +144,15 @@ void main() {
   group('stripChatMarkdown — mention resolution', () {
     test('resolves mention from authorMap', () {
       final authorMap = {uuid: makeMember('Alice')};
-      expect(
-        stripChatMarkdown('hi @[$uuid]', authorMap),
-        'hi @Alice',
-      );
+      expect(stripChatMarkdown('hi @[$uuid]', authorMap), 'hi @Alice');
     });
 
     test('falls back to @Unknown for missing ID', () {
-      expect(
-        stripChatMarkdown('hi @[$uuid]', {}),
-        'hi @Unknown',
-      );
+      expect(stripChatMarkdown('hi @[$uuid]', {}), 'hi @Unknown');
     });
 
     test('falls back to @Unknown when authorMap is null', () {
-      expect(
-        stripChatMarkdown('hi @[$uuid]', null),
-        'hi @Unknown',
-      );
+      expect(stripChatMarkdown('hi @[$uuid]', null), 'hi @Unknown');
     });
 
     test('complex: bold + mention + inline code', () {

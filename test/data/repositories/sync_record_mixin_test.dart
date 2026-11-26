@@ -117,28 +117,25 @@ void main() {
   });
 
   group('SyncRecordMixin durable-outbox enqueue (F05)', () {
-    test(
-      'null handle + not-in-progress persists a durable outbox row '
-      '(inverts the old "skip quietly" behavior)',
-      () async {
-        final repo = _ProbeRepository();
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          drainTrigger: (_) async {}, // no-op: assert the persisted row only
-        );
+    test('null handle + not-in-progress persists a durable outbox row '
+        '(inverts the old "skip quietly" behavior)', () async {
+      final repo = _ProbeRepository();
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        drainTrigger: (_) async {}, // no-op: assert the persisted row only
+      );
 
-        // No handle, not auto-configuring — the historical drop path. It now
-        // durably enqueues instead.
-        await repo.syncRecordUpdate('members', 'm1', {'name': 'Later'});
+      // No handle, not auto-configuring — the historical drop path. It now
+      // durably enqueues instead.
+      await repo.syncRecordUpdate('members', 'm1', {'name': 'Later'});
 
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        expect(rows, hasLength(1));
-        expect(rows.single.opType, 'update');
-        expect(rows.single.entityTable, 'members');
-        expect(rows.single.entityId, 'm1');
-        expect(rows.single.fieldsJson, '{"name":"Later"}');
-      },
-    );
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      expect(rows, hasLength(1));
+      expect(rows.single.opType, 'update');
+      expect(rows.single.entityTable, 'members');
+      expect(rows.single.entityId, 'm1');
+      expect(rows.single.fieldsJson, '{"name":"Later"}');
+    });
 
     test('never-paired device enqueues nothing', () async {
       final repo = _ProbeRepository();
@@ -155,70 +152,65 @@ void main() {
       expect(await db.syncOutboxDao.count(), 0);
     });
 
-    test(
-      'enqueue then drain after a handle install emits exactly the op '
-      'and deletes the row',
-      () async {
-        final repo = _ProbeRepository();
-        final dispatched = <String>[];
-        final drainer = SyncOutboxDrainer(
-          db,
-          dispatchOp: (h, op) async {
-            dispatched.add('${op.opType.name}:${op.table}/${op.entityId}');
-          },
-        );
-        // No handle yet: the trigger drains against null (a no-op deferral).
-        ffi.PrismSyncHandle? installedHandle;
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          drainTrigger: (_) => drainer.drain(installedHandle),
-        );
+    test('enqueue then drain after a handle install emits exactly the op '
+        'and deletes the row', () async {
+      final repo = _ProbeRepository();
+      final dispatched = <String>[];
+      final drainer = SyncOutboxDrainer(
+        db,
+        dispatchOp: (h, op) async {
+          dispatched.add('${op.opType.name}:${op.table}/${op.entityId}');
+        },
+      );
+      // No handle yet: the trigger drains against null (a no-op deferral).
+      ffi.PrismSyncHandle? installedHandle;
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        drainTrigger: (_) => drainer.drain(installedHandle),
+      );
 
-        await repo.syncRecordUpdate('members', 'm1', {'name': 'A'});
-        // The trigger ran with a null handle — row still pending.
-        expect(dispatched, isEmpty);
-        expect(await db.syncOutboxDao.count(), 1);
+      await repo.syncRecordUpdate('members', 'm1', {'name': 'A'});
+      // The trigger ran with a null handle — row still pending.
+      expect(dispatched, isEmpty);
+      expect(await db.syncOutboxDao.count(), 1);
 
-        // Handle installed; an explicit drain dispatches the row and deletes it.
-        installedHandle = const _FakePrismSyncHandle();
-        await drainer.drain(installedHandle);
+      // Handle installed; an explicit drain dispatches the row and deletes it.
+      installedHandle = const _FakePrismSyncHandle();
+      await drainer.drain(installedHandle);
 
-        expect(dispatched, ['update:members/m1']);
-        expect(await db.syncOutboxDao.count(), 0);
-      },
-    );
+      expect(dispatched, ['update:members/m1']);
+      expect(await db.syncOutboxDao.count(), 0);
+    });
 
-    test(
-      'F32 boot window: a drain triggered during configure dispatches with '
-      'syncAutoConfigureInProgress still true',
-      () async {
-        // Mirrors `createHandle`, which now drains the outbox inside the
-        // configure try block — before the finally flips the flag false — so a
-        // listener firing on the flag transition cannot interleave a fresh-HLC
-        // live emission between configure-success and the drain.
-        await SyncRecordMixin.persistCapturedOpsToOutbox(db, const [
-          CapturedSyncOp('members', 'm1', SyncRecordOpType.update, {'k': 'v'},
-              capturedAtMs: 1234),
-        ]);
+    test('F32 boot window: a drain triggered during configure dispatches with '
+        'syncAutoConfigureInProgress still true', () async {
+      // Mirrors `createHandle`, which now drains the outbox inside the
+      // configure try block — before the finally flips the flag false — so a
+      // listener firing on the flag transition cannot interleave a fresh-HLC
+      // live emission between configure-success and the drain.
+      await SyncRecordMixin.persistCapturedOpsToOutbox(db, const [
+        CapturedSyncOp('members', 'm1', SyncRecordOpType.update, {
+          'k': 'v',
+        }, capturedAtMs: 1234),
+      ]);
 
-        const handle = _FakePrismSyncHandle();
-        bool? flagDuringDispatch;
-        final drainer = SyncOutboxDrainer(
-          db,
-          dispatchOp: (h, op) async {
-            flagDuringDispatch = syncAutoConfigureInProgress.value;
-          },
-        );
+      const handle = _FakePrismSyncHandle();
+      bool? flagDuringDispatch;
+      final drainer = SyncOutboxDrainer(
+        db,
+        dispatchOp: (h, op) async {
+          flagDuringDispatch = syncAutoConfigureInProgress.value;
+        },
+      );
 
-        // Simulate the configure window: flag true, drain, then clear.
-        syncAutoConfigureInProgress.value = true;
-        await drainer.drain(handle);
-        syncAutoConfigureInProgress.value = false;
+      // Simulate the configure window: flag true, drain, then clear.
+      syncAutoConfigureInProgress.value = true;
+      await drainer.drain(handle);
+      syncAutoConfigureInProgress.value = false;
 
-        expect(flagDuringDispatch, isTrue);
-        expect(await db.syncOutboxDao.count(), 0);
-      },
-    );
+      expect(flagDuringDispatch, isTrue);
+      expect(await db.syncOutboxDao.count(), 0);
+    });
 
     test(
       "FFI 'sync not configured' leaves attempts unchanged (deferral)",
@@ -248,50 +240,53 @@ void main() {
       },
     );
 
-    test(
-      'a generic FFI error quarantines after N without blocking a '
-      'different entity',
-      () async {
-        // c1 hits a generic error (quarantines after N); c2 is an independent
-        // lane that must still drain to completion.
-        await SyncRecordMixin.persistCapturedOpsToOutbox(db, const [
-          CapturedSyncOp('chat_messages', 'c1', SyncRecordOpType.create, {'x': 1}),
-          CapturedSyncOp('chat_messages', 'c2', SyncRecordOpType.create, {'y': 2}),
-        ]);
+    test('a generic FFI error quarantines after N without blocking a '
+        'different entity', () async {
+      // c1 hits a generic error (quarantines after N); c2 is an independent
+      // lane that must still drain to completion.
+      await SyncRecordMixin.persistCapturedOpsToOutbox(db, const [
+        CapturedSyncOp('chat_messages', 'c1', SyncRecordOpType.create, {
+          'x': 1,
+        }),
+        CapturedSyncOp('chat_messages', 'c2', SyncRecordOpType.create, {
+          'y': 2,
+        }),
+      ]);
 
-        const handle = _FakePrismSyncHandle();
-        final dispatched = <String>[];
-        final drainer = SyncOutboxDrainer(
-          db,
-          quarantineAfter: 3,
-          dispatchOp: (h, op) async {
-            dispatched.add(op.entityId);
-            if (op.entityId == 'c1') {
-              throw StateError('generic boom');
-            }
-            // c2 succeeds.
-          },
-        );
+      const handle = _FakePrismSyncHandle();
+      final dispatched = <String>[];
+      final drainer = SyncOutboxDrainer(
+        db,
+        quarantineAfter: 3,
+        dispatchOp: (h, op) async {
+          dispatched.add(op.entityId);
+          if (op.entityId == 'c1') {
+            throw StateError('generic boom');
+          }
+          // c2 succeeds.
+        },
+      );
 
-        for (var i = 0; i < 4; i++) {
-          await drainer.drainOnce(handle);
-        }
+      for (var i = 0; i < 4; i++) {
+        await drainer.drainOnce(handle);
+      }
 
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        // c1 quarantined after N generic failures; it blocks only its own lane.
-        final c1 = rows.firstWhere((r) => r.entityId == 'c1');
-        expect(c1.quarantined, isTrue);
-        // c2 (a different entity) drained successfully despite c1's poison.
-        expect(rows.any((r) => r.entityId == 'c2'), isFalse);
-        expect(dispatched, contains('c2'));
-      },
-    );
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      // c1 quarantined after N generic failures; it blocks only its own lane.
+      final c1 = rows.firstWhere((r) => r.entityId == 'c1');
+      expect(c1.quarantined, isTrue);
+      // c2 (a different entity) drained successfully despite c1's poison.
+      expect(rows.any((r) => r.entityId == 'c2'), isFalse);
+      expect(dispatched, contains('c2'));
+    });
 
     test('an enqueue failure is reported once and swallowed', () async {
       final reported = <AppError>[];
       void listener(AppError e) => reported.add(e);
       ErrorReportingService.instance.addListener(listener);
-      addTearDown(() => ErrorReportingService.instance.removeListener(listener));
+      addTearDown(
+        () => ErrorReportingService.instance.removeListener(listener),
+      );
 
       final repo = _ProbeRepository();
       SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
@@ -358,103 +353,97 @@ void main() {
       expect(await db.syncOutboxDao.count(), 0);
     });
 
-    test(
-      'emit inside a Drift transaction dispatches NO FFI before commit '
-      '(emit-after-commit invariant)',
-      () async {
-        // The reachable-today shape: an unsuppressed importer emits
-        // a live syncRecord* INSIDE db.transaction(). The outbox row must be
-        // persisted atomically with the data write, but the live trigger must
-        // NOT fire the drain (which would dispatch FFI before the outer commit
-        // and leak on rollback). The post-commit drain picks the row up.
-        final repo = _ProbeRepository();
-        final dispatched = <String>[];
-        const handle = _FakePrismSyncHandle();
-        final drainer = SyncOutboxDrainer(
-          db,
-          dispatchOp: (h, op) async => dispatched.add(op.entityId),
-        );
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          drainTrigger: (_) => drainer.drain(handle),
-        );
+    test('emit inside a Drift transaction dispatches NO FFI before commit '
+        '(emit-after-commit invariant)', () async {
+      // The reachable-today shape: an unsuppressed importer emits
+      // a live syncRecord* INSIDE db.transaction(). The outbox row must be
+      // persisted atomically with the data write, but the live trigger must
+      // NOT fire the drain (which would dispatch FFI before the outer commit
+      // and leak on rollback). The post-commit drain picks the row up.
+      final repo = _ProbeRepository();
+      final dispatched = <String>[];
+      const handle = _FakePrismSyncHandle();
+      final drainer = SyncOutboxDrainer(
+        db,
+        dispatchOp: (h, op) async => dispatched.add(op.entityId),
+      );
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        drainTrigger: (_) => drainer.drain(handle),
+      );
 
-        await db.transaction(() async {
-          await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
-          // Inside the open transaction: row enqueued, but NO FFI dispatched —
-          // the live trigger was skipped because we are mid-transaction.
-          expect(dispatched, isEmpty);
-          expect(await db.syncOutboxDao.count(), 1);
-        });
-
-        // Still no dispatch right after commit (the live trigger never fired).
+      await db.transaction(() async {
+        await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
+        // Inside the open transaction: row enqueued, but NO FFI dispatched —
+        // the live trigger was skipped because we are mid-transaction.
         expect(dispatched, isEmpty);
         expect(await db.syncOutboxDao.count(), 1);
+      });
 
-        // A post-commit drain (boot/resume/catch-up) flushes it.
-        await drainer.drain(handle);
-        expect(dispatched, ['m1']);
-        expect(await db.syncOutboxDao.count(), 0);
-      },
-    );
+      // Still no dispatch right after commit (the live trigger never fired).
+      expect(dispatched, isEmpty);
+      expect(await db.syncOutboxDao.count(), 1);
 
-    test(
-      'a rolled-back transaction leaves the data row absent AND no FFI '
-      'dispatched (no phantom op)',
-      () async {
-        final repo = _ProbeRepository();
-        final dispatched = <String>[];
-        const handle = _FakePrismSyncHandle();
-        final drainer = SyncOutboxDrainer(
-          db,
-          dispatchOp: (h, op) async => dispatched.add(op.entityId),
-        );
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          drainTrigger: (_) => drainer.drain(handle),
-        );
+      // A post-commit drain (boot/resume/catch-up) flushes it.
+      await drainer.drain(handle);
+      expect(dispatched, ['m1']);
+      expect(await db.syncOutboxDao.count(), 0);
+    });
 
-        Object? caught;
-        try {
-          await db.transaction(() async {
-            await db
-                .into(db.members)
-                .insert(
-                  MembersCompanion(
-                    id: const Value('m1'),
-                    name: const Value('Phantom'),
-                    emoji: const Value('P'),
-                    createdAt: Value(DateTime.now().toUtc()),
-                  ),
-                );
-            await repo.syncRecordCreate('members', 'm1', {'name': 'Phantom'});
-            // Give any fire-and-forget drain a chance to run BEFORE we roll
-            // back. With the guard in place no drain is triggered in-txn, so
-            // nothing dispatches; without it, this is the window where the old
-            // code would have leaked a phantom FFI op (the row is deleted by
-            // the drain but the data + outbox writes still roll back).
-            await pumpEventQueue();
-            throw StateError('import failed mid-transaction');
-          });
-        } catch (e) {
-          caught = e;
-        }
+    test('a rolled-back transaction leaves the data row absent AND no FFI '
+        'dispatched (no phantom op)', () async {
+      final repo = _ProbeRepository();
+      final dispatched = <String>[];
+      const handle = _FakePrismSyncHandle();
+      final drainer = SyncOutboxDrainer(
+        db,
+        dispatchOp: (h, op) async => dispatched.add(op.entityId),
+      );
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        drainTrigger: (_) => drainer.drain(handle),
+      );
 
-        expect(caught, isA<StateError>());
-        // Both the data row and the outbox row rolled back with the txn.
-        expect(
-          await db.select(db.members).get(),
-          isEmpty,
-          reason: 'data row must not survive the rollback',
-        );
-        expect(await db.syncOutboxDao.count(), 0);
-        // No FFI ever dispatched — the op was never sent to a peer.
-        expect(dispatched, isEmpty);
-        // A subsequent drain finds nothing to send (no phantom op leaked).
-        await drainer.drain(handle);
-        expect(dispatched, isEmpty);
-      },
-    );
+      Object? caught;
+      try {
+        await db.transaction(() async {
+          await db
+              .into(db.members)
+              .insert(
+                MembersCompanion(
+                  id: const Value('m1'),
+                  name: const Value('Phantom'),
+                  emoji: const Value('P'),
+                  createdAt: Value(DateTime.now().toUtc()),
+                ),
+              );
+          await repo.syncRecordCreate('members', 'm1', {'name': 'Phantom'});
+          // Give any fire-and-forget drain a chance to run BEFORE we roll
+          // back. With the guard in place no drain is triggered in-txn, so
+          // nothing dispatches; without it, this is the window where the old
+          // code would have leaked a phantom FFI op (the row is deleted by
+          // the drain but the data + outbox writes still roll back).
+          await pumpEventQueue();
+          throw StateError('import failed mid-transaction');
+        });
+      } catch (e) {
+        caught = e;
+      }
+
+      expect(caught, isA<StateError>());
+      // Both the data row and the outbox row rolled back with the txn.
+      expect(
+        await db.select(db.members).get(),
+        isEmpty,
+        reason: 'data row must not survive the rollback',
+      );
+      expect(await db.syncOutboxDao.count(), 0);
+      // No FFI ever dispatched — the op was never sent to a peer.
+      expect(dispatched, isEmpty);
+      // A subsequent drain finds nothing to send (no phantom op leaked).
+      await drainer.drain(handle);
+      expect(dispatched, isEmpty);
+    });
   });
 
   group('SyncRecordMixin.suppressAndCapture', () {
@@ -582,42 +571,39 @@ void main() {
   });
 
   group('SyncRecordMixin.runSyncedWrite (F08)', () {
-    test(
-      'success: data row + outbox rows commit together, in capture order, '
-      'before any FFI dispatch',
-      () async {
-        final repo = _ProbeRepository();
-        final dispatched = <String>[];
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          // No-op drain: assert the persisted rows BEFORE any dispatch.
-          drainTrigger: (_) async {},
-        );
+    test('success: data row + outbox rows commit together, in capture order, '
+        'before any FFI dispatch', () async {
+      final repo = _ProbeRepository();
+      final dispatched = <String>[];
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        // No-op drain: assert the persisted rows BEFORE any dispatch.
+        drainTrigger: (_) async {},
+      );
 
-        await repo.runSyncedWrite(() async {
-          await db
-              .into(db.members)
-              .insert(
-                MembersCompanion(
-                  id: const Value('m1'),
-                  name: const Value('A'),
-                  emoji: const Value('A'),
-                  createdAt: Value(DateTime.now().toUtc()),
-                ),
-              );
-          await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
-          await repo.syncRecordUpdate('members', 'm1', {'name': 'B'});
-        });
+      await repo.runSyncedWrite(() async {
+        await db
+            .into(db.members)
+            .insert(
+              MembersCompanion(
+                id: const Value('m1'),
+                name: const Value('A'),
+                emoji: const Value('A'),
+                createdAt: Value(DateTime.now().toUtc()),
+              ),
+            );
+        await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
+        await repo.syncRecordUpdate('members', 'm1', {'name': 'B'});
+      });
 
-        // Data row committed.
-        expect((await db.select(db.members).get()).single.id, 'm1');
-        // Outbox rows present in capture order; nothing dispatched yet.
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        expect(rows.map((r) => r.entityId), ['m1', 'm1']);
-        expect(rows.map((r) => r.opType), ['create', 'update']);
-        expect(dispatched, isEmpty);
-      },
-    );
+      // Data row committed.
+      expect((await db.select(db.members).get()).single.id, 'm1');
+      // Outbox rows present in capture order; nothing dispatched yet.
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      expect(rows.map((r) => r.entityId), ['m1', 'm1']);
+      expect(rows.map((r) => r.opType), ['create', 'update']);
+      expect(dispatched, isEmpty);
+    });
 
     test(
       'body throw: data rows AND outbox rows both absent (atomic rollback)',
@@ -778,30 +764,27 @@ void main() {
       },
     );
 
-    test(
-      'runFencedEmissionTransaction captures emissions and persists them '
-      'inside the transaction (no live dispatch)',
-      () async {
-        final repo = _ProbeRepository();
-        var triggered = 0;
-        SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
-          db: db,
-          drainTrigger: (_) async => triggered++,
-        );
+    test('runFencedEmissionTransaction captures emissions and persists them '
+        'inside the transaction (no live dispatch)', () async {
+      final repo = _ProbeRepository();
+      var triggered = 0;
+      SyncRecordMixin.debugInstallOutboxRuntimeForTesting(
+        db: db,
+        drainTrigger: (_) async => triggered++,
+      );
 
-        final captured = <CapturedSyncOp>[];
-        await SyncRecordMixin.runFencedEmissionTransaction<void>(db, () async {
-          await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
-          await SyncRecordMixin.persistCapturedOpsToOutbox(db, captured);
-        }, captured.add);
+      final captured = <CapturedSyncOp>[];
+      await SyncRecordMixin.runFencedEmissionTransaction<void>(db, () async {
+        await repo.syncRecordCreate('members', 'm1', {'name': 'A'});
+        await SyncRecordMixin.persistCapturedOpsToOutbox(db, captured);
+      }, captured.add);
 
-        // The emission was captured (not dispatched live) and persisted.
-        expect(captured, hasLength(1));
-        expect(triggered, 0, reason: 'no live drain trigger fired in the fence');
-        final rows = await db.syncOutboxDao.allInIdOrder();
-        expect(rows.single.entityId, 'm1');
-      },
-    );
+      // The emission was captured (not dispatched live) and persisted.
+      expect(captured, hasLength(1));
+      expect(triggered, 0, reason: 'no live drain trigger fired in the fence');
+      final rows = await db.syncOutboxDao.allInIdOrder();
+      expect(rows.single.entityId, 'm1');
+    });
   });
 
   group('CapturedSyncOp.capturedAtMs + reconcile/backfill entry points', () {
@@ -824,28 +807,31 @@ void main() {
       }
     });
 
-    test('syncRecordReconcile / syncRecordBackfill capture as update ops', () async {
-      final repo = _ProbeRepository();
-      final captured = <CapturedSyncOp>[];
+    test(
+      'syncRecordReconcile / syncRecordBackfill capture as update ops',
+      () async {
+        final repo = _ProbeRepository();
+        final captured = <CapturedSyncOp>[];
 
-      await SyncRecordMixin.suppressAndCapture(() async {
-        await repo.syncRecordReconcile('members', 'm1', {'name': 'R'});
-        await repo.syncRecordBackfill('members', 'm2', {'name': 'B'});
-      }, captured.add);
+        await SyncRecordMixin.suppressAndCapture(() async {
+          await repo.syncRecordReconcile('members', 'm1', {'name': 'R'});
+          await repo.syncRecordBackfill('members', 'm2', {'name': 'B'});
+        }, captured.add);
 
-      expect(captured, hasLength(2));
-      expect(captured[0].opType, SyncRecordOpType.update);
-      expect(captured[0].entityId, 'm1');
-      expect(captured[0].fields, {'name': 'R'});
-      expect(captured[0].capturedAtMs, isNotNull);
-      // Tagged so the outbox guard can refuse it (the outbox cannot represent
-      // divergence-aware emission).
-      expect(captured[0].isDivergenceAware, isTrue);
-      expect(captured[1].opType, SyncRecordOpType.update);
-      expect(captured[1].entityId, 'm2');
-      expect(captured[1].fields, {'name': 'B'});
-      expect(captured[1].isDivergenceAware, isTrue);
-    });
+        expect(captured, hasLength(2));
+        expect(captured[0].opType, SyncRecordOpType.update);
+        expect(captured[0].entityId, 'm1');
+        expect(captured[0].fields, {'name': 'R'});
+        expect(captured[0].capturedAtMs, isNotNull);
+        // Tagged so the outbox guard can refuse it (the outbox cannot represent
+        // divergence-aware emission).
+        expect(captured[0].isDivergenceAware, isTrue);
+        expect(captured[1].opType, SyncRecordOpType.update);
+        expect(captured[1].entityId, 'm2');
+        expect(captured[1].fields, {'name': 'B'});
+        expect(captured[1].isDivergenceAware, isTrue);
+      },
+    );
 
     test(
       'F32 guard: a captured reconcile op handed to the outbox throws',
@@ -878,8 +864,9 @@ void main() {
 
         const oldOrigin = 1577836801000; // just above the backfill floor
         await repo.replayCapturedOps(const [
-          CapturedSyncOp('members', 'm1', SyncRecordOpType.update, {'name': 'X'},
-              capturedAtMs: oldOrigin),
+          CapturedSyncOp('members', 'm1', SyncRecordOpType.update, {
+            'name': 'X',
+          }, capturedAtMs: oldOrigin),
         ]);
 
         expect(replayed, hasLength(1));

@@ -61,16 +61,19 @@ void main() {
       expect(container.read(analyticsRangeProvider).isAllTime, isTrue);
     });
 
-    test('range starts at the earliest session, not a fixed lookback', () async {
-      final earliest = DateTime.now().subtract(const Duration(days: 730));
-      await insert('first', earliest);
-      await insert('later', DateTime.now().subtract(const Duration(days: 1)));
+    test(
+      'range starts at the earliest session, not a fixed lookback',
+      () async {
+        final earliest = DateTime.now().subtract(const Duration(days: 730));
+        await insert('first', earliest);
+        await insert('later', DateTime.now().subtract(const Duration(days: 1)));
 
-      container.read(analyticsRangeProvider.notifier).selectAllTime();
-      final analytics = await readAnalytics();
+        container.read(analyticsRangeProvider.notifier).selectAllTime();
+        final analytics = await readAnalytics();
 
-      expectStartNear(analytics.rangeStart, earliest);
-    });
+        expectStartNear(analytics.rangeStart, earliest);
+      },
+    );
 
     test(
       'self-corrects when the earliest session is deleted (no stale gap)',

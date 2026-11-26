@@ -277,25 +277,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     _SettingsLink(
                       icon: Icons.restaurant_outlined,
                       iconColor: Colors.deepOrangeAccent,
-                      title: tr(context, 'Nutrition & hydration', 'Nutrición e hidratación'),
+                      title: tr(
+                        context,
+                        'Nutrition & hydration',
+                        'Nutrición e hidratación',
+                      ),
                       onTap: () => context.push('/nutrition'),
                     ),
                     _SettingsLink(
                       icon: Icons.collections_bookmark_outlined,
                       iconColor: Colors.pinkAccent,
-                      title: tr(context, 'System Scrapbook', 'Álbum del sistema'),
+                      title: tr(
+                        context,
+                        'System Scrapbook',
+                        'Álbum del sistema',
+                      ),
                       onTap: () => context.push('/scrapbook'),
                     ),
                     _SettingsLink(
                       icon: Icons.hub_outlined,
                       iconColor: Colors.brown,
-                      title: tr(context, 'Internal Connections', 'Conexiones internas'),
+                      title: tr(
+                        context,
+                        'Internal Connections',
+                        'Conexiones internas',
+                      ),
                       onTap: () => context.push('/connections'),
                     ),
                     _SettingsLink(
                       icon: Icons.link,
                       iconColor: Colors.cyan,
-                      title: tr(context, 'Connected records explorer', 'Explorador de registros conectados'),
+                      title: tr(
+                        context,
+                        'Connected records explorer',
+                        'Explorador de registros conectados',
+                      ),
                       onTap: () => context.push('/links'),
                     ),
                     _SettingsLink(
@@ -319,7 +335,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     _SettingsLink(
                       icon: Icons.style_outlined,
                       iconColor: Colors.purple,
-                      title: tr(context, 'Introduction cards', 'Tarjetas de presentación'),
+                      title: tr(
+                        context,
+                        'Introduction cards',
+                        'Tarjetas de presentación',
+                      ),
                       onTap: () => context.push('/introductions'),
                     ),
                     _SettingsLink(

@@ -40,9 +40,9 @@ void main() {
           'is_deleted': false,
         });
 
-        final row = await (db.select(db.systemSettingsTable)
-              ..where((t) => t.id.equals('singleton')))
-            .getSingleOrNull();
+        final row = await (db.select(
+          db.systemSettingsTable,
+        )..where((t) => t.id.equals('singleton'))).getSingleOrNull();
 
         expect(row, isNotNull);
         expect(row!.systemAvatarData, isNotNull);

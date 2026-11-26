@@ -48,9 +48,7 @@ Future<void> _seedV27Db(File dbFile) async {
     }
 
     // Remove the new partial index if it was already created.
-    rawDb.execute(
-      'DROP INDEX IF EXISTS idx_custom_fields_parent',
-    );
+    rawDb.execute('DROP INDEX IF EXISTS idx_custom_fields_parent');
 
     rawDb.execute('PRAGMA user_version = 27;');
   } finally {

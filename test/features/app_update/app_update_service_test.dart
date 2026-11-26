@@ -71,7 +71,10 @@ void main() {
     final client = MockClient((req) async {
       expect(req.url.path, '/repos/o/r/releases');
       // Out of order on purpose: the newest build wins, not the first.
-      return http.Response(jsonEncode([_release(build: 30), _release(), _release(build: 35)]), 200);
+      return http.Response(
+        jsonEncode([_release(build: 30), _release(), _release(build: 35)]),
+        200,
+      );
     });
     expect((await service(client).checkForUpdate())!.buildNumber, 42);
     expect(await service(client, current: 42).checkForUpdate(), isNull);
@@ -79,12 +82,37 @@ void main() {
   });
 
   test('never offers an older app version, even with a higher build', () async {
-    Map<String, dynamic> rel(int build, String version) => {..._release(build: build), 'name': 'Prism $version (build $build)'};
-    final client = MockClient((_) async => http.Response(jsonEncode([rel(44, '0.31.0'), rel(43, '0.37.0')]), 200));
-    final s = AppUpdateService(client: client, repo: 'o/r', currentBuild: () async => 43, currentVersion: () async => '0.37.0', cacheDir: () async => tmp);
+    Map<String, dynamic> rel(int build, String version) => {
+      ..._release(build: build),
+      'name': 'Prism $version (build $build)',
+    };
+    final client = MockClient(
+      (_) async => http.Response(
+        jsonEncode([rel(44, '0.31.0'), rel(43, '0.37.0')]),
+        200,
+      ),
+    );
+    final s = AppUpdateService(
+      client: client,
+      repo: 'o/r',
+      currentBuild: () async => 43,
+      currentVersion: () async => '0.37.0',
+      cacheDir: () async => tmp,
+    );
     expect(await s.checkForUpdate(), isNull);
-    final client2 = MockClient((_) async => http.Response(jsonEncode([rel(63, '0.41.0'), rel(44, '0.31.0')]), 200));
-    final s2 = AppUpdateService(client: client2, repo: 'o/r', currentBuild: () async => 43, currentVersion: () async => '0.37.0', cacheDir: () async => tmp);
+    final client2 = MockClient(
+      (_) async => http.Response(
+        jsonEncode([rel(63, '0.41.0'), rel(44, '0.31.0')]),
+        200,
+      ),
+    );
+    final s2 = AppUpdateService(
+      client: client2,
+      repo: 'o/r',
+      currentBuild: () async => 43,
+      currentVersion: () async => '0.37.0',
+      cacheDir: () async => tmp,
+    );
     expect((await s2.checkForUpdate())!.buildNumber, 63);
     expect(compareVersions('0.41.0', '0.37.0'), greaterThan(0));
     expect(compareVersions('x', '0.37.0'), isNull);
@@ -97,9 +125,21 @@ void main() {
       expect(req.url.path, '/api/v1/repos/c/r/releases');
       return http.Response(jsonEncode([_release(build: 70)]), 200);
     });
-    final s = AppUpdateService(client: client, repo: 'o/r', codebergRepo: 'c/r', currentBuild: () async => 10, cacheDir: () async => tmp);
+    final s = AppUpdateService(
+      client: client,
+      repo: 'o/r',
+      codebergRepo: 'c/r',
+      currentBuild: () async => 10,
+      cacheDir: () async => tmp,
+    );
     expect((await s.checkForUpdate())!.buildNumber, 70);
-    final onlyCodeberg = AppUpdateService(client: client, repo: '', codebergRepo: 'c/r', currentBuild: () async => 10, cacheDir: () async => tmp);
+    final onlyCodeberg = AppUpdateService(
+      client: client,
+      repo: '',
+      codebergRepo: 'c/r',
+      currentBuild: () async => 10,
+      cacheDir: () async => tmp,
+    );
     expect((await onlyCodeberg.checkForUpdate())!.buildNumber, 70);
   });
 
@@ -177,11 +217,23 @@ void main() {
       if (calls == 1) {
         // Half the file, then the connection drops.
         final half = _apkBytes.sublist(0, 2000);
-        final stream = Stream<List<int>>.fromIterable([half]).followedBy(Stream.error(const SocketException('dropped')));
-        return http.StreamedResponse(stream, 200, contentLength: _apkBytes.length);
+        final stream = Stream<List<int>>.fromIterable([
+          half,
+        ]).followedBy(Stream.error(const SocketException('dropped')));
+        return http.StreamedResponse(
+          stream,
+          200,
+          contentLength: _apkBytes.length,
+        );
       }
-      final from = int.parse(req.headers['Range']!.substring(6, req.headers['Range']!.length - 1));
-      return http.StreamedResponse(Stream.value(_apkBytes.sublist(from)), 206, contentLength: _apkBytes.length - from);
+      final from = int.parse(
+        req.headers['Range']!.substring(6, req.headers['Range']!.length - 1),
+      );
+      return http.StreamedResponse(
+        Stream.value(_apkBytes.sublist(from)),
+        206,
+        contentLength: _apkBytes.length - from,
+      );
     });
     final path = await service(client).download(parseReleaseJson(_release())!);
     expect(File(path).readAsBytesSync(), _apkBytes);

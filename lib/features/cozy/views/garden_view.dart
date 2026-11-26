@@ -5,9 +5,16 @@ import 'package:prism_plurality/features/cozy/views/cozy_widgets.dart';
 import 'package:prism_plurality/features/games/core/games_data.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
-String plantEmoji(Plant p) => (plantSpecies[p.species] ?? plantSpecies['sprout']!).$2[p.stage];
+String plantEmoji(Plant p) =>
+    (plantSpecies[p.species] ?? plantSpecies['sprout']!).$2[p.stage];
 
-const _stageNames = [('Seed', 'Semilla'), ('Sprout', 'Brote'), ('Growing', 'Creciendo'), ('Grown', 'Crecida'), ('Blooming', 'En flor')];
+const _stageNames = [
+  ('Seed', 'Semilla'),
+  ('Sprout', 'Brote'),
+  ('Growing', 'Creciendo'),
+  ('Grown', 'Crecida'),
+  ('Blooming', 'En flor'),
+];
 
 /// The system garden: anyone can plant and water; plants never die.
 class GardenView extends ConsumerWidget {
@@ -40,12 +47,20 @@ class GardenView extends ConsumerWidget {
               tone: PrismButtonTone.filled,
               icon: PhosphorIcons.plant(),
               label: tr(context, 'Plant something', 'Plantar algo'),
-              onPressed: () => PrismSheet.show<void>(context: context, title: tr(context, 'Plant something', 'Plantar algo'), builder: (_) => const _PlantSheet()),
+              onPressed: () => PrismSheet.show<void>(
+                context: context,
+                title: tr(context, 'Plant something', 'Plantar algo'),
+                builder: (_) => const _PlantSheet(),
+              ),
             ),
             if (plants.any((p) => p.thirsty))
               PrismButton(
                 icon: PhosphorIcons.drop(),
-                label: tr(context, 'Water all thirsty plants', 'Regar todas las sedientas'),
+                label: tr(
+                  context,
+                  'Water all thirsty plants',
+                  'Regar todas las sedientas',
+                ),
                 onPressed: () async {
                   for (final p in plants.where((p) => p.thirsty)) {
                     await ref.read(cozyActionsProvider).water(p, me);
@@ -59,7 +74,11 @@ class GardenView extends ConsumerWidget {
           EmptyState(
             icon: const Text('🌱', style: TextStyle(fontSize: 34)),
             title: tr(context, 'An empty garden bed', 'Un bancal vacío'),
-            subtitle: tr(context, 'Plant the first seed.', 'Planta la primera semilla.'),
+            subtitle: tr(
+              context,
+              'Plant the first seed.',
+              'Planta la primera semilla.',
+            ),
           )
         else
           LayoutBuilder(
@@ -76,7 +95,8 @@ class GardenView extends ConsumerWidget {
                   for (final p in plants)
                     Semantics(
                       button: true,
-                      label: '${p.name}, ${cozyTrP(context, _stageNames[p.stage])}${p.thirsty ? ', ${tr(context, 'thirsty', 'con sed')}' : ''}',
+                      label:
+                          '${p.name}, ${cozyTrP(context, _stageNames[p.stage])}${p.thirsty ? ', ${tr(context, 'thirsty', 'con sed')}' : ''}',
                       excludeSemantics: true,
                       child: PrismSurface(
                         padding: const EdgeInsets.all(8),
@@ -93,13 +113,28 @@ class GardenView extends ConsumerWidget {
                                   opacity: p.thirsty ? 0.6 : 1,
                                   child: Transform.rotate(
                                     angle: p.thirsty ? 0.12 : 0,
-                                    child: Text(plantEmoji(p), style: TextStyle(fontSize: 26 + p.stage * 6.0)),
+                                    child: Text(
+                                      plantEmoji(p),
+                                      style: TextStyle(
+                                        fontSize: 26 + p.stage * 6.0,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge),
-                            Text(p.thirsty ? tr(context, '💧 thirsty', '💧 con sed') : cozyTrP(context, _stageNames[p.stage]), style: theme.textTheme.labelSmall),
+                            Text(
+                              p.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelLarge,
+                            ),
+                            Text(
+                              p.thirsty
+                                  ? tr(context, '💧 thirsty', '💧 con sed')
+                                  : cozyTrP(context, _stageNames[p.stage]),
+                              style: theme.textTheme.labelSmall,
+                            ),
                             const SizedBox(height: 4),
                             PrismButton(
                               density: PrismControlDensity.compact,
@@ -107,7 +142,14 @@ class GardenView extends ConsumerWidget {
                               label: tr(context, 'Water', 'Regar'),
                               onPressed: () {
                                 ref.read(cozyActionsProvider).water(p, me);
-                                PrismToast.show(context, message: tr(context, '${p.name} says thank you 💧', '${p.name} te da las gracias 💧'));
+                                PrismToast.show(
+                                  context,
+                                  message: tr(
+                                    context,
+                                    '${p.name} says thank you 💧',
+                                    '${p.name} te da las gracias 💧',
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -154,16 +196,41 @@ class _PlantSheetState extends ConsumerState<_PlantSheet> {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: [for (final e in plantSpecies.entries) PrismChip(label: '${e.value.$2.last} ${e.value.$1}', selected: _species == e.key, onTap: () => setState(() => _species = e.key))],
+            children: [
+              for (final e in plantSpecies.entries)
+                PrismChip(
+                  label: '${e.value.$2.last} ${e.value.$1}',
+                  selected: _species == e.key,
+                  onTap: () => setState(() => _species = e.key),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
-          PrismTextField(controller: _name, hintText: tr(context, 'Give it a name (e.g. "Pip")', 'Ponle nombre (p. ej. "Pip")')),
+          PrismTextField(
+            controller: _name,
+            hintText: tr(
+              context,
+              'Give it a name (e.g. "Pip")',
+              'Ponle nombre (p. ej. "Pip")',
+            ),
+          ),
           PrismListRow(
             dense: true,
             leading: AlterDot(_by, size: 24),
-            title: Text(tr(context, 'Planted by ${_by == null ? 'the system' : names[_by] ?? '?'}', 'Plantada por ${_by == null ? 'el sistema' : names[_by] ?? '?'}')),
+            title: Text(
+              tr(
+                context,
+                'Planted by ${_by == null ? 'the system' : names[_by] ?? '?'}',
+                'Plantada por ${_by == null ? 'el sistema' : names[_by] ?? '?'}',
+              ),
+            ),
             onTap: () async {
-              final p = await pickAlters(context, ref, max: 1, selected: [?_by]);
+              final p = await pickAlters(
+                context,
+                ref,
+                max: 1,
+                selected: [?_by],
+              );
               if (p != null) setState(() => _by = p.firstOrNull);
             },
           ),
@@ -176,7 +243,9 @@ class _PlantSheetState extends ConsumerState<_PlantSheet> {
                   .read(trackerNotifierProvider.notifier)
                   .create(
                     kind: TrackerKind.cozyPlant,
-                    title: _name.text.trim().isEmpty ? plantSpecies[_species]!.$1 : _name.text.trim(),
+                    title: _name.text.trim().isEmpty
+                        ? plantSpecies[_species]!.$1
+                        : _name.text.trim(),
                     memberId: _by,
                     fields: {'species': _species, 'water': const []},
                   );
@@ -194,7 +263,10 @@ class _PlantDetail extends ConsumerWidget {
   final String plantId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(plantsProvider).where((x) => x.r.id == plantId).firstOrNull;
+    final p = ref
+        .watch(plantsProvider)
+        .where((x) => x.r.id == plantId)
+        .firstOrNull;
     if (p == null) return const SizedBox(height: 60);
     final names = ref.watch(gameNamesProvider);
     final carers = <String?, int>{};
@@ -207,8 +279,15 @@ class _PlantDetail extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(plantEmoji(p), textAlign: TextAlign.center, style: const TextStyle(fontSize: 64)),
-          Text('${cozyTrP(context, _stageNames[p.stage])} · ${tr(context, 'watered ${p.waterings.length} times', 'regada ${p.waterings.length} veces')}', textAlign: TextAlign.center),
+          Text(
+            plantEmoji(p),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 64),
+          ),
+          Text(
+            '${cozyTrP(context, _stageNames[p.stage])} · ${tr(context, 'watered ${p.waterings.length} times', 'regada ${p.waterings.length} veces')}',
+            textAlign: TextAlign.center,
+          ),
           Text(
             tr(
               context,
@@ -219,12 +298,21 @@ class _PlantDetail extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           if (carers.isNotEmpty) ...[
-            PrismSectionHeader(title: tr(context, 'CARED FOR BY', 'CUIDADA POR')),
+            PrismSectionHeader(
+              title: tr(context, 'CARED FOR BY', 'CUIDADA POR'),
+            ),
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: [
-                for (final e in carers.entries) PrismChip(avatar: AlterDot(e.key, size: 20), label: '${names[e.key] ?? tr(context, 'someone', 'alguien')} · ${e.value}', selected: false, onTap: () {}),
+                for (final e in carers.entries)
+                  PrismChip(
+                    avatar: AlterDot(e.key, size: 20),
+                    label:
+                        '${names[e.key] ?? tr(context, 'someone', 'alguien')} · ${e.value}',
+                    selected: false,
+                    onTap: () {},
+                  ),
               ],
             ),
           ],
@@ -246,13 +334,19 @@ class _PlantDetail extends ConsumerWidget {
                   tone: PrismButtonTone.filled,
                   icon: PhosphorIcons.drop(),
                   label: tr(context, 'Water', 'Regar'),
-                  onPressed: () => ref.read(cozyActionsProvider).water(p, ref.read(cozyMeProvider)),
+                  onPressed: () => ref
+                      .read(cozyActionsProvider)
+                      .water(p, ref.read(cozyMeProvider)),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          Text(cozyAgo(context, p.lastWatered), textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            cozyAgo(context, p.lastWatered),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );

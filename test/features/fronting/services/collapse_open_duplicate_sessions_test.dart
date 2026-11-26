@@ -45,26 +45,28 @@ void main() {
       return rows.where((s) => s.endTime == null).toList();
     }
 
-    test('keeps the most-recent open and closes earlier ones at next start',
-        () async {
-      final t1 = DateTime(2025, 1, 1, 9);
-      final t2 = DateTime(2025, 6, 1, 9);
-      final t3 = DateTime(2026, 1, 1, 9);
-      await open('s1', 'm-1', t1);
-      await open('s2', 'm-1', t2);
-      await open('s3', 'm-1', t3);
+    test(
+      'keeps the most-recent open and closes earlier ones at next start',
+      () async {
+        final t1 = DateTime(2025, 1, 1, 9);
+        final t2 = DateTime(2025, 6, 1, 9);
+        final t3 = DateTime(2026, 1, 1, 9);
+        await open('s1', 'm-1', t1);
+        await open('s2', 'm-1', t2);
+        await open('s3', 'm-1', t3);
 
-      final closed = await collapseOpenDuplicateSessions(
-        repository,
-        memberIds: const ['m-1'],
-      );
+        final closed = await collapseOpenDuplicateSessions(
+          repository,
+          memberIds: const ['m-1'],
+        );
 
-      expect(closed, {'s1', 's2'});
-      final opens = await openRowsFor('m-1');
-      expect(opens.single.id, 's3');
-      expect((await repository.getSessionById('s1'))!.endTime, t2);
-      expect((await repository.getSessionById('s2'))!.endTime, t3);
-    });
+        expect(closed, {'s1', 's2'});
+        final opens = await openRowsFor('m-1');
+        expect(opens.single.id, 's3');
+        expect((await repository.getSessionById('s1'))!.endTime, t2);
+        expect((await repository.getSessionById('s2'))!.endTime, t3);
+      },
+    );
 
     test('a single open is left untouched (returns nothing closed)', () async {
       await open('s1', 'm-1', DateTime(2026, 1, 1, 9));

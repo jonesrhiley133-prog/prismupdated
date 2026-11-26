@@ -694,8 +694,7 @@ void main() {
         container.read(prismSyncHandleProvider.notifier)
             as _StubSyncHandleNotifier;
 
-    test(
-        'service identity and an in-flight isSyncing claim survive a '
+    test('service identity and an in-flight isSyncing claim survive a '
         'data→data handle transition (reqs a + b)', () async {
       final handleA = _FakeRustHandle();
       final h = makeContainer(initialHandle: handleA);
@@ -744,12 +743,14 @@ void main() {
 
       final result = await importFuture;
       expect(result.membersImported, 1);
-      expect(service2.state.isSyncing, isFalse,
-          reason: 'the import completed on the same instance');
+      expect(
+        service2.state.isSyncing,
+        isFalse,
+        reason: 'the import completed on the same instance',
+      );
     });
 
-    test(
-        'groups importer rebinds to the NEW handle without a service rebuild '
+    test('groups importer rebinds to the NEW handle without a service rebuild '
         '(req c)', () async {
       final handleA = _FakeRustHandle();
       final handleB = _FakeRustHandle();
@@ -759,8 +760,11 @@ void main() {
       final service = h.container.read(pluralKitSyncServiceProvider);
       final importer1 = service.groupsImporterForTesting;
       expect(importer1, isNotNull);
-      expect(importer1!.syncHandle, same(handleA),
-          reason: 'initial importer bound to the boot handle');
+      expect(
+        importer1!.syncHandle,
+        same(handleA),
+        reason: 'initial importer bound to the boot handle',
+      );
 
       stubOf(h.container).emitHandle(handleB);
 
@@ -784,8 +788,7 @@ void main() {
       );
     });
 
-    test(
-        'exactly one notifier delivery per service emit after a transition '
+    test('exactly one notifier delivery per service emit after a transition '
         '(req d)', () async {
       final h = makeContainer(initialHandle: null);
       await h.container.read(prismSyncHandleProvider.future);

@@ -70,8 +70,7 @@ class _SecureStorageStub {
 
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   _FakeClient(this.allSwitches);
 
   /// Newest-first switch history. Returned on the first `getSwitches` call;
@@ -91,7 +90,10 @@ class _FakeClient implements PluralKitClient {
   Future<PKMember> getMember(String memberRef) => throw UnimplementedError();
 
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async {
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async {
     if (before != null) return const [];
     return allSwitches;
   }
@@ -117,14 +119,20 @@ class _FakeClient implements PluralKitClient {
   Future<PKMember> updateMember(String id, Map<String, dynamic> data) =>
       throw UnimplementedError();
   @override
-  Future<PKSwitch> createSwitch(List<String> memberIds, {DateTime? timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> createSwitch(
+    List<String> memberIds, {
+    DateTime? timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitch(String switchId, {required DateTime timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitch(
+    String switchId, {
+    required DateTime timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitchMembers(String switchId, List<String> memberIds) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitchMembers(
+    String switchId,
+    List<String> memberIds,
+  ) => throw UnimplementedError();
   @override
   Future<void> deleteSwitch(String switchId) => throw UnimplementedError();
   @override
@@ -187,159 +195,152 @@ void main() {
   tearDown(storageStub.teardown);
 
   group('canonicalization safety (pkSyncDao wired)', () {
-    test(
-      '(a) adopts a locally-pushed row (random v4 id, real switch uuid) in '
-      'place — no tombstone, no delete intent stamped anywhere',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('(a) adopts a locally-pushed row (random v4 id, real switch uuid) in '
+        'place — no tombstone, no delete intent stamped anywhere', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(db.membersDao, null);
-        await memberRepo.createMember(
-          _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
-        );
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(
+        _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
+      );
 
-        // Repository wired WITH pkSyncDao — intent stamping is now live, so
-        // a buggy canonicalization would surface as a non-null
-        // deleteIntentEpoch and a non-empty getDeletedLinkedSessions().
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
+      // Repository wired WITH pkSyncDao — intent stamping is now live, so
+      // a buggy canonicalization would surface as a non-null
+      // deleteIntentEpoch and a non-empty getDeletedLinkedSessions().
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
 
-        // A locally-pushed front: random v4 id, stamped with the real switch
-        // uuid the API will report. Never re-keyed to the deterministic id,
-        // so it is non-canonical by id — exactly the C1 population. The
-        // switch id MUST be uuid-shaped: `isPluralKitSwitchUuid` is a strict
-        // 8-4-4-4-12 hex gate, and a non-uuid id would short-circuit the
-        // canonicalization loop entirely, making this test vacuous.
-        const localPushedId = '11111111-2222-4333-8444-555555555555';
-        const switchUuid = '1f1f1f1f-0000-4000-8000-000000000001';
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: localPushedId,
-            startTime: DateTime.utc(2026, 1, 1, 10),
-            memberId: 'local-a',
-            pluralkitUuid: switchUuid,
-          ),
-        );
+      // A locally-pushed front: random v4 id, stamped with the real switch
+      // uuid the API will report. Never re-keyed to the deterministic id,
+      // so it is non-canonical by id — exactly the C1 population. The
+      // switch id MUST be uuid-shaped: `isPluralKitSwitchUuid` is a strict
+      // 8-4-4-4-12 hex gate, and a non-uuid id would short-circuit the
+      // canonicalization loop entirely, making this test vacuous.
+      const localPushedId = '11111111-2222-4333-8444-555555555555';
+      const switchUuid = '1f1f1f1f-0000-4000-8000-000000000001';
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: localPushedId,
+          startTime: DateTime.utc(2026, 1, 1, 10),
+          memberId: 'local-a',
+          pluralkitUuid: switchUuid,
+        ),
+      );
 
-        final sw1 = PKSwitch(
-          id: switchUuid,
-          timestamp: DateTime.utc(2026, 1, 1, 10),
-          members: const ['pkA'],
-        );
-        final service = _makeServiceWithPkDao(
-          db: db,
-          client: _FakeClient([sw1]),
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
-        await _link(service);
-        await service.performFullImport();
+      final sw1 = PKSwitch(
+        id: switchUuid,
+        timestamp: DateTime.utc(2026, 1, 1, 10),
+        members: const ['pkA'],
+      );
+      final service = _makeServiceWithPkDao(
+        db: db,
+        client: _FakeClient([sw1]),
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
+      await _link(service);
+      await service.performFullImport();
 
-        // The row survives under its original id (adopted in place), still
-        // live and still linked to the same switch.
-        final all = await sessionRepo.getAllSessions();
-        expect(all, hasLength(1), reason: 'locally-pushed row was preserved');
-        final row = all.single;
-        expect(row.id, localPushedId, reason: 'adopted in place, not re-keyed');
-        expect(row.isDeleted, isFalse);
-        expect(row.pluralkitUuid, switchUuid);
-        expect(row.memberId, 'local-a');
+      // The row survives under its original id (adopted in place), still
+      // live and still linked to the same switch.
+      final all = await sessionRepo.getAllSessions();
+      expect(all, hasLength(1), reason: 'locally-pushed row was preserved');
+      final row = all.single;
+      expect(row.id, localPushedId, reason: 'adopted in place, not re-keyed');
+      expect(row.isDeleted, isFalse);
+      expect(row.pluralkitUuid, switchUuid);
+      expect(row.memberId, 'local-a');
 
-        // CRITICAL C1 assertion: nothing was stamped for PK-side deletion.
-        final raw = await db.frontingSessionsDao.getAllSessionsIncludingDeleted();
-        expect(
-          raw.where((s) => s.deleteIntentEpoch != null),
-          isEmpty,
-          reason: 'canonicalization must not stamp ANY delete intent',
-        );
-        expect(
-          await sessionRepo.getDeletedLinkedSessions(),
-          isEmpty,
-          reason: 'no PK switch deletion may be queued by a re-import',
-        );
-      },
-    );
+      // CRITICAL C1 assertion: nothing was stamped for PK-side deletion.
+      final raw = await db.frontingSessionsDao.getAllSessionsIncludingDeleted();
+      expect(
+        raw.where((s) => s.deleteIntentEpoch != null),
+        isEmpty,
+        reason: 'canonicalization must not stamp ANY delete intent',
+      );
+      expect(
+        await sessionRepo.getDeletedLinkedSessions(),
+        isEmpty,
+        reason: 'no PK switch deletion may be queued by a re-import',
+      );
+    });
 
-    test(
-      '(b) leaves rows for an unlinked member entirely alone (H4) — no '
-      'tombstone, no delete intent',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('(b) leaves rows for an unlinked member entirely alone (H4) — no '
+        'tombstone, no delete intent', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(db.membersDao, null);
-        await memberRepo.createMember(
-          _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
-        );
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(
+        _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
+      );
 
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
 
-        // A historical PK-linked row for local-a at some switch. The switch
-        // uuid must be uuid-shaped to pass the strict `isPluralKitSwitchUuid`
-        // gate — otherwise the loop never even considers this row and the
-        // test is vacuous.
-        const rowId = '99999999-aaaa-4bbb-8ccc-dddddddddddd';
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: rowId,
-            startTime: DateTime.utc(2025, 6, 1, 8),
-            endTime: DateTime.utc(2025, 6, 1, 9),
-            memberId: 'local-a',
-            pluralkitUuid: '2f2f2f2f-0000-4000-8000-000000000001',
-          ),
-        );
+      // A historical PK-linked row for local-a at some switch. The switch
+      // uuid must be uuid-shaped to pass the strict `isPluralKitSwitchUuid`
+      // gate — otherwise the loop never even considers this row and the
+      // test is vacuous.
+      const rowId = '99999999-aaaa-4bbb-8ccc-dddddddddddd';
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: rowId,
+          startTime: DateTime.utc(2025, 6, 1, 8),
+          endTime: DateTime.utc(2025, 6, 1, 9),
+          memberId: 'local-a',
+          pluralkitUuid: '2f2f2f2f-0000-4000-8000-000000000001',
+        ),
+      );
 
-        // Now UNLINK local-a (clear its pluralkit ids). After this the member
-        // no longer resolves in uuidToLocalId, so the canonical set built
-        // from currently-resolvable members can't cover its rows.
-        await db.membersDao.updateMemberById(
-          'local-a',
-          const MembersCompanion(
-            pluralkitId: Value(null),
-            pluralkitUuid: Value(null),
-          ),
-        );
+      // Now UNLINK local-a (clear its pluralkit ids). After this the member
+      // no longer resolves in uuidToLocalId, so the canonical set built
+      // from currently-resolvable members can't cover its rows.
+      await db.membersDao.updateMemberById(
+        'local-a',
+        const MembersCompanion(
+          pluralkitId: Value(null),
+          pluralkitUuid: Value(null),
+        ),
+      );
 
-        // The API reports an unrelated switch (no members the device maps).
-        final sw1 = PKSwitch(
-          id: '2f2f2f2f-0000-4000-8000-000000000099',
-          timestamp: DateTime.utc(2026, 1, 1, 10),
-          members: const ['pkZ'],
-        );
-        final service = _makeServiceWithPkDao(
-          db: db,
-          client: _FakeClient([sw1]),
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
-        await _link(service);
-        await service.performFullImport();
+      // The API reports an unrelated switch (no members the device maps).
+      final sw1 = PKSwitch(
+        id: '2f2f2f2f-0000-4000-8000-000000000099',
+        timestamp: DateTime.utc(2026, 1, 1, 10),
+        members: const ['pkZ'],
+      );
+      final service = _makeServiceWithPkDao(
+        db: db,
+        client: _FakeClient([sw1]),
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
+      await _link(service);
+      await service.performFullImport();
 
-        // The unlinked member's historical row is untouched.
-        final raw = await db.frontingSessionsDao
-            .getAllSessionsIncludingDeleted();
-        final preserved = raw.firstWhere((s) => s.id == rowId);
-        expect(
-          preserved.isDeleted,
-          isFalse,
-          reason: 'H4: unlinked member history must not be tombstoned',
-        );
-        expect(
-          raw.where((s) => s.deleteIntentEpoch != null),
-          isEmpty,
-          reason: 'H4: no delete intent for excluded/unmapped members',
-        );
-        expect(await sessionRepo.getDeletedLinkedSessions(), isEmpty);
-      },
-    );
+      // The unlinked member's historical row is untouched.
+      final raw = await db.frontingSessionsDao.getAllSessionsIncludingDeleted();
+      final preserved = raw.firstWhere((s) => s.id == rowId);
+      expect(
+        preserved.isDeleted,
+        isFalse,
+        reason: 'H4: unlinked member history must not be tombstoned',
+      );
+      expect(
+        raw.where((s) => s.deleteIntentEpoch != null),
+        isEmpty,
+        reason: 'H4: no delete intent for excluded/unmapped members',
+      );
+      expect(await sessionRepo.getDeletedLinkedSessions(), isEmpty);
+    });
 
     test(
       '(b2) leaves rows for a pluralkitSyncIgnored member alone (H4)',
@@ -402,77 +403,73 @@ void main() {
       },
     );
 
-    test(
-      '(c) tombstones a genuine rescue artifact (switch not in the API) but '
-      'clears the link first and stamps NO delete intent',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('(c) tombstones a genuine rescue artifact (switch not in the API) but '
+        'clears the link first and stamps NO delete intent', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        final memberRepo = DriftMemberRepository(db.membersDao, null);
-        await memberRepo.createMember(
-          _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
-        );
+      final memberRepo = DriftMemberRepository(db.membersDao, null);
+      await memberRepo.createMember(
+        _member(localId: 'local-a', pkShortId: 'pkA', pkUuid: 'uuid-a'),
+      );
 
-        final sessionRepo = DriftFrontingSessionRepository(
-          db.frontingSessionsDao,
-          null,
-          pkSyncDao: db.pluralKitSyncDao,
-        );
+      final sessionRepo = DriftFrontingSessionRepository(
+        db.frontingSessionsDao,
+        null,
+        pkSyncDao: db.pluralKitSyncDao,
+      );
 
-        // A rescue artifact: linked to a switch uuid the API fixture does
-        // NOT contain, for a resolvable member. This is the population that
-        // SHOULD be tombstoned — but via clear-link-then-delete so the
-        // deletion pusher never fires.
-        const rescueId = '77777777-aaaa-4bbb-8ccc-ffffffffffff';
-        const ghostSwitch = '00000000-0000-0000-0000-0000000000aa';
-        await sessionRepo.createSession(
-          domain_fs.FrontingSession(
-            id: rescueId,
-            startTime: DateTime.utc(2025, 1, 1, 10),
-            memberId: 'local-a',
-            pluralkitUuid: ghostSwitch,
-          ),
-        );
+      // A rescue artifact: linked to a switch uuid the API fixture does
+      // NOT contain, for a resolvable member. This is the population that
+      // SHOULD be tombstoned — but via clear-link-then-delete so the
+      // deletion pusher never fires.
+      const rescueId = '77777777-aaaa-4bbb-8ccc-ffffffffffff';
+      const ghostSwitch = '00000000-0000-0000-0000-0000000000aa';
+      await sessionRepo.createSession(
+        domain_fs.FrontingSession(
+          id: rescueId,
+          startTime: DateTime.utc(2025, 1, 1, 10),
+          memberId: 'local-a',
+          pluralkitUuid: ghostSwitch,
+        ),
+      );
 
-        // The API only knows sw-1 (for local-a) — the ghost switch is gone.
-        final sw1 = PKSwitch(
-          id: 'sw-1',
-          timestamp: DateTime.utc(2026, 1, 1, 10),
-          members: const ['pkA'],
-        );
-        final service = _makeServiceWithPkDao(
-          db: db,
-          client: _FakeClient([sw1]),
-          memberRepo: memberRepo,
-          sessionRepo: sessionRepo,
-        );
-        await _link(service);
-        await service.performFullImport();
+      // The API only knows sw-1 (for local-a) — the ghost switch is gone.
+      final sw1 = PKSwitch(
+        id: 'sw-1',
+        timestamp: DateTime.utc(2026, 1, 1, 10),
+        members: const ['pkA'],
+      );
+      final service = _makeServiceWithPkDao(
+        db: db,
+        client: _FakeClient([sw1]),
+        memberRepo: memberRepo,
+        sessionRepo: sessionRepo,
+      );
+      await _link(service);
+      await service.performFullImport();
 
-        final raw = await db.frontingSessionsDao
-            .getAllSessionsIncludingDeleted();
-        final rescue = raw.firstWhere((s) => s.id == rescueId);
-        expect(
-          rescue.isDeleted,
-          isTrue,
-          reason: 'genuine rescue artifact is tombstoned',
-        );
-        expect(
-          rescue.pluralkitUuid,
-          isNull,
-          reason: 'PK link cleared BEFORE tombstoning (C1 idiom)',
-        );
-        expect(
-          rescue.deleteIntentEpoch,
-          isNull,
-          reason: 'no delete intent — importer cleanup must not push DELETE',
-        );
-        // The deletion pusher only ever picks up rows with BOTH a non-null
-        // pluralkit_uuid AND a non-null intent epoch — this row has neither.
-        expect(await sessionRepo.getDeletedLinkedSessions(), isEmpty);
-      },
-    );
+      final raw = await db.frontingSessionsDao.getAllSessionsIncludingDeleted();
+      final rescue = raw.firstWhere((s) => s.id == rescueId);
+      expect(
+        rescue.isDeleted,
+        isTrue,
+        reason: 'genuine rescue artifact is tombstoned',
+      );
+      expect(
+        rescue.pluralkitUuid,
+        isNull,
+        reason: 'PK link cleared BEFORE tombstoning (C1 idiom)',
+      );
+      expect(
+        rescue.deleteIntentEpoch,
+        isNull,
+        reason: 'no delete intent — importer cleanup must not push DELETE',
+      );
+      // The deletion pusher only ever picks up rows with BOTH a non-null
+      // pluralkit_uuid AND a non-null intent epoch — this row has neither.
+      expect(await sessionRepo.getDeletedLinkedSessions(), isEmpty);
+    });
 
     test(
       'sanity: an explicit user delete (deleteSession on a linked live row) '
@@ -507,7 +504,8 @@ void main() {
         expect(
           queued.map((s) => s.id),
           contains(id),
-          reason: 'control: deleteSession on a linked row stamps intent so '
+          reason:
+              'control: deleteSession on a linked row stamps intent so '
               'the (a)/(c) "no intent" assertions are meaningful',
         );
       },

@@ -120,7 +120,9 @@ class _PrismListRowState extends State<PrismListRow> {
       ),
     );
 
-    if (!canPress && widget.onLongPress == null && widget.onSecondaryTap == null) {
+    if (!canPress &&
+        widget.onLongPress == null &&
+        widget.onSecondaryTap == null) {
       return child;
     }
 

@@ -66,15 +66,13 @@ Widget _buildScreen({
         (ref) => Stream.value(const SystemSettings()),
       ),
       speakingAsProvider.overrideWith(_FakeSpeakingAsNotifier.new),
-      activeMembersProvider.overrideWith(
-        (ref) => Stream.value(allMembers),
-      ),
+      activeMembersProvider.overrideWith((ref) => Stream.value(allMembers)),
       memberByIdProvider.overrideWith(
         (ref, id) => Stream.value(
           allMembers.cast<Member?>().firstWhere(
-                (m) => m?.id == id,
-                orElse: () => null,
-              ),
+            (m) => m?.id == id,
+            orElse: () => null,
+          ),
         ),
       ),
       memberBoardFeedProvider.overrideWith(
@@ -97,9 +95,7 @@ Widget _buildScreen({
 void main() {
   group('MemberBoardScreen — smoke', () {
     testWidgets('renders screen title "Public Posts"', (tester) async {
-      await tester.pumpWidget(
-        _buildScreen(allMembers: [_alice]),
-      );
+      await tester.pumpWidget(_buildScreen(allMembers: [_alice]));
       await tester.pump();
 
       // "Public Posts" appears at least once (top bar title), possibly more
@@ -127,9 +123,7 @@ void main() {
 
     testWidgets('renders list of posts when data available', (tester) async {
       final posts = [_publicPost('1'), _publicPost('2')];
-      await tester.pumpWidget(
-        _buildScreen(posts: posts, allMembers: [_alice]),
-      );
+      await tester.pumpWidget(_buildScreen(posts: posts, allMembers: [_alice]));
       await tester.pump();
 
       expect(find.textContaining('Post body 1'), findsOneWidget);
@@ -137,9 +131,7 @@ void main() {
     });
 
     testWidgets('renders + action button in top bar', (tester) async {
-      await tester.pumpWidget(
-        _buildScreen(allMembers: [_alice]),
-      );
+      await tester.pumpWidget(_buildScreen(allMembers: [_alice]));
       await tester.pump();
 
       // The top bar has a + button for composing.
@@ -174,14 +166,13 @@ void main() {
             activeMembersProvider.overrideWith(
               (ref) => Stream.value(const <Member>[]),
             ),
-            memberByIdProvider.overrideWith(
-              (ref, id) => Stream.value(null),
-            ),
+            memberByIdProvider.overrideWith((ref, id) => Stream.value(null)),
             memberBoardFeedProvider.overrideWith(
               (ref, memberId) => const Stream.empty(),
             ),
-            memberBoardPostNotifierProvider
-                .overrideWith(_FakeBoardPostNotifier.new),
+            memberBoardPostNotifierProvider.overrideWith(
+              _FakeBoardPostNotifier.new,
+            ),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

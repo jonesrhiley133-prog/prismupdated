@@ -68,41 +68,50 @@ void main() {
     });
 
     // Row 5: connected, nothing confirmed → needsDirection only
-    test('connected, nothing confirmed → needsDirection=true, needsMapping=false, canAutoSync=false', () {
-      const state = PluralKitSyncState(
-        isConnected: true,
-        directionConfirmed: false,
-        mappingAcknowledged: false,
-      );
-      expect(state.needsDirection, true);
-      expect(state.needsMapping, false);
-      expect(state.canAutoSync, false);
-    });
+    test(
+      'connected, nothing confirmed → needsDirection=true, needsMapping=false, canAutoSync=false',
+      () {
+        const state = PluralKitSyncState(
+          isConnected: true,
+          directionConfirmed: false,
+          mappingAcknowledged: false,
+        );
+        expect(state.needsDirection, true);
+        expect(state.needsMapping, false);
+        expect(state.canAutoSync, false);
+      },
+    );
 
     // Row 6: connected, directionConfirmed, not mappingAcknowledged → needsMapping only
-    test('connected, directionConfirmed=true, mappingAcknowledged=false → needsMapping=true', () {
-      const state = PluralKitSyncState(
-        isConnected: true,
-        directionConfirmed: true,
-        mappingAcknowledged: false,
-      );
-      expect(state.needsDirection, false);
-      expect(state.needsMapping, true);
-      expect(state.canAutoSync, false);
-    });
+    test(
+      'connected, directionConfirmed=true, mappingAcknowledged=false → needsMapping=true',
+      () {
+        const state = PluralKitSyncState(
+          isConnected: true,
+          directionConfirmed: true,
+          mappingAcknowledged: false,
+        );
+        expect(state.needsDirection, false);
+        expect(state.needsMapping, true);
+        expect(state.canAutoSync, false);
+      },
+    );
 
     // Row 7: connected, mappingAcknowledged without directionConfirmed
     // (hypothetical / migration edge case — should land in needsDirection)
-    test('connected, mappingAcknowledged=true, directionConfirmed=false → needsDirection=true', () {
-      const state = PluralKitSyncState(
-        isConnected: true,
-        directionConfirmed: false,
-        mappingAcknowledged: true,
-      );
-      expect(state.needsDirection, true);
-      expect(state.needsMapping, false);
-      expect(state.canAutoSync, false);
-    });
+    test(
+      'connected, mappingAcknowledged=true, directionConfirmed=false → needsDirection=true',
+      () {
+        const state = PluralKitSyncState(
+          isConnected: true,
+          directionConfirmed: false,
+          mappingAcknowledged: true,
+        );
+        expect(state.needsDirection, true);
+        expect(state.needsMapping, false);
+        expect(state.canAutoSync, false);
+      },
+    );
 
     // Row 8: connected, both confirmed → canAutoSync only
     test('connected, both flags=true → canAutoSync=true', () {
@@ -131,7 +140,10 @@ void main() {
 
   group('PluralKitSyncState — copyWith round-trips', () {
     test('copyWith preserves directionConfirmed', () {
-      const base = PluralKitSyncState(isConnected: true, directionConfirmed: false);
+      const base = PluralKitSyncState(
+        isConnected: true,
+        directionConfirmed: false,
+      );
       final updated = base.copyWith(directionConfirmed: true);
       expect(updated.directionConfirmed, true);
       expect(updated.isConnected, true);
@@ -204,7 +216,10 @@ void main() {
     });
 
     test('states differing in directionConfirmed are not equal', () {
-      const a = PluralKitSyncState(isConnected: true, directionConfirmed: false);
+      const a = PluralKitSyncState(
+        isConnected: true,
+        directionConfirmed: false,
+      );
       const b = PluralKitSyncState(isConnected: true, directionConfirmed: true);
       expect(a, isNot(equals(b)));
     });
@@ -287,8 +302,7 @@ class _SecureStorageStub {
 
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   @override
   String get currentToken => 'fake';
   @override
@@ -299,8 +313,10 @@ class _FakeClient implements PluralKitClient {
   @override
   Future<PKMember> getMember(String r) => throw UnimplementedError();
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async =>
-      const [];
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async => const [];
   @override
   Future<PKSwitch?> getCurrentFronters() async => null;
   @override
@@ -339,9 +355,8 @@ class _FakeClient implements PluralKitClient {
 }
 
 class _FakeMemberRepo implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   @override
   Future<List<domain.Member>> getAllMembers() async => const [];
@@ -415,8 +430,9 @@ class _FakeSessionRepo implements FrontingSessionRepository {
   Future<List<domain.FrontingSession>> getSessionsForMember(String m) async =>
       const [];
   @override
-  Future<List<domain.FrontingSession>> getRecentSessions({int limit = 20}) async =>
-      const [];
+  Future<List<domain.FrontingSession>> getRecentSessions({
+    int limit = 20,
+  }) async => const [];
   @override
   Future<List<domain.FrontingSession>> getRecentSleepSessions({
     int limit = 10,
@@ -532,18 +548,30 @@ void _registerConfirmDirectionTests() {
         // Step 1: fresh connect.
         await service.setToken('some-token');
         expect(service.state.isConnected, isTrue);
-        expect(service.state.needsDirection, isTrue,
-            reason: 'fresh connection should need direction');
-        expect(service.state.needsMapping, isFalse,
-            reason: 'mapping gated behind direction');
+        expect(
+          service.state.needsDirection,
+          isTrue,
+          reason: 'fresh connection should need direction',
+        );
+        expect(
+          service.state.needsMapping,
+          isFalse,
+          reason: 'mapping gated behind direction',
+        );
         expect(service.state.canAutoSync, isFalse);
 
         // Step 2: confirm direction.
         await service.confirmDirection();
-        expect(service.state.needsDirection, isFalse,
-            reason: 'directionConfirmed=true clears needsDirection');
-        expect(service.state.needsMapping, isTrue,
-            reason: 'after direction confirmed, mapping is next');
+        expect(
+          service.state.needsDirection,
+          isFalse,
+          reason: 'directionConfirmed=true clears needsDirection',
+        );
+        expect(
+          service.state.needsMapping,
+          isTrue,
+          reason: 'after direction confirmed, mapping is next',
+        );
         expect(service.state.canAutoSync, isFalse);
 
         // Persisted state reflects the change.
@@ -554,4 +582,3 @@ void _registerConfirmDirectionTests() {
     );
   });
 }
-

@@ -45,7 +45,8 @@ Uint8List encodeWebpLossless(int width, int height, Uint8List rgba) {
   final data = w.finish();
   final chunk = data.length + (data.length.isOdd ? 1 : 0);
   final out = BytesBuilder();
-  void u32(int v) => out.add([v & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff, (v >> 24) & 0xff]);
+  void u32(int v) =>
+      out.add([v & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff, (v >> 24) & 0xff]);
   out.add('RIFF'.codeUnits);
   u32(4 + 8 + chunk);
   out.add('WEBP'.codeUnits);

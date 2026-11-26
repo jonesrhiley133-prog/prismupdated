@@ -61,17 +61,24 @@ CapturedSyncOp _op(
 ]) => CapturedSyncOp(table, id, type, fields);
 
 void main() {
-  test('dispatches each op type to the matching entry point, in order', () async {
-    final e = _RecordingEmitter();
-    final failures = await e.replayCapturedOps([
-      _op('fields', 'a', SyncRecordOpType.create, {'x': 1}),
-      _op('fields', 'b', SyncRecordOpType.update, {'y': 2}),
-      _op('values', 'c', SyncRecordOpType.delete),
-    ]);
+  test(
+    'dispatches each op type to the matching entry point, in order',
+    () async {
+      final e = _RecordingEmitter();
+      final failures = await e.replayCapturedOps([
+        _op('fields', 'a', SyncRecordOpType.create, {'x': 1}),
+        _op('fields', 'b', SyncRecordOpType.update, {'y': 2}),
+        _op('values', 'c', SyncRecordOpType.delete),
+      ]);
 
-    expect(failures, isEmpty);
-    expect(e.calls, ['create:fields:a', 'update:fields:b', 'delete:values:c']);
-  });
+      expect(failures, isEmpty);
+      expect(e.calls, [
+        'create:fields:a',
+        'update:fields:b',
+        'delete:values:c',
+      ]);
+    },
+  );
 
   test('empty list is a no-op', () async {
     final e = _RecordingEmitter();
@@ -109,25 +116,32 @@ void main() {
     expect(e.calls, ['create:t:a', 'delete:t:c']);
   });
 
-  test('a per-op failure is reported with the given logLabel + warning severity',
-      () async {
-    final reported = <AppError>[];
-    void listener(AppError err) => reported.add(err);
-    ErrorReportingService.instance.addListener(listener);
-    addTearDown(() => ErrorReportingService.instance.removeListener(listener));
+  test(
+    'a per-op failure is reported with the given logLabel + warning severity',
+    () async {
+      final reported = <AppError>[];
+      void listener(AppError err) => reported.add(err);
+      ErrorReportingService.instance.addListener(listener);
+      addTearDown(
+        () => ErrorReportingService.instance.removeListener(listener),
+      );
 
-    final e = _RecordingEmitter(throwOnEntityIds: {'x'});
-    await e.replayCapturedOps(
-      [_op('tbl', 'x', SyncRecordOpType.create)],
-      logLabel: 'My batch',
-    );
+      final e = _RecordingEmitter(throwOnEntityIds: {'x'});
+      await e.replayCapturedOps([
+        _op('tbl', 'x', SyncRecordOpType.create),
+      ], logLabel: 'My batch');
 
-    final mine =
-        reported.where((r) => r.message.contains('My batch replay failed'));
-    expect(mine, hasLength(1));
-    expect(mine.single.severity, ErrorSeverity.warning);
-    expect(mine.single.message, startsWith('My batch replay failed for tbl/x'));
-  });
+      final mine = reported.where(
+        (r) => r.message.contains('My batch replay failed'),
+      );
+      expect(mine, hasLength(1));
+      expect(mine.single.severity, ErrorSeverity.warning);
+      expect(
+        mine.single.message,
+        startsWith('My batch replay failed for tbl/x'),
+      );
+    },
+  );
 
   test('default logLabel is "Sync"', () async {
     final reported = <AppError>[];
@@ -139,7 +153,9 @@ void main() {
     await e.replayCapturedOps([_op('tbl', 'z', SyncRecordOpType.update)]);
 
     expect(
-      reported.where((r) => r.message.startsWith('Sync replay failed for tbl/z')),
+      reported.where(
+        (r) => r.message.startsWith('Sync replay failed for tbl/z'),
+      ),
       hasLength(1),
     );
   });

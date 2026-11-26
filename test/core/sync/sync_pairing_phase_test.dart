@@ -79,19 +79,20 @@ void main() {
         expect(await service.read(), SyncPairingPhase.pendingPair);
       });
 
-      test('reset path: wipeInProgress → unread is allowed (recovery)',
-          () async {
-        final service = SyncPairingPhaseService();
-        await service.write(SyncPairingPhase.wipeInProgress);
-        await service.transition(
-          from: SyncPairingPhase.wipeInProgress,
-          to: SyncPairingPhase.unread,
-        );
-        expect(await service.read(), SyncPairingPhase.unread);
-      });
+      test(
+        'reset path: wipeInProgress → unread is allowed (recovery)',
+        () async {
+          final service = SyncPairingPhaseService();
+          await service.write(SyncPairingPhase.wipeInProgress);
+          await service.transition(
+            from: SyncPairingPhase.wipeInProgress,
+            to: SyncPairingPhase.unread,
+          );
+          expect(await service.read(), SyncPairingPhase.unread);
+        },
+      );
 
-      test('reset path: pendingPair → unread is allowed (recovery)',
-          () async {
+      test('reset path: pendingPair → unread is allowed (recovery)', () async {
         final service = SyncPairingPhaseService();
         await service.write(SyncPairingPhase.pendingPair);
         await service.transition(
@@ -137,8 +138,7 @@ void main() {
         );
       });
 
-      test('paired → wipeInProgress (must go through unread first)',
-          () async {
+      test('paired → wipeInProgress (must go through unread first)', () async {
         final service = SyncPairingPhaseService();
         await service.write(SyncPairingPhase.paired);
         expect(

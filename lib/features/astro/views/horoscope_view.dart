@@ -12,7 +12,12 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 /// Runs [compute] off the first frame and caches the result per [cacheKey],
 /// so switching tabs back and forth stays instant.
 class AstroFuture<T> extends StatefulWidget {
-  const AstroFuture({super.key, required this.cacheKey, required this.compute, required this.builder});
+  const AstroFuture({
+    super.key,
+    required this.cacheKey,
+    required this.compute,
+    required this.builder,
+  });
   final String cacheKey;
   final T Function() compute;
   final Widget Function(BuildContext, T) builder;
@@ -57,9 +62,16 @@ class _AstroFutureState<T> extends State<AstroFuture<T>> {
     future: _future,
     builder: (context, snap) {
       if (snap.hasError) {
-        return Padding(padding: const EdgeInsets.all(24), child: Text('${snap.error}'));
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text('${snap.error}'),
+        );
       }
-      if (!snap.hasData) return const Padding(padding: EdgeInsets.all(40), child: PrismLoadingState());
+      if (!snap.hasData)
+        return const Padding(
+          padding: EdgeInsets.all(40),
+          child: PrismLoadingState(),
+        );
       return widget.builder(context, snap.data as T);
     },
   );
@@ -67,7 +79,12 @@ class _AstroFutureState<T> extends State<AstroFuture<T>> {
 
 /// One day's reading, as used by Today and the Daily/Tomorrow horoscope.
 class DayReadingView extends StatelessWidget {
-  const DayReadingView({super.key, required this.reading, required this.access, this.header = true});
+  const DayReadingView({
+    super.key,
+    required this.reading,
+    required this.access,
+    this.header = true,
+  });
   final DayReading reading;
   final AstroAccess access;
   final bool header;
@@ -89,11 +106,21 @@ class DayReadingView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(dateLabel.toUpperCase(), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1, color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  dateLabel.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.1,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  es ? 'Astrología de hoy para ${access.name}' : 'Today\'s Astrology for ${access.name}',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                  es
+                      ? 'Astrología de hoy para ${access.name}'
+                      : 'Today\'s Astrology for ${access.name}',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 BigThree(access: access),
@@ -107,9 +134,21 @@ class DayReadingView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _kv(context, tr(context, 'Today\'s theme', 'Tema del día'), r.title),
-                          _kv(context, tr(context, 'Emotional focus', 'Enfoque emocional'), r.emotionalFocus),
-                          _kv(context, tr(context, 'Moon', 'Luna'), '${r.phase.glyph} ${phaseName(r.phase, es)} · ${signs[r.moonSign].name.of(es)}${r.moonNextSign != null ? ' → ${signs[r.moonNextSign!].name.of(es)}' : ''}'),
+                          _kv(
+                            context,
+                            tr(context, 'Today\'s theme', 'Tema del día'),
+                            r.title,
+                          ),
+                          _kv(
+                            context,
+                            tr(context, 'Emotional focus', 'Enfoque emocional'),
+                            r.emotionalFocus,
+                          ),
+                          _kv(
+                            context,
+                            tr(context, 'Moon', 'Luna'),
+                            '${r.phase.glyph} ${phaseName(r.phase, es)} · ${signs[r.moonSign].name.of(es)}${r.moonNextSign != null ? ' → ${signs[r.moonNextSign!].name.of(es)}' : ''}',
+                          ),
                         ],
                       ),
                     ),
@@ -127,7 +166,12 @@ class DayReadingView extends StatelessWidget {
         AstroCard(
           title: tr(context, 'Energy of the day', 'Energía del día'),
           emoji: '⚡',
-          child: Column(children: [for (final k in EnergyKind.values) EnergyBar(kind: k, value: r.scores[k]!, color: accent)]),
+          child: Column(
+            children: [
+              for (final k in EnergyKind.values)
+                EnergyBar(kind: k, value: r.scores[k]!, color: accent),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         PrismSurface(
@@ -135,20 +179,49 @@ class DayReadingView extends StatelessWidget {
           child: Column(
             children: [
               for (final (i, part) in ReadingPart.values.indexed) ...[
-                if (i > 0) Divider(height: 1, indent: 16, endIndent: 16, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
+                if (i > 0)
+                  Divider(
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.4,
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(width: 28, child: Text(part.emoji, style: const TextStyle(fontSize: 16))),
+                      SizedBox(
+                        width: 28,
+                        child: Text(
+                          part.emoji,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(part.label.of(es), style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                            Text(
+                              part.label.of(es),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                             const SizedBox(height: 2),
-                            Text(r.parts[part]!, style: theme.textTheme.bodyMedium?.copyWith(height: 1.45, fontStyle: part == ReadingPart.reflection || part == ReadingPart.message ? FontStyle.italic : null)),
+                            Text(
+                              r.parts[part]!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                height: 1.45,
+                                fontStyle:
+                                    part == ReadingPart.reflection ||
+                                        part == ReadingPart.message
+                                    ? FontStyle.italic
+                                    : null,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -160,15 +233,29 @@ class DayReadingView extends StatelessWidget {
           ),
         ),
         if (r.transits.where((t) => t.transit != Body.moon).isNotEmpty) ...[
-          PrismSectionHeader(title: tr(context, 'MAJOR TRANSITS', 'TRÁNSITOS PRINCIPALES')),
+          PrismSectionHeader(
+            title: tr(context, 'MAJOR TRANSITS', 'TRÁNSITOS PRINCIPALES'),
+          ),
           PrismSurface(
             padding: EdgeInsets.zero,
             child: Column(
               children: [
-                for (final t in r.transits.where((t) => t.transit != Body.moon).take(6))
+                for (final t
+                    in r.transits.where((t) => t.transit != Body.moon).take(6))
                   PrismListRow(
                     dense: true,
-                    leading: SizedBox(width: 30, child: Center(child: AstroGlyph(bodyGlyph(t.transit), size: 18, color: t.harmonious ? accent : theme.colorScheme.tertiary))),
+                    leading: SizedBox(
+                      width: 30,
+                      child: Center(
+                        child: AstroGlyph(
+                          bodyGlyph(t.transit),
+                          size: 18,
+                          color: t.harmonious
+                              ? accent
+                              : theme.colorScheme.tertiary,
+                        ),
+                      ),
+                    ),
                     title: Text(t.label(es)),
                     subtitle: Text(t.meaning(es)),
                   ),
@@ -188,8 +275,18 @@ class DayReadingView extends StatelessWidget {
       child: Text.rich(
         TextSpan(
           children: [
-            TextSpan(text: '$k: ', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            TextSpan(text: v, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+            TextSpan(
+              text: '$k: ',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            TextSpan(
+              text: v,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
       ),
@@ -213,12 +310,30 @@ class _EnergyRing extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            SizedBox.expand(child: CustomPaint(painter: _RingPainter(value / 100, color, theme.colorScheme.surfaceContainerHighest))),
+            SizedBox.expand(
+              child: CustomPaint(
+                painter: _RingPainter(
+                  value / 100,
+                  color,
+                  theme.colorScheme.surfaceContainerHighest,
+                ),
+              ),
+            ),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('$value%', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-                Text(tr(context, 'energy', 'energía'), style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  '$value%',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  tr(context, 'energy', 'energía'),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ],
@@ -248,7 +363,8 @@ class _HoroscopeSectionState extends State<HoroscopeSection> {
     final subject = a.subject!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final key = '${a.member.id}|${a.birth.hashCode}|${a.profile.houseSystem}|$es|$today';
+    final key =
+        '${a.member.id}|${a.birth.hashCode}|${a.profile.houseSystem}|$es|$today';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -262,7 +378,11 @@ class _HoroscopeSectionState extends State<HoroscopeSection> {
                   child: PrismChip(
                     label: switch (s) {
                       HoroscopeSpan.daily => tr(context, 'Today', 'Hoy'),
-                      HoroscopeSpan.tomorrow => tr(context, 'Tomorrow', 'Mañana'),
+                      HoroscopeSpan.tomorrow => tr(
+                        context,
+                        'Tomorrow',
+                        'Mañana',
+                      ),
                       HoroscopeSpan.weekly => tr(context, 'Week', 'Semana'),
                       HoroscopeSpan.monthly => tr(context, 'Month', 'Mes'),
                       HoroscopeSpan.yearly => tr(context, 'Year', 'Año'),
@@ -278,11 +398,22 @@ class _HoroscopeSectionState extends State<HoroscopeSection> {
         SectionSwitcher(
           id: _span,
           child: switch (_span) {
-            HoroscopeSpan.daily => DayReadingView(reading: dailyReading(subject, today, es), access: a, header: true),
-            HoroscopeSpan.tomorrow => _Tomorrow(access: a, day: today.add(const Duration(days: 1))),
+            HoroscopeSpan.daily => DayReadingView(
+              reading: dailyReading(subject, today, es),
+              access: a,
+              header: true,
+            ),
+            HoroscopeSpan.tomorrow => _Tomorrow(
+              access: a,
+              day: today.add(const Duration(days: 1)),
+            ),
             HoroscopeSpan.weekly => AstroFuture<WeekReading>(
               cacheKey: 'week|$key',
-              compute: () => weeklyReading(subject, today.subtract(Duration(days: today.weekday - 1)), es),
+              compute: () => weeklyReading(
+                subject,
+                today.subtract(Duration(days: today.weekday - 1)),
+                es,
+              ),
               builder: (context, w) => _WeekView(week: w, access: a),
             ),
             HoroscopeSpan.monthly => AstroFuture<MonthReading>(
@@ -320,11 +451,21 @@ class _Tomorrow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tr(context, 'TOMORROW\'S PREVIEW', 'AVANCE DE MAÑANA'), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1)),
+              Text(
+                tr(context, 'TOMORROW\'S PREVIEW', 'AVANCE DE MAÑANA'),
+                style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1),
+              ),
               const SizedBox(height: 4),
-              Text(r.title, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              Text(
+                r.title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text('${r.phase.glyph} ${phaseName(r.phase, es)} · ${signs[r.moonSign].name.of(es)} · ${tr(context, 'Energy', 'Energía')} ${r.energy}%'),
+              Text(
+                '${r.phase.glyph} ${phaseName(r.phase, es)} · ${signs[r.moonSign].name.of(es)} · ${tr(context, 'Energy', 'Energía')} ${r.energy}%',
+              ),
             ],
           ),
         ),
@@ -336,7 +477,11 @@ class _Tomorrow extends StatelessWidget {
 }
 
 class _EventList extends StatelessWidget {
-  const _EventList({required this.events, required this.accent, this.dateFormat});
+  const _EventList({
+    required this.events,
+    required this.accent,
+    this.dateFormat,
+  });
   final List<SkyEvent> events;
   final Color accent;
   final DateFormat? dateFormat;
@@ -346,7 +491,15 @@ class _EventList extends StatelessWidget {
     final theme = Theme.of(context);
     final fmt = dateFormat ?? DateFormat.MMMd(context.dateLocale);
     if (events.isEmpty) {
-      return AstroCard(child: Text(tr(context, 'No major events in this period.', 'No hay eventos importantes en este periodo.')));
+      return AstroCard(
+        child: Text(
+          tr(
+            context,
+            'No major events in this period.',
+            'No hay eventos importantes en este periodo.',
+          ),
+        ),
+      );
     }
     return PrismSurface(
       padding: EdgeInsets.zero,
@@ -360,15 +513,33 @@ class _EventList extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    e.glyph.runes.first > 0x1F000 ? Text(e.glyph, style: const TextStyle(fontSize: 18)) : AstroGlyph(e.glyph, size: 18, color: e.personal ? accent : theme.colorScheme.onSurfaceVariant),
-                    Text(fmt.format(e.utc.toLocal()), style: theme.textTheme.labelSmall?.copyWith(fontSize: 10)),
+                    e.glyph.runes.first > 0x1F000
+                        ? Text(e.glyph, style: const TextStyle(fontSize: 18))
+                        : AstroGlyph(
+                            e.glyph,
+                            size: 18,
+                            color: e.personal
+                                ? accent
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                    Text(
+                      fmt.format(e.utc.toLocal()),
+                      style: theme.textTheme.labelSmall?.copyWith(fontSize: 10),
+                    ),
                   ],
                 ),
               ),
               title: Row(
                 children: [
                   Flexible(child: Text(e.title)),
-                  if (e.personal) ...[const SizedBox(width: 6), Icon(PhosphorIcons.userCircle(PhosphorIconsStyle.fill), size: 14, color: accent)],
+                  if (e.personal) ...[
+                    const SizedBox(width: 6),
+                    Icon(
+                      PhosphorIcons.userCircle(PhosphorIconsStyle.fill),
+                      size: 14,
+                      color: accent,
+                    ),
+                  ],
                 ],
               ),
               subtitle: Text(e.detail),
@@ -398,16 +569,33 @@ class _WeekView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tr(context, 'THIS WEEK', 'ESTA SEMANA'), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1)),
+              Text(
+                tr(context, 'THIS WEEK', 'ESTA SEMANA'),
+                style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1),
+              ),
               const SizedBox(height: 6),
-              Text(week.summary, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, height: 1.4)),
+              Text(
+                week.summary,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),
         const SizedBox(height: 12),
-        AstroCard(title: tr(context, 'Emotional themes', 'Temas emocionales'), emoji: '💭', child: Text(week.emotional, style: const TextStyle(height: 1.45))),
+        AstroCard(
+          title: tr(context, 'Emotional themes', 'Temas emocionales'),
+          emoji: '💭',
+          child: Text(week.emotional, style: const TextStyle(height: 1.45)),
+        ),
         const SizedBox(height: 10),
-        AstroCard(title: tr(context, 'Relationship themes', 'Temas de relaciones'), emoji: '❤️', child: Text(week.relationships, style: const TextStyle(height: 1.45))),
+        AstroCard(
+          title: tr(context, 'Relationship themes', 'Temas de relaciones'),
+          emoji: '❤️',
+          child: Text(week.relationships, style: const TextStyle(height: 1.45)),
+        ),
         PrismSectionHeader(title: tr(context, 'DAY BY DAY', 'DÍA A DÍA')),
         PrismSurface(
           padding: EdgeInsets.zero,
@@ -415,33 +603,68 @@ class _WeekView extends StatelessWidget {
             children: [
               for (final d in week.days)
                 PrismListRow(
-                  selected: d.day.day == today.day && d.day.month == today.month,
+                  selected:
+                      d.day.day == today.day && d.day.month == today.month,
                   leading: SizedBox(
                     width: 44,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(DateFormat.E(context.dateLocale).format(d.day), style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700)),
-                        Text(d.phase.glyph, style: const TextStyle(fontSize: 16)),
+                        Text(
+                          DateFormat.E(context.dateLocale).format(d.day),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          d.phase.glyph,
+                          style: const TextStyle(fontSize: 16),
+                        ),
                       ],
                     ),
                   ),
                   title: Text(d.title),
-                  subtitle: Text('${signs[d.moonSign].name.of(es)} ${tr(context, 'Moon', 'Luna')} · ${tr(context, 'Energy', 'Energía')} ${d.energy}% · ${d.parts[ReadingPart.focus]}'),
+                  subtitle: Text(
+                    '${signs[d.moonSign].name.of(es)} ${tr(context, 'Moon', 'Luna')} · ${tr(context, 'Energy', 'Energía')} ${d.energy}% · ${d.parts[ReadingPart.focus]}',
+                  ),
                   onTap: () => PrismSheet.show(
                     context: context,
-                    title: DateFormat.MMMMEEEEd(context.dateLocale).format(d.day),
+                    title: DateFormat.MMMMEEEEd(
+                      context.dateLocale,
+                    ).format(d.day),
                     maxHeightFactor: 0.92,
-                    builder: (_) => ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), children: [DayReadingView(reading: d, access: access, header: false)]),
+                    builder: (_) => ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                      children: [
+                        DayReadingView(
+                          reading: d,
+                          access: access,
+                          header: false,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             ],
           ),
         ),
-        PrismSectionHeader(title: tr(context, 'IMPORTANT DAYS', 'DÍAS IMPORTANTES')),
-        _EventList(events: week.important, accent: accent, dateFormat: DateFormat.E(context.dateLocale)),
-        PrismSectionHeader(title: tr(context, 'ASTROLOGICAL EVENTS', 'EVENTOS ASTROLÓGICOS')),
-        _EventList(events: week.events.where((e) => !e.personal).toList(), accent: accent, dateFormat: DateFormat.E(context.dateLocale)),
+        PrismSectionHeader(
+          title: tr(context, 'IMPORTANT DAYS', 'DÍAS IMPORTANTES'),
+        ),
+        _EventList(
+          events: week.important,
+          accent: accent,
+          dateFormat: DateFormat.E(context.dateLocale),
+        ),
+        PrismSectionHeader(
+          title: tr(context, 'ASTROLOGICAL EVENTS', 'EVENTOS ASTROLÓGICOS'),
+        ),
+        _EventList(
+          events: week.events.where((e) => !e.personal).toList(),
+          accent: accent,
+          dateFormat: DateFormat.E(context.dateLocale),
+        ),
         const AstroDisclaimer(),
       ],
     );
@@ -467,9 +690,20 @@ class _MonthView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(DateFormat.yMMMM(context.dateLocale).format(month.month).toUpperCase(), style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1)),
+              Text(
+                DateFormat.yMMMM(
+                  context.dateLocale,
+                ).format(month.month).toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(letterSpacing: 1.1),
+              ),
               const SizedBox(height: 6),
-              Text(month.theme, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, height: 1.4)),
+              Text(
+                month.theme,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
+                ),
+              ),
               if (month.retrogrades.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 Wrap(
@@ -478,14 +712,29 @@ class _MonthView extends StatelessWidget {
                   children: [
                     for (final b in month.retrogrades)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(color: theme.colorScheme.tertiary.withValues(alpha: 0.12), borderRadius: prismCorners(context, 20)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.tertiary.withValues(
+                            alpha: 0.12,
+                          ),
+                          borderRadius: prismCorners(context, 20),
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AstroGlyph(bodyGlyph(b), size: 14, color: theme.colorScheme.tertiary),
+                            AstroGlyph(
+                              bodyGlyph(b),
+                              size: 14,
+                              color: theme.colorScheme.tertiary,
+                            ),
                             const SizedBox(width: 4),
-                            Text('${planets[b]!.name.of(es)} ℞', style: theme.textTheme.labelSmall),
+                            Text(
+                              '${planets[b]!.name.of(es)} ℞',
+                              style: theme.textTheme.labelSmall,
+                            ),
                           ],
                         ),
                       ),
@@ -497,13 +746,35 @@ class _MonthView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         for (final (i, e) in month.areas.entries.indexed) ...[
-          AstroCard(title: e.key, emoji: emojis[i % emojis.length], child: Text(e.value, style: const TextStyle(height: 1.45))),
+          AstroCard(
+            title: e.key,
+            emoji: emojis[i % emojis.length],
+            child: Text(e.value, style: const TextStyle(height: 1.45)),
+          ),
           const SizedBox(height: 10),
         ],
         PrismSectionHeader(title: tr(context, 'MOON PHASES', 'FASES LUNARES')),
-        _EventList(events: [for (final e in month.events) if (e.kind == SkyEventKind.lunation || e.kind == SkyEventKind.eclipse) e], accent: accent),
-        PrismSectionHeader(title: tr(context, 'IMPORTANT DATES', 'FECHAS IMPORTANTES')),
-        _EventList(events: [for (final e in month.events) if (e.kind != SkyEventKind.lunation && e.kind != SkyEventKind.eclipse) e], accent: accent),
+        _EventList(
+          events: [
+            for (final e in month.events)
+              if (e.kind == SkyEventKind.lunation ||
+                  e.kind == SkyEventKind.eclipse)
+                e,
+          ],
+          accent: accent,
+        ),
+        PrismSectionHeader(
+          title: tr(context, 'IMPORTANT DATES', 'FECHAS IMPORTANTES'),
+        ),
+        _EventList(
+          events: [
+            for (final e in month.events)
+              if (e.kind != SkyEventKind.lunation &&
+                  e.kind != SkyEventKind.eclipse)
+                e,
+          ],
+          accent: accent,
+        ),
         const AstroDisclaimer(),
       ],
     );
@@ -531,9 +802,21 @@ class _YearView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${year.year}', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+              Text(
+                '${year.year}',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(tr(context, 'The year ahead for ${access.name}', 'El año de ${access.name}'), style: theme.textTheme.titleSmall),
+              Text(
+                tr(
+                  context,
+                  'The year ahead for ${access.name}',
+                  'El año de ${access.name}',
+                ),
+                style: theme.textTheme.titleSmall,
+              ),
               if (year.birthday != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -544,17 +827,42 @@ class _YearView extends StatelessWidget {
             ],
           ),
         ),
-        PrismSectionHeader(title: tr(context, 'MAJOR THEMES', 'TEMAS PRINCIPALES')),
-        for (final t in year.themes) ...[AstroCard(child: Text(t, style: const TextStyle(height: 1.45))), const SizedBox(height: 10)],
-        PrismSectionHeader(title: tr(context, 'GROWTH PERIODS', 'PERIODOS DE CRECIMIENTO')),
-        _EventList(events: year.growth, accent: accent, dateFormat: DateFormat.MMMd(context.dateLocale)),
-        PrismSectionHeader(title: tr(context, 'REFLECTION PERIODS', 'PERIODOS DE REFLEXIÓN')),
-        _EventList(events: year.reflection, accent: accent, dateFormat: DateFormat.MMMd(context.dateLocale)),
+        PrismSectionHeader(
+          title: tr(context, 'MAJOR THEMES', 'TEMAS PRINCIPALES'),
+        ),
+        for (final t in year.themes) ...[
+          AstroCard(child: Text(t, style: const TextStyle(height: 1.45))),
+          const SizedBox(height: 10),
+        ],
+        PrismSectionHeader(
+          title: tr(context, 'GROWTH PERIODS', 'PERIODOS DE CRECIMIENTO'),
+        ),
+        _EventList(
+          events: year.growth,
+          accent: accent,
+          dateFormat: DateFormat.MMMd(context.dateLocale),
+        ),
+        PrismSectionHeader(
+          title: tr(context, 'REFLECTION PERIODS', 'PERIODOS DE REFLEXIÓN'),
+        ),
+        _EventList(
+          events: year.reflection,
+          accent: accent,
+          dateFormat: DateFormat.MMMd(context.dateLocale),
+        ),
         PrismSectionHeader(title: tr(context, 'MONTH BY MONTH', 'MES A MES')),
         for (final m in byMonth.keys.toList()..sort()) ...[
           Padding(
             padding: const EdgeInsets.only(top: 6, bottom: 6, left: 4),
-            child: Text(DateFormat.MMMM(context.dateLocale).format(DateTime(year.year, m)), style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, color: accent)),
+            child: Text(
+              DateFormat.MMMM(
+                context.dateLocale,
+              ).format(DateTime(year.year, m)),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: accent,
+              ),
+            ),
           ),
           _EventList(events: byMonth[m]!, accent: accent),
         ],
@@ -563,7 +871,6 @@ class _YearView extends StatelessWidget {
     );
   }
 }
-
 
 class _RingPainter extends CustomPainter {
   _RingPainter(this.fraction, this.color, this.track);
@@ -574,15 +881,29 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const stroke = 7.0;
-    final rect = Rect.fromLTWH(stroke / 2, stroke / 2, size.width - stroke, size.height - stroke);
+    final rect = Rect.fromLTWH(
+      stroke / 2,
+      stroke / 2,
+      size.width - stroke,
+      size.height - stroke,
+    );
     final base = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..color = track;
     canvas.drawArc(rect, 0, 6.2832, false, base);
-    canvas.drawArc(rect, -1.5708, 6.2832 * fraction.clamp(0, 1), false, base..color = color..strokeCap = StrokeCap.round);
+    canvas.drawArc(
+      rect,
+      -1.5708,
+      6.2832 * fraction.clamp(0, 1),
+      false,
+      base
+        ..color = color
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   @override
-  bool shouldRepaint(_RingPainter old) => old.fraction != fraction || old.color != color || old.track != track;
+  bool shouldRepaint(_RingPainter old) =>
+      old.fraction != fraction || old.color != color || old.track != track;
 }

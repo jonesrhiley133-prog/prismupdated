@@ -24,7 +24,9 @@ Future<File> _seedV39Db(
   final seeded = AppDatabase(NativeDatabase(dbFile));
   await seeded.customSelect('SELECT 1').get();
   if (seedDeletedShortIdHolder) {
-    await seeded.into(seeded.members).insert(
+    await seeded
+        .into(seeded.members)
+        .insert(
           MembersCompanion.insert(
             id: 'deleted-holder',
             name: 'Old Holder',
@@ -67,80 +69,94 @@ Future<String?> _indexSql(AppDatabase db, String name) async {
 
 void main() {
   group('schema v39 -> v40: pluralkit_id index narrows to active-only', () {
-    test('rebuilds idx_members_pluralkit_id with an is_deleted = 0 filter',
-        () async {
-      final dbFile = await _seedV39Db('prism_migration_v39_to_v40_shape_');
+    test(
+      'rebuilds idx_members_pluralkit_id with an is_deleted = 0 filter',
+      () async {
+        final dbFile = await _seedV39Db('prism_migration_v39_to_v40_shape_');
 
-      final upgraded = AppDatabase(NativeDatabase(dbFile));
-      addTearDown(upgraded.close);
-      await upgraded.customSelect('SELECT 1').get();
+        final upgraded = AppDatabase(NativeDatabase(dbFile));
+        addTearDown(upgraded.close);
+        await upgraded.customSelect('SELECT 1').get();
 
-      final version =
-          await upgraded.customSelect('PRAGMA user_version').getSingle();
-      expect(
-        version.read<int>('user_version'),
-        AppDatabase.currentSchemaVersion,
-      );
+        final version = await upgraded
+            .customSelect('PRAGMA user_version')
+            .getSingle();
+        expect(
+          version.read<int>('user_version'),
+          AppDatabase.currentSchemaVersion,
+        );
 
-      final memberShortIdSql =
-          await _indexSql(upgraded, 'idx_members_pluralkit_id');
-      expect(memberShortIdSql, isNotNull);
-      expect(memberShortIdSql, contains('is_deleted = 0'));
+        final memberShortIdSql = await _indexSql(
+          upgraded,
+          'idx_members_pluralkit_id',
+        );
+        expect(memberShortIdSql, isNotNull);
+        expect(memberShortIdSql, contains('is_deleted = 0'));
 
-      // v40 also adds the F4 create-push lease column.
-      final memberCols = await upgraded
-          .customSelect("SELECT name FROM pragma_table_info('members')")
-          .get();
-      expect(
-        memberCols.map((r) => r.read<String>('name')),
-        contains('create_push_started_at'),
-      );
+        // v40 also adds the F4 create-push lease column.
+        final memberCols = await upgraded
+            .customSelect("SELECT name FROM pragma_table_info('members')")
+            .get();
+        expect(
+          memberCols.map((r) => r.read<String>('name')),
+          contains('create_push_started_at'),
+        );
 
-      // The uuid index is intentionally left covering tombstones.
-      final memberUuidSql =
-          await _indexSql(upgraded, 'idx_members_pluralkit_uuid');
-      expect(memberUuidSql, isNotNull);
-      expect(memberUuidSql, isNot(contains('is_deleted')));
-    });
+        // The uuid index is intentionally left covering tombstones.
+        final memberUuidSql = await _indexSql(
+          upgraded,
+          'idx_members_pluralkit_uuid',
+        );
+        expect(memberUuidSql, isNotNull);
+        expect(memberUuidSql, isNot(contains('is_deleted')));
+      },
+    );
 
     test(
-        'a soft-deleted tombstone\'s recycled short id no longer blocks a live '
-        'member that now owns it', () async {
-      final dbFile = await _seedV39Db(
-        'prism_migration_v39_to_v40_recycle_',
-        seedDeletedShortIdHolder: true,
-      );
+      'a soft-deleted tombstone\'s recycled short id no longer blocks a live '
+      'member that now owns it',
+      () async {
+        final dbFile = await _seedV39Db(
+          'prism_migration_v39_to_v40_recycle_',
+          seedDeletedShortIdHolder: true,
+        );
 
-      final upgraded = AppDatabase(NativeDatabase(dbFile));
-      addTearDown(upgraded.close);
-      await upgraded.customSelect('SELECT 1').get();
+        final upgraded = AppDatabase(NativeDatabase(dbFile));
+        addTearDown(upgraded.close);
+        await upgraded.customSelect('SELECT 1').get();
 
-      // A DIFFERENT live member takes the recycled short id — under the old
-      // covering index this insert threw SQLITE_CONSTRAINT_UNIQUE.
-      await upgraded.into(upgraded.members).insert(
-            MembersCompanion.insert(
-              id: 'live-holder',
-              name: 'New Holder',
-              emoji: const drift.Value('🟢'),
-              createdAt: DateTime(2026, 2, 1),
-              pluralkitUuid: const drift.Value('uuid-new'),
-              pluralkitId: const drift.Value('abcde'),
-            ),
-          );
+        // A DIFFERENT live member takes the recycled short id — under the old
+        // covering index this insert threw SQLITE_CONSTRAINT_UNIQUE.
+        await upgraded
+            .into(upgraded.members)
+            .insert(
+              MembersCompanion.insert(
+                id: 'live-holder',
+                name: 'New Holder',
+                emoji: const drift.Value('🟢'),
+                createdAt: DateTime(2026, 2, 1),
+                pluralkitUuid: const drift.Value('uuid-new'),
+                pluralkitId: const drift.Value('abcde'),
+              ),
+            );
 
-      final deleted = await (upgraded.select(upgraded.members)
-            ..where((m) => m.id.equals('deleted-holder')))
-          .getSingle();
-      expect(deleted.isDeleted, isTrue);
-      expect(deleted.pluralkitUuid, 'uuid-old',
-          reason: 'the tombstone keeps its real uuid (uuid index untouched)');
+        final deleted = await (upgraded.select(
+          upgraded.members,
+        )..where((m) => m.id.equals('deleted-holder'))).getSingle();
+        expect(deleted.isDeleted, isTrue);
+        expect(
+          deleted.pluralkitUuid,
+          'uuid-old',
+          reason: 'the tombstone keeps its real uuid (uuid index untouched)',
+        );
 
-      final live = await (upgraded.select(upgraded.members)
-            ..where((m) => m.id.equals('live-holder')))
-          .getSingle();
-      expect(live.pluralkitId, 'abcde');
-      expect(live.isDeleted, isFalse);
-    });
+        final live = await (upgraded.select(
+          upgraded.members,
+        )..where((m) => m.id.equals('live-holder'))).getSingle();
+        expect(live.pluralkitId, 'abcde');
+        expect(live.isDeleted, isFalse);
+      },
+    );
 
     test('two ACTIVE members still cannot share a short id', () async {
       final dbFile = await _seedV39Db('prism_migration_v39_to_v40_active_dup_');
@@ -149,7 +165,9 @@ void main() {
       addTearDown(upgraded.close);
       await upgraded.customSelect('SELECT 1').get();
 
-      await upgraded.into(upgraded.members).insert(
+      await upgraded
+          .into(upgraded.members)
+          .insert(
             MembersCompanion.insert(
               id: 'active-1',
               name: 'A',
@@ -159,7 +177,9 @@ void main() {
           );
 
       await expectLater(
-        upgraded.into(upgraded.members).insert(
+        upgraded
+            .into(upgraded.members)
+            .insert(
               MembersCompanion.insert(
                 id: 'active-2',
                 name: 'B',
@@ -168,8 +188,11 @@ void main() {
               ),
             ),
         throwsA(
-          isA<Object>()
-              .having((e) => e.toString(), 'message', contains('UNIQUE')),
+          isA<Object>().having(
+            (e) => e.toString(),
+            'message',
+            contains('UNIQUE'),
+          ),
         ),
       );
     });

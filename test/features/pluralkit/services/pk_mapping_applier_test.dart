@@ -1453,175 +1453,166 @@ void main() {
   // ───────────────────────────────────────────────────────────────────────
 
   group('H11: applied short-circuit re-validates surviving effect', () {
-    test(
-      'applied Push + local link since cleared + PK member still exists → '
-      're-links (no duplicate POST)',
-      () async {
-        final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
-        final client = FakePluralKitClient(
-          onCreate: (data) => PKMember(
-            id: 'newid',
-            uuid: 'new-uuid',
+    test('applied Push + local link since cleared + PK member still exists → '
+        're-links (no duplicate POST)', () async {
+      final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
+      final client = FakePluralKitClient(
+        onCreate: (data) => PKMember(
+          id: 'newid',
+          uuid: 'new-uuid',
+          name: data['name'] as String,
+        ),
+      );
+      final applier = buildApplier(repo: repo, client: client);
+
+      // First push: creates the PK member, links locally, marks applied.
+      await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
+      expect(client.createCallCount, 1);
+      expect((await dao.getById('push:l1'))!.status, 'applied');
+
+      // User unlinks the local member (PK member 'new-uuid' still exists).
+      await repo.clearPluralKitLink('l1');
+
+      // Re-Push: must NOT short-circuit, must NOT POST a duplicate, and must
+      // re-link using the recorded ids after verifying the member survives.
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
+
+      expect(results.single.outcome, PkApplyOutcome.applied);
+      expect(
+        client.createCallCount,
+        1,
+        reason: 'PK member still exists → re-link, never a second POST',
+      );
+      expect(
+        client.getMemberRefs,
+        contains('new-uuid'),
+        reason: 'Re-apply probes the recorded uuid before re-linking',
+      );
+      final updated = await repo.getMemberById('l1');
+      expect(updated!.pluralkitUuid, 'new-uuid');
+      expect(updated.pluralkitId, 'newid');
+    });
+
+    test('applied Push + local link cleared + PK member deleted (404) → '
+        're-POSTs a fresh member', () async {
+      final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
+      var nextCreate = 0;
+      final client = FakePluralKitClient(
+        // Recorded member is gone on PK: getMember(uuid) → 404.
+        onGetMember: (_) =>
+            throw const PluralKitApiError(404, 'gone', code: 20006),
+        onCreate: (data) {
+          nextCreate++;
+          return PKMember(
+            id: 'newid$nextCreate',
+            uuid: 'new-uuid-$nextCreate',
             name: data['name'] as String,
-          ),
-        );
-        final applier = buildApplier(repo: repo, client: client);
+          );
+        },
+      );
+      final applier = buildApplier(repo: repo, client: client);
 
-        // First push: creates the PK member, links locally, marks applied.
-        await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
-        expect(client.createCallCount, 1);
-        expect((await dao.getById('push:l1'))!.status, 'applied');
+      await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
+      expect(client.createCallCount, 1);
 
-        // User unlinks the local member (PK member 'new-uuid' still exists).
-        await repo.clearPluralKitLink('l1');
+      // Unlink, then re-Push. The PK member was deleted (why the user
+      // unlinked), so re-linking the stale uuid would resurrect a dead
+      // reference — the applier must create afresh instead.
+      await repo.clearPluralKitLink('l1');
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
 
-        // Re-Push: must NOT short-circuit, must NOT POST a duplicate, and must
-        // re-link using the recorded ids after verifying the member survives.
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
+      expect(results.single.outcome, PkApplyOutcome.applied);
+      expect(
+        client.createCallCount,
+        2,
+        reason: 'Deleted PK member → re-apply creates a fresh one',
+      );
+      final updated = await repo.getMemberById('l1');
+      expect(updated!.pluralkitUuid, 'new-uuid-2');
+      expect(updated.pluralkitId, 'newid2');
+      // State row now carries the FRESH ids.
+      final state = await dao.getById('push:l1');
+      expect(state!.pkMemberUuid, 'new-uuid-2');
+      expect(state.status, 'applied');
+    });
 
-        expect(results.single.outcome, PkApplyOutcome.applied);
-        expect(
-          client.createCallCount,
-          1,
-          reason: 'PK member still exists → re-link, never a second POST',
-        );
-        expect(
-          client.getMemberRefs,
-          contains('new-uuid'),
-          reason: 'Re-apply probes the recorded uuid before re-linking',
-        );
-        final updated = await repo.getMemberById('l1');
-        expect(updated!.pluralkitUuid, 'new-uuid');
-        expect(updated.pluralkitId, 'newid');
-      },
-    );
+    test('applied Push + local link intact → still short-circuits '
+        '(no duplicate POST)', () async {
+      final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
+      final client = FakePluralKitClient(
+        onCreate: (data) => PKMember(
+          id: 'newid',
+          uuid: 'new-uuid',
+          name: data['name'] as String,
+        ),
+      );
+      final applier = buildApplier(repo: repo, client: client);
 
-    test(
-      'applied Push + local link cleared + PK member deleted (404) → '
-      're-POSTs a fresh member',
-      () async {
-        final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
-        var nextCreate = 0;
-        final client = FakePluralKitClient(
-          // Recorded member is gone on PK: getMember(uuid) → 404.
-          onGetMember: (_) =>
-              throw const PluralKitApiError(404, 'gone', code: 20006),
-          onCreate: (data) {
-            nextCreate++;
-            return PKMember(
-              id: 'newid$nextCreate',
-              uuid: 'new-uuid-$nextCreate',
-              name: data['name'] as String,
-            );
-          },
-        );
-        final applier = buildApplier(repo: repo, client: client);
+      await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
+      expect(client.createCallCount, 1);
 
-        await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
-        expect(client.createCallCount, 1);
+      // Link intact — re-apply must short-circuit, not POST or probe.
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
 
-        // Unlink, then re-Push. The PK member was deleted (why the user
-        // unlinked), so re-linking the stale uuid would resurrect a dead
-        // reference — the applier must create afresh instead.
-        await repo.clearPluralKitLink('l1');
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
+      expect(results.single.outcome, PkApplyOutcome.alreadyApplied);
+      expect(client.createCallCount, 1, reason: 'No duplicate POST');
+      expect(
+        client.getMemberRefs,
+        isEmpty,
+        reason: 'Intact link short-circuits before any network probe',
+      );
+    });
 
-        expect(results.single.outcome, PkApplyOutcome.applied);
-        expect(
-          client.createCallCount,
-          2,
-          reason: 'Deleted PK member → re-apply creates a fresh one',
-        );
-        final updated = await repo.getMemberById('l1');
-        expect(updated!.pluralkitUuid, 'new-uuid-2');
-        expect(updated.pluralkitId, 'newid2');
-        // State row now carries the FRESH ids.
-        final state = await dao.getById('push:l1');
-        expect(state!.pkMemberUuid, 'new-uuid-2');
-        expect(state.status, 'applied');
-      },
-    );
+    test('applied Push + link cleared + probe fails transiently (500) → '
+        'decision FAILS, no duplicate POST', () async {
+      final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
+      var probeArmed = false;
+      final client = FakePluralKitClient(
+        onGetMember: (_) {
+          if (probeArmed) {
+            throw const PluralKitApiError(500, 'server hiccup');
+          }
+          throw const PluralKitApiError(404, 'gone', code: 20006);
+        },
+        onCreate: (data) => PKMember(
+          id: 'newid',
+          uuid: 'new-uuid',
+          name: data['name'] as String,
+        ),
+      );
+      final applier = buildApplier(repo: repo, client: client);
 
-    test(
-      'applied Push + local link intact → still short-circuits '
-      '(no duplicate POST)',
-      () async {
-        final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
-        final client = FakePluralKitClient(
-          onCreate: (data) => PKMember(
-            id: 'newid',
-            uuid: 'new-uuid',
-            name: data['name'] as String,
-          ),
-        );
-        final applier = buildApplier(repo: repo, client: client);
+      await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
+      expect(client.createCallCount, 1);
 
-        await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
-        expect(client.createCallCount, 1);
+      await repo.clearPluralKitLink('l1');
+      probeArmed = true;
 
-        // Link intact — re-apply must short-circuit, not POST or probe.
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
+      // A transient probe failure must NOT fall through to a fresh POST
+      // (duplicate-creation risk) — the decision fails and is retryable.
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
 
-        expect(results.single.outcome, PkApplyOutcome.alreadyApplied);
-        expect(client.createCallCount, 1, reason: 'No duplicate POST');
-        expect(
-          client.getMemberRefs,
-          isEmpty,
-          reason: 'Intact link short-circuits before any network probe',
-        );
-      },
-    );
-
-    test(
-      'applied Push + link cleared + probe fails transiently (500) → '
-      'decision FAILS, no duplicate POST',
-      () async {
-        final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
-        var probeArmed = false;
-        final client = FakePluralKitClient(
-          onGetMember: (_) {
-            if (probeArmed) {
-              throw const PluralKitApiError(500, 'server hiccup');
-            }
-            throw const PluralKitApiError(404, 'gone', code: 20006);
-          },
-          onCreate: (data) => PKMember(
-            id: 'newid',
-            uuid: 'new-uuid',
-            name: data['name'] as String,
-          ),
-        );
-        final applier = buildApplier(repo: repo, client: client);
-
-        await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
-        expect(client.createCallCount, 1);
-
-        await repo.clearPluralKitLink('l1');
-        probeArmed = true;
-
-        // A transient probe failure must NOT fall through to a fresh POST
-        // (duplicate-creation risk) — the decision fails and is retryable.
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
-
-        expect(results.single.outcome, PkApplyOutcome.failed);
-        expect(
-          client.createCallCount,
-          1,
-          reason: 'a 5xx probe must never be treated as "member gone"',
-        );
-        final updated = await repo.getMemberById('l1');
-        expect(updated!.pluralkitUuid, isNull,
-            reason: 'no blind re-link on an unverified identity');
-      },
-    );
+      expect(results.single.outcome, PkApplyOutcome.failed);
+      expect(
+        client.createCallCount,
+        1,
+        reason: 'a 5xx probe must never be treated as "member gone"',
+      );
+      final updated = await repo.getMemberById('l1');
+      expect(
+        updated!.pluralkitUuid,
+        isNull,
+        reason: 'no blind re-link on an unverified identity',
+      );
+    });
 
     test('applied Link + local link since cleared → re-links', () async {
       final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
@@ -1672,59 +1663,65 @@ void main() {
       expect(updated!.pluralkitSyncIgnored, isFalse);
     });
 
-    test('applied Import + imported member since deleted → re-imports', () async {
-      final repo = FakeMemberRepo([]);
-      final client = FakePluralKitClient();
-      final applier = buildApplier(
-        repo: repo,
-        client: client,
-        uuid: const _FixedUuid('imp-local-1'),
-      );
-      const pk = PKMember(id: 'abcde', uuid: 'u-imp', name: 'Imported');
+    test(
+      'applied Import + imported member since deleted → re-imports',
+      () async {
+        final repo = FakeMemberRepo([]);
+        final client = FakePluralKitClient();
+        final applier = buildApplier(
+          repo: repo,
+          client: client,
+          uuid: const _FixedUuid('imp-local-1'),
+        );
+        const pk = PKMember(id: 'abcde', uuid: 'u-imp', name: 'Imported');
 
-      await applier.apply([const PkImportDecision(pkMember: pk)]);
-      expect(await repo.getMemberById('imp-local-1'), isNotNull);
-      expect((await dao.getById('import:u-imp'))!.status, 'applied');
+        await applier.apply([const PkImportDecision(pkMember: pk)]);
+        expect(await repo.getMemberById('imp-local-1'), isNotNull);
+        expect((await dao.getById('import:u-imp'))!.status, 'applied');
 
-      // The imported local member is deleted. Re-applying the Import must
-      // create it again rather than no-op.
-      await repo.deleteMember('imp-local-1');
-      expect(await repo.getMemberById('imp-local-1'), isNull);
+        // The imported local member is deleted. Re-applying the Import must
+        // create it again rather than no-op.
+        await repo.deleteMember('imp-local-1');
+        expect(await repo.getMemberById('imp-local-1'), isNull);
 
-      final results = await applier.apply([
-        const PkImportDecision(pkMember: pk),
-      ]);
+        final results = await applier.apply([
+          const PkImportDecision(pkMember: pk),
+        ]);
 
-      expect(results.single.outcome, PkApplyOutcome.applied);
-      final reimported = await repo.getMemberById('imp-local-1');
-      expect(reimported, isNotNull);
-      expect(reimported!.pluralkitUuid, 'u-imp');
-    });
+        expect(results.single.outcome, PkApplyOutcome.applied);
+        final reimported = await repo.getMemberById('imp-local-1');
+        expect(reimported, isNotNull);
+        expect(reimported!.pluralkitUuid, 'u-imp');
+      },
+    );
 
-    test('applied Import + imported member still linked → short-circuits', () async {
-      final repo = FakeMemberRepo([]);
-      final client = FakePluralKitClient();
-      final applier = buildApplier(
-        repo: repo,
-        client: client,
-        uuid: const _FixedUuid('imp-local-1'),
-      );
-      const pk = PKMember(id: 'abcde', uuid: 'u-imp', name: 'Imported');
+    test(
+      'applied Import + imported member still linked → short-circuits',
+      () async {
+        final repo = FakeMemberRepo([]);
+        final client = FakePluralKitClient();
+        final applier = buildApplier(
+          repo: repo,
+          client: client,
+          uuid: const _FixedUuid('imp-local-1'),
+        );
+        const pk = PKMember(id: 'abcde', uuid: 'u-imp', name: 'Imported');
 
-      await applier.apply([const PkImportDecision(pkMember: pk)]);
-      final countAfterFirst = (await repo.getAllMembers()).length;
+        await applier.apply([const PkImportDecision(pkMember: pk)]);
+        final countAfterFirst = (await repo.getAllMembers()).length;
 
-      final results = await applier.apply([
-        const PkImportDecision(pkMember: pk),
-      ]);
+        final results = await applier.apply([
+          const PkImportDecision(pkMember: pk),
+        ]);
 
-      expect(results.single.outcome, PkApplyOutcome.alreadyApplied);
-      expect(
-        (await repo.getAllMembers()).length,
-        countAfterFirst,
-        reason: 'Intact import must not create a duplicate local member',
-      );
-    });
+        expect(results.single.outcome, PkApplyOutcome.alreadyApplied);
+        expect(
+          (await repo.getAllMembers()).length,
+          countAfterFirst,
+          reason: 'Intact import must not create a duplicate local member',
+        );
+      },
+    );
   });
 
   // ───────────────────────────────────────────────────────────────────────
@@ -1783,47 +1780,44 @@ void main() {
       },
     );
 
-    test(
-      'applied Push + link cleared + recorded member owned by the connected '
-      'system → re-links (ownership OK, no duplicate POST)',
-      () async {
-        final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
-        final client = FakePluralKitClient(
-          onGetMember: (ref) => PKMember(
-            id: 'newid',
-            uuid: ref,
-            name: 'Alice',
-            system: 'pktchv', // SAME system → usable
-          ),
-          onCreate: (data) => PKMember(
-            id: 'newid',
-            uuid: 'new-uuid',
-            name: data['name'] as String,
-          ),
-        );
-        final applier = buildApplier(
-          repo: repo,
-          client: client,
-          connectedSystemId: 'pktchv',
-        );
+    test('applied Push + link cleared + recorded member owned by the connected '
+        'system → re-links (ownership OK, no duplicate POST)', () async {
+      final repo = FakeMemberRepo([_local(id: 'l1', name: 'Alice')]);
+      final client = FakePluralKitClient(
+        onGetMember: (ref) => PKMember(
+          id: 'newid',
+          uuid: ref,
+          name: 'Alice',
+          system: 'pktchv', // SAME system → usable
+        ),
+        onCreate: (data) => PKMember(
+          id: 'newid',
+          uuid: 'new-uuid',
+          name: data['name'] as String,
+        ),
+      );
+      final applier = buildApplier(
+        repo: repo,
+        client: client,
+        connectedSystemId: 'pktchv',
+      );
 
-        await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
-        expect(client.createCallCount, 1);
+      await applier.apply([const PkPushNewDecision(localMemberId: 'l1')]);
+      expect(client.createCallCount, 1);
 
-        await repo.clearPluralKitLink('l1');
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
+      await repo.clearPluralKitLink('l1');
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
 
-        expect(results.single.outcome, PkApplyOutcome.applied);
-        expect(
-          client.createCallCount,
-          1,
-          reason: 'owned-by-us recorded member → re-link, no second POST',
-        );
-        expect((await repo.getMemberById('l1'))!.pluralkitUuid, 'new-uuid');
-      },
-    );
+      expect(results.single.outcome, PkApplyOutcome.applied);
+      expect(
+        client.createCallCount,
+        1,
+        reason: 'owned-by-us recorded member → re-link, no second POST',
+      );
+      expect((await repo.getMemberById('l1'))!.pluralkitUuid, 'new-uuid');
+    });
   });
 
   // ───────────────────────────────────────────────────────────────────────
@@ -2011,39 +2005,42 @@ void main() {
       },
     );
 
-    test('successful import emits release + create outbox rows in order', () async {
-      // Soft-deleted holder of u-y, so the release loop clears its link
-      // (emit #1, an update) before the import creates the fresh member
-      // (emit #2, a create) — both captured into the outbox in that order.
-      const holderId = 'deleted-holder-2';
-      await realRepo.createMember(
-        _local(id: holderId, name: 'Old', pluralkitUuid: 'u-y'),
-      );
-      await realRepo.deleteMember(holderId);
+    test(
+      'successful import emits release + create outbox rows in order',
+      () async {
+        // Soft-deleted holder of u-y, so the release loop clears its link
+        // (emit #1, an update) before the import creates the fresh member
+        // (emit #2, a create) — both captured into the outbox in that order.
+        const holderId = 'deleted-holder-2';
+        await realRepo.createMember(
+          _local(id: holderId, name: 'Old', pluralkitUuid: 'u-y'),
+        );
+        await realRepo.deleteMember(holderId);
 
-      syncCredentialsPersisted.value = true;
-      const newId = 'fresh-member-id';
-      final applier = buildApplier(
-        repo: realRepo,
-        client: FakePluralKitClient(),
-        uuid: const _FixedUuid(newId),
-      );
+        syncCredentialsPersisted.value = true;
+        const newId = 'fresh-member-id';
+        final applier = buildApplier(
+          repo: realRepo,
+          client: FakePluralKitClient(),
+          uuid: const _FixedUuid(newId),
+        );
 
-      const pk = PKMember(id: 'pk-y', uuid: 'u-y', name: 'Imported');
-      final results = await applier.apply([
-        const PkImportDecision(pkMember: pk),
-      ]);
-      expect(results.single.outcome, PkApplyOutcome.applied);
+        const pk = PKMember(id: 'pk-y', uuid: 'u-y', name: 'Imported');
+        final results = await applier.apply([
+          const PkImportDecision(pkMember: pk),
+        ]);
+        expect(results.single.outcome, PkApplyOutcome.applied);
 
-      final rows = await db.syncOutboxDao.allInIdOrder();
-      expect(
-        rows.map((r) => '${r.opType}:${r.entityTable}/${r.entityId}'),
-        containsAllInOrder([
-          'update:members/$holderId', // clearPluralKitLink (release loop)
-          'create:members/$newId', // createMember (action)
-        ]),
-      );
-    });
+        final rows = await db.syncOutboxDao.allInIdOrder();
+        expect(
+          rows.map((r) => '${r.opType}:${r.entityTable}/${r.entityId}'),
+          containsAllInOrder([
+            'update:members/$holderId', // clearPluralKitLink (release loop)
+            'create:members/$newId', // createMember (action)
+          ]),
+        );
+      },
+    );
   });
 }
 

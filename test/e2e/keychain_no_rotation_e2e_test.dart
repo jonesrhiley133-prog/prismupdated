@@ -31,9 +31,7 @@ import 'e2e_support.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel(
-    'plugins.it_nomads.com/flutter_secure_storage',
-  );
+  const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
   final store = <String, String?>{};
 
   setUp(() {
@@ -74,7 +72,9 @@ void main() {
     'local-storage key',
     skip: e2eSkip(),
     () async {
-      await RustLib.init(externalLibrary: ExternalLibrary.open(resolveFfiLib()));
+      await RustLib.init(
+        externalLibrary: ExternalLibrary.open(resolveFfiLib()),
+      );
       final relay = await spawnRelay();
       // db is unused by the post-fix cacheRuntimeKeys; an in-memory executor is
       // enough to catch a reintroduced rotation (which would PRAGMA-rekey it and
@@ -85,7 +85,8 @@ void main() {
         device = await createDevice(relay);
 
         // A device-local app-DB key that is NOT derived from the sync group.
-        const deviceLocalKey = '5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a'
+        const deviceLocalKey =
+            '5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a'
             '5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a';
         store[kDatabaseKeyStorageKey] = deviceLocalKey;
 

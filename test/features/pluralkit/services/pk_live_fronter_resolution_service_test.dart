@@ -49,10 +49,7 @@ class _FakeMemberRepository implements MemberRepository {
   ) async => throw UnimplementedError();
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _members[id];
     if (existing == null) return 0;
     updateCount++;
@@ -522,35 +519,37 @@ void main() {
       expect(local.pluralkitUuid, isNull);
     });
 
-    test('import refuses a fetched member owned by a different system',
-        () async {
-      final repo = _FakeMemberRepository(const []);
-      final client = _FakePluralKitClient(
-        members: const [
-          PKMember(
-            id: 'zzzzz',
-            uuid: 'pk-uuid-foreign',
-            name: 'Stranger',
-            system: 'venus',
-          ),
-        ],
-      );
-      final service = PkLiveFronterResolutionService(
-        memberRepository: repo,
-        client: client,
-        connectedSystemId: 'pktchv',
-      );
+    test(
+      'import refuses a fetched member owned by a different system',
+      () async {
+        final repo = _FakeMemberRepository(const []);
+        final client = _FakePluralKitClient(
+          members: const [
+            PKMember(
+              id: 'zzzzz',
+              uuid: 'pk-uuid-foreign',
+              name: 'Stranger',
+              system: 'venus',
+            ),
+          ],
+        );
+        final service = PkLiveFronterResolutionService(
+          memberRepository: repo,
+          client: client,
+          connectedSystemId: 'pktchv',
+        );
 
-      await expectLater(
-        service.importCurrentFronter(
-          const PkUnmappedFronterRef(pkId: 'zzzzz'),
-        ),
-        throwsA(isA<StateError>()),
-      );
-      // No foreign member was imported.
-      expect(repo.createCount, 0);
-      expect((await repo.getAllMembers()), isEmpty);
-    });
+        await expectLater(
+          service.importCurrentFronter(
+            const PkUnmappedFronterRef(pkId: 'zzzzz'),
+          ),
+          throwsA(isA<StateError>()),
+        );
+        // No foreign member was imported.
+        expect(repo.createCount, 0);
+        expect((await repo.getAllMembers()), isEmpty);
+      },
+    );
 
     test('link proceeds when the fetched member is owned by the connected '
         'system', () async {
@@ -720,52 +719,49 @@ void main() {
     });
   });
 
-  group(
-    'PR 2: importCurrentFronter on non-excluded partial link uses '
-    'recordPluralKitIdentity',
-    () {
-      test('completes partial link without flipping sync_ignored', () async {
-        // Local has the short PK id but no UUID — needs completion. Was NOT
-        // excluded, so completion proceeds. importCurrentFronter passes
-        // clearIgnored: false → routes through recordPluralKitIdentity.
-        final partialLocal = _local(
-          id: 'local-1',
-          name: 'Partial',
-          pluralkitId: 'abcde',
-          // no UUID — _completeIdentityIfNeeded will fill it.
-        );
-        final repo = _RecordingMemberRepository([partialLocal]);
-        final client = _FakePluralKitClient(
-          members: const [
-            PKMember(
-              id: 'abcde',
-              uuid: 'pk-uuid-1',
-              name: 'PK Name',
-              displayName: 'PK Display',
-            ),
-          ],
-        );
-        final service = PkLiveFronterResolutionService(
-          memberRepository: repo,
-          client: client,
-        );
+  group('PR 2: importCurrentFronter on non-excluded partial link uses '
+      'recordPluralKitIdentity', () {
+    test('completes partial link without flipping sync_ignored', () async {
+      // Local has the short PK id but no UUID — needs completion. Was NOT
+      // excluded, so completion proceeds. importCurrentFronter passes
+      // clearIgnored: false → routes through recordPluralKitIdentity.
+      final partialLocal = _local(
+        id: 'local-1',
+        name: 'Partial',
+        pluralkitId: 'abcde',
+        // no UUID — _completeIdentityIfNeeded will fill it.
+      );
+      final repo = _RecordingMemberRepository([partialLocal]);
+      final client = _FakePluralKitClient(
+        members: const [
+          PKMember(
+            id: 'abcde',
+            uuid: 'pk-uuid-1',
+            name: 'PK Name',
+            displayName: 'PK Display',
+          ),
+        ],
+      );
+      final service = PkLiveFronterResolutionService(
+        memberRepository: repo,
+        client: client,
+      );
 
-        await service.importCurrentFronter(
-          const PkUnmappedFronterRef(pkId: 'abcde'),
-        );
+      await service.importCurrentFronter(
+        const PkUnmappedFronterRef(pkId: 'abcde'),
+      );
 
-        // Goes through recordPluralKitIdentity (preserves sync state).
-        expect(repo.applyLinkCalls, isEmpty);
-        expect(repo.recordIdentityCalls, hasLength(1));
-        expect(repo.recordIdentityCalls.single.memberId, 'local-1');
-        final patch = repo.recordIdentityCalls.single.patch;
-        // Always-include-uuid pattern: uuid is in every patch.
-        expect(patch['pluralkit_uuid'], 'pk-uuid-1');
-        // No sync_ignored key — the method asserts against any value.
-        expect(patch.containsKey('pluralkit_sync_ignored'), isFalse);
-      });
-    },
-  );
+      // Goes through recordPluralKitIdentity (preserves sync state).
+      expect(repo.applyLinkCalls, isEmpty);
+      expect(repo.recordIdentityCalls, hasLength(1));
+      expect(repo.recordIdentityCalls.single.memberId, 'local-1');
+      final patch = repo.recordIdentityCalls.single.patch;
+      // Always-include-uuid pattern: uuid is in every patch.
+      expect(patch['pluralkit_uuid'], 'pk-uuid-1');
+      // No sync_ignored key — the method asserts against any value.
+      expect(patch.containsKey('pluralkit_sync_ignored'), isFalse);
+    });
+  });
 
   group('PR 2: linkCurrentFronterToLocal (user-driven)', () {
     test('uses applyPluralKitLink and resumes sync', () async {
@@ -838,8 +834,11 @@ void main() {
 
       expect(repo.applyLinkCalls, hasLength(1));
       final patch = repo.applyLinkCalls.single.patch;
-      expect(patch.containsKey('pluralkit_sync_ignored'), isFalse,
-          reason: 'narrow patch must not pass sync_ignored to the method');
+      expect(
+        patch.containsKey('pluralkit_sync_ignored'),
+        isFalse,
+        reason: 'narrow patch must not pass sync_ignored to the method',
+      );
       final stored = await repo.getMemberById('local-1');
       expect(stored!.pluralkitSyncIgnored, isFalse);
     });
@@ -910,10 +909,7 @@ class _RecordingMemberRepository extends _FakeMemberRepository {
   recordIdentityCalls = [];
 
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     applyLinkCalls.add((memberId: id, patch: Map.of(patch)));
     return super.applyPluralKitLink(id, patch);
   }

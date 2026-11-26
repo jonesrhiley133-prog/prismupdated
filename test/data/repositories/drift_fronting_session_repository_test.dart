@@ -85,17 +85,19 @@ void main() {
       expect(captured.single.fields['notes'], 'after');
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.createSession(makeSession(notes: 'same'));
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.createSession(makeSession(notes: 'same'));
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateSession(makeSession(notes: 'same'));
+        await repo.updateSession(makeSession(notes: 'same'));
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
       await repo.createSession(
@@ -124,88 +126,87 @@ void main() {
       expect(row.pluralkitUuid, 'uuid-1');
     });
 
-    test('null-clearing emits the null and writes it to the database',
-        () async {
-      await repo.createSession(makeSession(notes: 'had notes'));
+    test(
+      'null-clearing emits the null and writes it to the database',
+      () async {
+        await repo.createSession(makeSession(notes: 'had notes'));
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+
+        await repo.updateSession(makeSession(notes: null));
+
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('notes'), isTrue);
+        expect(patch['notes'], isNull);
+
+        final row = await dao.getSessionById('s1');
+        expect(row!.notes, isNull);
+      },
+    );
+
+    test('silently no-ops on a tombstoned session (does not emit, '
+        'does not resurrect)', () async {
+      await repo.createSession(makeSession(notes: 'original'));
+      await repo.deleteSession('s1');
       final captured = <CapturedSyncOp>[];
       SyncRecordMixin.installCaptureSinkForTesting(captured.add);
       addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateSession(makeSession(notes: null));
+      await repo.updateSession(makeSession(notes: 'attempted edit'));
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('notes'), isTrue);
-      expect(patch['notes'], isNull);
-
+      expect(captured, isEmpty);
       final row = await dao.getSessionById('s1');
-      expect(row!.notes, isNull);
+      expect(row, isNotNull);
+      expect(row!.isDeleted, isTrue);
+      expect(row.notes, 'original');
     });
 
-    test(
-      'silently no-ops on a tombstoned session (does not emit, '
-      'does not resurrect)',
-      () async {
-        await repo.createSession(makeSession(notes: 'original'));
-        await repo.deleteSession('s1');
-        final captured = <CapturedSyncOp>[];
-        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test('F10: no-ops on a tombstoned PK-linked row with a null '
+        'deleteIntentEpoch (cross-device-delete shape) — never flips '
+        'is_deleted, emits ZERO ops', () async {
+      // The shape F10 targets: a delete made on device B arrives on device A
+      // via CRDT merge as a tombstone with the PK link INTACT but a null
+      // deleteIntentEpoch (delete_intent_epoch is device-local and never
+      // syncs). The old H5 discriminator would have revived it; F10 makes the
+      // tombstone terminal because is_deleted is absorbing and in-place
+      // revival is unsyncable by construction.
+      //
+      // This repo is constructed with pkSyncDao=null, so deleteSession on a
+      // linked row leaves deleteIntentEpoch null — exactly the cross-device
+      // shape — while preserving the pluralkit_uuid link.
+      await repo.createSession(
+        makeSession(notes: 'original', pluralkitUuid: 'pk-switch-uuid'),
+      );
+      await repo.deleteSession('s1');
+      final tombstone = await dao.getSessionById('s1');
+      expect(tombstone!.isDeleted, isTrue);
+      expect(tombstone.pluralkitUuid, 'pk-switch-uuid');
+      expect(tombstone.deleteIntentEpoch, isNull);
 
-        await repo.updateSession(makeSession(notes: 'attempted edit'));
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-        expect(captured, isEmpty);
-        final row = await dao.getSessionById('s1');
-        expect(row, isNotNull);
-        expect(row!.isDeleted, isTrue);
-        expect(row.notes, 'original');
-      },
-    );
+      // A corrective re-import would call updateSession with a live
+      // (isDeleted: false) session carrying the same link to "rebuild" it.
+      await repo.updateSession(
+        makeSession(
+          notes: 'corrective rebuild',
+          pluralkitUuid: 'pk-switch-uuid',
+        ),
+      );
 
-    test(
-      'F10: no-ops on a tombstoned PK-linked row with a null '
-      'deleteIntentEpoch (cross-device-delete shape) — never flips '
-      'is_deleted, emits ZERO ops',
-      () async {
-        // The shape F10 targets: a delete made on device B arrives on device A
-        // via CRDT merge as a tombstone with the PK link INTACT but a null
-        // deleteIntentEpoch (delete_intent_epoch is device-local and never
-        // syncs). The old H5 discriminator would have revived it; F10 makes the
-        // tombstone terminal because is_deleted is absorbing and in-place
-        // revival is unsyncable by construction.
-        //
-        // This repo is constructed with pkSyncDao=null, so deleteSession on a
-        // linked row leaves deleteIntentEpoch null — exactly the cross-device
-        // shape — while preserving the pluralkit_uuid link.
-        await repo.createSession(
-          makeSession(notes: 'original', pluralkitUuid: 'pk-switch-uuid'),
-        );
-        await repo.deleteSession('s1');
-        final tombstone = await dao.getSessionById('s1');
-        expect(tombstone!.isDeleted, isTrue);
-        expect(tombstone.pluralkitUuid, 'pk-switch-uuid');
-        expect(tombstone.deleteIntentEpoch, isNull);
-
-        final captured = <CapturedSyncOp>[];
-        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
-
-        // A corrective re-import would call updateSession with a live
-        // (isDeleted: false) session carrying the same link to "rebuild" it.
-        await repo.updateSession(
-          makeSession(
-            notes: 'corrective rebuild',
-            pluralkitUuid: 'pk-switch-uuid',
-          ),
-        );
-
-        expect(captured, isEmpty,
-            reason: 'F10: no op — and in particular no is_deleted:false field');
-        final row = await dao.getSessionById('s1');
-        expect(row!.isDeleted, isTrue, reason: 'tombstone stays terminal');
-        expect(row.notes, 'original', reason: 'the row is untouched');
-      },
-    );
+      expect(
+        captured,
+        isEmpty,
+        reason: 'F10: no op — and in particular no is_deleted:false field',
+      );
+      final row = await dao.getSessionById('s1');
+      expect(row!.isDeleted, isTrue, reason: 'tombstone stays terminal');
+      expect(row.notes, 'original', reason: 'the row is untouched');
+    });
 
     test(
       'F10: no-ops on a LINK-CLEARED tombstone fed a PK-linked rebuild '
@@ -242,9 +243,13 @@ void main() {
           ),
         );
 
-        expect(captured, isEmpty,
-            reason: 'F10: defense-in-depth — no revive op for a link-cleared '
-                'tombstone, the H5 hole');
+        expect(
+          captured,
+          isEmpty,
+          reason:
+              'F10: defense-in-depth — no revive op for a link-cleared '
+              'tombstone, the H5 hole',
+        );
         final row = await dao.getSessionById('s1');
         expect(row!.isDeleted, isTrue, reason: 'tombstone stays terminal');
         expect(row.pluralkitUuid, isNull, reason: 'no link rewritten');

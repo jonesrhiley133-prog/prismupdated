@@ -97,8 +97,7 @@ class _SecureStorageStub {
 
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   _FakeClient(this._systemId);
 
   final String _systemId;
@@ -131,8 +130,10 @@ class _FakeClient implements PluralKitClient {
   Future<PKMember> getMember(String memberRef) => throw UnimplementedError();
 
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async =>
-      const [];
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async => const [];
 
   @override
   Future<PKSwitch?> getCurrentFronters() async => null;
@@ -152,22 +153,19 @@ class _FakeClient implements PluralKitClient {
   Future<PKSwitch> createSwitch(
     List<String> memberIds, {
     DateTime? timestamp,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<PKSwitch> updateSwitch(
     String switchId, {
     required DateTime timestamp,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<PKSwitch> updateSwitchMembers(
     String switchId,
     List<String> memberIds,
-  ) =>
-      throw UnimplementedError();
+  ) => throw UnimplementedError();
 
   @override
   Future<void> deleteSwitch(String switchId) => throw UnimplementedError();
@@ -185,18 +183,14 @@ class _FakeClient implements PluralKitClient {
   Future<List<String>> getGroupMembers(String groupRef) async => const [];
 
   @override
-  Future<void> addMembersToGroup(
-    String groupRef,
-    List<String> memberRefs,
-  ) =>
+  Future<void> addMembersToGroup(String groupRef, List<String> memberRefs) =>
       throw UnimplementedError();
 
   @override
   Future<void> removeMembersFromGroup(
     String groupRef,
     List<String> memberRefs,
-  ) =>
-      throw UnimplementedError();
+  ) => throw UnimplementedError();
 
   @override
   void dispose() {}
@@ -214,7 +208,8 @@ class _FakeMemberRepository implements MemberRepository {
   @override
   Future<domain.Member?> getMemberById(String id) async => null;
   @override
-  Future<List<domain.Member>> getMembersByIds(List<String> ids) async => const [];
+  Future<List<domain.Member>> getMembersByIds(List<String> ids) async =>
+      const [];
   @override
   Stream<List<domain.Member>> watchMembersByIds(List<String> ids) =>
       Stream.value(const []);
@@ -568,136 +563,129 @@ void main() {
         expect(
           rows.map((r) => r.id),
           contains('push:l1'),
-          reason:
-              'Same-system token rotation must NOT clear pk_mapping_state',
+          reason: 'Same-system token rotation must NOT clear pk_mapping_state',
         );
       },
     );
 
-    test(
-      'different-system swap clears pk_mapping_state',
-      () async {
-        final db = _makeDb();
-        addTearDown(db.close);
+    test('different-system swap clears pk_mapping_state', () async {
+      final db = _makeDb();
+      addTearDown(db.close);
 
-        await _seedRow(
-          db,
-          systemId: 'sys-X',
-          mappingAcknowledged: true,
-          directionConfirmed: true,
-          linkedAt: DateTime(2024, 1, 1, 12).toUtc(),
+      await _seedRow(
+        db,
+        systemId: 'sys-X',
+        mappingAcknowledged: true,
+        directionConfirmed: true,
+        linkedAt: DateTime(2024, 1, 1, 12).toUtc(),
+      );
+
+      await PkMappingStateDao(db).upsert(
+        PkMappingStateCompanion(
+          id: const Value('push:l1'),
+          decisionType: const Value('push'),
+          localMemberId: const Value('l1'),
+          status: const Value('applied'),
+          createdAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
+          updatedAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
+        ),
+      );
+
+      final before = await PkMappingStateDao(db).getAll();
+      expect(before, hasLength(1));
+
+      // Service whose client returns a DIFFERENT systemId.
+      final service = _makeService(db, 'sys-Y');
+      await service.setToken('new-token');
+
+      final after = await PkMappingStateDao(db).getAll();
+      expect(
+        after,
+        isEmpty,
+        reason:
+            'Different-system swap must clear pk_mapping_state so a '
+            're-mapping is not silently no-op\'d by stale applied rows',
+      );
+    });
+
+    test('re-push of same local after different-system swap succeeds (no '
+        'alreadyApplied)', () async {
+      // End-to-end proof of why the clear matters: after a system swap a
+      // PkPushNewDecision for the same local id must produce a real
+      // applier write, not an alreadyApplied no-op against the prior
+      // session's "push:l1" row.
+      final db = _makeDb();
+      addTearDown(db.close);
+
+      await _seedRow(
+        db,
+        systemId: 'sys-X',
+        mappingAcknowledged: true,
+        directionConfirmed: true,
+        linkedAt: DateTime(2024, 1, 1, 12).toUtc(),
+      );
+      await PkMappingStateDao(db).upsert(
+        PkMappingStateCompanion(
+          id: const Value('push:l1'),
+          decisionType: const Value('push'),
+          localMemberId: const Value('l1'),
+          pkMemberId: const Value('priorid'),
+          pkMemberUuid: const Value('prior-uuid'),
+          status: const Value('applied'),
+          createdAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
+          updatedAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
+        ),
+      );
+
+      // Swap to a different system.
+      final memberRepo = _RepushMemberRepo([
+        domain.Member(
+          id: 'l1',
+          name: 'Alice',
+          createdAt: DateTime(2024).toUtc(),
+        ),
+      ]);
+      final client = _FakeClient('sys-Y')
+        ..onCreate = (data) => PKMember(
+          id: 'newid',
+          uuid: 'new-uuid',
+          name: data['name'] as String,
         );
+      final service = PluralKitSyncService(
+        memberRepository: memberRepo,
+        frontingSessionRepository: _FakeFrontingSessionRepository(),
+        syncDao: db.pluralKitSyncDao,
+        bus: PkSyncEventBus(),
+        secureStorage: const FlutterSecureStorage(),
+        clientFactory: (_) => client,
+      );
+      await service.setToken('new-token');
 
-        await PkMappingStateDao(db).upsert(
-          PkMappingStateCompanion(
-            id: const Value('push:l1'),
-            decisionType: const Value('push'),
-            localMemberId: const Value('l1'),
-            status: const Value('applied'),
-            createdAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
-            updatedAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
-          ),
-        );
+      // Now drive the applier directly against the cleared state.
+      final applier = PkMappingApplier(
+        members: memberRepo,
+        state: PkMappingStateDao(db),
+        pushService: const PkPushService(),
+        client: client,
+        bus: PkSyncEventBus(),
+      );
+      final results = await applier.apply([
+        const PkPushNewDecision(localMemberId: 'l1'),
+      ]);
 
-        final before = await PkMappingStateDao(db).getAll();
-        expect(before, hasLength(1));
+      expect(
+        results.single.outcome,
+        PkApplyOutcome.applied,
+        reason:
+            'After system swap the prior "push:l1" row must be gone; '
+            'this decision must not be reported as alreadyApplied',
+      );
+      expect(client.createCallCount, 1);
 
-        // Service whose client returns a DIFFERENT systemId.
-        final service = _makeService(db, 'sys-Y');
-        await service.setToken('new-token');
-
-        final after = await PkMappingStateDao(db).getAll();
-        expect(
-          after,
-          isEmpty,
-          reason:
-              'Different-system swap must clear pk_mapping_state so a '
-              're-mapping is not silently no-op\'d by stale applied rows',
-        );
-      },
-    );
-
-    test(
-      're-push of same local after different-system swap succeeds (no '
-      'alreadyApplied)',
-      () async {
-        // End-to-end proof of why the clear matters: after a system swap a
-        // PkPushNewDecision for the same local id must produce a real
-        // applier write, not an alreadyApplied no-op against the prior
-        // session's "push:l1" row.
-        final db = _makeDb();
-        addTearDown(db.close);
-
-        await _seedRow(
-          db,
-          systemId: 'sys-X',
-          mappingAcknowledged: true,
-          directionConfirmed: true,
-          linkedAt: DateTime(2024, 1, 1, 12).toUtc(),
-        );
-        await PkMappingStateDao(db).upsert(
-          PkMappingStateCompanion(
-            id: const Value('push:l1'),
-            decisionType: const Value('push'),
-            localMemberId: const Value('l1'),
-            pkMemberId: const Value('priorid'),
-            pkMemberUuid: const Value('prior-uuid'),
-            status: const Value('applied'),
-            createdAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
-            updatedAt: Value(DateTime(2024, 1, 1, 12).toUtc()),
-          ),
-        );
-
-        // Swap to a different system.
-        final memberRepo = _RepushMemberRepo([
-          domain.Member(
-            id: 'l1',
-            name: 'Alice',
-            createdAt: DateTime(2024).toUtc(),
-          ),
-        ]);
-        final client = _FakeClient('sys-Y')
-          ..onCreate = (data) => PKMember(
-                id: 'newid',
-                uuid: 'new-uuid',
-                name: data['name'] as String,
-              );
-        final service = PluralKitSyncService(
-          memberRepository: memberRepo,
-          frontingSessionRepository: _FakeFrontingSessionRepository(),
-          syncDao: db.pluralKitSyncDao,
-          bus: PkSyncEventBus(),
-          secureStorage: const FlutterSecureStorage(),
-          clientFactory: (_) => client,
-        );
-        await service.setToken('new-token');
-
-        // Now drive the applier directly against the cleared state.
-        final applier = PkMappingApplier(
-          members: memberRepo,
-          state: PkMappingStateDao(db),
-          pushService: const PkPushService(),
-          client: client,
-          bus: PkSyncEventBus(),
-        );
-        final results = await applier.apply([
-          const PkPushNewDecision(localMemberId: 'l1'),
-        ]);
-
-        expect(
-          results.single.outcome,
-          PkApplyOutcome.applied,
-          reason:
-              'After system swap the prior "push:l1" row must be gone; '
-              'this decision must not be reported as alreadyApplied',
-        );
-        expect(client.createCallCount, 1);
-
-        final updated = await memberRepo.getMemberById('l1');
-        expect(updated!.pluralkitId, 'newid');
-        expect(updated.pluralkitUuid, 'new-uuid');
-      },
-    );
+      final updated = await memberRepo.getMemberById('l1');
+      expect(updated!.pluralkitId, 'newid');
+      expect(updated.pluralkitUuid, 'new-uuid');
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -725,50 +713,60 @@ void main() {
       );
     }
 
-    test('401 during rotation: old token + connection state untouched',
-        () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-
-      await _seedRow(
-        db,
-        systemId: 'sys-X',
-        mappingAcknowledged: true,
-        directionConfirmed: true,
-        linkedAt: t0,
-      );
-      // A working token from the prior successful connect.
-      storageStub._store[pkTokenKey] = 'old-working-token';
-
-      final client = _FakeClient('sys-X')..throwAuthError = true;
-      final service = makeServiceWithClient(db, client);
-      await service.loadState();
-      expect(service.state.isConnected, isTrue);
-
-      await service.setToken('bad-new-token');
-
-      // Storage: the working token survives; nothing was written or deleted.
-      expect(
-        storageStub._store[pkTokenKey],
-        'old-working-token',
-        reason: 'H9: a failed rotation must not overwrite the working token',
-      );
-      expect(storageStub.writeCount, 0,
-          reason: 'H9: validation must precede any storage write');
-      expect(storageStub.deleteCount, 0,
-          reason: 'H9: failure paths must never delete the token slot');
-
-      // DB + in-memory state: still connected on the old token.
-      final row = await db.pluralKitSyncDao.getSyncState();
-      expect(row.isConnected, isTrue,
-          reason: 'H9: DB connection state untouched on validation failure');
-      expect(row.systemId, 'sys-X');
-      expect(service.state.isConnected, isTrue);
-      expect(service.state.syncError, contains('Invalid token'));
-    });
-
     test(
-        'transient network error during rotation: old token + connection '
+      '401 during rotation: old token + connection state untouched',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
+
+        await _seedRow(
+          db,
+          systemId: 'sys-X',
+          mappingAcknowledged: true,
+          directionConfirmed: true,
+          linkedAt: t0,
+        );
+        // A working token from the prior successful connect.
+        storageStub._store[pkTokenKey] = 'old-working-token';
+
+        final client = _FakeClient('sys-X')..throwAuthError = true;
+        final service = makeServiceWithClient(db, client);
+        await service.loadState();
+        expect(service.state.isConnected, isTrue);
+
+        await service.setToken('bad-new-token');
+
+        // Storage: the working token survives; nothing was written or deleted.
+        expect(
+          storageStub._store[pkTokenKey],
+          'old-working-token',
+          reason: 'H9: a failed rotation must not overwrite the working token',
+        );
+        expect(
+          storageStub.writeCount,
+          0,
+          reason: 'H9: validation must precede any storage write',
+        );
+        expect(
+          storageStub.deleteCount,
+          0,
+          reason: 'H9: failure paths must never delete the token slot',
+        );
+
+        // DB + in-memory state: still connected on the old token.
+        final row = await db.pluralKitSyncDao.getSyncState();
+        expect(
+          row.isConnected,
+          isTrue,
+          reason: 'H9: DB connection state untouched on validation failure',
+        );
+        expect(row.systemId, 'sys-X');
+        expect(service.state.isConnected, isTrue);
+        expect(service.state.syncError, contains('Invalid token'));
+      },
+    );
+
+    test('transient network error during rotation: old token + connection '
         'state untouched', () async {
       final db = _makeDb();
       addTearDown(db.close);
@@ -804,8 +802,7 @@ void main() {
       expect(service.state.syncError, contains('Connection failed'));
     });
 
-    test(
-        'secure-storage write failure after successful validation: error '
+    test('secure-storage write failure after successful validation: error '
         'surfaced, prior token intact, DB not flipped', () async {
       final db = _makeDb();
       addTearDown(db.close);
@@ -829,23 +826,22 @@ void main() {
 
       // safeSecureWrite failure semantics: the write threw before storing,
       // so the previously stored token was not overwritten.
-      expect(storageStub.writeCount, greaterThan(0),
-          reason: 'the write was attempted (validation passed)');
+      expect(
+        storageStub.writeCount,
+        greaterThan(0),
+        reason: 'the write was attempted (validation passed)',
+      );
       expect(storageStub._store[pkTokenKey], 'old-working-token');
 
       // The DB row keeps its prior shape — setToken returned before the
       // upsert. In particular linkedAt was not re-stamped.
       final row = await db.pluralKitSyncDao.getSyncState();
       expect(row.isConnected, isTrue);
-      expect(
-        row.linkedAt?.millisecondsSinceEpoch,
-        t0.millisecondsSinceEpoch,
-      );
+      expect(row.linkedAt?.millisecondsSinceEpoch, t0.millisecondsSinceEpoch);
       expect(service.state.syncError, contains('save the token'));
     });
 
-    test(
-        'secure-storage write failure on a FRESH device: DB must not claim '
+    test('secure-storage write failure on a FRESH device: DB must not claim '
         'connected while storage is empty', () async {
       final db = _makeDb();
       addTearDown(db.close);
@@ -914,34 +910,39 @@ void main() {
             'history and silently skip its import',
       );
       expect(row.switchCursorId, isNull);
-      expect(row.lastSyncDate, isNull,
-          reason:
-              'M4: a retained lastSyncDate sends the next sync down the '
-              'incremental branch instead of the first-sync full import');
-    });
-
-    test('same-system token rotation preserves cursor + lastSyncDate',
-        () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-      await seedConnectedWithCursor(db);
-
-      final service = _makeService(db, 'sys-X');
-      await service.setToken('rotated-token');
-
-      final row = await db.pluralKitSyncDao.getSyncState();
-      expect(row.systemId, 'sys-X');
       expect(
-        row.switchCursorTimestamp?.millisecondsSinceEpoch,
-        cursorTs.millisecondsSinceEpoch,
-        reason: 'rotation is not a remap — the incremental sweep must resume',
-      );
-      expect(row.switchCursorId, 'sw-cursor-old');
-      expect(
-        row.lastSyncDate?.millisecondsSinceEpoch,
-        lastSync.millisecondsSinceEpoch,
+        row.lastSyncDate,
+        isNull,
+        reason:
+            'M4: a retained lastSyncDate sends the next sync down the '
+            'incremental branch instead of the first-sync full import',
       );
     });
+
+    test(
+      'same-system token rotation preserves cursor + lastSyncDate',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
+        await seedConnectedWithCursor(db);
+
+        final service = _makeService(db, 'sys-X');
+        await service.setToken('rotated-token');
+
+        final row = await db.pluralKitSyncDao.getSyncState();
+        expect(row.systemId, 'sys-X');
+        expect(
+          row.switchCursorTimestamp?.millisecondsSinceEpoch,
+          cursorTs.millisecondsSinceEpoch,
+          reason: 'rotation is not a remap — the incremental sweep must resume',
+        );
+        expect(row.switchCursorId, 'sw-cursor-old');
+        expect(
+          row.lastSyncDate?.millisecondsSinceEpoch,
+          lastSync.millisecondsSinceEpoch,
+        );
+      },
+    );
   });
 }
 
@@ -985,10 +986,7 @@ class _RepushMemberRepo implements MemberRepository {
     Map<String, dynamic> changedFields,
   ) async => 0;
   @override
-  Future<int> applyPluralKitLink(
-    String id,
-    Map<String, dynamic> patch,
-  ) async {
+  Future<int> applyPluralKitLink(String id, Map<String, dynamic> patch) async {
     final existing = _byId[id];
     if (existing == null) return 0;
     _byId[id] = existing.copyWith(
@@ -1005,6 +1003,7 @@ class _RepushMemberRepo implements MemberRepository {
     );
     return 1;
   }
+
   @override
   Future<int> recordPluralKitIdentity(
     String id,
@@ -1025,6 +1024,7 @@ class _RepushMemberRepo implements MemberRepository {
     );
     return 1;
   }
+
   @override
   Future<int> excludePluralKitSync(String id) async {
     final existing = _byId[id];
@@ -1032,6 +1032,7 @@ class _RepushMemberRepo implements MemberRepository {
     _byId[id] = existing.copyWith(pluralkitSyncIgnored: true);
     return 1;
   }
+
   @override
   Future<int> resumePluralKitSync(String id) async {
     final existing = _byId[id];
@@ -1039,6 +1040,7 @@ class _RepushMemberRepo implements MemberRepository {
     _byId[id] = existing.copyWith(pluralkitSyncIgnored: false);
     return 1;
   }
+
   @override
   Future<void> deleteMember(String id) async {
     _byId.remove(id);

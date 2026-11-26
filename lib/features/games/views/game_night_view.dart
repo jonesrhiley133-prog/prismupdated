@@ -23,10 +23,24 @@ class GameNightsView extends ConsumerWidget {
     final upcoming = nights.where((n) => n.status != 'done').toList();
     final past = nights.where((n) => n.status == 'done').toList();
     Widget tile(GameNight n) => PrismListRow(
-      leading: Text(n.status == 'done' ? '🏁' : (n.status == 'live' ? '🎲' : (n.status == 'paused' ? '⏸️' : '🌙')), style: const TextStyle(fontSize: 24)),
-      title: Text(n.title.isEmpty ? tr(context, 'Game night', 'Noche de juegos') : n.title),
+      leading: Text(
+        n.status == 'done'
+            ? '🏁'
+            : (n.status == 'live'
+                  ? '🎲'
+                  : (n.status == 'paused' ? '⏸️' : '🌙')),
+        style: const TextStyle(fontSize: 24),
+      ),
+      title: Text(
+        n.title.isEmpty
+            ? tr(context, 'Game night', 'Noche de juegos')
+            : n.title,
+      ),
       subtitle: Text(
-        [if (n.when != null) DateFormat.MMMEd().add_jm().format(n.when!), '${n.games.length} ${tr(context, 'games', 'juegos')} · ${n.players.map((p) => names[p] ?? '?').join(', ')}'].join('\n'),
+        [
+          if (n.when != null) DateFormat.MMMEd().add_jm().format(n.when!),
+          '${n.games.length} ${tr(context, 'games', 'juegos')} · ${n.players.map((p) => names[p] ?? '?').join(', ')}',
+        ].join('\n'),
       ),
       showChevron: true,
       onTap: () => context.push(AppRoutePaths.gameNight(n.r.id)),
@@ -40,24 +54,41 @@ class GameNightsView extends ConsumerWidget {
             'Plan an evening of games with any alters — fronting or not. Pause any time and pick up later.',
             'Planea una noche de juegos con cualquier alter, esté al frente o no. Pausa cuando quieras y retoma después.',
           ),
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 10),
         PrismButton(
           tone: PrismButtonTone.filled,
           icon: PhosphorIcons.plus(),
-          label: tr(context, 'Plan a game night', 'Planear una noche de juegos'),
+          label: tr(
+            context,
+            'Plan a game night',
+            'Planear una noche de juegos',
+          ),
           onPressed: () async {
             final id = await createGameNight(context, ref);
-            if (id != null && context.mounted) context.push(AppRoutePaths.gameNight(id));
+            if (id != null && context.mounted)
+              context.push(AppRoutePaths.gameNight(id));
           },
         ),
-        PrismSectionHeader(title: tr(context, 'UPCOMING & IN PROGRESS', 'PRÓXIMAS Y EN CURSO')),
+        PrismSectionHeader(
+          title: tr(context, 'UPCOMING & IN PROGRESS', 'PRÓXIMAS Y EN CURSO'),
+        ),
         if (upcoming.isEmpty)
           EmptyState(
             icon: Icon(PhosphorIcons.moonStars()),
-            title: tr(context, 'No game nights planned', 'No hay noches planeadas'),
-            subtitle: tr(context, 'Whenever you feel like it.', 'Cuando os apetezca.'),
+            title: tr(
+              context,
+              'No game nights planned',
+              'No hay noches planeadas',
+            ),
+            subtitle: tr(
+              context,
+              'Whenever you feel like it.',
+              'Cuando os apetezca.',
+            ),
           )
         else
           PrismSurface(
@@ -65,7 +96,9 @@ class GameNightsView extends ConsumerWidget {
             child: Column(children: [for (final n in upcoming) tile(n)]),
           ),
         if (past.isNotEmpty) ...[
-          PrismSectionHeader(title: tr(context, 'PAST NIGHTS', 'NOCHES PASADAS')),
+          PrismSectionHeader(
+            title: tr(context, 'PAST NIGHTS', 'NOCHES PASADAS'),
+          ),
           PrismSurface(
             padding: EdgeInsets.zero,
             child: Column(children: [for (final n in past) tile(n)]),
@@ -77,9 +110,18 @@ class GameNightsView extends ConsumerWidget {
 }
 
 Future<String?> createGameNight(BuildContext context, WidgetRef ref) async {
-  final title = await promptText(context, title: tr(context, 'Name this game night', 'Nombra la noche de juegos'), initial: tr(context, 'Game night', 'Noche de juegos'), maxLines: 1);
+  final title = await promptText(
+    context,
+    title: tr(context, 'Name this game night', 'Nombra la noche de juegos'),
+    initial: tr(context, 'Game night', 'Noche de juegos'),
+    maxLines: 1,
+  );
   if (title == null || !context.mounted) return null;
-  final players = await pickAlters(context, ref, title: tr(context, 'Who\'s coming?', '¿Quién viene?'));
+  final players = await pickAlters(
+    context,
+    ref,
+    title: tr(context, 'Who\'s coming?', '¿Quién viene?'),
+  );
   if (players == null || !context.mounted) return null;
   final now = DateTime.now();
   final date = await showPrismDatePicker(
@@ -90,8 +132,17 @@ Future<String?> createGameNight(BuildContext context, WidgetRef ref) async {
   );
   DateTime when = now;
   if (date != null && context.mounted) {
-    final t = await showPrismTimePicker(context: context, initialTime: const TimeOfDay(hour: 19, minute: 0));
-    when = DateTime(date.year, date.month, date.day, t?.hour ?? 19, t?.minute ?? 0);
+    final t = await showPrismTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 19, minute: 0),
+    );
+    when = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      t?.hour ?? 19,
+      t?.minute ?? 0,
+    );
   }
   String? calId;
   if (date != null) {
@@ -115,7 +166,18 @@ Future<String?> createGameNight(BuildContext context, WidgetRef ref) async {
   }
   final r = await ref
       .read(trackerNotifierProvider.notifier)
-      .create(kind: TrackerKind.gameNight, title: title, occurredAt: when, fields: {'players': players, 'games': const <String>[], 'status': 'planned', 'coop': false, 'calendar': calId});
+      .create(
+        kind: TrackerKind.gameNight,
+        title: title,
+        occurredAt: when,
+        fields: {
+          'players': players,
+          'games': const <String>[],
+          'status': 'planned',
+          'coop': false,
+          'calendar': calId,
+        },
+      );
   return r.id;
 }
 
@@ -124,32 +186,54 @@ class GameNightScreen extends ConsumerWidget {
   const GameNightScreen({super.key, required this.nightId});
   final String nightId;
 
-  Future<void> _update(WidgetRef ref, GameNight n, Map<String, Object?> f) => ref.read(trackerNotifierProvider.notifier).save(n.r.withFields({...n.r.fields, ...f}));
+  Future<void> _update(WidgetRef ref, GameNight n, Map<String, Object?> f) =>
+      ref
+          .read(trackerNotifierProvider.notifier)
+          .save(n.r.withFields({...n.r.fields, ...f}));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final n = ref.watch(gameNightsProvider).where((x) => x.r.id == nightId).firstOrNull;
+    final n = ref
+        .watch(gameNightsProvider)
+        .where((x) => x.r.id == nightId)
+        .firstOrNull;
     final theme = Theme.of(context);
     if (n == null) {
       return PrismPageScaffold(
-        topBar: PrismTopBar(title: tr(context, 'Game night', 'Noche de juegos')),
-        body: EmptyState(icon: Icon(PhosphorIcons.moonStars()), title: tr(context, 'Not found', 'No encontrada'), subtitle: ''),
+        topBar: PrismTopBar(
+          title: tr(context, 'Game night', 'Noche de juegos'),
+        ),
+        body: EmptyState(
+          icon: Icon(PhosphorIcons.moonStars()),
+          title: tr(context, 'Not found', 'No encontrada'),
+          subtitle: '',
+        ),
       );
     }
     final names = ref.watch(gameNamesProvider);
-    final results = ref.watch(gameResultsProvider).where((r) => r.nightId == nightId).toList()..sort((a, b) => a.when.compareTo(b.when));
+    final results =
+        ref
+            .watch(gameResultsProvider)
+            .where((r) => r.nightId == nightId)
+            .toList()
+          ..sort((a, b) => a.when.compareTo(b.when));
     final played = {for (final r in results) r.gameId};
     final next = n.games.where((g) => !played.contains(g)).firstOrNull;
     final totals = <String, int>{};
     for (final r in results) {
-      if (r.memberId != null && r.score != null) totals[r.memberId!] = (totals[r.memberId!] ?? 0) + r.score!;
+      if (r.memberId != null && r.score != null)
+        totals[r.memberId!] = (totals[r.memberId!] ?? 0) + r.score!;
     }
     final combined = totals.values.fold(0, (a, b) => a + b);
 
     return PrismPageScaffold(
       topBar: PrismTopBar(
-        title: n.title.isEmpty ? tr(context, 'Game night', 'Noche de juegos') : n.title,
-        subtitle: n.when == null ? null : DateFormat.MMMEd().add_jm().format(n.when!),
+        title: n.title.isEmpty
+            ? tr(context, 'Game night', 'Noche de juegos')
+            : n.title,
+        subtitle: n.when == null
+            ? null
+            : DateFormat.MMMEd().add_jm().format(n.when!),
         actions: [
           PrismTopBarAction(
             icon: PhosphorIcons.trash(),
@@ -171,17 +255,40 @@ class GameNightScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(switch (n.status) {
-                    'live' => tr(context, '🎲 In progress', '🎲 En curso'),
-                    'paused' => tr(context, '⏸️ Paused — resume whenever you like', '⏸️ En pausa: retoma cuando quieras'),
-                    'done' => tr(context, '🏁 Finished', '🏁 Terminada'),
-                    _ => tr(context, '🌙 Planned', '🌙 Planeada'),
-                  }, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    switch (n.status) {
+                      'live' => tr(context, '🎲 In progress', '🎲 En curso'),
+                      'paused' => tr(
+                        context,
+                        '⏸️ Paused — resume whenever you like',
+                        '⏸️ En pausa: retoma cuando quieras',
+                      ),
+                      'done' => tr(context, '🏁 Finished', '🏁 Terminada'),
+                      _ => tr(context, '🌙 Planned', '🌙 Planeada'),
+                    },
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   PrismSegmentedControl<bool>(
                     segments: [
-                      PrismSegment(value: false, label: tr(context, 'Friendly scores', 'Puntos amistosos')),
-                      PrismSegment(value: true, label: tr(context, 'Co-op (team total)', 'Cooperativo (total)')),
+                      PrismSegment(
+                        value: false,
+                        label: tr(
+                          context,
+                          'Friendly scores',
+                          'Puntos amistosos',
+                        ),
+                      ),
+                      PrismSegment(
+                        value: true,
+                        label: tr(
+                          context,
+                          'Co-op (team total)',
+                          'Cooperativo (total)',
+                        ),
+                      ),
                     ],
                     selected: n.coop,
                     onChanged: (v) => _update(ref, n, {'coop': v}),
@@ -198,20 +305,39 @@ class GameNightScreen extends ConsumerWidget {
                             icon: PhosphorIcons.play(),
                             label: n.status == 'paused'
                                 ? tr(context, 'Resume', 'Reanudar')
-                                : tr(context, 'Play next: ${trp(context, gameById(next)?.name ?? (next, next))}', 'Siguiente: ${trp(context, gameById(next)?.name ?? (next, next))}'),
+                                : tr(
+                                    context,
+                                    'Play next: ${trp(context, gameById(next)?.name ?? (next, next))}',
+                                    'Siguiente: ${trp(context, gameById(next)?.name ?? (next, next))}',
+                                  ),
                             onPressed: () async {
                               await _update(ref, n, {'status': 'live'});
-                              if (context.mounted) context.push(AppRoutePaths.gamePlay(next, night: n.r.id));
+                              if (context.mounted)
+                                context.push(
+                                  AppRoutePaths.gamePlay(next, night: n.r.id),
+                                );
                             },
                           ),
-                        if (n.status == 'live') PrismButton(icon: PhosphorIcons.pause(), label: tr(context, 'Pause', 'Pausar'), onPressed: () => _update(ref, n, {'status': 'paused'})),
-                        PrismButton(icon: PhosphorIcons.flagCheckered(), label: tr(context, 'End night', 'Terminar'), onPressed: () => _update(ref, n, {'status': 'done'})),
+                        if (n.status == 'live')
+                          PrismButton(
+                            icon: PhosphorIcons.pause(),
+                            label: tr(context, 'Pause', 'Pausar'),
+                            onPressed: () =>
+                                _update(ref, n, {'status': 'paused'}),
+                          ),
+                        PrismButton(
+                          icon: PhosphorIcons.flagCheckered(),
+                          label: tr(context, 'End night', 'Terminar'),
+                          onPressed: () => _update(ref, n, {'status': 'done'}),
+                        ),
                       ],
                     ),
                 ],
               ),
             ),
-            PrismSectionHeader(title: tr(context, 'WHO\'S PLAYING', 'QUIÉN JUEGA')),
+            PrismSectionHeader(
+              title: tr(context, 'WHO\'S PLAYING', 'QUIÉN JUEGA'),
+            ),
             AlterChips(
               ids: n.players,
               onTap: () async {
@@ -226,9 +352,24 @@ class GameNightScreen extends ConsumerWidget {
                 children: [
                   for (var i = 0; i < n.games.length; i++)
                     PrismListRow(
-                      leading: Text(gameById(n.games[i])?.emoji ?? '🎲', style: const TextStyle(fontSize: 22)),
-                      title: Text(trp(context, gameById(n.games[i])?.name ?? (n.games[i], n.games[i]))),
-                      subtitle: Text(played.contains(n.games[i]) ? tr(context, '✓ Played', '✓ Jugado') : (n.games[i] == next ? tr(context, 'Up next', 'Siguiente') : '')),
+                      leading: Text(
+                        gameById(n.games[i])?.emoji ?? '🎲',
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                      title: Text(
+                        trp(
+                          context,
+                          gameById(n.games[i])?.name ??
+                              (n.games[i], n.games[i]),
+                        ),
+                      ),
+                      subtitle: Text(
+                        played.contains(n.games[i])
+                            ? tr(context, '✓ Played', '✓ Jugado')
+                            : (n.games[i] == next
+                                  ? tr(context, 'Up next', 'Siguiente')
+                                  : ''),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -257,7 +398,10 @@ class GameNightScreen extends ConsumerWidget {
                     leading: Icon(PhosphorIcons.plus()),
                     title: Text(tr(context, 'Add a game', 'Añadir un juego')),
                     onTap: () async {
-                      final g = await pickGame(context, where: (g) => g.multiplayer);
+                      final g = await pickGame(
+                        context,
+                        where: (g) => g.multiplayer,
+                      );
                       if (g != null)
                         await _update(ref, n, {
                           'games': [...n.games, g.id],
@@ -266,9 +410,21 @@ class GameNightScreen extends ConsumerWidget {
                   ),
                   PrismListRow(
                     leading: Icon(PhosphorIcons.shuffle()),
-                    title: Text(tr(context, 'Surprise line-up (3 games)', 'Programa sorpresa (3 juegos)')),
+                    title: Text(
+                      tr(
+                        context,
+                        'Surprise line-up (3 games)',
+                        'Programa sorpresa (3 juegos)',
+                      ),
+                    ),
                     onTap: () {
-                      final pool = gameCatalog.where((g) => g.multiplayer && !n.games.contains(g.id)).toList()..shuffle();
+                      final pool =
+                          gameCatalog
+                              .where(
+                                (g) => g.multiplayer && !n.games.contains(g.id),
+                              )
+                              .toList()
+                            ..shuffle();
                       _update(ref, n, {
                         'games': [...n.games, ...pool.take(3).map((g) => g.id)],
                       });
@@ -284,9 +440,20 @@ class GameNightScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (n.coop)
-                      Text(tr(context, 'Team total: $combined points 🤝', 'Total del equipo: $combined puntos 🤝'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))
+                      Text(
+                        tr(
+                          context,
+                          'Team total: $combined points 🤝',
+                          'Total del equipo: $combined puntos 🤝',
+                        ),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      )
                     else
-                      for (final e in (totals.entries.toList()..sort((a, b) => b.value.compareTo(a.value))))
+                      for (final e
+                          in (totals.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value))))
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 3),
                           child: Row(
@@ -294,7 +461,12 @@ class GameNightScreen extends ConsumerWidget {
                               AlterDot(e.key, size: 24),
                               const SizedBox(width: 8),
                               Expanded(child: Text(names[e.key] ?? '?')),
-                              Text('${e.value}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                              Text(
+                                '${e.value}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -306,24 +478,53 @@ class GameNightScreen extends ConsumerWidget {
                           '${gameById(r.gameId)?.emoji ?? ''} ${trp(context, gameById(r.gameId)?.name ?? (r.gameId, r.gameId))} — ${r.memberId == null ? '' : '${names[r.memberId]}: '}${r.summary}',
                         ),
                       ),
-                    for (final r in results.where((r) => (r.memorable ?? '').isNotEmpty).take(3))
+                    for (final r
+                        in results
+                            .where((r) => (r.memorable ?? '').isNotEmpty)
+                            .take(3))
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: Text('"${r.memorable}"', style: const TextStyle(fontStyle: FontStyle.italic)),
+                        child: Text(
+                          '"${r.memorable}"',
+                          style: const TextStyle(fontStyle: FontStyle.italic),
+                        ),
                       ),
                     const SizedBox(height: 10),
                     PrismButton(
                       icon: PhosphorIcons.notebook(),
-                      label: tr(context, 'Save recap to Journal', 'Guardar resumen en el diario'),
+                      label: tr(
+                        context,
+                        'Save recap to Journal',
+                        'Guardar resumen en el diario',
+                      ),
                       onPressed: () async {
                         final body = [
-                          n.coop ? 'Team total: $combined' : totals.entries.map((e) => '${names[e.key]}: ${e.value}').join(', '),
-                          for (final r in results) '• ${gameById(r.gameId)?.name.$1 ?? r.gameId}: ${r.memberId == null ? '' : '${names[r.memberId]} — '}${r.summary}',
+                          n.coop
+                              ? 'Team total: $combined'
+                              : totals.entries
+                                    .map((e) => '${names[e.key]}: ${e.value}')
+                                    .join(', '),
+                          for (final r in results)
+                            '• ${gameById(r.gameId)?.name.$1 ?? r.gameId}: ${r.memberId == null ? '' : '${names[r.memberId]} — '}${r.summary}',
                         ].join('\n');
                         await ref
                             .read(trackerNotifierProvider.notifier)
-                            .create(kind: TrackerKind.journalEntry, title: '🎲 ${n.title}', body: body, occurredAt: DateTime.now(), tags: const ['games', 'game-night']);
-                        if (context.mounted) PrismToast.show(context, message: tr(context, 'Saved to Journal', 'Guardado en el diario'));
+                            .create(
+                              kind: TrackerKind.journalEntry,
+                              title: '🎲 ${n.title}',
+                              body: body,
+                              occurredAt: DateTime.now(),
+                              tags: const ['games', 'game-night'],
+                            );
+                        if (context.mounted)
+                          PrismToast.show(
+                            context,
+                            message: tr(
+                              context,
+                              'Saved to Journal',
+                              'Guardado en el diario',
+                            ),
+                          );
                       },
                     ),
                   ],
@@ -339,19 +540,37 @@ class GameNightScreen extends ConsumerWidget {
 
 /// Route wrapper: resolves a custom game or a game night, then hosts it.
 class GamePlayRoute extends ConsumerWidget {
-  const GamePlayRoute({super.key, required this.gameId, this.challengeId, this.customId, this.nightId});
+  const GamePlayRoute({
+    super.key,
+    required this.gameId,
+    this.challengeId,
+    this.customId,
+    this.nightId,
+  });
   final String gameId;
   final String? challengeId;
   final String? customId;
   final String? nightId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final custom = customId == null ? null : ref.watch(customGamesProvider).where((c) => c.r.id == customId).firstOrNull;
-    final night = nightId == null ? null : ref.read(gameNightsProvider).where((n) => n.r.id == nightId).firstOrNull;
+    final custom = customId == null
+        ? null
+        : ref
+              .watch(customGamesProvider)
+              .where((c) => c.r.id == customId)
+              .firstOrNull;
+    final night = nightId == null
+        ? null
+        : ref
+              .read(gameNightsProvider)
+              .where((n) => n.r.id == nightId)
+              .firstOrNull;
     return GameScreen(
       gameId: custom?.base ?? gameId,
       challengeId: challengeId,
-      custom: custom == null ? null : {...custom.content, 'title': custom.title},
+      custom: custom == null
+          ? null
+          : {...custom.content, 'title': custom.title},
       customTitle: custom?.title,
       players: night?.players,
       nightId: nightId,

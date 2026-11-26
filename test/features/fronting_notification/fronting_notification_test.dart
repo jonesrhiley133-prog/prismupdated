@@ -236,7 +236,9 @@ void main() {
       _strings,
       _now,
     );
-    expect(asleep.lines, ['Asleep since ${_strings.formatTime(_now.subtract(const Duration(hours: 1)))}']);
+    expect(asleep.lines, [
+      'Asleep since ${_strings.formatTime(_now.subtract(const Duration(hours: 1)))}',
+    ]);
     expect(
       fillTemplate('{a}  and {missing} {b}', {'a': 'x', 'b': 'y'}),
       'x and y',

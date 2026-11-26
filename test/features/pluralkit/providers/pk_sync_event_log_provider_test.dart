@@ -11,9 +11,9 @@ void main() {
 
     test('receives events while the notifier is alive', () async {
       final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
+      final container = ProviderContainer(
+        overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+      );
       addTearDown(container.dispose);
 
       // Simulate app.dart's ref.listen keeping the notifier alive.
@@ -32,9 +32,9 @@ void main() {
 
     test('retains every event when the notifier is kept alive', () async {
       final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
+      final container = ProviderContainer(
+        overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+      );
       addTearDown(container.dispose);
 
       // Keep the notifier alive from before any event is emitted, mirroring
@@ -51,38 +51,39 @@ void main() {
       expect(entries, hasLength(5));
     });
 
-    test('drops the oldest entries once the 200-entry cap is exceeded',
-        () async {
+    test(
+      'drops the oldest entries once the 200-entry cap is exceeded',
+      () async {
+        final capture = PkSyncEventBusCapture();
+        final container = ProviderContainer(
+          overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+        );
+        addTearDown(container.dispose);
+
+        container.listen(pkSyncEventLogProvider, (_, _) {});
+
+        for (var i = 0; i < 250; i++) {
+          capture.bus.emit(PkMembersImported(count: i));
+        }
+
+        await Future<void>.delayed(Duration.zero);
+
+        final entries = container.read(pkSyncEventLogProvider);
+        expect(entries, hasLength(kPkSyncEventLogMax));
+        // We emitted counts 0..249; the ring keeps the last 200, so the first
+        // surviving entry should correspond to count == 50.
+        final firstEvent = entries.first.event as PkMembersImported;
+        expect(firstEvent.count, 50);
+        final lastEvent = entries.last.event as PkMembersImported;
+        expect(lastEvent.count, 249);
+      },
+    );
+
+    test('clear() empties the log and the notifier keeps recording', () async {
       final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
-      addTearDown(container.dispose);
-
-      container.listen(pkSyncEventLogProvider, (_, _) {});
-
-      for (var i = 0; i < 250; i++) {
-        capture.bus.emit(PkMembersImported(count: i));
-      }
-
-      await Future<void>.delayed(Duration.zero);
-
-      final entries = container.read(pkSyncEventLogProvider);
-      expect(entries, hasLength(kPkSyncEventLogMax));
-      // We emitted counts 0..249; the ring keeps the last 200, so the first
-      // surviving entry should correspond to count == 50.
-      final firstEvent = entries.first.event as PkMembersImported;
-      expect(firstEvent.count, 50);
-      final lastEvent = entries.last.event as PkMembersImported;
-      expect(lastEvent.count, 249);
-    });
-
-    test('clear() empties the log and the notifier keeps recording',
-        () async {
-      final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
+      final container = ProviderContainer(
+        overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+      );
       addTearDown(container.dispose);
 
       container.listen(pkSyncEventLogProvider, (_, _) {});
@@ -106,9 +107,9 @@ void main() {
 
     test('isError on the entry mirrors the underlying event', () async {
       final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
+      final container = ProviderContainer(
+        overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+      );
       addTearDown(container.dispose);
 
       container.listen(pkSyncEventLogProvider, (_, _) {});
@@ -124,27 +125,29 @@ void main() {
       expect(entries[1].isError, isFalse);
     });
 
-    test('disposing the container detaches the bus subscription cleanly',
-        () async {
-      final capture = PkSyncEventBusCapture();
-      final container = ProviderContainer(overrides: [
-        pkSyncEventBusProvider.overrideWithValue(capture.bus),
-      ]);
+    test(
+      'disposing the container detaches the bus subscription cleanly',
+      () async {
+        final capture = PkSyncEventBusCapture();
+        final container = ProviderContainer(
+          overrides: [pkSyncEventBusProvider.overrideWithValue(capture.bus)],
+        );
 
-      container.listen(pkSyncEventLogProvider, (_, _) {});
+        container.listen(pkSyncEventLogProvider, (_, _) {});
 
-      capture.bus.emit(const PkMembersImported(count: 1));
-      await Future<void>.delayed(Duration.zero);
-      expect(container.read(pkSyncEventLogProvider), hasLength(1));
+        capture.bus.emit(const PkMembersImported(count: 1));
+        await Future<void>.delayed(Duration.zero);
+        expect(container.read(pkSyncEventLogProvider), hasLength(1));
 
-      container.dispose();
+        container.dispose();
 
-      // Emitting after dispose must not throw or trip a StateError, even
-      // though the notifier's subscription has been cancelled.
-      expect(
-        () => capture.bus.emit(const PkMembersImported(count: 2)),
-        returnsNormally,
-      );
-    });
+        // Emitting after dispose must not throw or trip a StateError, even
+        // though the notifier's subscription has been cancelled.
+        expect(
+          () => capture.bus.emit(const PkMembersImported(count: 2)),
+          returnsNormally,
+        );
+      },
+    );
   });
 }

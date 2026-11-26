@@ -28,10 +28,12 @@ const _exploringFilter = '__exploring';
 class RelationshipsHubScreen extends ConsumerStatefulWidget {
   const RelationshipsHubScreen({super.key});
   @override
-  ConsumerState<RelationshipsHubScreen> createState() => _RelationshipsHubScreenState();
+  ConsumerState<RelationshipsHubScreen> createState() =>
+      _RelationshipsHubScreenState();
 }
 
-class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen> {
+class _RelationshipsHubScreenState
+    extends ConsumerState<RelationshipsHubScreen> {
   final _mapKey = GlobalKey<RelationshipMapState>();
   RelMapView? _view;
   String? _focus;
@@ -71,13 +73,29 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
     final settings = ref.watch(relSettingsProvider);
     final rels = ref.watch(relsProvider);
     final stats = RelStats(rels, settings);
-    final view = _view ?? RelMapView.values.firstWhere((v) => v.name == settings.defaultLayout, orElse: () => RelMapView.network);
+    final view =
+        _view ??
+        RelMapView.values.firstWhere(
+          (v) => v.name == settings.defaultLayout,
+          orElse: () => RelMapView.network,
+        );
     final undo = ref.watch(relUndoProvider);
 
     return PrismPageScaffold(
       topBar: PrismTopBar(
         title: tr(context, 'Relationships', 'Relaciones'),
-        actions: [FeatureDataAction(featureId: 'relationships'), PrismTopBarAction(icon: AppIcons.navSettings, tooltip: tr(context, 'Relationship settings', 'Ajustes de relaciones'), onPressed: () => showRelSettings(context))],
+        actions: [
+          FeatureDataAction(featureId: 'relationships'),
+          PrismTopBarAction(
+            icon: AppIcons.navSettings,
+            tooltip: tr(
+              context,
+              'Relationship settings',
+              'Ajustes de relaciones',
+            ),
+            onPressed: () => showRelSettings(context),
+          ),
+        ],
       ),
       bodyPadding: EdgeInsets.zero,
       body: ListView(
@@ -88,7 +106,16 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // A. Header
-                Text(tr(context, 'Explore, understand, and organize the connections within your system.', 'Explora, comprende y organiza las conexiones dentro de tu sistema.'), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  tr(
+                    context,
+                    'Explore, understand, and organize the connections within your system.',
+                    'Explora, comprende y organiza las conexiones dentro de tu sistema.',
+                  ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   tr(
@@ -96,18 +123,34 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                     '${stats.total} relationships · ${stats.alters} alters connected · ${stats.romantic} romantic · ${stats.familial} familial · ${stats.platonic} platonic',
                     '${stats.total} relaciones · ${stats.alters} alters conectados · ${stats.romantic} románticas · ${stats.familial} familiares · ${stats.platonic} platónicas',
                   ),
-                  style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    PrismButton(label: tr(context, 'Add relationship', 'Añadir relación'), icon: AppIcons.add, tone: PrismButtonTone.filled, onPressed: () => showRelEditor(context)),
-                    PrismButton(label: tr(context, 'Randomize relationship', 'Relación aleatoria'), icon: PhosphorIcons.shuffle(), onPressed: () => showRandomizer(context)),
+                    PrismButton(
+                      label: tr(context, 'Add relationship', 'Añadir relación'),
+                      icon: AppIcons.add,
+                      tone: PrismButtonTone.filled,
+                      onPressed: () => showRelEditor(context),
+                    ),
+                    PrismButton(
+                      label: tr(
+                        context,
+                        'Randomize relationship',
+                        'Relación aleatoria',
+                      ),
+                      icon: PhosphorIcons.shuffle(),
+                      onPressed: () => showRandomizer(context),
+                    ),
                   ],
                 ),
-                if (undo != null && DateTime.now().difference(undo.at).inMinutes < 2) ...[
+                if (undo != null &&
+                    DateTime.now().difference(undo.at).inMinutes < 2) ...[
                   const SizedBox(height: 12),
                   _UndoBar(undo: undo),
                 ],
@@ -115,25 +158,48 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                 const SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, box) {
-                    final cols = box.maxWidth >= 900 ? 6 : (box.maxWidth >= 560 ? 3 : 2);
+                    final cols = box.maxWidth >= 900
+                        ? 6
+                        : (box.maxWidth >= 560 ? 3 : 2);
                     final w = (box.maxWidth - (cols - 1) * 8) / cols;
-                    Widget card(String? f, String label, int n, IconData icon) => SizedBox(
+                    Widget card(
+                      String? f,
+                      String label,
+                      int n,
+                      IconData icon,
+                    ) => SizedBox(
                       width: w,
                       child: PrismSurface(
                         padding: const EdgeInsets.all(12),
                         onTap: () => _applyStatFilter(f, settings),
-                        borderColor: _filter == f && f != null ? theme.colorScheme.primary : null,
+                        borderColor: _filter == f && f != null
+                            ? theme.colorScheme.primary
+                            : null,
                         semanticLabel: '$label: $n',
                         child: Row(
                           children: [
-                            Icon(icon, size: 20, color: theme.colorScheme.primary),
+                            Icon(
+                              icon,
+                              size: 20,
+                              color: theme.colorScheme.primary,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('$n', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-                                  Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                                  Text(
+                                    '$n',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  Text(
+                                    label,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
                                 ],
                               ),
                             ),
@@ -145,19 +211,62 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        card(null, tr(context, 'Documented relationships', 'Relaciones documentadas'), stats.total, PhosphorIcons.graph()),
-                        card('romantic', tr(context, 'Romantic', 'Románticas'), stats.romantic, PhosphorIcons.heart()),
-                        card('platonic', tr(context, 'Platonic', 'Platónicas'), stats.platonic, PhosphorIcons.handshake()),
-                        card('familial', tr(context, 'Familial', 'Familiares'), stats.familial, PhosphorIcons.treeStructure()),
-                        card(_complicatedFilter, tr(context, 'Complicated or uncertain', 'Complicadas o inciertas'), stats.complicated, PhosphorIcons.question()),
-                        card(_exploringFilter, tr(context, 'Being explored', 'Explorándose'), stats.exploring, PhosphorIcons.compass()),
+                        card(
+                          null,
+                          tr(
+                            context,
+                            'Documented relationships',
+                            'Relaciones documentadas',
+                          ),
+                          stats.total,
+                          PhosphorIcons.graph(),
+                        ),
+                        card(
+                          'romantic',
+                          tr(context, 'Romantic', 'Románticas'),
+                          stats.romantic,
+                          PhosphorIcons.heart(),
+                        ),
+                        card(
+                          'platonic',
+                          tr(context, 'Platonic', 'Platónicas'),
+                          stats.platonic,
+                          PhosphorIcons.handshake(),
+                        ),
+                        card(
+                          'familial',
+                          tr(context, 'Familial', 'Familiares'),
+                          stats.familial,
+                          PhosphorIcons.treeStructure(),
+                        ),
+                        card(
+                          _complicatedFilter,
+                          tr(
+                            context,
+                            'Complicated or uncertain',
+                            'Complicadas o inciertas',
+                          ),
+                          stats.complicated,
+                          PhosphorIcons.question(),
+                        ),
+                        card(
+                          _exploringFilter,
+                          tr(context, 'Being explored', 'Explorándose'),
+                          stats.exploring,
+                          PhosphorIcons.compass(),
+                        ),
                       ],
                     );
                   },
                 ),
                 // C. Map
                 const SizedBox(height: 20),
-                Text(tr(context, 'Relationship map', 'Mapa de relaciones'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                Text(
+                  tr(context, 'Relationship map', 'Mapa de relaciones'),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 SizedBox(
                   height: 40,
@@ -171,8 +280,17 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                             label: relViewLabel(context, v),
                             selected: view == v,
                             onTap: () async {
-                              if (v == RelMapView.individual && _focus == null) {
-                                final id = await pickAlter(context, ref, title: tr(context, 'Whose connections?', '¿Las conexiones de quién?'));
+                              if (v == RelMapView.individual &&
+                                  _focus == null) {
+                                final id = await pickAlter(
+                                  context,
+                                  ref,
+                                  title: tr(
+                                    context,
+                                    'Whose connections?',
+                                    '¿Las conexiones de quién?',
+                                  ),
+                                );
                                 if (id == null) return;
                                 setState(() => _focus = id);
                               }
@@ -198,14 +316,26 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                     Expanded(
                       child: PrismTextField(
                         controller: _search,
-                        hintText: tr(context, 'Find an alter on the map', 'Busca un alter en el mapa'),
+                        hintText: tr(
+                          context,
+                          'Find an alter on the map',
+                          'Busca un alter en el mapa',
+                        ),
                         prefixIcon: Icon(AppIcons.search),
                         textInputAction: TextInputAction.search,
                         onSubmitted: (q) => _findOnMap(q),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    PrismButton(label: _listView ? tr(context, 'Map', 'Mapa') : tr(context, 'List', 'Lista'), icon: _listView ? PhosphorIcons.graph() : PhosphorIcons.listBullets(), onPressed: () => setState(() => _listView = !_listView)),
+                    PrismButton(
+                      label: _listView
+                          ? tr(context, 'Map', 'Mapa')
+                          : tr(context, 'List', 'Lista'),
+                      icon: _listView
+                          ? PhosphorIcons.graph()
+                          : PhosphorIcons.listBullets(),
+                      onPressed: () => setState(() => _listView = !_listView),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -215,15 +345,28 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                   children: [
                     for (final c in settings.categories)
                       PrismChip(
-                        label: '${_hidden.contains(c) ? '○' : '●'} ${relCategoryLabel(context, c, settings)}',
+                        label:
+                            '${_hidden.contains(c) ? '○' : '●'} ${relCategoryLabel(context, c, settings)}',
                         selected: !_hidden.contains(c),
-                        onTap: () => setState(() => _hidden.contains(c) ? _hidden.remove(c) : _hidden.add(c)),
+                        onTap: () => setState(
+                          () => _hidden.contains(c)
+                              ? _hidden.remove(c)
+                              : _hidden.add(c),
+                        ),
                       ),
                   ],
                 ),
                 const SizedBox(height: 10),
                 if (_listView)
-                  PrismSurface(padding: EdgeInsets.zero, child: RelationshipListView(view: view, focus: _focus, hiddenCategories: _hidden, onOpenRel: _openRel))
+                  PrismSurface(
+                    padding: EdgeInsets.zero,
+                    child: RelationshipListView(
+                      view: view,
+                      focus: _focus,
+                      hiddenCategories: _hidden,
+                      onOpenRel: _openRel,
+                    ),
+                  )
                 else
                   RelationshipMap(
                     key: _mapKey,
@@ -241,14 +384,30 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                 const SizedBox(height: 8),
                 _Legend(settings: settings),
                 const SizedBox(height: 4),
-                Text(tr(context, 'Tap an alter to highlight their connections (tap again for their profile); tap a line for the relationship. Pinch or scroll to zoom, drag to pan.', 'Toca un alter para resaltar sus conexiones (otra vez para su perfil); toca una línea para ver la relación. Pellizca o desplaza para hacer zoom, arrastra para mover.'), style: theme.textTheme.bodySmall),
+                Text(
+                  tr(
+                    context,
+                    'Tap an alter to highlight their connections (tap again for their profile); tap a line for the relationship. Pinch or scroll to zoom, drag to pan.',
+                    'Toca un alter para resaltar sus conexiones (otra vez para su perfil); toca una línea para ver la relación. Pellizca o desplaza para hacer zoom, arrastra para mover.',
+                  ),
+                  style: theme.textTheme.bodySmall,
+                ),
                 // D. Directory / family / insights
                 const SizedBox(height: 20),
                 PrismSegmentedControl<_Below>(
                   segments: [
-                    PrismSegment(value: _Below.directory, label: tr(context, 'Directory', 'Directorio')),
-                    PrismSegment(value: _Below.family, label: tr(context, 'Family tree', 'Árbol familiar')),
-                    PrismSegment(value: _Below.insights, label: tr(context, 'Insights', 'Perspectivas')),
+                    PrismSegment(
+                      value: _Below.directory,
+                      label: tr(context, 'Directory', 'Directorio'),
+                    ),
+                    PrismSegment(
+                      value: _Below.family,
+                      label: tr(context, 'Family tree', 'Árbol familiar'),
+                    ),
+                    PrismSegment(
+                      value: _Below.insights,
+                      label: tr(context, 'Insights', 'Perspectivas'),
+                    ),
                   ],
                   selected: _below,
                   onChanged: (v) => setState(() => _below = v),
@@ -269,20 +428,38 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
 
   void _findOnMap(String q) {
     final prefer = ref.read(memberNamePreferDisplayProvider);
-    final m = ref.read(relAltersProvider).where((m) => m.effectiveName(preferDisplayName: prefer).toLowerCase().contains(q.trim().toLowerCase())).firstOrNull;
+    final m = ref
+        .read(relAltersProvider)
+        .where(
+          (m) => m
+              .effectiveName(preferDisplayName: prefer)
+              .toLowerCase()
+              .contains(q.trim().toLowerCase()),
+        )
+        .firstOrNull;
     if (m == null || q.trim().isEmpty) {
-      PrismToast.show(context, message: tr(context, 'No alter found', 'No se encontró el alter'));
+      PrismToast.show(
+        context,
+        message: tr(context, 'No alter found', 'No se encontró el alter'),
+      );
       return;
     }
     if (_listView) setState(() => _listView = false);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _mapKey.currentState?.focusOn(m.id));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _mapKey.currentState?.focusOn(m.id),
+    );
   }
 
-  Widget _directory(BuildContext context, List<Rel> rels, RelSettings settings) {
+  Widget _directory(
+    BuildContext context,
+    List<Rel> rels,
+    RelSettings settings,
+  ) {
     final alters = ref.watch(relAlterIndexProvider);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
     final counts = ref.watch(relInteractionCountsProvider);
-    String nm(String? id) => alters[id]?.effectiveName(preferDisplayName: prefer) ?? '';
+    String nm(String? id) =>
+        alters[id]?.effectiveName(preferDisplayName: prefer) ?? '';
     final q = _query.trim().toLowerCase();
     var list = [
       for (final r in rels)
@@ -297,30 +474,65 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
                 nm(r.b).toLowerCase().contains(q) ||
                 (r.otherName ?? '').toLowerCase().contains(q) ||
                 r.title.toLowerCase().contains(q) ||
-                r.labels.any((l) => labelText(context, l, settings).toLowerCase().contains(q))))
+                r.labels.any(
+                  (l) =>
+                      labelText(context, l, settings).toLowerCase().contains(q),
+                )))
           r,
     ];
-    String key(Rel r) => r.title.isNotEmpty ? r.title.toLowerCase() : '${nm(r.a)} ${nm(r.b).isEmpty ? r.otherName ?? '' : nm(r.b)}'.toLowerCase();
+    String key(Rel r) => r.title.isNotEmpty
+        ? r.title.toLowerCase()
+        : '${nm(r.a)} ${nm(r.b).isEmpty ? r.otherName ?? '' : nm(r.b)}'
+              .toLowerCase();
     list = switch (_sort) {
       _Sort.recent => list..sort((a, b) => b.updated.compareTo(a.updated)),
       _Sort.alpha => list..sort((a, b) => key(a).compareTo(key(b))),
-      _Sort.oldest => list..sort((a, b) => a.documented.compareTo(b.documented)),
-      _Sort.interactions => list..sort((a, b) => (counts[b.id] ?? 0).compareTo(counts[a.id] ?? 0)),
+      _Sort.oldest =>
+        list..sort((a, b) => a.documented.compareTo(b.documented)),
+      _Sort.interactions =>
+        list..sort((a, b) => (counts[b.id] ?? 0).compareTo(counts[a.id] ?? 0)),
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        PrismTextField(hintText: tr(context, 'Search by alter, label or title', 'Busca por alter, etiqueta o título'), prefixIcon: Icon(AppIcons.search), onChanged: (v) => setState(() => _query = v)),
+        PrismTextField(
+          hintText: tr(
+            context,
+            'Search by alter, label or title',
+            'Busca por alter, etiqueta o título',
+          ),
+          prefixIcon: Icon(AppIcons.search),
+          onChanged: (v) => setState(() => _query = v),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
           runSpacing: 6,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            PrismChip(label: tr(context, 'All', 'Todas'), selected: _filter == null, onTap: () => setState(() => _filter = null)),
-            for (final c in settings.categories) PrismChip(label: relCategoryLabel(context, c, settings), selected: _filter == c, onTap: () => setState(() => _filter = _filter == c ? null : c)),
-            if (_filter == _complicatedFilter) PrismChip(label: tr(context, 'Complicated', 'Complicadas'), selected: true, onTap: () => setState(() => _filter = null)),
-            if (_filter == _exploringFilter) PrismChip(label: tr(context, 'Being explored', 'Explorándose'), selected: true, onTap: () => setState(() => _filter = null)),
+            PrismChip(
+              label: tr(context, 'All', 'Todas'),
+              selected: _filter == null,
+              onTap: () => setState(() => _filter = null),
+            ),
+            for (final c in settings.categories)
+              PrismChip(
+                label: relCategoryLabel(context, c, settings),
+                selected: _filter == c,
+                onTap: () => setState(() => _filter = _filter == c ? null : c),
+              ),
+            if (_filter == _complicatedFilter)
+              PrismChip(
+                label: tr(context, 'Complicated', 'Complicadas'),
+                selected: true,
+                onTap: () => setState(() => _filter = null),
+              ),
+            if (_filter == _exploringFilter)
+              PrismChip(
+                label: tr(context, 'Being explored', 'Explorándose'),
+                selected: true,
+                onTap: () => setState(() => _filter = null),
+              ),
           ],
         ),
         const SizedBox(height: 8),
@@ -329,7 +541,14 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
             Expanded(
               child: PrismSelect<String?>(
                 value: _status,
-                items: [PrismSelectItem(value: null, label: tr(context, 'Any status', 'Cualquier estado')), for (final s in relStatuses) PrismSelectItem(value: s, label: relStatusText(context, s))],
+                items: [
+                  PrismSelectItem(
+                    value: null,
+                    label: tr(context, 'Any status', 'Cualquier estado'),
+                  ),
+                  for (final s in relStatuses)
+                    PrismSelectItem(value: s, label: relStatusText(context, s)),
+                ],
                 onChanged: (v) => setState(() => _status = v),
               ),
             ),
@@ -338,15 +557,37 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
               child: PrismSelect<_Sort>(
                 value: _sort,
                 items: [
-                  PrismSelectItem(value: _Sort.recent, label: tr(context, 'Recently updated', 'Actualizadas recientemente')),
-                  PrismSelectItem(value: _Sort.alpha, label: tr(context, 'Alphabetical', 'Alfabético')),
-                  PrismSelectItem(value: _Sort.oldest, label: tr(context, 'Oldest first', 'Más antiguas')),
-                  PrismSelectItem(value: _Sort.interactions, label: tr(context, 'Most documented', 'Más documentadas')),
+                  PrismSelectItem(
+                    value: _Sort.recent,
+                    label: tr(
+                      context,
+                      'Recently updated',
+                      'Actualizadas recientemente',
+                    ),
+                  ),
+                  PrismSelectItem(
+                    value: _Sort.alpha,
+                    label: tr(context, 'Alphabetical', 'Alfabético'),
+                  ),
+                  PrismSelectItem(
+                    value: _Sort.oldest,
+                    label: tr(context, 'Oldest first', 'Más antiguas'),
+                  ),
+                  PrismSelectItem(
+                    value: _Sort.interactions,
+                    label: tr(context, 'Most documented', 'Más documentadas'),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _sort = v ?? _Sort.recent),
               ),
             ),
-            PrismTopBarAction(icon: _grid ? PhosphorIcons.rows() : PhosphorIcons.squaresFour(), tooltip: _grid ? tr(context, 'List layout', 'Vista de lista') : tr(context, 'Grid layout', 'Vista de cuadrícula'), onPressed: () => setState(() => _grid = !_grid)),
+            PrismTopBarAction(
+              icon: _grid ? PhosphorIcons.rows() : PhosphorIcons.squaresFour(),
+              tooltip: _grid
+                  ? tr(context, 'List layout', 'Vista de lista')
+                  : tr(context, 'Grid layout', 'Vista de cuadrícula'),
+              onPressed: () => setState(() => _grid = !_grid),
+            ),
           ],
         ),
         const SizedBox(height: 10),
@@ -354,18 +595,52 @@ class _RelationshipsHubScreenState extends ConsumerState<RelationshipsHubScreen>
           EmptyState(
             icon: Icon(PhosphorIcons.graph()),
             title: tr(context, 'No relationships yet', 'Aún no hay relaciones'),
-            subtitle: tr(context, 'Document how your alters connect — friendships, family, romance and more. Labels can be combined, and nothing is ever assumed for you.', 'Documenta cómo se conectan tus alters: amistades, familia, romance y más. Las etiquetas se pueden combinar y nunca se asume nada por ti.'),
-            actionLabel: tr(context, 'Add your first relationship', 'Añade tu primera relación'),
+            subtitle: tr(
+              context,
+              'Document how your alters connect — friendships, family, romance and more. Labels can be combined, and nothing is ever assumed for you.',
+              'Documenta cómo se conectan tus alters: amistades, familia, romance y más. Las etiquetas se pueden combinar y nunca se asume nada por ti.',
+            ),
+            actionLabel: tr(
+              context,
+              'Add your first relationship',
+              'Añade tu primera relación',
+            ),
             onAction: () => showRelEditor(context),
           )
         else if (list.isEmpty)
-          Padding(padding: const EdgeInsets.all(24), child: Text(tr(context, 'Nothing matches these filters.', 'Nada coincide con estos filtros.'), textAlign: TextAlign.center))
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              tr(
+                context,
+                'Nothing matches these filters.',
+                'Nada coincide con estos filtros.',
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
         else
           LayoutBuilder(
             builder: (context, box) {
-              final cols = _grid ? (box.maxWidth >= 900 ? 3 : (box.maxWidth >= 520 ? 2 : 1)) : 1;
+              final cols = _grid
+                  ? (box.maxWidth >= 900 ? 3 : (box.maxWidth >= 520 ? 2 : 1))
+                  : 1;
               final w = (box.maxWidth - (cols - 1) * 8) / cols;
-              return Wrap(spacing: 8, runSpacing: 8, children: [for (final r in list) SizedBox(width: w, child: RelCard(rel: r, interactions: counts[r.id] ?? 0, onTap: () => _openRel(r)))]);
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final r in list)
+                    SizedBox(
+                      width: w,
+                      child: RelCard(
+                        rel: r,
+                        interactions: counts[r.id] ?? 0,
+                        onTap: () => _openRel(r),
+                      ),
+                    ),
+                ],
+              );
             },
           ),
       ],
@@ -381,10 +656,18 @@ class _UndoBar extends ConsumerWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
-      decoration: BoxDecoration(color: theme.colorScheme.secondaryContainer, borderRadius: prismCorners(context, 12)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: prismCorners(context, 12),
+      ),
       child: Row(
         children: [
-          Expanded(child: Text(tr(context, 'Relationship deleted.', 'Relación eliminada.'), style: TextStyle(color: theme.colorScheme.onSecondaryContainer))),
+          Expanded(
+            child: Text(
+              tr(context, 'Relationship deleted.', 'Relación eliminada.'),
+              style: TextStyle(color: theme.colorScheme.onSecondaryContainer),
+            ),
+          ),
           PrismButton(
             label: tr(context, 'Undo', 'Deshacer'),
             density: PrismControlDensity.compact,
@@ -393,7 +676,11 @@ class _UndoBar extends ConsumerWidget {
               ref.read(relUndoProvider.notifier).set(null);
             },
           ),
-          PrismTopBarAction(icon: AppIcons.close, tooltip: tr(context, 'Dismiss', 'Descartar'), onPressed: () => ref.read(relUndoProvider.notifier).set(null)),
+          PrismTopBarAction(
+            icon: AppIcons.close,
+            tooltip: tr(context, 'Dismiss', 'Descartar'),
+            onPressed: () => ref.read(relUndoProvider.notifier).set(null),
+          ),
         ],
       ),
     );
@@ -414,13 +701,66 @@ class _Legend extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CustomPaint(size: const Size(22, 8), painter: _LegendLine(relColor(settings, s), relDash(s, 'confirmed'))),
+              CustomPaint(
+                size: const Size(22, 8),
+                painter: _LegendLine(
+                  relColor(settings, s),
+                  relDash(s, 'confirmed'),
+                ),
+              ),
               const SizedBox(width: 4),
-              ConstrainedBox(constraints: const BoxConstraints(maxWidth: 220), child: Text(relStyleText(context, s), style: theme.textTheme.labelSmall)),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                child: Text(
+                  relStyleText(context, s),
+                  style: theme.textTheme.labelSmall,
+                ),
+              ),
             ],
           ),
-        Row(mainAxisSize: MainAxisSize.min, children: [CustomPaint(size: const Size(22, 8), painter: _LegendLine(theme.colorScheme.onSurfaceVariant, const [3, 4])), const SizedBox(width: 4), ConstrainedBox(constraints: const BoxConstraints(maxWidth: 220), child: Text(tr(context, 'Suspected / uncertain', 'Sospechada / incierta'), style: theme.textTheme.labelSmall))]),
-        Row(mainAxisSize: MainAxisSize.min, children: [Text('→', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(width: 4), ConstrainedBox(constraints: const BoxConstraints(maxWidth: 220), child: Text(tr(context, 'Arrow shows direction (parent → child)', 'La flecha indica dirección (madre/padre → hijo)'), style: theme.textTheme.labelSmall))]),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomPaint(
+              size: const Size(22, 8),
+              painter: _LegendLine(theme.colorScheme.onSurfaceVariant, const [
+                3,
+                4,
+              ]),
+            ),
+            const SizedBox(width: 4),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: Text(
+                tr(context, 'Suspected / uncertain', 'Sospechada / incierta'),
+                style: theme.textTheme.labelSmall,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '→',
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(width: 4),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: Text(
+                tr(
+                  context,
+                  'Arrow shows direction (parent → child)',
+                  'La flecha indica dirección (madre/padre → hijo)',
+                ),
+                style: theme.textTheme.labelSmall,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -445,7 +785,12 @@ class _LegendLine extends CustomPainter {
     var i = 0;
     while (x < size.width) {
       final seg = dash![i % dash!.length];
-      if (i.isEven) canvas.drawLine(Offset(x, y), Offset((x + seg).clamp(0, size.width), y), p);
+      if (i.isEven)
+        canvas.drawLine(
+          Offset(x, y),
+          Offset((x + seg).clamp(0, size.width), y),
+          p,
+        );
       x += seg;
       i++;
     }
@@ -457,7 +802,13 @@ class _LegendLine extends CustomPainter {
 
 /// A relationship in the directory or on an alter's profile.
 class RelCard extends ConsumerWidget {
-  const RelCard({super.key, required this.rel, this.interactions = 0, this.onTap, this.viewer});
+  const RelCard({
+    super.key,
+    required this.rel,
+    this.interactions = 0,
+    this.onTap,
+    this.viewer,
+  });
   final Rel rel;
   final int interactions;
   final VoidCallback? onTap;
@@ -474,10 +825,12 @@ class RelCard extends ConsumerWidget {
     final a = alters[rel.a], b = alters[rel.b];
     final labels = viewer == null ? rel.labels : rel.labelsFor(viewer!);
     final cats = relCategoriesOf(rel, settings);
-    String n(Member? m, String? fb) => m?.effectiveName(preferDisplayName: prefer) ?? fb ?? '—';
+    String n(Member? m, String? fb) =>
+        m?.effectiveName(preferDisplayName: prefer) ?? fb ?? '—';
     return PrismSurface(
       onTap: onTap,
-      semanticLabel: '${n(a, null)} and ${n(b, rel.otherName)}: ${labels.map((l) => labelText(context, l, settings)).join(', ')}',
+      semanticLabel:
+          '${n(a, null)} and ${n(b, rel.otherName)}: ${labels.map((l) => labelText(context, l, settings)).join(', ')}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -488,8 +841,17 @@ class RelCard extends ConsumerWidget {
                 height: 36,
                 child: Stack(
                   children: [
-                    if (a != null) Positioned(left: 0, child: relAvatar(ref, a, 34)),
-                    Positioned(left: 20, child: b != null ? relAvatar(ref, b, 34) : PrismCircleAvatar(radius: 17, child: Icon(PhosphorIcons.user(), size: 16))),
+                    if (a != null)
+                      Positioned(left: 0, child: relAvatar(ref, a, 34)),
+                    Positioned(
+                      left: 20,
+                      child: b != null
+                          ? relAvatar(ref, b, 34)
+                          : PrismCircleAvatar(
+                              radius: 17,
+                              child: Icon(PhosphorIcons.user(), size: 16),
+                            ),
+                    ),
                   ],
                 ),
               ),
@@ -498,12 +860,37 @@ class RelCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(viewer != null ? n(viewer == rel.a ? b : a, rel.otherName) : (rel.title.isNotEmpty ? rel.title : '${n(a, null)} & ${n(b, rel.otherName)}'), maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                    Text(labels.map((l) => labelText(context, l, settings)).join(' · '), maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(
+                      viewer != null
+                          ? n(viewer == rel.a ? b : a, rel.otherName)
+                          : (rel.title.isNotEmpty
+                                ? rel.title
+                                : '${n(a, null)} & ${n(b, rel.otherName)}'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      labels
+                          .map((l) => labelText(context, l, settings))
+                          .join(' · '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              if (rel.private) Icon(PhosphorIcons.lockSimple(), size: 15, color: theme.colorScheme.onSurfaceVariant),
+              if (rel.private)
+                Icon(
+                  PhosphorIcons.lockSimple(),
+                  size: 15,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
             ],
           ),
           const SizedBox(height: 8),
@@ -511,16 +898,55 @@ class RelCard extends ConsumerWidget {
             spacing: 10,
             runSpacing: 4,
             children: [
-              Text(cats.map((c) => relCategoryLabel(context, c, settings)).join(', '), style: theme.textTheme.labelSmall),
-              Text(relStatusText(context, rel.status), style: theme.textTheme.labelSmall),
-              if (rel.confidence != 'confirmed') Text(relConfidenceText(context, rel.confidence), style: theme.textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic)),
-              Text(tr(context, 'Updated ${df.format(rel.updated)}', 'Actualizada ${df.format(rel.updated)}'), style: theme.textTheme.labelSmall),
-              if (interactions > 0) Text(tr(context, '$interactions entries', '$interactions entradas'), style: theme.textTheme.labelSmall),
+              Text(
+                cats
+                    .map((c) => relCategoryLabel(context, c, settings))
+                    .join(', '),
+                style: theme.textTheme.labelSmall,
+              ),
+              Text(
+                relStatusText(context, rel.status),
+                style: theme.textTheme.labelSmall,
+              ),
+              if (rel.confidence != 'confirmed')
+                Text(
+                  relConfidenceText(context, rel.confidence),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              Text(
+                tr(
+                  context,
+                  'Updated ${df.format(rel.updated)}',
+                  'Actualizada ${df.format(rel.updated)}',
+                ),
+                style: theme.textTheme.labelSmall,
+              ),
+              if (interactions > 0)
+                Text(
+                  tr(
+                    context,
+                    '$interactions entries',
+                    '$interactions entradas',
+                  ),
+                  style: theme.textTheme.labelSmall,
+                ),
             ],
           ),
           if (rel.description.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(rel.private ? tr(context, 'Private description', 'Descripción privada') : rel.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontStyle: rel.private ? FontStyle.italic : null)),
+            Text(
+              rel.private
+                  ? tr(context, 'Private description', 'Descripción privada')
+                  : rel.description,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontStyle: rel.private ? FontStyle.italic : null,
+              ),
+            ),
           ],
         ],
       ),
@@ -538,8 +964,19 @@ class _FamilyTree extends ConsumerWidget {
     final settings = ref.watch(relSettingsProvider);
     final alters = ref.watch(relAlterIndexProvider);
     final prefer = ref.watch(memberNamePreferDisplayProvider);
-    final fam = [for (final r in ref.watch(relsProvider)) if (r.internal && alters.containsKey(r.a) && alters.containsKey(r.b) && r.labels.any((l) => categoryOf(l, settings) == 'familial')) r];
-    final notes = ref.watch(trackerKindProvider(TrackerKind.relationshipFamilyNote)).value ?? const <TrackerRecord>[];
+    final fam = [
+      for (final r in ref.watch(relsProvider))
+        if (r.internal &&
+            alters.containsKey(r.a) &&
+            alters.containsKey(r.b) &&
+            r.labels.any((l) => categoryOf(l, settings) == 'familial'))
+          r,
+    ];
+    final notes =
+        ref
+            .watch(trackerKindProvider(TrackerKind.relationshipFamilyNote))
+            .value ??
+        const <TrackerRecord>[];
 
     // Family groups = connected parts of the family graph.
     final adj = <String, Set<String>>{};
@@ -565,15 +1002,58 @@ class _FamilyTree extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Family groups are built from familial labels. Alters can belong to more than one family.', 'Los grupos familiares se forman con etiquetas familiares. Un alter puede estar en varias familias.'), style: theme.textTheme.bodySmall)),
-            PrismButton(label: tr(context, 'Add family connection', 'Añadir conexión familiar'), icon: AppIcons.add, tone: PrismButtonTone.filled, density: PrismControlDensity.compact, onPressed: () => showRelEditor(context, category: 'familial')),
+            Expanded(
+              child: Text(
+                tr(
+                  context,
+                  'Family groups are built from familial labels. Alters can belong to more than one family.',
+                  'Los grupos familiares se forman con etiquetas familiares. Un alter puede estar en varias familias.',
+                ),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            PrismButton(
+              label: tr(
+                context,
+                'Add family connection',
+                'Añadir conexión familiar',
+              ),
+              icon: AppIcons.add,
+              tone: PrismButtonTone.filled,
+              density: PrismControlDensity.compact,
+              onPressed: () => showRelEditor(context, category: 'familial'),
+            ),
           ],
         ),
         const SizedBox(height: 10),
         if (groups.isEmpty)
-          Padding(padding: const EdgeInsets.all(24), child: Text(tr(context, 'No family connections yet. Add parents, siblings, cousins, guardians or your own family roles.', 'Aún no hay conexiones familiares. Añade madres/padres, hermanos, primos, tutores o tus propios roles.'), textAlign: TextAlign.center)),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              tr(
+                context,
+                'No family connections yet. Add parents, siblings, cousins, guardians or your own family roles.',
+                'Aún no hay conexiones familiares. Añade madres/padres, hermanos, primos, tutores o tus propios roles.',
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         for (final (gi, g) in groups.indexed) ...[
-          _FamilyGroup(index: gi, members: g, rels: [for (final r in fam) if (g.contains(r.a)) r], notes: [for (final n in notes) if (n.strings('members').any(g.contains)) n], alters: alters, settings: settings, prefer: prefer),
+          _FamilyGroup(
+            index: gi,
+            members: g,
+            rels: [
+              for (final r in fam)
+                if (g.contains(r.a)) r,
+            ],
+            notes: [
+              for (final n in notes)
+                if (n.strings('members').any(g.contains)) n,
+            ],
+            alters: alters,
+            settings: settings,
+            prefer: prefer,
+          ),
           const SizedBox(height: 10),
         ],
       ],
@@ -582,7 +1062,15 @@ class _FamilyTree extends ConsumerWidget {
 }
 
 class _FamilyGroup extends ConsumerWidget {
-  const _FamilyGroup({required this.index, required this.members, required this.rels, required this.notes, required this.alters, required this.settings, required this.prefer});
+  const _FamilyGroup({
+    required this.index,
+    required this.members,
+    required this.rels,
+    required this.notes,
+    required this.alters,
+    required this.settings,
+    required this.prefer,
+  });
   final int index;
   final List<String> members;
   final List<Rel> rels;
@@ -594,12 +1082,26 @@ class _FamilyGroup extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    String nm(String? id) => alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
+    String nm(String? id) =>
+        alters[id]?.effectiveName(preferDisplayName: prefer) ?? '—';
     // Generations from parent-like labels.
     final edges = <(String, String, int)>[];
     for (final r in rels) {
-      final l = r.labels.firstWhere((x) => categoryOf(x, settings) == 'familial');
-      final gen = const {'parent': 1, 'guardian': 1, 'grandparent': 2, 'aunt_uncle': 1, 'child': -1, 'ward': -1, 'grandchild': -2, 'niece_nephew': -1}[l] ?? 0;
+      final l = r.labels.firstWhere(
+        (x) => categoryOf(x, settings) == 'familial',
+      );
+      final gen =
+          const {
+            'parent': 1,
+            'guardian': 1,
+            'grandparent': 2,
+            'aunt_uncle': 1,
+            'child': -1,
+            'ward': -1,
+            'grandchild': -2,
+            'niece_nephew': -1,
+          }[l] ??
+          0;
       edges.add(gen >= 0 ? (r.a!, r.b!, gen) : (r.b!, r.a!, -gen));
     }
     final layout = familyLayout(members, edges);
@@ -609,35 +1111,69 @@ class _FamilyGroup extends ConsumerWidget {
     }
     final ys = rows.keys.toList()..sort();
     for (final y in ys) {
-      rows[y]!.sort((a, b) => layout.positions[a]!.dx.compareTo(layout.positions[b]!.dx));
+      rows[y]!.sort(
+        (a, b) => layout.positions[a]!.dx.compareTo(layout.positions[b]!.dx),
+      );
     }
-    final title = members.length <= 3 ? members.map(nm).join(', ') : '${members.take(2).map(nm).join(', ')} +${members.length - 2}';
+    final title = members.length <= 3
+        ? members.map(nm).join(', ')
+        : '${members.take(2).map(nm).join(', ')} +${members.length - 2}';
     return PrismExpandableSection(
       initiallyExpanded: index == 0,
-      leading: Icon(PhosphorIcons.treeStructure(), color: theme.colorScheme.primary),
-      title: Text(tr(context, 'Family: $title', 'Familia: $title'), style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-      subtitle: Text(tr(context, '${members.length} alters · ${rels.length} connections', '${members.length} alters · ${rels.length} conexiones')),
+      leading: Icon(
+        PhosphorIcons.treeStructure(),
+        color: theme.colorScheme.primary,
+      ),
+      title: Text(
+        tr(context, 'Family: $title', 'Familia: $title'),
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      subtitle: Text(
+        tr(
+          context,
+          '${members.length} alters · ${rels.length} connections',
+          '${members.length} alters · ${rels.length} conexiones',
+        ),
+      ),
       children: [
         for (final (i, y) in ys.indexed)
           Column(
             children: [
-              if (i > 0) Icon(PhosphorIcons.caretDown(), size: 14, color: theme.colorScheme.onSurfaceVariant),
+              if (i > 0)
+                Icon(
+                  PhosphorIcons.caretDown(),
+                  size: 14,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     for (final m in rows[y]!)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 4,
+                        ),
                         child: GestureDetector(
                           onTap: () => context.push(AppRoutePaths.member(m)),
                           child: SizedBox(
                             width: 76,
                             child: Column(
                               children: [
-                                if (alters[m] != null) relAvatar(ref, alters[m]!, 42),
+                                if (alters[m] != null)
+                                  relAvatar(ref, alters[m]!, 42),
                                 const SizedBox(height: 4),
-                                Text(nm(m), maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                Text(
+                                  nm(m),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -653,12 +1189,28 @@ class _FamilyGroup extends ConsumerWidget {
           PrismListRow(
             dense: true,
             title: Text('${nm(r.a)} → ${nm(r.b)}'),
-            subtitle: Text(r.labels.where((l) => categoryOf(l, settings) == 'familial').map((l) => '${nm(r.a)} ${tr(context, 'is', 'es')} ${labelText(context, l, settings).toLowerCase()}').join(', ')),
+            subtitle: Text(
+              r.labels
+                  .where((l) => categoryOf(l, settings) == 'familial')
+                  .map(
+                    (l) =>
+                        '${nm(r.a)} ${tr(context, 'is', 'es')} ${labelText(context, l, settings).toLowerCase()}',
+                  )
+                  .join(', '),
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                PrismTopBarAction(icon: AppIcons.editOutlined, tooltip: tr(context, 'Edit connection', 'Editar conexión'), onPressed: () => showRelEditor(context, editing: r)),
-                PrismTopBarAction(icon: AppIcons.deleteOutline, tooltip: tr(context, 'Remove connection', 'Quitar conexión'), onPressed: () => confirmDeleteRel(context, ref, r)),
+                PrismTopBarAction(
+                  icon: AppIcons.editOutlined,
+                  tooltip: tr(context, 'Edit connection', 'Editar conexión'),
+                  onPressed: () => showRelEditor(context, editing: r),
+                ),
+                PrismTopBarAction(
+                  icon: AppIcons.deleteOutline,
+                  tooltip: tr(context, 'Remove connection', 'Quitar conexión'),
+                  onPressed: () => confirmDeleteRel(context, ref, r),
+                ),
               ],
             ),
             onTap: () => context.push(relRoute(r.id)),
@@ -666,15 +1218,31 @@ class _FamilyGroup extends ConsumerWidget {
         const Divider(),
         Row(
           children: [
-            Expanded(child: Text(tr(context, 'Family notes', 'Notas familiares'), style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700))),
-            PrismButton(label: tr(context, 'Add note', 'Añadir nota'), icon: AppIcons.add, density: PrismControlDensity.compact, onPressed: () => _editFamilyNote(context, ref, members, null)),
+            Expanded(
+              child: Text(
+                tr(context, 'Family notes', 'Notas familiares'),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            PrismButton(
+              label: tr(context, 'Add note', 'Añadir nota'),
+              icon: AppIcons.add,
+              density: PrismControlDensity.compact,
+              onPressed: () => _editFamilyNote(context, ref, members, null),
+            ),
           ],
         ),
         for (final n in notes)
           PrismListRow(
             dense: true,
-            title: Text(n.title.isEmpty ? tr(context, 'Note', 'Nota') : n.title),
-            subtitle: (n.body ?? '').isEmpty ? null : Text(n.body!, maxLines: 2, overflow: TextOverflow.ellipsis),
+            title: Text(
+              n.title.isEmpty ? tr(context, 'Note', 'Nota') : n.title,
+            ),
+            subtitle: (n.body ?? '').isEmpty
+                ? null
+                : Text(n.body!, maxLines: 2, overflow: TextOverflow.ellipsis),
             showChevron: true,
             onTap: () => _editFamilyNote(context, ref, members, n),
           ),
@@ -683,7 +1251,12 @@ class _FamilyGroup extends ConsumerWidget {
   }
 }
 
-Future<void> _editFamilyNote(BuildContext context, WidgetRef ref, List<String> members, TrackerRecord? n) async {
+Future<void> _editFamilyNote(
+  BuildContext context,
+  WidgetRef ref,
+  List<String> members,
+  TrackerRecord? n,
+) async {
   final title = TextEditingController(text: n?.title);
   final body = TextEditingController(text: n?.body);
   await PrismSheet.show(
@@ -695,9 +1268,17 @@ Future<void> _editFamilyNote(BuildContext context, WidgetRef ref, List<String> m
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PrismTextField(controller: title, labelText: tr(ctx, 'Title', 'Título')),
+          PrismTextField(
+            controller: title,
+            labelText: tr(ctx, 'Title', 'Título'),
+          ),
           const SizedBox(height: 10),
-          PrismTextField(controller: body, labelText: tr(ctx, 'Note', 'Nota'), minLines: 3, maxLines: 10),
+          PrismTextField(
+            controller: body,
+            labelText: tr(ctx, 'Note', 'Nota'),
+            minLines: 3,
+            maxLines: 10,
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -706,7 +1287,9 @@ Future<void> _editFamilyNote(BuildContext context, WidgetRef ref, List<String> m
                   label: tr(ctx, 'Delete', 'Eliminar'),
                   tone: PrismButtonTone.destructive,
                   onPressed: () async {
-                    await ref.read(trackerNotifierProvider.notifier).delete(n.id);
+                    await ref
+                        .read(trackerNotifierProvider.notifier)
+                        .delete(n.id);
                     if (ctx.mounted) Navigator.of(ctx).pop();
                   },
                 ),
@@ -715,12 +1298,26 @@ Future<void> _editFamilyNote(BuildContext context, WidgetRef ref, List<String> m
                 label: ctx.l10n.save,
                 tone: PrismButtonTone.filled,
                 onPressed: () async {
-                  if (title.text.trim().isEmpty && body.text.trim().isEmpty) return;
+                  if (title.text.trim().isEmpty && body.text.trim().isEmpty)
+                    return;
                   final t = ref.read(trackerNotifierProvider.notifier);
                   if (n == null) {
-                    await t.create(kind: TrackerKind.relationshipFamilyNote, title: title.text.trim(), body: body.text.trim(), occurredAt: DateTime.now(), fields: {'members': members});
+                    await t.create(
+                      kind: TrackerKind.relationshipFamilyNote,
+                      title: title.text.trim(),
+                      body: body.text.trim(),
+                      occurredAt: DateTime.now(),
+                      fields: {'members': members},
+                    );
                   } else {
-                    await t.save(n.copyWith(title: title.text.trim(), body: body.text.trim()).withFields({'members': members}));
+                    await t.save(
+                      n
+                          .copyWith(
+                            title: title.text.trim(),
+                            body: body.text.trim(),
+                          )
+                          .withFields({'members': members}),
+                    );
                   }
                   if (ctx.mounted) Navigator.of(ctx).pop();
                 },
@@ -746,9 +1343,19 @@ class _Insights extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(tr(context, 'Insights are turned off.', 'Las perspectivas están desactivadas.')),
+            Text(
+              tr(
+                context,
+                'Insights are turned off.',
+                'Las perspectivas están desactivadas.',
+              ),
+            ),
             const SizedBox(height: 8),
-            PrismButton(label: tr(context, 'Turn on', 'Activar'), onPressed: () => ref.read(relActionsProvider).saveSettings({'insights': true})),
+            PrismButton(
+              label: tr(context, 'Turn on', 'Activar'),
+              onPressed: () =>
+                  ref.read(relActionsProvider).saveSettings({'insights': true}),
+            ),
           ],
         ),
       );
@@ -758,10 +1365,21 @@ class _Insights extends ConsumerWidget {
     final rels = ref.watch(relsProvider);
     final insights = computeInsights(
       rels: rels,
-      names: {for (final m in alters.values) m.id: m.effectiveName(preferDisplayName: prefer)},
-      events: ref.watch(trackerKindProvider(TrackerKind.relationshipEvent)).value ?? const [],
-      checkins: ref.watch(trackerKindProvider(TrackerKind.relationshipCheckin)).value ?? const [],
-      notes: ref.watch(trackerKindProvider(TrackerKind.relationshipNote)).value ?? const [],
+      names: {
+        for (final m in alters.values)
+          m.id: m.effectiveName(preferDisplayName: prefer),
+      },
+      events:
+          ref.watch(trackerKindProvider(TrackerKind.relationshipEvent)).value ??
+          const [],
+      checkins:
+          ref
+              .watch(trackerKindProvider(TrackerKind.relationshipCheckin))
+              .value ??
+          const [],
+      notes:
+          ref.watch(trackerKindProvider(TrackerKind.relationshipNote)).value ??
+          const [],
       settings: settings,
       now: DateTime.now(),
     );
@@ -778,18 +1396,44 @@ class _Insights extends ConsumerWidget {
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
-        if (insights.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(tr(context, 'Add relationships, timeline events or check-ins to see patterns here.', 'Añade relaciones, eventos o registros para ver patrones aquí.'), textAlign: TextAlign.center)),
+        if (insights.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              tr(
+                context,
+                'Add relationships, timeline events or check-ins to see patterns here.',
+                'Añade relaciones, eventos o registros para ver patrones aquí.',
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         for (final i in insights)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: PrismExpandableSection(
-              leading: Icon(switch (i.kind) { 'improving' => PhosphorIcons.trendUp(), 'declining' => PhosphorIcons.trendDown(), 'stale' => PhosphorIcons.clock(), 'conflicts' => PhosphorIcons.lightning(), _ => PhosphorIcons.lightbulb() }, color: theme.colorScheme.primary),
-              title: Text(tr(context, i.title.$1, i.title.$2), style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+              leading: Icon(switch (i.kind) {
+                'improving' => PhosphorIcons.trendUp(),
+                'declining' => PhosphorIcons.trendDown(),
+                'stale' => PhosphorIcons.clock(),
+                'conflicts' => PhosphorIcons.lightning(),
+                _ => PhosphorIcons.lightbulb(),
+              }, color: theme.colorScheme.primary),
+              title: Text(
+                tr(context, i.title.$1, i.title.$2),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               subtitle: Text(tr(context, i.body.$1, i.body.$2)),
               children: [
-                Text(tr(context, 'Based on:', 'Basado en:'), style: theme.textTheme.labelMedium),
+                Text(
+                  tr(context, 'Based on:', 'Basado en:'),
+                  style: theme.textTheme.labelMedium,
+                ),
                 for (final id in i.sources.take(8))
-                  if (byId[id] case final r?) RelCard(rel: r, onTap: () => context.push(relRoute(r.id))),
+                  if (byId[id] case final r?)
+                    RelCard(rel: r, onTap: () => context.push(relRoute(r.id))),
               ],
             ),
           ),

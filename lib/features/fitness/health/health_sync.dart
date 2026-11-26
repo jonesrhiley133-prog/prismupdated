@@ -30,49 +30,120 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 // its own progress cursor; results report exactly what came back per type.
 
 /// Categories the user can choose to import.
-enum HealthCategory { workouts, steps, distance, calories, heartRate, activeMinutes, sleep, cycle }
+enum HealthCategory {
+  workouts,
+  steps,
+  distance,
+  calories,
+  heartRate,
+  activeMinutes,
+  sleep,
+  cycle,
+}
 
 String healthCategoryText(BuildContext c, HealthCategory k) => switch (k) {
-  HealthCategory.workouts => tr(c, 'Workouts & exercise sessions', 'Entrenamientos y sesiones'),
+  HealthCategory.workouts => tr(
+    c,
+    'Workouts & exercise sessions',
+    'Entrenamientos y sesiones',
+  ),
   HealthCategory.steps => tr(c, 'Steps', 'Pasos'),
   HealthCategory.distance => tr(c, 'Distance', 'Distancia'),
   HealthCategory.calories => tr(c, 'Calories burned', 'Calorías quemadas'),
   HealthCategory.heartRate => tr(c, 'Heart rate', 'Frecuencia cardiaca'),
   HealthCategory.activeMinutes => tr(c, 'Active minutes', 'Minutos activos'),
-  HealthCategory.sleep => tr(c, 'Sleep (separate opt-in)', 'Sueño (opcional aparte)'),
-  HealthCategory.cycle => tr(c, 'Periods (separate opt-in)', 'Periodos (opcional aparte)'),
+  HealthCategory.sleep => tr(
+    c,
+    'Sleep (separate opt-in)',
+    'Sueño (opcional aparte)',
+  ),
+  HealthCategory.cycle => tr(
+    c,
+    'Periods (separate opt-in)',
+    'Periodos (opcional aparte)',
+  ),
 };
 
 String healthCategoryWhy(BuildContext c, HealthCategory k) => switch (k) {
-  HealthCategory.workouts => tr(c, 'Type, start and end time, duration, distance and calories of each workout.', 'Tipo, inicio y fin, duración, distancia y calorías de cada entrenamiento.'),
+  HealthCategory.workouts => tr(
+    c,
+    'Type, start and end time, duration, distance and calories of each workout.',
+    'Tipo, inicio y fin, duración, distancia y calorías de cada entrenamiento.',
+  ),
   HealthCategory.steps => tr(c, 'Your daily step count.', 'Tus pasos diarios.'),
-  HealthCategory.distance => tr(c, 'Daily distance walked or run.', 'Distancia diaria caminada o corrida.'),
-  HealthCategory.calories => tr(c, 'Daily calories burned, as recorded by the source app.', 'Calorías diarias quemadas, según la app de origen.'),
-  HealthCategory.heartRate => tr(c, 'Average heart rate per day.', 'Frecuencia media por día.'),
-  HealthCategory.activeMinutes => tr(c, 'Minutes of exercise per day.', 'Minutos de ejercicio al día.'),
-  HealthCategory.sleep => tr(c, 'Nightly sleep: totals in Fitness, and each night added to your Sleep log.', 'Sueño: totales en Ejercicio y cada noche en tu registro de sueño.'),
-  HealthCategory.cycle => tr(c, 'Period days and flow, added to Cycle. Days you logged yourself are never overwritten.', 'Días de periodo y flujo, en Ciclo. Lo que registraste tú nunca se sobrescribe.'),
+  HealthCategory.distance => tr(
+    c,
+    'Daily distance walked or run.',
+    'Distancia diaria caminada o corrida.',
+  ),
+  HealthCategory.calories => tr(
+    c,
+    'Daily calories burned, as recorded by the source app.',
+    'Calorías diarias quemadas, según la app de origen.',
+  ),
+  HealthCategory.heartRate => tr(
+    c,
+    'Average heart rate per day.',
+    'Frecuencia media por día.',
+  ),
+  HealthCategory.activeMinutes => tr(
+    c,
+    'Minutes of exercise per day.',
+    'Minutos de ejercicio al día.',
+  ),
+  HealthCategory.sleep => tr(
+    c,
+    'Nightly sleep: totals in Fitness, and each night added to your Sleep log.',
+    'Sueño: totales en Ejercicio y cada noche en tu registro de sueño.',
+  ),
+  HealthCategory.cycle => tr(
+    c,
+    'Period days and flow, added to Cycle. Days you logged yourself are never overwritten.',
+    'Días de periodo y flujo, en Ciclo. Lo que registraste tú nunca se sobrescribe.',
+  ),
 };
 
 /// Types read for a category.
-List<HealthDataType> healthTypesFor(HealthCategory c, {required bool ios}) => switch (c) {
-  HealthCategory.workouts => [HealthDataType.WORKOUT],
-  HealthCategory.steps => [HealthDataType.STEPS],
-  HealthCategory.distance => [ios ? HealthDataType.DISTANCE_WALKING_RUNNING : HealthDataType.DISTANCE_DELTA],
-  HealthCategory.calories => ios ? [HealthDataType.ACTIVE_ENERGY_BURNED] : [HealthDataType.TOTAL_CALORIES_BURNED, HealthDataType.ACTIVE_ENERGY_BURNED],
-  HealthCategory.heartRate => [HealthDataType.HEART_RATE],
-  HealthCategory.activeMinutes => ios ? [HealthDataType.EXERCISE_TIME] : [HealthDataType.WORKOUT],
-  HealthCategory.sleep => [ios ? HealthDataType.SLEEP_ASLEEP : HealthDataType.SLEEP_SESSION],
-  HealthCategory.cycle => [HealthDataType.MENSTRUATION_FLOW],
-};
+List<HealthDataType> healthTypesFor(HealthCategory c, {required bool ios}) =>
+    switch (c) {
+      HealthCategory.workouts => [HealthDataType.WORKOUT],
+      HealthCategory.steps => [HealthDataType.STEPS],
+      HealthCategory.distance => [
+        ios
+            ? HealthDataType.DISTANCE_WALKING_RUNNING
+            : HealthDataType.DISTANCE_DELTA,
+      ],
+      HealthCategory.calories =>
+        ios
+            ? [HealthDataType.ACTIVE_ENERGY_BURNED]
+            : [
+                HealthDataType.TOTAL_CALORIES_BURNED,
+                HealthDataType.ACTIVE_ENERGY_BURNED,
+              ],
+      HealthCategory.heartRate => [HealthDataType.HEART_RATE],
+      HealthCategory.activeMinutes =>
+        ios ? [HealthDataType.EXERCISE_TIME] : [HealthDataType.WORKOUT],
+      HealthCategory.sleep => [
+        ios ? HealthDataType.SLEEP_ASLEEP : HealthDataType.SLEEP_SESSION,
+      ],
+      HealthCategory.cycle => [HealthDataType.MENSTRUATION_FLOW],
+    };
 
 /// Types that must be granted before a category can be read. On Health
 /// Connect a workout read also reads distance, total calories and steps.
-List<HealthDataType> requiredTypesFor(HealthCategory c, {required bool ios}) => switch (c) {
-  HealthCategory.workouts || HealthCategory.activeMinutes when !ios => [HealthDataType.WORKOUT, HealthDataType.DISTANCE_DELTA, HealthDataType.TOTAL_CALORIES_BURNED, HealthDataType.STEPS],
-  HealthCategory.calories when !ios => [HealthDataType.TOTAL_CALORIES_BURNED],
-  _ => healthTypesFor(c, ios: ios),
-};
+List<HealthDataType> requiredTypesFor(HealthCategory c, {required bool ios}) =>
+    switch (c) {
+      HealthCategory.workouts || HealthCategory.activeMinutes when !ios => [
+        HealthDataType.WORKOUT,
+        HealthDataType.DISTANCE_DELTA,
+        HealthDataType.TOTAL_CALORIES_BURNED,
+        HealthDataType.STEPS,
+      ],
+      HealthCategory.calories when !ios => [
+        HealthDataType.TOTAL_CALORIES_BURNED,
+      ],
+      _ => healthTypesFor(c, ios: ios),
+    };
 
 /// Prism activity for a platform workout type.
 String mapWorkoutActivity(String type) {
@@ -81,7 +152,10 @@ String mapWorkoutActivity(String type) {
   if (t.contains('run') || t.contains('jog')) return 'run';
   if (t.contains('bik') || t.contains('cycl')) return 'cycle';
   if (t.contains('swim')) return 'swim';
-  if (t.contains('strength') || t.contains('weight') || t.contains('calisthenics')) return 'strength';
+  if (t.contains('strength') ||
+      t.contains('weight') ||
+      t.contains('calisthenics'))
+    return 'strength';
   if (t.contains('yoga') || t.contains('pilates')) return 'yoga';
   if (t.contains('interval') || t.contains('hiit')) return 'hiit';
   if (t.contains('hik')) return 'hike';
@@ -89,8 +163,24 @@ String mapWorkoutActivity(String type) {
   if (t.contains('climb')) return 'climb';
   if (t.contains('row')) return 'row';
   if (t.contains('stretch') || t.contains('flexibility')) return 'stretch';
-  if (const ['ball', 'tennis', 'soccer', 'football', 'hockey', 'golf', 'rugby', 'cricket', 'badminton', 'volley', 'squash', 'boxing', 'martial', 'skat', 'ski', 'surf']
-      .any(t.contains)) {
+  if (const [
+    'ball',
+    'tennis',
+    'soccer',
+    'football',
+    'hockey',
+    'golf',
+    'rugby',
+    'cricket',
+    'badminton',
+    'volley',
+    'squash',
+    'boxing',
+    'martial',
+    'skat',
+    'ski',
+    'surf',
+  ].any(t.contains)) {
     return 'sports';
   }
   return 'other';
@@ -115,8 +205,13 @@ String sourceAppName(String raw) {
 /// Joins sleep segments (Apple Health stores a night as many pieces) into
 /// nights: pieces less than an hour apart belong together. Nights shorter
 /// than 30 minutes are dropped.
-List<(DateTime, DateTime)> mergeSleepSegments(List<(DateTime, DateTime)> segments) {
-  final sorted = [for (final x in segments) if (x.$2.isAfter(x.$1)) x]..sort((a, b) => a.$1.compareTo(b.$1));
+List<(DateTime, DateTime)> mergeSleepSegments(
+  List<(DateTime, DateTime)> segments,
+) {
+  final sorted = [
+    for (final x in segments)
+      if (x.$2.isAfter(x.$1)) x,
+  ]..sort((a, b) => a.$1.compareTo(b.$1));
   final out = <(DateTime, DateTime)>[];
   for (final (a, b) in sorted) {
     if (out.isNotEmpty && a.difference(out.last.$2).inMinutes < 60) {
@@ -126,12 +221,25 @@ List<(DateTime, DateTime)> mergeSleepSegments(List<(DateTime, DateTime)> segment
       out.add((a, b));
     }
   }
-  return [for (final x in out) if (x.$2.difference(x.$1).inMinutes >= 30) x];
+  return [
+    for (final x in out)
+      if (x.$2.difference(x.$1).inMinutes >= 30) x,
+  ];
 }
 
 /// A workout from a provider or file.
 class ImportedWorkout {
-  const ImportedWorkout({required this.sourceId, required this.source, required this.activity, required this.start, required this.end, this.distanceKm, this.calories, this.heartRate, this.rawType});
+  const ImportedWorkout({
+    required this.sourceId,
+    required this.source,
+    required this.activity,
+    required this.start,
+    required this.end,
+    this.distanceKm,
+    this.calories,
+    this.heartRate,
+    this.rawType,
+  });
   final String sourceId;
   final String source;
   final String activity;
@@ -149,18 +257,37 @@ class ImportedWorkout {
 /// workout of the same activity overlaps it almost exactly (the same
 /// session synced by two apps, or already logged by hand).
 @visibleForTesting
-(List<ImportedWorkout> fresh, int duplicates) dedupeWorkouts(List<TrackerRecord> existing, List<ImportedWorkout> incoming) {
+(List<ImportedWorkout> fresh, int duplicates) dedupeWorkouts(
+  List<TrackerRecord> existing,
+  List<ImportedWorkout> incoming,
+) {
   final ids = {for (final r in existing) ?r.str('sourceId')};
   final kept = <ImportedWorkout>[];
   var dups = 0;
-  bool overlaps(DateTime s1, int m1, DateTime s2, int m2) => s1.difference(s2).inMinutes.abs() <= 3 && (m1 - m2).abs() <= 3;
+  bool overlaps(DateTime s1, int m1, DateTime s2, int m2) =>
+      s1.difference(s2).inMinutes.abs() <= 3 && (m1 - m2).abs() <= 3;
   for (final w in incoming) {
     if (ids.contains(w.sourceId)) {
       dups++;
       continue;
     }
-    final clash = existing.any((r) => r.str(FitField.activity) == w.activity && r.occurredAt != null && overlaps(r.occurredAt!, r.integer(FitField.minutes) ?? 0, w.start, w.minutes)) ||
-        kept.any((k) => k.activity == w.activity && overlaps(k.start, k.minutes, w.start, w.minutes));
+    final clash =
+        existing.any(
+          (r) =>
+              r.str(FitField.activity) == w.activity &&
+              r.occurredAt != null &&
+              overlaps(
+                r.occurredAt!,
+                r.integer(FitField.minutes) ?? 0,
+                w.start,
+                w.minutes,
+              ),
+        ) ||
+        kept.any(
+          (k) =>
+              k.activity == w.activity &&
+              overlaps(k.start, k.minutes, w.start, w.minutes),
+        );
     if (clash) {
       dups++;
       continue;
@@ -192,7 +319,14 @@ String dayKey(DateTime t) {
 /// One value per metric for a day covered by several imports (live sync and
 /// files): the largest, matching [pickDailySource].
 Map<String, num?> mergeDailyRows(Iterable<TrackerRecord> rows) {
-  const fields = ['steps', 'distanceKm', 'calories', 'activeMinutes', 'heartRateAvg', 'sleepMinutes'];
+  const fields = [
+    'steps',
+    'distanceKm',
+    'calories',
+    'activeMinutes',
+    'heartRateAvg',
+    'sleepMinutes',
+  ];
   final out = <String, num?>{};
   for (final f in fields) {
     num? best;
@@ -209,7 +343,8 @@ Map<String, num?> mergeDailyRows(Iterable<TrackerRecord> rows) {
 abstract class HealthGateway {
   bool get supported;
   bool get ios;
-  Future<String> availability(); // available, notInstalled, updateRequired, unsupported
+  Future<String>
+  availability(); // available, notInstalled, updateRequired, unsupported
   Future<void> install();
   Future<bool> request(List<HealthDataType> types);
 
@@ -218,7 +353,11 @@ abstract class HealthGateway {
   Future<bool?> has(List<HealthDataType> types);
   Future<bool> requestHistory();
   Future<void> revoke();
-  Future<List<HealthDataPoint>> read(List<HealthDataType> types, DateTime from, DateTime to);
+  Future<List<HealthDataPoint>> read(
+    List<HealthDataType> types,
+    DateTime from,
+    DateTime to,
+  );
   Future<int?> steps(DateTime from, DateTime to);
 }
 
@@ -244,7 +383,8 @@ class PluginHealthGateway implements HealthGateway {
     final s = await _h.getHealthConnectSdkStatus();
     return switch (s) {
       HealthConnectSdkStatus.sdkAvailable => 'available',
-      HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired => 'updateRequired',
+      HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired =>
+        'updateRequired',
       _ => 'notInstalled',
     };
   }
@@ -258,16 +398,25 @@ class PluginHealthGateway implements HealthGateway {
   @override
   Future<bool> request(List<HealthDataType> types) async {
     await _cfg();
-    if (!ios && types.any((t) => t == HealthDataType.STEPS || t == HealthDataType.WORKOUT)) {
+    if (!ios &&
+        types.any(
+          (t) => t == HealthDataType.STEPS || t == HealthDataType.WORKOUT,
+        )) {
       await Permission.activityRecognition.request();
     }
-    return _h.requestAuthorization(types, permissions: [for (final _ in types) HealthDataAccess.READ]);
+    return _h.requestAuthorization(
+      types,
+      permissions: [for (final _ in types) HealthDataAccess.READ],
+    );
   }
 
   @override
   Future<bool?> has(List<HealthDataType> types) async {
     await _cfg();
-    return _h.hasPermissions(types, permissions: [for (final _ in types) HealthDataAccess.READ]);
+    return _h.hasPermissions(
+      types,
+      permissions: [for (final _ in types) HealthDataAccess.READ],
+    );
   }
 
   @override
@@ -290,9 +439,17 @@ class PluginHealthGateway implements HealthGateway {
   }
 
   @override
-  Future<List<HealthDataPoint>> read(List<HealthDataType> types, DateTime from, DateTime to) async {
+  Future<List<HealthDataPoint>> read(
+    List<HealthDataType> types,
+    DateTime from,
+    DateTime to,
+  ) async {
     await _cfg();
-    final pts = await _h.getHealthDataFromTypes(types: types, startTime: from, endTime: to);
+    final pts = await _h.getHealthDataFromTypes(
+      types: types,
+      startTime: from,
+      endTime: to,
+    );
     return _h.removeDuplicates(pts);
   }
 
@@ -303,11 +460,19 @@ class PluginHealthGateway implements HealthGateway {
   }
 }
 
-final healthGatewayProvider = Provider<HealthGateway>((ref) => PluginHealthGateway());
+final healthGatewayProvider = Provider<HealthGateway>(
+  (ref) => PluginHealthGateway(),
+);
 
 /// Per-category outcome of the last sync.
 class CategoryResult {
-  const CategoryResult({required this.status, this.created = 0, this.updated = 0, this.duplicates = 0, this.error});
+  const CategoryResult({
+    required this.status,
+    this.created = 0,
+    this.updated = 0,
+    this.duplicates = 0,
+    this.error,
+  });
 
   /// ok, empty, failed, denied
   final String status;
@@ -316,7 +481,13 @@ class CategoryResult {
   final int duplicates;
   final String? error;
 
-  Map<String, Object?> toJson() => {'status': status, 'created': created, 'updated': updated, 'duplicates': duplicates, 'error': error}..removeWhere((k, v) => v == null);
+  Map<String, Object?> toJson() => {
+    'status': status,
+    'created': created,
+    'updated': updated,
+    'duplicates': duplicates,
+    'error': error,
+  }..removeWhere((k, v) => v == null);
   static CategoryResult fromJson(Map j) => CategoryResult(
     status: (j['status'] as String?) ?? 'ok',
     created: (j['created'] as num?)?.toInt() ?? 0,
@@ -337,11 +508,24 @@ class HealthSettings {
   String? get defaultAlter => f['defaultAlter'] as String?;
   Set<HealthCategory> get categories {
     final raw = f['categories'];
-    if (raw is! List) return {HealthCategory.workouts, HealthCategory.steps, HealthCategory.distance, HealthCategory.calories, HealthCategory.activeMinutes};
-    return {for (final c in HealthCategory.values) if (raw.contains(c.name)) c};
+    if (raw is! List)
+      return {
+        HealthCategory.workouts,
+        HealthCategory.steps,
+        HealthCategory.distance,
+        HealthCategory.calories,
+        HealthCategory.activeMinutes,
+      };
+    return {
+      for (final c in HealthCategory.values)
+        if (raw.contains(c.name)) c,
+    };
   }
 
-  Set<HealthCategory> _set(String key) => {for (final c in HealthCategory.values) if ((f[key] as List?)?.contains(c.name) ?? false) c};
+  Set<HealthCategory> _set(String key) => {
+    for (final c in HealthCategory.values)
+      if ((f[key] as List?)?.contains(c.name) ?? false) c,
+  };
 
   /// Categories the platform confirmed as allowed / refused.
   Set<HealthCategory> get granted => _set('granted');
@@ -355,39 +539,62 @@ class HealthSettings {
   String? get lastError => f['lastError'] as String?;
   int get imported => (f['imported'] as num?)?.toInt() ?? 0;
   int get duplicates => (f['duplicates'] as num?)?.toInt() ?? 0;
-  List<String> get sourcesSeen => [for (final s in (f['sources'] as List?) ?? const []) sourceAppName('$s')];
+  List<String> get sourcesSeen => [
+    for (final s in (f['sources'] as List?) ?? const []) sourceAppName('$s'),
+  ];
 
   /// Where each category got to (only advanced after its data is saved).
-  DateTime? cursor(HealthCategory c) => DateTime.tryParse('${(f['cursors'] as Map?)?[c.name] ?? ''}');
+  DateTime? cursor(HealthCategory c) =>
+      DateTime.tryParse('${(f['cursors'] as Map?)?[c.name] ?? ''}');
 
   Map<HealthCategory, CategoryResult> get lastResults => {
     for (final c in HealthCategory.values)
-      if ((f['lastResult'] as Map?)?[c.name] is Map) c: CategoryResult.fromJson((f['lastResult'] as Map)[c.name] as Map),
+      if ((f['lastResult'] as Map?)?[c.name] is Map)
+        c: CategoryResult.fromJson((f['lastResult'] as Map)[c.name] as Map),
   };
 }
 
 final healthSettingsProvider = Provider<HealthSettings>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.fitnessSource)).value ?? const <TrackerRecord>[];
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.fitnessSource)).value ??
+      const <TrackerRecord>[];
   return HealthSettings(_settingsRow(rows));
 });
 
 TrackerRecord? _settingsRow(Iterable<TrackerRecord> rows) {
-  final list = [for (final r in rows) if (r.kind == TrackerKind.fitnessSource && r.title == 'health') r]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+  final list = [
+    for (final r in rows)
+      if (r.kind == TrackerKind.fitnessSource && r.title == 'health') r,
+  ]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   if (list.isNotEmpty) return list.first;
-  final any = [for (final r in rows) if (r.kind == TrackerKind.fitnessSource && r.str('fileSource') == null) r]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+  final any = [
+    for (final r in rows)
+      if (r.kind == TrackerKind.fitnessSource && r.str('fileSource') == null) r,
+  ]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   return any.firstOrNull;
 }
 
 /// Result of one sync.
 class HealthSyncResult {
-  const HealthSyncResult({this.workouts = 0, this.updated = 0, this.duplicates = 0, this.days = 0, this.error, this.byCategory = const {}});
+  const HealthSyncResult({
+    this.workouts = 0,
+    this.updated = 0,
+    this.duplicates = 0,
+    this.days = 0,
+    this.error,
+    this.byCategory = const {},
+  });
   final int workouts;
   final int updated;
   final int duplicates;
   final int days;
   final String? error;
   final Map<HealthCategory, CategoryResult> byCategory;
-  bool get partial => byCategory.values.any((r) => r.status == 'failed' || r.status == 'denied') && byCategory.values.any((r) => r.status == 'ok' || r.status == 'empty');
+  bool get partial =>
+      byCategory.values.any(
+        (r) => r.status == 'failed' || r.status == 'denied',
+      ) &&
+      byCategory.values.any((r) => r.status == 'ok' || r.status == 'empty');
 }
 
 /// Writes imported workouts and daily totals idempotently. Shared by live
@@ -397,14 +604,25 @@ class FitnessWriter {
   final Ref ref;
   TrackerNotifier get _t => ref.read(trackerNotifierProvider.notifier);
 
-  Future<List<TrackerRecord>> _all() => ref.read(trackerRecordRepositoryProvider).getAll();
+  Future<List<TrackerRecord>> _all() =>
+      ref.read(trackerRecordRepositoryProvider).getAll();
 
   /// Upserts workouts. A workout with a known source id is updated when the
   /// provider changed it (unless edited by hand in Prism); an almost
   /// identical session from another source is skipped as a duplicate.
-  Future<(int created, int updated, int duplicates)> upsertWorkouts(List<ImportedWorkout> incoming, {required String platform, String? memberId}) async {
-    final existing = [for (final r in await _all()) if (r.kind == TrackerKind.fitnessWorkout) r];
-    final byId = {for (final r in existing) if (r.str('sourceId') != null) r.str('sourceId')!: r};
+  Future<(int created, int updated, int duplicates)> upsertWorkouts(
+    List<ImportedWorkout> incoming, {
+    required String platform,
+    String? memberId,
+  }) async {
+    final existing = [
+      for (final r in await _all())
+        if (r.kind == TrackerKind.fitnessWorkout) r,
+    ];
+    final byId = {
+      for (final r in existing)
+        if (r.str('sourceId') != null) r.str('sourceId')!: r,
+    };
     var created = 0, updated = 0, dups = 0;
     final fresh = <ImportedWorkout>[];
     for (final w in incoming) {
@@ -413,21 +631,34 @@ class FitnessWriter {
         fresh.add(w);
         continue;
       }
-      final changed = prev.integer(FitField.minutes) != w.minutes ||
+      final changed =
+          prev.integer(FitField.minutes) != w.minutes ||
           prev.occurredAt?.toUtc() != w.start.toUtc() ||
-          (w.distanceKm != null && (prev.number(FitField.distanceKm) ?? -1) != double.parse(w.distanceKm!.toStringAsFixed(2))) ||
+          (w.distanceKm != null &&
+              (prev.number(FitField.distanceKm) ?? -1) !=
+                  double.parse(w.distanceKm!.toStringAsFixed(2))) ||
           (w.calories != null && prev.integer(FitField.calories) != w.calories);
       if (!changed || prev.flag('manualEdit')) {
         dups++;
         continue;
       }
-      await _t.save(prev.copyWith(occurredAt: w.start, endedAt: w.end).withFields(_workoutFields(w, platform)));
+      await _t.save(
+        prev
+            .copyWith(occurredAt: w.start, endedAt: w.end)
+            .withFields(_workoutFields(w, platform)),
+      );
       updated++;
     }
     final (keep, d) = dedupeWorkouts(existing, fresh);
     dups += d;
     for (final w in keep) {
-      await _t.create(kind: TrackerKind.fitnessWorkout, occurredAt: w.start, endedAt: w.end, memberId: memberId, fields: _workoutFields(w, platform));
+      await _t.create(
+        kind: TrackerKind.fitnessWorkout,
+        occurredAt: w.start,
+        endedAt: w.end,
+        memberId: memberId,
+        fields: _workoutFields(w, platform),
+      );
       created++;
     }
     return (created, updated, dups);
@@ -436,7 +667,9 @@ class FitnessWriter {
   Map<String, Object?> _workoutFields(ImportedWorkout w, String platform) => {
     FitField.activity: w.activity,
     FitField.minutes: w.minutes,
-    FitField.distanceKm: w.distanceKm == null ? null : double.parse(w.distanceKm!.toStringAsFixed(2)),
+    FitField.distanceKm: w.distanceKm == null
+        ? null
+        : double.parse(w.distanceKm!.toStringAsFixed(2)),
     FitField.calories: w.calories,
     'imported': true,
     'source': sourceAppName(w.source),
@@ -448,13 +681,19 @@ class FitnessWriter {
   /// Merges daily values (field → value) into one record per local day and
   /// platform. Only the given fields change, so a failed category never
   /// wipes another's numbers.
-  Future<int> upsertDaily(Map<String, Map<String, Object?>> byDay, {required String platform, String? memberId}) async {
+  Future<int> upsertDaily(
+    Map<String, Map<String, Object?>> byDay, {
+    required String platform,
+    String? memberId,
+  }) async {
     if (byDay.isEmpty) return 0;
     final existing = <String, TrackerRecord>{};
     for (final r in await _all()) {
       if (r.kind != TrackerKind.fitnessDaily) continue;
       if ((r.str('platform') ?? platform) != platform) continue;
-      final k = r.str('dayKey') ?? (r.occurredAt == null ? null : dayKey(r.occurredAt!));
+      final k =
+          r.str('dayKey') ??
+          (r.occurredAt == null ? null : dayKey(r.occurredAt!));
       if (k != null) existing.putIfAbsent(k, () => r);
     }
     var n = 0;
@@ -464,7 +703,12 @@ class FitnessWriter {
       final prev = existing[e.key];
       final parts = e.key.split('-').map(int.parse).toList();
       if (prev == null) {
-        await _t.create(kind: TrackerKind.fitnessDaily, occurredAt: DateTime(parts[0], parts[1], parts[2]), memberId: memberId, fields: {...values, 'dayKey': e.key, 'platform': platform});
+        await _t.create(
+          kind: TrackerKind.fitnessDaily,
+          occurredAt: DateTime(parts[0], parts[1], parts[2]),
+          memberId: memberId,
+          fields: {...values, 'dayKey': e.key, 'platform': platform},
+        );
       } else {
         await _t.save(prev.withFields({...values, 'dayKey': e.key}));
       }
@@ -488,18 +732,27 @@ class HealthSyncService {
 
   /// Settings read from storage (not from a stream that may not have
   /// delivered yet).
-  Future<HealthSettings> _settingsNow() async => HealthSettings(_settingsRow(await ref.read(trackerRecordRepositoryProvider).getAll()));
+  Future<HealthSettings> _settingsNow() async => HealthSettings(
+    _settingsRow(await ref.read(trackerRecordRepositoryProvider).getAll()),
+  );
 
   Future<void> saveSettings(Map<String, Object?> changes) async {
     final s = (await _settingsNow()).r;
     if (s == null) {
-      await _t.create(kind: TrackerKind.fitnessSource, title: 'health', fields: changes);
+      await _t.create(
+        kind: TrackerKind.fitnessSource,
+        title: 'health',
+        fields: changes,
+      );
     } else {
       await _t.save(s.withFields(changes));
     }
   }
 
-  List<HealthDataType> typesFor(Set<HealthCategory> cats) => {for (final c in cats) ...healthTypesFor(c, ios: _g.ios), for (final c in cats) ...requiredTypesFor(c, ios: _g.ios)}.toList();
+  List<HealthDataType> typesFor(Set<HealthCategory> cats) => {
+    for (final c in cats) ...healthTypesFor(c, ios: _g.ios),
+    for (final c in cats) ...requiredTypesFor(c, ios: _g.ios),
+  }.toList();
 
   /// Asks for read access to [cats], then checks each category: a partial
   /// grant still connects, syncing what was allowed.
@@ -514,7 +767,8 @@ class HealthSyncService {
         granted.add(c);
       }
     }
-    if ((historyDays ?? 30) > 30 && granted.isNotEmpty) await _g.requestHistory();
+    if ((historyDays ?? 30) > 30 && granted.isNotEmpty)
+      await _g.requestHistory();
     final connected = granted.isNotEmpty;
     await saveSettings({
       'connected': connected,
@@ -533,7 +787,11 @@ class HealthSyncService {
     try {
       await _g.revoke();
     } catch (_) {}
-    await saveSettings({'connected': false, 'granted': const <String>[], 'cursors': null});
+    await saveSettings({
+      'connected': false,
+      'granted': const <String>[],
+      'cursors': null,
+    });
   }
 
   /// Imports new data. Each category is read and saved on its own; its
@@ -541,13 +799,20 @@ class HealthSyncService {
   Future<HealthSyncResult> sync({DateTime? now, bool force = false}) async {
     if (_running) return const HealthSyncResult();
     final s = await _settingsNow();
-    if (!s.connected || !isFeatureOn(ref, 'healthIntegration') || !isFeatureOn(ref, 'fitness')) return const HealthSyncResult();
+    if (!s.connected ||
+        !isFeatureOn(ref, 'healthIntegration') ||
+        !isFeatureOn(ref, 'fitness'))
+      return const HealthSyncResult();
     _running = true;
     final end = now ?? DateTime.now();
     final ios = _g.ios;
     final results = <HealthCategory, CategoryResult>{};
-    final cursors = Map<String, Object?>.of((s.f['cursors'] as Map?)?.cast<String, Object?>() ?? const {});
-    final sources = {...((s.f['sources'] as List?) ?? const []).map((e) => '$e')};
+    final cursors = Map<String, Object?>.of(
+      (s.f['cursors'] as Map?)?.cast<String, Object?>() ?? const {},
+    );
+    final sources = {
+      ...((s.f['sources'] as List?) ?? const []).map((e) => '$e'),
+    };
     var created = 0, updated = 0, dups = 0, days = 0;
     try {
       await saveSettings({'lastAttempt': end.toIso8601String()});
@@ -567,11 +832,15 @@ class HealthSyncService {
 
       DateTime startFor(HealthCategory c) {
         final cur = s.cursor(c);
-        if (cur == null || force) return _day(end).subtract(Duration(days: s.historyDays));
+        if (cur == null || force)
+          return _day(end).subtract(Duration(days: s.historyDays));
         return _day(cur).subtract(const Duration(days: 1));
       }
 
-      Future<void> run(HealthCategory c, Future<CategoryResult> Function(DateTime from) body) async {
+      Future<void> run(
+        HealthCategory c,
+        Future<CategoryResult> Function(DateTime from) body,
+      ) async {
         if (!s.categories.contains(c)) return;
         if (denied.contains(c)) {
           results[c] = const CategoryResult(status: 'denied');
@@ -599,32 +868,51 @@ class HealthSyncService {
                   HealthDataUnit.MILE => v.totalDistance! * 1.609344,
                   _ => v.totalDistance! / 1000,
                 };
-          workouts.add(ImportedWorkout(
-            sourceId: '$_platform:${p.uuid}',
-            source: p.sourceName,
-            activity: mapWorkoutActivity(v.workoutActivityType.name),
-            rawType: v.workoutActivityType.name,
-            start: p.dateFrom.toLocal(),
-            end: p.dateTo.toLocal(),
-            distanceKm: dist == null || dist <= 0 ? null : dist,
-            calories: v.totalEnergyBurned == null || v.totalEnergyBurned! <= 0 ? null : v.totalEnergyBurned,
-          ));
+          workouts.add(
+            ImportedWorkout(
+              sourceId: '$_platform:${p.uuid}',
+              source: p.sourceName,
+              activity: mapWorkoutActivity(v.workoutActivityType.name),
+              rawType: v.workoutActivityType.name,
+              start: p.dateFrom.toLocal(),
+              end: p.dateTo.toLocal(),
+              distanceKm: dist == null || dist <= 0 ? null : dist,
+              calories: v.totalEnergyBurned == null || v.totalEnergyBurned! <= 0
+                  ? null
+                  : v.totalEnergyBurned,
+            ),
+          );
         }
       }
 
       await run(HealthCategory.workouts, (from) async {
         await readWorkouts(from);
         if (workouts.isEmpty) return const CategoryResult(status: 'empty');
-        final (cr, up, du) = await _w.upsertWorkouts(workouts, platform: _platform, memberId: s.defaultAlter);
+        final (cr, up, du) = await _w.upsertWorkouts(
+          workouts,
+          platform: _platform,
+          memberId: s.defaultAlter,
+        );
         created += cr;
         updated += up;
         dups += du;
-        return CategoryResult(status: 'ok', created: cr, updated: up, duplicates: du);
+        return CategoryResult(
+          status: 'ok',
+          created: cr,
+          updated: up,
+          duplicates: du,
+        );
       });
 
-      Future<CategoryResult> saveDaily(Map<String, Map<String, Object?>> byDay) async {
+      Future<CategoryResult> saveDaily(
+        Map<String, Map<String, Object?>> byDay,
+      ) async {
         if (byDay.isEmpty) return const CategoryResult(status: 'empty');
-        final n = await _w.upsertDaily(byDay, platform: _platform, memberId: s.defaultAlter);
+        final n = await _w.upsertDaily(
+          byDay,
+          platform: _platform,
+          memberId: s.defaultAlter,
+        );
         days += n;
         return CategoryResult(status: 'ok', updated: n);
       }
@@ -632,15 +920,29 @@ class HealthSyncService {
       await run(HealthCategory.steps, (from) async {
         // The platform's aggregate already resolves overlapping sources.
         final byDay = <String, Map<String, Object?>>{};
-        for (var d = _day(from); !d.isAfter(end); d = DateTime(d.year, d.month, d.day + 1)) {
+        for (
+          var d = _day(from);
+          !d.isAfter(end);
+          d = DateTime(d.year, d.month, d.day + 1)
+        ) {
           final next = DateTime(d.year, d.month, d.day + 1);
           final n = await _g.steps(d, next.isAfter(end) ? end : next);
-          if (n != null && n > 0) byDay[dayKey(d)] = {'steps': n, 'stepsSource': ios ? 'Apple Health' : 'Health Connect'};
+          if (n != null && n > 0)
+            byDay[dayKey(d)] = {
+              'steps': n,
+              'stepsSource': ios ? 'Apple Health' : 'Health Connect',
+            };
         }
         return saveDaily(byDay);
       });
 
-      Future<Map<String, Map<String, Object?>>> summed(List<HealthDataType> types, DateTime from, String field, double Function(NumericHealthValue v, HealthDataUnit unit) value, {int digits = 0}) async {
+      Future<Map<String, Map<String, Object?>>> summed(
+        List<HealthDataType> types,
+        DateTime from,
+        String field,
+        double Function(NumericHealthValue v, HealthDataUnit unit) value, {
+        int digits = 0,
+      }) async {
         final perDay = <String, Map<String, double>>{};
         for (final p in await _g.read(types, from, end)) {
           final v = p.value;
@@ -652,20 +954,54 @@ class HealthSyncService {
         }
         return {
           for (final e in perDay.entries)
-            if (pickDailySource(e.value) case (final total, final src) when total > 0)
-              e.key: {field: digits == 0 ? total.round() : double.parse(total.toStringAsFixed(digits)), '${field}Source': sourceAppName(src)},
+            if (pickDailySource(e.value) case (
+              final total,
+              final src,
+            ) when total > 0)
+              e.key: {
+                field: digits == 0
+                    ? total.round()
+                    : double.parse(total.toStringAsFixed(digits)),
+                '${field}Source': sourceAppName(src),
+              },
         };
       }
 
-      await run(HealthCategory.distance, (from) async => saveDaily(await summed(healthTypesFor(HealthCategory.distance, ios: ios), from, 'distanceKm', (v, u) => switch (u) {
-        HealthDataUnit.MILE => v.numericValue * 1.609344,
-        _ => v.numericValue / 1000,
-      }, digits: 2)));
+      await run(
+        HealthCategory.distance,
+        (from) async => saveDaily(
+          await summed(
+            healthTypesFor(HealthCategory.distance, ios: ios),
+            from,
+            'distanceKm',
+            (v, u) => switch (u) {
+              HealthDataUnit.MILE => v.numericValue * 1.609344,
+              _ => v.numericValue / 1000,
+            },
+            digits: 2,
+          ),
+        ),
+      );
 
       await run(HealthCategory.calories, (from) async {
         // Samsung Health writes total calories; others may write active.
-        var byDay = await summed(ios ? [HealthDataType.ACTIVE_ENERGY_BURNED] : [HealthDataType.TOTAL_CALORIES_BURNED], from, 'calories', (v, u) => u == HealthDataUnit.JOULE ? v.numericValue / 4184 : v.numericValue.toDouble());
-        if (byDay.isEmpty && !ios) byDay = await summed([HealthDataType.ACTIVE_ENERGY_BURNED], from, 'calories', (v, u) => v.numericValue.toDouble());
+        var byDay = await summed(
+          ios
+              ? [HealthDataType.ACTIVE_ENERGY_BURNED]
+              : [HealthDataType.TOTAL_CALORIES_BURNED],
+          from,
+          'calories',
+          (v, u) => u == HealthDataUnit.JOULE
+              ? v.numericValue / 4184
+              : v.numericValue.toDouble(),
+        );
+        if (byDay.isEmpty && !ios)
+          byDay = await summed(
+            [HealthDataType.ACTIVE_ENERGY_BURNED],
+            from,
+            'calories',
+            (v, u) => v.numericValue.toDouble(),
+          );
         return saveDaily(byDay);
       });
 
@@ -679,27 +1015,46 @@ class HealthSyncService {
           final cur = sums[k] ?? (0, 0);
           sums[k] = (cur.$1 + v.numericValue, cur.$2 + 1);
         }
-        return saveDaily({for (final e in sums.entries) e.key: {'heartRateAvg': (e.value.$1 / e.value.$2).round()}});
+        return saveDaily({
+          for (final e in sums.entries)
+            e.key: {'heartRateAvg': (e.value.$1 / e.value.$2).round()},
+        });
       });
 
       await run(HealthCategory.activeMinutes, (from) async {
-        if (ios) return saveDaily(await summed([HealthDataType.EXERCISE_TIME], from, 'activeMinutes', (v, u) => v.numericValue.toDouble()));
+        if (ios)
+          return saveDaily(
+            await summed(
+              [HealthDataType.EXERCISE_TIME],
+              from,
+              'activeMinutes',
+              (v, u) => v.numericValue.toDouble(),
+            ),
+          );
         await readWorkouts(from);
         final perDay = <String, int>{};
         for (final w in workouts) {
           final k = dayKey(w.start);
           perDay[k] = (perDay[k] ?? 0) + w.minutes;
         }
-        return saveDaily({for (final e in perDay.entries) e.key: {'activeMinutes': e.value}});
+        return saveDaily({
+          for (final e in perDay.entries) e.key: {'activeMinutes': e.value},
+        });
       });
 
       await run(HealthCategory.sleep, (from) async {
         final perDay = <String, Map<String, double>>{};
-        final sleepPoints = await _g.read(healthTypesFor(HealthCategory.sleep, ios: ios), from, end);
+        final sleepPoints = await _g.read(
+          healthTypesFor(HealthCategory.sleep, ios: ios),
+          from,
+          end,
+        );
         for (final p in sleepPoints) {
           final k = dayKey(p.dateTo);
           final m = perDay.putIfAbsent(k, () => {});
-          m[p.sourceName] = (m[p.sourceName] ?? 0) + p.dateTo.difference(p.dateFrom).inMinutes;
+          m[p.sourceName] =
+              (m[p.sourceName] ?? 0) +
+              p.dateTo.difference(p.dateFrom).inMinutes;
           sources.add(p.sourceName);
         }
         // Each night also goes into the Sleep log, unless a night that
@@ -707,12 +1062,27 @@ class HealthSyncService {
         var nights = 0;
         if (s.f['sleepToLog'] != false) {
           try {
-            final segments = [for (final p in sleepPoints) (p.dateFrom.toLocal(), p.dateTo.toLocal())];
-            final existing = await ref.read(frontingSessionRepositoryProvider).watchRecentSleepSessions(limit: 400).first;
-            final taken = [for (final x in existing) (x.startTime, x.endTime ?? x.startTime)];
+            final segments = [
+              for (final p in sleepPoints)
+                (p.dateFrom.toLocal(), p.dateTo.toLocal()),
+            ];
+            final existing = await ref
+                .read(frontingSessionRepositoryProvider)
+                .watchRecentSleepSessions(limit: 400)
+                .first;
+            final taken = [
+              for (final x in existing) (x.startTime, x.endTime ?? x.startTime),
+            ];
             for (final (a, b) in mergeSleepSegments(segments)) {
-              if (taken.any((t) => a.isBefore(t.$2) && b.isAfter(t.$1))) continue;
-              await ref.read(sleepNotifierProvider.notifier).logHistoricalSleep(startTime: a, endTime: b, notes: 'Imported from health data');
+              if (taken.any((t) => a.isBefore(t.$2) && b.isAfter(t.$1)))
+                continue;
+              await ref
+                  .read(sleepNotifierProvider.notifier)
+                  .logHistoricalSleep(
+                    startTime: a,
+                    endTime: b,
+                    notes: 'Imported from health data',
+                  );
               taken.add((a, b));
               nights++;
             }
@@ -720,14 +1090,26 @@ class HealthSyncService {
         }
         final daily = await saveDaily({
           for (final e in perDay.entries)
-            if (pickDailySource(e.value) case (final total, _)) e.key: {'sleepMinutes': total.round()},
+            if (pickDailySource(e.value) case (final total, _))
+              e.key: {'sleepMinutes': total.round()},
         });
-        return nights == 0 ? daily : CategoryResult(status: 'ok', created: daily.created + nights, updated: daily.updated, duplicates: daily.duplicates);
+        return nights == 0
+            ? daily
+            : CategoryResult(
+                status: 'ok',
+                created: daily.created + nights,
+                updated: daily.updated,
+                duplicates: daily.duplicates,
+              );
       });
 
       await run(HealthCategory.cycle, (from) async {
         final days = <String, ImportedCycleDay>{};
-        for (final p in await _g.read([HealthDataType.MENSTRUATION_FLOW], from, end)) {
+        for (final p in await _g.read(
+          [HealthDataType.MENSTRUATION_FLOW],
+          from,
+          end,
+        )) {
           final v = p.value;
           if (v is! MenstruationFlowHealthValue) continue;
           final flow = switch (v.flow) {
@@ -740,30 +1122,63 @@ class HealthSyncService {
           if (flow == 0) continue;
           sources.add(p.sourceName);
           final d = p.dateFrom.toLocal();
-          final day = ImportedCycleDay(DateTime(d.year, d.month, d.day), flow, source: sourceAppName(p.sourceName));
+          final day = ImportedCycleDay(
+            DateTime(d.year, d.month, d.day),
+            flow,
+            source: sourceAppName(p.sourceName),
+          );
           final prev = days[day.key];
           if (prev == null || prev.flow < flow) days[day.key] = day;
         }
         if (days.isEmpty) return const CategoryResult(status: 'empty');
-        final (cr, up, same) = await ref.read(cycleImportWriterProvider).apply(days.values.toList(), memberId: s.defaultAlter);
+        final (cr, up, same) = await ref
+            .read(cycleImportWriterProvider)
+            .apply(days.values.toList(), memberId: s.defaultAlter);
         created += cr;
-        return CategoryResult(status: 'ok', created: cr, updated: up, duplicates: same);
+        return CategoryResult(
+          status: 'ok',
+          created: cr,
+          updated: up,
+          duplicates: same,
+        );
       });
 
-      final anyOk = results.values.any((r) => r.status == 'ok' || r.status == 'empty');
-      final firstError = results.values.where((r) => r.status == 'failed').map((r) => r.error).firstOrNull;
+      final anyOk = results.values.any(
+        (r) => r.status == 'ok' || r.status == 'empty',
+      );
+      final firstError = results.values
+          .where((r) => r.status == 'failed')
+          .map((r) => r.error)
+          .firstOrNull;
       await saveSettings({
         if (anyOk) 'lastSync': end.toIso8601String(),
-        'lastError': anyOk ? null : (firstError ?? (results.values.every((r) => r.status == 'denied') ? 'denied' : null)),
+        'lastError': anyOk
+            ? null
+            : (firstError ??
+                  (results.values.every((r) => r.status == 'denied')
+                      ? 'denied'
+                      : null)),
         'imported': s.imported + created,
         'duplicates': s.duplicates + dups,
         'sources': sources.where((x) => x.trim().isNotEmpty).toList(),
         'cursors': cursors,
         'denied': [for (final c in denied) c.name],
-        'granted': [for (final c in s.categories) if (!denied.contains(c)) c.name],
-        'lastResult': {for (final e in results.entries) e.key.name: e.value.toJson()},
+        'granted': [
+          for (final c in s.categories)
+            if (!denied.contains(c)) c.name,
+        ],
+        'lastResult': {
+          for (final e in results.entries) e.key.name: e.value.toJson(),
+        },
       });
-      return HealthSyncResult(workouts: created, updated: updated, duplicates: dups, days: days, byCategory: results, error: anyOk ? null : firstError);
+      return HealthSyncResult(
+        workouts: created,
+        updated: updated,
+        duplicates: dups,
+        days: days,
+        byCategory: results,
+        error: anyOk ? null : firstError,
+      );
     } catch (e) {
       await saveSettings({'lastError': _short(e)});
       return HealthSyncResult(error: _short(e), byCategory: results);
@@ -784,14 +1199,21 @@ class HealthSyncService {
     final all = await ref.read(trackerRecordRepositoryProvider).getAll();
     var n = 0;
     for (final r in all) {
-      final mine = platform == null || (r.str('platform') ?? 'healthconnect') == platform || (platform == 'healthconnect' && r.str('platform') == null);
+      final mine =
+          platform == null ||
+          (r.str('platform') ?? 'healthconnect') == platform ||
+          (platform == 'healthconnect' && r.str('platform') == null);
       if (!mine) continue;
-      if ((r.kind == TrackerKind.fitnessWorkout && r.flag('imported') && !r.flag('manualEdit')) || r.kind == TrackerKind.fitnessDaily) {
+      if ((r.kind == TrackerKind.fitnessWorkout &&
+              r.flag('imported') &&
+              !r.flag('manualEdit')) ||
+          r.kind == TrackerKind.fitnessDaily) {
         await _t.delete(r.id, children: false);
         n++;
       }
     }
-    if (platform == null || platform == _platform) await saveSettings({'imported': 0, 'lastSync': null, 'cursors': null});
+    if (platform == null || platform == _platform)
+      await saveSettings({'imported': 0, 'lastSync': null, 'cursors': null});
     return n;
   }
 }

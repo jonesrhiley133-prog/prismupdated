@@ -39,78 +39,87 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('computeTrimChanges', () {
-    test('partial overlap — edited starts first: conflicting start moves to edited end',
-        () {
-      // Edited: 10:00–12:00, Conflicting: 11:00–13:00
-      final edited = _snap(
-        id: 'edited',
-        start: DateTime(2025, 1, 1, 10, 0),
-        end: DateTime(2025, 1, 1, 12, 0),
-      );
-      final conflicting = _snap(
-        id: 'conflict',
-        memberId: 'bob',
-        start: DateTime(2025, 1, 1, 11, 0),
-        end: DateTime(2025, 1, 1, 13, 0),
-      );
+    test(
+      'partial overlap — edited starts first: conflicting start moves to edited end',
+      () {
+        // Edited: 10:00–12:00, Conflicting: 11:00–13:00
+        final edited = _snap(
+          id: 'edited',
+          start: DateTime(2025, 1, 1, 10, 0),
+          end: DateTime(2025, 1, 1, 12, 0),
+        );
+        final conflicting = _snap(
+          id: 'conflict',
+          memberId: 'bob',
+          start: DateTime(2025, 1, 1, 11, 0),
+          end: DateTime(2025, 1, 1, 13, 0),
+        );
 
-      final result = service.computeTrimChanges(edited, conflicting);
+        final result = service.computeTrimChanges(edited, conflicting);
 
-      expect(result.wouldDeleteConflicting, isFalse);
-      expect(result.changes, hasLength(1));
-      final change = result.changes.first as UpdateSessionChange;
-      expect(change.sessionId, 'conflict');
-      expect(change.patch.start, DateTime(2025, 1, 1, 12, 0));
-      expect(change.patch.end, isNull);
-    });
+        expect(result.wouldDeleteConflicting, isFalse);
+        expect(result.changes, hasLength(1));
+        final change = result.changes.first as UpdateSessionChange;
+        expect(change.sessionId, 'conflict');
+        expect(change.patch.start, DateTime(2025, 1, 1, 12, 0));
+        expect(change.patch.end, isNull);
+      },
+    );
 
-    test('partial overlap — conflicting starts first: conflicting end moves to edited start',
-        () {
-      // Edited: 11:00–13:00, Conflicting: 10:00–12:00
-      final edited = _snap(
-        id: 'edited',
-        start: DateTime(2025, 1, 1, 11, 0),
-        end: DateTime(2025, 1, 1, 13, 0),
-      );
-      final conflicting = _snap(
-        id: 'conflict',
-        memberId: 'bob',
-        start: DateTime(2025, 1, 1, 10, 0),
-        end: DateTime(2025, 1, 1, 12, 0),
-      );
+    test(
+      'partial overlap — conflicting starts first: conflicting end moves to edited start',
+      () {
+        // Edited: 11:00–13:00, Conflicting: 10:00–12:00
+        final edited = _snap(
+          id: 'edited',
+          start: DateTime(2025, 1, 1, 11, 0),
+          end: DateTime(2025, 1, 1, 13, 0),
+        );
+        final conflicting = _snap(
+          id: 'conflict',
+          memberId: 'bob',
+          start: DateTime(2025, 1, 1, 10, 0),
+          end: DateTime(2025, 1, 1, 12, 0),
+        );
 
-      final result = service.computeTrimChanges(edited, conflicting);
+        final result = service.computeTrimChanges(edited, conflicting);
 
-      expect(result.wouldDeleteConflicting, isFalse);
-      expect(result.changes, hasLength(1));
-      final change = result.changes.first as UpdateSessionChange;
-      expect(change.sessionId, 'conflict');
-      expect(change.patch.end, DateTime(2025, 1, 1, 11, 0));
-      expect(change.patch.start, isNull);
-    });
+        expect(result.wouldDeleteConflicting, isFalse);
+        expect(result.changes, hasLength(1));
+        final change = result.changes.first as UpdateSessionChange;
+        expect(change.sessionId, 'conflict');
+        expect(change.patch.end, DateTime(2025, 1, 1, 11, 0));
+        expect(change.patch.start, isNull);
+      },
+    );
 
-    test('full containment: conflicting deleted, wouldDeleteConflicting=true', () {
-      // Edited: 10:00–14:00, Conflicting: 11:00–13:00 (fully inside)
-      final edited = _snap(
-        id: 'edited',
-        start: DateTime(2025, 1, 1, 10, 0),
-        end: DateTime(2025, 1, 1, 14, 0),
-      );
-      final conflicting = _snap(
-        id: 'conflict',
-        memberId: 'bob',
-        start: DateTime(2025, 1, 1, 11, 0),
-        end: DateTime(2025, 1, 1, 13, 0),
-      );
+    test(
+      'full containment: conflicting deleted, wouldDeleteConflicting=true',
+      () {
+        // Edited: 10:00–14:00, Conflicting: 11:00–13:00 (fully inside)
+        final edited = _snap(
+          id: 'edited',
+          start: DateTime(2025, 1, 1, 10, 0),
+          end: DateTime(2025, 1, 1, 14, 0),
+        );
+        final conflicting = _snap(
+          id: 'conflict',
+          memberId: 'bob',
+          start: DateTime(2025, 1, 1, 11, 0),
+          end: DateTime(2025, 1, 1, 13, 0),
+        );
 
-      final result = service.computeTrimChanges(edited, conflicting);
+        final result = service.computeTrimChanges(edited, conflicting);
 
-      expect(result.wouldDeleteConflicting, isTrue);
-      expect(
-        result.changes.whereType<DeleteSessionChange>().map((c) => c.sessionId),
-        contains('conflict'),
-      );
-    });
+        expect(result.wouldDeleteConflicting, isTrue);
+        expect(
+          result.changes.whereType<DeleteSessionChange>().map(
+            (c) => c.sessionId,
+          ),
+          contains('conflict'),
+        );
+      },
+    );
 
     test('near-zero duration after trim: wouldDeleteConflicting=true', () {
       // Edited: 10:00–12:00, Conflicting: 11:00–12:00 — after trim start moves to 12:00 = zero duration
@@ -163,35 +172,38 @@ void main() {
       expect(changes, isEmpty);
     });
 
-    test('cross-type overlaps are skipped — never trimmed (data-loss guard)', () {
-      // An open-ended normal front whose effective end is far-future would
-      // "contain" every later sleep session. resolveAllOverlaps must drop
-      // cross-type overlaps so none are deleted, even if a caller passes them.
-      final edited = _snap(
-        id: 'front',
-        start: DateTime(2025, 1, 1, 10, 0),
-        end: null, // active / open-ended
-        sessionType: SessionType.normal,
-      );
-      final sleeps = [
-        for (var i = 1; i <= 5; i++)
-          _snap(
-            id: 'sleep$i',
-            memberId: null,
-            start: DateTime(2025, 1, 1 + i, 22, 0),
-            end: DateTime(2025, 1, 2 + i, 6, 0),
-            sessionType: SessionType.sleep,
-          ),
-      ];
+    test(
+      'cross-type overlaps are skipped — never trimmed (data-loss guard)',
+      () {
+        // An open-ended normal front whose effective end is far-future would
+        // "contain" every later sleep session. resolveAllOverlaps must drop
+        // cross-type overlaps so none are deleted, even if a caller passes them.
+        final edited = _snap(
+          id: 'front',
+          start: DateTime(2025, 1, 1, 10, 0),
+          end: null, // active / open-ended
+          sessionType: SessionType.normal,
+        );
+        final sleeps = [
+          for (var i = 1; i <= 5; i++)
+            _snap(
+              id: 'sleep$i',
+              memberId: null,
+              start: DateTime(2025, 1, 1 + i, 22, 0),
+              end: DateTime(2025, 1, 2 + i, 6, 0),
+              sessionType: SessionType.sleep,
+            ),
+        ];
 
-      final changes = service.resolveAllOverlaps(
-        edited: edited,
-        overlaps: sleeps,
-        resolution: OverlapResolution.trim,
-      );
+        final changes = service.resolveAllOverlaps(
+          edited: edited,
+          overlaps: sleeps,
+          resolution: OverlapResolution.trim,
+        );
 
-      expect(changes, isEmpty);
-    });
+        expect(changes, isEmpty);
+      },
+    );
 
     test('single overlap resolves correctly with trim', () {
       final edited = _snap(
@@ -253,13 +265,15 @@ void main() {
       );
 
       // overlap1 is fully contained by edited, so it gets deleted
-      final deletedIds = changes.whereType<DeleteSessionChange>()
+      final deletedIds = changes
+          .whereType<DeleteSessionChange>()
           .map((c) => c.sessionId)
           .toSet();
       expect(deletedIds, contains('overlap1'));
 
       // overlap2 partially overlaps (extends past edited.end), so its start is trimmed
-      final updatedIds = changes.whereType<UpdateSessionChange>()
+      final updatedIds = changes
+          .whereType<UpdateSessionChange>()
           .map((c) => c.sessionId)
           .toSet();
       expect(updatedIds, contains('overlap2'));
@@ -271,35 +285,40 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('computeDeleteChanges', () {
-    test('extendPrevious: previous end set to session end, session deleted', () {
-      final session = _snap(
-        id: 'to-delete',
-        start: DateTime(2025, 1, 1, 11, 0),
-        end: DateTime(2025, 1, 1, 12, 0),
-      );
-      final previous = _snap(
-        id: 'prev',
-        memberId: 'bob',
-        start: DateTime(2025, 1, 1, 10, 0),
-        end: DateTime(2025, 1, 1, 11, 0),
-      );
-      final context = FrontingDeleteContext(
-        session: session,
-        previous: previous,
-      );
+    test(
+      'extendPrevious: previous end set to session end, session deleted',
+      () {
+        final session = _snap(
+          id: 'to-delete',
+          start: DateTime(2025, 1, 1, 11, 0),
+          end: DateTime(2025, 1, 1, 12, 0),
+        );
+        final previous = _snap(
+          id: 'prev',
+          memberId: 'bob',
+          start: DateTime(2025, 1, 1, 10, 0),
+          end: DateTime(2025, 1, 1, 11, 0),
+        );
+        final context = FrontingDeleteContext(
+          session: session,
+          previous: previous,
+        );
 
-      final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.extendPrevious);
+        final changes = service.computeDeleteChanges(
+          context,
+          FrontingDeleteStrategy.extendPrevious,
+        );
 
-      expect(changes, hasLength(2));
-      final update = changes.whereType<UpdateSessionChange>().first;
-      expect(update.sessionId, 'prev');
-      expect(update.patch.end, DateTime(2025, 1, 1, 12, 0));
-      expect(update.patch.clearEnd, isFalse);
+        expect(changes, hasLength(2));
+        final update = changes.whereType<UpdateSessionChange>().first;
+        expect(update.sessionId, 'prev');
+        expect(update.patch.end, DateTime(2025, 1, 1, 12, 0));
+        expect(update.patch.clearEnd, isFalse);
 
-      final del = changes.whereType<DeleteSessionChange>().first;
-      expect(del.sessionId, 'to-delete');
-    });
+        final del = changes.whereType<DeleteSessionChange>().first;
+        expect(del.sessionId, 'to-delete');
+      },
+    );
 
     test('extendPrevious on active session: previous gets clearEnd=true', () {
       final session = _snap(
@@ -319,7 +338,9 @@ void main() {
       );
 
       final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.extendPrevious);
+        context,
+        FrontingDeleteStrategy.extendPrevious,
+      );
 
       final update = changes.whereType<UpdateSessionChange>().first;
       expect(update.sessionId, 'prev');
@@ -339,13 +360,12 @@ void main() {
         start: DateTime(2025, 1, 1, 12, 0),
         end: DateTime(2025, 1, 1, 13, 0),
       );
-      final context = FrontingDeleteContext(
-        session: session,
-        next: next,
-      );
+      final context = FrontingDeleteContext(session: session, next: next);
 
       final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.extendNext);
+        context,
+        FrontingDeleteStrategy.extendNext,
+      );
 
       expect(changes, hasLength(2));
       final update = changes.whereType<UpdateSessionChange>().first;
@@ -381,7 +401,9 @@ void main() {
       );
 
       final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.splitBetweenNeighbors);
+        context,
+        FrontingDeleteStrategy.splitBetweenNeighbors,
+      );
 
       // midpoint of 10:00–12:00 is 11:00
       expect(changes, hasLength(3));
@@ -395,10 +417,8 @@ void main() {
       expect(del.sessionId, 'to-delete');
     });
 
-    test(
-        'convertToUnknown: memberId set to Unknown sentinel, '
-        'session not deleted',
-        () {
+    test('convertToUnknown: memberId set to Unknown sentinel, '
+        'session not deleted', () {
       // In the per-member model, coFronterIds no longer exists.
       // convertToUnknown writes the canonical Unknown sentinel id
       // directly so analytics treats the row identically to rows from
@@ -413,13 +433,18 @@ void main() {
       final context = FrontingDeleteContext(session: session);
 
       final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.convertToUnknown);
+        context,
+        FrontingDeleteStrategy.convertToUnknown,
+      );
 
       expect(changes, hasLength(1));
       final update = changes.whereType<UpdateSessionChange>().first;
       expect(update.sessionId, 'to-convert');
-      expect(update.patch.clearMemberId, isFalse,
-          reason: 'should write the sentinel id, not null');
+      expect(
+        update.patch.clearMemberId,
+        isFalse,
+        reason: 'should write the sentinel id, not null',
+      );
       expect(update.patch.memberId, unknownSentinelMemberId);
     });
 
@@ -432,7 +457,9 @@ void main() {
       final context = FrontingDeleteContext(session: session);
 
       final changes = service.computeDeleteChanges(
-          context, FrontingDeleteStrategy.leaveGap);
+        context,
+        FrontingDeleteStrategy.leaveGap,
+      );
 
       expect(changes, hasLength(1));
       final del = changes.whereType<DeleteSessionChange>().first;
@@ -445,9 +472,7 @@ void main() {
   // ════════════════════════════════════════════════════════════════════════════
 
   group('computeGapFillChanges', () {
-    test(
-        'creates Unknown session with the sentinel memberId for each gap',
-        () {
+    test('creates Unknown session with the sentinel memberId for each gap', () {
       final gaps = [
         GapInfo(
           start: DateTime(2025, 1, 1, 11, 0),
@@ -518,12 +543,7 @@ void main() {
         start: pStart,
         end: pEnd,
       );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
+      final bob = _snap(id: 'bob-s', memberId: 'bob', start: pStart, end: pEnd);
       final ctx = FrontingDeletePeriodContext(
         periodStart: pStart,
         periodEnd: pEnd,
@@ -537,8 +557,10 @@ void main() {
       );
 
       expect(changes, hasLength(2));
-      expect(changes.whereType<DeleteSessionChange>().map((c) => c.sessionId),
-          containsAll(['alice-s', 'bob-s']));
+      expect(
+        changes.whereType<DeleteSessionChange>().map((c) => c.sessionId),
+        containsAll(['alice-s', 'bob-s']),
+      );
     });
 
     test('both-straddler with leaveGap → splits into halves; right-half '
@@ -584,37 +606,39 @@ void main() {
       expect(create.session.presetId, expectedPresetId);
     });
 
-    test('both-straddler with extendPrevious → left untouched (covers slice)',
-        () {
-      final alice = _snap(
-        id: 'alice-s',
-        memberId: 'alice',
-        start: DateTime(2026, 5, 1, 13, 0),
-        end: DateTime(2026, 5, 1, 16, 0),
-      );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
-      final ctx = FrontingDeletePeriodContext(
-        periodStart: pStart,
-        periodEnd: pEnd,
-        isOngoing: false,
-        sessionsInPeriod: [alice, bob],
-      );
+    test(
+      'both-straddler with extendPrevious → left untouched (covers slice)',
+      () {
+        final alice = _snap(
+          id: 'alice-s',
+          memberId: 'alice',
+          start: DateTime(2026, 5, 1, 13, 0),
+          end: DateTime(2026, 5, 1, 16, 0),
+        );
+        final bob = _snap(
+          id: 'bob-s',
+          memberId: 'bob',
+          start: pStart,
+          end: pEnd,
+        );
+        final ctx = FrontingDeletePeriodContext(
+          periodStart: pStart,
+          periodEnd: pEnd,
+          isOngoing: false,
+          sessionsInPeriod: [alice, bob],
+        );
 
-      final changes = service.computeDeletePeriodChanges(
-        ctx,
-        FrontingDeleteStrategy.extendPrevious,
-      );
+        final changes = service.computeDeletePeriodChanges(
+          ctx,
+          FrontingDeleteStrategy.extendPrevious,
+        );
 
-      // Alice (both-straddler) untouched. Bob (fully contained) deleted.
-      expect(changes, hasLength(1));
-      final delete = changes.single as DeleteSessionChange;
-      expect(delete.sessionId, 'bob-s');
-    });
+        // Alice (both-straddler) untouched. Bob (fully contained) deleted.
+        expect(changes, hasLength(1));
+        final delete = changes.single as DeleteSessionChange;
+        expect(delete.sessionId, 'bob-s');
+      },
+    );
 
     test('straddle-start-only with extendPrevious → end moves to P_end', () {
       // Alice [13:00, 14:30] dangles into the slice from before.
@@ -694,45 +718,48 @@ void main() {
       expect(update.patch.start, pEnd);
     });
 
-    test('extendPrevious + straddle-end: trim reparents to previousSession', () {
-      // Carol ended at periodStart (touching previous). Bob starts inside
-      // the slice and continues past pEnd (straddle-end). For
-      // extendPrevious, Carol gets extended to pEnd; Bob is trimmed at
-      // pEnd. Comments timestamped on Bob in [origStart, pEnd) should
-      // move to Carol — matching single-session extendPrevious behavior.
-      final carol = _snap(
-        id: 'carol-s',
-        memberId: 'carol',
-        start: DateTime(2026, 5, 1, 13, 0),
-        end: pStart,
-      );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: DateTime(2026, 5, 1, 14, 30),
-        end: DateTime(2026, 5, 1, 16, 0),
-      );
-      final ctx = FrontingDeletePeriodContext(
-        periodStart: pStart,
-        periodEnd: pEnd,
-        isOngoing: false,
-        sessionsInPeriod: [bob],
-        previousSessions: [carol],
-      );
+    test(
+      'extendPrevious + straddle-end: trim reparents to previousSession',
+      () {
+        // Carol ended at periodStart (touching previous). Bob starts inside
+        // the slice and continues past pEnd (straddle-end). For
+        // extendPrevious, Carol gets extended to pEnd; Bob is trimmed at
+        // pEnd. Comments timestamped on Bob in [origStart, pEnd) should
+        // move to Carol — matching single-session extendPrevious behavior.
+        final carol = _snap(
+          id: 'carol-s',
+          memberId: 'carol',
+          start: DateTime(2026, 5, 1, 13, 0),
+          end: pStart,
+        );
+        final bob = _snap(
+          id: 'bob-s',
+          memberId: 'bob',
+          start: DateTime(2026, 5, 1, 14, 30),
+          end: DateTime(2026, 5, 1, 16, 0),
+        );
+        final ctx = FrontingDeletePeriodContext(
+          periodStart: pStart,
+          periodEnd: pEnd,
+          isOngoing: false,
+          sessionsInPeriod: [bob],
+          previousSessions: [carol],
+        );
 
-      final changes = service.computeDeletePeriodChanges(
-        ctx,
-        FrontingDeleteStrategy.extendPrevious,
-      );
+        final changes = service.computeDeletePeriodChanges(
+          ctx,
+          FrontingDeleteStrategy.extendPrevious,
+        );
 
-      // Bob trim with reparent to Carol; Carol extended.
-      final bobUpdate = changes
-          .whereType<UpdateSessionChange>()
-          .firstWhere((u) => u.sessionId == 'bob-s');
-      expect(bobUpdate.patch.start, pEnd);
-      expect(bobUpdate.patch.reparentOrphansToSessionId, 'carol-s');
-      expect(bobUpdate.patch.dropOrphanedComments, isFalse);
-    });
+        // Bob trim with reparent to Carol; Carol extended.
+        final bobUpdate = changes.whereType<UpdateSessionChange>().firstWhere(
+          (u) => u.sessionId == 'bob-s',
+        );
+        expect(bobUpdate.patch.start, pEnd);
+        expect(bobUpdate.patch.reparentOrphansToSessionId, 'carol-s');
+        expect(bobUpdate.patch.dropOrphanedComments, isFalse);
+      },
+    );
 
     test('extendPrevious + both-straddler + straddle-end: the both-straddler '
         'is the reparent target (it natively covers the slice)', () {
@@ -837,9 +864,9 @@ void main() {
         FrontingDeleteStrategy.extendPrevious,
       );
 
-      final bobUpdate = changes
-          .whereType<UpdateSessionChange>()
-          .firstWhere((u) => u.sessionId == 'bob-s');
+      final bobUpdate = changes.whereType<UpdateSessionChange>().firstWhere(
+        (u) => u.sessionId == 'bob-s',
+      );
       expect(bobUpdate.patch.reparentOrphansToSessionId, 'alice-s');
       expect(bobUpdate.patch.dropOrphanedComments, isFalse);
     });
@@ -852,12 +879,7 @@ void main() {
         start: DateTime(2026, 5, 1, 13, 0),
         end: pStart,
       );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
+      final bob = _snap(id: 'bob-s', memberId: 'bob', start: pStart, end: pEnd);
       final ctx = FrontingDeletePeriodContext(
         periodStart: pStart,
         periodEnd: pEnd,
@@ -877,9 +899,9 @@ void main() {
         changes.whereType<DeleteSessionChange>().map((c) => c.sessionId),
         contains('bob-s'),
       );
-      final carolUpdate = changes
-          .whereType<UpdateSessionChange>()
-          .firstWhere((u) => u.sessionId == 'carol-s');
+      final carolUpdate = changes.whereType<UpdateSessionChange>().firstWhere(
+        (u) => u.sessionId == 'carol-s',
+      );
       expect(carolUpdate.patch.end, pEnd);
       expect(carolUpdate.patch.clearEnd, isFalse);
     });
@@ -898,12 +920,7 @@ void main() {
         start: pStart,
         end: pEnd,
       );
-      final bob = _snap(
-        id: 'bbb',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
+      final bob = _snap(id: 'bbb', memberId: 'bob', start: pStart, end: pEnd);
 
       // Call with both orderings — they must produce the same survivor.
       final ctx1 = FrontingDeletePeriodContext(
@@ -927,11 +944,11 @@ void main() {
         FrontingDeleteStrategy.convertToUnknown,
       );
       final survivor1 = changes1.whereType<UpdateSessionChange>().firstWhere(
-            (u) => u.patch.memberId == unknownSentinelMemberId,
-          );
+        (u) => u.patch.memberId == unknownSentinelMemberId,
+      );
       final survivor2 = changes2.whereType<UpdateSessionChange>().firstWhere(
-            (u) => u.patch.memberId == unknownSentinelMemberId,
-          );
+        (u) => u.patch.memberId == unknownSentinelMemberId,
+      );
       expect(survivor1.sessionId, survivor2.sessionId);
       // Lower id wins under (start, id) sort with identical start.
       expect(survivor1.sessionId, 'aaa');
@@ -989,10 +1006,7 @@ void main() {
       );
 
       expect(changes, hasLength(1));
-      expect(
-        (changes.single as DeleteSessionChange).sessionId,
-        'alice-s',
-      );
+      expect((changes.single as DeleteSessionChange).sessionId, 'alice-s');
     });
 
     test('ongoing period: extendPrevious clears previousSession end', () {
@@ -1024,8 +1038,10 @@ void main() {
 
       // Alice deleted; Carol re-opened (clearEnd) so she's currently fronting.
       expect(changes, hasLength(2));
-      expect(changes.whereType<DeleteSessionChange>().single.sessionId,
-          'alice-s');
+      expect(
+        changes.whereType<DeleteSessionChange>().single.sessionId,
+        'alice-s',
+      );
       final carolUpdate = changes.whereType<UpdateSessionChange>().single;
       expect(carolUpdate.sessionId, 'carol-s');
       expect(carolUpdate.patch.clearEnd, isTrue);
@@ -1069,12 +1085,7 @@ void main() {
         start: DateTime(2026, 5, 1, 13, 30),
         end: DateTime(2026, 5, 1, 14, 30),
       );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
+      final bob = _snap(id: 'bob-s', memberId: 'bob', start: pStart, end: pEnd);
       final carol = _snap(
         id: 'carol-s',
         memberId: 'carol',
@@ -1101,8 +1112,10 @@ void main() {
       };
       expect(updates['alice-s']!.end, pStart);
       expect(updates['carol-s']!.start, pEnd);
-      expect(changes.whereType<DeleteSessionChange>().single.sessionId,
-          'bob-s');
+      expect(
+        changes.whereType<DeleteSessionChange>().single.sessionId,
+        'bob-s',
+      );
     });
 
     test('convertToUnknown with straddlers: slice cleared, contained '
@@ -1117,12 +1130,7 @@ void main() {
         start: DateTime(2026, 5, 1, 13, 30),
         end: DateTime(2026, 5, 1, 14, 30),
       );
-      final bob = _snap(
-        id: 'bob-s',
-        memberId: 'bob',
-        start: pStart,
-        end: pEnd,
-      );
+      final bob = _snap(id: 'bob-s', memberId: 'bob', start: pStart, end: pEnd);
       final carol = _snap(
         id: 'carol-s',
         memberId: 'carol',
@@ -1164,8 +1172,7 @@ void main() {
     });
 
     test('convertToUnknown with only straddlers (no contained survivor) '
-        'emits Unknown Create first and reparents slice comments to it',
-        () {
+        'emits Unknown Create first and reparents slice comments to it', () {
       // Alice straddles start, Bob straddles end. No fully-contained
       // session to repurpose — emit the Unknown Create up front with a
       // preset id, then route the straddler-trim orphans onto that id
@@ -1246,16 +1253,15 @@ void main() {
       expect(unknownCreate.session.presetId, isNotNull);
       final unknownId = unknownCreate.session.presetId!;
 
-      final rightHalf = changes
-          .whereType<CreateSessionChange>()
-          .firstWhere((c) => c.session.memberId == 'alice');
+      final rightHalf = changes.whereType<CreateSessionChange>().firstWhere(
+        (c) => c.session.memberId == 'alice',
+      );
       expect(rightHalf.session.start, pEnd);
       expect(rightHalf.session.splitFromSessionId, 'alice-s');
       expect(rightHalf.session.sliceReparentToSessionId, unknownId);
     });
 
-    test(
-        'ongoing period + both-straddler-open + leaveGap: trim end to '
+    test('ongoing period + both-straddler-open + leaveGap: trim end to '
         'P_start (no post-period continuation)', () {
       // Alice has been fronting from 13:00 and is still active.
       final alice = _snap(

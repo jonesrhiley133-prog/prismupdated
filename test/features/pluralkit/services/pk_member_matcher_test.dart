@@ -18,16 +18,8 @@ Member _local({
   );
 }
 
-PKMember _pk({
-  required String id,
-  required String name,
-  String? uuid,
-}) {
-  return PKMember(
-    id: id,
-    uuid: uuid ?? 'uuid-$id',
-    name: name,
-  );
+PKMember _pk({required String id, required String name, String? uuid}) {
+  return PKMember(id: id, uuid: uuid ?? 'uuid-$id', name: name);
 }
 
 void main() {
@@ -62,10 +54,7 @@ void main() {
 
   test('multiple PK with same name → all ambiguous (F13)', () {
     final locals = [_local(id: 'l1', name: 'Alice')];
-    final pk = [
-      _pk(id: 'pk1', name: 'Alice'),
-      _pk(id: 'pk2', name: 'Alice'),
-    ];
+    final pk = [_pk(id: 'pk1', name: 'Alice'), _pk(id: 'pk2', name: 'Alice')];
 
     final suggestions = matcher.suggest(locals, pk);
     expect(suggestions, hasLength(2));
@@ -149,8 +138,7 @@ void main() {
   test('empty inputs', () {
     expect(matcher.suggest([], []), isEmpty);
     expect(matcher.suggest([_local(id: 'l1', name: 'Alice')], []), isEmpty);
-    final suggestions =
-        matcher.suggest([], [_pk(id: 'pk1', name: 'Alice')]);
+    final suggestions = matcher.suggest([], [_pk(id: 'pk1', name: 'Alice')]);
     expect(suggestions.first.confidence, PkMatchConfidence.none);
   });
 }

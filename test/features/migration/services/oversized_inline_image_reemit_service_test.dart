@@ -21,7 +21,9 @@ Future<void> _insertMember(
   Uint8List? pkBanner,
   bool isDeleted = false,
 }) async {
-  await db.into(db.members).insert(
+  await db
+      .into(db.members)
+      .insert(
         MembersCompanion.insert(
           id: id,
           name: 'M $id',
@@ -49,7 +51,8 @@ void main() {
   // cares that the result is under budget and smaller than the input.
   Future<Uint8List?> fakeAvatar(Uint8List input) async =>
       _bytes(8 * 1024, fill: 1);
-  Future<Uint8List> fakeHeader(Uint8List input) async => _bytes(16 * 1024, fill: 2);
+  Future<Uint8List> fakeHeader(Uint8List input) async =>
+      _bytes(16 * 1024, fill: 2);
 
   setUp(() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
@@ -64,37 +67,40 @@ void main() {
   OversizedInlineImageReemitService service() {
     return OversizedInlineImageReemitService(
       db: db,
-      recordUpdate: ({required table, required entityId, required fields}) async {
-        updates.add(_Captured(table, entityId, fields));
-      },
+      recordUpdate:
+          ({required table, required entityId, required fields}) async {
+            updates.add(_Captured(table, entityId, fields));
+          },
       avatarNormalizer: fakeAvatar,
       headerNormalizer: fakeHeader,
     );
   }
 
-  test('re-normalizes an oversized avatar, writes it back, and re-emits',
-      () async {
-    final big = _bytes(700 * 1024); // > 512 KB budget
-    await _insertMember(db, id: 'big-avatar', avatar: big);
+  test(
+    're-normalizes an oversized avatar, writes it back, and re-emits',
+    () async {
+      final big = _bytes(700 * 1024); // > 512 KB budget
+      await _insertMember(db, id: 'big-avatar', avatar: big);
 
-    final result = await service().runOnce();
+      final result = await service().runOnce();
 
-    expect(result.membersRepaired, 1);
-    expect(result.fieldsReemitted, 1);
-    expect(updates, hasLength(1));
-    expect(updates.single.table, 'members');
-    expect(updates.single.entityId, 'big-avatar');
-    expect(
-      updates.single.fields['avatar_image_data'],
-      base64Encode(_bytes(8 * 1024, fill: 1)),
-    );
+      expect(result.membersRepaired, 1);
+      expect(result.fieldsReemitted, 1);
+      expect(updates, hasLength(1));
+      expect(updates.single.table, 'members');
+      expect(updates.single.entityId, 'big-avatar');
+      expect(
+        updates.single.fields['avatar_image_data'],
+        base64Encode(_bytes(8 * 1024, fill: 1)),
+      );
 
-    // Local DB now holds the shrunk avatar, not the oversized one.
-    final stored = await (db.select(db.members)
-          ..where((t) => t.id.equals('big-avatar')))
-        .getSingle();
-    expect(stored.avatarImageData, _bytes(8 * 1024, fill: 1));
-  });
+      // Local DB now holds the shrunk avatar, not the oversized one.
+      final stored = await (db.select(
+        db.members,
+      )..where((t) => t.id.equals('big-avatar'))).getSingle();
+      expect(stored.avatarImageData, _bytes(8 * 1024, fill: 1));
+    },
+  );
 
   test('repairs oversized header and pk banner fields too', () async {
     await _insertMember(
@@ -155,9 +161,10 @@ void main() {
     // Normalizer returns something still over budget -> field is skipped.
     final svc = OversizedInlineImageReemitService(
       db: db,
-      recordUpdate: ({required table, required entityId, required fields}) async {
-        updates.add(_Captured(table, entityId, fields));
-      },
+      recordUpdate:
+          ({required table, required entityId, required fields}) async {
+            updates.add(_Captured(table, entityId, fields));
+          },
       avatarNormalizer: (input) async => _bytes(800 * 1024), // still oversized
       headerNormalizer: fakeHeader,
     );
@@ -168,9 +175,9 @@ void main() {
     expect(result.membersRepaired, 0);
     expect(updates, isEmpty);
     // Original bytes preserved (not overwritten with a still-oversized blob).
-    final stored = await (db.select(db.members)
-          ..where((t) => t.id.equals('stubborn')))
-        .getSingle();
+    final stored = await (db.select(
+      db.members,
+    )..where((t) => t.id.equals('stubborn'))).getSingle();
     expect(stored.avatarImageData!.length, 700 * 1024);
   });
 }

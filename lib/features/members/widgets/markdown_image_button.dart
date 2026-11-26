@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -150,16 +151,19 @@ class MarkdownImageButtonState extends ConsumerState<MarkdownImageButton> {
         .read(prismFileDialogServiceProvider)
         .pickImageFile();
     if (picked == null || !mounted) return;
-    final bytes = await picked.readAsBytes();
+    final raw = await picked.readAsBytes();
     if (!mounted) return;
-    await _stageAndInsert(bytes);
+    final cropped = await PrismImageCrop.fromBytes(context, raw);
+    if (cropped == null || !mounted) return;
+    await _stageAndInsert(cropped.bytes);
   }
 
   Future<void> _addFromPicker(ImageSource source) async {
-    final picked = await ImagePicker().pickImage(source: source);
-    if (picked == null || !mounted) return;
-    final bytes = await picked.readAsBytes();
-    if (!mounted) return;
+    final bytes = await PrismImageCrop.pickBytes(
+      context,
+      camera: source == ImageSource.camera,
+    );
+    if (bytes == null || !mounted) return;
     await _stageAndInsert(bytes);
   }
 

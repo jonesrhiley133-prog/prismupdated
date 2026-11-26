@@ -11,7 +11,11 @@ import 'package:prism_plurality/features/astro/views/astro_widgets.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Astro is on and its calendar layer wanted.
-final _astroCalendarOn = Provider<bool>((ref) => ref.watch(featureEnabledProvider('astro')) && ref.watch(astroSettingsProvider).calendar);
+final _astroCalendarOn = Provider<bool>(
+  (ref) =>
+      ref.watch(featureEnabledProvider('astro')) &&
+      ref.watch(astroSettingsProvider).calendar,
+);
 
 final _monthEvents = <String, List<SkyEvent>>{};
 final _monthLunations = <String, List<Lunation>>{};
@@ -20,14 +24,21 @@ List<SkyEvent> _eventsFor(DateTime day, bool es) {
   final key = '${day.year}-${day.month}|$es';
   return _monthEvents.putIfAbsent(key, () {
     final start = DateTime(day.year, day.month);
-    return skyEvents(start.toUtc(), DateTime(day.year, day.month + 1).toUtc(), es);
+    return skyEvents(
+      start.toUtc(),
+      DateTime(day.year, day.month + 1).toUtc(),
+      es,
+    );
   });
 }
 
-List<Lunation> _lunationsFor(DateTime day) => _monthLunations.putIfAbsent('${day.year}-${day.month}', () {
-  final start = DateTime(day.year, day.month);
-  return lunations(start.toUtc(), DateTime(day.year, day.month + 1).toUtc());
-});
+List<Lunation> _lunationsFor(DateTime day) => _monthLunations.putIfAbsent(
+  '${day.year}-${day.month}',
+  () {
+    final start = DateTime(day.year, day.month);
+    return lunations(start.toUtc(), DateTime(day.year, day.month + 1).toUtc());
+  },
+);
 
 bool _sameLocalDay(DateTime utc, DateTime day) {
   final t = utc.toLocal();
@@ -43,9 +54,14 @@ class AstroDayGlyph extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!ref.watch(_astroCalendarOn)) return const SizedBox.shrink();
-    final l = _lunationsFor(day).where((l) => _sameLocalDay(l.utc, day)).firstOrNull;
+    final l = _lunationsFor(
+      day,
+    ).where((l) => _sameLocalDay(l.utc, day)).firstOrNull;
     if (l == null) return const SizedBox.shrink();
-    return Padding(padding: const EdgeInsets.only(right: 2), child: Text(l.phase.glyph, style: const TextStyle(fontSize: 9)));
+    return Padding(
+      padding: const EdgeInsets.only(right: 2),
+      child: Text(l.phase.glyph, style: const TextStyle(fontSize: 9)),
+    );
   }
 }
 
@@ -70,24 +86,58 @@ class CalendarAstroForDay extends ConsumerWidget {
     for (final a in listed) {
       if (!viewers.contains(a.member.id) || a.subject == null) continue;
       final start = DateTime(day.year, day.month, day.day);
-      for (final e in exactTransits(a.subject!, start.toUtc(), start.add(const Duration(days: 1)).toUtc(), es)) {
-        personal.add(SkyEvent(e.kind, e.utc, e.glyph, '${a.name}: ${e.title}', e.detail, personal: true, body: e.body));
+      for (final e in exactTransits(
+        a.subject!,
+        start.toUtc(),
+        start.add(const Duration(days: 1)).toUtc(),
+        es,
+      )) {
+        personal.add(
+          SkyEvent(
+            e.kind,
+            e.utc,
+            e.glyph,
+            '${a.name}: ${e.title}',
+            e.detail,
+            personal: true,
+            body: e.body,
+          ),
+        );
       }
     }
     final readings = <(AstroAccess, TarotReading)>[
       for (final a in listed)
         for (final r in ref.watch(tarotReadingsProvider(a.member.id)))
-          if (_sameLocalDay(r.when.toUtc(), day) && (!r.record.isPrivate || viewers.contains(a.member.id))) (a, r),
+          if (_sameLocalDay(r.when.toUtc(), day) &&
+              (!r.record.isPrivate || viewers.contains(a.member.id)))
+            (a, r),
     ];
-    if (events.isEmpty && personal.isEmpty && readings.isEmpty) return const SizedBox.shrink();
-    Widget row(String glyph, String text, {VoidCallback? onTap, bool emoji = false}) => InkWell(
+    if (events.isEmpty && personal.isEmpty && readings.isEmpty)
+      return const SizedBox.shrink();
+    Widget row(
+      String glyph,
+      String text, {
+      VoidCallback? onTap,
+      bool emoji = false,
+    }) => InkWell(
       onTap: onTap,
       borderRadius: prismCorners(context, 8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           children: [
-            SizedBox(width: 28, child: Center(child: emoji ? Text(glyph, style: const TextStyle(fontSize: 16)) : AstroGlyph(glyph, size: 16, color: theme.colorScheme.secondary))),
+            SizedBox(
+              width: 28,
+              child: Center(
+                child: emoji
+                    ? Text(glyph, style: const TextStyle(fontSize: 16))
+                    : AstroGlyph(
+                        glyph,
+                        size: 16,
+                        color: theme.colorScheme.secondary,
+                      ),
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
           ],
@@ -98,9 +148,23 @@ class CalendarAstroForDay extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final e in [...events, ...personal])
-          row(e.glyph, e.title, emoji: e.glyph.runes.first > 0x1F000, onTap: () => context.push(AppRoutePaths.astro)),
+          row(
+            e.glyph,
+            e.title,
+            emoji: e.glyph.runes.first > 0x1F000,
+            onTap: () => context.push(AppRoutePaths.astro),
+          ),
         for (final (a, r) in readings)
-          row('🃏', es ? '${a.name}: tirada de tarot (${r.spread.name.es})' : '${a.name}: tarot reading (${r.spread.name.en})', emoji: true, onTap: () => context.push(AppRoutePaths.astroAlter(a.member.id, section: 'tarot'))),
+          row(
+            '🃏',
+            es
+                ? '${a.name}: tirada de tarot (${r.spread.name.es})'
+                : '${a.name}: tarot reading (${r.spread.name.en})',
+            emoji: true,
+            onTap: () => context.push(
+              AppRoutePaths.astroAlter(a.member.id, section: 'tarot'),
+            ),
+          ),
       ],
     );
   }
@@ -109,18 +173,25 @@ class CalendarAstroForDay extends ConsumerWidget {
 /// The "Astrology" card on an alter's profile. Shows nothing unless the
 /// viewer may see this alter's astrology and it isn't hidden.
 class AstroProfileModule extends ConsumerWidget {
-  const AstroProfileModule({super.key, required this.member, required this.accent, this.showTitle = true});
+  const AstroProfileModule({
+    super.key,
+    required this.member,
+    required this.accent,
+    this.showTitle = true,
+  });
   final Member member;
   final Color accent;
   final bool showTitle;
 
   static bool visible(WidgetRef ref, String memberId) =>
-      ref.watch(featureEnabledProvider('astro')) && (ref.watch(astroAccessProvider(memberId))?.listed ?? false);
+      ref.watch(featureEnabledProvider('astro')) &&
+      (ref.watch(astroAccessProvider(memberId))?.listed ?? false);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final a = ref.watch(astroAccessProvider(member.id));
-    if (a == null || !a.listed || !ref.watch(featureEnabledProvider('astro'))) return const SizedBox.shrink();
+    if (a == null || !a.listed || !ref.watch(featureEnabledProvider('astro')))
+      return const SizedBox.shrink();
     final es = astroEs(context);
     final theme = Theme.of(context);
     final c = a.chart;
@@ -129,7 +200,13 @@ class AstroProfileModule extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showTitle) ...[
-          Text(tr(context, 'Astrology', 'Astrología'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: accent)),
+          Text(
+            tr(context, 'Astrology', 'Astrología'),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: accent,
+            ),
+          ),
           const SizedBox(height: 8),
         ],
         Row(
@@ -140,10 +217,26 @@ class AstroProfileModule extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(signs[s].name.of(es), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-                  Text('☉ ${signs[s].name.of(es)} ${es ? 'Sol' : 'Sun'}', style: theme.textTheme.bodySmall),
-                  if (c != null && c.moonCertain) Text('☽ ${signs[c.moonSign].name.of(es)} ${es ? 'Luna' : 'Moon'}', style: theme.textTheme.bodySmall),
-                  if (c?.risingSign != null) Text('↑ ${signs[c!.risingSign!].name.of(es)} ${es ? 'Ascendente' : 'Rising'}', style: theme.textTheme.bodySmall),
+                  Text(
+                    signs[s].name.of(es),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Text(
+                    '☉ ${signs[s].name.of(es)} ${es ? 'Sol' : 'Sun'}',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  if (c != null && c.moonCertain)
+                    Text(
+                      '☽ ${signs[c.moonSign].name.of(es)} ${es ? 'Luna' : 'Moon'}',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  if (c?.risingSign != null)
+                    Text(
+                      '↑ ${signs[c!.risingSign!].name.of(es)} ${es ? 'Ascendente' : 'Rising'}',
+                      style: theme.textTheme.bodySmall,
+                    ),
                 ],
               ),
             ),
@@ -154,7 +247,11 @@ class AstroProfileModule extends ConsumerWidget {
           density: PrismControlDensity.compact,
           onPressed: () => context.push(AppRoutePaths.astroAlter(member.id)),
           icon: PhosphorIcons.arrowRight(),
-          label: tr(context, 'View full astrology profile', 'Ver perfil astrológico completo'),
+          label: tr(
+            context,
+            'View full astrology profile',
+            'Ver perfil astrológico completo',
+          ),
         ),
       ],
     );
@@ -168,9 +265,14 @@ class AstroFrontingCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!ref.watch(featureEnabledProvider('astro')) || !ref.watch(astroSettingsProvider).homeCard) return const SizedBox.shrink();
+    if (!ref.watch(featureEnabledProvider('astro')) ||
+        !ref.watch(astroSettingsProvider).homeCard)
+      return const SizedBox.shrink();
     final viewers = ref.watch(astroViewersProvider);
-    final a = ref.watch(astroListedProvider).where((x) => viewers.contains(x.member.id)).firstOrNull;
+    final a = ref
+        .watch(astroListedProvider)
+        .where((x) => viewers.contains(x.member.id))
+        .firstOrNull;
     if (a == null || a.subject == null) return const SizedBox.shrink();
     final es = astroEs(context);
     final theme = Theme.of(context);
@@ -188,11 +290,21 @@ class AstroFrontingCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(es ? 'Al frente: ${a.name}' : 'Currently Fronting: ${a.name}', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    es
+                        ? 'Al frente: ${a.name}'
+                        : 'Currently Fronting: ${a.name}',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 2),
                   BigThree(access: a, size: 13),
                   const SizedBox(height: 2),
-                  Text('✨ ${tr(context, 'Today\'s theme', 'Tema de hoy')}: ${reading.title}', style: theme.textTheme.bodySmall),
+                  Text(
+                    '✨ ${tr(context, 'Today\'s theme', 'Tema de hoy')}: ${reading.title}',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ],
               ),
             ),
@@ -206,7 +318,9 @@ class AstroFrontingCard extends ConsumerWidget {
 
 /// One astrology line for Daily Insights, or null.
 String? astroInsight(WidgetRef ref, bool es) {
-  if (!ref.watch(featureEnabledProvider('astro')) || !ref.watch(astroSettingsProvider).insights) return null;
+  if (!ref.watch(featureEnabledProvider('astro')) ||
+      !ref.watch(astroSettingsProvider).insights)
+    return null;
   final now = DateTime.now();
   final phase = phaseForDay(now);
   final moon = moonSignForDay(now);

@@ -78,11 +78,13 @@ class CityIndex {
     final zones = lines[i++].split('|');
     final countries = {
       for (final p in lines[i++].split('|'))
-        if (p.contains('=')) p.substring(0, p.indexOf('=')): p.substring(p.indexOf('=') + 1),
+        if (p.contains('='))
+          p.substring(0, p.indexOf('=')): p.substring(p.indexOf('=') + 1),
     };
     final regions = {
       for (final p in lines[i++].split('|'))
-        if (p.contains('=')) p.substring(0, p.indexOf('=')): p.substring(p.indexOf('=') + 1),
+        if (p.contains('='))
+          p.substring(0, p.indexOf('=')): p.substring(p.indexOf('=') + 1),
     };
     final cities = <City>[];
     final folded = <String>[];
@@ -111,7 +113,9 @@ class CityIndex {
   List<City> search(String query, {int limit = 25}) {
     final parts = query.split(',');
     final q = foldForSearch(parts.first.trim());
-    final rest = parts.length > 1 ? foldForSearch(parts.sublist(1).join(',').trim()) : '';
+    final rest = parts.length > 1
+        ? foldForSearch(parts.sublist(1).join(',').trim())
+        : '';
     if (q.length < 2) return const [];
     final starts = <City>[], contains = <City>[];
     for (var i = 0; i < cities.length; i++) {
@@ -123,7 +127,8 @@ class CityIndex {
           !foldForSearch('${c.region} ${c.country}').contains(rest)) {
         continue;
       }
-      final atWordStart = at == 0 || f[at - 1] == '|' || f[at - 1] == ' ' || f[at - 1] == '-';
+      final atWordStart =
+          at == 0 || f[at - 1] == '|' || f[at - 1] == ' ' || f[at - 1] == '-';
       (atWordStart ? starts : contains).add(c);
       if (starts.length >= limit) break;
     }

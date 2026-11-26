@@ -18,9 +18,7 @@ import 'package:prism_plurality/core/services/secure_storage.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel(
-    'plugins.it_nomads.com/flutter_secure_storage',
-  );
+  const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
 
   late int active;
   late int maxConcurrent;
@@ -59,32 +57,36 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  test('concurrent safeSecureWrite calls never touch the backend at once',
-      () async {
-    await Future.wait<void>([
-      for (var i = 0; i < 8; i++) safeSecureWrite('key_$i', 'value_$i'),
-    ]);
+  test(
+    'concurrent safeSecureWrite calls never touch the backend at once',
+    () async {
+      await Future.wait<void>([
+        for (var i = 0; i < 8; i++) safeSecureWrite('key_$i', 'value_$i'),
+      ]);
 
-    expect(
-      maxConcurrent,
-      1,
-      reason:
-          'secure-storage writes must be serialized so the Windows .dat is '
-          'never written concurrently',
-    );
-  });
+      expect(
+        maxConcurrent,
+        1,
+        reason:
+            'secure-storage writes must be serialized so the Windows .dat is '
+            'never written concurrently',
+      );
+    },
+  );
 
-  test('mixed concurrent read/write/delete/readAll calls are serialized',
-      () async {
-    await Future.wait<void>([
-      safeSecureWrite('a', '1'),
-      safeSecureRead('a'),
-      safeSecureWrite('b', '2'),
-      safeSecureDelete('a'),
-      safeSecureReadAll(),
-      safeSecureWrite('c', '3'),
-    ]);
+  test(
+    'mixed concurrent read/write/delete/readAll calls are serialized',
+    () async {
+      await Future.wait<void>([
+        safeSecureWrite('a', '1'),
+        safeSecureRead('a'),
+        safeSecureWrite('b', '2'),
+        safeSecureDelete('a'),
+        safeSecureReadAll(),
+        safeSecureWrite('c', '3'),
+      ]);
 
-    expect(maxConcurrent, 1);
-  });
+      expect(maxConcurrent, 1);
+    },
+  );
 }

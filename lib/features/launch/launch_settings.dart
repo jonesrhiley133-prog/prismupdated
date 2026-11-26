@@ -15,7 +15,14 @@ enum LaunchLogo { filled, outline, tile }
 enum LaunchBackground { theme, prism }
 
 /// Built-in greeting choices.
-enum GreetingPreset { welcomeBack, timeOfDay, welcomeHome, niceToSee, custom, none }
+enum GreetingPreset {
+  welcomeBack,
+  timeOfDay,
+  welcomeHome,
+  niceToSee,
+  custom,
+  none,
+}
 
 /// Launch Experience preferences. Stored on the device (not synced), so they
 /// are available the moment the app starts, before the database opens.
@@ -90,14 +97,23 @@ class LaunchSettings {
   };
 
   static LaunchSettings fromJson(Map<String, Object?> j) {
-    T pick<T extends Enum>(List<T> values, Object? v, T fallback) => values.where((e) => e.name == v).firstOrNull ?? fallback;
+    T pick<T extends Enum>(List<T> values, Object? v, T fallback) =>
+        values.where((e) => e.name == v).firstOrNull ?? fallback;
     return LaunchSettings(
       enabled: j['enabled'] != false,
       speed: ((j['speed'] as num?)?.toDouble() ?? 1.0).clamp(0.6, 1.6),
       style: pick(LaunchStyle.values, j['style'], LaunchStyle.assemble),
       logo: pick(LaunchLogo.values, j['logo'], LaunchLogo.filled),
-      background: pick(LaunchBackground.values, j['background'], LaunchBackground.theme),
-      greeting: pick(GreetingPreset.values, j['greeting'], GreetingPreset.welcomeBack),
+      background: pick(
+        LaunchBackground.values,
+        j['background'],
+        LaunchBackground.theme,
+      ),
+      greeting: pick(
+        GreetingPreset.values,
+        j['greeting'],
+        GreetingPreset.welcomeBack,
+      ),
       customGreeting: '${j['customGreeting'] ?? ''}',
       showAvatar: j['showAvatar'] != false,
       reducedMotion: j['reducedMotion'] == true,
@@ -136,17 +152,23 @@ class LaunchBoot {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_prefsKey);
-      if (raw != null) settings = LaunchSettings.fromJson((jsonDecode(raw) as Map).cast<String, Object?>());
+      if (raw != null)
+        settings = LaunchSettings.fromJson(
+          (jsonDecode(raw) as Map).cast<String, Object?>(),
+        );
       cachedSystemName = prefs.getString(_nameKey) ?? '';
       final last = prefs.getInt(_lastCloseKey);
       if (last != null) {
-        quickReopen = DateTime.now().millisecondsSinceEpoch - last < const Duration(minutes: 2).inMilliseconds;
+        quickReopen =
+            DateTime.now().millisecondsSinceEpoch - last <
+            const Duration(minutes: 2).inMilliseconds;
       }
     } catch (_) {}
   }
 
   /// Whether to play the launch animation this time.
-  static bool get shouldPlay => settings.enabled && !(settings.skipQuickReopen && quickReopen);
+  static bool get shouldPlay =>
+      settings.enabled && !(settings.skipQuickReopen && quickReopen);
 
   static Future<void> noteClosed() async {
     try {
@@ -179,7 +201,10 @@ class LaunchSettingsNotifier extends Notifier<LaunchSettings> {
   }
 }
 
-final launchSettingsProvider = NotifierProvider<LaunchSettingsNotifier, LaunchSettings>(LaunchSettingsNotifier.new);
+final launchSettingsProvider =
+    NotifierProvider<LaunchSettingsNotifier, LaunchSettings>(
+      LaunchSettingsNotifier.new,
+    );
 
 String timeOfDayWord(DateTime now, {bool es = false}) {
   final h = now.hour;
@@ -202,14 +227,29 @@ String buildGreeting({
   final t = now ?? DateTime.now();
   final name = systemName.trim();
   final template = switch (preset) {
-    GreetingPreset.welcomeBack => name.isEmpty ? (es ? '¡Bienvenido de nuevo!' : 'Welcome back!') : (es ? '¡Bienvenido de nuevo, {system_name}!' : 'Welcome back, {system_name}!'),
+    GreetingPreset.welcomeBack =>
+      name.isEmpty
+          ? (es ? '¡Bienvenido de nuevo!' : 'Welcome back!')
+          : (es
+                ? '¡Bienvenido de nuevo, {system_name}!'
+                : 'Welcome back, {system_name}!'),
     GreetingPreset.timeOfDay => () {
       final w = timeOfDayWord(t, es: es);
-      final base = es ? (w == 'mañana' ? 'Buenos días' : (w == 'tarde' ? 'Buenas tardes' : 'Buenas noches')) : 'Good $w';
+      final base = es
+          ? (w == 'mañana'
+                ? 'Buenos días'
+                : (w == 'tarde' ? 'Buenas tardes' : 'Buenas noches'))
+          : 'Good $w';
       return name.isEmpty ? base : '$base, {system_name}';
     }(),
-    GreetingPreset.welcomeHome => name.isEmpty ? (es ? 'Bienvenido a casa' : 'Welcome home') : (es ? 'Bienvenido a casa, {system_name}' : 'Welcome home, {system_name}'),
-    GreetingPreset.niceToSee => es ? 'Qué alegría verte de nuevo' : "It's nice to see you again",
+    GreetingPreset.welcomeHome =>
+      name.isEmpty
+          ? (es ? 'Bienvenido a casa' : 'Welcome home')
+          : (es
+                ? 'Bienvenido a casa, {system_name}'
+                : 'Welcome home, {system_name}'),
+    GreetingPreset.niceToSee =>
+      es ? 'Qué alegría verte de nuevo' : "It's nice to see you again",
     GreetingPreset.custom => custom,
     GreetingPreset.none => '',
   };

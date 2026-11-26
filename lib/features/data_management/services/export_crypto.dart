@@ -297,14 +297,23 @@ class ExportCrypto {
     offset += jsonLen;
 
     final key = _deriveKey(password, salt, n: n, r: r, p: p);
-    final json = utf8.decode(aesGcmDecryptSync(key, Uint8List.fromList(nonce), Uint8List.fromList(jsonCt)));
+    final json = utf8.decode(
+      aesGcmDecryptSync(
+        key,
+        Uint8List.fromList(nonce),
+        Uint8List.fromList(jsonCt),
+      ),
+    );
     return (json: json, mediaBlobs: _readMedia(data, offset));
   }
 
   /// Like [decrypt], but the AES step uses the platform's native crypto
   /// (WebCrypto in browsers) and yields to the UI. Used on the web, where
   /// there is no background isolate and the pure-Dart cipher is slow.
-  static Future<({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})> decryptAsync(Uint8List data, String password) async {
+  static Future<
+    ({String json, List<({String mediaId, Uint8List blob})> mediaBlobs})
+  >
+  decryptAsync(Uint8List data, String password) async {
     final h = _readHeader(data);
     // Let the "decrypting" state paint before the key derivation runs.
     await Future<void>.delayed(const Duration(milliseconds: 60));
@@ -314,12 +323,22 @@ class ExportCrypto {
     return (json: json, mediaBlobs: _readMedia(data, h.offset));
   }
 
-  static ({int n, int r, int p, Uint8List salt, Uint8List nonce, Uint8List jsonCt, int offset}) _readHeader(Uint8List data) {
+  static ({
+    int n,
+    int r,
+    int p,
+    Uint8List salt,
+    Uint8List nonce,
+    Uint8List jsonCt,
+    int offset,
+  })
+  _readHeader(Uint8List data) {
     final magic = utf8.decode(data.sublist(0, _magic.length));
     if (magic != _magic) {
       throw const FormatException('Not a Prism encrypted export');
     }
-    const minHeaderLength = 6 + 4 + 4 + 4 + _saltLength + _nonceLength + 4 + 16 + 4;
+    const minHeaderLength =
+        6 + 4 + 4 + 4 + _saltLength + _nonceLength + 4 + 16 + 4;
     if (data.length < minHeaderLength) {
       throw const FormatException('Encrypted export is too short');
     }
@@ -340,16 +359,27 @@ class ExportCrypto {
     final jsonLen = _readUint32BE(data, offset);
     offset += 4;
     if (data.length < offset + jsonLen) {
-      throw const FormatException('Encrypted export is truncated (JSON section)');
+      throw const FormatException(
+        'Encrypted export is truncated (JSON section)',
+      );
     }
     final jsonCt = data.sublist(offset, offset + jsonLen);
     offset += jsonLen;
-    return (n: n, r: r, p: p, salt: salt, nonce: nonce, jsonCt: jsonCt, offset: offset);
+    return (
+      n: n,
+      r: r,
+      p: p,
+      salt: salt,
+      nonce: nonce,
+      jsonCt: jsonCt,
+      offset: offset,
+    );
   }
 
-  static List<({String mediaId, Uint8List blob})> _readMedia(Uint8List data, int offset) {
-
-
+  static List<({String mediaId, Uint8List blob})> _readMedia(
+    Uint8List data,
+    int offset,
+  ) {
     // Media section
     if (data.length < offset + 4) {
       throw const FormatException(
@@ -425,7 +455,14 @@ class ExportCrypto {
     int p = _scryptP,
   }) {
     // Same output as pointycastle's Scrypt, much faster in browsers.
-    return fastScrypt(Uint8List.fromList(utf8.encode(password)), salt, n: n, r: r, p: p, dkLen: _keyLength);
+    return fastScrypt(
+      Uint8List.fromList(utf8.encode(password)),
+      salt,
+      n: n,
+      r: r,
+      p: p,
+      dkLen: _keyLength,
+    );
   }
 
   static Uint8List _uint32BE(int value) {

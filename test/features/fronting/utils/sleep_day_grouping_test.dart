@@ -13,13 +13,12 @@ FrontingSession _sleep({
   required String id,
   required DateTime start,
   DateTime? end,
-}) =>
-    FrontingSession(
-      id: id,
-      startTime: start,
-      endTime: end,
-      sessionType: SessionType.sleep,
-    );
+}) => FrontingSession(
+  id: id,
+  startTime: start,
+  endTime: end,
+  sessionType: SessionType.sleep,
+);
 
 void main() {
   group('groupSleepByEndDate', () {
@@ -101,10 +100,11 @@ void main() {
 
       final result = groupSleepByEndDate([s1, s2, s3]);
 
-      expect(
-        result[DateTime(2026, 3, 21)]!.map((s) => s.id).toList(),
-        ['first', 'second', 'third'],
-      );
+      expect(result[DateTime(2026, 3, 21)]!.map((s) => s.id).toList(), [
+        'first',
+        'second',
+        'third',
+      ]);
     });
 
     test('empty input returns empty map', () {

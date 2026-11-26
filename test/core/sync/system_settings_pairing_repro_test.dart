@@ -161,12 +161,15 @@ void main() {
       );
     });
 
-    test('B4: Infinity wake_suggestion_after_hours is sanitized away', () async {
-      await _runStrictApply(
-        db,
-        _vanillaFields(wakeSuggestionAfterHours: double.infinity),
-      );
-    });
+    test(
+      'B4: Infinity wake_suggestion_after_hours is sanitized away',
+      () async {
+        await _runStrictApply(
+          db,
+          _vanillaFields(wakeSuggestionAfterHours: double.infinity),
+        );
+      },
+    );
 
     test('B5: missing wake_suggestion_after_hours (older peer)', () async {
       final fields = _vanillaFields();
@@ -174,16 +177,17 @@ void main() {
       await _runStrictApply(db, fields);
     });
 
-    test('B6: integer 1 in place of bool field (older peer encoding)',
-        () async {
-      final fields = _vanillaFields();
-      fields['show_quick_front'] = 1;
-      fields['chat_enabled'] = 1;
-      await _runStrictApply(db, fields);
-    });
+    test(
+      'B6: integer 1 in place of bool field (older peer encoding)',
+      () async {
+        final fields = _vanillaFields();
+        fields['show_quick_front'] = 1;
+        fields['chat_enabled'] = 1;
+        await _runStrictApply(db, fields);
+      },
+    );
 
-    test('B7: null in non-nullable string fields (accent_color_hex)',
-        () async {
+    test('B7: null in non-nullable string fields (accent_color_hex)', () async {
       final fields = _vanillaFields();
       fields['accent_color_hex'] = null;
       fields['nav_bar_items'] = null;
@@ -192,8 +196,7 @@ void main() {
       await _runStrictApply(db, fields);
     });
 
-    test('B8: empty fields map (Drift update with no columns set)',
-        () async {
+    test('B8: empty fields map (Drift update with no columns set)', () async {
       // Force the UPDATE path: pre-create the singleton row, then send a
       // change with no fields — Drift's update.write() returns 0 rows on
       // an empty companion, but the validateIntegrity step is still
@@ -201,9 +204,7 @@ void main() {
       await db
           .into(db.systemSettingsTable)
           .insertOnConflictUpdate(
-            const database.SystemSettingsTableCompanion(
-              id: Value('singleton'),
-            ),
+            const database.SystemSettingsTableCompanion(id: Value('singleton')),
           );
       await _runStrictApply(db, <String, dynamic>{});
     });
@@ -243,8 +244,11 @@ void main() {
       fields['system_description'] = 'desc';
       fields['system_color'] = '#abcdef';
       fields['system_tag'] = '|tag|';
-      fields['sp_boards_backfilled_at'] =
-          DateTime.utc(2026, 5, 1).toIso8601String();
+      fields['sp_boards_backfilled_at'] = DateTime.utc(
+        2026,
+        5,
+        1,
+      ).toIso8601String();
       await _runStrictApply(db, fields);
     });
 

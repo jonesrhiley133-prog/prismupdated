@@ -74,22 +74,22 @@ class _PrismSurfaceState extends State<PrismSurface> {
                   alpha: _pressed
                       ? (isDark ? 0.14 : 0.12)
                       : _hovered
-                          ? (isDark ? 0.12 : 0.10)
-                          : (isDark ? 0.10 : 0.08),
+                      ? (isDark ? 0.12 : 0.10)
+                      : (isDark ? 0.10 : 0.08),
                 ),
                 PrismSurfaceTone.strong => baseColor.withValues(
                   alpha: _pressed
                       ? (isDark ? 0.18 : 0.16)
                       : _hovered
-                          ? (isDark ? 0.16 : 0.13)
-                          : (isDark ? 0.14 : 0.10),
+                      ? (isDark ? 0.16 : 0.13)
+                      : (isDark ? 0.14 : 0.10),
                 ),
                 PrismSurfaceTone.accent => baseColor.withValues(
                   alpha: _pressed
                       ? (isDark ? 0.22 : 0.18)
                       : _hovered
-                          ? (isDark ? 0.19 : 0.15)
-                          : (isDark ? 0.16 : 0.12),
+                      ? (isDark ? 0.19 : 0.15)
+                      : (isDark ? 0.16 : 0.12),
                 ),
               }
             : _surfaceFillColor(theme, widget.tone, _pressed, _hovered));
@@ -101,22 +101,22 @@ class _PrismSurfaceState extends State<PrismSurface> {
                   alpha: _pressed
                       ? (isDark ? 0.16 : 0.18)
                       : _hovered
-                          ? (isDark ? 0.14 : 0.16)
-                          : (isDark ? 0.12 : 0.14),
+                      ? (isDark ? 0.14 : 0.16)
+                      : (isDark ? 0.12 : 0.14),
                 ),
                 PrismSurfaceTone.strong => baseColor.withValues(
                   alpha: _pressed
                       ? (isDark ? 0.20 : 0.20)
                       : _hovered
-                          ? (isDark ? 0.18 : 0.18)
-                          : (isDark ? 0.15 : 0.16),
+                      ? (isDark ? 0.18 : 0.18)
+                      : (isDark ? 0.15 : 0.16),
                 ),
                 PrismSurfaceTone.accent => baseColor.withValues(
                   alpha: _pressed
                       ? (isDark ? 0.24 : 0.24)
                       : _hovered
-                          ? 0.21
-                          : (isDark ? 0.17 : 0.18),
+                      ? 0.21
+                      : (isDark ? 0.17 : 0.18),
                 ),
               }
             : _surfaceBorderColor(theme, widget.tone, _pressed, _hovered));
@@ -124,8 +124,7 @@ class _PrismSurfaceState extends State<PrismSurface> {
     // Appearance presets restyle plain cards; accent/explicit fills keep
     // their meaning (selection, member colours).
     final look = LookTheme.of(context);
-    final styled =
-        look != null && widget.fillColor == null && !useAccentFill;
+    final styled = look != null && widget.fillColor == null && !useAccentFill;
     final cardStyle = styled ? look.style(LookElement.card) : null;
     final lookGradient = styled ? look.gradient(LookElement.card) : null;
     final lookBorder = styled ? look.border(LookElement.card) : null;
@@ -224,8 +223,8 @@ Color _surfaceFillColor(
   final overlayAlpha = pressed
       ? (isDark ? 0.06 : 0.04)
       : hovered
-          ? (isDark ? 0.03 : 0.02)
-          : 0.0;
+      ? (isDark ? 0.03 : 0.02)
+      : 0.0;
 
   if (overlayAlpha == 0.0) return baseColor;
 
@@ -249,17 +248,24 @@ Color _surfaceBorderColor(
   };
 
   final alpha = switch (tone) {
-    PrismSurfaceTone.subtle => pressed
-        ? (isDark ? 0.60 : 0.62)
-        : hovered
-            ? (isDark ? 0.55 : 0.57)
-            : (isDark ? 0.50 : 0.52),
-    PrismSurfaceTone.strong => pressed
-        ? (isDark ? 0.62 : 0.70)
-        : hovered
-            ? (isDark ? 0.57 : 0.65)
-            : (isDark ? 0.52 : 0.60),
-    PrismSurfaceTone.accent => pressed ? 0.24 : hovered ? 0.21 : 0.18,
+    PrismSurfaceTone.subtle =>
+      pressed
+          ? (isDark ? 0.60 : 0.62)
+          : hovered
+          ? (isDark ? 0.55 : 0.57)
+          : (isDark ? 0.50 : 0.52),
+    PrismSurfaceTone.strong =>
+      pressed
+          ? (isDark ? 0.62 : 0.70)
+          : hovered
+          ? (isDark ? 0.57 : 0.65)
+          : (isDark ? 0.52 : 0.60),
+    PrismSurfaceTone.accent =>
+      pressed
+          ? 0.24
+          : hovered
+          ? 0.21
+          : 0.18,
   };
 
   return baseColor.withValues(alpha: alpha);

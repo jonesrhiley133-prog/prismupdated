@@ -25,8 +25,9 @@ class PinNumpadCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIconOnly = icon != null && label == null;
-    final backspaceLabel =
-        isIconOnly ? context.l10n.syncSetupNumpadBackspaceLabel : null;
+    final backspaceLabel = isIconOnly
+        ? context.l10n.syncSetupNumpadBackspaceLabel
+        : null;
 
     Widget button = GestureDetector(
       onTap: onTap,
@@ -56,10 +57,7 @@ class PinNumpadCell extends StatelessWidget {
       button = Semantics(
         label: backspaceLabel,
         button: true,
-        child: Tooltip(
-          message: backspaceLabel!,
-          child: button,
-        ),
+        child: Tooltip(message: backspaceLabel!, child: button),
       );
     }
 

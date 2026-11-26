@@ -31,20 +31,25 @@ void main() {
     });
 
     group('onDragEnd from pristine', () {
-      test('marks touched, sets currentValue, becomes dirty with commitIntent set', () {
-        final s = SliderEditState.pristine(midpoint: 50).onDragEnd(60);
-        expect(s.touched, isTrue);
-        expect(s.currentValue, 60.0);
-        expect(s.isDirty, isTrue);
-        expect(s.canClear, isTrue);
-        expect(s.semanticIsUnset, isFalse);
-        expect(s.commitIntent, CommitIntent.set);
-      });
+      test(
+        'marks touched, sets currentValue, becomes dirty with commitIntent set',
+        () {
+          final s = SliderEditState.pristine(midpoint: 50).onDragEnd(60);
+          expect(s.touched, isTrue);
+          expect(s.currentValue, 60.0);
+          expect(s.isDirty, isTrue);
+          expect(s.canClear, isTrue);
+          expect(s.semanticIsUnset, isFalse);
+          expect(s.commitIntent, CommitIntent.set);
+        },
+      );
     });
 
     group('onDragEnd ending at midpoint with no initialValue', () {
       test('touched is true and isDirty is true (50 != null)', () {
-        final s = SliderEditState.pristine(midpoint: 50).onDragEnd(60).onDragEnd(50);
+        final s = SliderEditState.pristine(
+          midpoint: 50,
+        ).onDragEnd(60).onDragEnd(50);
         expect(s.touched, isTrue);
         expect(s.currentValue, 50.0);
         expect(s.initialValue, isNull);
@@ -78,15 +83,18 @@ void main() {
     });
 
     group('onClear on pristine (no initialValue)', () {
-      test('normalizes to pristine — clearedPending false, isDirty false, noop intent, canClear false', () {
-        final s = SliderEditState.pristine(midpoint: 50).onClear();
-        expect(s.clearedPending, isFalse);
-        expect(s.touched, isFalse);
-        expect(s.initialValue, isNull);
-        expect(s.isDirty, isFalse);
-        expect(s.canClear, isFalse);
-        expect(s.commitIntent, CommitIntent.noop);
-      });
+      test(
+        'normalizes to pristine — clearedPending false, isDirty false, noop intent, canClear false',
+        () {
+          final s = SliderEditState.pristine(midpoint: 50).onClear();
+          expect(s.clearedPending, isFalse);
+          expect(s.touched, isFalse);
+          expect(s.initialValue, isNull);
+          expect(s.isDirty, isFalse);
+          expect(s.canClear, isFalse);
+          expect(s.commitIntent, CommitIntent.noop);
+        },
+      );
     });
 
     group('onClear then onDragEnd', () {
@@ -111,9 +119,9 @@ void main() {
 
     group('onCommitSuccess after delete', () {
       test('resets to pristine with midpoint', () {
-        final s = SliderEditState.loaded(value: 75)
-            .onClear()
-            .onCommitSuccess(intent: CommitIntent.delete, midpoint: 50);
+        final s = SliderEditState.loaded(
+          value: 75,
+        ).onClear().onCommitSuccess(intent: CommitIntent.delete, midpoint: 50);
         expect(s.currentValue, 50.0);
         expect(s.initialValue, isNull);
         expect(s.touched, isFalse);
@@ -123,9 +131,9 @@ void main() {
 
     group('onCommitSuccess after set', () {
       test('promotes currentValue to initialValue, clears flags', () {
-        final s = SliderEditState.pristine(midpoint: 50)
-            .onDragEnd(60)
-            .onCommitSuccess(intent: CommitIntent.set, midpoint: 50);
+        final s = SliderEditState.pristine(
+          midpoint: 50,
+        ).onDragEnd(60).onCommitSuccess(intent: CommitIntent.set, midpoint: 50);
         expect(s.currentValue, 60.0);
         expect(s.initialValue, 60.0);
         expect(s.touched, isFalse);
@@ -138,9 +146,9 @@ void main() {
 
     group('onExternalReload with new value', () {
       test('external reload wins over pending clear', () {
-        final s = SliderEditState.loaded(value: 75)
-            .onClear()
-            .onExternalReload(newValue: 30, midpoint: 50);
+        final s = SliderEditState.loaded(
+          value: 75,
+        ).onClear().onExternalReload(newValue: 30, midpoint: 50);
         expect(s.currentValue, 30.0);
         expect(s.initialValue, 30.0);
         expect(s.clearedPending, isFalse);
@@ -150,9 +158,9 @@ void main() {
 
     group('onExternalReload with null value', () {
       test('resets to pristine', () {
-        final s = SliderEditState.loaded(value: 75)
-            .onClear()
-            .onExternalReload(newValue: null, midpoint: 50);
+        final s = SliderEditState.loaded(
+          value: 75,
+        ).onClear().onExternalReload(newValue: null, midpoint: 50);
         expect(s.currentValue, 50.0);
         expect(s.initialValue, isNull);
       });
@@ -161,7 +169,10 @@ void main() {
     group('onCommitSuccess with noop intent', () {
       test('is a no-op — returns state equal to input', () {
         final s = SliderEditState.loaded(value: 60);
-        final result = s.onCommitSuccess(intent: CommitIntent.noop, midpoint: 50);
+        final result = s.onCommitSuccess(
+          intent: CommitIntent.noop,
+          midpoint: 50,
+        );
         expect(result, equals(s));
         expect(identical(result, s), isTrue);
       });
@@ -169,9 +180,9 @@ void main() {
 
     group('onExternalReload while mid-edit (touched + dirty)', () {
       test('discards local edit, server value wins', () {
-        final s = SliderEditState.loaded(value: 60)
-            .onDragEnd(80)
-            .onExternalReload(newValue: 30, midpoint: 50);
+        final s = SliderEditState.loaded(
+          value: 60,
+        ).onDragEnd(80).onExternalReload(newValue: 30, midpoint: 50);
         expect(s.currentValue, 30.0);
         expect(s.initialValue, 30.0);
         expect(s.touched, isFalse);
@@ -182,7 +193,9 @@ void main() {
 
     group('pristine → drag → clear hides the × button', () {
       test('canClear false after clearing a drag on pristine state', () {
-        final s = SliderEditState.pristine(midpoint: 50).onDragEnd(80).onClear();
+        final s = SliderEditState.pristine(
+          midpoint: 50,
+        ).onDragEnd(80).onClear();
         expect(s.canClear, isFalse);
         expect(s.clearedPending, isFalse);
         expect(s.touched, isFalse);
@@ -216,8 +229,16 @@ void main() {
 
     group('equality', () {
       test('identical fields are equal', () {
-        const a = SliderEditState(currentValue: 50, initialValue: 75, touched: true);
-        const b = SliderEditState(currentValue: 50, initialValue: 75, touched: true);
+        const a = SliderEditState(
+          currentValue: 50,
+          initialValue: 75,
+          touched: true,
+        );
+        const b = SliderEditState(
+          currentValue: 50,
+          initialValue: 75,
+          touched: true,
+        );
         expect(a, equals(b));
         expect(a.hashCode, equals(b.hashCode));
       });

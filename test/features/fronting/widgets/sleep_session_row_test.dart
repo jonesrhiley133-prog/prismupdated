@@ -52,9 +52,7 @@ void main() {
     // ── Renders core content ─────────────────────────────────────────────────
 
     testWidgets('renders date headline with day and month', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Apr'), findsWidgets);
@@ -62,9 +60,7 @@ void main() {
     });
 
     testWidgets('renders duration in headline row', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       // 8h 12m duration
@@ -81,9 +77,7 @@ void main() {
     });
 
     testWidgets('renders time range in subtitle', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('→'), findsOneWidget);
@@ -102,31 +96,29 @@ void main() {
     });
 
     testWidgets('hides notes preview when notes are null', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       expect(find.text('Vivid dreams about flying'), findsNothing);
     });
 
-    testWidgets('hides notes preview when notes are empty string',
-        (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session(notes: '')),
-      );
+    testWidgets('hides notes preview when notes are empty string', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildSubject(session: _session(notes: '')));
       await tester.pumpAndSettle();
 
-      final italicTexts = tester.widgetList<Text>(find.byType(Text)).where(
-            (t) => t.style?.fontStyle == FontStyle.italic,
-          );
+      final italicTexts = tester
+          .widgetList<Text>(find.byType(Text))
+          .where((t) => t.style?.fontStyle == FontStyle.italic);
       expect(italicTexts, isEmpty);
     });
 
     // ── SleepQuality.unknown ─────────────────────────────────────────────────
 
-    testWidgets('shows "Not rated" label for SleepQuality.unknown',
-        (tester) async {
+    testWidgets('shows "Not rated" label for SleepQuality.unknown', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildSubject(session: _session(quality: SleepQuality.unknown)),
       );
@@ -136,9 +128,7 @@ void main() {
     });
 
     testWidgets('shows "Not rated" label when quality is null', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       expect(find.text('Not rated'), findsOneWidget);
@@ -161,11 +151,10 @@ void main() {
       expect(find.textContaining('Date looks off'), findsOneWidget);
     });
 
-    testWidgets('does not show warning chip for past-dated session',
-        (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+    testWidgets('does not show warning chip for past-dated session', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Date looks off'), findsNothing);
@@ -176,10 +165,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
       await tester.pumpWidget(
-        _buildSubject(
-          session: _session(),
-          onTap: () => tapped = true,
-        ),
+        _buildSubject(session: _session(), onTap: () => tapped = true),
       );
       await tester.pumpAndSettle();
 
@@ -204,9 +190,7 @@ void main() {
     // ── Semantics ────────────────────────────────────────────────────────────
 
     testWidgets('has button semantics role', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       final semantics = tester.getSemantics(find.byType(SleepSessionRow));
@@ -214,9 +198,7 @@ void main() {
     });
 
     testWidgets('semantic label contains date and duration', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       final semantics = tester.getSemantics(find.byType(SleepSessionRow));
@@ -225,9 +207,7 @@ void main() {
     });
 
     testWidgets('semantic hint contains "Long press"', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       final semantics = tester.getSemantics(find.byType(SleepSessionRow));
@@ -237,9 +217,7 @@ void main() {
     // ── Touch target ─────────────────────────────────────────────────────────
 
     testWidgets('touch target is at least 48dp tall', (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(session: _session()),
-      );
+      await tester.pumpWidget(_buildSubject(session: _session()));
       await tester.pumpAndSettle();
 
       final size = tester.getSize(find.byType(SleepSessionRow));

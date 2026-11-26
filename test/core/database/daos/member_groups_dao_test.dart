@@ -24,8 +24,12 @@ void main() {
     });
 
     test('returns max + 1 for root siblings', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'a', displayOrder: 0));
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'b', displayOrder: 3));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'a', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'b', displayOrder: 3));
       expect(await db.memberGroupsDao.nextDisplayOrder(null), 4);
     });
 
@@ -40,10 +44,24 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-a', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-b', displayOrder: 5, parentGroupId: 'root'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-a',
+              displayOrder: 0,
+              parentGroupId: 'root',
+            ),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-b',
+              displayOrder: 5,
+              parentGroupId: 'root',
+            ),
+          );
       expect(await db.memberGroupsDao.nextDisplayOrder('root'), 6);
     });
 
@@ -51,8 +69,11 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 99));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 1, parentGroupId: 'root'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 1, parentGroupId: 'root'),
+          );
       // Root max is 99 but child query should only see child siblings (max=1).
       expect(await db.memberGroupsDao.nextDisplayOrder('root'), 2);
       // Root query should only see root siblings (max=99).
@@ -60,8 +81,11 @@ void main() {
     });
 
     test('soft-deleted groups are excluded from the count', () async {
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'dead', displayOrder: 100, isDeleted: true));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'dead', displayOrder: 100, isDeleted: true),
+          );
       // The only row is soft-deleted, so next order starts at 0.
       expect(await db.memberGroupsDao.nextDisplayOrder(null), 0);
     });
@@ -76,8 +100,7 @@ void main() {
     });
 
     test('returns empty list for non-existent parent id', () async {
-      final children =
-          await db.memberGroupsDao.watchChildGroups('ghost').first;
+      final children = await db.memberGroupsDao.watchChildGroups('ghost').first;
       expect(children, isEmpty);
     });
 
@@ -85,8 +108,11 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
 
       final roots = await db.memberGroupsDao.watchChildGroups(null).first;
       expect(roots.map((r) => r.id), ['root']);
@@ -96,13 +122,22 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'grandchild', displayOrder: 0, parentGroupId: 'child'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'grandchild',
+              displayOrder: 0,
+              parentGroupId: 'child',
+            ),
+          );
 
-      final children =
-          await db.memberGroupsDao.watchChildGroups('root').first;
+      final children = await db.memberGroupsDao.watchChildGroups('root').first;
       expect(children.map((r) => r.id), ['child']);
     });
 
@@ -110,8 +145,9 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'dead', displayOrder: 1, isDeleted: true));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'dead', displayOrder: 1, isDeleted: true));
 
       final roots = await db.memberGroupsDao.watchChildGroups(null).first;
       expect(roots.map((r) => r.id), ['root']);
@@ -144,12 +180,17 @@ void main() {
       await db
           .into(db.members)
           .insert(pkFixtureMember(id: 'deleted', name: 'Deleted'));
-      await (db.update(db.members)..where((m) => m.id.equals('deleted')))
-          .write(const MembersCompanion(isDeleted: Value(true)));
-      await db.into(db.memberGroupEntries).insert(
+      await (db.update(db.members)..where((m) => m.id.equals('deleted'))).write(
+        const MembersCompanion(isDeleted: Value(true)),
+      );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(id: 'entry-live', groupId: 'g', memberId: 'live'),
           );
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'entry-deleted',
               groupId: 'g',
@@ -160,15 +201,17 @@ void main() {
       final allEntries = await db.memberGroupsDao.getAllGroupEntries();
       expect(allEntries.map((entry) => entry.id), ['entry-live']);
 
-      final groupEntries =
-          await db.memberGroupsDao.watchGroupEntries('g').first;
+      final groupEntries = await db.memberGroupsDao
+          .watchGroupEntries('g')
+          .first;
       expect(groupEntries.map((entry) => entry.id), ['entry-live']);
 
       final counts = await db.memberGroupsDao.watchMemberCountsByGroup().first;
       expect(counts, {'g': 1});
 
-      final repairEntries =
-          await db.memberGroupsDao.activeEntriesForMember('deleted');
+      final repairEntries = await db.memberGroupsDao.activeEntriesForMember(
+        'deleted',
+      );
       expect(repairEntries.map((entry) => entry.id), ['entry-deleted']);
     });
   });
@@ -188,10 +231,20 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'grandchild', displayOrder: 0, parentGroupId: 'child'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'grandchild',
+              displayOrder: 0,
+              parentGroupId: 'child',
+            ),
+          );
 
       final children = await db.memberGroupsDao.getDirectChildrenOf('root');
       expect(children.map((r) => r.id), ['child']);
@@ -201,10 +254,21 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'alive', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'dead', displayOrder: 1, parentGroupId: 'root', isDeleted: true));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'alive', displayOrder: 0, parentGroupId: 'root'),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'dead',
+              displayOrder: 1,
+              parentGroupId: 'root',
+              isDeleted: true,
+            ),
+          );
 
       final children = await db.memberGroupsDao.getDirectChildrenOf('root');
       expect(children.map((r) => r.id), ['alive']);
@@ -217,10 +281,24 @@ void main() {
       await db
           .into(db.memberGroups)
           .insert(pkFixtureGroup(id: 'root-b', displayOrder: 1));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-a1', displayOrder: 0, parentGroupId: 'root-a'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-b1', displayOrder: 0, parentGroupId: 'root-b'));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-a1',
+              displayOrder: 0,
+              parentGroupId: 'root-a',
+            ),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-b1',
+              displayOrder: 0,
+              parentGroupId: 'root-b',
+            ),
+          );
 
       final childrenA = await db.memberGroupsDao.getDirectChildrenOf('root-a');
       expect(childrenA.map((r) => r.id), ['child-a1']);
@@ -240,12 +318,30 @@ void main() {
     });
 
     test('sibling groups are NOT deleted', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root-a', displayOrder: 0));
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root-b', displayOrder: 1));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-a', displayOrder: 0, parentGroupId: 'root-a'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child-b', displayOrder: 0, parentGroupId: 'root-b'));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root-a', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root-b', displayOrder: 1));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-a',
+              displayOrder: 0,
+              parentGroupId: 'root-a',
+            ),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'child-b',
+              displayOrder: 0,
+              parentGroupId: 'root-b',
+            ),
+          );
 
       await repo.deleteGroupWithDescendants('root-a');
 
@@ -258,11 +354,23 @@ void main() {
     });
 
     test('deletes root, child, and grandchild all at once', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'grandchild', displayOrder: 0, parentGroupId: 'child'));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'grandchild',
+              displayOrder: 0,
+              parentGroupId: 'child',
+            ),
+          );
 
       await repo.deleteGroupWithDescendants('root');
 
@@ -271,8 +379,12 @@ void main() {
     });
 
     test('group with no children: only the target is deleted', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'leaf', displayOrder: 0));
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'other', displayOrder: 1));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'leaf', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'other', displayOrder: 1));
 
       await repo.deleteGroupWithDescendants('leaf');
 
@@ -291,9 +403,14 @@ void main() {
     });
 
     test('direct children get parentGroupId cleared', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
 
       await repo.promoteChildrenToRoot('root');
 
@@ -303,11 +420,23 @@ void main() {
     });
 
     test('grandchildren are NOT promoted — only direct children', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'grandchild', displayOrder: 0, parentGroupId: 'child'));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(
+              id: 'grandchild',
+              displayOrder: 0,
+              parentGroupId: 'child',
+            ),
+          );
 
       await repo.promoteChildrenToRoot('root');
 
@@ -318,9 +447,14 @@ void main() {
     });
 
     test('the parent group is soft-deleted after promotion', () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'root', displayOrder: 0));
-      await db.into(db.memberGroups).insert(
-          pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'));
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'root', displayOrder: 0));
+      await db
+          .into(db.memberGroups)
+          .insert(
+            pkFixtureGroup(id: 'child', displayOrder: 0, parentGroupId: 'root'),
+          );
 
       await repo.promoteChildrenToRoot('root');
 
@@ -334,18 +468,19 @@ void main() {
   group('entriesForGroupForReconcile', () {
     test('returns active entries with pending_pk_op = none', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'),
-          );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'));
 
-      final rows =
-          await db.memberGroupsDao.entriesForGroupForReconcile('g');
+      final rows = await db.memberGroupsDao.entriesForGroupForReconcile('g');
       expect(rows.map((r) => r.id), ['e1']);
     });
 
     test('returns active entries with push_add intent', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'e1',
               groupId: 'g',
@@ -354,41 +489,40 @@ void main() {
             ),
           );
 
-      final rows =
-          await db.memberGroupsDao.entriesForGroupForReconcile('g');
+      final rows = await db.memberGroupsDao.entriesForGroupForReconcile('g');
       expect(rows, hasLength(1));
       expect(rows.single.pendingPkOp, 'push_add');
     });
 
-    test(
-      'returns soft-deleted entries with push_remove intent (so reconcile '
-      'does not revive them when PK still reports the member)',
-      () async {
-        await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-        await db.into(db.memberGroupEntries).insert(
-              pkFixtureEntry(
-                id: 'e1',
-                groupId: 'g',
-                memberId: 'm1',
-                isDeleted: true,
-                pendingPkOp: 'push_remove',
-              ),
-            );
+    test('returns soft-deleted entries with push_remove intent (so reconcile '
+        'does not revive them when PK still reports the member)', () async {
+      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
+            pkFixtureEntry(
+              id: 'e1',
+              groupId: 'g',
+              memberId: 'm1',
+              isDeleted: true,
+              pendingPkOp: 'push_remove',
+            ),
+          );
 
-        final rows =
-            await db.memberGroupsDao.entriesForGroupForReconcile('g');
-        expect(rows, hasLength(1));
-        expect(rows.single.isDeleted, isTrue);
-        expect(rows.single.pendingPkOp, 'push_remove');
-      },
-    );
+      final rows = await db.memberGroupsDao.entriesForGroupForReconcile('g');
+      expect(rows, hasLength(1));
+      expect(rows.single.isDeleted, isTrue);
+      expect(rows.single.pendingPkOp, 'push_remove');
+    });
 
     test(
       'EXCLUDES soft-deleted entries with pending_pk_op = none (the existing '
       'reconcile semantic — done with this row)',
       () async {
         await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-        await db.into(db.memberGroupEntries).insert(
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
               pkFixtureEntry(
                 id: 'e1',
                 groupId: 'g',
@@ -397,8 +531,7 @@ void main() {
               ),
             );
 
-        final rows =
-            await db.memberGroupsDao.entriesForGroupForReconcile('g');
+        final rows = await db.memberGroupsDao.entriesForGroupForReconcile('g');
         expect(rows, isEmpty);
       },
     );
@@ -406,10 +539,12 @@ void main() {
     test('scopes to the requested group', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g2'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'a', groupId: 'g1', memberId: 'm1'),
-          );
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'a', groupId: 'g1', memberId: 'm1'));
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'b',
               groupId: 'g2',
@@ -418,8 +553,7 @@ void main() {
             ),
           );
 
-      final rows =
-          await db.memberGroupsDao.entriesForGroupForReconcile('g1');
+      final rows = await db.memberGroupsDao.entriesForGroupForReconcile('g1');
       expect(rows.map((r) => r.id), ['a']);
     });
   });
@@ -430,10 +564,12 @@ void main() {
       'entriesForGroupForReconcile hides',
       () async {
         await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-        await db.into(db.memberGroupEntries).insert(
-              pkFixtureEntry(id: 'live', groupId: 'g', memberId: 'm1'),
-            );
-        await db.into(db.memberGroupEntries).insert(
+        await db
+            .into(db.memberGroupEntries)
+            .insert(pkFixtureEntry(id: 'live', groupId: 'g', memberId: 'm1'));
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
               pkFixtureEntry(
                 id: 'peer-tomb',
                 groupId: 'g',
@@ -442,12 +578,14 @@ void main() {
               ),
             );
 
-        final reconcile =
-            await db.memberGroupsDao.entriesForGroupForReconcile('g');
+        final reconcile = await db.memberGroupsDao.entriesForGroupForReconcile(
+          'g',
+        );
         expect(reconcile.map((r) => r.id), ['live']);
 
-        final full =
-            await db.memberGroupsDao.entriesForGroupIncludingDeleted('g');
+        final full = await db.memberGroupsDao.entriesForGroupIncludingDeleted(
+          'g',
+        );
         expect(full.map((r) => r.id).toSet(), {'live', 'peer-tomb'});
       },
     );
@@ -455,7 +593,9 @@ void main() {
     test('scopes to the requested group', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g2'));
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'a',
               groupId: 'g1',
@@ -463,42 +603,47 @@ void main() {
               isDeleted: true,
             ),
           );
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'b', groupId: 'g2', memberId: 'm1'),
-          );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'b', groupId: 'g2', memberId: 'm1'));
 
-      final rows =
-          await db.memberGroupsDao.entriesForGroupIncludingDeleted('g1');
+      final rows = await db.memberGroupsDao.entriesForGroupIncludingDeleted(
+        'g1',
+      );
       expect(rows.map((r) => r.id), ['a']);
     });
   });
 
   group('markEntryPushRemoveGuarded (F06)', () {
-    test('flips a synced tombstone (deleted, pending=none) to push_remove',
-        () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(
-              id: 'e1',
-              groupId: 'g',
-              memberId: 'm1',
-              isDeleted: true,
-            ),
-          );
+    test(
+      'flips a synced tombstone (deleted, pending=none) to push_remove',
+      () async {
+        await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
+              pkFixtureEntry(
+                id: 'e1',
+                groupId: 'g',
+                memberId: 'm1',
+                isDeleted: true,
+              ),
+            );
 
-      final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('e1');
-      expect(hits, 1);
-      final row = await (db.select(
-        db.memberGroupEntries,
-      )..where((e) => e.id.equals('e1'))).getSingle();
-      expect(row.pendingPkOp, 'push_remove');
-    });
+        final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('e1');
+        expect(hits, 1);
+        final row = await (db.select(
+          db.memberGroupEntries,
+        )..where((e) => e.id.equals('e1'))).getSingle();
+        expect(row.pendingPkOp, 'push_remove');
+      },
+    );
 
     test('does NOT touch an active row (guard misses)', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'),
-          );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'));
 
       final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('e1');
       expect(hits, 0);
@@ -508,33 +653,39 @@ void main() {
       expect(row.pendingPkOp, 'none');
     });
 
-    test('does NOT clobber an in-flight local intent (push_add/push_remove)',
-        () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(
-              id: 'add',
-              groupId: 'g',
-              memberId: 'm1',
-              isDeleted: true,
-              pendingPkOp: 'push_add',
-            ),
-          );
+    test(
+      'does NOT clobber an in-flight local intent (push_add/push_remove)',
+      () async {
+        await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
+              pkFixtureEntry(
+                id: 'add',
+                groupId: 'g',
+                memberId: 'm1',
+                isDeleted: true,
+                pendingPkOp: 'push_add',
+              ),
+            );
 
-      final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('add');
-      expect(hits, 0);
-      final row = await (db.select(
-        db.memberGroupEntries,
-      )..where((e) => e.id.equals('add'))).getSingle();
-      expect(row.pendingPkOp, 'push_add');
-    });
+        final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('add');
+        expect(hits, 0);
+        final row = await (db.select(
+          db.memberGroupEntries,
+        )..where((e) => e.id.equals('add'))).getSingle();
+        expect(row.pendingPkOp, 'push_add');
+      },
+    );
 
     test(
       'refreshes created_at so an old-stamp tombstone is not born expired '
       '(M15 — the F06 sweep adopts pre-upgrade/offline tombstones)',
       () async {
         await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-        await db.into(db.memberGroupEntries).insert(
+        await db
+            .into(db.memberGroupEntries)
+            .insert(
               pkFixtureEntry(
                 id: 'e1',
                 groupId: 'g',
@@ -544,12 +695,11 @@ void main() {
             );
         // The precise F06 case: a peer tombstone applied long before the user
         // upgraded / re-enabled PK pull, far older than pushRetryMaxAge.
-        await (db.update(db.memberGroupEntries)
-              ..where((e) => e.id.equals('e1')))
-            .write(
+        await (db.update(
+          db.memberGroupEntries,
+        )..where((e) => e.id.equals('e1'))).write(
           MemberGroupEntriesCompanion(
-            createdAt:
-                Value(DateTime.now().subtract(const Duration(days: 60))),
+            createdAt: Value(DateTime.now().subtract(const Duration(days: 60))),
           ),
         );
 
@@ -557,13 +707,17 @@ void main() {
         final hits = await db.memberGroupsDao.markEntryPushRemoveGuarded('e1');
         expect(hits, 1);
 
-        final row = await (db.select(db.memberGroupEntries)
-              ..where((e) => e.id.equals('e1')))
-            .getSingle();
+        final row = await (db.select(
+          db.memberGroupEntries,
+        )..where((e) => e.id.equals('e1'))).getSingle();
         expect(row.pendingPkOp, 'push_remove');
-        expect(row.createdAt!.isAfter(before), isTrue,
-            reason: 'adopting the remove intent must reset the intent-age '
-                'clock so the cap gives it the full retry budget, not zero');
+        expect(
+          row.createdAt!.isAfter(before),
+          isTrue,
+          reason:
+              'adopting the remove intent must reset the intent-age '
+              'clock so the cap gives it the full retry budget, not zero',
+        );
       },
     );
   });
@@ -571,9 +725,9 @@ void main() {
   group('entriesWithPendingPkOp', () {
     test('returns empty when no rows have pending intent', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'),
-          );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'e1', groupId: 'g', memberId: 'm1'));
 
       final rows = await db.memberGroupsDao.entriesWithPendingPkOp();
       expect(rows, isEmpty);
@@ -582,7 +736,9 @@ void main() {
     test('returns push_add and push_remove rows across all groups', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g2'));
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'a',
               groupId: 'g1',
@@ -590,7 +746,9 @@ void main() {
               pendingPkOp: 'push_add',
             ),
           );
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'b',
               groupId: 'g2',
@@ -599,37 +757,36 @@ void main() {
               pendingPkOp: 'push_remove',
             ),
           );
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'c', groupId: 'g1', memberId: 'm2'),
-          );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'c', groupId: 'g1', memberId: 'm2'));
 
       final rows = await db.memberGroupsDao.entriesWithPendingPkOp();
       expect(rows.map((r) => r.id).toSet(), {'a', 'b'});
     });
 
-    test(
-      'returns push_add rows even when is_deleted is true — pre-push '
-      'validation must be able to see this contradiction',
-      () async {
-        // This state can arise when a CRDT delete from another device flips
-        // is_deleted on a row that locally still has push_add queued.
-        await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
-        await db.into(db.memberGroupEntries).insert(
-              pkFixtureEntry(
-                id: 'a',
-                groupId: 'g',
-                memberId: 'm1',
-                isDeleted: true,
-                pendingPkOp: 'push_add',
-              ),
-            );
+    test('returns push_add rows even when is_deleted is true — pre-push '
+        'validation must be able to see this contradiction', () async {
+      // This state can arise when a CRDT delete from another device flips
+      // is_deleted on a row that locally still has push_add queued.
+      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g'));
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
+            pkFixtureEntry(
+              id: 'a',
+              groupId: 'g',
+              memberId: 'm1',
+              isDeleted: true,
+              pendingPkOp: 'push_add',
+            ),
+          );
 
-        final rows = await db.memberGroupsDao.entriesWithPendingPkOp();
-        expect(rows, hasLength(1));
-        expect(rows.single.isDeleted, isTrue);
-        expect(rows.single.pendingPkOp, 'push_add');
-      },
-    );
+      final rows = await db.memberGroupsDao.entriesWithPendingPkOp();
+      expect(rows, hasLength(1));
+      expect(rows.single.isDeleted, isTrue);
+      expect(rows.single.pendingPkOp, 'push_add');
+    });
   });
 
   // ── updateGroupSortState ──────────────────────────────────────────────────
@@ -641,8 +798,10 @@ void main() {
           .insert(pkFixtureGroup(id: 'g1', displayOrder: 0));
 
       const json = '{"mode":1,"order":["a","b"]}';
-      final affected = await db.memberGroupsDao
-          .updateGroupSortState('g1', json);
+      final affected = await db.memberGroupsDao.updateGroupSortState(
+        'g1',
+        json,
+      );
 
       expect(affected, 1);
       final row = await db.memberGroupsDao.getGroupById('g1');
@@ -650,27 +809,33 @@ void main() {
       expect(row!.sortState, json);
     });
 
-    test('second call wins — last write semantics, no transaction abort',
-        () async {
-      await db
-          .into(db.memberGroups)
-          .insert(pkFixtureGroup(id: 'g2', displayOrder: 0));
+    test(
+      'second call wins — last write semantics, no transaction abort',
+      () async {
+        await db
+            .into(db.memberGroups)
+            .insert(pkFixtureGroup(id: 'g2', displayOrder: 0));
 
-      const first = '{"mode":1,"order":["a","b"]}';
-      const second = '{"mode":0,"order":["b","a","c"]}';
+        const first = '{"mode":1,"order":["a","b"]}';
+        const second = '{"mode":0,"order":["b","a","c"]}';
 
-      final firstAffected =
-          await db.memberGroupsDao.updateGroupSortState('g2', first);
-      final secondAffected =
-          await db.memberGroupsDao.updateGroupSortState('g2', second);
+        final firstAffected = await db.memberGroupsDao.updateGroupSortState(
+          'g2',
+          first,
+        );
+        final secondAffected = await db.memberGroupsDao.updateGroupSortState(
+          'g2',
+          second,
+        );
 
-      expect(firstAffected, 1);
-      expect(secondAffected, 1);
+        expect(firstAffected, 1);
+        expect(secondAffected, 1);
 
-      final row = await db.memberGroupsDao.getGroupById('g2');
-      expect(row, isNotNull);
-      expect(row!.sortState, second);
-    });
+        final row = await db.memberGroupsDao.getGroupById('g2');
+        expect(row, isNotNull);
+        expect(row!.sortState, second);
+      },
+    );
 
     test('does not affect other groups', () async {
       await db
@@ -691,8 +856,10 @@ void main() {
     });
 
     test('returns 0 when no row matches the id', () async {
-      final affected = await db.memberGroupsDao
-          .updateGroupSortState('nonexistent', '{"mode":0,"order":[]}');
+      final affected = await db.memberGroupsDao.updateGroupSortState(
+        'nonexistent',
+        '{"mode":0,"order":[]}',
+      );
       expect(affected, 0);
     });
   });
@@ -700,9 +867,9 @@ void main() {
   // Guarded DAO helpers added for the PK audit fixes.
   group('PK audit DAO methods', () {
     test('getGroupByIdIncludingDeleted finds a tombstone (M13)', () async {
-      await db.into(db.memberGroups).insert(
-            pkFixtureGroup(id: 'g1', isDeleted: true),
-          );
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'g1', isDeleted: true));
       final row = await db.memberGroupsDao.getGroupByIdIncludingDeleted('g1');
       expect(row, isNotNull);
       expect(row!.isDeleted, isTrue);
@@ -710,113 +877,125 @@ void main() {
       expect(await db.memberGroupsDao.getGroupById('g1'), isNull);
     });
 
-    test('getGroupByIdIncludingDeleted returns null for an unknown id',
-        () async {
+    test(
+      'getGroupByIdIncludingDeleted returns null for an unknown id',
+      () async {
+        expect(
+          await db.memberGroupsDao.getGroupByIdIncludingDeleted('nope'),
+          isNull,
+        );
+      },
+    );
+
+    test('deleteGroup soft-deletes the group + its entries and KEEPS '
+        'pluralkit_uuid on the tombstone (wave-3 verifier issue 3 / F15 — uuid '
+        'findability for the tombstone-aware importer guard)', () async {
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'g1', pluralkitUuid: 'pk-g1'));
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'));
+
+      await db.memberGroupsDao.deleteGroup('g1');
+
+      final tombstone = await db.memberGroupsDao.getGroupByIdIncludingDeleted(
+        'g1',
+      );
+      expect(tombstone!.isDeleted, isTrue);
+      // F15: the uuid is PRESERVED on the soft-deleted row (the pre-fix
+      // deleteGroup nulled it, which erased the tombstone evidence the
+      // importer's resurrection guard relies on). The partial unique index
+      // only covers active rows, so a tombstone can and must keep its uuid.
       expect(
-        await db.memberGroupsDao.getGroupByIdIncludingDeleted('nope'),
-        isNull,
+        tombstone.pluralkitUuid,
+        'pk-g1',
+        reason: 'the tombstone must keep its uuid for guard findability',
+      );
+
+      // The group's entries are soft-deleted, not left active.
+      final entry = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('e1'))).getSingle();
+      expect(
+        entry.isDeleted,
+        isTrue,
+        reason: 'deleteGroup must soft-delete the group\'s entries too',
+      );
+
+      // And the uuid-keyed tombstone lookup the importer guard uses sees it.
+      final byUuid = await db.memberGroupsDao
+          .findByPluralkitUuidIncludingDeleted('pk-g1');
+      expect(byUuid, isNotNull);
+      expect(byUuid!.id, 'g1');
+      // Re-import-shaped insert under the same uuid must not violate the
+      // partial unique index (tombstones are excluded from it).
+      await db
+          .into(db.memberGroups)
+          .insert(pkFixtureGroup(id: 'g1-new', pluralkitUuid: 'pk-g1'));
+    });
+
+    test('softDeleteEntryWithPendingOp refreshes created_at '
+        '(intent age, not row age)', () async {
+      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
+      await db
+          .into(db.memberGroupEntries)
+          .insert(pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'));
+      // Backdate to simulate a steady-state membership far older than the
+      // push retry cap.
+      await (db.update(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('e1'))).write(
+        MemberGroupEntriesCompanion(
+          createdAt: Value(DateTime.now().subtract(const Duration(days: 60))),
+        ),
+      );
+
+      final before = DateTime.now().subtract(const Duration(seconds: 5));
+      await db.memberGroupsDao.softDeleteEntryWithPendingOp(
+        'e1',
+        pendingPkOp: 'push_remove',
+      );
+
+      final row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('e1'))).getSingle();
+      expect(row.isDeleted, isTrue);
+      expect(row.pendingPkOp, 'push_remove');
+      expect(
+        row.createdAt!.isAfter(before),
+        isTrue,
+        reason: 'queuing a remove must reset the intent-age clock',
       );
     });
 
     test(
-      'deleteGroup soft-deletes the group + its entries and KEEPS '
-      'pluralkit_uuid on the tombstone (wave-3 verifier issue 3 / F15 — uuid '
-      'findability for the tombstone-aware importer guard)',
-      () async {
-        await db.into(db.memberGroups).insert(
-              pkFixtureGroup(id: 'g1', pluralkitUuid: 'pk-g1'),
-            );
-        await db.into(db.memberGroupEntries).insert(
-              pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'),
-            );
-
-        await db.memberGroupsDao.deleteGroup('g1');
-
-        final tombstone =
-            await db.memberGroupsDao.getGroupByIdIncludingDeleted('g1');
-        expect(tombstone!.isDeleted, isTrue);
-        // F15: the uuid is PRESERVED on the soft-deleted row (the pre-fix
-        // deleteGroup nulled it, which erased the tombstone evidence the
-        // importer's resurrection guard relies on). The partial unique index
-        // only covers active rows, so a tombstone can and must keep its uuid.
-        expect(tombstone.pluralkitUuid, 'pk-g1',
-            reason: 'the tombstone must keep its uuid for guard findability');
-
-        // The group's entries are soft-deleted, not left active.
-        final entry = await (db.select(db.memberGroupEntries)
-              ..where((e) => e.id.equals('e1')))
-            .getSingle();
-        expect(entry.isDeleted, isTrue,
-            reason: 'deleteGroup must soft-delete the group\'s entries too');
-
-        // And the uuid-keyed tombstone lookup the importer guard uses sees it.
-        final byUuid = await db.memberGroupsDao
-            .findByPluralkitUuidIncludingDeleted('pk-g1');
-        expect(byUuid, isNotNull);
-        expect(byUuid!.id, 'g1');
-        // Re-import-shaped insert under the same uuid must not violate the
-        // partial unique index (tombstones are excluded from it).
-        await db.into(db.memberGroups).insert(
-              pkFixtureGroup(id: 'g1-new', pluralkitUuid: 'pk-g1'),
-            );
-      },
-    );
-
-    test(
-      'softDeleteEntryWithPendingOp refreshes created_at '
-      '(intent age, not row age)',
+      'member_group_entries.created_at clientDefault stamps now on insert',
       () async {
         await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
-        await db.into(db.memberGroupEntries).insert(
-              pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'),
-            );
-        // Backdate to simulate a steady-state membership far older than the
-        // push retry cap.
-        await (db.update(db.memberGroupEntries)
-              ..where((e) => e.id.equals('e1')))
-            .write(
-          MemberGroupEntriesCompanion(
-            createdAt:
-                Value(DateTime.now().subtract(const Duration(days: 60))),
-          ),
-        );
-
         final before = DateTime.now().subtract(const Duration(seconds: 5));
-        await db.memberGroupsDao.softDeleteEntryWithPendingOp(
-          'e1',
-          pendingPkOp: 'push_remove',
+        await db
+            .into(db.memberGroupEntries)
+            .insert(pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'));
+        final row = await (db.select(
+          db.memberGroupEntries,
+        )..where((e) => e.id.equals('e1'))).getSingle();
+        expect(row.createdAt, isNotNull);
+        expect(
+          row.createdAt!.isAfter(before),
+          isTrue,
+          reason: 'clientDefault must stamp a recent created_at (H6b)',
         );
-
-        final row = await (db.select(db.memberGroupEntries)
-              ..where((e) => e.id.equals('e1')))
-            .getSingle();
-        expect(row.isDeleted, isTrue);
-        expect(row.pendingPkOp, 'push_remove');
-        expect(row.createdAt!.isAfter(before), isTrue,
-            reason: 'queuing a remove must reset the intent-age clock');
       },
     );
-
-    test('member_group_entries.created_at clientDefault stamps now on insert',
-        () async {
-      await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
-      final before = DateTime.now().subtract(const Duration(seconds: 5));
-      await db.into(db.memberGroupEntries).insert(
-            pkFixtureEntry(id: 'e1', groupId: 'g1', memberId: 'm1'),
-          );
-      final row = await (db.select(db.memberGroupEntries)
-            ..where((e) => e.id.equals('e1')))
-          .getSingle();
-      expect(row.createdAt, isNotNull);
-      expect(row.createdAt!.isAfter(before), isTrue,
-          reason: 'clientDefault must stamp a recent created_at (H6b)');
-    });
 
     test('softDeleteEntryWithPendingOpGuarded only fires on the expected state '
         '(H6c)', () async {
       await db.into(db.memberGroups).insert(pkFixtureGroup(id: 'g1'));
       // Active row, push_remove (the CRDT-revive shape).
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'e1',
               groupId: 'g1',
@@ -832,9 +1011,9 @@ void main() {
         expectedActive: true,
       );
       expect(hits, 1);
-      var row = await (db.select(db.memberGroupEntries)
-            ..where((e) => e.id.equals('e1')))
-          .getSingle();
+      var row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('e1'))).getSingle();
       expect(row.isDeleted, isTrue);
 
       // A second call expecting active now MISSES (row is already deleted).
@@ -846,7 +1025,9 @@ void main() {
       expect(miss, 0);
 
       // A push_add row is never matched (guard requires push_remove).
-      await db.into(db.memberGroupEntries).insert(
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
             pkFixtureEntry(
               id: 'e2',
               groupId: 'g1',
@@ -856,16 +1037,19 @@ void main() {
           );
       final addMiss = await db.memberGroupsDao
           .softDeleteEntryWithPendingOpGuarded(
-        'e2',
-        pendingPkOp: 'push_remove',
-        expectedActive: true,
-      );
+            'e2',
+            pendingPkOp: 'push_remove',
+            expectedActive: true,
+          );
       expect(addMiss, 0);
-      row = await (db.select(db.memberGroupEntries)
-            ..where((e) => e.id.equals('e2')))
-          .getSingle();
-      expect(row.isDeleted, isFalse,
-          reason: 'a concurrent push_add re-add must not be clobbered (H6c)');
+      row = await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.id.equals('e2'))).getSingle();
+      expect(
+        row.isDeleted,
+        isFalse,
+        reason: 'a concurrent push_add re-add must not be clobbered (H6c)',
+      );
     });
   });
 }

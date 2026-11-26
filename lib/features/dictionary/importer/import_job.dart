@@ -13,9 +13,21 @@ import 'package:prism_plurality/features/dictionary/views/dictionary_import_flow
 import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Where a wiki import job is.
-enum ImportJobStatus { idle, listing, fetching, paused, ready, importing, done, error }
+enum ImportJobStatus {
+  idle,
+  listing,
+  fetching,
+  paused,
+  ready,
+  importing,
+  done,
+  error,
+}
 
-bool isRunningStatus(ImportJobStatus s) => s == ImportJobStatus.listing || s == ImportJobStatus.fetching || s == ImportJobStatus.importing;
+bool isRunningStatus(ImportJobStatus s) =>
+    s == ImportJobStatus.listing ||
+    s == ImportJobStatus.fetching ||
+    s == ImportJobStatus.importing;
 
 /// A fetched article plus whether it will be imported.
 class ImportItem {
@@ -23,12 +35,20 @@ class ImportItem {
   WikiArticle a;
   bool selected;
   Map<String, Object?> toJson() => {...a.toJson(), 'sel': selected};
-  static ImportItem fromJson(Map<String, Object?> j) => ImportItem(WikiArticle.fromJson(j), selected: j['sel'] != false);
+  static ImportItem fromJson(Map<String, Object?> j) =>
+      ImportItem(WikiArticle.fromJson(j), selected: j['sel'] != false);
 }
 
 /// Options chosen before (or while) importing.
 class ImportOptions {
-  ImportOptions({this.limit = 200, this.fullText = false, this.autoImport = true, this.useCategories = true, this.collection, this.dup = TermDuplicateAction.skip});
+  ImportOptions({
+    this.limit = 200,
+    this.fullText = false,
+    this.autoImport = true,
+    this.useCategories = true,
+    this.collection,
+    this.dup = TermDuplicateAction.skip,
+  });
   int limit; // wikiNoLimit = all
   bool fullText;
   bool autoImport;
@@ -36,14 +56,25 @@ class ImportOptions {
   String? collection;
   TermDuplicateAction dup;
 
-  Map<String, Object?> toJson() => {'limit': limit, 'fullText': fullText, 'autoImport': autoImport, 'useCategories': useCategories, 'collection': collection, 'dup': dup.name};
+  Map<String, Object?> toJson() => {
+    'limit': limit,
+    'fullText': fullText,
+    'autoImport': autoImport,
+    'useCategories': useCategories,
+    'collection': collection,
+    'dup': dup.name,
+  };
   static ImportOptions fromJson(Map<String, Object?> j) => ImportOptions(
     limit: (j['limit'] as num?)?.toInt() ?? 200,
     fullText: j['fullText'] == true,
     autoImport: j['autoImport'] != false,
     useCategories: j['useCategories'] != false,
     collection: j['collection'] as String?,
-    dup: TermDuplicateAction.values.where((d) => d.name == j['dup']).firstOrNull ?? TermDuplicateAction.skip,
+    dup:
+        TermDuplicateAction.values
+            .where((d) => d.name == j['dup'])
+            .firstOrNull ??
+        TermDuplicateAction.skip,
   );
 }
 
@@ -90,7 +121,11 @@ class ImportJob {
 
   static ImportJob fromJson(Map<String, Object?> j) {
     final job = ImportJob()
-      ..status = ImportJobStatus.values.where((s) => s.name == j['status']).firstOrNull ?? ImportJobStatus.idle
+      ..status =
+          ImportJobStatus.values
+              .where((s) => s.name == j['status'])
+              .firstOrNull ??
+          ImportJobStatus.idle
       ..input = j['input'] as String?
       ..providerId = j['providerId'] as String?
       ..sourceLabel = '${j['sourceLabel'] ?? ''}'
@@ -99,11 +134,18 @@ class ImportJob {
       ..titles = [for (final t in (j['titles'] as List?) ?? const []) '$t']
       ..next = (j['next'] as num?)?.toInt() ?? 0
       ..errorCode = j['error'] as String?
-      ..options = ImportOptions.fromJson(((j['options'] as Map?) ?? const {}).cast<String, Object?>())
+      ..options = ImportOptions.fromJson(
+        ((j['options'] as Map?) ?? const {}).cast<String, Object?>(),
+      )
       ..result = (j['result'] as Map?)?.cast<String, Object?>()
       ..updatedAt = DateTime.tryParse('${j['updatedAt'] ?? ''}');
-    job.items.addAll([for (final i in (j['items'] as List?) ?? const []) if (i is Map) ImportItem.fromJson(i.cast<String, Object?>())]);
-    job.failed.addAll([for (final f in (j['failed'] as List?) ?? const []) '$f']);
+    job.items.addAll([
+      for (final i in (j['items'] as List?) ?? const [])
+        if (i is Map) ImportItem.fromJson(i.cast<String, Object?>()),
+    ]);
+    job.failed.addAll([
+      for (final f in (j['failed'] as List?) ?? const []) '$f',
+    ]);
     return job;
   }
 }
@@ -114,10 +156,21 @@ class BackgroundWorkPlatform {
   static const _ch = MethodChannel('com.prismplural.prism/background_work');
   bool get _supported => !kIsWeb && Platform.isAndroid;
 
-  Future<void> update({required String title, required String text, int progress = 0, int max = 0}) async {
+  Future<void> update({
+    required String title,
+    required String text,
+    int progress = 0,
+    int max = 0,
+  }) async {
     if (!_supported) return;
     try {
-      await _ch.invokeMethod('update', {'title': title, 'text': text, 'progress': progress, 'max': max, 'channelName': 'Imports and background tasks'});
+      await _ch.invokeMethod('update', {
+        'title': title,
+        'text': text,
+        'progress': progress,
+        'max': max,
+        'channelName': 'Imports and background tasks',
+      });
     } catch (_) {}
   }
 
@@ -129,23 +182,30 @@ class BackgroundWorkPlatform {
   }
 }
 
-final backgroundWorkPlatformProvider = Provider<BackgroundWorkPlatform>((ref) => const BackgroundWorkPlatform());
+final backgroundWorkPlatformProvider = Provider<BackgroundWorkPlatform>(
+  (ref) => const BackgroundWorkPlatform(),
+);
 
 /// Overridable for tests.
 final wikiHttpProvider = Provider<WikiHttp>((ref) => WikiHttp());
 
 /// Where the job is saved (overridable for tests).
-final importJobFileProvider = Provider<Future<File?> Function()>((ref) => () async {
-  if (kIsWeb) return null;
-  try {
-    return File('${(await getApplicationSupportDirectory()).path}/dictionary_import_job.json');
-  } catch (_) {
-    return null;
-  }
-});
+final importJobFileProvider = Provider<Future<File?> Function()>(
+  (ref) => () async {
+    if (kIsWeb) return null;
+    try {
+      return File(
+        '${(await getApplicationSupportDirectory()).path}/dictionary_import_job.json',
+      );
+    } catch (_) {
+      return null;
+    }
+  },
+);
 
 String _encode(Map<String, Object?> j) => jsonEncode(j);
-Map<String, Object?> _decode(String s) => (jsonDecode(s) as Map).cast<String, Object?>();
+Map<String, Object?> _decode(String s) =>
+    (jsonDecode(s) as Map).cast<String, Object?>();
 
 /// Runs and remembers the wiki import. UI watches [ImportJobState.version].
 class ImportJobNotifier extends Notifier<int> {
@@ -203,7 +263,9 @@ class ImportJobNotifier extends Notifier<int> {
 
   Future<void> _save({bool force = false}) async {
     if (!ref.mounted) return;
-    if (!force && DateTime.now().difference(_lastSave) < const Duration(seconds: 3)) return;
+    if (!force &&
+        DateTime.now().difference(_lastSave) < const Duration(seconds: 3))
+      return;
     _lastSave = DateTime.now();
     final prev = _saving;
     final f = await ref.read(importJobFileProvider)();
@@ -289,7 +351,11 @@ class ImportJobNotifier extends Notifier<int> {
     await _notify();
     try {
       await _ensureProvider();
-      job.titles = await _provider!.listTitles(_http, _request!, limit: job.options.limit);
+      job.titles = await _provider!.listTitles(
+        _http,
+        _request!,
+        limit: job.options.limit,
+      );
       if (!ref.mounted) return;
       job.next = 0;
       await _save(force: true);
@@ -310,8 +376,14 @@ class ImportJobNotifier extends Notifier<int> {
         job
           ..input ??= u
           ..providerId = p.id
-          ..sourceLabel = job.sourceLabel.isEmpty ? '${p.name} · ${r.uri.host}' : job.sourceLabel
-          ..titles = [...job.titles.take(job.next), r.page ?? u, ...job.titles.skip(job.next)];
+          ..sourceLabel = job.sourceLabel.isEmpty
+              ? '${p.name} · ${r.uri.host}'
+              : job.sourceLabel
+          ..titles = [
+            ...job.titles.take(job.next),
+            r.page ?? u,
+            ...job.titles.skip(job.next),
+          ];
       } catch (_) {
         job.failed.add(u);
       }
@@ -347,7 +419,10 @@ class ImportJobNotifier extends Notifier<int> {
       await importNow();
       return;
     }
-    if (job.titles.isEmpty && job.scope != null && job.scope != WikiScope.article && job.items.isEmpty) {
+    if (job.titles.isEmpty &&
+        job.scope != null &&
+        job.scope != WikiScope.article &&
+        job.items.isEmpty) {
       job.status = ImportJobStatus.idle;
       await listAndFetch();
       return;
@@ -362,7 +437,9 @@ class ImportJobNotifier extends Notifier<int> {
   }
 
   void pause() {
-    if (job.status != ImportJobStatus.fetching && job.status != ImportJobStatus.listing) return;
+    if (job.status != ImportJobStatus.fetching &&
+        job.status != ImportJobStatus.listing)
+      return;
     _cancel = true;
   }
 
@@ -383,12 +460,20 @@ class ImportJobNotifier extends Notifier<int> {
 
   Future<void> _notify({String? text}) async {
     if (!ref.mounted) return;
-    await ref.read(backgroundWorkPlatformProvider).update(
-    title: job.status == ImportJobStatus.listing ? 'Finding articles to import…' : 'Importing into Dictionary',
-    text: text ?? (job.total == 0 ? job.sourceLabel : '${job.done} of ${job.total} · ${job.sourceLabel}'),
-      progress: job.done,
-      max: job.total,
-    );
+    await ref
+        .read(backgroundWorkPlatformProvider)
+        .update(
+          title: job.status == ImportJobStatus.listing
+              ? 'Finding articles to import…'
+              : 'Importing into Dictionary',
+          text:
+              text ??
+              (job.total == 0
+                  ? job.sourceLabel
+                  : '${job.done} of ${job.total} · ${job.sourceLabel}'),
+          progress: job.done,
+          max: job.total,
+        );
   }
 
   Future<void> _fetchLoop() async {
@@ -410,9 +495,17 @@ class ImportJobNotifier extends Notifier<int> {
         await ref.read(backgroundWorkPlatformProvider).finish();
         return;
       }
-      final batch = job.titles.sublist(job.next, (job.next + step).clamp(0, job.titles.length));
+      final batch = job.titles.sublist(
+        job.next,
+        (job.next + step).clamp(0, job.titles.length),
+      );
       try {
-        final got = await p.fetchArticles(_http, r, batch, fullText: job.options.fullText);
+        final got = await p.fetchArticles(
+          _http,
+          r,
+          batch,
+          fullText: job.options.fullText,
+        );
         // Prism shut down mid-request: the saved job resumes next time.
         if (!ref.mounted) return;
         for (final a in got) {
@@ -425,7 +518,9 @@ class ImportJobNotifier extends Notifier<int> {
         }
         job.next += batch.length;
       } on WikiImportError catch (e) {
-        if (e.code == 'blocked_by_robots' || e.code == 'auth_required' || e.code == 'rate_limited') {
+        if (e.code == 'blocked_by_robots' ||
+            e.code == 'auth_required' ||
+            e.code == 'rate_limited') {
           _fail(e);
           return;
         }
@@ -454,7 +549,13 @@ class ImportJobNotifier extends Notifier<int> {
     if (job.options.autoImport && job.items.any((i) => i.selected && i.a.ok)) {
       await importNow();
     } else {
-      await ref.read(backgroundWorkPlatformProvider).finish(title: 'Ready to import', text: '${job.items.length} terms from ${job.sourceLabel}. Open Dictionary to review them.');
+      await ref
+          .read(backgroundWorkPlatformProvider)
+          .finish(
+            title: 'Ready to import',
+            text:
+                '${job.items.length} terms from ${job.sourceLabel}. Open Dictionary to review them.',
+          );
     }
   }
 
@@ -465,11 +566,23 @@ class ImportJobNotifier extends Notifier<int> {
     job.status = ImportJobStatus.importing;
     _changed(now: true);
     await _save(force: true);
-    await ref.read(backgroundWorkPlatformProvider).update(title: 'Adding terms to Dictionary', text: '${chosen.length} terms', max: 0);
+    await ref
+        .read(backgroundWorkPlatformProvider)
+        .update(
+          title: 'Adding terms to Dictionary',
+          text: '${chosen.length} terms',
+          max: 0,
+        );
     try {
       final all = await ref.read(trackerRecordRepositoryProvider).getAll();
-      final terms = [for (final t in all) if (t.kind == TrackerKind.dictTerm) t];
-      final cols = [for (final t in all) if (t.kind == TrackerKind.dictCollection) t];
+      final terms = [
+        for (final t in all)
+          if (t.kind == TrackerKind.dictTerm) t,
+      ];
+      final cols = [
+        for (final t in all)
+          if (t.kind == TrackerKind.dictCollection) t,
+      ];
       final notifier = ref.read(trackerNotifierProvider.notifier);
       final cands = [for (final (i, it) in chosen.indexed) it.a.toCandidate(i)];
       final extra = {
@@ -477,11 +590,19 @@ class ImportJobNotifier extends Notifier<int> {
           'a$i': {
             'categories': it.a.categories.isEmpty ? null : it.a.categories,
             'images': it.a.images.isEmpty ? null : it.a.images,
-            'flags': it.a.flags.isEmpty ? null : [for (final f in it.a.flags) f.toJson()],
-            'references': it.a.references.isEmpty ? null : it.a.references.take(20).toList(),
+            'flags': it.a.flags.isEmpty
+                ? null
+                : [for (final f in it.a.flags) f.toJson()],
+            'references': it.a.references.isEmpty
+                ? null
+                : it.a.references.take(20).toList(),
             'updated': it.a.updated?.toIso8601String(),
             'license': it.a.license,
-            'fullText': job.options.fullText && it.a.content.length > it.a.summary.length ? it.a.content : null,
+            'fullText':
+                job.options.fullText &&
+                    it.a.content.length > it.a.summary.length
+                ? it.a.content
+                : null,
             DictField.description: null,
           },
       };
@@ -502,24 +623,39 @@ class ImportJobNotifier extends Notifier<int> {
         fields: {
           'method': method ?? 'url',
           'provider': job.providerId,
-          'origin': _request?.origin ?? (job.input == null ? null : Uri.tryParse(job.input!)?.origin),
+          'origin':
+              _request?.origin ??
+              (job.input == null ? null : Uri.tryParse(job.input!)?.origin),
           'found': job.items.length + job.failed.length,
           'imported': r.created,
           'replaced': r.replaced,
           'skipped': r.skipped + job.items.where((i) => !i.selected).length,
           'failed': job.failed.length,
-          'failedTitles': job.failed.isEmpty ? null : job.failed.take(200).toList(),
+          'failedTitles': job.failed.isEmpty
+              ? null
+              : job.failed.take(200).toList(),
           'status': job.failed.isEmpty ? 'done' : 'partial',
           'termIds': r.ids,
         },
       );
       job
         ..status = ImportJobStatus.done
-        ..result = {'created': r.created, 'replaced': r.replaced, 'skipped': r.skipped, 'failed': job.failed.length}
+        ..result = {
+          'created': r.created,
+          'replaced': r.replaced,
+          'skipped': r.skipped,
+          'failed': job.failed.length,
+        }
         ..items.clear();
       _changed(now: true);
       await _save(force: true);
-      await ref.read(backgroundWorkPlatformProvider).finish(title: 'Dictionary import finished', text: 'Added ${r.created} · updated ${r.replaced} · skipped ${r.skipped}');
+      await ref
+          .read(backgroundWorkPlatformProvider)
+          .finish(
+            title: 'Dictionary import finished',
+            text:
+                'Added ${r.created} · updated ${r.replaced} · skipped ${r.skipped}',
+          );
       return r;
     } catch (e) {
       job
@@ -535,7 +671,8 @@ class ImportJobNotifier extends Notifier<int> {
   /// Adds articles parsed from a file, API or pasted text to the review list.
   void addArticles(List<WikiArticle> list, {required String label}) {
     if (isRunningStatus(job.status)) return;
-    if (job.status == ImportJobStatus.done || job.status == ImportJobStatus.error) {
+    if (job.status == ImportJobStatus.done ||
+        job.status == ImportJobStatus.error) {
       final keep = job.options;
       job = ImportJob()..options = keep;
     }
@@ -586,4 +723,6 @@ class ImportJobNotifier extends Notifier<int> {
   }
 }
 
-final importJobProvider = NotifierProvider<ImportJobNotifier, int>(ImportJobNotifier.new);
+final importJobProvider = NotifierProvider<ImportJobNotifier, int>(
+  ImportJobNotifier.new,
+);

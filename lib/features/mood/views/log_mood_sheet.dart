@@ -568,13 +568,25 @@ class _BodyMapPointer extends StatelessWidget {
       title: Text(es ? 'Sensaciones corporales' : 'Body sensations'),
       subtitle: Text(
         count > 0
-            ? (es ? 'Este registro tiene $count. Ahora están en Salud › Mapa corporal.' : 'This check-in has $count. They now live in Health › Body Map.')
-            : (es ? 'Ahora se registran en Salud › Mapa corporal.' : 'Now recorded in Health › Body Map.'),
+            ? (es
+                  ? 'Este registro tiene $count. Ahora están en Salud › Mapa corporal.'
+                  : 'This check-in has $count. They now live in Health › Body Map.')
+            : (es
+                  ? 'Ahora se registran en Salud › Mapa corporal.'
+                  : 'Now recorded in Health › Body Map.'),
       ),
-      trailing: Icon(AppIcons.chevronRight, size: 18, color: theme.colorScheme.onSurfaceVariant),
+      trailing: Icon(
+        AppIcons.chevronRight,
+        size: 18,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
       onTap: () {
         Navigator.of(context).pop();
-        GoRouter.of(context).go(count > 0 && moodId != null ? AppRoutePaths.healthMoodSensations(moodId!) : '${AppRoutePaths.health}?tab=map');
+        GoRouter.of(context).go(
+          count > 0 && moodId != null
+              ? AppRoutePaths.healthMoodSensations(moodId!)
+              : '${AppRoutePaths.health}?tab=map',
+        );
       },
     );
   }

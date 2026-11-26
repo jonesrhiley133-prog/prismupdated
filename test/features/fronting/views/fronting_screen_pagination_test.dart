@@ -107,7 +107,10 @@ void main() {
       const width = 1200.0;
       final rect = await pumpClamped(tester, width);
       expect(rect.width, closeTo(PrismTokens.contentMaxWidth, 0.5));
-      expect(rect.left, closeTo((width - PrismTokens.contentMaxWidth) / 2, 0.5));
+      expect(
+        rect.left,
+        closeTo((width - PrismTokens.contentMaxWidth) / 2, 0.5),
+      );
     });
   });
 }

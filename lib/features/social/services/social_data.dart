@@ -11,7 +11,11 @@ import 'package:prism_plurality/features/trackers/providers/tracker_providers.da
 /// change (one pass over the list).
 @immutable
 class SocialData {
-  SocialData(Iterable<TrackerRecord> all, {required this.members, DateTime? now}) : now = now ?? DateTime.now() {
+  SocialData(
+    Iterable<TrackerRecord> all, {
+    required this.members,
+    DateTime? now,
+  }) : now = now ?? DateTime.now() {
     for (final r in all) {
       switch (r.kind) {
         case SocialKind.post:
@@ -34,10 +38,12 @@ class SocialData {
           final target = r.str('target');
           if (r.memberId != null && target != null) {
             (r.str('mode') == 'mute' ? muted : blocked)[r.memberId!] ??= {};
-            (r.str('mode') == 'mute' ? muted : blocked)[r.memberId!]![target] = r.id;
+            (r.str('mode') == 'mute' ? muted : blocked)[r.memberId!]![target] =
+                r.id;
           }
         case SocialKind.hide:
-          if (r.memberId != null && r.parentId != null) (hidden[r.memberId!] ??= {})[r.parentId!] = r.id;
+          if (r.memberId != null && r.parentId != null)
+            (hidden[r.memberId!] ??= {})[r.parentId!] = r.id;
         case SocialKind.report:
           reports.add(r);
         case SocialKind.profile:
@@ -90,23 +96,34 @@ class SocialData {
   final highlights = <String, Highlight>{};
   final sharesOf = <String, List<Post>>{};
 
-  BlogProfile profile(String memberId) => BlogProfile.of(profileRecords[memberId]);
+  BlogProfile profile(String memberId) =>
+      BlogProfile.of(profileRecords[memberId]);
 
   bool isBlocked(String viewer, String other) =>
-      (blocked[viewer]?.containsKey(other) ?? false) || (blocked[other]?.containsKey(viewer) ?? false);
+      (blocked[viewer]?.containsKey(other) ?? false) ||
+      (blocked[other]?.containsKey(viewer) ?? false);
 
-  bool isMuted(String viewer, String other) => muted[viewer]?.containsKey(other) ?? false;
+  bool isMuted(String viewer, String other) =>
+      muted[viewer]?.containsKey(other) ?? false;
 
-  bool follows(String viewer, String target) => following[viewer]?.containsKey(target) ?? false;
+  bool follows(String viewer, String target) =>
+      following[viewer]?.containsKey(target) ?? false;
 
   /// Whether [viewer] may see something with this author/audience.
   /// A null viewer (nobody picked) sees only "everyone" content.
-  bool canSee({required String? author, required Audience audience, required List<String> audienceIds, required String? viewer}) {
+  bool canSee({
+    required String? author,
+    required Audience audience,
+    required List<String> audienceIds,
+    required String? viewer,
+  }) {
     if (author != null && author == viewer) return true;
-    if (viewer != null && author != null && isBlocked(viewer, author)) return false;
+    if (viewer != null && author != null && isBlocked(viewer, author))
+      return false;
     return switch (audience) {
       Audience.everyone => true,
-      Audience.followers => viewer != null && author != null && follows(viewer, author),
+      Audience.followers =>
+        viewer != null && author != null && follows(viewer, author),
       Audience.selected => viewer != null && audienceIds.contains(viewer),
       Audience.self => false,
     };
@@ -115,11 +132,20 @@ class SocialData {
   bool canSeePost(Post p, String? viewer) {
     if (!p.isLive(now) && p.author != viewer) return false;
     if (!p.isLive(now)) return p.author == viewer;
-    return canSee(author: p.author, audience: p.audience, audienceIds: p.audienceIds, viewer: viewer);
+    return canSee(
+      author: p.author,
+      audience: p.audience,
+      audienceIds: p.audienceIds,
+      viewer: viewer,
+    );
   }
 
-  bool canSeeStory(Story s, String? viewer) =>
-      canSee(author: s.author, audience: s.audience, audienceIds: s.audienceIds, viewer: viewer);
+  bool canSeeStory(Story s, String? viewer) => canSee(
+    author: s.author,
+    audience: s.audience,
+    audienceIds: s.audienceIds,
+    viewer: viewer,
+  );
 
   /// The original a reblog points at (reblogs of reblogs resolve to the root).
   Post? original(Post p) {
@@ -133,7 +159,10 @@ class SocialData {
   }
 
   /// Reaction counts by emoji, and which ones [viewer] used.
-  ({Map<String, int> counts, Set<String> mine}) reactions(String targetId, String? viewer) {
+  ({Map<String, int> counts, Set<String> mine}) reactions(
+    String targetId,
+    String? viewer,
+  ) {
     final counts = <String, int>{};
     final mine = <String>{};
     for (final r in reactionsOn[targetId] ?? const <TrackerRecord>[]) {
@@ -157,10 +186,15 @@ class SocialData {
         }
       }
     }
-    return (counts: counts, mine: mine, voters: votes.map((v) => v.memberId).toSet().length);
+    return (
+      counts: counts,
+      mine: mine,
+      voters: votes.map((v) => v.memberId).toSet().length,
+    );
   }
 
-  List<Post> sortedPosts(Iterable<Post> list) => list.toList()..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+  List<Post> sortedPosts(Iterable<Post> list) =>
+      list.toList()..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
 
   /// What [viewer] sees in a feed.
   ///
@@ -168,7 +202,12 @@ class SocialData {
   /// first. `everything`: every visible post, newest first. `forYou`:
   /// everything, ranked by recency with a boost for followed authors and
   /// for posts with interaction.
-  List<Post> feed(String? viewer, {String mode = 'everything', String? tag, String query = ''}) {
+  List<Post> feed(
+    String? viewer, {
+    String mode = 'everything',
+    String? tag,
+    String query = '',
+  }) {
     final q = query.trim().toLowerCase();
     final t = tag == null ? null : normalizeTag(tag);
     final list = <Post>[];
@@ -182,9 +221,14 @@ class SocialData {
       }
       final original = this.original(p);
       if (p.reblogOf != null && original == null) continue;
-      if (t != null && !p.tags.contains(t) && !(original?.tags.contains(t) ?? false)) continue;
+      if (t != null &&
+          !p.tags.contains(t) &&
+          !(original?.tags.contains(t) ?? false))
+        continue;
       if (q.isNotEmpty) {
-        final hay = '${p.title} ${p.body} ${p.tags.join(' ')} ${original?.title ?? ''} ${original?.body ?? ''} ${members[author]?.name ?? ''}'.toLowerCase();
+        final hay =
+            '${p.title} ${p.body} ${p.tags.join(' ')} ${original?.title ?? ''} ${original?.body ?? ''} ${members[author]?.name ?? ''}'
+                .toLowerCase();
         if (!hay.contains(q)) continue;
       }
       list.add(p);
@@ -192,8 +236,14 @@ class SocialData {
     if (mode != 'forYou') return sortedPosts(list);
     double score(Post p) {
       final ageH = now.difference(p.publishedAt).inMinutes / 60;
-      final interactions = (reactionsOn[p.id]?.length ?? 0) + (commentsOn[p.id]?.length ?? 0) * 2 + (sharesOf[p.id]?.length ?? 0) * 3;
-      final followed = viewer != null && p.author != null && follows(viewer, p.author!) ? 1.5 : 1.0;
+      final interactions =
+          (reactionsOn[p.id]?.length ?? 0) +
+          (commentsOn[p.id]?.length ?? 0) * 2 +
+          (sharesOf[p.id]?.length ?? 0) * 3;
+      final followed =
+          viewer != null && p.author != null && follows(viewer, p.author!)
+          ? 1.5
+          : 1.0;
       return followed * (1 + interactions * 0.3) / (1 + ageH / 12);
     }
 
@@ -212,10 +262,21 @@ class SocialData {
     });
   }
 
-  List<Post> drafts(String memberId) => sortedPosts(posts.values.where((p) => p.author == memberId && p.status == PostStatus.draft));
+  List<Post> drafts(String memberId) => sortedPosts(
+    posts.values.where(
+      (p) => p.author == memberId && p.status == PostStatus.draft,
+    ),
+  );
 
   List<Post> scheduled(String memberId) =>
-      posts.values.where((p) => p.author == memberId && p.status == PostStatus.scheduled && p.publishedAt.isAfter(now)).toList()
+      posts.values
+          .where(
+            (p) =>
+                p.author == memberId &&
+                p.status == PostStatus.scheduled &&
+                p.publishedAt.isAfter(now),
+          )
+          .toList()
         ..sort((a, b) => a.publishedAt.compareTo(b.publishedAt));
 
   /// Tags in use, most popular first.
@@ -227,7 +288,8 @@ class SocialData {
         counts[t] = (counts[t] ?? 0) + 1;
       }
     }
-    return [for (final e in counts.entries) (e.key, e.value)]..sort((a, b) => b.$2.compareTo(a.$2));
+    return [for (final e in counts.entries) (e.key, e.value)]
+      ..sort((a, b) => b.$2.compareTo(a.$2));
   }
 
   // ------------------------------------------------------------ stories
@@ -236,8 +298,13 @@ class SocialData {
   Map<String, List<Story>> activeStories(String? viewer) {
     final out = <String, List<Story>>{};
     for (final s in stories.values) {
-      if (s.author == null || !s.isActive(now) || !canSeeStory(s, viewer) || s.slides.isEmpty) continue;
-      if (viewer != null && s.author != viewer && isMuted(viewer, s.author!)) continue;
+      if (s.author == null ||
+          !s.isActive(now) ||
+          !canSeeStory(s, viewer) ||
+          s.slides.isEmpty)
+        continue;
+      if (viewer != null && s.author != viewer && isMuted(viewer, s.author!))
+        continue;
       (out[s.author!] ??= []).add(s);
     }
     for (final l in out.values) {
@@ -246,19 +313,25 @@ class SocialData {
     return out;
   }
 
-  bool hasSeen(String storyId, String? viewer) => viewer != null && (storyViews[storyId]?.containsKey(viewer) ?? false);
+  bool hasSeen(String storyId, String? viewer) =>
+      viewer != null && (storyViews[storyId]?.containsKey(viewer) ?? false);
 
   /// Expired stories the author chose to archive.
   List<Story> archive(String memberId) =>
-      stories.values.where((s) => s.author == memberId && !s.isActive(now) && s.archived).toList()
+      stories.values
+          .where((s) => s.author == memberId && !s.isActive(now) && s.archived)
+          .toList()
         ..sort((a, b) => b.postedAt.compareTo(a.postedAt));
 
   List<Highlight> highlightsOf(String memberId) =>
-      highlights.values.where((h) => h.owner == memberId).toList()..sort((a, b) => a.r.sortOrder.compareTo(b.r.sortOrder));
+      highlights.values.where((h) => h.owner == memberId).toList()
+        ..sort((a, b) => a.r.sortOrder.compareTo(b.r.sortOrder));
 
   // ------------------------------------------------------- notifications
 
-  DateTime lastSeen(String memberId) => seenRecords[memberId]?.occurredAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime lastSeen(String memberId) =>
+      seenRecords[memberId]?.occurredAt ??
+      DateTime.fromMillisecondsSinceEpoch(0);
 
   /// Activity aimed at [memberId] (newest first): reactions to their posts,
   /// comments and stories, replies, reblogs, quotes, mentions, follows,
@@ -266,15 +339,25 @@ class SocialData {
   List<SocialNotification> notifications(String memberId) {
     final out = <SocialNotification>[];
     final me = members[memberId];
-    final myPosts = {for (final p in posts.values) if (p.author == memberId) p.id};
+    final myPosts = {
+      for (final p in posts.values)
+        if (p.author == memberId) p.id,
+    };
     final myComments = <String>{};
     for (final list in commentsOn.values) {
       for (final c in list) {
         if (c.author == memberId) myComments.add(c.id);
       }
     }
-    final myStories = {for (final s in stories.values) if (s.author == memberId) s.id};
-    bool skip(String? actor) => actor == null || actor == memberId || isBlocked(memberId, actor) || isMuted(memberId, actor);
+    final myStories = {
+      for (final s in stories.values)
+        if (s.author == memberId) s.id,
+    };
+    bool skip(String? actor) =>
+        actor == null ||
+        actor == memberId ||
+        isBlocked(memberId, actor) ||
+        isMuted(memberId, actor);
 
     for (final e in reactionsOn.entries) {
       final kind = myPosts.contains(e.key)
@@ -287,46 +370,134 @@ class SocialData {
       if (kind == null) continue;
       for (final r in e.value) {
         if (skip(r.memberId)) continue;
-        out.add(SocialNotification(kind, r.memberId!, r.createdAt, targetId: e.key, detail: r.title));
+        out.add(
+          SocialNotification(
+            kind,
+            r.memberId!,
+            r.createdAt,
+            targetId: e.key,
+            detail: r.title,
+          ),
+        );
       }
     }
     for (final e in commentsOn.entries) {
       for (final c in e.value) {
         if (skip(c.author)) continue;
         if (myPosts.contains(e.key)) {
-          out.add(SocialNotification('comment', c.author!, c.at, targetId: e.key, detail: c.body));
+          out.add(
+            SocialNotification(
+              'comment',
+              c.author!,
+              c.at,
+              targetId: e.key,
+              detail: c.body,
+            ),
+          );
         } else if (myStories.contains(e.key)) {
-          out.add(SocialNotification('storyReply', c.author!, c.at, targetId: e.key, detail: c.body));
+          out.add(
+            SocialNotification(
+              'storyReply',
+              c.author!,
+              c.at,
+              targetId: e.key,
+              detail: c.body,
+            ),
+          );
         } else if (c.replyTo != null && myComments.contains(c.replyTo)) {
-          out.add(SocialNotification('reply', c.author!, c.at, targetId: e.key, detail: c.body));
+          out.add(
+            SocialNotification(
+              'reply',
+              c.author!,
+              c.at,
+              targetId: e.key,
+              detail: c.body,
+            ),
+          );
         }
       }
     }
-    final mentionNames = me == null ? const <String>{} : {me.name.toLowerCase().replaceAll(' ', ''), ...?me.displayName?.split(RegExp(r'\s+')).map((x) => x.toLowerCase())};
-    bool mentionsMe(String text) => mentionPattern.allMatches(text).any((m) => mentionNames.contains(m.group(1)!.toLowerCase()));
+    final mentionNames = me == null
+        ? const <String>{}
+        : {
+            me.name.toLowerCase().replaceAll(' ', ''),
+            ...?me.displayName
+                ?.split(RegExp(r'\s+'))
+                .map((x) => x.toLowerCase()),
+          };
+    bool mentionsMe(String text) => mentionPattern
+        .allMatches(text)
+        .any((m) => mentionNames.contains(m.group(1)!.toLowerCase()));
     for (final p in posts.values) {
-      if (!p.isLive(now) || skip(p.author) || !canSeePost(p, memberId)) continue;
+      if (!p.isLive(now) || skip(p.author) || !canSeePost(p, memberId))
+        continue;
       final source = p.reblogOf ?? p.quoteOf;
       if (source != null && myPosts.contains(source)) {
-        out.add(SocialNotification(p.quoteOf != null ? 'quote' : 'reblog', p.author!, p.publishedAt, targetId: p.id));
+        out.add(
+          SocialNotification(
+            p.quoteOf != null ? 'quote' : 'reblog',
+            p.author!,
+            p.publishedAt,
+            targetId: p.id,
+          ),
+        );
       }
-      if (mentionsMe('${p.title} ${p.body}')) out.add(SocialNotification('mention', p.author!, p.publishedAt, targetId: p.id));
-      if (p.type == PostType.question && p.askedTo == memberId) out.add(SocialNotification('question', p.author!, p.publishedAt, targetId: p.id));
+      if (mentionsMe('${p.title} ${p.body}'))
+        out.add(
+          SocialNotification(
+            'mention',
+            p.author!,
+            p.publishedAt,
+            targetId: p.id,
+          ),
+        );
+      if (p.type == PostType.question && p.askedTo == memberId)
+        out.add(
+          SocialNotification(
+            'question',
+            p.author!,
+            p.publishedAt,
+            targetId: p.id,
+          ),
+        );
     }
     for (final list in commentsOn.values) {
       for (final c in list) {
-        if (!skip(c.author) && mentionsMe(c.body)) out.add(SocialNotification('mention', c.author!, c.at, targetId: c.target, detail: c.body));
+        if (!skip(c.author) && mentionsMe(c.body))
+          out.add(
+            SocialNotification(
+              'mention',
+              c.author!,
+              c.at,
+              targetId: c.target,
+              detail: c.body,
+            ),
+          );
       }
     }
     for (final f in followers[memberId] ?? const <String>{}) {
       if (skip(f)) continue;
       final id = following[f]?[memberId];
-      out.add(SocialNotification('follow', f, id == null ? now : (_followTime[id] ?? now)));
+      out.add(
+        SocialNotification(
+          'follow',
+          f,
+          id == null ? now : (_followTime[id] ?? now),
+        ),
+      );
     }
     for (final e in votesOn.entries) {
       if (!myPosts.contains(e.key)) continue;
       for (final v in e.value) {
-        if (!skip(v.memberId)) out.add(SocialNotification('vote', v.memberId!, v.createdAt, targetId: e.key));
+        if (!skip(v.memberId))
+          out.add(
+            SocialNotification(
+              'vote',
+              v.memberId!,
+              v.createdAt,
+              targetId: e.key,
+            ),
+          );
       }
     }
     out.sort((a, b) => b.at.compareTo(a.at));
@@ -337,7 +508,8 @@ class SocialData {
   final _storyViewIds = <String, List<String>>{};
 
   /// Record ids of a story's views (for deleting a story).
-  List<String> storyViewRecordIds(String storyId) => _storyViewIds[storyId] ?? const [];
+  List<String> storyViewRecordIds(String storyId) =>
+      _storyViewIds[storyId] ?? const [];
 
   int unreadCount(String memberId) {
     final since = lastSeen(memberId);
@@ -347,7 +519,13 @@ class SocialData {
 
 @immutable
 class SocialNotification {
-  const SocialNotification(this.kind, this.actor, this.at, {this.targetId, this.detail});
+  const SocialNotification(
+    this.kind,
+    this.actor,
+    this.at, {
+    this.targetId,
+    this.detail,
+  });
 
   /// reactPost, reactComment, reactStory, comment, reply, storyReply,
   /// reblog, quote, mention, question, follow, vote.
@@ -359,8 +537,12 @@ class SocialNotification {
 }
 
 final socialRecordsProvider = Provider<List<TrackerRecord>>((ref) {
-  final all = ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[];
-  return [for (final r in all) if (SocialKind.all.contains(r.kind)) r];
+  final all =
+      ref.watch(trackerRecordsProvider).value ?? const <TrackerRecord>[];
+  return [
+    for (final r in all)
+      if (SocialKind.all.contains(r.kind)) r,
+  ];
 });
 
 /// Rebuilt when social records or members change; screens select from it.
@@ -371,4 +553,6 @@ final socialDataProvider = Provider<SocialData>((ref) {
 });
 
 /// Whether the social records have loaded at least once.
-final socialLoadedProvider = Provider<bool>((ref) => ref.watch(trackerRecordsProvider).hasValue);
+final socialLoadedProvider = Provider<bool>(
+  (ref) => ref.watch(trackerRecordsProvider).hasValue,
+);

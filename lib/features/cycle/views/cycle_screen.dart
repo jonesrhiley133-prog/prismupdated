@@ -92,7 +92,8 @@ class _CycleScreenState extends ConsumerState<CycleScreen> {
       topBar: PrismTopBar(
         title: l10n.cycleTitle,
         showBackButton: widget.showBackButton,
-        actions: [FeatureDataAction(featureId: 'cycle'),
+        actions: [
+          FeatureDataAction(featureId: 'cycle'),
           PrismTopBarAction(
             icon: Icons.upload_file_outlined,
             tooltip: tr(context, 'Import history', 'Importar historial'),

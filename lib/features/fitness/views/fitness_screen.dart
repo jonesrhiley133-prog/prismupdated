@@ -108,11 +108,7 @@ class _FitnessScreenState extends ConsumerState<FitnessScreen> {
           if (ref.watch(featureEnabledProvider('healthIntegration')))
             PrismTopBarAction(
               icon: PhosphorIcons.heartbeat(),
-              tooltip: tr(
-                context,
-                'Connected apps',
-                'Apps conectadas',
-              ),
+              tooltip: tr(context, 'Connected apps', 'Apps conectadas'),
               onPressed: () => context.push('/fitness/integrations'),
             ),
 

@@ -27,11 +27,15 @@ abstract final class DemoMode {
     active = prefs.getBool(_kActive) ?? false;
   }
 
-  static String duration(SharedPreferences prefs) => prefs.getString(_kDuration) ?? '1m';
-  static bool seeded(SharedPreferences prefs) => prefs.getBool(_kSeeded) ?? false;
-  static Future<void> markSeeded(SharedPreferences prefs) => prefs.setBool(_kSeeded, true);
+  static String duration(SharedPreferences prefs) =>
+      prefs.getString(_kDuration) ?? '1m';
+  static bool seeded(SharedPreferences prefs) =>
+      prefs.getBool(_kSeeded) ?? false;
+  static Future<void> markSeeded(SharedPreferences prefs) =>
+      prefs.setBool(_kSeeded, true);
 
-  static Future<File> demoFile() async => File(p.join((await getAppDataDir()).path, demoDbName));
+  static Future<File> demoFile() async =>
+      File(p.join((await getAppDataDir()).path, demoDbName));
 
   static bool _isDemoKey(String k) => k.startsWith('prism.demo.');
 
@@ -53,14 +57,20 @@ abstract final class DemoMode {
   }
 
   /// Switches to Demo Mode. Takes effect after [AppRestartScope.restart].
-  static Future<void> enter(SharedPreferences prefs, String duration, {bool freshData = true}) async {
+  static Future<void> enter(
+    SharedPreferences prefs,
+    String duration, {
+    bool freshData = true,
+  }) async {
     if (prefs.getBool(_kActive) ?? false) return;
     final snap = jsonEncode(_snapshot(prefs));
     await prefs.setString(_kBackup, snap);
     // Second copy on disk in case preferences are cleared mid-demo.
     if (!kIsWeb) {
       try {
-        await File(p.join((await getAppDataDir()).path, 'prism_demo_prefs_backup.json')).writeAsString(snap, flush: true);
+        await File(
+          p.join((await getAppDataDir()).path, 'prism_demo_prefs_backup.json'),
+        ).writeAsString(snap, flush: true);
       } catch (e) {
         debugPrint('[DEMO] could not write prefs backup file: $e');
       }
@@ -74,11 +84,16 @@ abstract final class DemoMode {
   }
 
   /// Leaves Demo Mode and restores the real settings exactly.
-  static Future<void> exit(SharedPreferences prefs, {bool keepDemoData = true}) async {
+  static Future<void> exit(
+    SharedPreferences prefs, {
+    bool keepDemoData = true,
+  }) async {
     var raw = prefs.getString(_kBackup);
     if (raw == null && !kIsWeb) {
       try {
-        final f = File(p.join((await getAppDataDir()).path, 'prism_demo_prefs_backup.json'));
+        final f = File(
+          p.join((await getAppDataDir()).path, 'prism_demo_prefs_backup.json'),
+        );
         if (await f.exists()) raw = await f.readAsString();
       } catch (_) {}
     }
@@ -147,7 +162,8 @@ class AppRestartScope extends StatefulWidget {
   const AppRestartScope({super.key, required this.child});
   final Widget child;
 
-  static void restart(BuildContext context) => context.findAncestorStateOfType<_AppRestartScopeState>()?._restart();
+  static void restart(BuildContext context) =>
+      context.findAncestorStateOfType<_AppRestartScopeState>()?._restart();
 
   @override
   State<AppRestartScope> createState() => _AppRestartScopeState();
@@ -175,6 +191,9 @@ class _AppRestartScopeState extends State<AppRestartScope> {
 
   @override
   Widget build(BuildContext context) => _blank
-      ? const Directionality(textDirection: TextDirection.ltr, child: ColoredBox(color: Color(0xFF111111)))
+      ? const Directionality(
+          textDirection: TextDirection.ltr,
+          child: ColoredBox(color: Color(0xFF111111)),
+        )
       : KeyedSubtree(key: _key, child: widget.child);
 }

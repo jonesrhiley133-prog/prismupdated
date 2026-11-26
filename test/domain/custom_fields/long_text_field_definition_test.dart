@@ -13,7 +13,10 @@ void main() {
         () => longTextFieldDefinition.configFromJson(<String, dynamic>{}),
         returnsNormally,
       );
-      expect(longTextFieldDefinition.configFromJson(<String, dynamic>{}), isNull);
+      expect(
+        longTextFieldDefinition.configFromJson(<String, dynamic>{}),
+        isNull,
+      );
     });
 
     test('valid LongTextConfig json → LongTextConfig', () {
@@ -32,14 +35,17 @@ void main() {
       expect(longTextFieldDefinition.configToJson(null), isNull);
     });
 
-    test('LongTextConfig(hideTitleOnProfile: true) → non-null map that round-trips', () {
-      const config = LongTextConfig(hideTitleOnProfile: true);
-      final json = longTextFieldDefinition.configToJson(config);
-      expect(json, isNotNull);
+    test(
+      'LongTextConfig(hideTitleOnProfile: true) → non-null map that round-trips',
+      () {
+        const config = LongTextConfig(hideTitleOnProfile: true);
+        final json = longTextFieldDefinition.configToJson(config);
+        expect(json, isNotNull);
 
-      final roundTripped = longTextFieldDefinition.configFromJson(json);
-      expect(roundTripped, isA<LongTextConfig>());
-      expect((roundTripped as LongTextConfig).hideTitleOnProfile, isTrue);
-    });
+        final roundTripped = longTextFieldDefinition.configFromJson(json);
+        expect(roundTripped, isA<LongTextConfig>());
+        expect((roundTripped as LongTextConfig).hideTitleOnProfile, isTrue);
+      },
+    );
   });
 }

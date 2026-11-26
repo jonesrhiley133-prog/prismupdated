@@ -8,9 +8,7 @@ import 'package:prism_plurality/shared/widgets/pin_numpad_button.dart';
 Widget _testApp(Widget child) {
   return ProviderScope(
     child: MaterialApp(
-      home: Scaffold(
-        body: Center(child: child),
-      ),
+      home: Scaffold(body: Center(child: child)),
     ),
   );
 }
@@ -20,9 +18,7 @@ Widget _testAppWithOverrides(Widget child, List overrides) {
   return ProviderScope(
     overrides: List.from(overrides),
     child: MaterialApp(
-      home: Scaffold(
-        body: Center(child: child),
-      ),
+      home: Scaffold(body: Center(child: child)),
     ),
   );
 }
@@ -31,9 +27,9 @@ void main() {
   group('PinNumpadButton', () {
     testWidgets('onTap fires on tap, not onTapDown', (tester) async {
       var tapCount = 0;
-      await tester.pumpWidget(_testApp(
-        PinNumpadButton(label: '5', onTap: () => tapCount++),
-      ));
+      await tester.pumpWidget(
+        _testApp(PinNumpadButton(label: '5', onTap: () => tapCount++)),
+      );
 
       await tester.tap(find.byType(PinNumpadButton));
       await tester.pump();
@@ -42,9 +38,9 @@ void main() {
     });
 
     testWidgets('default size is 72', (tester) async {
-      await tester.pumpWidget(_testApp(
-        PinNumpadButton(label: '5', onTap: () {}),
-      ));
+      await tester.pumpWidget(
+        _testApp(PinNumpadButton(label: '5', onTap: () {})),
+      );
 
       // The GestureDetector wraps a SizedBox(72×72) as the outermost size constraint.
       final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
@@ -53,9 +49,9 @@ void main() {
     });
 
     testWidgets('explicit size 64 produces a 64×64 SizedBox', (tester) async {
-      await tester.pumpWidget(_testApp(
-        PinNumpadButton(label: '5', onTap: () {}, size: 64),
-      ));
+      await tester.pumpWidget(
+        _testApp(PinNumpadButton(label: '5', onTap: () {}, size: 64)),
+      );
 
       final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
       final match = sizedBoxes.any((b) => b.width == 64 && b.height == 64);
@@ -63,9 +59,9 @@ void main() {
     });
 
     testWidgets('semantics label for digit button', (tester) async {
-      await tester.pumpWidget(_testApp(
-        PinNumpadButton(label: '7', onTap: () {}),
-      ));
+      await tester.pumpWidget(
+        _testApp(PinNumpadButton(label: '7', onTap: () {})),
+      );
 
       // The merged label includes both the Semantics.label and the Text child
       // (e.g. "7\n7"). We verify the declared label is present.
@@ -74,13 +70,15 @@ void main() {
     });
 
     testWidgets('semantics label for icon-only button', (tester) async {
-      await tester.pumpWidget(_testApp(
-        PinNumpadButton(
-          icon: Icons.backspace,
-          semanticLabel: 'Delete',
-          onTap: () {},
+      await tester.pumpWidget(
+        _testApp(
+          PinNumpadButton(
+            icon: Icons.backspace,
+            semanticLabel: 'Delete',
+            onTap: () {},
+          ),
         ),
-      ));
+      );
 
       final semantics = tester.getSemantics(find.byType(PinNumpadButton));
       expect(semantics.label, contains('Delete'));
@@ -91,19 +89,21 @@ void main() {
     ) async {
       var shown = true;
       late StateSetter setOuterState;
-      await tester.pumpWidget(_testApp(
-        StatefulBuilder(
-          builder: (context, setState) {
-            setOuterState = setState;
-            return shown
-                ? PinNumpadButton(
-                    label: '6',
-                    onTap: () => setOuterState(() => shown = false),
-                  )
-                : const SizedBox.shrink();
-          },
+      await tester.pumpWidget(
+        _testApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              setOuterState = setState;
+              return shown
+                  ? PinNumpadButton(
+                      label: '6',
+                      onTap: () => setOuterState(() => shown = false),
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
         ),
-      ));
+      );
 
       final gesture = await tester.startGesture(
         tester.getCenter(find.byType(PinNumpadButton)),
@@ -116,19 +116,18 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('reduced motion: AnimatedOpacity present when accessible mode',
-        (tester) async {
+    testWidgets('reduced motion: AnimatedOpacity present when accessible mode', (
+      tester,
+    ) async {
       // `disableAnimations: true` maps to VisualEffectsMode.reduced (not accessible),
       // and reduced.useAnimations is true — so we must explicitly override the
       // provider to VisualEffectsMode.accessible to trigger the AnimatedOpacity path.
       await tester.pumpWidget(
-        _testAppWithOverrides(
-          PinNumpadButton(label: '1', onTap: () {}),
-          [
-            visualEffectsPreferenceProvider
-                .overrideWith(_AccessibleVisualEffectsNotifier.new),
-          ],
-        ),
+        _testAppWithOverrides(PinNumpadButton(label: '1', onTap: () {}), [
+          visualEffectsPreferenceProvider.overrideWith(
+            _AccessibleVisualEffectsNotifier.new,
+          ),
+        ]),
       );
 
       await tester.pump();
@@ -139,8 +138,7 @@ void main() {
 }
 
 /// Notifier that always returns [VisualEffectsMode.accessible].
-class _AccessibleVisualEffectsNotifier
-    extends VisualEffectsPreferenceNotifier {
+class _AccessibleVisualEffectsNotifier extends VisualEffectsPreferenceNotifier {
   @override
   VisualEffectsMode? build() => VisualEffectsMode.accessible;
 }

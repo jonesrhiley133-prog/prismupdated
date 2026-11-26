@@ -89,58 +89,64 @@ void main() {
 
     // ── 1. LWW: later write wins entirely (no per-key merge) ─────────────────
 
-    test('writeTypedConfig writes the entire blob (no field-level merge)', () async {
-      // Read current config.
-      final initial = await repo.getFieldById('f1');
-      expect(initial, isNotNull);
-      final initialConfig = initial!.typeConfig as ChoiceConfig;
-      expect(initialConfig.options.length, 3);
+    test(
+      'writeTypedConfig writes the entire blob (no field-level merge)',
+      () async {
+        // Read current config.
+        final initial = await repo.getFieldById('f1');
+        expect(initial, isNotNull);
+        final initialConfig = initial!.typeConfig as ChoiceConfig;
+        expect(initialConfig.options.length, 3);
 
-      // Device A: rename option 'a' from 'Apple' to 'Apricot'.
-      final deviceAConfig = initialConfig.copyWith(
-        options: [
-          initialConfig.options[0].copyWith(label: 'Apricot'),
-          initialConfig.options[1],
-          initialConfig.options[2],
-        ],
-      );
-      await repo.writeTypedConfig('f1', deviceAConfig);
+        // Device A: rename option 'a' from 'Apple' to 'Apricot'.
+        final deviceAConfig = initialConfig.copyWith(
+          options: [
+            initialConfig.options[0].copyWith(label: 'Apricot'),
+            initialConfig.options[1],
+            initialConfig.options[2],
+          ],
+        );
+        await repo.writeTypedConfig('f1', deviceAConfig);
 
-      // Verify Device A's write landed.
-      final afterA = await repo.getFieldById('f1');
-      expect((afterA!.typeConfig as ChoiceConfig).options[0].label, 'Apricot');
+        // Verify Device A's write landed.
+        final afterA = await repo.getFieldById('f1');
+        expect(
+          (afterA!.typeConfig as ChoiceConfig).options[0].label,
+          'Apricot',
+        );
 
-      // Device B (concurrent, racing): deletes option 'c' (soft-delete),
-      // but its blob started from the ORIGINAL config — NOT from Device A's
-      // mutated copy. In real CRDT this would be a concurrent write.
-      // We're testing the invariant that the LATER writeTypedConfig call
-      // replaces the ENTIRE blob, so Device A's rename must NOT survive.
-      final deviceBConfig = initialConfig.copyWith(
-        options: [
-          initialConfig.options[0], // <- 'Apple' label, NOT 'Apricot'
-          initialConfig.options[1],
-          initialConfig.options[2].copyWith(isDeleted: true),
-        ],
-      );
-      await repo.writeTypedConfig('f1', deviceBConfig);
+        // Device B (concurrent, racing): deletes option 'c' (soft-delete),
+        // but its blob started from the ORIGINAL config — NOT from Device A's
+        // mutated copy. In real CRDT this would be a concurrent write.
+        // We're testing the invariant that the LATER writeTypedConfig call
+        // replaces the ENTIRE blob, so Device A's rename must NOT survive.
+        final deviceBConfig = initialConfig.copyWith(
+          options: [
+            initialConfig.options[0], // <- 'Apple' label, NOT 'Apricot'
+            initialConfig.options[1],
+            initialConfig.options[2].copyWith(isDeleted: true),
+          ],
+        );
+        await repo.writeTypedConfig('f1', deviceBConfig);
 
-      // Verify: final state is Device B's blob in its entirety.
-      // The rename from Device A is GONE (label is 'Apple', not 'Apricot').
-      // This proves the LWW invariant: no per-key merge, last write wins.
-      final finalField = await repo.getFieldById('f1');
-      final finalConfig = finalField!.typeConfig as ChoiceConfig;
-      expect(finalConfig.options.length, 3);
-      expect(
-        finalConfig.options[0].label,
-        'Apple',
-        reason: "Device B's blob fully replaced Device A's — rename is gone",
-      );
-      expect(
-        finalConfig.options[2].isDeleted,
-        isTrue,
-        reason: "Device B's soft-delete is preserved",
-      );
-    });
+        // Verify: final state is Device B's blob in its entirety.
+        // The rename from Device A is GONE (label is 'Apple', not 'Apricot').
+        // This proves the LWW invariant: no per-key merge, last write wins.
+        final finalField = await repo.getFieldById('f1');
+        final finalConfig = finalField!.typeConfig as ChoiceConfig;
+        expect(finalConfig.options.length, 3);
+        expect(
+          finalConfig.options[0].label,
+          'Apple',
+          reason: "Device B's blob fully replaced Device A's — rename is gone",
+        );
+        expect(
+          finalConfig.options[2].isDeleted,
+          isTrue,
+          reason: "Device B's soft-delete is preserved",
+        );
+      },
+    );
 
     // ── 2. Forward-compat: extra (unknown) keys survive parse → mutate → write ─
 
@@ -174,15 +180,20 @@ void main() {
       await repo.writeTypedConfig('f1', mutated);
 
       // Re-read the raw JSON from the DB directly.
-      final rawAfterResult = await db.customSelect(
-        "SELECT type_config_json FROM custom_fields WHERE id = 'f1'",
-      ).getSingle();
+      final rawAfterResult = await db
+          .customSelect(
+            "SELECT type_config_json FROM custom_fields WHERE id = 'f1'",
+          )
+          .getSingle();
       final rawAfter = rawAfterResult.read<String>('type_config_json');
 
       // The 'futureFeature' key must survive the full parse → mutate → write
       // round-trip. This is the forward-compat invariant.
-      expect(rawAfter, contains('futureFeature'),
-          reason: 'unknown key must survive parse → mutate → write round-trip');
+      expect(
+        rawAfter,
+        contains('futureFeature'),
+        reason: 'unknown key must survive parse → mutate → write round-trip',
+      );
       expect(rawAfter, contains('preserved'));
 
       // The mutation should also be reflected.
@@ -221,12 +232,16 @@ void main() {
 
         final field = await repo2.getFieldById('t1');
         expect(field, isNotNull);
-        expect(field!.typeConfig, isA<TextConfig>(),
-            reason: 'should decode back to TextConfig, not unknownTypeConfigRaw');
+        expect(
+          field!.typeConfig,
+          isA<TextConfig>(),
+          reason: 'should decode back to TextConfig, not unknownTypeConfigRaw',
+        );
         expect(
           (field.typeConfig! as TextConfig).hideTitleOnProfile,
           isTrue,
-          reason: 'hideTitleOnProfile:true must survive writeTypedConfig → getFieldById',
+          reason:
+              'hideTitleOnProfile:true must survive writeTypedConfig → getFieldById',
         );
       },
     );
@@ -240,7 +255,10 @@ void main() {
           const TextConfig(hideTitleOnProfile: true),
         );
         final afterTrue = await repo2.getFieldById('t1');
-        expect((afterTrue!.typeConfig! as TextConfig).hideTitleOnProfile, isTrue);
+        expect(
+          (afterTrue!.typeConfig! as TextConfig).hideTitleOnProfile,
+          isTrue,
+        );
 
         // Later write: hideTitleOnProfile = false.  Must replace entire blob.
         await repo2.writeTypedConfig(

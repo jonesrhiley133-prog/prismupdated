@@ -18,13 +18,15 @@ void main() {
       final db = database.AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
       // Seed the member row that applyFields will upsert into.
-      await db.into(db.members).insert(
-        database.MembersCompanion.insert(
-          id: 'member-coerce',
-          name: 'CoerceTest',
-          createdAt: DateTime.utc(2026, 1, 1),
-        ),
-      );
+      await db
+          .into(db.members)
+          .insert(
+            database.MembersCompanion.insert(
+              id: 'member-coerce',
+              name: 'CoerceTest',
+              createdAt: DateTime.utc(2026, 1, 1),
+            ),
+          );
       return db;
     }
 
@@ -58,26 +60,28 @@ void main() {
       expect(row!.age, 'ageless');
     });
 
-    test('integer wire value is coerced to string (old-client back-compat)',
-        () async {
-      final db = await _makeDb();
-      final syncAdapter = buildSyncAdapterWithCompletion(db);
-      final members = syncAdapter.adapter.entities.singleWhere(
-        (e) => e.tableName == 'members',
-      );
+    test(
+      'integer wire value is coerced to string (old-client back-compat)',
+      () async {
+        final db = await _makeDb();
+        final syncAdapter = buildSyncAdapterWithCompletion(db);
+        final members = syncAdapter.adapter.entities.singleWhere(
+          (e) => e.tableName == 'members',
+        );
 
-      syncAdapter.beginSyncBatch();
-      await members.applyFields('member-coerce', {
-        ..._baseFields(),
-        'age': 42, // bare integer from old client
-      });
-      await syncAdapter.completeSyncBatch();
+        syncAdapter.beginSyncBatch();
+        await members.applyFields('member-coerce', {
+          ..._baseFields(),
+          'age': 42, // bare integer from old client
+        });
+        await syncAdapter.completeSyncBatch();
 
-      final row = await db.membersDao.getMemberById('member-coerce');
-      expect(row, isNotNull);
-      // The numeric wire value must be preserved as its string form.
-      expect(row!.age, '42');
-    });
+        final row = await db.membersDao.getMemberById('member-coerce');
+        expect(row, isNotNull);
+        // The numeric wire value must be preserved as its string form.
+        expect(row!.age, '42');
+      },
+    );
 
     test('null wire age leaves column null', () async {
       final db = await _makeDb();

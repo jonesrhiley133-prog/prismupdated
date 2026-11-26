@@ -93,7 +93,11 @@ void main() {
     await db
         .into(db.members)
         .insert(
-          pkFixtureMember(id: 'member-a', name: 'Alice', pluralkitUuid: 'pk-member-a'),
+          pkFixtureMember(
+            id: 'member-a',
+            name: 'Alice',
+            pluralkitUuid: 'pk-member-a',
+          ),
         );
     await db
         .into(db.memberGroups)
@@ -176,7 +180,11 @@ void main() {
     await db
         .into(db.members)
         .insert(
-          pkFixtureMember(id: 'member-a', name: 'Alice', pluralkitUuid: 'pk-member-a'),
+          pkFixtureMember(
+            id: 'member-a',
+            name: 'Alice',
+            pluralkitUuid: 'pk-member-a',
+          ),
         );
     await db
         .into(db.memberGroups)
@@ -192,7 +200,11 @@ void main() {
     await db
         .into(db.memberGroupEntries)
         .insert(
-          pkFixtureEntry(id: 'entry-a', groupId: 'suppressed', memberId: 'member-a'),
+          pkFixtureEntry(
+            id: 'entry-a',
+            groupId: 'suppressed',
+            memberId: 'member-a',
+          ),
         );
 
     final result = await service().runOnce();
@@ -280,7 +292,9 @@ void main() {
     () async {
       await db.systemSettingsDao.getSettings();
       await db.systemSettingsDao.updatePkGroupSyncV2Enabled(true);
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.memberGroups)
+          .insert(
             pkFixtureGroup(
               id: 'pk-group-local-1',
               name: 'Cluster',
@@ -308,64 +322,23 @@ void main() {
   // clobber a genuine edit. The service stays callback-agnostic; this pins that
   // runOnce drives group and entry emission through one shared backfill sink the
   // same way the wiring hands it `recordBackfill` for both.
-  test('runOnce routes group and entry emissions through one backfill callback',
-      () async {
-    await db.systemSettingsDao.getSettings();
-    await db.systemSettingsDao.updatePkGroupSyncV2Enabled(true);
-    await db.into(db.members).insert(
-          pkFixtureMember(
-            id: 'member-a',
-            name: 'Alice',
-            pluralkitUuid: 'pk-member-a',
-          ),
-        );
-    await db.into(db.memberGroups).insert(
-          pkFixtureGroup(
-            id: 'pk-group-local-1',
-            name: 'Cluster',
-            createdAt: DateTime.utc(2024, 1, 1),
-            pluralkitUuid: 'pk-group-1',
-          ),
-        );
-    await db.into(db.memberGroupEntries).insert(
-          pkFixtureEntry(
-            id: 'legacy-entry',
-            groupId: 'pk-group-local-1',
-            memberId: 'member-a',
-          ),
-        );
-
-    final backfilled = <_RecordedOp>[];
-    Future<void> backfill({
-      required String table,
-      required String entityId,
-      required Map<String, dynamic> fields,
-    }) async {
-      backfilled.add(_RecordedOp(table, entityId, fields));
-    }
-
-    final result = await PkGroupSyncV2CatchupService(
-      db: db,
-      recordGroupUpdate: backfill,
-      recordEntryCreate: backfill,
-    ).runOnce();
-
-    expect(result.groupsEmitted, 1);
-    expect(result.entriesEmitted, 1);
-    expect(
-      backfilled.map((op) => op.table),
-      containsAll(<String>['member_groups', 'member_group_entries']),
-      reason: 'both group and entry emissions go through the backfill sink',
-    );
-  });
-
   test(
-    'runOnce substitutes manualEmpty when a corrupt sort_state column is '
-    'emitted via the catch-up path',
+    'runOnce routes group and entry emissions through one backfill callback',
     () async {
       await db.systemSettingsDao.getSettings();
       await db.systemSettingsDao.updatePkGroupSyncV2Enabled(true);
-      await db.into(db.memberGroups).insert(
+      await db
+          .into(db.members)
+          .insert(
+            pkFixtureMember(
+              id: 'member-a',
+              name: 'Alice',
+              pluralkitUuid: 'pk-member-a',
+            ),
+          );
+      await db
+          .into(db.memberGroups)
+          .insert(
             pkFixtureGroup(
               id: 'pk-group-local-1',
               name: 'Cluster',
@@ -373,25 +346,73 @@ void main() {
               pluralkitUuid: 'pk-group-1',
             ),
           );
-      // Bypass the mapper to plant a corrupt column value — simulates legacy
-      // pre-validation rows or a manual DB edit.
-      await db.customStatement(
-        'UPDATE member_groups SET sort_state = ? WHERE id = ?',
-        ['garbage', 'pk-group-local-1'],
-      );
+      await db
+          .into(db.memberGroupEntries)
+          .insert(
+            pkFixtureEntry(
+              id: 'legacy-entry',
+              groupId: 'pk-group-local-1',
+              memberId: 'member-a',
+            ),
+          );
 
-      final result = await service().runOnce();
+      final backfilled = <_RecordedOp>[];
+      Future<void> backfill({
+        required String table,
+        required String entityId,
+        required Map<String, dynamic> fields,
+      }) async {
+        backfilled.add(_RecordedOp(table, entityId, fields));
+      }
+
+      final result = await PkGroupSyncV2CatchupService(
+        db: db,
+        recordGroupUpdate: backfill,
+        recordEntryCreate: backfill,
+      ).runOnce();
 
       expect(result.groupsEmitted, 1);
+      expect(result.entriesEmitted, 1);
       expect(
-        groupOps.single.fields['sort_state'],
-        '{"mode":0,"order":[]}',
-        reason:
-            'corrupt local rows must never re-broadcast through the PK '
-            'catch-up emit path',
+        backfilled.map((op) => op.table),
+        containsAll(<String>['member_groups', 'member_group_entries']),
+        reason: 'both group and entry emissions go through the backfill sink',
       );
     },
   );
+
+  test('runOnce substitutes manualEmpty when a corrupt sort_state column is '
+      'emitted via the catch-up path', () async {
+    await db.systemSettingsDao.getSettings();
+    await db.systemSettingsDao.updatePkGroupSyncV2Enabled(true);
+    await db
+        .into(db.memberGroups)
+        .insert(
+          pkFixtureGroup(
+            id: 'pk-group-local-1',
+            name: 'Cluster',
+            createdAt: DateTime.utc(2024, 1, 1),
+            pluralkitUuid: 'pk-group-1',
+          ),
+        );
+    // Bypass the mapper to plant a corrupt column value — simulates legacy
+    // pre-validation rows or a manual DB edit.
+    await db.customStatement(
+      'UPDATE member_groups SET sort_state = ? WHERE id = ?',
+      ['garbage', 'pk-group-local-1'],
+    );
+
+    final result = await service().runOnce();
+
+    expect(result.groupsEmitted, 1);
+    expect(
+      groupOps.single.fields['sort_state'],
+      '{"mode":0,"order":[]}',
+      reason:
+          'corrupt local rows must never re-broadcast through the PK '
+          'catch-up emit path',
+    );
+  });
 }
 
 class _RecordedOp {

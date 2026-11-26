@@ -315,28 +315,31 @@ void main() {
       ], reason: 'later cadence preserves repair semantics');
     });
 
-    test('user force-request promotes legacy pending entries to repair', () async {
-      await dao.markMissing(
-        mediaId: 'legacy',
-        priority: MissingMediaDao.priorityChat,
-        nowMs: clock,
-      );
-      await dao.recordRequested(
-        mediaId: 'legacy',
-        attempts: 1,
-        nextEligibleAtMs: clock + 999999,
-        nowMs: clock,
-      );
+    test(
+      'user force-request promotes legacy pending entries to repair',
+      () async {
+        await dao.markMissing(
+          mediaId: 'legacy',
+          priority: MissingMediaDao.priorityChat,
+          nowMs: clock,
+        );
+        await dao.recordRequested(
+          mediaId: 'legacy',
+          attempts: 1,
+          nextEligibleAtMs: clock + 999999,
+          nowMs: clock,
+        );
 
-      await dao.requestAllNow(clock, promoteToRepair: true);
-      await build().runCadence();
+        await dao.requestAllNow(clock, promoteToRepair: true);
+        await build().runCadence();
 
-      expect(requested, ['repair:legacy']);
-      expect(
-        (await dao.getById('legacy'))!.state,
-        MissingMediaDao.statePendingRepair,
-      );
-    });
+        expect(requested, ['repair:legacy']);
+        expect(
+          (await dao.getById('legacy'))!.state,
+          MissingMediaDao.statePendingRepair,
+        );
+      },
+    );
   });
 
   test('profile images get a tighter cooldown than chat images', () async {

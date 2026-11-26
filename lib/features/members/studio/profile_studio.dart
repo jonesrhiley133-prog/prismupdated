@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -1049,9 +1049,12 @@ class _ProfileStudioScreenState extends ConsumerState<ProfileStudioScreen> {
   }
 
   Future<void> _pickBanner() async {
-    final x = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final x = await PrismImageCrop.pickBytes(
+      context,
+      spec: PrismCropSpec.banner,
+    );
     if (x == null) return;
-    final prepared = await compute(prepareSocialImage, await x.readAsBytes());
+    final prepared = await compute(prepareSocialImage, x);
     if (prepared != null)
       _edit(() {
         _b.header = prepared.bytes;

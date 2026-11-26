@@ -1592,74 +1592,71 @@ void main() {
       );
     });
 
-    test(
-      'cancel cleanup wipes unknown prism_sync.* keys via the shared helper '
-      '(no static list drift)',
-      () async {
-        // Regression for Block 9 of the Android sync remediation. Before the
-        // refactor, `_cleanupKeychainOnFailure` carried its own hard-coded
-        // list of keys to delete; any new transient `prism_sync.*` key added
-        // later would silently leak after a failed pairing attempt. The
-        // shared `wipeSyncKeychainNamespace` helper does a prefix scan, so
-        // unknown keys must be removed without anyone updating a list here.
-        //
-        // Arrangement: seed the same baseline keys the prior test uses PLUS
-        // a fictional `prism_sync.someNewTransientKey` and a dynamic
-        // `prism_sync.epoch_key_42`. Both are outside the old static list
-        // and outside `kProtectedFromReset`. We also seed a protected DB
-        // slot to verify the helper's exclusion still applies.
-        final keychain = installSecureStorageMock({
-          'prism_sync.sync_id': base64Encode(utf8.encode('sync-xyz')),
-          'prism_sync.device_id': base64Encode(utf8.encode('device-xyz')),
-          'prism_sync.session_token': base64Encode(utf8.encode('token-xyz')),
-          'prism_sync.someNewTransientKey': 'NEW',
-          'prism_sync.epoch_key_42': 'EPOCH42',
-          'prism_sync.database_key': 'KEEP',
-        });
+    test('cancel cleanup wipes unknown prism_sync.* keys via the shared helper '
+        '(no static list drift)', () async {
+      // Regression for Block 9 of the Android sync remediation. Before the
+      // refactor, `_cleanupKeychainOnFailure` carried its own hard-coded
+      // list of keys to delete; any new transient `prism_sync.*` key added
+      // later would silently leak after a failed pairing attempt. The
+      // shared `wipeSyncKeychainNamespace` helper does a prefix scan, so
+      // unknown keys must be removed without anyone updating a list here.
+      //
+      // Arrangement: seed the same baseline keys the prior test uses PLUS
+      // a fictional `prism_sync.someNewTransientKey` and a dynamic
+      // `prism_sync.epoch_key_42`. Both are outside the old static list
+      // and outside `kProtectedFromReset`. We also seed a protected DB
+      // slot to verify the helper's exclusion still applies.
+      final keychain = installSecureStorageMock({
+        'prism_sync.sync_id': base64Encode(utf8.encode('sync-xyz')),
+        'prism_sync.device_id': base64Encode(utf8.encode('device-xyz')),
+        'prism_sync.session_token': base64Encode(utf8.encode('token-xyz')),
+        'prism_sync.someNewTransientKey': 'NEW',
+        'prism_sync.epoch_key_42': 'EPOCH42',
+        'prism_sync.database_key': 'KEEP',
+      });
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
+      final container = makeContainer();
+      addTearDown(container.dispose);
 
-        final notifier = container.read(devicePairingProvider.notifier);
-        await notifier.handlePostCeremonyFailureForTest(
-          ceremonyCompleted: true,
-          error: StateError('simulated bootstrap failure'),
-        );
-        expect(
-          container.read(devicePairingProvider).step,
-          PairingStep.snapshotFailure,
-        );
+      final notifier = container.read(devicePairingProvider.notifier);
+      await notifier.handlePostCeremonyFailureForTest(
+        ceremonyCompleted: true,
+        error: StateError('simulated bootstrap failure'),
+      );
+      expect(
+        container.read(devicePairingProvider).step,
+        PairingStep.snapshotFailure,
+      );
 
-        await notifier.cancelAndRemoveDevice();
-        await pumpEventQueue();
+      await notifier.cancelAndRemoveDevice();
+      await pumpEventQueue();
 
-        // The fictional transient key must have been wiped even though no
-        // one ever added it to a static cleanup list.
-        expect(
-          keychain['prism_sync.someNewTransientKey'],
-          isNull,
-          reason:
-              'cleanup must use a prefix scan, not a static list. Adding a '
-              'new transient prism_sync.* key without touching the cleanup '
-              'code must still result in deletion on pairing failure.',
-        );
-        expect(
-          keychain['prism_sync.epoch_key_42'],
-          isNull,
-          reason:
-              'dynamic epoch_key_* entries must be deleted by the shared '
-              'cleanup helper.',
-        );
-        // Protected DB-encryption slot still survives.
-        expect(
-          keychain['prism_sync.database_key'],
-          'KEEP',
-          reason:
-              'kProtectedFromReset must be preserved by the pairing-failure '
-              'cleanup helper too.',
-        );
-      },
-    );
+      // The fictional transient key must have been wiped even though no
+      // one ever added it to a static cleanup list.
+      expect(
+        keychain['prism_sync.someNewTransientKey'],
+        isNull,
+        reason:
+            'cleanup must use a prefix scan, not a static list. Adding a '
+            'new transient prism_sync.* key without touching the cleanup '
+            'code must still result in deletion on pairing failure.',
+      );
+      expect(
+        keychain['prism_sync.epoch_key_42'],
+        isNull,
+        reason:
+            'dynamic epoch_key_* entries must be deleted by the shared '
+            'cleanup helper.',
+      );
+      // Protected DB-encryption slot still survives.
+      expect(
+        keychain['prism_sync.database_key'],
+        'KEEP',
+        reason:
+            'kProtectedFromReset must be preserved by the pairing-failure '
+            'cleanup helper too.',
+      );
+    });
 
     // ----------------------------------------------------------------
     // Block 6a follow-up fixes — joiner-side rollback interaction.
@@ -1675,85 +1672,81 @@ void main() {
     //   the plain `drainRustStore` path instead of aborting.
     // ----------------------------------------------------------------
 
-    test(
-      'joiner cleanup is skipped after DrainPartialWriteException — '
-      'snapshot rollback survives',
-      () async {
-        // Seed the keychain with the pre-pairing snapshot. The
-        // rollback inside the (overridden) drain restores this same
-        // map, so the post-error keychain should still contain it.
-        final preCeremony = <String, String>{
-          'prism_sync.relay_url': base64Encode(
-            utf8.encode('https://relay.example.com'),
-          ),
-          // A non-protected pre-existing slot to prove the cleanup
-          // would have wiped it had it run.
-          'prism_sync.someExistingTransientKey': 'PRE-EXISTING',
-        };
-        final keychain = installSecureStorageMock({...preCeremony});
+    test('joiner cleanup is skipped after DrainPartialWriteException — '
+        'snapshot rollback survives', () async {
+      // Seed the keychain with the pre-pairing snapshot. The
+      // rollback inside the (overridden) drain restores this same
+      // map, so the post-error keychain should still contain it.
+      final preCeremony = <String, String>{
+        'prism_sync.relay_url': base64Encode(
+          utf8.encode('https://relay.example.com'),
+        ),
+        // A non-protected pre-existing slot to prove the cleanup
+        // would have wiped it had it run.
+        'prism_sync.someExistingTransientKey': 'PRE-EXISTING',
+      };
+      final keychain = installSecureStorageMock({...preCeremony});
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
+      final container = makeContainer();
+      addTearDown(container.dispose);
 
-        // Override the snapshot-rollback drain to (1) capture the
-        // snapshot, (2) re-write its entries (the real rollback's
-        // restoration), and (3) throw the diagnostic exception.
-        Map<String, String>? capturedSnapshot;
-        DevicePairingNotifier.drainRustStoreWithSnapshotRollbackOverride =
-            (handle, {required rollbackSnapshot}) async {
-              capturedSnapshot = Map<String, String>.from(rollbackSnapshot);
-              // Simulate the real rollback's restore phase running
-              // before the drain re-throws DrainPartialWriteException.
-              for (final entry in rollbackSnapshot.entries) {
-                keychain[entry.key] = entry.value;
-              }
-              throw DrainPartialWriteException(
-                failedKey: 'prism_sync.device_secret',
-                phase: DrainPartialWritePhase.write,
-                cause: StateError('simulated keychain write failure'),
-              );
-            };
-        addTearDown(() {
-          DevicePairingNotifier.drainRustStoreWithSnapshotRollbackOverride =
-              null;
-        });
+      // Override the snapshot-rollback drain to (1) capture the
+      // snapshot, (2) re-write its entries (the real rollback's
+      // restoration), and (3) throw the diagnostic exception.
+      Map<String, String>? capturedSnapshot;
+      DevicePairingNotifier.drainRustStoreWithSnapshotRollbackOverride =
+          (handle, {required rollbackSnapshot}) async {
+            capturedSnapshot = Map<String, String>.from(rollbackSnapshot);
+            // Simulate the real rollback's restore phase running
+            // before the drain re-throws DrainPartialWriteException.
+            for (final entry in rollbackSnapshot.entries) {
+              keychain[entry.key] = entry.value;
+            }
+            throw DrainPartialWriteException(
+              failedKey: 'prism_sync.device_secret',
+              phase: DrainPartialWritePhase.write,
+              cause: StateError('simulated keychain write failure'),
+            );
+          };
+      addTearDown(() {
+        DevicePairingNotifier.drainRustStoreWithSnapshotRollbackOverride = null;
+      });
 
-        // Resolve the handle future so prismSyncHandleProvider.value is
-        // populated when the joiner pulls the active ceremony handle.
-        await container.read(prismSyncHandleProvider.future);
+      // Resolve the handle future so prismSyncHandleProvider.value is
+      // populated when the joiner pulls the active ceremony handle.
+      await container.read(prismSyncHandleProvider.future);
 
-        final notifier = container.read(devicePairingProvider.notifier);
-        await notifier.completeJoinerWithPassword('123456');
-        await pumpEventQueue();
+      final notifier = container.read(devicePairingProvider.notifier);
+      await notifier.completeJoinerWithPassword('123456');
+      await pumpEventQueue();
 
-        // Sanity: snapshot was captured and restored by the override.
-        expect(capturedSnapshot, isNotNull);
+      // Sanity: snapshot was captured and restored by the override.
+      expect(capturedSnapshot, isNotNull);
+      expect(
+        capturedSnapshot,
+        equals(preCeremony),
+        reason:
+            'the joiner must hand the snapshot-rollback drain the '
+            'pre-ceremony pre-state verbatim',
+      );
+
+      // The drain failure routes to PairingStep.error (pre-persistence).
+      final state = container.read(devicePairingProvider);
+      expect(state.step, PairingStep.error);
+
+      // Critical assertion: the rollback's restored entries are STILL
+      // in the keychain. If `_cleanupKeychainOnFailure` had run, it
+      // would have wiped them via the prefix scan.
+      for (final entry in preCeremony.entries) {
         expect(
-          capturedSnapshot,
-          equals(preCeremony),
+          keychain[entry.key],
+          entry.value,
           reason:
-              'the joiner must hand the snapshot-rollback drain the '
-              'pre-ceremony pre-state verbatim',
+              'cleanup must NOT run after a DrainPartialWriteException — '
+              'the snapshot rollback already restored ${entry.key}',
         );
-
-        // The drain failure routes to PairingStep.error (pre-persistence).
-        final state = container.read(devicePairingProvider);
-        expect(state.step, PairingStep.error);
-
-        // Critical assertion: the rollback's restored entries are STILL
-        // in the keychain. If `_cleanupKeychainOnFailure` had run, it
-        // would have wiped them via the prefix scan.
-        for (final entry in preCeremony.entries) {
-          expect(
-            keychain[entry.key],
-            entry.value,
-            reason:
-                'cleanup must NOT run after a DrainPartialWriteException — '
-                'the snapshot rollback already restored ${entry.key}',
-          );
-        }
-      },
-    );
+      }
+    });
 
     test(
       'joiner snapshot-capture failure falls back to plain drainRustStore',
@@ -1895,51 +1888,46 @@ void main() {
   });
 
   group('deleteStaleSyncDatabaseFiles', () {
-    test(
-      'deletes only the sync DB files, never prism.db',
-      () async {
-        final tempDir = await Directory.systemTemp.createTemp(
-          'pairing_stale_db_test',
-        );
-        addTearDown(() async {
-          if (await tempDir.exists()) {
-            await tempDir.delete(recursive: true);
-          }
-        });
-
-        // Seed a full app data dir: the local DB (must survive) plus the
-        // stale sync DB and its sidecars (must be removed).
-        final prismDb = File(p.join(tempDir.path, 'prism.db'));
-        final prismDbWal = File(p.join(tempDir.path, 'prism.db-wal'));
-        final syncDb = File(
-          p.join(tempDir.path, 'prism_sync.db'),
-        );
-        final syncWal = File(p.join(tempDir.path, 'prism_sync.db-wal'));
-        final syncShm = File(p.join(tempDir.path, 'prism_sync.db-shm'));
-        for (final f in [prismDb, prismDbWal, syncDb, syncWal, syncShm]) {
-          await f.writeAsString('x');
+    test('deletes only the sync DB files, never prism.db', () async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'pairing_stale_db_test',
+      );
+      addTearDown(() async {
+        if (await tempDir.exists()) {
+          await tempDir.delete(recursive: true);
         }
+      });
 
-        final container = ProviderContainer();
-        addTearDown(container.dispose);
-        final notifier = container.read(devicePairingProvider.notifier);
+      // Seed a full app data dir: the local DB (must survive) plus the
+      // stale sync DB and its sidecars (must be removed).
+      final prismDb = File(p.join(tempDir.path, 'prism.db'));
+      final prismDbWal = File(p.join(tempDir.path, 'prism.db-wal'));
+      final syncDb = File(p.join(tempDir.path, 'prism_sync.db'));
+      final syncWal = File(p.join(tempDir.path, 'prism_sync.db-wal'));
+      final syncShm = File(p.join(tempDir.path, 'prism_sync.db-shm'));
+      for (final f in [prismDb, prismDbWal, syncDb, syncWal, syncShm]) {
+        await f.writeAsString('x');
+      }
 
-        await notifier.deleteStaleSyncDatabaseFiles(directory: tempDir);
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(devicePairingProvider.notifier);
 
-        // Sync DB + sidecars gone.
-        expect(await syncDb.exists(), isFalse, reason: 'sync DB must be erased');
-        expect(await syncWal.exists(), isFalse);
-        expect(await syncShm.exists(), isFalse);
+      await notifier.deleteStaleSyncDatabaseFiles(directory: tempDir);
 
-        // Local DB untouched — it may hold pre-pairing members/fronts.
-        expect(
-          await prismDb.exists(),
-          isTrue,
-          reason: 'prism.db must NOT be deleted',
-        );
-        expect(await prismDbWal.exists(), isTrue);
-      },
-    );
+      // Sync DB + sidecars gone.
+      expect(await syncDb.exists(), isFalse, reason: 'sync DB must be erased');
+      expect(await syncWal.exists(), isFalse);
+      expect(await syncShm.exists(), isFalse);
+
+      // Local DB untouched — it may hold pre-pairing members/fronts.
+      expect(
+        await prismDb.exists(),
+        isTrue,
+        reason: 'prism.db must NOT be deleted',
+      );
+      expect(await prismDbWal.exists(), isTrue);
+    });
 
     test('tolerates missing sync DB files', () async {
       final tempDir = await Directory.systemTemp.createTemp(
@@ -1959,63 +1947,21 @@ void main() {
       await notifier.deleteStaleSyncDatabaseFiles(directory: tempDir);
     });
 
-    test(
-      'throws when the main prism_sync.db cannot be removed',
-      () async {
-        // Unix-only: we force a delete failure by revoking write permission on
-        // the containing directory (removing a file needs dir-write, not
-        // file-write). On Windows this mechanism doesn't apply; the
-        // load-bearing throw is exercised on the CI/dev (darwin/linux) hosts.
-        if (Platform.isWindows) {
-          return;
-        }
+    test('throws when the main prism_sync.db cannot be removed', () async {
+      // Unix-only: we force a delete failure by revoking write permission on
+      // the containing directory (removing a file needs dir-write, not
+      // file-write). On Windows this mechanism doesn't apply; the
+      // load-bearing throw is exercised on the CI/dev (darwin/linux) hosts.
+      if (Platform.isWindows) {
+        return;
+      }
 
-        final tempDir = await Directory.systemTemp.createTemp(
-          'pairing_stale_db_locked_test',
-        );
-        addTearDown(() async {
-          // Restore write perms before cleanup or the teardown itself fails.
-          await Process.run('chmod', ['u+w', tempDir.path]);
-          if (await tempDir.exists()) {
-            await tempDir.delete(recursive: true);
-          }
-        });
-
-        final syncDb = File(p.join(tempDir.path, 'prism_sync.db'));
-        await syncDb.writeAsString('x');
-
-        // Revoke write on the directory so unlinking prism_sync.db fails,
-        // standing in for a locked handle on Windows.
-        final chmod = await Process.run('chmod', ['u-w', tempDir.path]);
-        expect(chmod.exitCode, 0, reason: 'chmod setup must succeed');
-
-        final container = ProviderContainer();
-        addTearDown(container.dispose);
-        final notifier = container.read(devicePairingProvider.notifier);
-
-        await expectLater(
-          notifier.deleteStaleSyncDatabaseFiles(directory: tempDir),
-          throwsA(isA<FileSystemException>()),
-          // The main DB delete failing must surface — silently swallowing it
-          // would let the caller reset into the same dead-end.
-        );
-
-        // Main DB still present — proving the failure was real and surfaced
-        // rather than masked.
-        await Process.run('chmod', ['u+w', tempDir.path]);
-        expect(await syncDb.exists(), isTrue);
-      },
-    );
-
-    test('tolerates a missing/locked sidecar once the main DB is gone', () async {
-      // Sidecar failures must NOT abort the erase. We can't easily lock a
-      // single sidecar cross-platform, but the happy-path test already proves
-      // sidecars are removed; here we assert a missing sidecar (absent -wal)
-      // alongside a present main DB completes without throwing.
       final tempDir = await Directory.systemTemp.createTemp(
-        'pairing_stale_db_sidecar_test',
+        'pairing_stale_db_locked_test',
       );
       addTearDown(() async {
+        // Restore write perms before cleanup or the teardown itself fails.
+        await Process.run('chmod', ['u+w', tempDir.path]);
         if (await tempDir.exists()) {
           await tempDir.delete(recursive: true);
         }
@@ -2023,15 +1969,57 @@ void main() {
 
       final syncDb = File(p.join(tempDir.path, 'prism_sync.db'));
       await syncDb.writeAsString('x');
-      // No sidecars on disk.
+
+      // Revoke write on the directory so unlinking prism_sync.db fails,
+      // standing in for a locked handle on Windows.
+      final chmod = await Process.run('chmod', ['u-w', tempDir.path]);
+      expect(chmod.exitCode, 0, reason: 'chmod setup must succeed');
 
       final container = ProviderContainer();
       addTearDown(container.dispose);
       final notifier = container.read(devicePairingProvider.notifier);
 
-      await notifier.deleteStaleSyncDatabaseFiles(directory: tempDir);
-      expect(await syncDb.exists(), isFalse);
+      await expectLater(
+        notifier.deleteStaleSyncDatabaseFiles(directory: tempDir),
+        throwsA(isA<FileSystemException>()),
+        // The main DB delete failing must surface — silently swallowing it
+        // would let the caller reset into the same dead-end.
+      );
+
+      // Main DB still present — proving the failure was real and surfaced
+      // rather than masked.
+      await Process.run('chmod', ['u+w', tempDir.path]);
+      expect(await syncDb.exists(), isTrue);
     });
+
+    test(
+      'tolerates a missing/locked sidecar once the main DB is gone',
+      () async {
+        // Sidecar failures must NOT abort the erase. We can't easily lock a
+        // single sidecar cross-platform, but the happy-path test already proves
+        // sidecars are removed; here we assert a missing sidecar (absent -wal)
+        // alongside a present main DB completes without throwing.
+        final tempDir = await Directory.systemTemp.createTemp(
+          'pairing_stale_db_sidecar_test',
+        );
+        addTearDown(() async {
+          if (await tempDir.exists()) {
+            await tempDir.delete(recursive: true);
+          }
+        });
+
+        final syncDb = File(p.join(tempDir.path, 'prism_sync.db'));
+        await syncDb.writeAsString('x');
+        // No sidecars on disk.
+
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(devicePairingProvider.notifier);
+
+        await notifier.deleteStaleSyncDatabaseFiles(directory: tempDir);
+        expect(await syncDb.exists(), isFalse);
+      },
+    );
   });
 
   group('eraseStaleSyncDatabaseAndRetry guard', () {
@@ -2159,12 +2147,18 @@ void main() {
     // Catch-up conjunction: catch-up success is ANDed with the journal-drain
     // gate, not substituted for it. All four combinations are pinned so a future
     // edit can't silently drop either arm.
-    test('ACK is allowed only when BOTH journal drained AND catch-up succeeded', () {
-      expect(
-        shouldAckSnapshotApplied(journalDrained: true, catchUpSucceeded: true),
-        isTrue,
-      );
-    });
+    test(
+      'ACK is allowed only when BOTH journal drained AND catch-up succeeded',
+      () {
+        expect(
+          shouldAckSnapshotApplied(
+            journalDrained: true,
+            catchUpSucceeded: true,
+          ),
+          isTrue,
+        );
+      },
+    );
 
     test('ACK is blocked when catch-up failed even if the journal drained', () {
       // The joiner has not pulled the tail above the snapshot, so the relay's
@@ -2175,16 +2169,25 @@ void main() {
       );
     });
 
-    test('ACK is blocked when the journal is undrained even if catch-up succeeded', () {
-      expect(
-        shouldAckSnapshotApplied(journalDrained: false, catchUpSucceeded: true),
-        isFalse,
-      );
-    });
+    test(
+      'ACK is blocked when the journal is undrained even if catch-up succeeded',
+      () {
+        expect(
+          shouldAckSnapshotApplied(
+            journalDrained: false,
+            catchUpSucceeded: true,
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test('ACK is blocked when both conditions fail', () {
       expect(
-        shouldAckSnapshotApplied(journalDrained: false, catchUpSucceeded: false),
+        shouldAckSnapshotApplied(
+          journalDrained: false,
+          catchUpSucceeded: false,
+        ),
         isFalse,
       );
     });
@@ -2203,31 +2206,41 @@ void main() {
     ProviderContainer makeContainer() {
       return ProviderContainer(
         overrides: [
-          prismSyncHandleProvider.overrideWith(_NullPrismSyncHandleNotifier.new),
+          prismSyncHandleProvider.overrideWith(
+            _NullPrismSyncHandleNotifier.new,
+          ),
         ],
       );
     }
 
-    test('a retry whose catch-up throws does NOT ACK and re-arms nothing', () async {
-      final container = makeContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(devicePairingProvider.notifier);
-      notifier.bootstrapJournalDrainedForTest = true;
+    test(
+      'a retry whose catch-up throws does NOT ACK and re-arms nothing',
+      () async {
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(devicePairingProvider.notifier);
+        notifier.bootstrapJournalDrainedForTest = true;
 
-      var ackCalls = 0;
-      await notifier.runPendingSnapshotAckRetryForTest(
-        const _FakePrismSyncHandle(),
-        catchUp: (_) async => throw StateError('relay still unreachable'),
-        ack: ({required handle}) async => ackCalls++,
-      );
+        var ackCalls = 0;
+        await notifier.runPendingSnapshotAckRetryForTest(
+          const _FakePrismSyncHandle(),
+          catchUp: (_) async => throw StateError('relay still unreachable'),
+          ack: ({required handle}) async => ackCalls++,
+        );
 
-      expect(ackCalls, 0, reason: 'a failed catch-up must not ACK-delete the snapshot');
-      expect(
-        notifier.pendingSnapshotAckRetryArmed,
-        isFalse,
-        reason: 'the runner is single-shot — it tears the listener down on entry',
-      );
-    });
+        expect(
+          ackCalls,
+          0,
+          reason: 'a failed catch-up must not ACK-delete the snapshot',
+        );
+        expect(
+          notifier.pendingSnapshotAckRetryArmed,
+          isFalse,
+          reason:
+              'the runner is single-shot — it tears the listener down on entry',
+        );
+      },
+    );
 
     test('a retry whose catch-up succeeds ACKs exactly once', () async {
       final container = makeContainer();
@@ -2244,38 +2257,52 @@ void main() {
       );
 
       expect(catchUpCalls, 1);
-      expect(ackCalls, 1, reason: 'a recovered catch-up ACK-deletes the snapshot once');
-    });
-
-    test('catch-up success but an undrained journal still blocks the ACK', () async {
-      // The ACK conjunction holds in the retry path too: a successful catch-up
-      // is not enough on its own.
-      final container = makeContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(devicePairingProvider.notifier);
-      notifier.bootstrapJournalDrainedForTest = false;
-
-      var ackCalls = 0;
-      await notifier.runPendingSnapshotAckRetryForTest(
-        const _FakePrismSyncHandle(),
-        catchUp: (_) async {},
-        ack: ({required handle}) async => ackCalls++,
+      expect(
+        ackCalls,
+        1,
+        reason: 'a recovered catch-up ACK-deletes the snapshot once',
       );
-
-      expect(ackCalls, 0);
     });
 
-    test('arming a retry installs a listener; firing it on a clean SyncCompleted ACKs', () async {
-      final container = makeContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(devicePairingProvider.notifier);
+    test(
+      'catch-up success but an undrained journal still blocks the ACK',
+      () async {
+        // The ACK conjunction holds in the retry path too: a successful catch-up
+        // is not enough on its own.
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(devicePairingProvider.notifier);
+        notifier.bootstrapJournalDrainedForTest = false;
 
-      notifier.armPendingSnapshotAckRetryForTest(const _FakePrismSyncHandle());
-      expect(notifier.pendingSnapshotAckRetryArmed, isTrue);
+        var ackCalls = 0;
+        await notifier.runPendingSnapshotAckRetryForTest(
+          const _FakePrismSyncHandle(),
+          catchUp: (_) async {},
+          ack: ({required handle}) async => ackCalls++,
+        );
 
-      // Re-arming while armed is a no-op (single retry per attempt).
-      notifier.armPendingSnapshotAckRetryForTest(const _FakePrismSyncHandle());
-      expect(notifier.pendingSnapshotAckRetryArmed, isTrue);
-    });
+        expect(ackCalls, 0);
+      },
+    );
+
+    test(
+      'arming a retry installs a listener; firing it on a clean SyncCompleted ACKs',
+      () async {
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(devicePairingProvider.notifier);
+
+        notifier.armPendingSnapshotAckRetryForTest(
+          const _FakePrismSyncHandle(),
+        );
+        expect(notifier.pendingSnapshotAckRetryArmed, isTrue);
+
+        // Re-arming while armed is a no-op (single retry per attempt).
+        notifier.armPendingSnapshotAckRetryForTest(
+          const _FakePrismSyncHandle(),
+        );
+        expect(notifier.pendingSnapshotAckRetryArmed, isTrue);
+      },
+    );
   });
 }

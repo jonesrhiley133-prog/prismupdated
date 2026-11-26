@@ -22,6 +22,7 @@ class ClampedBody extends StatelessWidget {
   });
 
   final Widget child;
+
   /// Defaults to [PrismTokens.contentMaxWidth] (wider on desktop web).
   final double? maxWidth;
   final AlignmentGeometry alignment;
@@ -33,7 +34,9 @@ class ClampedBody extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth ?? PrismTokens.contentMaxWidth),
+        constraints: BoxConstraints(
+          maxWidth: maxWidth ?? PrismTokens.contentMaxWidth,
+        ),
         child: child,
       ),
     );
@@ -54,7 +57,10 @@ class CompactCalendar extends StatelessWidget {
     MediaQuery.sizeOf(context);
     if (PrismTokens.desktopWebContentWidth == null) return child;
     return Center(
-      child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: child),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: child,
+      ),
     );
   }
 }

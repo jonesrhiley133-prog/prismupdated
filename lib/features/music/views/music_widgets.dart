@@ -11,7 +11,12 @@ import 'package:prism_plurality/shared/extensions/app_localizations_extension.da
 
 /// Cover art for a track, or a music-note placeholder.
 class TrackArt extends ConsumerWidget {
-  const TrackArt({super.key, required this.track, this.size = 44, this.radius = 8});
+  const TrackArt({
+    super.key,
+    required this.track,
+    this.size = 44,
+    this.radius = 8,
+  });
 
   final Track? track;
   final double size;
@@ -25,7 +30,11 @@ class TrackArt extends ConsumerWidget {
       width: size,
       height: size,
       color: theme.colorScheme.primary.withValues(alpha: 0.18),
-      child: Icon(Icons.music_note_rounded, size: size * 0.5, color: theme.colorScheme.primary),
+      child: Icon(
+        Icons.music_note_rounded,
+        size: size * 0.5,
+        color: theme.colorScheme.primary,
+      ),
     );
     return ClipRRect(
       borderRadius: prismCorners(context, radius),
@@ -47,7 +56,12 @@ class TrackArt extends ConsumerWidget {
 
 /// Blurred cover art used behind the expanded and compact players.
 class ArtworkBackdrop extends ConsumerWidget {
-  const ArtworkBackdrop({super.key, required this.track, required this.blur, this.dim = 0.45});
+  const ArtworkBackdrop({
+    super.key,
+    required this.track,
+    required this.blur,
+    this.dim = 0.45,
+  });
 
   final Track? track;
   final bool blur;
@@ -115,7 +129,9 @@ class PlayerButton extends StatelessWidget {
       enabled: onPressed != null,
       excludeSemantics: true,
       child: Material(
-        color: filled ? fg : (active ? fg.withValues(alpha: 0.16) : Colors.transparent),
+        color: filled
+            ? fg
+            : (active ? fg.withValues(alpha: 0.16) : Colors.transparent),
         shape: prismCircleBorder(context),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -145,7 +161,9 @@ class PlayerProgressLine extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final total = ref.watch(musicControllerProvider.select((s) => s.durationMs));
+    final total = ref.watch(
+      musicControllerProvider.select((s) => s.durationMs),
+    );
     // The bar is at most a few hundred pixels wide, so redraw only when the
     // position moves about a pixel's worth of the track (never more than
     // 4x a second): on a long track most 200 ms ticks move it less than that.
@@ -162,13 +180,20 @@ class PlayerProgressLine extends ConsumerWidget {
     return RepaintBoundary(
       child: Semantics(
         label: context.l10n.musProgress,
-        value: '${formatTrackTime(pos)} / ${formatTrackTime(Duration(milliseconds: total))}',
+        value:
+            '${formatTrackTime(pos)} / ${formatTrackTime(Duration(milliseconds: total))}',
         child: SizedBox(
           height: 3,
           child: Stack(
             children: [
-              ColoredBox(color: color.withValues(alpha: 0.2), child: const SizedBox.expand()),
-              FractionallySizedBox(widthFactor: f, child: ColoredBox(color: color, child: const SizedBox.expand())),
+              ColoredBox(
+                color: color.withValues(alpha: 0.2),
+                child: const SizedBox.expand(),
+              ),
+              FractionallySizedBox(
+                widthFactor: f,
+                child: ColoredBox(color: color, child: const SizedBox.expand()),
+              ),
             ],
           ),
         ),

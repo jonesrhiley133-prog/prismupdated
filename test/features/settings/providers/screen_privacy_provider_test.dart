@@ -16,9 +16,7 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final value = await container.read(
-        screenPrivacyEnabledProvider.future,
-      );
+      final value = await container.read(screenPrivacyEnabledProvider.future);
       expect(value, isFalse);
     });
 
@@ -29,9 +27,7 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final value = await container.read(
-        screenPrivacyEnabledProvider.future,
-      );
+      final value = await container.read(screenPrivacyEnabledProvider.future);
       expect(value, isTrue);
     });
 
@@ -40,9 +36,7 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(screenPrivacyEnabledProvider.future);
-      await container
-          .read(screenPrivacyEnabledProvider.notifier)
-          .set(true);
+      await container.read(screenPrivacyEnabledProvider.notifier).set(true);
 
       expect(container.read(screenPrivacyEnabledProvider).value, isTrue);
 
@@ -50,22 +44,22 @@ void main() {
       expect(prefs.getBool('prism.pref.screen_privacy_enabled'), isTrue);
     });
 
-    test('set(false) writes false and the next container reads false',
-        () async {
-      SharedPreferences.setMockInitialValues({
-        'prism.pref.screen_privacy_enabled': true,
-      });
-      final first = ProviderContainer();
-      await first.read(screenPrivacyEnabledProvider.future);
-      await first.read(screenPrivacyEnabledProvider.notifier).set(false);
-      first.dispose();
+    test(
+      'set(false) writes false and the next container reads false',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'prism.pref.screen_privacy_enabled': true,
+        });
+        final first = ProviderContainer();
+        await first.read(screenPrivacyEnabledProvider.future);
+        await first.read(screenPrivacyEnabledProvider.notifier).set(false);
+        first.dispose();
 
-      final fresh = ProviderContainer();
-      addTearDown(fresh.dispose);
-      final value = await fresh.read(
-        screenPrivacyEnabledProvider.future,
-      );
-      expect(value, isFalse);
-    });
+        final fresh = ProviderContainer();
+        addTearDown(fresh.dispose);
+        final value = await fresh.read(screenPrivacyEnabledProvider.future);
+        expect(value, isFalse);
+      },
+    );
   });
 }

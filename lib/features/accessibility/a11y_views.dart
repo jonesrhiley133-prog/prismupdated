@@ -24,10 +24,21 @@ String colorVisionLabel(AppLocalizations l10n, ColorVision v) => switch (v) {
 };
 
 /// Asks first when the user turned on confirmations for important actions.
-Future<bool> confirmIfAsked(BuildContext context, WidgetRef ref, {required String title, String? message}) async {
+Future<bool> confirmIfAsked(
+  BuildContext context,
+  WidgetRef ref, {
+  required String title,
+  String? message,
+}) async {
   if (!ref.read(a11ySettingsProvider).confirmActions) return true;
   final l10n = context.l10n;
-  return PrismDialog.confirm(context: context, title: title, message: message, confirmLabel: l10n.a11yConfirmYes, cancelLabel: l10n.cancel);
+  return PrismDialog.confirm(
+    context: context,
+    title: title,
+    message: message,
+    confirmLabel: l10n.a11yConfirmYes,
+    cancelLabel: l10n.cancel,
+  );
 }
 
 String _pct(double v) => '${(v * 100).round()}%';
@@ -45,9 +56,13 @@ class A11ySections extends ConsumerWidget {
     void set(A11ySettings Function(A11ySettings) f) => n.change(f);
     Widget card(List<Widget> children) => PrismSectionCard(
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
     );
-    Widget pad(Widget w) => Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w);
+    Widget pad(Widget w) =>
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -84,34 +99,44 @@ class A11ySections extends ConsumerWidget {
         PrismSection(
           title: l10n.a11yVisual,
           child: card([
-            pad(LabeledSlider(
-              label: l10n.a11yUiScale,
-              value: a.uiScale,
-              min: 0.85,
-              max: 1.4,
-              divisions: 11,
-              format: _pct,
-              onChanged: (v) => set((x) => x.copyWith(uiScale: v)),
-            )),
-            pad(LabeledSlider(
-              label: l10n.a11yLineHeight,
-              value: a.lineHeight,
-              min: 1,
-              max: 1.8,
-              divisions: 8,
-              format: _pct,
-              onChanged: (v) => set((x) => x.copyWith(lineHeight: v)),
-            )),
-            pad(LabeledSlider(
-              label: l10n.a11yWordSpacing,
-              value: a.wordSpacing,
-              min: 0,
-              max: 6,
-              divisions: 12,
-              format: (v) => '+${v.toStringAsFixed(1)}',
-              onChanged: (v) => set((x) => x.copyWith(wordSpacing: v)),
-            )),
-            PrismSwitchRow(title: l10n.a11yBold, value: a.boldText, onChanged: (v) => set((x) => x.copyWith(boldText: v))),
+            pad(
+              LabeledSlider(
+                label: l10n.a11yUiScale,
+                value: a.uiScale,
+                min: 0.85,
+                max: 1.4,
+                divisions: 11,
+                format: _pct,
+                onChanged: (v) => set((x) => x.copyWith(uiScale: v)),
+              ),
+            ),
+            pad(
+              LabeledSlider(
+                label: l10n.a11yLineHeight,
+                value: a.lineHeight,
+                min: 1,
+                max: 1.8,
+                divisions: 8,
+                format: _pct,
+                onChanged: (v) => set((x) => x.copyWith(lineHeight: v)),
+              ),
+            ),
+            pad(
+              LabeledSlider(
+                label: l10n.a11yWordSpacing,
+                value: a.wordSpacing,
+                min: 0,
+                max: 6,
+                divisions: 12,
+                format: (v) => '+${v.toStringAsFixed(1)}',
+                onChanged: (v) => set((x) => x.copyWith(wordSpacing: v)),
+              ),
+            ),
+            PrismSwitchRow(
+              title: l10n.a11yBold,
+              value: a.boldText,
+              onChanged: (v) => set((x) => x.copyWith(boldText: v)),
+            ),
             PrismSwitchRow(
               title: l10n.a11yHighContrast,
               subtitle: l10n.a11yHighContrastHelp,
@@ -119,15 +144,17 @@ class A11ySections extends ConsumerWidget {
               onChanged: (v) => set((x) => x.copyWith(highContrast: v)),
             ),
             if (!a.highContrast)
-              pad(LabeledSlider(
-                label: l10n.a11yContrast,
-                value: a.contrast,
-                min: 0,
-                max: 1,
-                divisions: 10,
-                format: _pct,
-                onChanged: (v) => set((x) => x.copyWith(contrast: v)),
-              )),
+              pad(
+                LabeledSlider(
+                  label: l10n.a11yContrast,
+                  value: a.contrast,
+                  min: 0,
+                  max: 1,
+                  divisions: 10,
+                  format: _pct,
+                  onChanged: (v) => set((x) => x.copyWith(contrast: v)),
+                ),
+              ),
             PrismSwitchRow(
               title: l10n.a11yReduceTransparency,
               subtitle: l10n.a11yReduceTransparencyHelp,
@@ -140,33 +167,51 @@ class A11ySections extends ConsumerWidget {
               value: a.reduceEffects,
               onChanged: (v) => set((x) => x.copyWith(reduceEffects: v)),
             ),
-            pad(Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.a11yColorVision, style: theme.textTheme.labelLarge),
-                  const SizedBox(height: 2),
-                  Text(l10n.a11yColorVisionHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      for (final v in ColorVision.values)
-                        PrismChip(label: colorVisionLabel(l10n, v), selected: a.colorVision == v, onTap: () => set((x) => x.copyWith(colorVision: v))),
-                    ],
-                  ),
-                ],
+            pad(
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.a11yColorVision,
+                      style: theme.textTheme.labelLarge,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.a11yColorVisionHelp,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final v in ColorVision.values)
+                          PrismChip(
+                            label: colorVisionLabel(l10n, v),
+                            selected: a.colorVision == v,
+                            onTap: () => set((x) => x.copyWith(colorVision: v)),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
             PrismSwitchRow(
               title: l10n.a11yFocus,
               subtitle: l10n.a11yFocusHelp,
               value: a.strongFocus,
               onChanged: (v) => set((x) => x.copyWith(strongFocus: v)),
             ),
-            PrismSwitchRow(title: l10n.a11yLargeIcons, value: a.largeIcons, onChanged: (v) => set((x) => x.copyWith(largeIcons: v))),
+            PrismSwitchRow(
+              title: l10n.a11yLargeIcons,
+              value: a.largeIcons,
+              onChanged: (v) => set((x) => x.copyWith(largeIcons: v)),
+            ),
           ]),
         ),
         PrismSection(
@@ -179,44 +224,56 @@ class A11ySections extends ConsumerWidget {
               onChanged: (v) => set((x) => x.copyWith(reduceMotion: v)),
             ),
             if (!a.reduceMotion)
-              pad(LabeledSlider(
-                label: l10n.a11yAnimSpeed,
-                value: a.animationSpeed,
-                min: 0.5,
-                max: 2,
-                divisions: 6,
-                format: (v) => v == 1 ? l10n.a11yNormal : '${v}×',
-                onChanged: (v) => set((x) => x.copyWith(animationSpeed: v)),
-              )),
+              pad(
+                LabeledSlider(
+                  label: l10n.a11yAnimSpeed,
+                  value: a.animationSpeed,
+                  min: 0.5,
+                  max: 2,
+                  divisions: 6,
+                  format: (v) => v == 1 ? l10n.a11yNormal : '${v}×',
+                  onChanged: (v) => set((x) => x.copyWith(animationSpeed: v)),
+                ),
+              ),
           ]),
         ),
         PrismSection(
           title: l10n.a11yInteraction,
           child: card([
-            pad(LabeledSlider(
-              label: l10n.a11yTouch,
-              value: a.touchScale,
-              min: 1,
-              max: 1.5,
-              divisions: 5,
-              format: _pct,
-              onChanged: (v) => set((x) => x.copyWith(touchScale: v)),
-            )),
-            PrismSwitchRow(title: l10n.a11yHaptics, subtitle: l10n.a11yHapticsHelp, value: a.haptics, onChanged: (v) => set((x) => x.copyWith(haptics: v))),
+            pad(
+              LabeledSlider(
+                label: l10n.a11yTouch,
+                value: a.touchScale,
+                min: 1,
+                max: 1.5,
+                divisions: 5,
+                format: _pct,
+                onChanged: (v) => set((x) => x.copyWith(touchScale: v)),
+              ),
+            ),
+            PrismSwitchRow(
+              title: l10n.a11yHaptics,
+              subtitle: l10n.a11yHapticsHelp,
+              value: a.haptics,
+              onChanged: (v) => set((x) => x.copyWith(haptics: v)),
+            ),
             PrismSwitchRow(
               title: l10n.a11yConfirm,
               subtitle: l10n.a11yConfirmHelp,
               value: a.confirmActions,
               onChanged: (v) => set((x) => x.copyWith(confirmActions: v)),
             ),
-            pad(Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: PrismButton(
-                label: l10n.a11ySimplifyNav,
-                icon: Icons.view_agenda_outlined,
-                onPressed: () => context.push(AppRoutePaths.settingsNavigation),
+            pad(
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: PrismButton(
+                  label: l10n.a11ySimplifyNav,
+                  icon: Icons.view_agenda_outlined,
+                  onPressed: () =>
+                      context.push(AppRoutePaths.settingsNavigation),
+                ),
               ),
-            )),
+            ),
           ]),
         ),
         PrismSection(
@@ -228,10 +285,17 @@ class A11ySections extends ConsumerWidget {
               value: a.announce,
               onChanged: (v) => set((x) => x.copyWith(announce: v)),
             ),
-            pad(Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(l10n.a11yKeyboardHelp, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            )),
+            pad(
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  l10n.a11yKeyboardHelp,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
           ]),
         ),
       ],
@@ -270,12 +334,36 @@ class A11yQuickPanel extends ConsumerWidget {
             format: _pct,
             onChanged: (v) => set((x) => x.copyWith(uiScale: v)),
           ),
-          PrismSwitchRow(title: l10n.a11yHighContrast, value: a.highContrast, onChanged: (v) => set((x) => x.copyWith(highContrast: v))),
-          PrismSwitchRow(title: l10n.a11yReduceMotion, value: a.reduceMotion, onChanged: (v) => set((x) => x.copyWith(reduceMotion: v))),
-          PrismSwitchRow(title: l10n.a11yReduceTransparency, value: a.reduceTransparency, onChanged: (v) => set((x) => x.copyWith(reduceTransparency: v))),
-          PrismSwitchRow(title: l10n.a11yBold, value: a.boldText, onChanged: (v) => set((x) => x.copyWith(boldText: v))),
-          PrismSwitchRow(title: l10n.a11yLargeIcons, value: a.largeIcons, onChanged: (v) => set((x) => x.copyWith(largeIcons: v))),
-          PrismSwitchRow(title: l10n.a11yFocus, value: a.strongFocus, onChanged: (v) => set((x) => x.copyWith(strongFocus: v))),
+          PrismSwitchRow(
+            title: l10n.a11yHighContrast,
+            value: a.highContrast,
+            onChanged: (v) => set((x) => x.copyWith(highContrast: v)),
+          ),
+          PrismSwitchRow(
+            title: l10n.a11yReduceMotion,
+            value: a.reduceMotion,
+            onChanged: (v) => set((x) => x.copyWith(reduceMotion: v)),
+          ),
+          PrismSwitchRow(
+            title: l10n.a11yReduceTransparency,
+            value: a.reduceTransparency,
+            onChanged: (v) => set((x) => x.copyWith(reduceTransparency: v)),
+          ),
+          PrismSwitchRow(
+            title: l10n.a11yBold,
+            value: a.boldText,
+            onChanged: (v) => set((x) => x.copyWith(boldText: v)),
+          ),
+          PrismSwitchRow(
+            title: l10n.a11yLargeIcons,
+            value: a.largeIcons,
+            onChanged: (v) => set((x) => x.copyWith(largeIcons: v)),
+          ),
+          PrismSwitchRow(
+            title: l10n.a11yFocus,
+            value: a.strongFocus,
+            onChanged: (v) => set((x) => x.copyWith(strongFocus: v)),
+          ),
           const SizedBox(height: 8),
           PrismButton(
             label: l10n.a11yAllSettings,

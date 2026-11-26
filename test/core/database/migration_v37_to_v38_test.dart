@@ -149,8 +149,9 @@ void main() {
       addTearDown(upgraded.close);
       await upgraded.customSelect('SELECT 1').get();
 
-      final version =
-          await upgraded.customSelect('PRAGMA user_version').getSingle();
+      final version = await upgraded
+          .customSelect('PRAGMA user_version')
+          .getSingle();
       expect(version.read<int>('user_version'), greaterThanOrEqualTo(38));
 
       // Part 1 (F03/F10): PK-linked tombstones cleared; others untouched.
@@ -167,21 +168,26 @@ void main() {
             'AND delete_intent_epoch IS NOT NULL',
           )
           .get();
-      expect(deletedLinked, isEmpty,
-          reason: 'no PK-linked tombstone may carry a delete intent post-v38');
+      expect(
+        deletedLinked,
+        isEmpty,
+        reason: 'no PK-linked tombstone may carry a delete intent post-v38',
+      );
 
       // Part 2 (R1/F14): both sync_generation columns exist, default 0.
-      final groupCols = (await upgraded
-              .customSelect('PRAGMA table_info(member_groups)')
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final groupCols =
+          (await upgraded
+                  .customSelect('PRAGMA table_info(member_groups)')
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(groupCols, contains('sync_generation'));
-      final entryCols = (await upgraded
-              .customSelect('PRAGMA table_info(member_group_entries)')
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final entryCols =
+          (await upgraded
+                  .customSelect('PRAGMA table_info(member_group_entries)')
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(entryCols, contains('sync_generation'));
 
       final groupGen = await upgraded
@@ -200,21 +206,23 @@ void main() {
       expect(entryGen.read<int>('sync_generation'), 0);
 
       // Part 3 (F23): the new table + its lookup index exist.
-      final tables = (await upgraded
-              .customSelect(
-                "SELECT name FROM sqlite_master WHERE type = 'table'",
-              )
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final tables =
+          (await upgraded
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(tables, contains('pk_identity_sync_aliases'));
-      final indexes = (await upgraded
-              .customSelect(
-                "SELECT name FROM sqlite_master WHERE type = 'index'",
-              )
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final indexes =
+          (await upgraded
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'index'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(indexes, contains('idx_pk_identity_sync_aliases_identity'));
 
       // Part 4 (F25): stale self-alias purged; legit loser alias intact.
@@ -237,24 +245,27 @@ void main() {
       addTearDown(upgraded.close);
       await upgraded.customSelect('SELECT 1').get();
 
-      final version =
-          await upgraded.customSelect('PRAGMA user_version').getSingle();
+      final version = await upgraded
+          .customSelect('PRAGMA user_version')
+          .getSingle();
       expect(version.read<int>('user_version'), greaterThanOrEqualTo(38));
 
-      final groupCols = (await upgraded
-              .customSelect('PRAGMA table_info(member_groups)')
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final groupCols =
+          (await upgraded
+                  .customSelect('PRAGMA table_info(member_groups)')
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(groupCols, contains('sync_generation'));
 
-      final tables = (await upgraded
-              .customSelect(
-                "SELECT name FROM sqlite_master WHERE type = 'table'",
-              )
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final tables =
+          (await upgraded
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(tables, contains('pk_identity_sync_aliases'));
 
       final aliases = await _aliasIds(upgraded);
@@ -281,19 +292,27 @@ void main() {
         '  AND pluralkit_uuid IS NOT NULL '
         '  AND delete_intent_epoch IS NOT NULL',
       );
-      final stampChanges =
-          await upgraded.customSelect('SELECT changes() AS n').getSingle();
-      expect(stampChanges.read<int>('n'), 0,
-          reason: 'stamp-clear re-run matches zero rows');
+      final stampChanges = await upgraded
+          .customSelect('SELECT changes() AS n')
+          .getSingle();
+      expect(
+        stampChanges.read<int>('n'),
+        0,
+        reason: 'stamp-clear re-run matches zero rows',
+      );
 
       await upgraded.customStatement(
         'DELETE FROM pk_group_sync_aliases '
         "WHERE legacy_entity_id = 'pk-group-' || pk_group_uuid",
       );
-      final purgeChanges =
-          await upgraded.customSelect('SELECT changes() AS n').getSingle();
-      expect(purgeChanges.read<int>('n'), 0,
-          reason: 'self-alias purge re-run matches zero rows');
+      final purgeChanges = await upgraded
+          .customSelect('SELECT changes() AS n')
+          .getSingle();
+      expect(
+        purgeChanges.read<int>('n'),
+        0,
+        reason: 'self-alias purge re-run matches zero rows',
+      );
     });
   });
 }

@@ -23,8 +23,7 @@ class Call {
 
 class FakePluralKitClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final List<Call> calls = [];
   int _idCounter = 0;
   // When set, createMember throws this instead of returning — simulates a POST
@@ -448,52 +447,63 @@ void main() {
           createPushStartedAt: leaseMs,
         );
 
-    test('F4: a FRESH create lease defers the push (no duplicate POST)',
-        () async {
-      final fresh = DateTime.now().millisecondsSinceEpoch;
-      final summary = await service.syncMembers(
-        localMembers: [leaseMember('local-1', 'Pending', fresh)],
-        pkMembers: [],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
-      expect(
-        fakeClient.calls.where((c) => c.method == 'createMember'),
-        isEmpty,
-        reason: 'a fresh lease means another device is mid-POST — do not POST',
-      );
-      expect(
-        fakeRepo.calls.where((c) => c.method == 'stampCreatePushStartedAt'),
-        isEmpty,
-      );
-      expect(summary.membersPushed, 0);
-      expect(summary.membersSkipped, 1);
-    });
+    test(
+      'F4: a FRESH create lease defers the push (no duplicate POST)',
+      () async {
+        final fresh = DateTime.now().millisecondsSinceEpoch;
+        final summary = await service.syncMembers(
+          localMembers: [leaseMember('local-1', 'Pending', fresh)],
+          pkMembers: [],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
+        expect(
+          fakeClient.calls.where((c) => c.method == 'createMember'),
+          isEmpty,
+          reason:
+              'a fresh lease means another device is mid-POST — do not POST',
+        );
+        expect(
+          fakeRepo.calls.where((c) => c.method == 'stampCreatePushStartedAt'),
+          isEmpty,
+        );
+        expect(summary.membersPushed, 0);
+        expect(summary.membersSkipped, 1);
+      },
+    );
 
-    test('F4: stamps the lease before POST and clears it after link-back',
-        () async {
-      final summary = await service.syncMembers(
-        localMembers: [_localMember(id: 'local-1', name: 'NewMember')],
-        pkMembers: [],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
-      expect(summary.membersPushed, 1);
-      final methods = fakeRepo.calls.map((c) => c.method).toList();
-      final stampIdx = methods.indexOf('stampCreatePushStartedAt');
-      final clearIdx = methods.indexOf('clearCreatePushStartedAt');
-      expect(stampIdx, greaterThanOrEqualTo(0),
-          reason: 'the lease must be stamped before the POST');
-      expect(clearIdx, greaterThan(stampIdx),
-          reason: 'the lease must be cleared after the link-back');
-      expect(fakeClient.calls.any((c) => c.method == 'createMember'), isTrue);
-    });
+    test(
+      'F4: stamps the lease before POST and clears it after link-back',
+      () async {
+        final summary = await service.syncMembers(
+          localMembers: [_localMember(id: 'local-1', name: 'NewMember')],
+          pkMembers: [],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
+        expect(summary.membersPushed, 1);
+        final methods = fakeRepo.calls.map((c) => c.method).toList();
+        final stampIdx = methods.indexOf('stampCreatePushStartedAt');
+        final clearIdx = methods.indexOf('clearCreatePushStartedAt');
+        expect(
+          stampIdx,
+          greaterThanOrEqualTo(0),
+          reason: 'the lease must be stamped before the POST',
+        );
+        expect(
+          clearIdx,
+          greaterThan(stampIdx),
+          reason: 'the lease must be cleared after the link-back',
+        );
+        expect(fakeClient.calls.any((c) => c.method == 'createMember'), isTrue);
+      },
+    );
 
     test('F5: a STALE lease adopts a matching orphaned PK member instead of '
         're-POSTing', () async {
@@ -502,7 +512,9 @@ void main() {
           .millisecondsSinceEpoch;
       final summary = await service.syncMembers(
         localMembers: [leaseMember('local-1', 'Orphaned', stale)],
-        pkMembers: [_pkMember(id: 'po1', uuid: 'uuid-orphan', name: 'Orphaned')],
+        pkMembers: [
+          _pkMember(id: 'po1', uuid: 'uuid-orphan', name: 'Orphaned'),
+        ],
         fieldConfigs: {},
         direction: PkSyncDirection.pushOnly,
         lastSyncDate: null,
@@ -512,7 +524,8 @@ void main() {
       expect(
         fakeClient.calls.where((c) => c.method == 'createMember'),
         isEmpty,
-        reason: 'the orphan from a prior interrupted push is adopted, not '
+        reason:
+            'the orphan from a prior interrupted push is adopted, not '
             're-created',
       );
       final applyCall = fakeRepo.calls.firstWhere(
@@ -527,28 +540,33 @@ void main() {
       expect(summary.membersPushed, 1);
     });
 
-    test('F5: a STALE lease with NO matching orphan re-POSTs (re-stamps)',
-        () async {
-      final stale = DateTime.now()
-          .subtract(const Duration(minutes: 20))
-          .millisecondsSinceEpoch;
-      final summary = await service.syncMembers(
-        localMembers: [leaseMember('local-1', 'Lonely', stale)],
-        pkMembers: [],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
-      expect(fakeClient.calls.any((c) => c.method == 'createMember'), isTrue,
-          reason: 'no orphan to adopt — a stale lease re-POSTs');
-      expect(
-        fakeRepo.calls.any((c) => c.method == 'stampCreatePushStartedAt'),
-        isTrue,
-      );
-      expect(summary.membersPushed, 1);
-    });
+    test(
+      'F5: a STALE lease with NO matching orphan re-POSTs (re-stamps)',
+      () async {
+        final stale = DateTime.now()
+            .subtract(const Duration(minutes: 20))
+            .millisecondsSinceEpoch;
+        final summary = await service.syncMembers(
+          localMembers: [leaseMember('local-1', 'Lonely', stale)],
+          pkMembers: [],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
+        expect(
+          fakeClient.calls.any((c) => c.method == 'createMember'),
+          isTrue,
+          reason: 'no orphan to adopt — a stale lease re-POSTs',
+        );
+        expect(
+          fakeRepo.calls.any((c) => c.method == 'stampCreatePushStartedAt'),
+          isTrue,
+        );
+        expect(summary.membersPushed, 1);
+      },
+    );
 
     test('F5 safety: a transport-failed POST KEEPS the lease (the create may '
         'have landed; F5 resolves it next sync)', () async {
@@ -568,16 +586,22 @@ void main() {
         client: fakeClient,
       );
 
-      expect(fakeClient.calls.any((c) => c.method == 'createMember'), isTrue,
-          reason: 'the POST was attempted and threw');
+      expect(
+        fakeClient.calls.any((c) => c.method == 'createMember'),
+        isTrue,
+        reason: 'the POST was attempted and threw',
+      );
       expect(
         fakeRepo.calls.any((c) => c.method == 'clearCreatePushStartedAt'),
         isFalse,
         reason: 'an ambiguous failure must not release the lease',
       );
       final after = await fakeRepo.getMemberById('local-1');
-      expect(after!.createPushStartedAt, isNotNull,
-          reason: 'the lease is kept for the F5 stale-lease path');
+      expect(
+        after!.createPushStartedAt,
+        isNotNull,
+        reason: 'the lease is kept for the F5 stale-lease path',
+      );
       expect(after.pluralkitUuid, isNull, reason: 'the member stays unlinked');
     });
 
@@ -639,14 +663,16 @@ void main() {
     test('F5 safety: adoption does not steal a soft-deleted same-named '
         'member\'s PK identity', () async {
       // A soft-deleted member still owns uuid-twin on PK (delete-push not done).
-      await fakeRepo.createMember(domain.Member(
-        id: 'deleted-twin',
-        name: 'Twin',
-        createdAt: DateTime(2026, 1, 1),
-        pluralkitUuid: 'uuid-twin',
-        pluralkitId: 'tw1',
-        isDeleted: true,
-      ));
+      await fakeRepo.createMember(
+        domain.Member(
+          id: 'deleted-twin',
+          name: 'Twin',
+          createdAt: DateTime(2026, 1, 1),
+          pluralkitUuid: 'uuid-twin',
+          pluralkitId: 'tw1',
+          isDeleted: true,
+        ),
+      );
       // A brand-new active member of the same name with a stale lease.
       final stale = DateTime.now()
           .subtract(const Duration(minutes: 20))
@@ -670,10 +696,14 @@ void main() {
       );
 
       // The new member must NOT adopt the deleted member's PK uuid.
-      for (final c
-          in fakeRepo.calls.where((c) => c.method == 'applyPluralKitLink')) {
-        expect((c.args[1] as Map)['pluralkit_uuid'], isNot('uuid-twin'),
-            reason: 'a deleted member\'s live PK identity is not adoptable');
+      for (final c in fakeRepo.calls.where(
+        (c) => c.method == 'applyPluralKitLink',
+      )) {
+        expect(
+          (c.args[1] as Map)['pluralkit_uuid'],
+          isNot('uuid-twin'),
+          reason: 'a deleted member\'s live PK identity is not adoptable',
+        );
       }
       // It re-POSTs a fresh PK member instead.
       expect(fakeClient.calls.any((c) => c.method == 'createMember'), isTrue);
@@ -1335,10 +1365,7 @@ void main() {
 
       expect(summary.membersPushed, 0);
       expect(summary.membersSkipped, 1);
-      expect(
-        fakeClient.calls.any((c) => c.method == 'updateMember'),
-        isFalse,
-      );
+      expect(fakeClient.calls.any((c) => c.method == 'updateMember'), isFalse);
     });
 
     test('still pushes when local is populated and differs', () async {
@@ -1452,90 +1479,99 @@ void main() {
       },
     );
 
-    test('local pronouns null vs PK pronouns empty string: nothing to push', () async {
-      // PK treats '' and null both as "cleared" — the asymmetry must not
-      // count as a difference, or the field enters the pushable set only for
-      // the payload builder to omit it (risking an empty `{}` PATCH → 400).
-      final local = _localMember(
-        id: 'local-1',
-        name: 'Alice',
-        pluralkitId: 'pk001',
-        pronouns: null,
-      );
-      final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: '');
+    test(
+      'local pronouns null vs PK pronouns empty string: nothing to push',
+      () async {
+        // PK treats '' and null both as "cleared" — the asymmetry must not
+        // count as a difference, or the field enters the pushable set only for
+        // the payload builder to omit it (risking an empty `{}` PATCH → 400).
+        final local = _localMember(
+          id: 'local-1',
+          name: 'Alice',
+          pluralkitId: 'pk001',
+          pronouns: null,
+        );
+        final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: '');
 
-      final summary = await service.syncMembers(
-        localMembers: [local],
-        pkMembers: [pk],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
+        final summary = await service.syncMembers(
+          localMembers: [local],
+          pkMembers: [pk],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
 
-      expect(summary.membersPushed, 0);
-      expect(
-        fakeClient.calls.where((c) => c.method == 'updateMember'),
-        isEmpty,
-        reason: "''-vs-null is not a pushable difference",
-      );
-    });
+        expect(summary.membersPushed, 0);
+        expect(
+          fakeClient.calls.where((c) => c.method == 'updateMember'),
+          isEmpty,
+          reason: "''-vs-null is not a pushable difference",
+        );
+      },
+    );
 
-    test('local pronouns empty string vs PK null: no perpetual clear-push', () async {
-      // The mirror case: PK stores null, so pushing '' (a PK clear) would
-      // "differ" again on every later sync — a destructive write loop.
-      final local = _localMember(
-        id: 'local-1',
-        name: 'Alice',
-        pluralkitId: 'pk001',
-        pronouns: '',
-      );
-      final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: null);
+    test(
+      'local pronouns empty string vs PK null: no perpetual clear-push',
+      () async {
+        // The mirror case: PK stores null, so pushing '' (a PK clear) would
+        // "differ" again on every later sync — a destructive write loop.
+        final local = _localMember(
+          id: 'local-1',
+          name: 'Alice',
+          pluralkitId: 'pk001',
+          pronouns: '',
+        );
+        final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: null);
 
-      final summary = await service.syncMembers(
-        localMembers: [local],
-        pkMembers: [pk],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
+        final summary = await service.syncMembers(
+          localMembers: [local],
+          pkMembers: [pk],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
 
-      expect(summary.membersPushed, 0);
-      expect(
-        fakeClient.calls.where((c) => c.method == 'updateMember'),
-        isEmpty,
-      );
-    });
+        expect(summary.membersPushed, 0);
+        expect(
+          fakeClient.calls.where((c) => c.method == 'updateMember'),
+          isEmpty,
+        );
+      },
+    );
 
-    test('whitespace-only local pronouns vs populated PK: would-clear, not pushed', () async {
-      final local = _localMember(
-        id: 'local-1',
-        name: 'Alice',
-        pluralkitId: 'pk001',
-        pronouns: '  ',
-      );
-      final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: 'he/him');
+    test(
+      'whitespace-only local pronouns vs populated PK: would-clear, not pushed',
+      () async {
+        final local = _localMember(
+          id: 'local-1',
+          name: 'Alice',
+          pluralkitId: 'pk001',
+          pronouns: '  ',
+        );
+        final pk = _pkMember(id: 'pk001', name: 'Alice', pronouns: 'he/him');
 
-      final summary = await service.syncMembers(
-        localMembers: [local],
-        pkMembers: [pk],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
+        final summary = await service.syncMembers(
+          localMembers: [local],
+          pkMembers: [pk],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
 
-      expect(summary.membersPushed, 0);
-      expect(
-        fakeClient.calls.where((c) => c.method == 'updateMember'),
-        isEmpty,
-        reason: 'whitespace-only local must not overwrite populated PK',
-      );
-    });
+        expect(summary.membersPushed, 0);
+        expect(
+          fakeClient.calls.where((c) => c.method == 'updateMember'),
+          isEmpty,
+          reason: 'whitespace-only local must not overwrite populated PK',
+        );
+      },
+    );
 
     test(
       'local pronouns empty string + PK set + bio differs: no pronouns key',
@@ -1600,9 +1636,7 @@ void main() {
           localMembers: [local],
           pkMembers: [pk],
           fieldConfigs: {
-            'local-1': const PkFieldSyncConfig(
-              color: PkSyncDirection.pullOnly,
-            ),
+            'local-1': const PkFieldSyncConfig(color: PkSyncDirection.pullOnly),
           },
           direction: PkSyncDirection.bidirectional,
           lastSyncDate: null,
@@ -1643,9 +1677,7 @@ void main() {
           localMembers: [local],
           pkMembers: [pk],
           fieldConfigs: {
-            'local-1': const PkFieldSyncConfig(
-              name: PkSyncDirection.pullOnly,
-            ),
+            'local-1': const PkFieldSyncConfig(name: PkSyncDirection.pullOnly),
           },
           direction: PkSyncDirection.bidirectional,
           lastSyncDate: null,
@@ -1663,94 +1695,94 @@ void main() {
       },
     );
 
-    test('all fields differ in pushOnly: payload includes all of them', () async {
-      final local = _localMember(
-        id: 'local-1',
-        name: 'Alice Local',
-        pluralkitId: 'pk001',
-        pluralkitDisplayName: 'NewDisplay',
-        pronouns: 'they/them',
-        bio: 'new bio',
-        birthday: '2021-02-02',
-        customColorHex: '#abcdef',
-        customColorEnabled: true,
-      );
-      final pk = _pkMember(
-        id: 'pk001',
-        name: 'Alice PK',
-        displayName: 'OldDisplay',
-        pronouns: 'he/him',
-        description: 'old bio',
-        birthday: '2020-01-15',
-        color: '123456',
-      );
-
-      await service.syncMembers(
-        localMembers: [local],
-        pkMembers: [pk],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
-
-      final payload =
-          fakeClient.calls.firstWhere((c) => c.method == 'updateMember').args[1]
-              as Map<String, dynamic>;
-      expect(payload['name'], 'Alice Local');
-      expect(payload['display_name'], 'NewDisplay');
-      expect(payload['pronouns'], 'they/them');
-      expect(payload['description'], 'new bio');
-      expect(payload['birthday'], '2021-02-02');
-      expect(payload['color'], 'abcdef');
-    });
-
     test(
-      'no PATCH when the only differing fields are all excluded',
+      'all fields differ in pushOnly: payload includes all of them',
       () async {
-        // pronouns differ but are would-clear (local empty); color differs but
-        // is pull-only. Nothing includable → service must skip the PATCH (PK
-        // 400s on an empty PATCH body).
         final local = _localMember(
           id: 'local-1',
-          name: 'Alice',
+          name: 'Alice Local',
           pluralkitId: 'pk001',
-          bio: 'same',
-          pronouns: '',
+          pluralkitDisplayName: 'NewDisplay',
+          pronouns: 'they/them',
+          bio: 'new bio',
+          birthday: '2021-02-02',
           customColorHex: '#abcdef',
           customColorEnabled: true,
         );
         final pk = _pkMember(
           id: 'pk001',
-          name: 'Alice',
-          description: 'same',
+          name: 'Alice PK',
+          displayName: 'OldDisplay',
           pronouns: 'he/him',
+          description: 'old bio',
+          birthday: '2020-01-15',
           color: '123456',
         );
 
-        final summary = await service.syncMembers(
+        await service.syncMembers(
           localMembers: [local],
           pkMembers: [pk],
-          fieldConfigs: {
-            'local-1': const PkFieldSyncConfig(
-              color: PkSyncDirection.pullOnly,
-            ),
-          },
-          direction: PkSyncDirection.bidirectional,
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
           lastSyncDate: null,
           memberRepository: fakeRepo,
           client: fakeClient,
         );
 
-        expect(summary.membersPushed, 0);
-        expect(
-          fakeClient.calls.any((c) => c.method == 'updateMember'),
-          isFalse,
-          reason: 'no includable fields → no PATCH (empty body would 400)',
-        );
+        final payload =
+            fakeClient.calls
+                    .firstWhere((c) => c.method == 'updateMember')
+                    .args[1]
+                as Map<String, dynamic>;
+        expect(payload['name'], 'Alice Local');
+        expect(payload['display_name'], 'NewDisplay');
+        expect(payload['pronouns'], 'they/them');
+        expect(payload['description'], 'new bio');
+        expect(payload['birthday'], '2021-02-02');
+        expect(payload['color'], 'abcdef');
       },
     );
+
+    test('no PATCH when the only differing fields are all excluded', () async {
+      // pronouns differ but are would-clear (local empty); color differs but
+      // is pull-only. Nothing includable → service must skip the PATCH (PK
+      // 400s on an empty PATCH body).
+      final local = _localMember(
+        id: 'local-1',
+        name: 'Alice',
+        pluralkitId: 'pk001',
+        bio: 'same',
+        pronouns: '',
+        customColorHex: '#abcdef',
+        customColorEnabled: true,
+      );
+      final pk = _pkMember(
+        id: 'pk001',
+        name: 'Alice',
+        description: 'same',
+        pronouns: 'he/him',
+        color: '123456',
+      );
+
+      final summary = await service.syncMembers(
+        localMembers: [local],
+        pkMembers: [pk],
+        fieldConfigs: {
+          'local-1': const PkFieldSyncConfig(color: PkSyncDirection.pullOnly),
+        },
+        direction: PkSyncDirection.bidirectional,
+        lastSyncDate: null,
+        memberRepository: fakeRepo,
+        client: fakeClient,
+      );
+
+      expect(summary.membersPushed, 0);
+      expect(
+        fakeClient.calls.any((c) => c.method == 'updateMember'),
+        isFalse,
+        reason: 'no includable fields → no PATCH (empty body would 400)',
+      );
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -2424,11 +2456,7 @@ void main() {
 
     test('one PK 400 skips that member and the rest still push', () async {
       final client = _UpdateFailureClient({
-        'pk002': PluralKitApiError(
-          400,
-          validation40001Body(),
-          code: 40001,
-        ),
+        'pk002': PluralKitApiError(400, validation40001Body(), code: 40001),
       });
       final callbackMessages = <String>[];
 
@@ -2630,40 +2658,43 @@ void main() {
       );
     });
 
-    test('client-side cap skip (M10b) surfaces without a network call', () async {
-      // Bio over the 1000-char cap: the push service drops the field, the
-      // payload empties to a no-op, and the skip reaches the summary. The
-      // member still counts as pushed (the call "succeeded" as a no-op).
-      final local = _localMember(
-        id: 'local-1',
-        name: 'Alice',
-        pluralkitId: 'pk001',
-        pluralkitUuid: 'uuid-pk001',
-        bio: 'x' * 1001,
-      );
-      final pk = _pkMember(
-        id: 'pk001',
-        uuid: 'uuid-pk001',
-        name: 'Alice',
-        description: 'short',
-      );
+    test(
+      'client-side cap skip (M10b) surfaces without a network call',
+      () async {
+        // Bio over the 1000-char cap: the push service drops the field, the
+        // payload empties to a no-op, and the skip reaches the summary. The
+        // member still counts as pushed (the call "succeeded" as a no-op).
+        final local = _localMember(
+          id: 'local-1',
+          name: 'Alice',
+          pluralkitId: 'pk001',
+          pluralkitUuid: 'uuid-pk001',
+          bio: 'x' * 1001,
+        );
+        final pk = _pkMember(
+          id: 'pk001',
+          uuid: 'uuid-pk001',
+          name: 'Alice',
+          description: 'short',
+        );
 
-      final summary = await service.syncMembers(
-        localMembers: [local],
-        pkMembers: [pk],
-        fieldConfigs: {},
-        direction: PkSyncDirection.pushOnly,
-        lastSyncDate: null,
-        memberRepository: fakeRepo,
-        client: fakeClient,
-      );
+        final summary = await service.syncMembers(
+          localMembers: [local],
+          pkMembers: [pk],
+          fieldConfigs: {},
+          direction: PkSyncDirection.pushOnly,
+          lastSyncDate: null,
+          memberRepository: fakeRepo,
+          client: fakeClient,
+        );
 
-      expect(fakeClient.calls, isEmpty);
-      expect(summary.membersPushed, 1);
-      final message = summary.pushSkippedMessages.single;
-      expect(message, contains("'Alice'"));
-      expect(message, contains('is 1001 characters (PluralKit max 1000)'));
-    });
+        expect(fakeClient.calls, isEmpty);
+        expect(summary.membersPushed, 1);
+        final message = summary.pushSkippedMessages.single;
+        expect(message, contains("'Alice'"));
+        expect(message, contains('is 1001 characters (PluralKit max 1000)'));
+      },
+    );
 
     test('pushSkippedMessages round-trips through PkSyncSummary JSON', () {
       const summary = PkSyncSummary(
@@ -2695,11 +2726,8 @@ void main() {
     // PK side reports a DIFFERENT pronoun than local, forcing a push for each
     // member; the successful push then fires the identity-repair link-back —
     // the exact F16 write site.
-    PKMember pkFor(String n) => _pkMember(
-      id: 'pk00$n',
-      uuid: 'uuid-pk00$n',
-      name: 'Member $n',
-    );
+    PKMember pkFor(String n) =>
+        _pkMember(id: 'pk00$n', uuid: 'uuid-pk00$n', name: 'Member $n');
 
     test(
       'a generic DB error on one link-back skips that member, the rest sync',
@@ -2761,10 +2789,9 @@ void main() {
         // Defensive: even if a repository surfaced a global PK condition from a
         // write (a revoked token mid-write), it must propagate, not be
         // swallowed as a per-member skip.
-        final repo = _LinkFailureRepository(
-          {'local-1'},
-          error: const PluralKitAuthError(),
-        );
+        final repo = _LinkFailureRepository({
+          'local-1',
+        }, error: const PluralKitAuthError());
         final locals = [
           linked('1').copyWith(pluralkitUuid: 'stale-1'),
           linked('2').copyWith(pluralkitUuid: 'stale-2'),

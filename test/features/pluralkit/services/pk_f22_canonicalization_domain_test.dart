@@ -109,7 +109,10 @@ class _FakeClient implements PluralKitClient {
   Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
 
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async {
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async {
     if (before != null) return const [];
     return allSwitches;
   }
@@ -135,14 +138,20 @@ class _FakeClient implements PluralKitClient {
   Future<PKMember> updateMember(String id, Map<String, dynamic> data) =>
       throw UnimplementedError();
   @override
-  Future<PKSwitch> createSwitch(List<String> memberIds, {DateTime? timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> createSwitch(
+    List<String> memberIds, {
+    DateTime? timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitch(String switchId, {required DateTime timestamp}) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitch(
+    String switchId, {
+    required DateTime timestamp,
+  }) => throw UnimplementedError();
   @override
-  Future<PKSwitch> updateSwitchMembers(String switchId, List<String> memberIds) =>
-      throw UnimplementedError();
+  Future<PKSwitch> updateSwitchMembers(
+    String switchId,
+    List<String> memberIds,
+  ) => throw UnimplementedError();
   @override
   Future<void> deleteSwitch(String switchId) => throw UnimplementedError();
   @override
@@ -409,7 +418,8 @@ void main() {
         expect(
           artifact.isDeleted,
           isTrue,
-          reason: 'still-mapped rescue artifact IS tombstoned (domain guard '
+          reason:
+              'still-mapped rescue artifact IS tombstoned (domain guard '
               'must not break legitimate canonicalization)',
         );
         // F03/C1: link cleared first, no delete intent — importer cleanup

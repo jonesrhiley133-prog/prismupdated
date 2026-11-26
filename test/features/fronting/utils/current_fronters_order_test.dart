@@ -10,11 +10,12 @@ Member _member(String id, {int displayOrder = 0}) => Member(
   displayOrder: displayOrder,
 );
 
-FrontingSession _session(String memberId, DateTime startTime) => FrontingSession(
-  id: 'session-$memberId',
-  startTime: startTime,
-  memberId: memberId,
-);
+FrontingSession _session(String memberId, DateTime startTime) =>
+    FrontingSession(
+      id: 'session-$memberId',
+      startTime: startTime,
+      memberId: memberId,
+    );
 
 void main() {
   group('orderCurrentFronters', () {
@@ -44,11 +45,7 @@ void main() {
         _member('c', displayOrder: 20),
       ];
       final t = DateTime(2026, 1, 1, 12);
-      final sessions = [
-        _session('a', t),
-        _session('b', t),
-        _session('c', t),
-      ];
+      final sessions = [_session('a', t), _session('b', t), _session('c', t)];
 
       final result = orderCurrentFronters(sessions, members);
 
@@ -56,11 +53,7 @@ void main() {
     });
 
     test('breaks displayOrder ties by id ascending for full determinism', () {
-      final members = [
-        _member('charlie'),
-        _member('alice'),
-        _member('bob'),
-      ];
+      final members = [_member('charlie'), _member('alice'), _member('bob')];
       final t = DateTime(2026, 1, 1, 12);
       final sessions = [
         _session('charlie', t),

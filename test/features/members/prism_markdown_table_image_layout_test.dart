@@ -20,25 +20,25 @@ final Uint8List _kOnePxPng = base64Decode(
 /// A library attachment the bio markdown references by tag (`![](flag)`).
 /// Intrinsic dimensions 800×400 → aspect ratio 2.0.
 MediaAttachment _flagAttachment() => MediaAttachment(
-      id: 'att-flag',
-      messageId: 'msg-1',
-      tag: 'flag',
-      mediaId: 'media-flag',
-      mediaType: 'image',
-      encryptionKeyB64: base64Encode(List<int>.filled(32, 0)),
-      contentHash: 'chash',
-      plaintextHash: 'phash',
-      mimeType: 'image/png',
-      sizeBytes: 1,
-      width: 800,
-      height: 400,
-      durationMs: 0,
-      blurhash: '',
-      waveformB64: '',
-      thumbnailMediaId: '',
-      sourceUrl: '',
-      previewUrl: '',
-    );
+  id: 'att-flag',
+  messageId: 'msg-1',
+  tag: 'flag',
+  mediaId: 'media-flag',
+  mediaType: 'image',
+  encryptionKeyB64: base64Encode(List<int>.filled(32, 0)),
+  contentHash: 'chash',
+  plaintextHash: 'phash',
+  mimeType: 'image/png',
+  sizeBytes: 1,
+  width: 800,
+  height: 400,
+  durationMs: 0,
+  blurhash: '',
+  waveformB64: '',
+  thumbnailMediaId: '',
+  sourceUrl: '',
+  previewUrl: '',
+);
 
 /// Renders [data] as a member bio inside a bounded-width column.
 ///
@@ -48,41 +48,45 @@ MediaAttachment _flagAttachment() => MediaAttachment(
 /// stack. The overrides are inlined (rather than a typed `List<...>`) so the
 /// element type is inferred.
 Widget _wrap(String data, {required Uint8List? bytes}) => ProviderScope(
-      overrides: [
-        imageLibraryProvider
-            .overrideWith((ref) => Stream.value([_flagAttachment()])),
-        mediaFileProvider.overrideWith((ref, params) async => bytes),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: const [Locale('en')],
-        home: Scaffold(
-          body: Center(
-            // A bounded width — the real member-bio column, not an unbounded box.
-            child: SizedBox(
-              width: 360,
-              child: PrismMarkdownText(data: data, memberName: 'Robin'),
-            ),
-          ),
+  overrides: [
+    imageLibraryProvider.overrideWith(
+      (ref) => Stream.value([_flagAttachment()]),
+    ),
+    mediaFileProvider.overrideWith((ref, params) async => bytes),
+  ],
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: const [Locale('en')],
+    home: Scaffold(
+      body: Center(
+        // A bounded width — the real member-bio column, not an unbounded box.
+        child: SizedBox(
+          width: 360,
+          child: PrismMarkdownText(data: data, memberName: 'Robin'),
         ),
       ),
-    );
+    ),
+  ),
+);
 
 // Header-only `:::plain` image-beside-text layout tables (2 cols, 1 row) — the
 // exact shape that crashed: an image column sized by IntrinsicColumnWidth next
 // to a flexing text column.
-const _sizedImageTable = ':::plain\n'
+const _sizedImageTable =
+    ':::plain\n'
     '| ![](flag#120) | Plenty of descriptive text that should wrap inside its '
     'own flexible column beside the image |\n'
     '| --- | --- |\n'
     ':::';
 
-const _unsizedImageTable = ':::plain\n'
+const _unsizedImageTable =
+    ':::plain\n'
     '| ![](flag) | Plenty of descriptive text beside the image |\n'
     '| --- | --- |\n'
     ':::';
 
-const _tinyImageTable = ':::plain\n'
+const _tinyImageTable =
+    ':::plain\n'
     '| ![](flag#20) | Text beside a very small image |\n'
     '| --- | --- |\n'
     ':::';
@@ -116,8 +120,9 @@ void main() {
       );
     });
 
-    testWidgets('lays out a loaded image-beside-text table without throwing',
-        (tester) async {
+    testWidgets('lays out a loaded image-beside-text table without throwing', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(_sizedImageTable, bytes: _kOnePxPng));
       await tester.pumpAndSettle();
 
@@ -138,8 +143,9 @@ void main() {
       );
     });
 
-    testWidgets('lays out an UNSIZED loaded image table without throwing',
-        (tester) async {
+    testWidgets('lays out an UNSIZED loaded image table without throwing', (
+      tester,
+    ) async {
       // The original crash: an unsized image in an IntrinsicColumnWidth column
       // reported an infinite intrinsic width → the `width.isFinite` assertion.
       await tester.pumpWidget(_wrap(_unsizedImageTable, bytes: _kOnePxPng));
@@ -154,8 +160,9 @@ void main() {
       );
     });
 
-    testWidgets('lays out an expired image table without throwing',
-        (tester) async {
+    testWidgets('lays out an expired image table without throwing', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(_unsizedImageTable, bytes: null));
       await tester.pumpAndSettle();
 

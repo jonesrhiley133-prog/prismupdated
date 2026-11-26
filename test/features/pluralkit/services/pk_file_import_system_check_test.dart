@@ -164,10 +164,7 @@ class _FakePluralKitClient implements PluralKitClient {
 const _fileSystemUuid = 'aaaaaaaa-1111-2222-3333-444444444444';
 const _otherSystemUuid = 'bbbbbbbb-5555-6666-7777-888888888888';
 
-PkFileExport _makeExport({
-  required PKSystem system,
-  List<PKMember>? members,
-}) {
+PkFileExport _makeExport({required PKSystem system, List<PKMember>? members}) {
   return PkFileExport(
     system: system,
     members:
@@ -184,11 +181,7 @@ PkFileExport _makeExport({
   );
 }
 
-({
-  AppDatabase db,
-  PluralKitSyncService service,
-  _FakePluralKitClient client,
-})
+({AppDatabase db, PluralKitSyncService service, _FakePluralKitClient client})
 _makeHarness({required PKSystem tokenSystem}) {
   final db = AppDatabase(NativeDatabase.memory());
   final client = _FakePluralKitClient(system: tokenSystem);
@@ -252,10 +245,16 @@ void main() {
             'H8: the identity check must run before _importMembers — a '
             'foreign roster must never be merged',
       );
-      expect(h.client.getSystemCallCount, 1,
-          reason: 'the token system WAS fetched (and compared, not discarded)');
-      expect(h.service.state.isSyncing, isFalse,
-          reason: 'error path must clear the isSyncing claim');
+      expect(
+        h.client.getSystemCallCount,
+        1,
+        reason: 'the token system WAS fetched (and compared, not discarded)',
+      );
+      expect(
+        h.service.state.isSyncing,
+        isFalse,
+        reason: 'error path must clear the isSyncing claim',
+      );
       expect(h.service.state.syncError, contains('different PluralKit system'));
     });
 
@@ -319,8 +318,7 @@ void main() {
       expect(await _memberRowCount(h.db), 1);
     });
 
-    test(
-        'uuid match wins over divergent short ids (PK Premium short-id '
+    test('uuid match wins over divergent short ids (PK Premium short-id '
         'change)', () async {
       // PK Premium makes short ids user-changeable: an old export can carry
       // a short id that no longer matches the live system. The uuid is the
@@ -460,10 +458,16 @@ void main() {
         h.service.importFromFile(export),
         throwsA(isA<PkFileSystemMismatchError>()),
       );
-      expect(await _memberRowCount(h.db), 0,
-          reason: 'H8: the check must precede _importMembers');
-      expect(h.service.state.isSyncing, isFalse,
-          reason: 'the isSyncing claim is released before the throw');
+      expect(
+        await _memberRowCount(h.db),
+        0,
+        reason: 'H8: the check must precede _importMembers',
+      );
+      expect(
+        h.service.state.isSyncing,
+        isFalse,
+        reason: 'the isSyncing claim is released before the throw',
+      );
     });
 
     test('linked app accepts a file from the linked system', () async {

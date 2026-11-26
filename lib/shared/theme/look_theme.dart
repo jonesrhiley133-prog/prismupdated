@@ -193,9 +193,13 @@ ThemeData applyLook(
   // whole app is (16 = Prism's normal corners, 0 = square).
   final cardRadius = look.element(LookElement.card).radius;
   List<ThemeExtension<dynamic>> exts(ThemeData t) => [
-    ...t.extensions.values.where((e) => e is! LookTheme && (cardRadius == null || e is! PrismShapes)),
+    ...t.extensions.values.where(
+      (e) => e is! LookTheme && (cardRadius == null || e is! PrismShapes),
+    ),
     if (cardRadius != null)
-      (t.extension<PrismShapes>() ?? PrismShapes.rounded).copyWith(roundnessScale: (cardRadius / 16).clamp(0.0, 1.0)),
+      (t.extension<PrismShapes>() ?? PrismShapes.rounded).copyWith(
+        roundnessScale: (cardRadius / 16).clamp(0.0, 1.0),
+      ),
     ext,
   ];
   if (look.isPlain) return base.copyWith(extensions: exts(base));
@@ -930,7 +934,9 @@ class _LookBackgroundState extends State<LookBackground> {
                         duration: const Duration(milliseconds: 450),
                         curve: Curves.easeOut,
                         decoration: BoxDecoration(
-                          color: t?.$1 ?? (t?.$2 == null ? const Color(0x00000000) : null),
+                          color:
+                              t?.$1 ??
+                              (t?.$2 == null ? const Color(0x00000000) : null),
                           gradient: t?.$2,
                           backgroundBlendMode: BlendMode.color,
                         ),

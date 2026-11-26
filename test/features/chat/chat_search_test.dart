@@ -14,20 +14,24 @@ void main() {
     dao = db.chatMessagesDao;
 
     // Insert test messages — triggers will auto-index in FTS.
-    await dao.insertMessage(ChatMessagesCompanion.insert(
-      id: 'msg-1',
-      content: 'Hello world this is a test message',
-      timestamp: DateTime(2025, 1, 15, 10, 30),
-      conversationId: 'conv-1',
-      authorId: const Value('author-1'),
-    ));
-    await dao.insertMessage(ChatMessagesCompanion.insert(
-      id: 'msg-2',
-      content: 'Another message with special chars',
-      timestamp: DateTime(2025, 1, 15, 11, 0),
-      conversationId: 'conv-1',
-      authorId: const Value('author-1'),
-    ));
+    await dao.insertMessage(
+      ChatMessagesCompanion.insert(
+        id: 'msg-1',
+        content: 'Hello world this is a test message',
+        timestamp: DateTime(2025, 1, 15, 10, 30),
+        conversationId: 'conv-1',
+        authorId: const Value('author-1'),
+      ),
+    );
+    await dao.insertMessage(
+      ChatMessagesCompanion.insert(
+        id: 'msg-2',
+        content: 'Another message with special chars',
+        timestamp: DateTime(2025, 1, 15, 11, 0),
+        conversationId: 'conv-1',
+        authorId: const Value('author-1'),
+      ),
+    );
   });
 
   tearDown(() async {
@@ -92,25 +96,29 @@ void main() {
     });
 
     test('does not index system messages', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-sys',
-        content: 'System notification about joining',
-        timestamp: DateTime(2025, 1, 15, 12, 0),
-        conversationId: 'conv-1',
-        isSystemMessage: const Value(true),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-sys',
+          content: 'System notification about joining',
+          timestamp: DateTime(2025, 1, 15, 12, 0),
+          conversationId: 'conv-1',
+          isSystemMessage: const Value(true),
+        ),
+      );
       final results = await dao.searchMessages('notification');
       expect(results, isEmpty);
     });
 
     test('does not index deleted messages', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-del',
-        content: 'This was deleted',
-        timestamp: DateTime(2025, 1, 15, 12, 0),
-        conversationId: 'conv-1',
-        isDeleted: const Value(true),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-del',
+          content: 'This was deleted',
+          timestamp: DateTime(2025, 1, 15, 12, 0),
+          conversationId: 'conv-1',
+          isDeleted: const Value(true),
+        ),
+      );
       final results = await dao.searchMessages('deleted');
       expect(results, isEmpty);
     });
@@ -129,31 +137,45 @@ void main() {
       var results = await dao.searchMessages('special');
       expect(results, hasLength(1));
 
-      await dao.updateMessage(const ChatMessagesCompanion(
-        id: Value('msg-2'),
-        isSystemMessage: Value(true),
-      ));
+      await dao.updateMessage(
+        const ChatMessagesCompanion(
+          id: Value('msg-2'),
+          isSystemMessage: Value(true),
+        ),
+      );
 
       results = await dao.searchMessages('special');
-      expect(results, isEmpty,
-          reason: 'fts update trigger must fire on is_system_message flip');
+      expect(
+        results,
+        isEmpty,
+        reason: 'fts update trigger must fire on is_system_message flip',
+      );
     });
 
-    test('updates fts conversation_id when message moves conversation',
-        () async {
-      await dao.updateMessage(const ChatMessagesCompanion(
-        id: Value('msg-2'),
-        conversationId: Value('conv-2'),
-      ));
+    test(
+      'updates fts conversation_id when message moves conversation',
+      () async {
+        await dao.updateMessage(
+          const ChatMessagesCompanion(
+            id: Value('msg-2'),
+            conversationId: Value('conv-2'),
+          ),
+        );
 
-      final rows = await db.customSelect(
-        'SELECT conversation_id FROM chat_messages_fts '
-        "WHERE message_id = 'msg-2'",
-      ).get();
-      expect(rows, hasLength(1));
-      expect(rows.first.read<String>('conversation_id'), 'conv-2',
-          reason: 'fts update trigger must fire on conversation_id change');
-    });
+        final rows = await db
+            .customSelect(
+              'SELECT conversation_id FROM chat_messages_fts '
+              "WHERE message_id = 'msg-2'",
+            )
+            .get();
+        expect(rows, hasLength(1));
+        expect(
+          rows.first.read<String>('conversation_id'),
+          'conv-2',
+          reason: 'fts update trigger must fire on conversation_id change',
+        );
+      },
+    );
 
     test('drops single-char tokens to avoid range scans', () async {
       // Multi-token query made entirely of 1-char terms returns empty
@@ -177,43 +199,48 @@ void main() {
   // the *redacted* full content. These tests lock that contract in.
   group('FTS5 snippet spoiler redaction', () {
     test(
-        'match inside long spoiler never returns spoiler plaintext in snippet',
-        () async {
-      // A spoiler longer than the FTS snippet window (20 tokens) so the
-      // old SQLite-snippet path would have returned a fragment with no
-      // `||` delimiters around `lambda`.
-      const spoilerBody =
-          'alpha beta gamma delta epsilon zeta eta theta iota kappa '
-          'lambda mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega';
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-spoiler',
-        content: 'context before ||$spoilerBody|| tail after',
-        timestamp: DateTime(2025, 2, 1, 9, 0),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      'match inside long spoiler never returns spoiler plaintext in snippet',
+      () async {
+        // A spoiler longer than the FTS snippet window (20 tokens) so the
+        // old SQLite-snippet path would have returned a fragment with no
+        // `||` delimiters around `lambda`.
+        const spoilerBody =
+            'alpha beta gamma delta epsilon zeta eta theta iota kappa '
+            'lambda mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega';
+        await dao.insertMessage(
+          ChatMessagesCompanion.insert(
+            id: 'msg-spoiler',
+            content: 'context before ||$spoilerBody|| tail after',
+            timestamp: DateTime(2025, 2, 1, 9, 0),
+            conversationId: 'conv-1',
+            authorId: const Value('author-1'),
+          ),
+        );
 
-      final results = await dao.searchMessages('lambda');
-      expect(results, hasLength(1));
-      final hit = results.first;
-      expect(hit.messageId, 'msg-spoiler');
-      // No word from inside the spoiler may appear in the snippet —
-      // redaction converts the whole span to `▮` blocks before the
-      // query-match window is computed.
-      expect(hit.snippet.contains('lambda'), isFalse);
-      expect(hit.snippet.contains('alpha'), isFalse);
-      expect(hit.snippet.contains('omega'), isFalse);
-      expect(hit.snippet.contains('▮'), isTrue);
-    });
+        final results = await dao.searchMessages('lambda');
+        expect(results, hasLength(1));
+        final hit = results.first;
+        expect(hit.messageId, 'msg-spoiler');
+        // No word from inside the spoiler may appear in the snippet —
+        // redaction converts the whole span to `▮` blocks before the
+        // query-match window is computed.
+        expect(hit.snippet.contains('lambda'), isFalse);
+        expect(hit.snippet.contains('alpha'), isFalse);
+        expect(hit.snippet.contains('omega'), isFalse);
+        expect(hit.snippet.contains('▮'), isTrue);
+      },
+    );
 
     test('match outside a spoiler still highlights with [brackets]', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-mixed',
-        content: 'public intro ||hidden plot|| public outro',
-        timestamp: DateTime(2025, 2, 1, 9, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-mixed',
+          content: 'public intro ||hidden plot|| public outro',
+          timestamp: DateTime(2025, 2, 1, 9, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('intro');
       expect(results, hasLength(1));
@@ -224,45 +251,57 @@ void main() {
       expect(hit.snippet.contains('▮'), isTrue);
     });
 
-    test('short non-spoiler message returns preview with highlighted match',
-        () async {
-      final results = await dao.searchMessages('hello');
-      expect(results, hasLength(1));
-      final hit = results.first;
-      // Highlight preserves original casing; fixture uses `Hello`.
-      expect(hit.snippet.contains('[Hello]'), isTrue);
-      // No spoiler spans in these fixtures.
-      expect(hit.snippet.contains('▮'), isFalse);
-    });
+    test(
+      'short non-spoiler message returns preview with highlighted match',
+      () async {
+        final results = await dao.searchMessages('hello');
+        expect(results, hasLength(1));
+        final hit = results.first;
+        // Highlight preserves original casing; fixture uses `Hello`.
+        expect(hit.snippet.contains('[Hello]'), isTrue);
+        // No spoiler spans in these fixtures.
+        expect(hit.snippet.contains('▮'), isFalse);
+      },
+    );
 
     test('highlights a diacritic word with a diacritic query', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-dia',
-        content: 'we went to the café yesterday',
-        timestamp: DateTime(2025, 3, 1, 9, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-dia',
+          content: 'we went to the café yesterday',
+          timestamp: DateTime(2025, 3, 1, 9, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('café');
       expect(results, hasLength(1));
-      expect(results.first.snippet.contains('[café]'), isTrue,
-          reason: 'unicode-aware regex must match and bracket the full word');
+      expect(
+        results.first.snippet.contains('[café]'),
+        isTrue,
+        reason: 'unicode-aware regex must match and bracket the full word',
+      );
     });
 
     test('highlights a Cyrillic word with a Cyrillic query', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-cyr',
-        content: 'привет мир, это тест',
-        timestamp: DateTime(2025, 3, 2, 9, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-cyr',
+          content: 'привет мир, это тест',
+          timestamp: DateTime(2025, 3, 2, 9, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('мир');
       expect(results, hasLength(1));
-      expect(results.first.snippet.contains('[мир]'), isTrue,
-          reason: '\\b must be Unicode-aware to bracket non-Latin scripts');
+      expect(
+        results.first.snippet.contains('[мир]'),
+        isTrue,
+        reason: '\\b must be Unicode-aware to bracket non-Latin scripts',
+      );
     });
   });
 
@@ -281,10 +320,13 @@ void main() {
     final hexFragmentPattern = RegExp(r'[0-9a-f]{4,}');
     void expectNoBisectedToken(String snippet) {
       final stripped = snippet.replaceAll(mentionTokenPattern, '');
-      expect(hexFragmentPattern.hasMatch(stripped), isFalse,
-          reason:
-              'snippet contains UUID fragment after stripping valid mentions: '
-              '"$snippet" -> "$stripped"');
+      expect(
+        hexFragmentPattern.hasMatch(stripped),
+        isFalse,
+        reason:
+            'snippet contains UUID fragment after stripping valid mentions: '
+            '"$snippet" -> "$stripped"',
+      );
     }
 
     test('mention preceding the match is kept whole', () async {
@@ -293,13 +335,15 @@ void main() {
       // mid-UUID without the snap. 30 chars of padding keeps `trampoline`
       // close enough that the window starts inside the token.
       final padding = 'x' * 30;
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-mention-before',
-        content: '@[$aliceId] $padding trampoline tail',
-        timestamp: DateTime(2026, 5, 1, 9, 0),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-mention-before',
+          content: '@[$aliceId] $padding trampoline tail',
+          timestamp: DateTime(2026, 5, 1, 9, 0),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('trampoline');
       expect(results, hasLength(1));
@@ -311,13 +355,15 @@ void main() {
       // Right window is +80 chars from the match end; pad so the mention's
       // closing `]` sits just past the boundary.
       final padding = 'word ' * 14;
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-mention-after',
-        content: 'pineapple $padding @[$bobId] tail',
-        timestamp: DateTime(2026, 5, 1, 9, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-mention-after',
+          content: 'pineapple $padding @[$bobId] tail',
+          timestamp: DateTime(2026, 5, 1, 9, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('pineapple');
       expect(results, hasLength(1));
@@ -331,13 +377,15 @@ void main() {
   // tokens (`@[uuid]`) are preserved for the tile to render as chips.
   group('snippet strips markdown markers', () {
     test('leading `-#` small text marker is removed', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-small',
-        content: '-# whisper alligator quietly',
-        timestamp: DateTime(2026, 5, 5, 9, 0),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-small',
+          content: '-# whisper alligator quietly',
+          timestamp: DateTime(2026, 5, 5, 9, 0),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('alligator');
       expect(results, hasLength(1));
@@ -347,13 +395,15 @@ void main() {
     });
 
     test('bold/italic/code markers stripped, label preserved', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-mixed-md',
-        content: '**bold** and *italic* and `code` cantaloupe tail',
-        timestamp: DateTime(2026, 5, 5, 9, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-mixed-md',
+          content: '**bold** and *italic* and `code` cantaloupe tail',
+          timestamp: DateTime(2026, 5, 5, 9, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('cantaloupe');
       expect(results, hasLength(1));
@@ -366,38 +416,45 @@ void main() {
     });
 
     test('link label kept, url discarded', () async {
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-link',
-        content: '[durian recipes](https://example.com/durian) tail',
-        timestamp: DateTime(2026, 5, 5, 10, 0),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-link',
+          content: '[durian recipes](https://example.com/durian) tail',
+          timestamp: DateTime(2026, 5, 5, 10, 0),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('durian');
       expect(results, hasLength(1));
       final snippet = results.first.snippet;
       expect(snippet.contains('https://'), isFalse);
-      expect(snippet.contains('](') , isFalse);
+      expect(snippet.contains(']('), isFalse);
       // Matched word is wrapped in `[…]`; the rest of the label is preserved.
       expect(snippet.contains('[durian] recipes'), isTrue);
     });
 
     test('mention token `@[uuid]` is preserved for chip rendering', () async {
       const carolId = '01234567-89ab-cdef-0123-456789abcdef';
-      await dao.insertMessage(ChatMessagesCompanion.insert(
-        id: 'msg-mention-md',
-        content: '**hey** @[$carolId] eggplant',
-        timestamp: DateTime(2026, 5, 5, 10, 30),
-        conversationId: 'conv-1',
-        authorId: const Value('author-1'),
-      ));
+      await dao.insertMessage(
+        ChatMessagesCompanion.insert(
+          id: 'msg-mention-md',
+          content: '**hey** @[$carolId] eggplant',
+          timestamp: DateTime(2026, 5, 5, 10, 30),
+          conversationId: 'conv-1',
+          authorId: const Value('author-1'),
+        ),
+      );
 
       final results = await dao.searchMessages('eggplant');
       expect(results, hasLength(1));
       final snippet = results.first.snippet;
-      expect(snippet.contains('@[$carolId]'), isTrue,
-          reason: 'mention token must survive marker stripping');
+      expect(
+        snippet.contains('@[$carolId]'),
+        isTrue,
+        reason: 'mention token must survive marker stripping',
+      );
       expect(snippet.contains('**'), isFalse);
     });
   });

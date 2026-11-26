@@ -21,14 +21,12 @@ void main() {
     });
 
     test('mixed → fronters first, each group keeps input order', () {
-      final members = [
-        _member('a'),
-        _member('b'),
-        _member('c'),
-        _member('d'),
-      ];
+      final members = [_member('a'), _member('b'), _member('c'), _member('d')];
       final sections = partitionMembersForPicker(members, {'c', 'a'});
-      expect(_ids(sections.fronters), ['a', 'c']); // display order, not set order
+      expect(_ids(sections.fronters), [
+        'a',
+        'c',
+      ]); // display order, not set order
       expect(_ids(sections.others), ['b', 'd']);
       expect(sections.hasFronterSection, isTrue);
     });
@@ -60,19 +58,20 @@ void main() {
   group('orderMembersForPicker', () {
     test('no fronters → returns input unchanged', () {
       final members = [_member('a'), _member('b')];
-      expect(identical(orderMembersForPicker(members, const {}), members),
-          isTrue);
+      expect(
+        identical(orderMembersForPicker(members, const {}), members),
+        isTrue,
+      );
     });
 
     test('fronters float to top, rest follow in order', () {
-      final members = [
-        _member('a'),
-        _member('b'),
-        _member('c'),
-        _member('d'),
-      ];
-      expect(_ids(orderMembersForPicker(members, {'d', 'b'})),
-          ['b', 'd', 'a', 'c']);
+      final members = [_member('a'), _member('b'), _member('c'), _member('d')];
+      expect(_ids(orderMembersForPicker(members, {'d', 'b'})), [
+        'b',
+        'd',
+        'a',
+        'c',
+      ]);
     });
   });
 }

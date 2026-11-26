@@ -124,7 +124,7 @@ void main() {
 }
 
 String _describeChange(FrontingSessionChange change) => switch (change) {
-      CreateSessionChange() => 'create',
-      UpdateSessionChange() => 'update',
-      DeleteSessionChange() => 'delete',
-    };
+  CreateSessionChange() => 'create',
+  UpdateSessionChange() => 'update',
+  DeleteSessionChange() => 'delete',
+};

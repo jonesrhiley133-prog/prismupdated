@@ -66,7 +66,7 @@ class CustomFieldTypeDefinition {
 /// Mirrors PreferenceRegistry.
 final class CustomFieldTypeRegistry {
   CustomFieldTypeRegistry(Iterable<CustomFieldTypeDefinition> definitions)
-      : definitions = List.unmodifiable(definitions) {
+    : definitions = List.unmodifiable(definitions) {
     final ids = <String>{};
     final ints = <int>{};
     for (final def in definitions) {

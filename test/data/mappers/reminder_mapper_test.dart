@@ -60,23 +60,24 @@ void main() {
       expect(model.intervalDays, 3);
     });
 
-    test('frequency = "weekly" with weekly_days = "[1,3,5]" -> weekly + parsed',
-        () {
-      final row = _row(
-        frequency: 'weekly',
-        weeklyDays: '[1,3,5]',
-      );
-      final model = ReminderMapper.toDomain(row);
-      expect(model.frequency, domain.ReminderFrequency.weekly);
-      expect(model.weeklyDays, [1, 3, 5]);
-    });
+    test(
+      'frequency = "weekly" with weekly_days = "[1,3,5]" -> weekly + parsed',
+      () {
+        final row = _row(frequency: 'weekly', weeklyDays: '[1,3,5]');
+        final model = ReminderMapper.toDomain(row);
+        expect(model.frequency, domain.ReminderFrequency.weekly);
+        expect(model.weeklyDays, [1, 3, 5]);
+      },
+    );
 
-    test('corrupt frequency "garbage" falls back to null-case logic (interval)',
-        () {
-      final row = _row(frequency: 'garbage', intervalDays: 5);
-      final model = ReminderMapper.toDomain(row);
-      expect(model.frequency, domain.ReminderFrequency.interval);
-    });
+    test(
+      'corrupt frequency "garbage" falls back to null-case logic (interval)',
+      () {
+        final row = _row(frequency: 'garbage', intervalDays: 5);
+        final model = ReminderMapper.toDomain(row);
+        expect(model.frequency, domain.ReminderFrequency.interval);
+      },
+    );
 
     test('corrupt frequency "garbage" with null intervalDays -> daily', () {
       final row = _row(frequency: 'garbage', intervalDays: null);
@@ -93,46 +94,37 @@ void main() {
   });
 
   group('ReminderMapper.toDomain defensive weeklyDays parsing', () {
-    test('weekly_days = "{}" (non-list JSON) -> weeklyDays is null, no throw',
-        () {
-      final row = _row(frequency: 'weekly', weeklyDays: '{}');
-      late domain.Reminder model;
-      expect(
-        () => model = ReminderMapper.toDomain(row),
-        returnsNormally,
-      );
-      expect(model.weeklyDays, isNull);
-    });
+    test(
+      'weekly_days = "{}" (non-list JSON) -> weeklyDays is null, no throw',
+      () {
+        final row = _row(frequency: 'weekly', weeklyDays: '{}');
+        late domain.Reminder model;
+        expect(() => model = ReminderMapper.toDomain(row), returnsNormally);
+        expect(model.weeklyDays, isNull);
+      },
+    );
 
     test(
-        'weekly_days = "[1.5, \\"x\\"]" (non-int elements) -> weeklyDays is null',
-        () {
-      final row = _row(frequency: 'weekly', weeklyDays: '[1.5, "x"]');
-      late domain.Reminder model;
-      expect(
-        () => model = ReminderMapper.toDomain(row),
-        returnsNormally,
-      );
-      expect(model.weeklyDays, isNull);
-    });
+      'weekly_days = "[1.5, \\"x\\"]" (non-int elements) -> weeklyDays is null',
+      () {
+        final row = _row(frequency: 'weekly', weeklyDays: '[1.5, "x"]');
+        late domain.Reminder model;
+        expect(() => model = ReminderMapper.toDomain(row), returnsNormally);
+        expect(model.weeklyDays, isNull);
+      },
+    );
 
     test('weekly_days = "[-1, 99]" (out-of-range) -> weeklyDays is null', () {
       final row = _row(frequency: 'weekly', weeklyDays: '[-1, 99]');
       late domain.Reminder model;
-      expect(
-        () => model = ReminderMapper.toDomain(row),
-        returnsNormally,
-      );
+      expect(() => model = ReminderMapper.toDomain(row), returnsNormally);
       expect(model.weeklyDays, isNull);
     });
 
     test('weekly_days = "not json" -> weeklyDays is null, no throw', () {
       final row = _row(frequency: 'weekly', weeklyDays: 'not json');
       late domain.Reminder model;
-      expect(
-        () => model = ReminderMapper.toDomain(row),
-        returnsNormally,
-      );
+      expect(() => model = ReminderMapper.toDomain(row), returnsNormally);
       expect(model.weeklyDays, isNull);
     });
 
@@ -144,16 +136,15 @@ void main() {
   });
 
   group('ReminderMapper.toDomain defensive trigger parsing', () {
-    test('row.trigger = 99 (out of range) -> falls back to scheduled, no throw',
-        () {
-      final row = _row(trigger: 99);
-      late domain.Reminder model;
-      expect(
-        () => model = ReminderMapper.toDomain(row),
-        returnsNormally,
-      );
-      expect(model.trigger, domain.ReminderTrigger.scheduled);
-    });
+    test(
+      'row.trigger = 99 (out of range) -> falls back to scheduled, no throw',
+      () {
+        final row = _row(trigger: 99);
+        late domain.Reminder model;
+        expect(() => model = ReminderMapper.toDomain(row), returnsNormally);
+        expect(model.trigger, domain.ReminderTrigger.scheduled);
+      },
+    );
 
     test('row.trigger = -1 (negative) -> falls back to scheduled', () {
       final row = _row(trigger: -1);
@@ -175,55 +166,57 @@ void main() {
   });
 
   group('ReminderMapper round-trip', () {
-    test('weekly with weeklyDays [0, 6] survives domain -> companion -> row',
-        () {
-      final createdAt = DateTime(2026, 4, 16, 9, 0);
-      final modifiedAt = DateTime(2026, 4, 16, 10, 0);
-      final original = domain.Reminder(
-        id: 'r-weekly',
-        name: 'Weekend check-in',
-        message: 'How are you?',
-        trigger: domain.ReminderTrigger.scheduled,
-        frequency: domain.ReminderFrequency.weekly,
-        weeklyDays: const [0, 6],
-        timeOfDay: '20:30',
-        isActive: true,
-        createdAt: createdAt,
-        modifiedAt: modifiedAt,
-      );
+    test(
+      'weekly with weeklyDays [0, 6] survives domain -> companion -> row',
+      () {
+        final createdAt = DateTime(2026, 4, 16, 9, 0);
+        final modifiedAt = DateTime(2026, 4, 16, 10, 0);
+        final original = domain.Reminder(
+          id: 'r-weekly',
+          name: 'Weekend check-in',
+          message: 'How are you?',
+          trigger: domain.ReminderTrigger.scheduled,
+          frequency: domain.ReminderFrequency.weekly,
+          weeklyDays: const [0, 6],
+          timeOfDay: '20:30',
+          isActive: true,
+          createdAt: createdAt,
+          modifiedAt: modifiedAt,
+        );
 
-      final companion = ReminderMapper.toCompanion(original);
-      expect(companion.frequency.value, 'weekly');
-      expect(companion.weeklyDays.value, jsonEncode(const [0, 6]));
+        final companion = ReminderMapper.toCompanion(original);
+        expect(companion.frequency.value, 'weekly');
+        expect(companion.weeklyDays.value, jsonEncode(const [0, 6]));
 
-      final row = db.ReminderRow(
-        id: companion.id.value,
-        name: companion.name.value,
-        message: companion.message.value,
-        trigger: companion.trigger.value,
-        frequency: companion.frequency.value,
-        intervalDays: companion.intervalDays.value,
-        weeklyDays: companion.weeklyDays.value,
-        timeOfDay: companion.timeOfDay.value,
-        delayHours: companion.delayHours.value,
-        isActive: companion.isActive.value,
-        createdAt: companion.createdAt.value,
-        modifiedAt: companion.modifiedAt.value,
-        isDeleted: false,
-      );
+        final row = db.ReminderRow(
+          id: companion.id.value,
+          name: companion.name.value,
+          message: companion.message.value,
+          trigger: companion.trigger.value,
+          frequency: companion.frequency.value,
+          intervalDays: companion.intervalDays.value,
+          weeklyDays: companion.weeklyDays.value,
+          timeOfDay: companion.timeOfDay.value,
+          delayHours: companion.delayHours.value,
+          isActive: companion.isActive.value,
+          createdAt: companion.createdAt.value,
+          modifiedAt: companion.modifiedAt.value,
+          isDeleted: false,
+        );
 
-      final restored = ReminderMapper.toDomain(row);
-      expect(restored.id, original.id);
-      expect(restored.name, original.name);
-      expect(restored.message, original.message);
-      expect(restored.trigger, original.trigger);
-      expect(restored.frequency, original.frequency);
-      expect(restored.weeklyDays, original.weeklyDays);
-      expect(restored.timeOfDay, original.timeOfDay);
-      expect(restored.isActive, original.isActive);
-      expect(restored.createdAt, original.createdAt);
-      expect(restored.modifiedAt, original.modifiedAt);
-    });
+        final restored = ReminderMapper.toDomain(row);
+        expect(restored.id, original.id);
+        expect(restored.name, original.name);
+        expect(restored.message, original.message);
+        expect(restored.trigger, original.trigger);
+        expect(restored.frequency, original.frequency);
+        expect(restored.weeklyDays, original.weeklyDays);
+        expect(restored.timeOfDay, original.timeOfDay);
+        expect(restored.isActive, original.isActive);
+        expect(restored.createdAt, original.createdAt);
+        expect(restored.modifiedAt, original.modifiedAt);
+      },
+    );
 
     test('daily with null weeklyDays round-trips', () {
       final now = DateTime(2026, 4, 16, 9, 0);

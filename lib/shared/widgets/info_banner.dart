@@ -55,9 +55,7 @@ class InfoBanner extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(PrismShapes.of(context).radius(12)),
       ),
-      child: actionsBelow
-          ? _buildStacked(context, theme)
-          : _buildInline(theme),
+      child: actionsBelow ? _buildStacked(context, theme) : _buildInline(theme),
     );
   }
 
@@ -85,10 +83,7 @@ class InfoBanner extends StatelessWidget {
             tooltip: dismissTooltip,
             onPressed: onDismiss,
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(
-              minWidth: 32,
-              minHeight: 32,
-            ),
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             visualDensity: VisualDensity.compact,
           ),
         ],
@@ -104,7 +99,8 @@ class InfoBanner extends StatelessWidget {
       'InfoBanner with actionsBelow: true and onDismiss should provide '
       'dismissLabel (or at least dismissTooltip as a fallback).',
     );
-    final resolvedDismissLabel = dismissLabel ??
+    final resolvedDismissLabel =
+        dismissLabel ??
         dismissTooltip ??
         MaterialLocalizations.of(context).closeButtonTooltip;
     return Column(

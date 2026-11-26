@@ -32,14 +32,17 @@ void main() {
       expect(dateFieldDefinition.configToJson(null), isNull);
     });
 
-    test('DateConfig(hideTitleOnProfile: true) → non-null map that round-trips', () {
-      const config = DateConfig(hideTitleOnProfile: true);
-      final json = dateFieldDefinition.configToJson(config);
-      expect(json, isNotNull);
+    test(
+      'DateConfig(hideTitleOnProfile: true) → non-null map that round-trips',
+      () {
+        const config = DateConfig(hideTitleOnProfile: true);
+        final json = dateFieldDefinition.configToJson(config);
+        expect(json, isNotNull);
 
-      final roundTripped = dateFieldDefinition.configFromJson(json);
-      expect(roundTripped, isA<DateConfig>());
-      expect((roundTripped as DateConfig).hideTitleOnProfile, isTrue);
-    });
+        final roundTripped = dateFieldDefinition.configFromJson(json);
+        expect(roundTripped, isA<DateConfig>());
+        expect((roundTripped as DateConfig).hideTitleOnProfile, isTrue);
+      },
+    );
   });
 }

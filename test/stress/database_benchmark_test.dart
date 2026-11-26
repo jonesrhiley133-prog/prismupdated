@@ -82,10 +82,11 @@ void main() {
 
   test('conversation list with ordering', () async {
     final sw = Stopwatch()..start();
-    final conversations = await (db.select(db.conversations)
-          ..where((c) => c.isDeleted.equals(false))
-          ..orderBy([(c) => OrderingTerm.desc(c.lastActivityAt)]))
-        .get();
+    final conversations =
+        await (db.select(db.conversations)
+              ..where((c) => c.isDeleted.equals(false))
+              ..orderBy([(c) => OrderingTerm.desc(c.lastActivityAt)]))
+            .get();
     sw.stop();
     expect(
       conversations.length,
@@ -96,12 +97,14 @@ void main() {
 
   test('habit completions per member aggregation', () async {
     final sw = Stopwatch()..start();
-    final results = await db.customSelect(
-      'SELECT completed_by_member_id, COUNT(*) as cnt '
-      'FROM habit_completions WHERE is_deleted = 0 '
-      'GROUP BY completed_by_member_id '
-      'ORDER BY cnt DESC LIMIT 10',
-    ).get();
+    final results = await db
+        .customSelect(
+          'SELECT completed_by_member_id, COUNT(*) as cnt '
+          'FROM habit_completions WHERE is_deleted = 0 '
+          'GROUP BY completed_by_member_id '
+          'ORDER BY cnt DESC LIMIT 10',
+        )
+        .get();
     sw.stop();
     expect(results, isNotEmpty);
     expect(sw.elapsedMilliseconds, lessThan(500));

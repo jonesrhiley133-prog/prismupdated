@@ -62,8 +62,7 @@ class _SecureStorageStub {
 /// to the surface used by event-emission tests.
 class _FakeClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   _FakeClient({
     this.systemToReturn = const PKSystem(id: 'sys-1', name: 'Event System'),
     this.membersToReturn = const [],
@@ -172,25 +171,22 @@ void main() {
       expect(set.systemId, 'sys-42');
     });
 
-    test(
-      'setToken with null PK system name falls back to system id',
-      () async {
-        final db = AppDatabase(NativeDatabase.memory());
-        addTearDown(db.close);
-        final capture = PkSyncEventBusCapture();
-        // PK API allows `name` to be null. Plan pins fallback to id.
-        final client = _FakeClient(
-          systemToReturn: const PKSystem(id: 'sys-no-name', name: null),
-        );
-        final service = _makeService(db: db, bus: capture.bus, client: client);
+    test('setToken with null PK system name falls back to system id', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      final capture = PkSyncEventBusCapture();
+      // PK API allows `name` to be null. Plan pins fallback to id.
+      final client = _FakeClient(
+        systemToReturn: const PKSystem(id: 'sys-no-name', name: null),
+      );
+      final service = _makeService(db: db, bus: capture.bus, client: client);
 
-        await service.setToken('valid-token');
+      await service.setToken('valid-token');
 
-        final set = capture.events.single as PkTokenSet;
-        expect(set.systemName, 'sys-no-name');
-        expect(set.systemId, 'sys-no-name');
-      },
-    );
+      final set = capture.events.single as PkTokenSet;
+      expect(set.systemName, 'sys-no-name');
+      expect(set.systemId, 'sys-no-name');
+    });
 
     test('setToken on 401 emits PkTokenAuthFailed, not PkTokenSet', () async {
       final db = AppDatabase(NativeDatabase.memory());
@@ -209,27 +205,30 @@ void main() {
       expect(capture.events.whereType<PkTokenAuthFailed>(), hasLength(1));
     });
 
-    test('setToken other error emits PkRequestFailed with redacted token', () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final capture = PkSyncEventBusCapture();
-      const token = 'super-secret-token-1234';
-      final client = _FakeClient(throwOnGetSystemWithToken: token);
-      final service = _makeService(db: db, bus: capture.bus, client: client);
+    test(
+      'setToken other error emits PkRequestFailed with redacted token',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final capture = PkSyncEventBusCapture();
+        const token = 'super-secret-token-1234';
+        final client = _FakeClient(throwOnGetSystemWithToken: token);
+        final service = _makeService(db: db, bus: capture.bus, client: client);
 
-      await service.setToken(token);
+        await service.setToken(token);
 
-      final failures = capture.events.whereType<PkRequestFailed>().toList();
-      expect(failures, hasLength(1));
-      final failure = failures.single;
-      expect(failure.stage, 'setToken');
-      expect(
-        failure.message.contains(token),
-        isFalse,
-        reason: 'token must be redacted from the error message',
-      );
-      expect(failure.message.contains('[REDACTED]'), isTrue);
-    });
+        final failures = capture.events.whereType<PkRequestFailed>().toList();
+        expect(failures, hasLength(1));
+        final failure = failures.single;
+        expect(failure.stage, 'setToken');
+        expect(
+          failure.message.contains(token),
+          isFalse,
+          reason: 'token must be redacted from the error message',
+        );
+        expect(failure.message.contains('[REDACTED]'), isTrue);
+      },
+    );
 
     test('clearToken emits PkTokenCleared', () async {
       final db = AppDatabase(NativeDatabase.memory());
@@ -249,63 +248,60 @@ void main() {
       expect(capture.events.single, isA<PkTokenCleared>());
     });
 
-    test(
-      'pushMemberUpdate failure emits PkRequestFailed with redacted token '
-      '(2026-06 PK audit M11)',
-      () async {
-        final db = AppDatabase(NativeDatabase.memory());
-        addTearDown(db.close);
-        final capture = PkSyncEventBusCapture();
-        final client = _FakeClient();
-        final service = _makeService(db: db, bus: capture.bus, client: client);
+    test('pushMemberUpdate failure emits PkRequestFailed with redacted token '
+        '(2026-06 PK audit M11)', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      final capture = PkSyncEventBusCapture();
+      final client = _FakeClient();
+      final service = _makeService(db: db, bus: capture.bus, client: client);
 
-        // Bring the service to canAutoSync and persist a push-enabled global
-        // direction so the per-field gate doesn't skip the member.
-        await service.setToken('valid-token');
-        await db.pluralKitSyncDao.upsertSyncState(
-          PluralKitSyncStateCompanion(
-            id: const Value('pk_config'),
-            directionConfirmed: const Value(true),
-            mappingAcknowledged: const Value(true),
-            fieldSyncConfig: Value(
-              serializeFieldSyncConfig(
-                const {},
-                globalDirection: PkSyncDirection.bidirectional,
-              ),
+      // Bring the service to canAutoSync and persist a push-enabled global
+      // direction so the per-field gate doesn't skip the member.
+      await service.setToken('valid-token');
+      await db.pluralKitSyncDao.upsertSyncState(
+        PluralKitSyncStateCompanion(
+          id: const Value('pk_config'),
+          directionConfirmed: const Value(true),
+          mappingAcknowledged: const Value(true),
+          fieldSyncConfig: Value(
+            serializeFieldSyncConfig(
+              const {},
+              globalDirection: PkSyncDirection.bidirectional,
             ),
           ),
-        );
-        await service.loadState();
-        capture.events.clear();
+        ),
+      );
+      await service.loadState();
+      capture.events.clear();
 
-        // The fake client reports `currentToken == 'fake-token'`; the failure
-        // message embeds it so we can assert it's stripped by redaction.
-        final result = await service.pushMemberUpdate(
-          domain.Member(
-            id: 'm-1',
-            name: 'Ada',
-            createdAt: DateTime.utc(2026),
-            pluralkitId: 'aaaaa',
-            pluralkitUuid: 'uuid-m1',
-            pluralkitDisplayName: 'Ada',
-          ),
-          pushService: _FailingPushService(
-            Exception('boom token=fake-token leaked'),
-          ),
-        );
+      // The fake client reports `currentToken == 'fake-token'`; the failure
+      // message embeds it so we can assert it's stripped by redaction.
+      final result = await service.pushMemberUpdate(
+        domain.Member(
+          id: 'm-1',
+          name: 'Ada',
+          createdAt: DateTime.utc(2026),
+          pluralkitId: 'aaaaa',
+          pluralkitUuid: 'uuid-m1',
+          pluralkitDisplayName: 'Ada',
+        ),
+        pushService: _FailingPushService(
+          Exception('boom token=fake-token leaked'),
+        ),
+      );
 
-        expect(result, isFalse);
-        final failures = capture.events.whereType<PkRequestFailed>().toList();
-        expect(failures, hasLength(1));
-        expect(failures.single.stage, 'pushMemberUpdate');
-        expect(
-          failures.single.message.contains('fake-token'),
-          isFalse,
-          reason: 'token must be redacted from the failure event',
-        );
-        expect(failures.single.message.contains('[REDACTED]'), isTrue);
-      },
-    );
+      expect(result, isFalse);
+      final failures = capture.events.whereType<PkRequestFailed>().toList();
+      expect(failures, hasLength(1));
+      expect(failures.single.stage, 'pushMemberUpdate');
+      expect(
+        failures.single.message.contains('fake-token'),
+        isFalse,
+        reason: 'token must be redacted from the failure event',
+      );
+      expect(failures.single.message.contains('[REDACTED]'), isTrue);
+    });
 
     test(
       'importMembersOnly success emits PkMembersImported with count',
@@ -345,11 +341,7 @@ void main() {
         addTearDown(db.close);
         final capture = PkSyncEventBusCapture();
         final client = _FakeClient();
-        final service = _makeService(
-          db: db,
-          bus: capture.bus,
-          client: client,
-        );
+        final service = _makeService(db: db, bus: capture.bus, client: client);
 
         // Bring the service into canAutoSync=true via the normal setToken path.
         // _FakeClient.getSystem() returns a valid system, so setToken succeeds.
@@ -496,8 +488,7 @@ void main() {
     // (PkSwitchPushed(pushed: 0, deleted: N)) is verified via a unit test on
     // the PkSwitchPushed event itself: the `summary` and JSON payload must
     // both distinguish the deletion-only case from the creation-only case.
-    test('PkSwitchPushed event surfaces deletion-only case distinctly',
-        () {
+    test('PkSwitchPushed event surfaces deletion-only case distinctly', () {
       const event = PkSwitchPushed(pushed: 0, deleted: 3);
       expect(event.summary, 'Pushed 3 switch deletions');
       expect(event.toJson(), {

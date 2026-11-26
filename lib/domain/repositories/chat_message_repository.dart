@@ -7,9 +7,12 @@ abstract class ChatMessageRepository {
     int? offset,
   });
   Stream<List<domain.ChatMessage>> watchMessagesForConversation(
-      String conversationId);
+    String conversationId,
+  );
   Stream<List<domain.ChatMessage>> watchRecentMessages(
-      String conversationId, {required int limit});
+    String conversationId, {
+    required int limit,
+  });
   Future<List<domain.ChatMessage>> getAllMessages();
   Future<domain.ChatMessage?> getMessageById(String id);
   Future<void> createMessage(domain.ChatMessage message);
@@ -17,10 +20,30 @@ abstract class ChatMessageRepository {
   Future<void> deleteMessage(String id);
   Future<domain.ChatMessage?> getLatestMessage(String conversationId);
   Stream<domain.ChatMessage?> watchLatestMessage(String conversationId);
-  Future<List<({String messageId, String conversationId, String snippet, DateTime timestamp, String? authorId})>> searchMessages(String query, {int limit});
+  Future<
+    List<
+      ({
+        String messageId,
+        String conversationId,
+        String snippet,
+        DateTime timestamp,
+        String? authorId,
+      })
+    >
+  >
+  searchMessages(String query, {int limit});
   Stream<int> watchUnreadCount(String conversationId, DateTime since);
-  Stream<int> watchUnreadMentionCount(String conversationId, DateTime since, String memberId);
-  Stream<Map<String, int>> watchAllUnreadCounts(Map<String, DateTime> conversationSince);
-  Stream<Set<String>> watchConversationsWithMentions(Map<String, DateTime> conversationSince, String memberId);
+  Stream<int> watchUnreadMentionCount(
+    String conversationId,
+    DateTime since,
+    String memberId,
+  );
+  Stream<Map<String, int>> watchAllUnreadCounts(
+    Map<String, DateTime> conversationSince,
+  );
+  Stream<Set<String>> watchConversationsWithMentions(
+    Map<String, DateTime> conversationSince,
+    String memberId,
+  );
   Future<bool> isMessageDeleted(String messageId);
 }

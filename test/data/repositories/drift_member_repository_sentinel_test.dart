@@ -85,32 +85,29 @@ void main() {
       },
     );
 
-    test(
-      'ensureUnknownSentinelMember is idempotent on the same DB '
-      '(returns same id, wasCreated=false on second call)',
-      () async {
-        final db = AppDatabase(NativeDatabase.memory());
-        addTearDown(db.close);
-        final repo = DriftMemberRepository(db.membersDao, null);
+    test('ensureUnknownSentinelMember is idempotent on the same DB '
+        '(returns same id, wasCreated=false on second call)', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      final repo = DriftMemberRepository(db.membersDao, null);
 
-        final first = await repo.ensureUnknownSentinelMember();
-        expect(first.wasCreated, isTrue);
-        expect(first.member.id, unknownSentinelMemberId);
+      final first = await repo.ensureUnknownSentinelMember();
+      expect(first.wasCreated, isTrue);
+      expect(first.member.id, unknownSentinelMemberId);
 
-        final second = await repo.ensureUnknownSentinelMember();
-        expect(second.wasCreated, isFalse);
-        expect(second.member.id, first.member.id);
+      final second = await repo.ensureUnknownSentinelMember();
+      expect(second.wasCreated, isFalse);
+      expect(second.member.id, first.member.id);
 
-        final allMembers = await repo.getAllMembers();
-        expect(
-          allMembers.where((m) => m.id == unknownSentinelMemberId).length,
-          1,
-          reason:
-              'Idempotent ensure must not duplicate the sentinel row on '
-              'a same-DB second call.',
-        );
-      },
-    );
+      final allMembers = await repo.getAllMembers();
+      expect(
+        allMembers.where((m) => m.id == unknownSentinelMemberId).length,
+        1,
+        reason:
+            'Idempotent ensure must not duplicate the sentinel row on '
+            'a same-DB second call.',
+      );
+    });
   });
 
   // R6/C12 ingress gate: the sentinel reuses a deterministic UUIDv5 id. If a
@@ -162,53 +159,55 @@ void main() {
       );
     });
 
-    test('a live (non-tombstoned) sentinel id => emits the create as usual',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final repo = DriftMemberRepository(db.membersDao, null)
-        ..debugTombstoneGateForTesting = gateTombstoning({});
+    test(
+      'a live (non-tombstoned) sentinel id => emits the create as usual',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final repo = DriftMemberRepository(db.membersDao, null)
+          ..debugTombstoneGateForTesting = gateTombstoning({});
 
-      final captured = <String>[];
-      SyncRecordMixin.installCaptureSinkForTesting(
-        (op) => captured.add('${op.table}/${op.entityId}/${op.opType.name}'),
-      );
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+        final captured = <String>[];
+        SyncRecordMixin.installCaptureSinkForTesting(
+          (op) => captured.add('${op.table}/${op.entityId}/${op.opType.name}'),
+        );
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      final ensured = await repo.ensureUnknownSentinelMember();
+        final ensured = await repo.ensureUnknownSentinelMember();
 
-      expect(ensured.wasCreated, isTrue);
-      expect(await repo.getMemberById(unknownSentinelMemberId), isNotNull);
-      expect(
-        captured,
-        ['members/$unknownSentinelMemberId/create'],
-        reason: 'a live sentinel id is created and emitted normally',
-      );
-    });
+        expect(ensured.wasCreated, isTrue);
+        expect(await repo.getMemberById(unknownSentinelMemberId), isNotNull);
+        expect(captured, [
+          'members/$unknownSentinelMemberId/create',
+        ], reason: 'a live sentinel id is created and emitted normally');
+      },
+    );
 
-    test('an already-present sentinel row => no-op regardless of the gate',
-        () async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final repo = DriftMemberRepository(db.membersDao, null);
+    test(
+      'an already-present sentinel row => no-op regardless of the gate',
+      () async {
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+        final repo = DriftMemberRepository(db.membersDao, null);
 
-      // Seed the row first (emits a create).
-      await repo.ensureUnknownSentinelMember();
+        // Seed the row first (emits a create).
+        await repo.ensureUnknownSentinelMember();
 
-      // Now flip the gate to tombstoned and ensure again — the existing-row
-      // early return wins, so no read, no write, no emission.
-      repo.debugTombstoneGateForTesting = gateTombstoning({
-        unknownSentinelMemberId,
-      });
-      final captured = <String>[];
-      SyncRecordMixin.installCaptureSinkForTesting(
-        (op) => captured.add('${op.table}/${op.entityId}/${op.opType.name}'),
-      );
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+        // Now flip the gate to tombstoned and ensure again — the existing-row
+        // early return wins, so no read, no write, no emission.
+        repo.debugTombstoneGateForTesting = gateTombstoning({
+          unknownSentinelMemberId,
+        });
+        final captured = <String>[];
+        SyncRecordMixin.installCaptureSinkForTesting(
+          (op) => captured.add('${op.table}/${op.entityId}/${op.opType.name}'),
+        );
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      final second = await repo.ensureUnknownSentinelMember();
-      expect(second.wasCreated, isFalse);
-      expect(captured, isEmpty);
-    });
+        final second = await repo.ensureUnknownSentinelMember();
+        expect(second.wasCreated, isFalse);
+        expect(captured, isEmpty);
+      },
+    );
   });
 }

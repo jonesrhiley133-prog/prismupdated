@@ -130,8 +130,7 @@ class _UnsavedChangesGuardState<T> extends State<UnsavedChangesGuard<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final canPop =
-        !widget.isActive || _allowPop || !widget.hasUnsavedChanges;
+    final canPop = !widget.isActive || _allowPop || !widget.hasUnsavedChanges;
     return PopScope<T>(
       canPop: canPop,
       onPopInvokedWithResult: (didPop, result) async {

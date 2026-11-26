@@ -180,7 +180,10 @@ class _FakePkClient implements PluralKitClient {
   Future<List<PKMember>> getMembers() async => const [];
 
   @override
-  Future<List<PKSwitch>> getSwitches({DateTime? before, int limit = 100}) async {
+  Future<List<PKSwitch>> getSwitches({
+    DateTime? before,
+    int limit = 100,
+  }) async {
     if (switchPages.isEmpty) return const [];
     return switchPages.removeAt(0);
   }

@@ -16,7 +16,8 @@ enum GroupSortMode {
   static GroupSortMode fromInt(int? i) {
     if (i == null) return GroupSortMode.manual;
     try {
-      if (i < 0 || i >= GroupSortMode.values.length) return GroupSortMode.manual;
+      if (i < 0 || i >= GroupSortMode.values.length)
+        return GroupSortMode.manual;
       return GroupSortMode.values[i];
     } catch (_) {
       return GroupSortMode.manual;

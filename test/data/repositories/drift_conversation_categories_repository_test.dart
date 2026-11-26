@@ -102,17 +102,26 @@ void main() {
   });
 
   group('ordering by displayOrder', () {
-    test('watchAll returns categories ordered by displayOrder ascending', () async {
-      await repo.create(makeCategory(id: 'c3', name: 'Third', displayOrder: 3));
-      await repo.create(makeCategory(id: 'c1', name: 'First', displayOrder: 1));
-      await repo.create(makeCategory(id: 'c2', name: 'Second', displayOrder: 2));
+    test(
+      'watchAll returns categories ordered by displayOrder ascending',
+      () async {
+        await repo.create(
+          makeCategory(id: 'c3', name: 'Third', displayOrder: 3),
+        );
+        await repo.create(
+          makeCategory(id: 'c1', name: 'First', displayOrder: 1),
+        );
+        await repo.create(
+          makeCategory(id: 'c2', name: 'Second', displayOrder: 2),
+        );
 
-      final all = await repo.watchAll().first;
-      expect(all, hasLength(3));
-      expect(all[0].name, 'First');
-      expect(all[1].name, 'Second');
-      expect(all[2].name, 'Third');
-    });
+        final all = await repo.watchAll().first;
+        expect(all, hasLength(3));
+        expect(all[0].name, 'First');
+        expect(all[1].name, 'Second');
+        expect(all[2].name, 'Third');
+      },
+    );
 
     test('categories with same displayOrder are stable', () async {
       await repo.create(makeCategory(id: 'c1', name: 'A', displayOrder: 0));
@@ -167,9 +176,7 @@ void main() {
       addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
       final later = baseTime.add(const Duration(hours: 1));
-      await repo.update(
-        makeFullCategory(name: 'Renamed', modifiedAt: later),
-      );
+      await repo.update(makeFullCategory(name: 'Renamed', modifiedAt: later));
 
       expect(captured, hasLength(1));
       expect(captured.single.opType, SyncRecordOpType.update);
@@ -179,17 +186,19 @@ void main() {
       expect(captured.single.fields['name'], 'Renamed');
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.create(makeFullCategory());
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.create(makeFullCategory());
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.update(makeFullCategory());
+        await repo.update(makeFullCategory());
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
       await repo.create(

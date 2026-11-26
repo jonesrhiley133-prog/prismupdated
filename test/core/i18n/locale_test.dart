@@ -62,10 +62,12 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: const [Locale('en'), Locale('es')],
           locale: const Locale('en'),
-          home: Builder(builder: (ctx) {
-            enCancel = AppLocalizations.of(ctx).cancel;
-            return const SizedBox.shrink();
-          }),
+          home: Builder(
+            builder: (ctx) {
+              enCancel = AppLocalizations.of(ctx).cancel;
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       );
       await tester.pump();
@@ -75,10 +77,12 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: const [Locale('en'), Locale('es')],
           locale: const Locale('es'),
-          home: Builder(builder: (ctx) {
-            esCancel = AppLocalizations.of(ctx).cancel;
-            return const SizedBox.shrink();
-          }),
+          home: Builder(
+            builder: (ctx) {
+              esCancel = AppLocalizations.of(ctx).cancel;
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       );
       await tester.pump();
@@ -110,17 +114,17 @@ void main() {
 
       // English output should not contain Spanish month name for March
       // (Spanish: "mar." / "marzo"; English: "Mar")
-      expect(enFormatted.toLowerCase(), isNot(contains('mar.')),
-          reason: 'English output should not contain Spanish abbreviation');
+      expect(
+        enFormatted.toLowerCase(),
+        isNot(contains('mar.')),
+        reason: 'English output should not contain Spanish abbreviation',
+      );
     });
 
     test('passing null locale falls back gracefully (no throw)', () {
       // All our extension methods accept nullable locale.
       // Passing null should not throw — ICU picks its default.
-      expect(
-        () => DateFormat.yMMMd(null).format(date),
-        returnsNormally,
-      );
+      expect(() => DateFormat.yMMMd(null).format(date), returnsNormally);
     });
 
     test('regional locale affects date order (en_GB vs en_US)', () {

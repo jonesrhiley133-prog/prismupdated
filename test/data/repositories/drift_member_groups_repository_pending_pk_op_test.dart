@@ -23,7 +23,7 @@ class _TestMemberGroupsDao extends MemberGroupsDao {
 
 class _RecordingRepo extends DriftMemberGroupsRepository {
   _RecordingRepo(MemberGroupsDao dao, MemberRepository memberRepository)
-      : super(dao, null, memberRepository: memberRepository);
+    : super(dao, null, memberRepository: memberRepository);
 
   final creates = <String>[];
   final deletes = <String>[];
@@ -44,9 +44,8 @@ class _RecordingRepo extends DriftMemberGroupsRepository {
 }
 
 class _FakeMemberRepository implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _FakeMemberRepository(this._members);
 
@@ -67,7 +66,8 @@ class _FakeMemberRepository implements MemberRepository {
   // The repository code only calls getMemberById and getMembersByIds in the
   // paths under test. Throwing on the rest keeps unintended call sites obvious.
   @override
-  Future<void> clearPluralKitLink(String id) async => throw UnimplementedError();
+  Future<void> clearPluralKitLink(String id) async =>
+      throw UnimplementedError();
   @override
   Future<void> createMember(member_domain.Member member) async =>
       throw UnimplementedError();
@@ -107,10 +107,12 @@ class _FakeMemberRepository implements MemberRepository {
   ) async => throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
   @override
   Stream<List<member_domain.Member>> watchActiveMembers() =>
       throw UnimplementedError();
@@ -125,7 +127,7 @@ class _FakeMemberRepository implements MemberRepository {
       throw UnimplementedError();
   @override
   Future<({member_domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 Future<void> _seedGroup(
@@ -133,7 +135,9 @@ Future<void> _seedGroup(
   required String id,
   String? pluralkitUuid,
 }) {
-  return db.into(db.memberGroups).insert(
+  return db
+      .into(db.memberGroups)
+      .insert(
         MemberGroupsCompanion.insert(
           id: id,
           name: id,
@@ -157,9 +161,11 @@ Future<MemberGroupEntryRow?> _findEntry(
   String groupId,
   String memberId,
 ) async {
-  final rows = await (db.select(db.memberGroupEntries)
-        ..where((e) => e.groupId.equals(groupId) & e.memberId.equals(memberId)))
-      .get();
+  final rows =
+      await (db.select(db.memberGroupEntries)..where(
+            (e) => e.groupId.equals(groupId) & e.memberId.equals(memberId),
+          ))
+          .get();
   if (rows.isEmpty) return null;
   return rows.single;
 }
@@ -169,7 +175,9 @@ void main() {
   late _TestMemberGroupsDao dao;
   late _RecordingRepo repo;
 
-  Future<void> setupRepo({List<member_domain.Member> members = const []}) async {
+  Future<void> setupRepo({
+    List<member_domain.Member> members = const [],
+  }) async {
     db = AppDatabase(NativeDatabase.memory());
     dao = _TestMemberGroupsDao(db);
     repo = _RecordingRepo(dao, _FakeMemberRepository([...members]));
@@ -215,39 +223,37 @@ void main() {
       expect(entry!.pendingPkOp, 'none');
     });
 
-    test(
-      're-adding a soft-deleted push_remove row revives it as push_add '
-      '(NOT none — see v3-patches-2 #1)',
-      () async {
-        await setupRepo(
-          members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
-        );
-        await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
+    test('re-adding a soft-deleted push_remove row revives it as push_add '
+        '(NOT none — see v3-patches-2 #1)', () async {
+      await setupRepo(
+        members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
+      );
+      await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
 
-        // Set up the soft-deleted push_remove tombstone. It must live at
-        // the deterministic SHA id so the upsert in the revival path lands
-        // on the same row.
-        await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
-        await repo.removeMemberFromGroup('g1', 'm1');
-        final tombstone = await _findEntry(db, 'g1', 'm1');
-        expect(tombstone!.isDeleted, isTrue);
-        expect(tombstone.pendingPkOp, 'push_remove');
+      // Set up the soft-deleted push_remove tombstone. It must live at
+      // the deterministic SHA id so the upsert in the revival path lands
+      // on the same row.
+      await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
+      await repo.removeMemberFromGroup('g1', 'm1');
+      final tombstone = await _findEntry(db, 'g1', 'm1');
+      expect(tombstone!.isDeleted, isTrue);
+      expect(tombstone.pendingPkOp, 'push_remove');
 
-        // Re-add. The existing row is soft-deleted so findEntry returns
-        // null and the upsert path runs.
-        await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
+      // Re-add. The existing row is soft-deleted so findEntry returns
+      // null and the upsert path runs.
+      await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
 
-        final revived = await _findEntry(db, 'g1', 'm1');
-        expect(revived!.id, tombstone.id, reason: 'same canonical SHA id');
-        expect(revived.isDeleted, isFalse);
-        expect(
-          revived.pendingPkOp,
-          'push_add',
-          reason: 'reviving must preserve push intent so the next push round '
-              'restores PK after the remove that may have already shipped',
-        );
-      },
-    );
+      final revived = await _findEntry(db, 'g1', 'm1');
+      expect(revived!.id, tombstone.id, reason: 'same canonical SHA id');
+      expect(revived.isDeleted, isFalse);
+      expect(
+        revived.pendingPkOp,
+        'push_add',
+        reason:
+            'reviving must preserve push intent so the next push round '
+            'restores PK after the remove that may have already shipped',
+      );
+    });
 
     test('no-op early return when an active entry already exists', () async {
       await setupRepo(
@@ -265,45 +271,42 @@ void main() {
       expect(repo.creates.length, createsBefore);
     });
 
-    test(
-      'reviving a stale tombstone refreshes the created_at recency stamp '
-      '(intent age, not row age)',
-      () async {
-        await setupRepo(
-          members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
-        );
-        await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
+    test('reviving a stale tombstone refreshes the created_at recency stamp '
+        '(intent age, not row age)', () async {
+      await setupRepo(
+        members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
+      );
+      await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
 
-        // Build the tombstone, then BACKDATE its stamp far past the push
-        // retry cap. The revive runs through upsertEntry's
-        // insertOnConflictUpdate, whose DO UPDATE writes only the companion —
-        // clientDefault does NOT fire, so without the explicit createdAt in
-        // addMemberToGroup's companion the revived push_add would inherit
-        // this stale stamp and be instantly "expired" under the age cap.
-        await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
-        await repo.removeMemberFromGroup('g1', 'm1');
-        final tombstoneId = (await (db.select(db.memberGroupEntries)
-              ..where((e) => e.memberId.equals('m1'))).getSingle())
-            .id;
-        final stale = DateTime.now().subtract(const Duration(days: 60));
-        await (db.update(db.memberGroupEntries)
-              ..where((e) => e.id.equals(tombstoneId)))
-            .write(MemberGroupEntriesCompanion(createdAt: Value(stale)));
+      // Build the tombstone, then BACKDATE its stamp far past the push
+      // retry cap. The revive runs through upsertEntry's
+      // insertOnConflictUpdate, whose DO UPDATE writes only the companion —
+      // clientDefault does NOT fire, so without the explicit createdAt in
+      // addMemberToGroup's companion the revived push_add would inherit
+      // this stale stamp and be instantly "expired" under the age cap.
+      await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
+      await repo.removeMemberFromGroup('g1', 'm1');
+      final tombstoneId = (await (db.select(
+        db.memberGroupEntries,
+      )..where((e) => e.memberId.equals('m1'))).getSingle()).id;
+      final stale = DateTime.now().subtract(const Duration(days: 60));
+      await (db.update(db.memberGroupEntries)
+            ..where((e) => e.id.equals(tombstoneId)))
+          .write(MemberGroupEntriesCompanion(createdAt: Value(stale)));
 
-        final before = DateTime.now().subtract(const Duration(seconds: 5));
-        await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
+      final before = DateTime.now().subtract(const Duration(seconds: 5));
+      await repo.addMemberToGroup('g1', 'm1', 'unused-uuid');
 
-        final revived = await _findEntry(db, 'g1', 'm1');
-        expect(revived!.isDeleted, isFalse);
-        expect(revived.pendingPkOp, 'push_add');
-        expect(revived.createdAt, isNotNull);
-        expect(
-          revived.createdAt!.isAfter(before),
-          isTrue,
-          reason: 'the upsert revive must restamp created_at explicitly',
-        );
-      },
-    );
+      final revived = await _findEntry(db, 'g1', 'm1');
+      expect(revived!.isDeleted, isFalse);
+      expect(revived.pendingPkOp, 'push_add');
+      expect(revived.createdAt, isNotNull);
+      expect(
+        revived.createdAt!.isAfter(before),
+        isTrue,
+        reason: 'the upsert revive must restamp created_at explicitly',
+      );
+    });
   });
 
   group('removeMemberFromGroup pending_pk_op', () {
@@ -337,31 +340,28 @@ void main() {
       },
     );
 
-    test(
-      'PK-linked active entry currently with push_add intent → flip to '
-      'push_remove (do NOT hard-delete; v3-patches-2 #7)',
-      () async {
-        await setupRepo(
-          members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
-        );
-        await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
+    test('PK-linked active entry currently with push_add intent → flip to '
+        'push_remove (do NOT hard-delete; v3-patches-2 #7)', () async {
+      await setupRepo(
+        members: [_member(id: 'm1', pluralkitUuid: 'pk-m1')],
+      );
+      await _seedGroup(db, id: 'g1', pluralkitUuid: 'pk-g1');
 
-        // Add: pending becomes push_add. Push hasn't run yet.
-        await repo.addMemberToGroup('g1', 'm1', 'fresh-uuid');
-        expect((await _findEntry(db, 'g1', 'm1'))!.pendingPkOp, 'push_add');
+      // Add: pending becomes push_add. Push hasn't run yet.
+      await repo.addMemberToGroup('g1', 'm1', 'fresh-uuid');
+      expect((await _findEntry(db, 'g1', 'm1'))!.pendingPkOp, 'push_add');
 
-        // Remove. Old behavior would hard-delete since push hadn't shipped;
-        // new behavior soft-deletes and queues push_remove. The orchestrator
-        // will issue /members/remove which PK 4xx's not-member, then refetch
-        // confirms gone, then cleanup DELETE removes the tombstone.
-        await repo.removeMemberFromGroup('g1', 'm1');
+      // Remove. Old behavior would hard-delete since push hadn't shipped;
+      // new behavior soft-deletes and queues push_remove. The orchestrator
+      // will issue /members/remove which PK 4xx's not-member, then refetch
+      // confirms gone, then cleanup DELETE removes the tombstone.
+      await repo.removeMemberFromGroup('g1', 'm1');
 
-        final entry = await _findEntry(db, 'g1', 'm1');
-        expect(entry, isNotNull, reason: 'must NOT hard-delete');
-        expect(entry!.isDeleted, isTrue);
-        expect(entry.pendingPkOp, 'push_remove');
-      },
-    );
+      final entry = await _findEntry(db, 'g1', 'm1');
+      expect(entry, isNotNull, reason: 'must NOT hard-delete');
+      expect(entry!.isDeleted, isTrue);
+      expect(entry.pendingPkOp, 'push_remove');
+    });
 
     test('emits Prism syncRecordDelete on PK-linked remove', () async {
       await setupRepo(

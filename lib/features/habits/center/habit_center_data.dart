@@ -23,16 +23,23 @@ class HabitMeta {
   final TrackerRecord? record;
 
   int get target => record?.integer('target') ?? 1;
-  HabitUnit get unit => HabitUnit.values.firstWhere((u) => u.name == record?.str('unit'), orElse: () => HabitUnit.times);
+  HabitUnit get unit => HabitUnit.values.firstWhere(
+    (u) => u.name == record?.str('unit'),
+    orElse: () => HabitUnit.times,
+  );
 
   /// Label for one unit ("glass", "session", "page").
   String? get unitLabel => record?.str('unitLabel');
   String? get groupId => record?.str('group');
   bool get paused => record?.flag('paused') ?? false;
-  DateTime? get pausedUntil => DateTime.tryParse(record?.str('pausedUntil') ?? '');
+  DateTime? get pausedUntil =>
+      DateTime.tryParse(record?.str('pausedUntil') ?? '');
 
   /// Weekdays (1–7) that are rest days.
-  List<int> get recoveryDays => [for (final s in record?.strings('recovery') ?? const <String>[]) ?int.tryParse(s)];
+  List<int> get recoveryDays => [
+    for (final s in record?.strings('recovery') ?? const <String>[])
+      ?int.tryParse(s),
+  ];
 
   /// Day of month for monthly habits (null = not monthly).
   int? get monthDay => record?.integer('monthDay');
@@ -43,11 +50,14 @@ class HabitMeta {
   /// Record kind that counts automatically (e.g. `nutri.drink`).
   String? get autoLog => record?.str('autoLog');
   int? get challengeTarget => record?.integer('challenge');
-  DateTime? get challengeEnd => DateTime.tryParse(record?.str('challengeEnd') ?? '');
+  DateTime? get challengeEnd =>
+      DateTime.tryParse(record?.str('challengeEnd') ?? '');
   int get defaultMinutes => record?.integer('defaultMinutes') ?? 25;
   bool get shared => record?.flag('shared') ?? false;
 
-  bool isPausedOn(DateTime day) => paused && (pausedUntil == null || !dayKey(day).isAfter(dayKey(pausedUntil!)));
+  bool isPausedOn(DateTime day) =>
+      paused &&
+      (pausedUntil == null || !dayKey(day).isAfter(dayKey(pausedUntil!)));
 }
 
 /// Per-completion details (`habit.log`, parent = completion id).
@@ -71,18 +81,30 @@ num progressOf(HabitMeta meta, HabitLog log) => switch (meta.unit) {
 };
 
 final habitMetasProvider = Provider<Map<String, HabitMeta>>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.habitMeta)).value ?? const <TrackerRecord>[];
-  return {for (final r in rows.reversed) if (r.parentId != null) r.parentId!: HabitMeta(r)};
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.habitMeta)).value ??
+      const <TrackerRecord>[];
+  return {
+    for (final r in rows.reversed)
+      if (r.parentId != null) r.parentId!: HabitMeta(r),
+  };
 });
 
 final habitLogsProvider = Provider<Map<String, HabitLog>>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.habitLog)).value ?? const <TrackerRecord>[];
-  return {for (final r in rows) if (r.parentId != null) r.parentId!: HabitLog(r)};
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.habitLog)).value ??
+      const <TrackerRecord>[];
+  return {
+    for (final r in rows)
+      if (r.parentId != null) r.parentId!: HabitLog(r),
+  };
 });
 
 /// habitId → skipped days.
 final habitSkipsProvider = Provider<Map<String, Set<DateTime>>>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.habitSkip)).value ?? const <TrackerRecord>[];
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.habitSkip)).value ??
+      const <TrackerRecord>[];
   final out = <String, Set<DateTime>>{};
   for (final r in rows) {
     if (r.parentId == null || r.occurredAt == null) continue;
@@ -92,23 +114,37 @@ final habitSkipsProvider = Provider<Map<String, Set<DateTime>>>((ref) {
 });
 
 final habitGroupsProvider = Provider<List<TrackerRecord>>((ref) {
-  final rows = [...?ref.watch(trackerKindProvider(TrackerKind.habitGroup)).value];
+  final rows = [
+    ...?ref.watch(trackerKindProvider(TrackerKind.habitGroup)).value,
+  ];
   rows.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
   return rows;
 });
 
 /// Running timers: habitId → timer record.
 final habitTimersProvider = Provider<Map<String, TrackerRecord>>((ref) {
-  final rows = ref.watch(trackerKindProvider(TrackerKind.habitTimer)).value ?? const <TrackerRecord>[];
-  return {for (final r in rows) if (r.parentId != null) r.parentId!: r};
+  final rows =
+      ref.watch(trackerKindProvider(TrackerKind.habitTimer)).value ??
+      const <TrackerRecord>[];
+  return {
+    for (final r in rows)
+      if (r.parentId != null) r.parentId!: r,
+  };
 });
 
 /// Whether [habit] is scheduled on [day] (before skips/pauses).
-bool scheduledOn(Habit habit, HabitMeta meta, DateTime day, List<HabitCompletion> history) {
+bool scheduledOn(
+  Habit habit,
+  HabitMeta meta,
+  DateTime day,
+  List<HabitCompletion> history,
+) {
   final d = dayKey(day);
   if (dayKey(habit.createdAt).isAfter(d)) return false;
   if (meta.recoveryDays.contains(d.weekday)) return false;
-  if (meta.monthDay != null) return d.day == meta.monthDay!.clamp(1, DateUtils.getDaysInMonth(d.year, d.month));
+  if (meta.monthDay != null)
+    return d.day ==
+        meta.monthDay!.clamp(1, DateUtils.getDaysInMonth(d.year, d.month));
   switch (habit.frequency) {
     case HabitFrequency.daily:
     case HabitFrequency.custom:
@@ -118,7 +154,10 @@ bool scheduledOn(Habit habit, HabitMeta meta, DateTime day, List<HabitCompletion
     case HabitFrequency.interval:
       final n = habit.intervalDays ?? 1;
       if (n <= 1) return true;
-      final before = [for (final c in history) if (dayKey(c.completedAt).isBefore(d)) dayKey(c.completedAt)]..sort();
+      final before = [
+        for (final c in history)
+          if (dayKey(c.completedAt).isBefore(d)) dayKey(c.completedAt),
+      ]..sort();
       if (before.isEmpty) return true;
       return d.difference(before.last).inDays >= n;
   }
@@ -128,7 +167,13 @@ enum DayState { met, partial, missed, skipped, rest, paused, future }
 
 /// Everything the Center and dashboards show for one habit.
 class HabitView {
-  HabitView({required this.habit, required this.meta, required this.completions, required this.logs, required this.skips});
+  HabitView({
+    required this.habit,
+    required this.meta,
+    required this.completions,
+    required this.logs,
+    required this.skips,
+  });
   final Habit habit;
   final HabitMeta meta;
 
@@ -147,7 +192,10 @@ class HabitView {
 
   HabitLog logOf(HabitCompletion c) => logs[c.id] ?? const HabitLog(null);
 
-  num progressOn(DateTime day) => (byDay[dayKey(day)] ?? const []).fold<num>(0, (a, c) => a + progressOf(meta, logOf(c)));
+  num progressOn(DateTime day) => (byDay[dayKey(day)] ?? const []).fold<num>(
+    0,
+    (a, c) => a + progressOf(meta, logOf(c)),
+  );
 
   DayState stateOn(DateTime day, {DateTime? now}) {
     final d = dayKey(day);
@@ -157,7 +205,8 @@ class HabitView {
     if (d.isAfter(today)) return DayState.future;
     if (skips.contains(d)) return DayState.skipped;
     if (meta.isPausedOn(d)) return DayState.paused;
-    if (!scheduledOn(habit, meta, d, completions)) return p > 0 ? DayState.partial : DayState.rest;
+    if (!scheduledOn(habit, meta, d, completions))
+      return p > 0 ? DayState.partial : DayState.rest;
     return p > 0 ? DayState.partial : DayState.missed;
   }
 
@@ -167,7 +216,9 @@ class HabitView {
   }
 
   num get todayProgress => progressOn(DateTime.now());
-  double get todayFraction => meta.target <= 0 ? 1 : (todayProgress / meta.target).clamp(0, 1).toDouble();
+  double get todayFraction => meta.target <= 0
+      ? 1
+      : (todayProgress / meta.target).clamp(0, 1).toDouble();
 
   /// Consecutive met days; skipped, rest and paused days never break it,
   /// and an unfinished today doesn't either.
@@ -191,12 +242,17 @@ class HabitView {
   int get longestStreak {
     var best = 0, run = 0;
     final today = dayKey(DateTime.now());
-    for (var d = dayKey(habit.createdAt); !d.isAfter(today); d = d.add(const Duration(days: 1))) {
+    for (
+      var d = dayKey(habit.createdAt);
+      !d.isAfter(today);
+      d = d.add(const Duration(days: 1))
+    ) {
       final s = stateOn(d);
       if (s == DayState.met) {
         run++;
         if (run > best) best = run;
-      } else if ((s == DayState.missed || s == DayState.partial) && d != today) {
+      } else if ((s == DayState.missed || s == DayState.partial) &&
+          d != today) {
         run = 0;
       }
     }
@@ -206,7 +262,11 @@ class HabitView {
   /// Met days ÷ scheduled days in the range (skips excluded).
   double consistency(DateTime from, DateTime to) {
     var due = 0, met = 0;
-    for (var d = dayKey(from); !d.isAfter(dayKey(to)); d = d.add(const Duration(days: 1))) {
+    for (
+      var d = dayKey(from);
+      !d.isAfter(dayKey(to));
+      d = d.add(const Duration(days: 1))
+    ) {
       final s = stateOn(d);
       if (s == DayState.met) {
         met++;
@@ -218,8 +278,10 @@ class HabitView {
     return due == 0 ? 0 : met / due;
   }
 
-  List<HabitCompletion> completionsBetween(DateTime from, DateTime to) =>
-      [for (final c in completions) if (!c.completedAt.isBefore(from) && c.completedAt.isBefore(to)) c];
+  List<HabitCompletion> completionsBetween(DateTime from, DateTime to) => [
+    for (final c in completions)
+      if (!c.completedAt.isBefore(from) && c.completedAt.isBefore(to)) c,
+  ];
 
   double? averageMinutes(Iterable<HabitCompletion> cs) {
     final m = [for (final c in cs) ?logOf(c).minutes];
@@ -234,7 +296,8 @@ class HabitView {
 
 final habitViewsProvider = Provider<Map<String, HabitView>>((ref) {
   final habits = ref.watch(habitsProvider).value ?? const <Habit>[];
-  final all = ref.watch(allCompletionsProvider).value ?? const <HabitCompletion>[];
+  final all =
+      ref.watch(allCompletionsProvider).value ?? const <HabitCompletion>[];
   final metas = ref.watch(habitMetasProvider);
   final logs = ref.watch(habitLogsProvider);
   final skips = ref.watch(habitSkipsProvider);
@@ -247,7 +310,8 @@ final habitViewsProvider = Provider<Map<String, HabitView>>((ref) {
       h.id: HabitView(
         habit: h,
         meta: metas[h.id] ?? const HabitMeta(null),
-        completions: (byHabit[h.id] ?? [])..sort((a, b) => b.completedAt.compareTo(a.completedAt)),
+        completions: (byHabit[h.id] ?? [])
+          ..sort((a, b) => b.completedAt.compareTo(a.completedAt)),
         logs: logs,
         skips: skips[h.id] ?? const {},
       ),
@@ -276,15 +340,19 @@ class HabitCenterActions {
     String? source,
   }) async {
     final id = _uuid.v4();
-    await ref.read(habitNotifierProvider.notifier).completeHabit(
-      habitId: habit.id,
-      completedByMemberId: memberId,
-      notes: notes,
-      rating: rating,
-      wasFronting: memberId != null && memberId == ref.read(currentFronterProvider).value?.id,
-      completedAt: at,
-      completionId: id,
-    );
+    await ref
+        .read(habitNotifierProvider.notifier)
+        .completeHabit(
+          habitId: habit.id,
+          completedByMemberId: memberId,
+          notes: notes,
+          rating: rating,
+          wasFronting:
+              memberId != null &&
+              memberId == ref.read(currentFronterProvider).value?.id,
+          completedAt: at,
+          completionId: id,
+        );
     final fields = <String, Object?>{
       'habitId': habit.id,
       if (count != 1) 'count': count,
@@ -296,11 +364,22 @@ class HabitCenterActions {
       'source': ?source,
     };
     if (fields.length > 1) {
-      await _t.create(kind: TrackerKind.habitLog, parentId: id, occurredAt: at ?? DateTime.now(), memberId: memberId, fields: fields);
+      await _t.create(
+        kind: TrackerKind.habitLog,
+        parentId: id,
+        occurredAt: at ?? DateTime.now(),
+        memberId: memberId,
+        fields: fields,
+      );
     }
     final links = ref.read(linkActionsProvider);
     final self = RecordRef(RecordRef.habitLog, id);
-    if (locationId != null) await links.link(self, RecordRef(RecordRef.location, locationId), category: 'during');
+    if (locationId != null)
+      await links.link(
+        self,
+        RecordRef(RecordRef.location, locationId),
+        category: 'during',
+      );
     for (final r in linkTo) {
       await links.link(self, r, category: 'related');
     }
@@ -308,27 +387,44 @@ class HabitCenterActions {
   }
 
   /// Updates the details record of a completion.
-  Future<void> saveLog(HabitCompletion c, HabitLog existing, Map<String, Object?> changes) async {
+  Future<void> saveLog(
+    HabitCompletion c,
+    HabitLog existing,
+    Map<String, Object?> changes,
+  ) async {
     if (existing.record != null) {
       await _t.save(existing.record!.withFields(changes));
     } else {
-      await _t.create(kind: TrackerKind.habitLog, parentId: c.id, occurredAt: c.completedAt, memberId: c.completedByMemberId, fields: {'habitId': c.habitId, ...changes});
+      await _t.create(
+        kind: TrackerKind.habitLog,
+        parentId: c.id,
+        occurredAt: c.completedAt,
+        memberId: c.completedByMemberId,
+        fields: {'habitId': c.habitId, ...changes},
+      );
     }
   }
 
   /// Removes a completion together with its details and links.
   Future<void> deleteCompletion(HabitCompletion c) async {
-    await ref.read(habitNotifierProvider.notifier).uncompleteHabit(habitId: c.habitId, completionId: c.id);
+    await ref
+        .read(habitNotifierProvider.notifier)
+        .uncompleteHabit(habitId: c.habitId, completionId: c.id);
     await _cleanup({c.id}, {'${RecordRef.habitLog}:${c.id}'});
   }
 
   /// Deletes a habit with its completions, extensions and links.
   Future<void> deleteHabit(Habit h) async {
-    final completions = ref.read(habitViewsProvider)[h.id]?.completions ?? const <HabitCompletion>[];
+    final completions =
+        ref.read(habitViewsProvider)[h.id]?.completions ??
+        const <HabitCompletion>[];
     await ref.read(habitNotifierProvider.notifier).deleteHabit(h.id);
     await _cleanup(
       {h.id, for (final c in completions) c.id},
-      {'${RecordRef.habit}:${h.id}', for (final c in completions) '${RecordRef.habitLog}:${c.id}'},
+      {
+        '${RecordRef.habit}:${h.id}',
+        for (final c in completions) '${RecordRef.habitLog}:${c.id}',
+      },
     );
   }
 
@@ -336,8 +432,13 @@ class HabitCenterActions {
     final all = await ref.read(trackerRecordRepositoryProvider).getAll();
     final repo = ref.read(trackerRecordRepositoryProvider);
     for (final r in all) {
-      final owned = r.parentId != null && parents.contains(r.parentId) && r.kind.startsWith('habit.');
-      final linked = r.kind == TrackerKind.linkEdge && (refs.contains(r.str('a')) || refs.contains(r.str('b')));
+      final owned =
+          r.parentId != null &&
+          parents.contains(r.parentId) &&
+          r.kind.startsWith('habit.');
+      final linked =
+          r.kind == TrackerKind.linkEdge &&
+          (refs.contains(r.str('a')) || refs.contains(r.str('b')));
       if (owned || linked) await repo.delete(r.id);
     }
   }
@@ -347,35 +448,64 @@ class HabitCenterActions {
     if (existing != null) {
       await _t.save(existing.withFields(changes));
     } else {
-      await _t.create(kind: TrackerKind.habitMeta, parentId: habitId, fields: changes);
+      await _t.create(
+        kind: TrackerKind.habitMeta,
+        parentId: habitId,
+        fields: changes,
+      );
     }
   }
 
   Future<void> toggleSkip(String habitId, DateTime day) async {
     final d = dayKey(day);
-    final rows = ref.read(trackerKindProvider(TrackerKind.habitSkip)).value ?? const <TrackerRecord>[];
-    final existing = rows.where((r) => r.parentId == habitId && r.occurredAt != null && dayKey(r.occurredAt!) == d).toList();
+    final rows =
+        ref.read(trackerKindProvider(TrackerKind.habitSkip)).value ??
+        const <TrackerRecord>[];
+    final existing = rows
+        .where(
+          (r) =>
+              r.parentId == habitId &&
+              r.occurredAt != null &&
+              dayKey(r.occurredAt!) == d,
+        )
+        .toList();
     if (existing.isNotEmpty) {
       for (final r in existing) {
         await _t.delete(r.id, children: false);
       }
     } else {
-      await _t.create(kind: TrackerKind.habitSkip, parentId: habitId, occurredAt: d);
+      await _t.create(
+        kind: TrackerKind.habitSkip,
+        parentId: habitId,
+        occurredAt: d,
+      );
     }
   }
 
   Future<void> startTimer(String habitId) async {
     if (ref.read(habitTimersProvider).containsKey(habitId)) return;
-    await _t.create(kind: TrackerKind.habitTimer, parentId: habitId, occurredAt: DateTime.now(), fields: {'pausedMs': 0});
+    await _t.create(
+      kind: TrackerKind.habitTimer,
+      parentId: habitId,
+      occurredAt: DateTime.now(),
+      fields: {'pausedMs': 0},
+    );
   }
 
   Future<void> pauseTimer(TrackerRecord t) async {
     final pausedAt = DateTime.tryParse(t.str('pausedAt') ?? '');
     if (pausedAt == null) {
-      await _t.save(t.withFields({'pausedAt': DateTime.now().toIso8601String()}));
+      await _t.save(
+        t.withFields({'pausedAt': DateTime.now().toIso8601String()}),
+      );
     } else {
       final extra = DateTime.now().difference(pausedAt).inMilliseconds;
-      await _t.save(t.withFields({'pausedAt': null, 'pausedMs': (t.integer('pausedMs') ?? 0) + extra}));
+      await _t.save(
+        t.withFields({
+          'pausedAt': null,
+          'pausedMs': (t.integer('pausedMs') ?? 0) + extra,
+        }),
+      );
     }
   }
 
@@ -384,20 +514,35 @@ class HabitCenterActions {
     final start = t.occurredAt ?? t.createdAt;
     final pausedAt = DateTime.tryParse(t.str('pausedAt') ?? '');
     final end = pausedAt ?? now ?? DateTime.now();
-    return end.difference(start) - Duration(milliseconds: t.integer('pausedMs') ?? 0);
+    return end.difference(start) -
+        Duration(milliseconds: t.integer('pausedMs') ?? 0);
   }
 
-  Future<void> discardTimer(TrackerRecord t) => _t.delete(t.id, children: false);
+  Future<void> discardTimer(TrackerRecord t) =>
+      _t.delete(t.id, children: false);
 
-  Future<TrackerRecord> saveGroup({TrackerRecord? editing, required String name, required List<String> habitIds, int? color, String? icon}) async {
+  Future<TrackerRecord> saveGroup({
+    TrackerRecord? editing,
+    required String name,
+    required List<String> habitIds,
+    int? color,
+    String? icon,
+  }) async {
     final fields = {'habits': habitIds, 'color': color, 'icon': icon};
     if (editing != null) {
       final next = editing.copyWith(title: name).withFields(fields);
       await _t.save(next);
       return next;
     }
-    return _t.create(kind: TrackerKind.habitGroup, title: name, fields: fields, sortOrder: ref.read(habitGroupsProvider).length);
+    return _t.create(
+      kind: TrackerKind.habitGroup,
+      title: name,
+      fields: fields,
+      sortOrder: ref.read(habitGroupsProvider).length,
+    );
   }
 }
 
-final habitCenterActionsProvider = Provider<HabitCenterActions>(HabitCenterActions.new);
+final habitCenterActionsProvider = Provider<HabitCenterActions>(
+  HabitCenterActions.new,
+);

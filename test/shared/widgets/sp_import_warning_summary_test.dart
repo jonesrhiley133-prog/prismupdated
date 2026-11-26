@@ -28,9 +28,7 @@ const _otherWarning = 'some unrecognized warning text';
 void main() {
   // ── Test 1: empty warnings → widget not rendered ───────────────────────────
   testWidgets('T1: zero warnings renders nothing', (tester) async {
-    await tester.pumpWidget(
-      _wrap(const SpImportWarningSummary(warnings: [])),
-    );
+    await tester.pumpWidget(_wrap(const SpImportWarningSummary(warnings: [])));
     await tester.pumpAndSettle();
 
     expect(find.byType(PrismExpandableSection), findsNothing);
@@ -55,10 +53,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.byType(PrismExpandableSection),
-      findsNWidgets(7),
-    );
+    expect(find.byType(PrismExpandableSection), findsNWidgets(7));
     expect(find.text('Avatar downloads'), findsOneWidget);
     expect(find.text('Sessions missing a member'), findsOneWidget);
     expect(find.text('Custom front adjustments'), findsOneWidget);
@@ -111,10 +106,7 @@ void main() {
 
   // ── Test 5: > 10 items → show-all truncation + expansion ──────────────────
   testWidgets('T5: show-all truncates at 10, expands on tap', (tester) async {
-    final warnings = List.generate(
-      30,
-      (i) => 'Member $i not found in import',
-    );
+    final warnings = List.generate(30, (i) => 'Member $i not found in import');
 
     await tester.pumpWidget(_wrap(SpImportWarningSummary(warnings: warnings)));
     await tester.pumpAndSettle();
@@ -145,9 +137,7 @@ void main() {
   // ── Test 6: expand then collapse ──────────────────────────────────────────
   testWidgets('T6: section collapses after second tap', (tester) async {
     await tester.pumpWidget(
-      _wrap(
-        const SpImportWarningSummary(warnings: [_missingRefWarning]),
-      ),
+      _wrap(const SpImportWarningSummary(warnings: [_missingRefWarning])),
     );
     await tester.pumpAndSettle();
 
@@ -182,11 +172,11 @@ void main() {
   });
 
   // ── Test 8: focus after expand ────────────────────────────────────────────
-  testWidgets('T8: first child gains focus after section expands', (tester) async {
+  testWidgets('T8: first child gains focus after section expands', (
+    tester,
+  ) async {
     await tester.pumpWidget(
-      _wrap(
-        const SpImportWarningSummary(warnings: [_missingRefWarning]),
-      ),
+      _wrap(const SpImportWarningSummary(warnings: [_missingRefWarning])),
     );
     await tester.pumpAndSettle();
 

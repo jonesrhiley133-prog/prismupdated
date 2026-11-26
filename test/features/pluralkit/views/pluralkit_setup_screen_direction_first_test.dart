@@ -57,16 +57,14 @@ class _FakeSyncNotifier extends PluralKitSyncNotifier {
   Future<PkSyncSummary?> syncRecentData({
     bool isManual = false,
     PkSyncDirection direction = PkSyncDirection.pullOnly,
-  }) async =>
-      null;
+  }) async => null;
 
   @override
   Future<PkSyncSummary?> syncLiveFrontersOnly({
     bool isManual = false,
     PkSyncDirection direction = PkSyncDirection.pullOnly,
     PKSwitch? knownCurrentFronters,
-  }) async =>
-      null;
+  }) async => null;
 
   @override
   Future<PKSystem?> fetchSystemProfile() async => null;
@@ -169,9 +167,7 @@ Widget _buildScreen({
       pkSyncDirectionProvider.overrideWith(
         () => _FakePkSyncDirectionNotifier(syncDirection),
       ),
-      pkSyncModeProvider.overrideWith(
-        () => _FakePkSyncModeNotifier(syncMode),
-      ),
+      pkSyncModeProvider.overrideWith(() => _FakePkSyncModeNotifier(syncMode)),
       frontingMigrationWritesBlockedProvider.overrideWithValue(
         migrationBlocked,
       ),
@@ -180,9 +176,7 @@ Widget _buildScreen({
           () => _FakePkFirstSyncDeferredNotifier(pkFirstSyncDeferredValue),
         ),
       // Always override so tests never hit the real PK API.
-      pkCurrentFrontersProvider.overrideWith(
-        (ref) async => frontersValue,
-      ),
+      pkCurrentFrontersProvider.overrideWith((ref) async => frontersValue),
     ],
     child: const MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -303,7 +297,8 @@ void main() {
         expect(
           notifier.confirmDirectionCallCount,
           0,
-          reason: 'I3: Continue must be disabled until the user picks a '
+          reason:
+              'I3: Continue must be disabled until the user picks a '
               'direction.',
         );
 
@@ -321,7 +316,8 @@ void main() {
         expect(
           notifier.confirmDirectionCallCount,
           1,
-          reason: 'I3: after the user touches the picker, Continue must be '
+          reason:
+              'I3: after the user touches the picker, Continue must be '
               'enabled and confirmDirection must fire on tap.',
         );
 
@@ -337,50 +333,50 @@ void main() {
     // (b2) I3: when a non-default direction is preserved from a prior
     //     session (e.g. bidirectional), Continue must be pre-enabled — no
     //     re-tap required. Bug I3.
-    testWidgets(
-      '(b2) preserved non-default direction pre-enables Continue',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(600, 3000));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('(b2) preserved non-default direction pre-enables Continue', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(600, 3000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = FakeSystemSettingsRepository();
-        final notifier = _FakeSyncNotifier(
-          const PluralKitSyncState(
-            isConnected: true,
-            directionConfirmed: false,
-            mappingAcknowledged: false,
-          ),
-        );
+      final repo = FakeSystemSettingsRepository();
+      final notifier = _FakeSyncNotifier(
+        const PluralKitSyncState(
+          isConnected: true,
+          directionConfirmed: false,
+          mappingAcknowledged: false,
+        ),
+      );
 
-        await _pumpScreen(
-          tester,
-          settingsRepository: repo,
-          settingsStream: Stream.value(repo.settings),
-          syncNotifier: notifier,
-          // Simulate a preserved non-default direction from a prior session.
-          syncDirection: PkSyncDirection.bidirectional,
-        );
+      await _pumpScreen(
+        tester,
+        settingsRepository: repo,
+        settingsStream: Stream.value(repo.settings),
+        syncNotifier: notifier,
+        // Simulate a preserved non-default direction from a prior session.
+        syncDirection: PkSyncDirection.bidirectional,
+      );
 
-        // Pump once more so the post-frame callback that pre-marks
-        // _directionTouched can run.
-        await tester.pump();
+      // Pump once more so the post-frame callback that pre-marks
+      // _directionTouched can run.
+      await tester.pump();
 
-        expect(find.text('How should this sync?'), findsOneWidget);
-        expect(notifier.confirmDirectionCallCount, 0);
+      expect(find.text('How should this sync?'), findsOneWidget);
+      expect(notifier.confirmDirectionCallCount, 0);
 
-        // Continue must work immediately — no re-tap required.
-        await tester.tap(find.text('Continue'));
-        await tester.pump();
-        await tester.pump();
+      // Continue must work immediately — no re-tap required.
+      await tester.tap(find.text('Continue'));
+      await tester.pump();
+      await tester.pump();
 
-        expect(
-          notifier.confirmDirectionCallCount,
-          1,
-          reason: 'I3: preserved non-default direction must pre-enable '
-              'Continue — re-touch is annoying for resumed sessions.',
-        );
-      },
-    );
+      expect(
+        notifier.confirmDirectionCallCount,
+        1,
+        reason:
+            'I3: preserved non-default direction must pre-enable '
+            'Continue — re-touch is annoying for resumed sessions.',
+      );
+    });
 
     // (c) State canAutoSync after deferred sync: "First sync deferred" banner
     //     appears in Sync Actions section. Dismiss removes it.
@@ -411,10 +407,7 @@ void main() {
 
         // The "First sync deferred" banner must appear above sync actions.
         // The banner text contains the key phrase "First sync deferred".
-        expect(
-          find.textContaining('First sync deferred'),
-          findsOneWidget,
-        );
+        expect(find.textContaining('First sync deferred'), findsOneWidget);
 
         // Tap the dismiss button (close icon) to clear the banner.
         final closeIcon = find.byIcon(Icons.close);
@@ -441,9 +434,7 @@ void main() {
           id: 'sw-bob',
           timestamp: DateTime(2026),
           members: const ['bob01'],
-          memberDetails: const [
-            PKMemberSummary(id: 'bob01', name: 'Bob'),
-          ],
+          memberDetails: const [PKMemberSummary(id: 'bob01', name: 'Bob')],
         );
 
         final repo = FakeSystemSettingsRepository();
@@ -503,10 +494,7 @@ void main() {
         expect(find.text('Link headmates'), findsOneWidget);
 
         // Heads-up banner must NOT appear when fronters fetch returns null.
-        expect(
-          find.textContaining('PluralKit currently has'),
-          findsNothing,
-        );
+        expect(find.textContaining('PluralKit currently has'), findsNothing);
       },
     );
 
@@ -542,10 +530,7 @@ void main() {
         expect(find.text('Link headmates'), findsOneWidget);
 
         // Heads-up banner must NOT appear when PK switch has no members.
-        expect(
-          find.textContaining('PluralKit currently has'),
-          findsNothing,
-        );
+        expect(find.textContaining('PluralKit currently has'), findsNothing);
       },
     );
 
@@ -617,46 +602,42 @@ void main() {
     );
 
     // (f) _connect() no longer auto-pops the profile disclosure sheet.
-    testWidgets(
-      '(f) _connect() does not trigger profile disclosure sheet',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(600, 3000));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('(f) _connect() does not trigger profile disclosure sheet', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(600, 3000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = FakeSystemSettingsRepository();
-        final notifier = _FakeSyncNotifier(
-          const PluralKitSyncState(isConnected: false),
-        );
+      final repo = FakeSystemSettingsRepository();
+      final notifier = _FakeSyncNotifier(
+        const PluralKitSyncState(isConnected: false),
+      );
 
-        await _pumpScreen(
-          tester,
-          settingsRepository: repo,
-          settingsStream: Stream.value(repo.settings),
-          syncNotifier: notifier,
-          syncMode: PkSyncMode.fullSync,
-          syncDirection: PkSyncDirection.pullOnly,
-        );
+      await _pumpScreen(
+        tester,
+        settingsRepository: repo,
+        settingsStream: Stream.value(repo.settings),
+        syncNotifier: notifier,
+        syncMode: PkSyncMode.fullSync,
+        syncDirection: PkSyncDirection.pullOnly,
+      );
 
-        // Type a token and connect.
-        await tester.enterText(find.byType(TextField), 'pk-test-token');
-        await tester.tap(find.text('Connect'));
-        await tester.pump();
-        await tester.pump();
+      // Type a token and connect.
+      await tester.enterText(find.byType(TextField), 'pk-test-token');
+      await tester.tap(find.text('Connect'));
+      await tester.pump();
+      await tester.pump();
 
-        // After connect, state transitions to needsDirection
-        // (directionConfirmed=false). The disclosure sheet is NOT shown.
-        // fetchSystemProfile should NOT be called from _connect().
-        expect(notifier.confirmDirectionCallCount, 0);
-        // We can't easily verify fetchSystemProfile wasn't called on this
-        // fake since it's overridden to return null, but we verify no sheet
-        // appeared — the direction step should be visible, not a bottom sheet.
-        expect(find.text('How should this sync?'), findsOneWidget);
-        // No disclosure sheet overlay.
-        expect(
-          find.textContaining('Import profile data'),
-          findsNothing,
-        );
-      },
-    );
+      // After connect, state transitions to needsDirection
+      // (directionConfirmed=false). The disclosure sheet is NOT shown.
+      // fetchSystemProfile should NOT be called from _connect().
+      expect(notifier.confirmDirectionCallCount, 0);
+      // We can't easily verify fetchSystemProfile wasn't called on this
+      // fake since it's overridden to return null, but we verify no sheet
+      // appeared — the direction step should be visible, not a bottom sheet.
+      expect(find.text('How should this sync?'), findsOneWidget);
+      // No disclosure sheet overlay.
+      expect(find.textContaining('Import profile data'), findsNothing);
+    });
   });
 }

@@ -103,7 +103,10 @@ class TrackerRecordMapper {
       body: v('body', (r) => r as String?),
       data: v('data', (r) => r as String?),
       tags: v('tags', (r) => r as String?),
-      occurredAt: v('occurred_at', (r) => r == null ? null : parseSyncDateTime(r)),
+      occurredAt: v(
+        'occurred_at',
+        (r) => r == null ? null : parseSyncDateTime(r),
+      ),
       endedAt: v('ended_at', (r) => r == null ? null : parseSyncDateTime(r)),
       amount: v('amount', (r) => r as int?),
       memberId: v('member_id', (r) => r as String?),

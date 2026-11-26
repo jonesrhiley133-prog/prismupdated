@@ -486,17 +486,20 @@ void main() {
       }
     });
 
-    test('a keyless open never runs the codec assertion (nothing to protect)', () {
-      final dbPath = '${tempDir.path}/keyless.db';
-      final db = raw.sqlite3.open(dbPath);
-      try {
-        expect(() => configurePrismSqliteConnection(db), returnsNormally);
-        // Assertion did not run (no key) → no captured version.
-        expect(lastVerifiedCipherCodecVersion, isNull);
-      } finally {
-        db.close();
-      }
-    });
+    test(
+      'a keyless open never runs the codec assertion (nothing to protect)',
+      () {
+        final dbPath = '${tempDir.path}/keyless.db';
+        final db = raw.sqlite3.open(dbPath);
+        try {
+          expect(() => configurePrismSqliteConnection(db), returnsNormally);
+          // Assertion did not run (no key) → no captured version.
+          expect(lastVerifiedCipherCodecVersion, isNull);
+        } finally {
+          db.close();
+        }
+      },
+    );
 
     test('configures the SQLite busy timeout', () {
       final db = raw.sqlite3.openInMemory();
@@ -1192,7 +1195,8 @@ void main() {
         expect(
           storageStub._store[kSyncDatabaseKeyStorageKey],
           equals(realSyncKey),
-          reason: 'a transient read failure must not migrate the Drift key '
+          reason:
+              'a transient read failure must not migrate the Drift key '
               'over the real sync key',
         );
       },
@@ -1286,15 +1290,17 @@ void main() {
       expect(await incrementKeychainUnavailableBootCount(), 3);
     });
 
-    test('clear resets the streak so the gate only fires on consecutive boots',
-        () async {
-      await incrementKeychainUnavailableBootCount();
-      await incrementKeychainUnavailableBootCount();
-      await clearKeychainUnavailableBootCount();
-      // A single later failure must start over at 1 — below the threshold.
-      final afterClear = await incrementKeychainUnavailableBootCount();
-      expect(afterClear, 1);
-      expect(afterClear, lessThan(kKeychainUnavailableResetThreshold));
-    });
+    test(
+      'clear resets the streak so the gate only fires on consecutive boots',
+      () async {
+        await incrementKeychainUnavailableBootCount();
+        await incrementKeychainUnavailableBootCount();
+        await clearKeychainUnavailableBootCount();
+        // A single later failure must start over at 1 — below the threshold.
+        final afterClear = await incrementKeychainUnavailableBootCount();
+        expect(afterClear, 1);
+        expect(afterClear, lessThan(kKeychainUnavailableResetThreshold));
+      },
+    );
   });
 }

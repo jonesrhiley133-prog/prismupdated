@@ -30,7 +30,9 @@ void main() {
   ProviderContainer buildContainer(List<Conversation> conversations) {
     return ProviderContainer(
       overrides: [
-        conversationsProvider.overrideWith((ref) => Stream.value(conversations)),
+        conversationsProvider.overrideWith(
+          (ref) => Stream.value(conversations),
+        ),
         activeMembersProvider.overrideWithValue(
           AsyncValue.data([Member(id: 'alice', name: 'Alice', createdAt: now)]),
         ),

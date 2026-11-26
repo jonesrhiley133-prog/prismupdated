@@ -91,14 +91,25 @@ class BirthData {
     if (p != null) ensureTimeZones();
     if (p != null && hasTime) {
       try {
-        return tz.TZDateTime(tz.getLocation(p.timeZone), y, month, day, h, mi)
-            .toUtc();
+        return tz.TZDateTime(
+          tz.getLocation(p.timeZone),
+          y,
+          month,
+          day,
+          h,
+          mi,
+        ).toUtc();
       } catch (_) {}
     }
     if (p != null) {
       try {
-        return tz.TZDateTime(tz.getLocation(p.timeZone), y, month, day, 12)
-            .toUtc();
+        return tz.TZDateTime(
+          tz.getLocation(p.timeZone),
+          y,
+          month,
+          day,
+          12,
+        ).toUtc();
       } catch (_) {}
     }
     return DateTime.utc(y, month, day, h, mi);
@@ -169,7 +180,10 @@ class Aspect {
 double _maxOrb(AspectType t, Body a, Body b, {double scale = 1}) {
   var orb = t.orb;
   if (a.isLuminary || b.isLuminary) orb += 2;
-  if (a == Body.node || b == Body.node || a == Body.chiron || b == Body.chiron) {
+  if (a == Body.node ||
+      b == Body.node ||
+      a == Body.chiron ||
+      b == Body.chiron) {
     orb = 3;
   }
   return orb * scale;
@@ -218,8 +232,12 @@ class NatalChart {
     final hrs = birth.uncertaintyHours;
     if (hrs > 0) {
       for (final b in Body.values) {
-        final s0 = signOf(longitudeOf(b, utc.subtract(Duration(minutes: (hrs * 60).round()))));
-        final s1 = signOf(longitudeOf(b, utc.add(Duration(minutes: (hrs * 60).round()))));
+        final s0 = signOf(
+          longitudeOf(b, utc.subtract(Duration(minutes: (hrs * 60).round()))),
+        );
+        final s1 = signOf(
+          longitudeOf(b, utc.add(Duration(minutes: (hrs * 60).round()))),
+        );
         final s = positions[b]!.sign;
         if (s0 != s || s1 != s) uncertain[b] = s0 != s ? s0 : s1;
       }
@@ -271,10 +289,21 @@ class NatalChart {
 (int sign, int? cuspWith) sunSignForDate(int month, int day) {
   // Start day of each sign in a typical year: Aries Mar 21 … Pisces Feb 19.
   const starts = [
-    (3, 21), (4, 20), (5, 21), (6, 21), (7, 23), (8, 23),
-    (9, 23), (10, 23), (11, 22), (12, 22), (1, 20), (2, 19),
+    (3, 21),
+    (4, 20),
+    (5, 21),
+    (6, 21),
+    (7, 23),
+    (8, 23),
+    (9, 23),
+    (10, 23),
+    (11, 22),
+    (12, 22),
+    (1, 20),
+    (2, 19),
   ];
-  int dayOfYear(int m, int d) => DateTime.utc(2001, m, d).difference(DateTime.utc(2001)).inDays;
+  int dayOfYear(int m, int d) =>
+      DateTime.utc(2001, m, d).difference(DateTime.utc(2001)).inDays;
   final x = dayOfYear(month, day);
   var sign = 11;
   var best = -1;
@@ -286,7 +315,10 @@ class NatalChart {
       sign = s;
     }
   }
-  final nextStart = dayOfYear(starts[(sign + 1) % 12].$1, starts[(sign + 1) % 12].$2);
+  final nextStart = dayOfYear(
+    starts[(sign + 1) % 12].$1,
+    starts[(sign + 1) % 12].$2,
+  );
   final toNext = (nextStart - x) % 365;
   if (best == 0) return (sign, (sign + 11) % 12);
   if (toNext == 1) return (sign, (sign + 1) % 12);

@@ -177,61 +177,64 @@ void main() {
     },
   );
 
-  test(
-    'member_groups deleteGroup: a throw on the group tombstone (after the '
-    'coalesced entry tombstones) rolls back both tables and persists no '
-    'outbox row',
-    () async {
-      // Seed a plain (non-PK) group with one entry via direct inserts so the
-      // setup itself emits nothing.
-      await database.into(database.memberGroups).insert(
-            db.MemberGroupsCompanion.insert(
-              id: 'g1',
-              name: 'g1',
-              createdAt: DateTime.utc(2026, 1, 1),
-              sortState: Value(
-                MemberGroupMapper.encodeSortStateForColumn(
-                  GroupSortState.manualEmpty,
-                ),
+  test('member_groups deleteGroup: a throw on the group tombstone (after the '
+      'coalesced entry tombstones) rolls back both tables and persists no '
+      'outbox row', () async {
+    // Seed a plain (non-PK) group with one entry via direct inserts so the
+    // setup itself emits nothing.
+    await database
+        .into(database.memberGroups)
+        .insert(
+          db.MemberGroupsCompanion.insert(
+            id: 'g1',
+            name: 'g1',
+            createdAt: DateTime.utc(2026, 1, 1),
+            sortState: Value(
+              MemberGroupMapper.encodeSortStateForColumn(
+                GroupSortState.manualEmpty,
               ),
             ),
-          );
-      await database.into(database.memberGroupEntries).insert(
-            db.MemberGroupEntriesCompanion.insert(
-              id: 'e1',
-              groupId: 'g1',
-              memberId: 'm1',
-            ),
-          );
+          ),
+        );
+    await database
+        .into(database.memberGroupEntries)
+        .insert(
+          db.MemberGroupEntriesCompanion.insert(
+            id: 'e1',
+            groupId: 'g1',
+            memberId: 'm1',
+          ),
+        );
 
-      final repo = _BoomMemberGroups(database.memberGroupsDao);
+    final repo = _BoomMemberGroups(database.memberGroupsDao);
 
-      // Match the boom specifically so an incidental StateError (e.g. entity-id
-      // computation) can't make this pass without reaching the second emission.
-      await expectLater(
-        repo.deleteGroup('g1'),
-        throwsA(
-          isA<StateError>().having((e) => e.message, 'message', 'boom-delete'),
-        ),
-      );
+    // Match the boom specifically so an incidental StateError (e.g. entity-id
+    // computation) can't make this pass without reaching the second emission.
+    await expectLater(
+      repo.deleteGroup('g1'),
+      throwsA(
+        isA<StateError>().having((e) => e.message, 'message', 'boom-delete'),
+      ),
+    );
 
-      // The group and its entry survive the rolled-back transaction...
-      expect(await database.memberGroupsDao.getGroupById('g1'), isNotNull);
-      expect(
-        await database.memberGroupsDao.entriesForGroup('g1'),
-        isNotEmpty,
-        reason: 'entry deletes must roll back with the failed group emission',
-      );
-      // ...and the entry tombstone captured before the throw left no phantom row.
-      expect(await outbox(), isEmpty);
-    },
-  );
+    // The group and its entry survive the rolled-back transaction...
+    expect(await database.memberGroupsDao.getGroupById('g1'), isNotNull);
+    expect(
+      await database.memberGroupsDao.entriesForGroup('g1'),
+      isNotEmpty,
+      reason: 'entry deletes must roll back with the failed group emission',
+    );
+    // ...and the entry tombstone captured before the throw left no phantom row.
+    expect(await outbox(), isEmpty);
+  });
 
   test(
     'habit deleteHabit: a throw on the habit tombstone (after the completion '
     'tombstones) rolls back both tables and persists no outbox row',
     () async {
-      await database.into(database.habits).insert(
+      await database
+          .into(database.habits)
+          .insert(
             db.HabitsCompanion.insert(
               id: 'h1',
               name: 'Habit',
@@ -239,7 +242,9 @@ void main() {
               modifiedAt: DateTime.utc(2026, 1, 1),
             ),
           );
-      await database.into(database.habitCompletions).insert(
+      await database
+          .into(database.habitCompletions)
+          .insert(
             db.HabitCompletionsCompanion.insert(
               id: 'c1',
               habitId: 'h1',
@@ -258,9 +263,9 @@ void main() {
         ),
       );
 
-      final habit = await (database.select(database.habits)
-            ..where((h) => h.id.equals('h1')))
-          .getSingleOrNull();
+      final habit = await (database.select(
+        database.habits,
+      )..where((h) => h.id.equals('h1'))).getSingleOrNull();
       expect(habit, isNotNull);
       expect(
         await database.select(database.habitCompletions).get(),

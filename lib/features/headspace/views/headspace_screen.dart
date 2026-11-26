@@ -86,7 +86,8 @@ class HeadspaceScreen extends ConsumerWidget {
       topBar: PrismTopBar(
         title: l10n.navHeadspace,
         showBackButton: showBackButton,
-        actions: [FeatureDataAction(featureId: 'headspace'), 
+        actions: [
+          FeatureDataAction(featureId: 'headspace'),
           PrismTopBarAction(
             icon: AppIcons.add,
             tooltip: l10n.hsNewMap,
@@ -589,7 +590,8 @@ class _HeadspaceMapScreenState extends ConsumerState<HeadspaceMapScreen> {
                                                   : BoxShape.rectangle,
                                               borderRadius: shape == 'circle'
                                                   ? null
-                                                  : prismCorners(context, 
+                                                  : prismCorners(
+                                                      context,
                                                       shape == 'rect' ? 4 : 18,
                                                     ),
                                             ),

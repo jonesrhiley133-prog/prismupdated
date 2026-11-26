@@ -27,7 +27,7 @@ class _NoopEncryption extends MediaEncryptionService {}
 /// relay yet), then the real bytes — modelling "placeholder, then hydrated".
 class _NullThenBytesDownloadManager extends DownloadManager {
   _NullThenBytesDownloadManager({this.missesBefore = 1})
-      : super(handle: null, encryption: _NoopEncryption());
+    : super(handle: null, encryption: _NoopEncryption());
 
   final int missesBefore;
   int calls = 0;
@@ -53,52 +53,52 @@ class _NullThenBytesDownloadManager extends DownloadManager {
 }
 
 void main() {
-  test(
-    'mediaFileProvider re-resolves from null to bytes when a matching '
-    'MediaAvailableEvent fires',
-    () async {
-      final downloads = _NullThenBytesDownloadManager(missesBefore: 1);
-      final events = StreamController<MediaAvailableEvent>.broadcast();
-      addTearDown(events.close);
+  test('mediaFileProvider re-resolves from null to bytes when a matching '
+      'MediaAvailableEvent fires', () async {
+    final downloads = _NullThenBytesDownloadManager(missesBefore: 1);
+    final events = StreamController<MediaAvailableEvent>.broadcast();
+    addTearDown(events.close);
 
-      final container = ProviderContainer(
-        overrides: [
-          downloadManagerProvider.overrideWithValue(downloads),
-          // Drive the "blob landed" signal directly, standing in for the
-          // hydrator's event stream.
-          mediaAvailableProvider.overrideWith((ref) => events.stream),
-        ],
-      );
-      addTearDown(container.dispose);
+    final container = ProviderContainer(
+      overrides: [
+        downloadManagerProvider.overrideWithValue(downloads),
+        // Drive the "blob landed" signal directly, standing in for the
+        // hydrator's event stream.
+        mediaAvailableProvider.overrideWith((ref) => events.stream),
+      ],
+    );
+    addTearDown(container.dispose);
 
-      const params = (
-        mediaId: 'mfp-invalidate-1',
-        encryptionKeyB64: 'a2V5',
-        ciphertextHash: 'ch',
-        plaintextHash: 'ph',
-      );
+    const params = (
+      mediaId: 'mfp-invalidate-1',
+      encryptionKeyB64: 'a2V5',
+      ciphertextHash: 'ch',
+      plaintextHash: 'ph',
+    );
 
-      // Keep the provider subscribed (as a visible widget would), so a later
-      // invalidateSelf eagerly rebuilds it.
-      container.listen(mediaFileProvider(params), (_, _) {});
+    // Keep the provider subscribed (as a visible widget would), so a later
+    // invalidateSelf eagerly rebuilds it.
+    container.listen(mediaFileProvider(params), (_, _) {});
 
-      final first = await container.read(mediaFileProvider(params).future);
-      expect(first, isNull, reason: 'blob not on the relay yet → placeholder');
-      expect(downloads.calls, 1);
+    final first = await container.read(mediaFileProvider(params).future);
+    expect(first, isNull, reason: 'blob not on the relay yet → placeholder');
+    expect(downloads.calls, 1);
 
-      // Hydration lands the blob for THIS media id.
-      events.add(const MediaAvailableEvent('mfp-invalidate-1'));
+    // Hydration lands the blob for THIS media id.
+    events.add(const MediaAvailableEvent('mfp-invalidate-1'));
 
-      // The listener invalidates the provider, which re-runs getMedia.
-      await pumpEventQueue();
+    // The listener invalidates the provider, which re-runs getMedia.
+    await pumpEventQueue();
 
-      final second = await container.read(mediaFileProvider(params).future);
-      expect(second, isNotNull,
-          reason: 'a matching MediaAvailableEvent must trigger a re-resolve');
-      expect(second, equals(Uint8List.fromList([7, 7, 7])));
-      expect(downloads.calls, 2);
-    },
-  );
+    final second = await container.read(mediaFileProvider(params).future);
+    expect(
+      second,
+      isNotNull,
+      reason: 'a matching MediaAvailableEvent must trigger a re-resolve',
+    );
+    expect(second, equals(Uint8List.fromList([7, 7, 7])));
+    expect(downloads.calls, 2);
+  });
 
   test('an event for a DIFFERENT media id does not invalidate', () async {
     final downloads = _NullThenBytesDownloadManager(missesBefore: 1);
@@ -128,7 +128,10 @@ void main() {
     events.add(const MediaAvailableEvent('some-other-media'));
     await pumpEventQueue();
 
-    expect(downloads.calls, 1,
-        reason: 'only a matching media id should invalidate the provider');
+    expect(
+      downloads.calls,
+      1,
+      reason: 'only a matching media id should invalidate the provider',
+    );
   });
 }

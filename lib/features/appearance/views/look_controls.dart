@@ -7,12 +7,29 @@ import 'package:prism_plurality/shared/widgets/prism_chip.dart';
 import 'package:prism_plurality/shared/widgets/prism_color_picker_dialog.dart';
 
 const lookSwatches = [
-  0xFF000000, 0xFF14102B, 0xFF263238, 0xFF5C6BC0, 0xFF7E57C2, 0xFF7C4DFF, 0xFF29B6F6, 0xFF18FFFF,
-  0xFF26A69A, 0xFF66BB6A, 0xFFFFCA28, 0xFFFF7043, 0xFFEC407A, 0xFFFFE9D6, 0xFFFAF6EE, 0xFFFFFFFF,
+  0xFF000000,
+  0xFF14102B,
+  0xFF263238,
+  0xFF5C6BC0,
+  0xFF7E57C2,
+  0xFF7C4DFF,
+  0xFF29B6F6,
+  0xFF18FFFF,
+  0xFF26A69A,
+  0xFF66BB6A,
+  0xFFFFCA28,
+  0xFFFF7043,
+  0xFFEC407A,
+  0xFFFFE9D6,
+  0xFFFAF6EE,
+  0xFFFFFFFF,
 ];
 
 Future<int?> pickCustomColor(BuildContext context, int? initial) async {
-  final hex = await showPrismColorPickerDialog(context: context, initialColor: Color(initial ?? 0xFF7E57C2));
+  final hex = await showPrismColorPickerDialog(
+    context: context,
+    initialColor: Color(initial ?? 0xFF7E57C2),
+  );
   if (hex == null) return null;
   final raw = hex.replaceFirst('#', '');
   final v = int.tryParse(raw, radix: 16);
@@ -22,7 +39,13 @@ Future<int?> pickCustomColor(BuildContext context, int? initial) async {
 
 /// Label, swatches, "Custom…" and (optionally) "Default".
 class ColorChoiceRow extends StatelessWidget {
-  const ColorChoiceRow({super.key, required this.label, required this.value, required this.onChanged, this.allowDefault = true});
+  const ColorChoiceRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.allowDefault = true,
+  });
 
   final String label;
   final int? value;
@@ -45,12 +68,18 @@ class ColorChoiceRow extends StatelessWidget {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              if (allowDefault) PrismChip(label: l10n.apDefault, selected: value == null, onTap: () => onChanged(null)),
+              if (allowDefault)
+                PrismChip(
+                  label: l10n.apDefault,
+                  selected: value == null,
+                  onTap: () => onChanged(null),
+                ),
               for (final c in lookSwatches)
                 Semantics(
                   button: true,
                   selected: value == c,
-                  label: '$label #${c.toRadixString(16).substring(2).toUpperCase()}',
+                  label:
+                      '$label #${c.toRadixString(16).substring(2).toUpperCase()}',
                   excludeSemantics: true,
                   child: InkResponse(
                     onTap: () => onChanged(c),
@@ -61,7 +90,10 @@ class ColorChoiceRow extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Color(c),
                         borderRadius: prismRound(context),
-                        border: Border.all(width: value == c ? 3 : 1, color: theme.colorScheme.outline),
+                        border: Border.all(
+                          width: value == c ? 3 : 1,
+                          color: theme.colorScheme.outline,
+                        ),
                       ),
                     ),
                   ),
@@ -70,7 +102,14 @@ class ColorChoiceRow extends StatelessWidget {
                 Container(
                   width: 30,
                   height: 30,
-                  decoration: BoxDecoration(color: Color(value!), borderRadius: prismRound(context), border: Border.all(width: 3, color: theme.colorScheme.outline)),
+                  decoration: BoxDecoration(
+                    color: Color(value!),
+                    borderRadius: prismRound(context),
+                    border: Border.all(
+                      width: 3,
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
                 ),
               PrismButton(
                 label: l10n.fnColorCustom,
@@ -123,9 +162,16 @@ class LabeledSlider extends StatelessWidget {
           Row(
             children: [
               Expanded(child: Text(label, style: theme.textTheme.labelLarge)),
-              ExcludeSemantics(child: Text(text, style: theme.textTheme.labelMedium)),
+              ExcludeSemantics(
+                child: Text(text, style: theme.textTheme.labelMedium),
+              ),
               if (onReset != null)
-                PrismButton(label: context.l10n.apReset, density: PrismControlDensity.compact, tone: PrismButtonTone.outlined, onPressed: onReset!),
+                PrismButton(
+                  label: context.l10n.apReset,
+                  density: PrismControlDensity.compact,
+                  tone: PrismButtonTone.outlined,
+                  onPressed: onReset!,
+                ),
             ],
           ),
           Slider(

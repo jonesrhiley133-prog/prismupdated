@@ -36,14 +36,15 @@ void main() {
     member_domain.Member(id: id, name: id, createdAt: now),
   );
 
-  Future<void> setValue(String owner, Set<String> refs) => fieldsRepo.upsertValue(
-    cfv.CustomFieldValue(
-      id: deriveCustomFieldValueId(customFieldId: fieldId, memberId: owner),
-      customFieldId: fieldId,
-      memberId: owner,
-      value: encode(refs),
-    ),
-  );
+  Future<void> setValue(String owner, Set<String> refs) =>
+      fieldsRepo.upsertValue(
+        cfv.CustomFieldValue(
+          id: deriveCustomFieldValueId(customFieldId: fieldId, memberId: owner),
+          customFieldId: fieldId,
+          memberId: owner,
+          value: encode(refs),
+        ),
+      );
 
   setUp(() async {
     database = db.AppDatabase(NativeDatabase.memory());

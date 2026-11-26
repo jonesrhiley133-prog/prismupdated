@@ -91,7 +91,9 @@ void main() {
     ),
   );
 
-  testWidgets('leads with Copy + QR and lists what is included', (tester) async {
+  testWidgets('leads with Copy + QR and lists what is included', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       host(
         ShareTemplateSheetContent(
@@ -110,26 +112,27 @@ void main() {
     expect(find.text('Mood'), findsWidgets);
   });
 
-  testWidgets('too long for a QR → text-only mode (no image, selectable code)', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      host(
-        ShareTemplateSheetContent(
-          template: choiceTemplate(1000),
-          scrollController: ScrollController(),
+  testWidgets(
+    'too long for a QR → text-only mode (no image, selectable code)',
+    (tester) async {
+      await tester.pumpWidget(
+        host(
+          ShareTemplateSheetContent(
+            template: choiceTemplate(1000),
+            scrollController: ScrollController(),
+          ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    expect(find.byType(QrImageView), findsNothing);
-    expect(find.text('Share as text'), findsOneWidget);
-    expect(find.text('Share image'), findsNothing);
-    expect(find.text('Save image'), findsNothing);
-    expect(find.byType(SelectableText), findsOneWidget);
-    expect(find.text('Copy template'), findsOneWidget);
-  });
+      expect(find.byType(QrImageView), findsNothing);
+      expect(find.text('Share as text'), findsOneWidget);
+      expect(find.text('Share image'), findsNothing);
+      expect(find.text('Save image'), findsNothing);
+      expect(find.byType(SelectableText), findsOneWidget);
+      expect(find.text('Copy template'), findsOneWidget);
+    },
+  );
 
   testWidgets('over the option cap → blocked with no card or share actions', (
     tester,

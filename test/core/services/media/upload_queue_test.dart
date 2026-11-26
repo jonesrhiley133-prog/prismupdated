@@ -18,17 +18,18 @@ class _RecordingUpload {
 
   _RecordingUpload({this.behavior});
 
-  UploadFn get fn => ({
-    required String mediaId,
-    required String contentHash,
-    required Uint8List data,
-    BigInt? ttlSecs,
-  }) async {
-    final idx = calls.length;
-    calls.add((mediaId: mediaId, ttl: ttlSecs));
-    if (behavior != null) return behavior!(idx);
-    return UploadAttemptResult.ok;
-  };
+  UploadFn get fn =>
+      ({
+        required String mediaId,
+        required String contentHash,
+        required Uint8List data,
+        BigInt? ttlSecs,
+      }) async {
+        final idx = calls.length;
+        calls.add((mediaId: mediaId, ttl: ttlSecs));
+        if (behavior != null) return behavior!(idx);
+        return UploadAttemptResult.ok;
+      };
 }
 
 UploadQueueDao _memDao() {
@@ -56,42 +57,53 @@ void main() {
   });
 
   group('enqueue semantics', () {
-    test('onSuccess fires on durable enqueue, before the upload finishes', () async {
-      final dao = _memDao();
-      final gate = Completer<void>();
-      // Upload blocks until released — proves onSuccess does NOT wait on it.
-      final upload = _RecordingUpload(
-        behavior: (_) async {
-          await gate.future;
-          return UploadAttemptResult.ok;
-        },
-      );
-      final queue = UploadQueue(dao: dao, upload: upload.fn, resumeOnStart: false);
-      addTearDown(queue.dispose);
+    test(
+      'onSuccess fires on durable enqueue, before the upload finishes',
+      () async {
+        final dao = _memDao();
+        final gate = Completer<void>();
+        // Upload blocks until released — proves onSuccess does NOT wait on it.
+        final upload = _RecordingUpload(
+          behavior: (_) async {
+            await gate.future;
+            return UploadAttemptResult.ok;
+          },
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      var enqueued = false;
-      await queue.enqueue(
-        UploadTask(
-          mediaId: 'm',
-          contentHash: 'h',
-          encryptedData: _bytes(),
-          onSuccess: () => enqueued = true,
-        ),
-      );
+        var enqueued = false;
+        await queue.enqueue(
+          UploadTask(
+            mediaId: 'm',
+            contentHash: 'h',
+            encryptedData: _bytes(),
+            onSuccess: () => enqueued = true,
+          ),
+        );
 
-      // onSuccess already fired even though the upload is still blocked.
-      expect(enqueued, isTrue);
-      expect(await dao.getById('m'), isNotNull, reason: 'still uploading');
+        // onSuccess already fired even though the upload is still blocked.
+        expect(enqueued, isTrue);
+        expect(await dao.getById('m'), isNotNull, reason: 'still uploading');
 
-      gate.complete();
-      await pumpEventQueue();
-      expect(await dao.getById('m'), isNull, reason: 'deleted after upload');
-    });
+        gate.complete();
+        await pumpEventQueue();
+        expect(await dao.getById('m'), isNull, reason: 'deleted after upload');
+      },
+    );
 
     test('uploads the blob and deletes the row on success', () async {
       final dao = _memDao();
       final upload = _RecordingUpload();
-      final queue = UploadQueue(dao: dao, upload: upload.fn, resumeOnStart: false);
+      final queue = UploadQueue(
+        dao: dao,
+        upload: upload.fn,
+        resumeOnStart: false,
+      );
       addTearDown(queue.dispose);
 
       await queue.enqueue(
@@ -106,7 +118,11 @@ void main() {
     test('threads ttlSecs through to the upload fn', () async {
       final dao = _memDao();
       final upload = _RecordingUpload();
-      final queue = UploadQueue(dao: dao, upload: upload.fn, resumeOnStart: false);
+      final queue = UploadQueue(
+        dao: dao,
+        upload: upload.fn,
+        resumeOnStart: false,
+      );
       addTearDown(queue.dispose);
 
       await queue.enqueue(
@@ -123,106 +139,128 @@ void main() {
   });
 
   group('retry + backoff', () {
-    test('a throwing attempt does NOT delete the row; it retries then succeeds', () async {
-      final dao = _memDao();
-      final upload = _RecordingUpload(
-        behavior: (i) {
-          if (i < 2) throw StateError('transient $i');
-          return UploadAttemptResult.ok;
-        },
-      );
-      final queue = UploadQueue(
-        dao: dao,
-        upload: upload.fn,
-        baseBackoff: const Duration(milliseconds: 10),
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      'a throwing attempt does NOT delete the row; it retries then succeeds',
+      () async {
+        final dao = _memDao();
+        final upload = _RecordingUpload(
+          behavior: (i) {
+            if (i < 2) throw StateError('transient $i');
+            return UploadAttemptResult.ok;
+          },
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          baseBackoff: const Duration(milliseconds: 10),
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      await queue.enqueue(
-        UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
-      );
-      // The row survived the first failure.
-      expect(await dao.getById('m'), isNotNull);
+        await queue.enqueue(
+          UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
+        );
+        // The row survived the first failure.
+        expect(await dao.getById('m'), isNotNull);
 
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      expect(upload.calls.length, 3);
-      expect(await dao.getById('m'), isNull);
-    });
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        expect(upload.calls.length, 3);
+        expect(await dao.getById('m'), isNull);
+      },
+    );
 
-    test('exhausting retries → terminal tombstone, retained but bytes dropped', () async {
-      final dao = _memDao();
-      final upload = _RecordingUpload(behavior: (_) => throw StateError('always'));
-      final queue = UploadQueue(
-        dao: dao,
-        upload: upload.fn,
-        maxAttempts: 3,
-        baseBackoff: const Duration(milliseconds: 5),
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      'exhausting retries → terminal tombstone, retained but bytes dropped',
+      () async {
+        final dao = _memDao();
+        final upload = _RecordingUpload(
+          behavior: (_) => throw StateError('always'),
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          maxAttempts: 3,
+          baseBackoff: const Duration(milliseconds: 5),
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      await queue.enqueue(
-        UploadTask(
-          mediaId: 'm',
-          contentHash: 'h',
-          encryptedData: _bytes(64),
-        ),
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 300));
+        await queue.enqueue(
+          UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes(64)),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 300));
 
-      expect(upload.calls.length, 3, reason: 'exactly maxAttempts tries');
-      final row = await dao.getById('m');
-      expect(row, isNotNull, reason: 'terminal row retained, not dropped');
-      expect(row!.state, UploadQueueDao.stateTerminal);
-      expect(row.ciphertext, isEmpty, reason: 'bytes dropped to bound DB growth');
-      expect(row.lastError, contains('always'));
-      expect(await dao.terminalCount(), 1);
-    });
+        expect(upload.calls.length, 3, reason: 'exactly maxAttempts tries');
+        final row = await dao.getById('m');
+        expect(row, isNotNull, reason: 'terminal row retained, not dropped');
+        expect(row!.state, UploadQueueDao.stateTerminal);
+        expect(
+          row.ciphertext,
+          isEmpty,
+          reason: 'bytes dropped to bound DB growth',
+        );
+        expect(row.lastError, contains('always'));
+        expect(await dao.terminalCount(), 1);
+      },
+    );
   });
 
   group('unconfigured sync', () {
-    test('completeLocallyWhenUnconfigured completes without a real upload', () async {
-      final dao = _memDao();
-      final upload = _RecordingUpload(behavior: (_) => UploadAttemptResult.unconfigured);
-      final queue = UploadQueue(
-        dao: dao,
-        upload: upload.fn,
-        completeLocallyWhenUnconfigured: true,
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      'completeLocallyWhenUnconfigured completes without a real upload',
+      () async {
+        final dao = _memDao();
+        final upload = _RecordingUpload(
+          behavior: (_) => UploadAttemptResult.unconfigured,
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          completeLocallyWhenUnconfigured: true,
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      await queue.enqueue(
-        UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
-      );
-      await pumpEventQueue();
-      expect(await dao.getById('m'), isNull, reason: 'completed locally');
-    });
+        await queue.enqueue(
+          UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
+        );
+        await pumpEventQueue();
+        expect(await dao.getById('m'), isNull, reason: 'completed locally');
+      },
+    );
 
-    test('a transient throw (e.g. null handle) retries — never drops the row', () async {
-      final dao = _memDao();
-      // Always throws (models a configured-but-disconnected handle). The row
-      // must persist and back off, NOT be deleted.
-      final upload = _RecordingUpload(behavior: (_) => throw StateError('disconnected'));
-      final queue = UploadQueue(
-        dao: dao,
-        upload: upload.fn,
-        baseBackoff: const Duration(seconds: 30), // park after first failure
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      'a transient throw (e.g. null handle) retries — never drops the row',
+      () async {
+        final dao = _memDao();
+        // Always throws (models a configured-but-disconnected handle). The row
+        // must persist and back off, NOT be deleted.
+        final upload = _RecordingUpload(
+          behavior: (_) => throw StateError('disconnected'),
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          baseBackoff: const Duration(seconds: 30), // park after first failure
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      await queue.enqueue(
-        UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
-      );
-      await pumpEventQueue();
+        await queue.enqueue(
+          UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
+        );
+        await pumpEventQueue();
 
-      final row = await dao.getById('m');
-      expect(row, isNotNull, reason: 'a disconnect must not drop a configured send');
-      expect(row!.state, UploadQueueDao.statePending);
-      expect(row.attempts, 1);
-    });
+        final row = await dao.getById('m');
+        expect(
+          row,
+          isNotNull,
+          reason: 'a disconnect must not drop a configured send',
+        );
+        expect(row!.state, UploadQueueDao.statePending);
+        expect(row.attempts, 1);
+      },
+    );
   });
 
   group('resume across restart', () {
@@ -268,7 +306,11 @@ void main() {
           return UploadAttemptResult.ok;
         },
       );
-      final queue = UploadQueue(dao: dao, upload: upload.fn, resumeOnStart: false);
+      final queue = UploadQueue(
+        dao: dao,
+        upload: upload.fn,
+        resumeOnStart: false,
+      );
       addTearDown(queue.dispose);
 
       await queue.enqueue(
@@ -285,37 +327,48 @@ void main() {
       expect(await dao.pendingCount(), 0);
     });
 
-    test('progress stream closes after a terminal state (no controller leak)', () async {
-      final dao = _memDao();
-      final queue = UploadQueue(
-        dao: dao,
-        upload: _RecordingUpload().fn,
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      'progress stream closes after a terminal state (no controller leak)',
+      () async {
+        final dao = _memDao();
+        final queue = UploadQueue(
+          dao: dao,
+          upload: _RecordingUpload().fn,
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      final events = <UploadState>[];
-      var done = false;
-      final sub = queue
-          .progressStream('m')
-          .listen((p) => events.add(p.state), onDone: () => done = true);
-      addTearDown(sub.cancel);
+        final events = <UploadState>[];
+        var done = false;
+        final sub = queue
+            .progressStream('m')
+            .listen((p) => events.add(p.state), onDone: () => done = true);
+        addTearDown(sub.cancel);
 
-      await queue.enqueue(
-        UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
-      );
-      await pumpEventQueue();
+        await queue.enqueue(
+          UploadTask(mediaId: 'm', contentHash: 'h', encryptedData: _bytes()),
+        );
+        await pumpEventQueue();
 
-      expect(events.last, UploadState.completed);
-      expect(done, isTrue, reason: 'controller is closed + freed after terminal');
-    });
+        expect(events.last, UploadState.completed);
+        expect(
+          done,
+          isTrue,
+          reason: 'controller is closed + freed after terminal',
+        );
+      },
+    );
   });
 
   group('ordering + idempotency', () {
     test('drains multiple blobs in FIFO enqueue order', () async {
       final dao = _memDao();
       final upload = _RecordingUpload();
-      final queue = UploadQueue(dao: dao, upload: upload.fn, resumeOnStart: false);
+      final queue = UploadQueue(
+        dao: dao,
+        upload: upload.fn,
+        resumeOnStart: false,
+      );
       addTearDown(queue.dispose);
 
       for (final id in ['a', 'b', 'c']) {
@@ -335,27 +388,36 @@ void main() {
       expect(upload.calls.map((c) => c.mediaId), ['a', 'b', 'c', 'd']);
     });
 
-    test('re-enqueuing the same mediaId leaves no duplicate pending row', () async {
-      final dao = _memDao();
-      final upload = _RecordingUpload(behavior: (_) => throw StateError('parked'));
-      final queue = UploadQueue(
-        dao: dao,
-        upload: upload.fn,
-        baseBackoff: const Duration(seconds: 30),
-        resumeOnStart: false,
-      );
-      addTearDown(queue.dispose);
+    test(
+      're-enqueuing the same mediaId leaves no duplicate pending row',
+      () async {
+        final dao = _memDao();
+        final upload = _RecordingUpload(
+          behavior: (_) => throw StateError('parked'),
+        );
+        final queue = UploadQueue(
+          dao: dao,
+          upload: upload.fn,
+          baseBackoff: const Duration(seconds: 30),
+          resumeOnStart: false,
+        );
+        addTearDown(queue.dispose);
 
-      await queue.enqueue(
-        UploadTask(mediaId: 'dup', contentHash: 'h', encryptedData: _bytes()),
-      );
-      await queue.enqueue(
-        UploadTask(mediaId: 'dup', contentHash: 'h', encryptedData: _bytes(3)),
-      );
+        await queue.enqueue(
+          UploadTask(mediaId: 'dup', contentHash: 'h', encryptedData: _bytes()),
+        );
+        await queue.enqueue(
+          UploadTask(
+            mediaId: 'dup',
+            contentHash: 'h',
+            encryptedData: _bytes(3),
+          ),
+        );
 
-      final row = await dao.getById('dup');
-      expect(row, isNotNull);
-      expect(await dao.pendingCount(), 1);
-    });
+        final row = await dao.getById('dup');
+        expect(row, isNotNull);
+        expect(await dao.pendingCount(), 1);
+      },
+    );
   });
 }

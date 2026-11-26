@@ -32,10 +32,16 @@ const int _secsPerDay = 86400;
 /// device's `last_seen_at` `days` into the past while flipping it to `stale`,
 /// then expire its session. This reproduces "offline > 30 days, marked stale,
 /// session TTL elapsed" without waiting.
-void ageStaleAndExpireSession(String dbPath, String syncId, String deviceId, {int days = 31}) {
+void ageStaleAndExpireSession(
+  String dbPath,
+  String syncId,
+  String deviceId, {
+  int days = 31,
+}) {
   final db = sqlite3.open(dbPath);
   try {
-    final past = DateTime.now().millisecondsSinceEpoch ~/ 1000 - days * _secsPerDay;
+    final past =
+        DateTime.now().millisecondsSinceEpoch ~/ 1000 - days * _secsPerDay;
     db.execute(
       "UPDATE devices SET last_seen_at = ?, status = 'stale' "
       'WHERE sync_id = ? AND device_id = ?',
@@ -71,21 +77,34 @@ String deviceStatus(String dbPath, String syncId, String deviceId) {
 /// `days` into the past, flip it to `revoked`, and flag the group `needs_rekey`
 /// — exactly the relay-side state that used to deadlock standalone rekey AND
 /// new-device pairing forever. The relay must be stopped before calling.
-void ageOfflineAndAutoRevoke(String dbPath, String syncId, String deviceId, {int days = 91}) {
+void ageOfflineAndAutoRevoke(
+  String dbPath,
+  String syncId,
+  String deviceId, {
+  int days = 91,
+}) {
   final db = sqlite3.open(dbPath);
   try {
-    final past = DateTime.now().millisecondsSinceEpoch ~/ 1000 - days * _secsPerDay;
+    final past =
+        DateTime.now().millisecondsSinceEpoch ~/ 1000 - days * _secsPerDay;
     db.execute(
       "UPDATE devices SET last_seen_at = ?, status = 'revoked', revoked_at = ? "
       'WHERE sync_id = ? AND device_id = ?',
       [past, past, syncId, deviceId],
     );
-    expect(db.updatedRows, 1, reason: 'should auto-revoke exactly one device row');
-    db.execute(
-      'UPDATE sync_groups SET needs_rekey = 1 WHERE sync_id = ?',
-      [syncId],
+    expect(
+      db.updatedRows,
+      1,
+      reason: 'should auto-revoke exactly one device row',
     );
-    expect(db.updatedRows, 1, reason: 'should flag exactly one group needs_rekey');
+    db.execute('UPDATE sync_groups SET needs_rekey = 1 WHERE sync_id = ?', [
+      syncId,
+    ]);
+    expect(
+      db.updatedRows,
+      1,
+      reason: 'should flag exactly one group needs_rekey',
+    );
   } finally {
     db.close();
   }
@@ -95,7 +114,10 @@ void ageOfflineAndAutoRevoke(String dbPath, String syncId, String deviceId, {int
 int groupNeedsRekey(String dbPath, String syncId) {
   final db = sqlite3.open(dbPath);
   try {
-    final rows = db.select('SELECT needs_rekey FROM sync_groups WHERE sync_id = ?', [syncId]);
+    final rows = db.select(
+      'SELECT needs_rekey FROM sync_groups WHERE sync_id = ?',
+      [syncId],
+    );
     return rows.isEmpty ? -1 : rows.first['needs_rekey'] as int;
   } finally {
     db.close();
@@ -106,7 +128,10 @@ int groupNeedsRekey(String dbPath, String syncId) {
 int groupEpoch(String dbPath, String syncId) {
   final db = sqlite3.open(dbPath);
   try {
-    final rows = db.select('SELECT current_epoch FROM sync_groups WHERE sync_id = ?', [syncId]);
+    final rows = db.select(
+      'SELECT current_epoch FROM sync_groups WHERE sync_id = ?',
+      [syncId],
+    );
     return rows.isEmpty ? -1 : rows.first['current_epoch'] as int;
   } finally {
     db.close();
@@ -114,7 +139,12 @@ int groupEpoch(String dbPath, String syncId) {
 }
 
 /// Count rekey artifacts stored for a target device at a given epoch.
-int rekeyArtifactCount(String dbPath, String syncId, int epoch, String deviceId) {
+int rekeyArtifactCount(
+  String dbPath,
+  String syncId,
+  int epoch,
+  String deviceId,
+) {
   final db = sqlite3.open(dbPath);
   try {
     final rows = db.select(
@@ -181,7 +211,8 @@ void main() {
         expect(
           result['error'],
           isNull,
-          reason: 'a stale device must recover, not hit a false device_revoked '
+          reason:
+              'a stale device must recover, not hit a false device_revoked '
               '(was: ${result['error']})',
         );
         expect(
@@ -240,7 +271,11 @@ void main() {
         final epochBefore = groupEpoch(dbPath, a.syncId);
         ageOfflineAndAutoRevoke(dbPath, a.syncId, bCreds.deviceId);
         expect(deviceStatus(dbPath, a.syncId, bCreds.deviceId), 'revoked');
-        expect(groupNeedsRekey(dbPath, a.syncId), 1, reason: 'group owes a forced rekey');
+        expect(
+          groupNeedsRekey(dbPath, a.syncId),
+          1,
+          reason: 'group owes a forced rekey',
+        );
 
         relay = await spawnRelay(port: port, dbPath: dbPath);
 
@@ -274,7 +309,8 @@ void main() {
         expect(
           rekeyArtifactCount(dbPath, a.syncId, epochAfter, bCreds.deviceId),
           0,
-          reason: 'revoked B must have no wrapped key at the post-pairing epoch',
+          reason:
+              'revoked B must have no wrapped key at the post-pairing epoch',
         );
       } finally {
         c?.dispose();

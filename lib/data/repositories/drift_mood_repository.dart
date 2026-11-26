@@ -22,8 +22,9 @@ class DriftMoodRepository with SyncRecordMixin implements MoodRepository {
   AppDatabase get syncOutboxDatabase => _dao.attachedDatabase;
 
   @override
-  Stream<List<domain.MoodEntry>> watchAll() =>
-      _dao.watchAll().map((rows) => rows.map(MoodEntryMapper.toDomain).toList());
+  Stream<List<domain.MoodEntry>> watchAll() => _dao.watchAll().map(
+    (rows) => rows.map(MoodEntryMapper.toDomain).toList(),
+  );
 
   @override
   Future<List<domain.MoodEntry>> getAll() async =>
@@ -40,7 +41,11 @@ class DriftMoodRepository with SyncRecordMixin implements MoodRepository {
   Future<void> create(domain.MoodEntry entry) async {
     await runSyncedWrite(() async {
       await _dao.create(MoodEntryMapper.toCompanion(entry));
-      await syncRecordCreate(_table, entry.id, MoodEntryMapper.syncFields(entry));
+      await syncRecordCreate(
+        _table,
+        entry.id,
+        MoodEntryMapper.syncFields(entry),
+      );
     });
   }
 
@@ -54,7 +59,10 @@ class DriftMoodRepository with SyncRecordMixin implements MoodRepository {
         MoodEntryMapper.syncFields(entry),
       );
       if (changed.isEmpty) return;
-      await _dao.updateEntry(entry.id, MoodEntryMapper.partialCompanion(changed));
+      await _dao.updateEntry(
+        entry.id,
+        MoodEntryMapper.partialCompanion(changed),
+      );
       await syncRecordUpdate(_table, entry.id, changed);
     });
   }

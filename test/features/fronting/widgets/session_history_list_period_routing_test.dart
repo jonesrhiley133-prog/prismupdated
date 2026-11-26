@@ -35,7 +35,8 @@ FrontingSession _session({
   required String memberId,
   required DateTime start,
   DateTime? end,
-}) => FrontingSession(id: id, memberId: memberId, startTime: start, endTime: end);
+}) =>
+    FrontingSession(id: id, memberId: memberId, startTime: start, endTime: end);
 
 /// Builds a test widget that:
 ///   - Mounts SessionHistoryList with the given derived periods + members
@@ -74,65 +75,62 @@ Widget _buildSubject({
 
 void main() {
   group('_PeriodTile routing', () {
-    testWidgets(
-      '1-contributor period routes to /session/<id>',
-      (tester) async {
-        final t0 = DateTime(2026, 4, 1, 10);
-        final t1 = DateTime(2026, 4, 1, 12);
+    testWidgets('1-contributor period routes to /session/<id>', (tester) async {
+      final t0 = DateTime(2026, 4, 1, 10);
+      final t1 = DateTime(2026, 4, 1, 12);
 
-        final periods = [
-          FrontingPeriod(
-            start: t0,
-            end: t1,
-            activeMembers: const ['alice'],
-            briefVisitors: const [],
-            sessionIds: const ['s1'],
-            alwaysPresentMembers: const [],
-            isOpenEnded: false,
+      final periods = [
+        FrontingPeriod(
+          start: t0,
+          end: t1,
+          activeMembers: const ['alice'],
+          briefVisitors: const [],
+          sessionIds: const ['s1'],
+          alwaysPresentMembers: const [],
+          isOpenEnded: false,
+        ),
+      ];
+
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(
+              body: CustomScrollView(slivers: [SessionHistoryList()]),
+            ),
           ),
-        ];
-
-        final router = GoRouter(
-          routes: [
-            GoRoute(
-              path: '/',
-              builder: (_, _) => const Scaffold(
-                body: CustomScrollView(slivers: [SessionHistoryList()]),
-              ),
-            ),
-            GoRoute(
-              path: '/session/:id',
-              builder: (_, state) =>
-                  Scaffold(body: Text('session-${state.pathParameters['id']}')),
-            ),
-            // /period registered so the router doesn't throw if somehow
-            // the wrong branch is taken.
-            GoRoute(
-              path: '/period',
-              builder: (_, _) => const Scaffold(body: Text('period-screen')),
-            ),
-          ],
-        );
-
-        await tester.pumpWidget(
-          _buildSubject(
-            sessions: [_session(id: 's1', memberId: 'alice', start: t0, end: t1)],
-            periods: periods,
-            members: {'alice': _member('alice', 'Alice')},
-            router: router,
+          GoRoute(
+            path: '/session/:id',
+            builder: (_, state) =>
+                Scaffold(body: Text('session-${state.pathParameters['id']}')),
           ),
-        );
-        await tester.pumpAndSettle();
+          // /period registered so the router doesn't throw if somehow
+          // the wrong branch is taken.
+          GoRoute(
+            path: '/period',
+            builder: (_, _) => const Scaffold(body: Text('period-screen')),
+          ),
+        ],
+      );
 
-        await tester.tap(find.text('Alice'));
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        _buildSubject(
+          sessions: [_session(id: 's1', memberId: 'alice', start: t0, end: t1)],
+          periods: periods,
+          members: {'alice': _member('alice', 'Alice')},
+          router: router,
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // Must land on the single-session detail route.
-        expect(find.text('session-s1'), findsOneWidget);
-        // Must NOT have navigated to /period.
-        expect(find.text('period-screen'), findsNothing);
-      },
-    );
+      await tester.tap(find.text('Alice'));
+      await tester.pumpAndSettle();
+
+      // Must land on the single-session detail route.
+      expect(find.text('session-s1'), findsOneWidget);
+      // Must NOT have navigated to /period.
+      expect(find.text('period-screen'), findsNothing);
+    });
 
     testWidgets(
       '2-contributor period routes to /period with sorted ids in URI',
@@ -221,7 +219,12 @@ void main() {
         // splitter produces two display slices (one per day), we tap the
         // first() match rather than asserting a single widget.
         final periodStart = DateTime(2026, 4, 1, 22); // 10 PM day 1
-        final periodEnd = DateTime(2026, 4, 2, 2); // 2 AM day 2 — crosses midnight
+        final periodEnd = DateTime(
+          2026,
+          4,
+          2,
+          2,
+        ); // 2 AM day 2 — crosses midnight
 
         final periods = [
           FrontingPeriod(
@@ -267,8 +270,18 @@ void main() {
         await tester.pumpWidget(
           _buildSubject(
             sessions: [
-              _session(id: 's1', memberId: 'alice', start: periodStart, end: periodEnd),
-              _session(id: 's2', memberId: 'bob', start: periodStart, end: periodEnd),
+              _session(
+                id: 's1',
+                memberId: 'alice',
+                start: periodStart,
+                end: periodEnd,
+              ),
+              _session(
+                id: 's2',
+                memberId: 'bob',
+                start: periodStart,
+                end: periodEnd,
+              ),
             ],
             periods: periods,
             members: {'alice': aliceObj, 'bob': bobObj},

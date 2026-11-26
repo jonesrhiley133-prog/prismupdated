@@ -56,15 +56,21 @@ void main() {
 
     test('all 6 production types are present', () {
       final ids = _fullRegistry.definitions.map((d) => d.id).toSet();
-      expect(ids, containsAll(['text', 'long_text', 'color', 'date', 'choice', 'group']));
+      expect(
+        ids,
+        containsAll(['text', 'long_text', 'color', 'date', 'choice', 'group']),
+      );
     });
 
-    test('iterating definitions exposes group (was missing from hardcoded list)', () {
-      // Before the fix, _fieldTypeOptions only had [text, longText, color, date, choice].
-      // The registry iteration must now include 'group'.
-      final defIds = _fullRegistry.definitions.map((d) => d.id).toList();
-      expect(defIds, contains('group'));
-    });
+    test(
+      'iterating definitions exposes group (was missing from hardcoded list)',
+      () {
+        // Before the fix, _fieldTypeOptions only had [text, longText, color, date, choice].
+        // The registry iteration must now include 'group'.
+        final defIds = _fullRegistry.definitions.map((d) => d.id).toList();
+        expect(defIds, contains('group'));
+      },
+    );
 
     test('child picker hides group to prevent nested groups', () {
       // Simulate the picker filter: when parentFieldId != null, hide 'group'.
@@ -103,14 +109,16 @@ void main() {
       // Simulate _isCurrentTypeTextual getter
       const selectedTypeId = 'text';
       final isTextual =
-          _fullRegistry.lookupById(selectedTypeId)?.allowsTextualSwitch ?? false;
+          _fullRegistry.lookupById(selectedTypeId)?.allowsTextualSwitch ??
+          false;
       expect(isTextual, isTrue);
     });
 
     test('isCurrentTypeTextual is false for group', () {
       const selectedTypeId = 'group';
       final isTextual =
-          _fullRegistry.lookupById(selectedTypeId)?.allowsTextualSwitch ?? false;
+          _fullRegistry.lookupById(selectedTypeId)?.allowsTextualSwitch ??
+          false;
       expect(isTextual, isFalse);
     });
   });
@@ -161,8 +169,8 @@ void main() {
 
   group('Registry-driven picker — config section visibility', () {
     test('date precision section visible only for date type', () {
-      expect('date' == 'date', isTrue);   // selected → show
-      expect('text' == 'date', isFalse);  // not selected → hide
+      expect('date' == 'date', isTrue); // selected → show
+      expect('text' == 'date', isFalse); // not selected → hide
       expect('group' == 'date', isFalse); // not selected → hide
     });
 

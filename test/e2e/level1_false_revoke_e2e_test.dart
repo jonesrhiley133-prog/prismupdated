@@ -81,32 +81,32 @@ class _SecureStorageFake {
     TestWidgetsFlutterBinding.ensureInitialized();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_secureChannel, (MethodCall call) async {
-      switch (call.method) {
-        case 'write':
-          final key = call.arguments['key'] as String;
-          final value = call.arguments['value'] as String?;
-          if (value == null) {
-            store.remove(key);
-          } else {
-            store[key] = value;
+          switch (call.method) {
+            case 'write':
+              final key = call.arguments['key'] as String;
+              final value = call.arguments['value'] as String?;
+              if (value == null) {
+                store.remove(key);
+              } else {
+                store[key] = value;
+              }
+              return null;
+            case 'read':
+              return store[call.arguments['key'] as String];
+            case 'readAll':
+              return Map<String, String>.from(store);
+            case 'delete':
+              store.remove(call.arguments['key'] as String);
+              return null;
+            case 'deleteAll':
+              store.clear();
+              return null;
+            case 'containsKey':
+              return store.containsKey(call.arguments['key'] as String);
+            default:
+              return null;
           }
-          return null;
-        case 'read':
-          return store[call.arguments['key'] as String];
-        case 'readAll':
-          return Map<String, String>.from(store);
-        case 'delete':
-          store.remove(call.arguments['key'] as String);
-          return null;
-        case 'deleteAll':
-          store.clear();
-          return null;
-        case 'containsKey':
-          return store.containsKey(call.arguments['key'] as String);
-        default:
-          return null;
-      }
-    });
+        });
   }
 
   void uninstall() {
@@ -143,14 +143,14 @@ class _SecureStorageFake {
 /// NO `device_id` is present anywhere, and `push_incomplete` is false so
 /// `isMidDrainContinuation` returns false (the handler does NOT early-return).
 SyncEvent _ambiguousRevokeEvent() => SyncEvent('SyncCompleted', {
-      'type': 'SyncCompleted',
-      'result': {
-        'error_code': 'device_revoked',
-        'error': 'device revoked',
-        'remote_wipe': false,
-        'push_incomplete': false,
-      },
-    });
+  'type': 'SyncCompleted',
+  'result': {
+    'error_code': 'device_revoked',
+    'error': 'device revoked',
+    'remote_wipe': false,
+    'push_incomplete': false,
+  },
+});
 
 /// What `wire()` returns: the live container plus the handles a test drives.
 /// `delivered` records every event the provider actually handed to listeners,
@@ -197,7 +197,9 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
-        prismSyncHandleProvider.overrideWith(() => _LiveHandleNotifier(device.handle)),
+        prismSyncHandleProvider.overrideWith(
+          () => _LiveHandleNotifier(device.handle),
+        ),
         syncEventStreamProvider.overrideWith((ref) => events.stream),
         databaseProvider.overrideWithValue(db),
       ],
@@ -206,7 +208,11 @@ void main() {
     // Force the handle to resolve so `ref.read(prismSyncHandleProvider).value`
     // is the live handle by the time we push the event.
     final resolved = await container.read(prismSyncHandleProvider.future);
-    expect(resolved, same(device.handle), reason: 'live handle override active');
+    expect(
+      resolved,
+      same(device.handle),
+      reason: 'live handle override active',
+    );
 
     // Build the status notifier — this registers the
     // `ref.listen(syncEventStreamProvider, …)` dispatch that routes
@@ -248,81 +254,87 @@ void main() {
   // The false-revoke invariant: an ambiguous device_revoked with the relay
   // UNREACHABLE (registry check inconclusive) must NOT go destructive.
   // -------------------------------------------------------------------------
-  test('ambiguous device_revoked with unreachable relay preserves credentials',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    E2EDevice? a;
-    _Wired? w;
-    try {
-      a = await createDevice(relay);
-      await a.sync();
-      w = await wire(a); // builds syncStatusProvider + subscribes the stream
+  test(
+    'ambiguous device_revoked with unreachable relay preserves credentials',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      E2EDevice? a;
+      _Wired? w;
+      try {
+        a = await createDevice(relay);
+        await a.sync();
+        w = await wire(a); // builds syncStatusProvider + subscribes the stream
 
-      expect(
-        w.container.read(syncHealthProvider),
-        equals(SyncHealthState.healthy),
-        reason: 'baseline health before the event',
-      );
-      expect(w.secure.hasAllCreds(), isTrue, reason: 'creds seeded');
-
-      // Stop the relay so the REAL `ffi.listDevices` inside
-      // `_confirmRevokeViaRegistry` fails → inconclusive (unknown).
-      relay.stop();
-      await _settle();
-
-      // Push the ambiguous event (no device_id anywhere).
-      w.events.add(_ambiguousRevokeEvent());
-      // Prove the event actually reached the notifier — otherwise the
-      // "credentials preserved" assertion below would pass even on a dropped
-      // event, which looks identical to a correctly-preserved one.
-      await _awaitDelivered(w.delivered);
-
-      // Let the async revoke handler settle. It does: read device_id from the
-      // (faked) store → classify ambiguous → _confirmRevokeViaRegistry →
-      // ffi.listDevices against the dead relay → throws → unknown → preserve.
-      final finalHealth = await _awaitHealthSettled(
-        w.container,
-        // Any non-baseline terminal we'd care about; we mainly need time to
-        // pass, then assert. Poll until creds change or a few seconds elapse.
-        () => !w!.secure.hasAllCreds() ||
-            w.container.read(syncHealthProvider) ==
-                SyncHealthState.disconnected,
-      );
-
-      // INVARIANT 1 — health did not go destructive.
-      expect(
-        finalHealth,
-        isNot(anyOf(
-          equals(SyncHealthState.disconnected),
-          equals(SyncHealthState.unpaired),
-        )),
-        reason:
-            'ambiguous + inconclusive registry must NOT flip health to a '
-            'destructive state (was: $finalHealth)',
-      );
-
-      // INVARIANT 2 — credentials are still present (not wiped).
-      expect(
-        w.secure.hasAllCreds(),
-        isTrue,
-        reason:
-            'ambiguous + inconclusive registry must preserve all credentials '
-            '(store now: ${w.secure.store.keys.where((k) => k.startsWith('prism_sync.')).toList()})',
-      );
-      // Spot-check the specific durable creds survive intact.
-      for (final key in _credKeys) {
         expect(
-          (w.secure.store['prism_sync.$key'] ?? ''),
-          isNotEmpty,
-          reason: 'credential "$key" must still be present',
+          w.container.read(syncHealthProvider),
+          equals(SyncHealthState.healthy),
+          reason: 'baseline health before the event',
         );
+        expect(w.secure.hasAllCreds(), isTrue, reason: 'creds seeded');
+
+        // Stop the relay so the REAL `ffi.listDevices` inside
+        // `_confirmRevokeViaRegistry` fails → inconclusive (unknown).
+        relay.stop();
+        await _settle();
+
+        // Push the ambiguous event (no device_id anywhere).
+        w.events.add(_ambiguousRevokeEvent());
+        // Prove the event actually reached the notifier — otherwise the
+        // "credentials preserved" assertion below would pass even on a dropped
+        // event, which looks identical to a correctly-preserved one.
+        await _awaitDelivered(w.delivered);
+
+        // Let the async revoke handler settle. It does: read device_id from the
+        // (faked) store → classify ambiguous → _confirmRevokeViaRegistry →
+        // ffi.listDevices against the dead relay → throws → unknown → preserve.
+        final finalHealth = await _awaitHealthSettled(
+          w.container,
+          // Any non-baseline terminal we'd care about; we mainly need time to
+          // pass, then assert. Poll until creds change or a few seconds elapse.
+          () =>
+              !w!.secure.hasAllCreds() ||
+              w.container.read(syncHealthProvider) ==
+                  SyncHealthState.disconnected,
+        );
+
+        // INVARIANT 1 — health did not go destructive.
+        expect(
+          finalHealth,
+          isNot(
+            anyOf(
+              equals(SyncHealthState.disconnected),
+              equals(SyncHealthState.unpaired),
+            ),
+          ),
+          reason:
+              'ambiguous + inconclusive registry must NOT flip health to a '
+              'destructive state (was: $finalHealth)',
+        );
+
+        // INVARIANT 2 — credentials are still present (not wiped).
+        expect(
+          w.secure.hasAllCreds(),
+          isTrue,
+          reason:
+              'ambiguous + inconclusive registry must preserve all credentials '
+              '(store now: ${w.secure.store.keys.where((k) => k.startsWith('prism_sync.')).toList()})',
+        );
+        // Spot-check the specific durable creds survive intact.
+        for (final key in _credKeys) {
+          expect(
+            (w.secure.store['prism_sync.$key'] ?? ''),
+            isNotEmpty,
+            reason: 'credential "$key" must still be present',
+          );
+        }
+      } finally {
+        w?.teardown();
+        a?.dispose();
+        relay.stop();
       }
-    } finally {
-      w?.teardown();
-      a?.dispose();
-      relay.stop();
-    }
-  });
+    },
+  );
 
   // -------------------------------------------------------------------------
   // TEETH CHECK — force the registry verdict to confirmedRevoked on the SAME
@@ -330,71 +342,75 @@ void main() {
   // wiped. This both proves the assertions above are real and pins down exactly
   // what mutates on a true revoke.
   // -------------------------------------------------------------------------
-  test('teeth: forced confirmedRevoked DOES wipe creds and disconnect',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    E2EDevice? a;
-    _Wired? w;
-    try {
-      a = await createDevice(relay);
-      await a.sync();
-      w = await wire(a);
+  test(
+    'teeth: forced confirmedRevoked DOES wipe creds and disconnect',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      E2EDevice? a;
+      _Wired? w;
+      try {
+        a = await createDevice(relay);
+        await a.sync();
+        w = await wire(a);
 
-      // Force the ambiguous → registry confirmation to confirmedRevoked,
-      // bypassing the real `ffi.listDevices`. Everything else is the SAME path.
-      debugRevokeConfirmationOverride = () async =>
-          const RevokeConfirmationResult(RevokeConfirmation.confirmedRevoked);
-      // Drains run on a 2s post-revoke timer + 500ms debounce by default; shrink
-      // so the test settles fast and the re-clean timer is observable.
-      debugDrainDebounceOverride = const Duration(milliseconds: 5);
-      debugPostRevokeRecleanOverride = const Duration(milliseconds: 30);
+        // Force the ambiguous → registry confirmation to confirmedRevoked,
+        // bypassing the real `ffi.listDevices`. Everything else is the SAME path.
+        debugRevokeConfirmationOverride = () async =>
+            const RevokeConfirmationResult(RevokeConfirmation.confirmedRevoked);
+        // Drains run on a 2s post-revoke timer + 500ms debounce by default; shrink
+        // so the test settles fast and the re-clean timer is observable.
+        debugDrainDebounceOverride = const Duration(milliseconds: 5);
+        debugPostRevokeRecleanOverride = const Duration(milliseconds: 30);
 
-      expect(
-        w.container.read(syncHealthProvider),
-        equals(SyncHealthState.healthy),
-      );
-      expect(w.secure.hasAllCreds(), isTrue);
+        expect(
+          w.container.read(syncHealthProvider),
+          equals(SyncHealthState.healthy),
+        );
+        expect(w.secure.hasAllCreds(), isTrue);
 
-      // Relay can stay up; the override short-circuits the registry check, so
-      // the confirmed-self branch runs the destructive cleanup regardless.
-      w.events.add(_ambiguousRevokeEvent());
-      await _awaitDelivered(w.delivered);
+        // Relay can stay up; the override short-circuits the registry check, so
+        // the confirmed-self branch runs the destructive cleanup regardless.
+        w.events.add(_ambiguousRevokeEvent());
+        await _awaitDelivered(w.delivered);
 
-      // Wait for the FULL destructive effect — BOTH the health flip AND the
-      // wipe. An OR here would return the instant creds are cleared, a beat
-      // before `setState(disconnected)` runs, sampling a stale `healthy`.
-      final finalHealth = await _awaitHealthSettled(
-        w.container,
-        () => w!.container.read(syncHealthProvider) ==
-                SyncHealthState.disconnected &&
-            !w.secure.hasAllCreds(),
-        timeout: const Duration(seconds: 6),
-      );
+        // Wait for the FULL destructive effect — BOTH the health flip AND the
+        // wipe. An OR here would return the instant creds are cleared, a beat
+        // before `setState(disconnected)` runs, sampling a stale `healthy`.
+        final finalHealth = await _awaitHealthSettled(
+          w.container,
+          () =>
+              w!.container.read(syncHealthProvider) ==
+                  SyncHealthState.disconnected &&
+              !w.secure.hasAllCreds(),
+          timeout: const Duration(seconds: 6),
+        );
 
-      // The destructive path fired: health is disconnected.
-      expect(
-        finalHealth,
-        equals(SyncHealthState.disconnected),
-        reason:
-            'a confirmed self-revoke MUST set health to disconnected '
-            '(was: $finalHealth)',
-      );
-      // And the credentials were wiped from the keychain fake.
-      expect(
-        w.secure.hasAllCreds(),
-        isFalse,
-        reason:
-            'a confirmed self-revoke MUST wipe credentials (store still has: '
-            '${w.secure.store.keys.where((k) => k.startsWith('prism_sync.')).toList()})',
-      );
-    } finally {
-      debugDrainDebounceOverride = null;
-      debugPostRevokeRecleanOverride = null;
-      w?.teardown();
-      a?.dispose();
-      relay.stop();
-    }
-  });
+        // The destructive path fired: health is disconnected.
+        expect(
+          finalHealth,
+          equals(SyncHealthState.disconnected),
+          reason:
+              'a confirmed self-revoke MUST set health to disconnected '
+              '(was: $finalHealth)',
+        );
+        // And the credentials were wiped from the keychain fake.
+        expect(
+          w.secure.hasAllCreds(),
+          isFalse,
+          reason:
+              'a confirmed self-revoke MUST wipe credentials (store still has: '
+              '${w.secure.store.keys.where((k) => k.startsWith('prism_sync.')).toList()})',
+        );
+      } finally {
+        debugDrainDebounceOverride = null;
+        debugPostRevokeRecleanOverride = null;
+        w?.teardown();
+        a?.dispose();
+        relay.stop();
+      }
+    },
+  );
 }
 
 /// Wait until the provider has delivered at least one event to its listeners,
@@ -411,7 +427,8 @@ Future<void> _awaitDelivered(
   expect(
     delivered,
     isNotEmpty,
-    reason: 'the injected sync event must reach the notifier; a dropped event '
+    reason:
+        'the injected sync event must reach the notifier; a dropped event '
         'would make the outcome assertion meaningless',
   );
 }

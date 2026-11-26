@@ -142,49 +142,52 @@ void main() {
     }, tombstoneGate: tombstoneGate);
   }
 
-  test('re-reads CURRENT values with correct encodings and deletes on success',
-      () async {
-    // Migration enqueued at flip time; the row's CURRENT markdown_enabled is 1,
-    // which the drain must read (not a captured value) and emit as a bool.
-    await _insertMember(db, 'm1', markdownEnabled: true);
-    await _enqueue(db, 'members', 'm1', const ['markdown_enabled'], 'r1');
+  test(
+    're-reads CURRENT values with correct encodings and deletes on success',
+    () async {
+      // Migration enqueued at flip time; the row's CURRENT markdown_enabled is 1,
+      // which the drain must read (not a captured value) and emit as a bool.
+      await _insertMember(db, 'm1', markdownEnabled: true);
+      await _enqueue(db, 'members', 'm1', const ['markdown_enabled'], 'r1');
 
-    await _insertGroup(db, 'g1', sortState: '{"mode":0,"order":["e1","e2"]}');
-    await _enqueue(db, 'member_groups', 'g1', const ['sort_state'], 'r2');
+      await _insertGroup(db, 'g1', sortState: '{"mode":0,"order":["e1","e2"]}');
+      await _enqueue(db, 'member_groups', 'g1', const ['sort_state'], 'r2');
 
-    await _insertConversation(
-      db,
-      'c1',
-      includesAllMembers: true,
-      participantIds: '["owner"]',
-      creatorId: 'owner',
-    );
-    await _enqueue(
-      db,
-      'conversations',
-      'c1',
-      const ['includes_all_members', 'participant_ids', 'creator_id'],
-      'r3',
-    );
+      await _insertConversation(
+        db,
+        'c1',
+        includesAllMembers: true,
+        participantIds: '["owner"]',
+        creatorId: 'owner',
+      );
+      await _enqueue(db, 'conversations', 'c1', const [
+        'includes_all_members',
+        'participant_ids',
+        'creator_id',
+      ], 'r3');
 
-    final result = await service().drain();
+      final result = await service().drain();
 
-    expect(result.error, isNull);
-    expect(result.repaired, 3);
-    expect(emits, unorderedEquals([
-      const _Emit('members', 'm1', {'markdown_enabled': true}),
-      const _Emit('member_groups', 'g1', {
-        'sort_state': '{"mode":0,"order":["e1","e2"]}',
-      }),
-      const _Emit('conversations', 'c1', {
-        'includes_all_members': true,
-        'participant_ids': '["owner"]',
-        'creator_id': 'owner',
-      }),
-    ]));
-    // All rows deleted on success.
-    expect(await _queueCount(db), 0);
-  });
+      expect(result.error, isNull);
+      expect(result.repaired, 3);
+      expect(
+        emits,
+        unorderedEquals([
+          const _Emit('members', 'm1', {'markdown_enabled': true}),
+          const _Emit('member_groups', 'g1', {
+            'sort_state': '{"mode":0,"order":["e1","e2"]}',
+          }),
+          const _Emit('conversations', 'c1', {
+            'includes_all_members': true,
+            'participant_ids': '["owner"]',
+            'creator_id': 'owner',
+          }),
+        ]),
+      );
+      // All rows deleted on success.
+      expect(await _queueCount(db), 0);
+    },
+  );
 
   test(
     'drains the POST-mutation value, not a migration-time capture',
@@ -213,12 +216,15 @@ void main() {
 
       expect(result.error, isNull);
       expect(result.repaired, 2);
-      expect(emits, unorderedEquals([
-        const _Emit('members', 'm1', {'markdown_enabled': false}),
-        const _Emit('member_groups', 'g1', {
-          'sort_state': '{"mode":1,"order":["e2","e1"]}',
-        }),
-      ]));
+      expect(
+        emits,
+        unorderedEquals([
+          const _Emit('members', 'm1', {'markdown_enabled': false}),
+          const _Emit('member_groups', 'g1', {
+            'sort_state': '{"mode":1,"order":["e2","e1"]}',
+          }),
+        ]),
+      );
     },
   );
 
@@ -247,21 +253,23 @@ void main() {
     expect(await _queueCount(db), 0);
   });
 
-  test('drops repairs for deleted or missing entities without emitting',
-      () async {
-    await _insertMember(db, 'gone', markdownEnabled: true, isDeleted: true);
-    await _enqueue(db, 'members', 'gone', const ['markdown_enabled'], 'r1');
-    // Never-existed entity.
-    await _enqueue(db, 'members', 'never', const ['markdown_enabled'], 'r2');
+  test(
+    'drops repairs for deleted or missing entities without emitting',
+    () async {
+      await _insertMember(db, 'gone', markdownEnabled: true, isDeleted: true);
+      await _enqueue(db, 'members', 'gone', const ['markdown_enabled'], 'r1');
+      // Never-existed entity.
+      await _enqueue(db, 'members', 'never', const ['markdown_enabled'], 'r2');
 
-    final result = await service().drain();
+      final result = await service().drain();
 
-    expect(result.error, isNull);
-    expect(result.repaired, 0);
-    expect(result.dropped, 2);
-    expect(emits, isEmpty);
-    expect(await _queueCount(db), 0);
-  });
+      expect(result.error, isNull);
+      expect(result.repaired, 0);
+      expect(result.dropped, 2);
+      expect(emits, isEmpty);
+      expect(await _queueCount(db), 0);
+    },
+  );
 
   test('skips and deletes suppressed groups', () async {
     await _insertGroup(db, 'gsup', syncSuppressed: true);
@@ -275,18 +283,20 @@ void main() {
     expect(await _queueCount(db), 0);
   });
 
-  test('skips and deletes PK-backed groups when pk group-sync v2 is off',
-      () async {
-    await _insertGroup(db, 'gpk', pluralkitUuid: 'uuid-1');
-    await _enqueue(db, 'member_groups', 'gpk', const ['sort_state'], 'r1');
+  test(
+    'skips and deletes PK-backed groups when pk group-sync v2 is off',
+    () async {
+      await _insertGroup(db, 'gpk', pluralkitUuid: 'uuid-1');
+      await _enqueue(db, 'member_groups', 'gpk', const ['sort_state'], 'r1');
 
-    // pkGroupSyncV2Enabled defaults to false.
-    final result = await service().drain();
+      // pkGroupSyncV2Enabled defaults to false.
+      final result = await service().drain();
 
-    expect(result.skipped, 1);
-    expect(emits, isEmpty);
-    expect(await _queueCount(db), 0);
-  });
+      expect(result.skipped, 1);
+      expect(emits, isEmpty);
+      expect(await _queueCount(db), 0);
+    },
+  );
 
   test('emits PK-backed groups when pk group-sync v2 is enabled', () async {
     await _insertGroup(db, 'gpk', pluralkitUuid: 'uuid-1');
@@ -329,14 +339,7 @@ void main() {
         '(id, session_type, start_time, end_time, member_id, co_fronter_ids, '
         ' is_health_kit_import, is_deleted, pluralkit_uuid) '
         'VALUES (?, ?, 0, NULL, ?, ?, 0, ?, ?)',
-        [
-          id,
-          sessionType,
-          memberId,
-          '[]',
-          isDeleted ? 1 : 0,
-          pluralkitUuid,
-        ],
+        [id, sessionType, memberId, '[]', isDeleted ? 1 : 0, pluralkitUuid],
       );
     }
 
@@ -351,20 +354,13 @@ void main() {
         memberId: unknownSentinelMemberId,
         pluralkitUuid: null,
       );
-      await _enqueue(
-        db,
-        'fronting_sessions',
-        's1',
-        const ['member_id', 'pluralkit_uuid'],
-        'fronting_orphan_rescue',
-      );
-      await _enqueue(
-        db,
-        'members',
-        unknownSentinelMemberId,
-        const ['__create__'],
-        'fronting_orphan_rescue',
-      );
+      await _enqueue(db, 'fronting_sessions', 's1', const [
+        'member_id',
+        'pluralkit_uuid',
+      ], 'fronting_orphan_rescue');
+      await _enqueue(db, 'members', unknownSentinelMemberId, const [
+        '__create__',
+      ], 'fronting_orphan_rescue');
 
       final result = await service().drain();
 
@@ -393,13 +389,9 @@ void main() {
     test('C12: a tombstoned sentinel id drops the create without emitting into '
         'the burned id', () async {
       await insertSentinelMember(db);
-      await _enqueue(
-        db,
-        'members',
-        unknownSentinelMemberId,
-        const ['__create__'],
-        'fronting_orphan_rescue',
-      );
+      await _enqueue(db, 'members', unknownSentinelMemberId, const [
+        '__create__',
+      ], 'fronting_orphan_rescue');
 
       final result = await service(
         tombstoneGate: _gateTombstoning({unknownSentinelMemberId}),
@@ -414,13 +406,9 @@ void main() {
 
     test('a live (non-tombstoned) sentinel id emits the create', () async {
       await insertSentinelMember(db);
-      await _enqueue(
-        db,
-        'members',
-        unknownSentinelMemberId,
-        const ['__create__'],
-        'fronting_orphan_rescue',
-      );
+      await _enqueue(db, 'members', unknownSentinelMemberId, const [
+        '__create__',
+      ], 'fronting_orphan_rescue');
 
       final result = await service(tombstoneGate: _gateTombstoning({})).drain();
 
@@ -429,50 +417,47 @@ void main() {
       expect(emits.single.entityId, unknownSentinelMemberId);
     });
 
-    test('a rescue repair for a purged/missing session is dropped (no-op)',
-        () async {
-      // The rescued session was later hard-deleted (purged); the re-delivered
-      // repair finds no row and must drop rather than wedge the drain.
-      await _enqueue(
-        db,
-        'fronting_sessions',
-        'purged',
-        const ['member_id', 'pluralkit_uuid'],
-        'fronting_orphan_rescue',
-      );
+    test(
+      'a rescue repair for a purged/missing session is dropped (no-op)',
+      () async {
+        // The rescued session was later hard-deleted (purged); the re-delivered
+        // repair finds no row and must drop rather than wedge the drain.
+        await _enqueue(db, 'fronting_sessions', 'purged', const [
+          'member_id',
+          'pluralkit_uuid',
+        ], 'fronting_orphan_rescue');
 
-      final result = await service().drain();
+        final result = await service().drain();
 
-      expect(result.repaired, 0);
-      expect(result.dropped, 1);
-      expect(emits, isEmpty);
-      expect(await _queueCount(db), 0);
-    });
+        expect(result.repaired, 0);
+        expect(result.dropped, 1);
+        expect(emits, isEmpty);
+        expect(await _queueCount(db), 0);
+      },
+    );
 
-    test('a __create__ repair for a deleted sentinel member is dropped',
-        () async {
-      await insertSession(db, 's1', memberId: unknownSentinelMemberId);
-      // Sentinel member row was soft-deleted locally.
-      await db.customStatement(
-        'INSERT INTO members '
-        '(id, name, emoji, created_at, is_admin, display_order, is_active, '
-        ' is_deleted, markdown_enabled) '
-        'VALUES (?, ?, ?, 0, 0, 0, 1, 1, 0)',
-        [unknownSentinelMemberId, 'Unknown', '❔'],
-      );
-      await _enqueue(
-        db,
-        'members',
-        unknownSentinelMemberId,
-        const ['__create__'],
-        'fronting_orphan_rescue',
-      );
+    test(
+      'a __create__ repair for a deleted sentinel member is dropped',
+      () async {
+        await insertSession(db, 's1', memberId: unknownSentinelMemberId);
+        // Sentinel member row was soft-deleted locally.
+        await db.customStatement(
+          'INSERT INTO members '
+          '(id, name, emoji, created_at, is_admin, display_order, is_active, '
+          ' is_deleted, markdown_enabled) '
+          'VALUES (?, ?, ?, 0, 0, 0, 1, 1, 0)',
+          [unknownSentinelMemberId, 'Unknown', '❔'],
+        );
+        await _enqueue(db, 'members', unknownSentinelMemberId, const [
+          '__create__',
+        ], 'fronting_orphan_rescue');
 
-      final result = await service().drain();
+        final result = await service().drain();
 
-      expect(result.dropped, 1);
-      expect(emits, isEmpty);
-    });
+        expect(result.dropped, 1);
+        expect(emits, isEmpty);
+      },
+    );
   });
 
   group('one-time blanket backfill', () {

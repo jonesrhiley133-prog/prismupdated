@@ -112,10 +112,7 @@ void main() {
       );
 
       expect(backend.state.value.status, VoicePlaybackStatus.error);
-      expect(
-        backend.state.value.errorMessage,
-        contains('in-memory'),
-      );
+      expect(backend.state.value.errorMessage, contains('in-memory'));
     });
 
     test('resume via setPaused on existing valid handle', () async {

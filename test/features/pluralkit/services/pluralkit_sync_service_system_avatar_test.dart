@@ -22,34 +22,34 @@ class _SecureStorageStub {
     TestWidgetsFlutterBinding.ensureInitialized();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-      (MethodCall call) async {
-        switch (call.method) {
-          case 'write':
-            _store[call.arguments['key'] as String] =
-                call.arguments['value'] as String?;
-            return null;
-          case 'read':
-            return _store[call.arguments['key'] as String];
-          case 'delete':
-            _store.remove(call.arguments['key'] as String);
-            return null;
-          case 'containsKey':
-            return _store.containsKey(call.arguments['key'] as String);
-          default:
-            return null;
-        }
-      },
-    );
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          (MethodCall call) async {
+            switch (call.method) {
+              case 'write':
+                _store[call.arguments['key'] as String] =
+                    call.arguments['value'] as String?;
+                return null;
+              case 'read':
+                return _store[call.arguments['key'] as String];
+              case 'delete':
+                _store.remove(call.arguments['key'] as String);
+                return null;
+              case 'containsKey':
+                return _store.containsKey(call.arguments['key'] as String);
+              default:
+                return null;
+            }
+          },
+        );
     _store['prism_pluralkit_token'] = 'test-token';
   }
 
   void teardown() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-      null,
-    );
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          null,
+        );
     _store.clear();
   }
 }
@@ -60,8 +60,7 @@ class _SecureStorageStub {
 
 class _FakePKClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   PKSystem system = const PKSystem(id: 'sys-1', name: 'Test');
 
   @override
@@ -72,10 +71,9 @@ class _FakePKClient implements PluralKitClient {
 
   // Catch-all so we don't have to stub 15+ unused methods.
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnimplementedError(
-        'Unexpected call in _FakePKClient: ${invocation.memberName}',
-      );
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError(
+    'Unexpected call in _FakePKClient: ${invocation.memberName}',
+  );
 }
 
 AppDatabase _makeDb() => AppDatabase(NativeDatabase.memory());
@@ -131,43 +129,51 @@ void main() {
       expect(settingsRepo.settings.systemAvatarData, isNull);
     });
 
-    test('empty avatarUrl returns false without touching settings repo',
-        () async {
-      final db = _makeDb();
-      addTearDown(db.close);
+    test(
+      'empty avatarUrl returns false without touching settings repo',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
 
-      final settingsRepo = FakeSystemSettingsRepository();
-      final client = _FakePKClient()
-        ..system = const PKSystem(id: 'sys-1', name: 'Test', avatarUrl: '');
+        final settingsRepo = FakeSystemSettingsRepository();
+        final client = _FakePKClient()
+          ..system = const PKSystem(id: 'sys-1', name: 'Test', avatarUrl: '');
 
-      final service = _makeService(
-        client: client,
-        db: db,
-        settingsRepo: settingsRepo,
-      );
-
-      final result = await service.importSystemAvatar();
-      expect(result, isFalse);
-      expect(settingsRepo.settings.systemAvatarData, isNull);
-    });
-
-    test('null settings repo returns false even with a valid avatarUrl',
-        () async {
-      final db = _makeDb();
-      addTearDown(db.close);
-
-      final client = _FakePKClient()
-        ..system = const PKSystem(
-          id: 'sys-1',
-          name: 'Test',
-          avatarUrl: 'https://example.com/whatever.png',
+        final service = _makeService(
+          client: client,
+          db: db,
+          settingsRepo: settingsRepo,
         );
 
-      final service = _makeService(client: client, db: db, settingsRepo: null);
+        final result = await service.importSystemAvatar();
+        expect(result, isFalse);
+        expect(settingsRepo.settings.systemAvatarData, isNull);
+      },
+    );
 
-      final result = await service.importSystemAvatar();
-      expect(result, isFalse);
-    });
+    test(
+      'null settings repo returns false even with a valid avatarUrl',
+      () async {
+        final db = _makeDb();
+        addTearDown(db.close);
+
+        final client = _FakePKClient()
+          ..system = const PKSystem(
+            id: 'sys-1',
+            name: 'Test',
+            avatarUrl: 'https://example.com/whatever.png',
+          );
+
+        final service = _makeService(
+          client: client,
+          db: db,
+          settingsRepo: null,
+        );
+
+        final result = await service.importSystemAvatar();
+        expect(result, isFalse);
+      },
+    );
 
     test('not-connected (no token) throws StateError', () async {
       // Override the stub: wipe the token so _buildClient returns null.
@@ -175,9 +181,9 @@ void main() {
       storageStub.setup();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-        const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-        (call) async => null,
-      );
+            const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+            (call) async => null,
+          );
 
       final db = _makeDb();
       addTearDown(db.close);
@@ -190,11 +196,7 @@ void main() {
         settingsRepo: settingsRepo,
       );
 
-      await expectLater(
-        service.importSystemAvatar,
-        throwsA(isA<StateError>()),
-      );
+      await expectLater(service.importSystemAvatar, throwsA(isA<StateError>()));
     });
   });
 }
-

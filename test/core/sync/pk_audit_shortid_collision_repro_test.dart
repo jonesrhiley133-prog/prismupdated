@@ -81,8 +81,12 @@ Future<void> _apply(
   List<Map<String, dynamic>> changes,
 ) async {
   final wrapped = buildSyncAdapterWithCompletion(db);
-  await applyRemoteChanges(db, wrapped.adapter, _eventFromChanges(changes),
-      strict: true);
+  await applyRemoteChanges(
+    db,
+    wrapped.adapter,
+    _eventFromChanges(changes),
+    strict: true,
+  );
 }
 
 void main() {
@@ -90,78 +94,103 @@ void main() {
   setUp(() => db = database.AppDatabase(NativeDatabase.memory()));
   tearDown(() => db.close());
 
-  test(
-      'AUDIT: two DISTINCT PK members sharing a short id must NOT merge '
+  test('AUDIT: two DISTINCT PK members sharing a short id must NOT merge '
       '(short-id reuse under PK Premium)', () async {
     // Member A: fully imported, uuid U_A, short id "abcde".
     await _apply(db, [
-      _memberChange('member-a',
-          _memberFields(name: 'Alice', pkUuid: 'uuid-AAAA', pkId: 'abcde')),
+      _memberChange(
+        'member-a',
+        _memberFields(name: 'Alice', pkUuid: 'uuid-AAAA', pkId: 'abcde'),
+      ),
     ]);
 
     // Member B: a DIFFERENT PK member, uuid U_B. Under PK Premium the short id
     // "abcde" was freed by A (renamed) and reassigned to B; B's op carries the
     // colliding short id. This is a routine remote op, not a malformed one.
     await _apply(db, [
-      _memberChange('member-b',
-          _memberFields(name: 'Bob', pkUuid: 'uuid-BBBB', pkId: 'abcde')),
+      _memberChange(
+        'member-b',
+        _memberFields(name: 'Bob', pkUuid: 'uuid-BBBB', pkId: 'abcde'),
+      ),
     ]);
 
     final rows = await db.select(db.members).get();
     // ignore: avoid_print
-    print('[AUDIT] rows after applying two distinct members sharing short id '
-        '"abcde": ${rows.map((r) => '(${r.id}, name=${r.name}, '
-        'uuid=${r.pluralkitUuid}, pkId=${r.pluralkitId}, del=${r.isDeleted})').toList()}');
+    print(
+      '[AUDIT] rows after applying two distinct members sharing short id '
+      '"abcde": ${rows.map((r) => '(${r.id}, name=${r.name}, '
+          'uuid=${r.pluralkitUuid}, pkId=${r.pluralkitId}, del=${r.isDeleted})').toList()}',
+    );
 
     // CORRECT behavior: two distinct people, two live rows, identities intact.
     final liveUuids = rows
         .where((r) => !r.isDeleted && r.pluralkitUuid != null)
         .map((r) => r.pluralkitUuid)
         .toSet();
-    expect(liveUuids, containsAll(<String>{'uuid-AAAA', 'uuid-BBBB'}),
-        reason: 'Both distinct PK identities should survive; if uuid-AAAA is '
-            'missing, member A was silently destroyed by the short-id merge.');
-    expect(rows.where((r) => !r.isDeleted).length, 2,
-        reason: 'Expected two live member rows for two distinct PK members.');
+    expect(
+      liveUuids,
+      containsAll(<String>{'uuid-AAAA', 'uuid-BBBB'}),
+      reason:
+          'Both distinct PK identities should survive; if uuid-AAAA is '
+          'missing, member A was silently destroyed by the short-id merge.',
+    );
+    expect(
+      rows.where((r) => !r.isDeleted).length,
+      2,
+      reason: 'Expected two live member rows for two distinct PK members.',
+    );
   });
 
-  test(
-      'F3 deleted-row analogue: a recycled short id must NOT strip a '
+  test('F3 deleted-row analogue: a recycled short id must NOT strip a '
       'soft-deleted distinct member\'s real uuid', () async {
     // A live PK member, then soft-deleted; PK identity is intentionally retained
     // on the tombstone (user-recoverable, and needed to refuse a re-import dup).
     await _apply(db, [
-      _memberChange('member-deleted',
-          _memberFields(name: 'Rhea', pkUuid: 'uuid-YYYY', pkId: 'abcde')),
+      _memberChange(
+        'member-deleted',
+        _memberFields(name: 'Rhea', pkUuid: 'uuid-YYYY', pkId: 'abcde'),
+      ),
     ]);
     await _apply(db, [
       _memberChange(
-          'member-deleted',
-          _memberFields(
-              name: 'Rhea',
-              pkUuid: 'uuid-YYYY',
-              pkId: 'abcde',
-              isDeleted: true)),
+        'member-deleted',
+        _memberFields(
+          name: 'Rhea',
+          pkUuid: 'uuid-YYYY',
+          pkId: 'abcde',
+          isDeleted: true,
+        ),
+      ),
     ]);
 
     // A DIFFERENT live PK member recycles short id "abcde" (different uuid). The
     // pre-split-before release path would null BOTH pk fields on the deleted
     // row, destroying its real uuid.
     await _apply(db, [
-      _memberChange('member-live',
-          _memberFields(name: 'Bob', pkUuid: 'uuid-XXXX', pkId: 'abcde')),
+      _memberChange(
+        'member-live',
+        _memberFields(name: 'Bob', pkUuid: 'uuid-XXXX', pkId: 'abcde'),
+      ),
     ]);
 
     final rows = await db.select(db.members).get();
     final deleted = rows.singleWhere((r) => r.id == 'member-deleted');
     final live = rows.singleWhere((r) => r.id == 'member-live');
 
-    expect(deleted.pluralkitUuid, 'uuid-YYYY',
-        reason: 'The soft-deleted distinct member must keep its real uuid; a '
-            'recycled short id must only clear the stale pluralkit_id.');
-    expect(deleted.pluralkitId, isNull,
-        reason: 'The stale recycled short id should be cleared off the deleted '
-            'row so the live member can take it.');
+    expect(
+      deleted.pluralkitUuid,
+      'uuid-YYYY',
+      reason:
+          'The soft-deleted distinct member must keep its real uuid; a '
+          'recycled short id must only clear the stale pluralkit_id.',
+    );
+    expect(
+      deleted.pluralkitId,
+      isNull,
+      reason:
+          'The stale recycled short id should be cleared off the deleted '
+          'row so the live member can take it.',
+    );
     expect(live.pluralkitUuid, 'uuid-XXXX');
     expect(live.pluralkitId, 'abcde');
     expect(live.isDeleted, isFalse);

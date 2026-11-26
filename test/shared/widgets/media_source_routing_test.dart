@@ -233,14 +233,31 @@ void main() {
       await pumpSurface(tester, surface, files);
       await openMenu(tester, surface);
       await tester.tap(find.text('File'));
-      await tester.pumpAndSettle();
+      if (surface == 'chat') {
+        await tester.pumpAndSettle();
+      } else {
+        // The image is normalised in a background isolate before cropping,
+        // and the cropper animates while it loads, so don't wait to settle.
+        await tester.pump(const Duration(milliseconds: 300));
+        for (
+          var i = 0;
+          i < 40 && find.text('Crop image').evaluate().isEmpty;
+          i++
+        ) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 250)),
+          );
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+      }
 
       expect(reads, 1);
       expect(pickerCalls, isEmpty);
       if (surface == 'chat') {
         expect(find.bySemanticsLabel('Attached image preview'), findsWidgets);
       } else {
-        expect(find.byType(PrismDialog), findsOneWidget);
+        // Every imported image goes through the shared cropper first.
+        expect(find.text('Crop image'), findsOneWidget);
       }
       expect(tester.takeException(), isNull);
     });

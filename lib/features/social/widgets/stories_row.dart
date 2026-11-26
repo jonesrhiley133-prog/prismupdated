@@ -12,13 +12,20 @@ final storyAuthorsProvider = Provider<List<({String id, bool unseen})>>((ref) {
   final viewer = ref.watch(socialActorProvider);
   final d = ref.watch(socialDataProvider);
   final active = d.activeStories(viewer);
-  final list = [
-    for (final e in active.entries)
-      (id: e.key, unseen: e.value.any((s) => !d.hasSeen(s.id, viewer) && s.author != viewer), latest: e.value.last.postedAt),
-  ]..sort((a, b) {
-      if (a.unseen != b.unseen) return a.unseen ? -1 : 1;
-      return b.latest.compareTo(a.latest);
-    });
+  final list =
+      [
+        for (final e in active.entries)
+          (
+            id: e.key,
+            unseen: e.value.any(
+              (s) => !d.hasSeen(s.id, viewer) && s.author != viewer,
+            ),
+            latest: e.value.last.postedAt,
+          ),
+      ]..sort((a, b) {
+        if (a.unseen != b.unseen) return a.unseen ? -1 : 1;
+        return b.latest.compareTo(a.latest);
+      });
   return [for (final x in list) (id: x.id, unseen: x.unseen)];
 });
 
@@ -36,7 +43,10 @@ class StoriesRow extends ConsumerWidget {
     final viewer = ref.watch(socialActorProvider);
     final d = ref.watch(socialDataProvider);
     final mineActive = viewer != null && authors.any((a) => a.id == viewer);
-    final others = [for (final a in authors) if (a.id != viewer) a];
+    final others = [
+      for (final a in authors)
+        if (a.id != viewer) a,
+    ];
     if (others.isEmpty && !showAdd) return const SizedBox.shrink();
     final ids = [if (mineActive) viewer, for (final a in others) a.id];
     return Semantics(
@@ -51,12 +61,18 @@ class StoriesRow extends ConsumerWidget {
               _Bubble(
                 label: l10n.stoYourStory,
                 semantics: mineActive ? l10n.stoViewYours : l10n.stoAddStory,
-                onTap: () => mineActive ? openStories(context, ids, start: 0) : openStoryComposer(context, viewer),
+                onTap: () => mineActive
+                    ? openStories(context, ids, start: 0)
+                    : openStoryComposer(context, viewer),
                 onLongPress: () => openStoryComposer(context, viewer),
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    AlterAvatar(memberId: viewer, size: 58, ring: mineActive ? false : null),
+                    AlterAvatar(
+                      memberId: viewer,
+                      size: 58,
+                      ring: mineActive ? false : null,
+                    ),
                     Positioned(
                       right: -2,
                       bottom: -2,
@@ -67,8 +83,19 @@ class StoriesRow extends ConsumerWidget {
                         child: GestureDetector(
                           onTap: () => openStoryComposer(context, viewer),
                           child: Container(
-                            decoration: BoxDecoration(borderRadius: prismRound(context), color: theme.colorScheme.primary, border: Border.all(color: theme.scaffoldBackgroundColor, width: 2)),
-                            child: Icon(Icons.add_rounded, size: 18, color: theme.colorScheme.onPrimary),
+                            decoration: BoxDecoration(
+                              borderRadius: prismRound(context),
+                              color: theme.colorScheme.primary,
+                              border: Border.all(
+                                color: theme.scaffoldBackgroundColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.add_rounded,
+                              size: 18,
+                              color: theme.colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ),
@@ -79,15 +106,27 @@ class StoriesRow extends ConsumerWidget {
             for (var i = 0; i < others.length; i++)
               _Bubble(
                 label: alterName(d, others[i].id, context),
-                semantics: others[i].unseen ? l10n.stoNewFrom(alterName(d, others[i].id, context)) : l10n.stoSeenFrom(alterName(d, others[i].id, context)),
-                onTap: () => openStories(context, ids, start: ids.indexOf(others[i].id)),
-                child: AlterAvatar(memberId: others[i].id, size: 58, ring: others[i].unseen),
+                semantics: others[i].unseen
+                    ? l10n.stoNewFrom(alterName(d, others[i].id, context))
+                    : l10n.stoSeenFrom(alterName(d, others[i].id, context)),
+                onTap: () =>
+                    openStories(context, ids, start: ids.indexOf(others[i].id)),
+                child: AlterAvatar(
+                  memberId: others[i].id,
+                  size: 58,
+                  ring: others[i].unseen,
+                ),
               ),
             if (others.isEmpty && showAdd)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Text(l10n.stoNoneYet, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  child: Text(
+                    l10n.stoNoneYet,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -98,7 +137,13 @@ class StoriesRow extends ConsumerWidget {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble({required this.label, required this.semantics, required this.onTap, required this.child, this.onLongPress});
+  const _Bubble({
+    required this.label,
+    required this.semantics,
+    required this.onTap,
+    required this.child,
+    this.onLongPress,
+  });
   final String label;
   final String semantics;
   final VoidCallback onTap;
@@ -121,7 +166,12 @@ class _Bubble extends StatelessWidget {
             children: [
               child,
               const SizedBox(height: 4),
-              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelSmall),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
             ],
           ),
         ),
@@ -131,5 +181,5 @@ class _Bubble extends StatelessWidget {
 }
 
 /// Story count helpers for badges.
-int unseenStoryAuthors(List<({String id, bool unseen})> a) => a.where((x) => x.unseen).length;
-
+int unseenStoryAuthors(List<({String id, bool unseen})> a) =>
+    a.where((x) => x.unseen).length;

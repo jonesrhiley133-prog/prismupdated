@@ -7,15 +7,14 @@ CustomField _field({
   required String id,
   required String fieldTypeId,
   String? parentFieldId,
-}) =>
-    CustomField(
-      id: id,
-      name: 'name-$id',
-      fieldType: CustomFieldType.text,
-      fieldTypeId: fieldTypeId,
-      parentFieldId: parentFieldId,
-      createdAt: DateTime.utc(2026, 1, 1),
-    );
+}) => CustomField(
+  id: id,
+  name: 'name-$id',
+  fieldType: CustomFieldType.text,
+  fieldTypeId: fieldTypeId,
+  parentFieldId: parentFieldId,
+  createdAt: DateTime.utc(2026, 1, 1),
+);
 
 void main() {
   group('promoteOrphansForRender', () {
@@ -44,25 +43,29 @@ void main() {
       expect(out[1].parentFieldId, isNull);
     });
 
-    test('promotes child whose parent is itself nested (depth-1 enforcement)',
-        () {
-      // A is a group at top level.
-      // B is a child of A but mis-typed as 'group' (createFieldFromImport
-      // or sync apply can plant this).
-      // C is a child of B → would render 2-deep without this guard.
-      final a = _field(id: 'A', fieldTypeId: 'group');
-      final b = _field(id: 'B', fieldTypeId: 'group', parentFieldId: 'A');
-      final c = _field(id: 'C', fieldTypeId: 'text', parentFieldId: 'B');
+    test(
+      'promotes child whose parent is itself nested (depth-1 enforcement)',
+      () {
+        // A is a group at top level.
+        // B is a child of A but mis-typed as 'group' (createFieldFromImport
+        // or sync apply can plant this).
+        // C is a child of B → would render 2-deep without this guard.
+        final a = _field(id: 'A', fieldTypeId: 'group');
+        final b = _field(id: 'B', fieldTypeId: 'group', parentFieldId: 'A');
+        final c = _field(id: 'C', fieldTypeId: 'text', parentFieldId: 'B');
 
-      final out = promoteOrphansForRender([a, b, c]);
-      // C must be promoted to top level because B is nested.
-      final outC = out.firstWhere((f) => f.id == 'C');
-      expect(outC.parentFieldId, isNull,
-          reason: 'C should promote — its parent B is itself nested');
-    });
+        final out = promoteOrphansForRender([a, b, c]);
+        // C must be promoted to top level because B is nested.
+        final outC = out.firstWhere((f) => f.id == 'C');
+        expect(
+          outC.parentFieldId,
+          isNull,
+          reason: 'C should promote — its parent B is itself nested',
+        );
+      },
+    );
 
-    test('promotes a field whose parent_field_id is itself (self-cycle)',
-        () {
+    test('promotes a field whose parent_field_id is itself (self-cycle)', () {
       // Buggy peer or sync apply plants parent_field_id = self_id.
       final selfCycle = _field(
         id: 'self',
@@ -70,8 +73,11 @@ void main() {
         parentFieldId: 'self',
       );
       final out = promoteOrphansForRender([selfCycle]);
-      expect(out.single.parentFieldId, isNull,
-          reason: 'Self-cycle must promote to top level');
+      expect(
+        out.single.parentFieldId,
+        isNull,
+        reason: 'Self-cycle must promote to top level',
+      );
     });
 
     test('does not mutate the input list', () {

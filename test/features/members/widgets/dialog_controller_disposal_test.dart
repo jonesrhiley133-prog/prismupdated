@@ -16,35 +16,32 @@ import 'package:flutter_test/flutter_test.dart';
 /// (_AddToLibraryDialog / _PromptDialog), disposing only on teardown — never
 /// per-dialog while the route can still rebuild.
 void main() {
-  testWidgets(
-    'a controller that outlives the field survives repeated rebuilds '
-    '(the safe pattern)',
-    (tester) async {
-      final rebuild = ValueNotifier<int>(0);
-      final controller = TextEditingController();
+  testWidgets('a controller that outlives the field survives repeated rebuilds '
+      '(the safe pattern)', (tester) async {
+    final rebuild = ValueNotifier<int>(0);
+    final controller = TextEditingController();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Material(
-            child: ValueListenableBuilder<int>(
-              valueListenable: rebuild,
-              builder: (context, _, _) => TextField(controller: controller),
-            ),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: ValueListenableBuilder<int>(
+            valueListenable: rebuild,
+            builder: (context, _, _) => TextField(controller: controller),
           ),
         ),
-      );
+      ),
+    );
 
-      // The fixed ordering: the controller is NOT disposed while the field
-      // lives, so rebuilds re-subscribe to a live controller.
-      rebuild.value++;
-      await tester.pump();
-      rebuild.value++;
-      await tester.pump();
+    // The fixed ordering: the controller is NOT disposed while the field
+    // lives, so rebuilds re-subscribe to a live controller.
+    rebuild.value++;
+    await tester.pump();
+    rebuild.value++;
+    await tester.pump();
 
-      expect(tester.takeException(), isNull);
+    expect(tester.takeException(), isNull);
 
-      controller.dispose();
-      rebuild.dispose();
-    },
-  );
+    controller.dispose();
+    rebuild.dispose();
+  });
 }

@@ -1302,7 +1302,10 @@ class _PrismExportImportFlowState
         return;
       }
 
-      final resolved = await DataImportService.resolveInBackground(bytes, password: null);
+      final resolved = await DataImportService.resolveInBackground(
+        bytes,
+        password: null,
+      );
       final preview = await compute(
         DataImportService.parsePreviewForCompute,
         resolved.json,
@@ -1348,7 +1351,10 @@ class _PrismExportImportFlowState
     final bytes = _fileBytes!;
     final pass = password;
     try {
-      final resolved = await DataImportService.resolveInBackground(bytes, password: pass);
+      final resolved = await DataImportService.resolveInBackground(
+        bytes,
+        password: pass,
+      );
       final preview = await compute(
         DataImportService.parsePreviewForCompute,
         resolved.json,

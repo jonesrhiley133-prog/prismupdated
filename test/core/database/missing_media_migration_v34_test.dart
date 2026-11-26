@@ -61,24 +61,27 @@ void main() {
     expect(row.priority, MissingMediaDao.priorityChat);
   });
 
-  test('v32→v37 migration is idempotent when the table already exists', () async {
-    final dir = await Directory.systemTemp.createTemp('mm_migration2');
-    addTearDown(() => dir.delete(recursive: true));
-    final dbFile = File('${dir.path}/app.db');
+  test(
+    'v32→v37 migration is idempotent when the table already exists',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('mm_migration2');
+      addTearDown(() => dir.delete(recursive: true));
+      final dbFile = File('${dir.path}/app.db');
 
-    // Open at current schema (table present), then force user_version back to
-    // 32 WITHOUT dropping the table — the guarded createTable must not throw.
-    final seeded = AppDatabase(NativeDatabase(dbFile));
-    await seeded.customSelect('SELECT 1').get();
-    await seeded.close();
-    final rawDb = raw.sqlite3.open(dbFile.path);
-    rawDb.execute('PRAGMA user_version = 32;');
-    rawDb.close();
+      // Open at current schema (table present), then force user_version back to
+      // 32 WITHOUT dropping the table — the guarded createTable must not throw.
+      final seeded = AppDatabase(NativeDatabase(dbFile));
+      await seeded.customSelect('SELECT 1').get();
+      await seeded.close();
+      final rawDb = raw.sqlite3.open(dbFile.path);
+      rawDb.execute('PRAGMA user_version = 32;');
+      rawDb.close();
 
-    final upgraded = AppDatabase(NativeDatabase(dbFile));
-    addTearDown(upgraded.close);
-    // Should not throw despite the table already existing.
-    await upgraded.customSelect('SELECT 1').get();
-    expect(await upgraded.missingMediaDao.pendingCount(), 0);
-  });
+      final upgraded = AppDatabase(NativeDatabase(dbFile));
+      addTearDown(upgraded.close);
+      // Should not throw despite the table already existing.
+      await upgraded.customSelect('SELECT 1').get();
+      expect(await upgraded.missingMediaDao.pendingCount(), 0);
+    },
+  );
 }

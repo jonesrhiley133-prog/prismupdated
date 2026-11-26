@@ -23,10 +23,7 @@ abstract class MemberRepository {
   /// `updateHabitFields(id, Map)`; used by the board-posts repo's
   /// `markInboxOpenedFor` to route `board_last_read_at` writes through
   /// the members repo without inlining a row read and diff.
-  Future<int> updateMemberFields(
-    String id,
-    Map<String, dynamic> changedFields,
-  );
+  Future<int> updateMemberFields(String id, Map<String, dynamic> changedFields);
   Future<void> deleteMember(String id);
   Future<List<domain.Member>> getMembersByIds(List<String> ids);
   Stream<List<domain.Member>> watchMembersByIds(List<String> ids);
@@ -51,10 +48,7 @@ abstract class MemberRepository {
   ///   - Patch keys are validated against the same member-field allowlist
   ///     as `updateMemberFields` (`_memberPatchKeys` in
   ///     `drift_member_repository.dart`).
-  Future<int> applyPluralKitLink(
-    String memberId,
-    Map<String, dynamic> patch,
-  );
+  Future<int> applyPluralKitLink(String memberId, Map<String, dynamic> patch);
 
   /// System-driven write of PK identifiers AFTER a push to the PK server
   /// returned them. Does NOT touch `pluralkit_sync_ignored`; preserves
@@ -126,5 +120,5 @@ abstract class MemberRepository {
   /// (orphan reassignment), the SP importer (entries with `member: "unknown"`),
   /// and the data import service (orphan native rows).
   Future<({domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember();
+  ensureUnknownSentinelMember();
 }

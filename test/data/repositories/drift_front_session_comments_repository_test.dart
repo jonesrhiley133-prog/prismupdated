@@ -71,52 +71,54 @@ void main() {
     expect(count, 1);
   });
 
-  test('period query filters by session membership and half-open time range',
-      () async {
-    final start = DateTime.utc(2026, 4, 30, 10);
-    final end = DateTime.utc(2026, 4, 30, 11);
+  test(
+    'period query filters by session membership and half-open time range',
+    () async {
+      final start = DateTime.utc(2026, 4, 30, 10);
+      final end = DateTime.utc(2026, 4, 30, 11);
 
-    await repo.createComment(
-      comment(
-        id: 'before',
-        sessionId: 'session-a',
-        timestamp: start.subtract(const Duration(minutes: 1)),
-      ),
-    );
-    await repo.createComment(
-      comment(id: 'at-start', sessionId: 'session-a', timestamp: start),
-    );
-    await repo.createComment(
-      comment(
-        id: 'inside',
-        sessionId: 'session-b',
-        timestamp: start.add(const Duration(minutes: 15)),
-      ),
-    );
-    await repo.createComment(
-      comment(id: 'wrong-session', sessionId: 'session-c', timestamp: start),
-    );
-    await repo.createComment(
-      comment(id: 'at-end', sessionId: 'session-a', timestamp: end),
-    );
+      await repo.createComment(
+        comment(
+          id: 'before',
+          sessionId: 'session-a',
+          timestamp: start.subtract(const Duration(minutes: 1)),
+        ),
+      );
+      await repo.createComment(
+        comment(id: 'at-start', sessionId: 'session-a', timestamp: start),
+      );
+      await repo.createComment(
+        comment(
+          id: 'inside',
+          sessionId: 'session-b',
+          timestamp: start.add(const Duration(minutes: 15)),
+        ),
+      );
+      await repo.createComment(
+        comment(id: 'wrong-session', sessionId: 'session-c', timestamp: start),
+      );
+      await repo.createComment(
+        comment(id: 'at-end', sessionId: 'session-a', timestamp: end),
+      );
 
-    final range = TimeRange(start: start, end: end);
-    final comments = await repo
-        .watchCommentsForPeriod(
-          sessionIds: ['session-b', 'session-a'],
-          range: range,
-        )
-        .first;
-    final count = await repo
-        .watchCommentCountForPeriod(
-          sessionIds: ['session-b', 'session-a'],
-          range: range,
-        )
-        .first;
+      final range = TimeRange(start: start, end: end);
+      final comments = await repo
+          .watchCommentsForPeriod(
+            sessionIds: ['session-b', 'session-a'],
+            range: range,
+          )
+          .first;
+      final count = await repo
+          .watchCommentCountForPeriod(
+            sessionIds: ['session-b', 'session-a'],
+            range: range,
+          )
+          .first;
 
-    expect(comments.map((c) => c.id), ['at-start', 'inside']);
-    expect(count, 2);
-  });
+      expect(comments.map((c) => c.id), ['at-start', 'inside']);
+      expect(count, 2);
+    },
+  );
 
   test('period query handles empty session id list', () async {
     final start = DateTime.utc(2026, 4, 30, 10);
@@ -136,23 +138,30 @@ void main() {
     expect(count, 0);
   });
 
-  test('reparent moves active comments and emits updated session ids', () async {
-    final ts = DateTime.utc(2026, 4, 30, 10);
-    await repo.createComment(
-      comment(id: 'move-me', sessionId: 'old-session', timestamp: ts),
-    );
+  test(
+    'reparent moves active comments and emits updated session ids',
+    () async {
+      final ts = DateTime.utc(2026, 4, 30, 10);
+      await repo.createComment(
+        comment(id: 'move-me', sessionId: 'old-session', timestamp: ts),
+      );
 
-    await repo.reparentComments(
-      fromSessionId: 'old-session',
-      toSessionId: 'new-session',
-    );
+      await repo.reparentComments(
+        fromSessionId: 'old-session',
+        toSessionId: 'new-session',
+      );
 
-    final oldComments = await repo.watchCommentsForSession('old-session').first;
-    final newComments = await repo.watchCommentsForSession('new-session').first;
+      final oldComments = await repo
+          .watchCommentsForSession('old-session')
+          .first;
+      final newComments = await repo
+          .watchCommentsForSession('new-session')
+          .first;
 
-    expect(oldComments, isEmpty);
-    expect(newComments.map((c) => c.id), ['move-me']);
-  });
+      expect(oldComments, isEmpty);
+      expect(newComments.map((c) => c.id), ['move-me']);
+    },
+  );
 
   test('reparent at-or-after splits comments by timestamp', () async {
     final split = DateTime.utc(2026, 4, 30, 10);
@@ -272,47 +281,41 @@ void main() {
     // Substitute a DateTime change to exercise `_partialCommentCompanion`'s
     // `parseSyncDateTime` branch (same code path that handles nullable
     // DateTimes in other repos).
-    test(
-      'DateTime change round-trips through parseSyncDateTime',
-      () async {
-        await repo.createComment(makeComment());
-        final captured = <CapturedSyncOp>[];
-        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test('DateTime change round-trips through parseSyncDateTime', () async {
+      await repo.createComment(makeComment());
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-        final newTs = baseTime.add(const Duration(hours: 2));
-        await repo.updateComment(makeComment(timestamp: newTs));
+      final newTs = baseTime.add(const Duration(hours: 2));
+      await repo.updateComment(makeComment(timestamp: newTs));
 
-        expect(captured, hasLength(1));
-        final patch = captured.single.fields;
-        expect(patch.keys.toSet(), {'timestamp'});
-        expect(patch['timestamp'], isA<String>());
-        expect((patch['timestamp'] as String).endsWith('Z'), isTrue);
+      expect(captured, hasLength(1));
+      final patch = captured.single.fields;
+      expect(patch.keys.toSet(), {'timestamp'});
+      expect(patch['timestamp'], isA<String>());
+      expect((patch['timestamp'] as String).endsWith('Z'), isTrue);
 
-        final row = await db.frontSessionCommentsDao.getCommentByIdRow('c1');
-        expect(row!.timestamp.toUtc(), newTs);
-      },
-    );
+      final row = await db.frontSessionCommentsDao.getCommentByIdRow('c1');
+      expect(row!.timestamp.toUtc(), newTs);
+    });
 
-    test(
-      'silently no-ops on a tombstoned row (does not emit, '
-      'does not resurrect)',
-      () async {
-        await repo.createComment(makeComment());
-        await repo.deleteComment('c1');
-        final captured = <CapturedSyncOp>[];
-        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test('silently no-ops on a tombstoned row (does not emit, '
+        'does not resurrect)', () async {
+      await repo.createComment(makeComment());
+      await repo.deleteComment('c1');
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-        await repo.updateComment(makeComment(body: 'Attempted edit'));
+      await repo.updateComment(makeComment(body: 'Attempted edit'));
 
-        expect(captured, isEmpty);
-        final row = await db.frontSessionCommentsDao.getCommentByIdRow('c1');
-        expect(row, isNotNull);
-        expect(row!.isDeleted, isTrue);
-        expect(row.body, 'Original body');
-      },
-    );
+      expect(captured, isEmpty);
+      final row = await db.frontSessionCommentsDao.getCommentByIdRow('c1');
+      expect(row, isNotNull);
+      expect(row!.isDeleted, isTrue);
+      expect(row.body, 'Original body');
+    });
 
     test('silently no-ops when the row does not exist', () async {
       final captured = <CapturedSyncOp>[];
@@ -322,8 +325,7 @@ void main() {
       await repo.updateComment(makeComment(id: 'missing'));
 
       expect(captured, isEmpty);
-      final row =
-          await db.frontSessionCommentsDao.getCommentByIdRow('missing');
+      final row = await db.frontSessionCommentsDao.getCommentByIdRow('missing');
       expect(row, isNull);
     });
 

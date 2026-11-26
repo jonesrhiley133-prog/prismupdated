@@ -33,45 +33,42 @@ void main() {
   tearDown(() => db.close());
 
   group('debugNoteFields UTC normalization', () {
-    test(
-      'date, created_at, and modified_at emit Z-suffixed UTC even when '
-      'input is a local DateTime',
-      () {
-        final localDate = DateTime(2026, 4, 27, 9, 0);
-        final localCreated = DateTime(2026, 4, 27, 10, 0);
-        final localModified = DateTime(2026, 4, 27, 11, 30);
+    test('date, created_at, and modified_at emit Z-suffixed UTC even when '
+        'input is a local DateTime', () {
+      final localDate = DateTime(2026, 4, 27, 9, 0);
+      final localCreated = DateTime(2026, 4, 27, 10, 0);
+      final localModified = DateTime(2026, 4, 27, 11, 30);
 
-        final note = domain.Note(
-          id: 'n1',
-          title: 't',
-          body: 'b',
-          date: localDate,
-          createdAt: localCreated,
-          modifiedAt: localModified,
-        );
+      final note = domain.Note(
+        id: 'n1',
+        title: 't',
+        body: 'b',
+        date: localDate,
+        createdAt: localCreated,
+        modifiedAt: localModified,
+      );
 
-        final fields = repo.debugNoteFields(note);
-        final dateStr = fields['date'] as String;
-        final createdStr = fields['created_at'] as String;
-        final modifiedStr = fields['modified_at'] as String;
+      final fields = repo.debugNoteFields(note);
+      final dateStr = fields['date'] as String;
+      final createdStr = fields['created_at'] as String;
+      final modifiedStr = fields['modified_at'] as String;
 
-        expect(dateStr.endsWith('Z'), isTrue, reason: dateStr);
-        expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
-        expect(modifiedStr.endsWith('Z'), isTrue, reason: modifiedStr);
-        expect(
-          DateTime.parse(dateStr).isAtSameMomentAs(localDate.toUtc()),
-          isTrue,
-        );
-        expect(
-          DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
-          isTrue,
-        );
-        expect(
-          DateTime.parse(modifiedStr).isAtSameMomentAs(localModified.toUtc()),
-          isTrue,
-        );
-      },
-    );
+      expect(dateStr.endsWith('Z'), isTrue, reason: dateStr);
+      expect(createdStr.endsWith('Z'), isTrue, reason: createdStr);
+      expect(modifiedStr.endsWith('Z'), isTrue, reason: modifiedStr);
+      expect(
+        DateTime.parse(dateStr).isAtSameMomentAs(localDate.toUtc()),
+        isTrue,
+      );
+      expect(
+        DateTime.parse(createdStr).isAtSameMomentAs(localCreated.toUtc()),
+        isTrue,
+      );
+      expect(
+        DateTime.parse(modifiedStr).isAtSameMomentAs(localModified.toUtc()),
+        isTrue,
+      );
+    });
   });
 
   group('updateNote (patch-style emission)', () {
@@ -106,9 +103,7 @@ void main() {
       addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
       final later = baseTime.add(const Duration(hours: 1));
-      await repo.updateNote(
-        makeNote(body: 'Updated body', modifiedAt: later),
-      );
+      await repo.updateNote(makeNote(body: 'Updated body', modifiedAt: later));
 
       expect(captured, hasLength(1));
       expect(captured.single.opType, SyncRecordOpType.update);
@@ -119,22 +114,22 @@ void main() {
       expect(captured.single.fields['is_deleted'], isNull);
     });
 
-    test('emits nothing when the domain object matches the stored row',
-        () async {
-      await repo.createNote(makeNote());
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'emits nothing when the domain object matches the stored row',
+      () async {
+        await repo.createNote(makeNote());
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateNote(makeNote());
+        await repo.updateNote(makeNote());
 
-      expect(captured, isEmpty);
-    });
+        expect(captured, isEmpty);
+      },
+    );
 
     test('preserves untouched columns in the database', () async {
-      await repo.createNote(
-        makeNote(colorHex: '#ff0000', memberId: 'm1'),
-      );
+      await repo.createNote(makeNote(colorHex: '#ff0000', memberId: 'm1'));
 
       await repo.updateNote(
         makeNote(
@@ -153,28 +148,30 @@ void main() {
       expect(row.memberId, 'm1');
     });
 
-    test('null-clearing emits the null and writes it to the database',
-        () async {
-      await repo.createNote(makeNote(colorHex: '#ff0000'));
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'null-clearing emits the null and writes it to the database',
+      () async {
+        await repo.createNote(makeNote(colorHex: '#ff0000'));
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateNote(
-        makeNote(
-          colorHex: null,
-          modifiedAt: baseTime.add(const Duration(hours: 1)),
-        ),
-      );
+        await repo.updateNote(
+          makeNote(
+            colorHex: null,
+            modifiedAt: baseTime.add(const Duration(hours: 1)),
+          ),
+        );
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('color_hex'), isTrue);
-      expect(patch['color_hex'], isNull);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('color_hex'), isTrue);
+        expect(patch['color_hex'], isNull);
 
-      final row = await dao.getNoteById('n1');
-      expect(row!.colorHex, isNull);
-    });
+        final row = await dao.getNoteById('n1');
+        expect(row!.colorHex, isNull);
+      },
+    );
 
     test('silently no-ops on a tombstoned row (does not emit, '
         'does not resurrect)', () async {
@@ -210,13 +207,13 @@ void main() {
     final baseTime = DateTime.utc(2026, 5, 1, 12);
 
     domain.Note makeNote(String id, {DateTime? date}) => domain.Note(
-          id: id,
-          title: 't-$id',
-          body: 'b-$id',
-          date: date ?? baseTime,
-          createdAt: baseTime,
-          modifiedAt: baseTime,
-        );
+      id: id,
+      title: 't-$id',
+      body: 'b-$id',
+      date: date ?? baseTime,
+      createdAt: baseTime,
+      modifiedAt: baseTime,
+    );
 
     test('returns active notes and excludes tombstoned ones', () async {
       await repo.createNote(makeNote('n1'));

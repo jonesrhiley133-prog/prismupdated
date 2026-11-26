@@ -160,34 +160,38 @@ void main() {
     expect(report.totalDiverged, 1);
   });
 
-  test('live group whose id is live (field version present) is NOT counted',
-      () async {
-    await _insertGroup(db, id: 'pk-group-$_groupUuid', pkUuid: _groupUuid);
-    // Field version exists but is_deleted=false -> live, not a tombstone.
-    final gate = TombstoneGate((table, entityId, field) async {
-      if (field != 'is_deleted') return null;
-      return entityId == gen0GroupId ? 'false' : null;
-    });
-    final report = await TombstoneRevivedRowsDetector(db, gate).scan();
-    expect(report.groups.count, 0);
-    expect(report.totalDiverged, 0);
-  });
+  test(
+    'live group whose id is live (field version present) is NOT counted',
+    () async {
+      await _insertGroup(db, id: 'pk-group-$_groupUuid', pkUuid: _groupUuid);
+      // Field version exists but is_deleted=false -> live, not a tombstone.
+      final gate = TombstoneGate((table, entityId, field) async {
+        if (field != 'is_deleted') return null;
+        return entityId == gen0GroupId ? 'false' : null;
+      });
+      final report = await TombstoneRevivedRowsDetector(db, gate).scan();
+      expect(report.groups.count, 0);
+      expect(report.totalDiverged, 0);
+    },
+  );
 
-  test('a tombstoned group row that is itself deleted is NOT counted',
-      () async {
-    // Only LIVE Drift rows can diverge; a deleted local row is in agreement.
-    await _insertGroup(
-      db,
-      id: 'pk-group-$_groupUuid',
-      pkUuid: _groupUuid,
-      deleted: true,
-    );
-    final report = await TombstoneRevivedRowsDetector(
-      db,
-      _gateTombstoning({gen0GroupId}),
-    ).scan();
-    expect(report.groups.count, 0);
-  });
+  test(
+    'a tombstoned group row that is itself deleted is NOT counted',
+    () async {
+      // Only LIVE Drift rows can diverge; a deleted local row is in agreement.
+      await _insertGroup(
+        db,
+        id: 'pk-group-$_groupUuid',
+        pkUuid: _groupUuid,
+        deleted: true,
+      );
+      final report = await TombstoneRevivedRowsDetector(
+        db,
+        _gateTombstoning({gen0GroupId}),
+      ).scan();
+      expect(report.groups.count, 0);
+    },
+  );
 
   test('a group without a pluralkit_uuid is ignored entirely', () async {
     await _insertGroup(db, id: 'local-group', pkUuid: null);
@@ -216,37 +220,39 @@ void main() {
     expect(report.entries.entityIds, [gen0EntryId]);
   });
 
-  test('entry detection is generation-aware (gen-1 row uses the salted id)',
-      () async {
-    final gen1EntryId = deriveEntryIncarnationEntityId(
-      _groupUuid,
-      _memberUuid,
-      1,
-    )!;
-    await _insertGroup(db, id: 'pk-group-$_groupUuid', pkUuid: _groupUuid);
-    await _insertEntry(
-      db,
-      id: gen1EntryId,
-      groupId: 'pk-group-$_groupUuid',
-      pkGroupUuid: _groupUuid,
-      pkMemberUuid: _memberUuid,
-      generation: 1,
-    );
-    // The burned gen-0 id is tombstoned, but the live row is at gen-1 — its
-    // current id is live, so it must NOT be flagged.
-    final report = await TombstoneRevivedRowsDetector(
-      db,
-      _gateTombstoning({gen0EntryId}),
-    ).scan();
-    expect(report.entries.count, 0);
-    // Conversely, tombstoning the row's own gen-1 id flags it.
-    final report2 = await TombstoneRevivedRowsDetector(
-      db,
-      _gateTombstoning({gen1EntryId}),
-    ).scan();
-    expect(report2.entries.count, 1);
-    expect(report2.entries.entityIds, [gen1EntryId]);
-  });
+  test(
+    'entry detection is generation-aware (gen-1 row uses the salted id)',
+    () async {
+      final gen1EntryId = deriveEntryIncarnationEntityId(
+        _groupUuid,
+        _memberUuid,
+        1,
+      )!;
+      await _insertGroup(db, id: 'pk-group-$_groupUuid', pkUuid: _groupUuid);
+      await _insertEntry(
+        db,
+        id: gen1EntryId,
+        groupId: 'pk-group-$_groupUuid',
+        pkGroupUuid: _groupUuid,
+        pkMemberUuid: _memberUuid,
+        generation: 1,
+      );
+      // The burned gen-0 id is tombstoned, but the live row is at gen-1 — its
+      // current id is live, so it must NOT be flagged.
+      final report = await TombstoneRevivedRowsDetector(
+        db,
+        _gateTombstoning({gen0EntryId}),
+      ).scan();
+      expect(report.entries.count, 0);
+      // Conversely, tombstoning the row's own gen-1 id flags it.
+      final report2 = await TombstoneRevivedRowsDetector(
+        db,
+        _gateTombstoning({gen1EntryId}),
+      ).scan();
+      expect(report2.entries.count, 1);
+      expect(report2.entries.entityIds, [gen1EntryId]);
+    },
+  );
 
   test('an entry with no PK ref on the row AND no PK-linked group/member is '
       'ignored', () async {

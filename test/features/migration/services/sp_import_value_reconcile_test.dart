@@ -36,7 +36,10 @@ void main() {
 
   tearDown(() => db.close());
 
-  Uint8List exportJson({required String colorValue, String fieldName = 'Color'}) {
+  Uint8List exportJson({
+    required String colorValue,
+    String fieldName = 'Color',
+  }) {
     return Uint8List.fromList(
       utf8.encode(
         jsonEncode({
@@ -92,8 +95,7 @@ void main() {
   Future<List<CustomFieldValueRow>> allValueRows() =>
       db.select(db.customFieldValues).get();
 
-  test('repeat import converges on one live row per (field, member)',
-      () async {
+  test('repeat import converges on one live row per (field, member)', () async {
     await runImport(colorValue: 'red');
     final pair = await importedPair();
     final deterministicId = deriveCustomFieldValueId(
@@ -119,60 +121,64 @@ void main() {
     expect((await allValueRows()).length, 1);
   });
 
-  test('import after a UI edit updates the live row instead of duplicating',
-      () async {
-    await runImport(colorValue: 'red');
-    final pair = await importedPair();
+  test(
+    'import after a UI edit updates the live row instead of duplicating',
+    () async {
+      await runImport(colorValue: 'red');
+      final pair = await importedPair();
 
-    await fieldsRepo.upsertValue(
-      domain.CustomFieldValue(
-        id: deriveCustomFieldValueId(
+      await fieldsRepo.upsertValue(
+        domain.CustomFieldValue(
+          id: deriveCustomFieldValueId(
+            customFieldId: pair.fieldId,
+            memberId: pair.memberId,
+          ),
           customFieldId: pair.fieldId,
           memberId: pair.memberId,
+          value: 'edited locally',
         ),
+      );
+
+      await runImport(colorValue: 'green');
+
+      final value = await fieldsRepo.getValueForField(
+        pair.fieldId,
+        pair.memberId,
+      );
+      expect(value?.value, 'green');
+      expect((await allValueRows()).length, 1);
+    },
+  );
+
+  test(
+    'import over a burned deterministic id mints a fresh visible row',
+    () async {
+      await runImport(colorValue: 'red');
+      final pair = await importedPair();
+      final deterministicId = deriveCustomFieldValueId(
         customFieldId: pair.fieldId,
         memberId: pair.memberId,
-        value: 'edited locally',
-      ),
-    );
+      );
 
-    await runImport(colorValue: 'green');
+      // Clearing tombstones the deterministic id; fleet-wide it is absorbing
+      // and can never be revived, so the re-import must not write into it.
+      await fieldsRepo.deleteValueFor(pair.fieldId, pair.memberId);
 
-    final value = await fieldsRepo.getValueForField(
-      pair.fieldId,
-      pair.memberId,
-    );
-    expect(value?.value, 'green');
-    expect((await allValueRows()).length, 1);
-  });
+      await runImport(colorValue: 'blue');
 
-  test('import over a burned deterministic id mints a fresh visible row',
-      () async {
-    await runImport(colorValue: 'red');
-    final pair = await importedPair();
-    final deterministicId = deriveCustomFieldValueId(
-      customFieldId: pair.fieldId,
-      memberId: pair.memberId,
-    );
+      final revived = await fieldsRepo.getValueForField(
+        pair.fieldId,
+        pair.memberId,
+      );
+      expect(revived?.value, 'blue');
+      expect(revived?.id, isNot(deterministicId));
 
-    // Clearing tombstones the deterministic id; fleet-wide it is absorbing
-    // and can never be revived, so the re-import must not write into it.
-    await fieldsRepo.deleteValueFor(pair.fieldId, pair.memberId);
-
-    await runImport(colorValue: 'blue');
-
-    final revived = await fieldsRepo.getValueForField(
-      pair.fieldId,
-      pair.memberId,
-    );
-    expect(revived?.value, 'blue');
-    expect(revived?.id, isNot(deterministicId));
-
-    final rows = await allValueRows();
-    final tombstone = rows.singleWhere((r) => r.id == deterministicId);
-    expect(tombstone.isDeleted, isTrue);
-    expect(rows.where((r) => !r.isDeleted).length, 1);
-  });
+      final rows = await allValueRows();
+      final tombstone = rows.singleWhere((r) => r.id == deterministicId);
+      expect(tombstone.isDeleted, isTrue);
+      expect(rows.where((r) => !r.isDeleted).length, 1);
+    },
+  );
 
   test('repeat import updates an active field definition without duplicating '
       'or touching local layout', () async {

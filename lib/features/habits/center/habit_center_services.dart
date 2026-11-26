@@ -43,27 +43,46 @@ class HabitReminderScheduler {
       if (!v.habit.isActive) continue;
       final times = [
         for (final r in v.meta.reminders)
-          if (r.split(':') case [final h, final m]) (int.tryParse(h) ?? 9) * 60 + (int.tryParse(m) ?? 0),
+          if (r.split(':') case [final h, final m])
+            (int.tryParse(h) ?? 9) * 60 + (int.tryParse(m) ?? 0),
       ];
       if (times.isEmpty && !v.meta.remindMissed) continue;
       for (var i = 0; i < 7; i++) {
         final d = today.add(Duration(days: i));
         final s = v.stateOn(d);
-        if (s == DayState.rest || s == DayState.paused || s == DayState.skipped || s == DayState.met) continue;
+        if (s == DayState.rest ||
+            s == DayState.paused ||
+            s == DayState.skipped ||
+            s == DayState.met)
+          continue;
         if (!scheduledOn(v.habit, v.meta, d, v.completions)) continue;
         final left = v.meta.target - v.progressOn(d);
         for (final t in times) {
           final at = d.add(Duration(minutes: t));
-          if (at.isAfter(now)) plan.add((at, v.habit.name, i == 0 && left < v.meta.target ? '${left.ceil()} to go today' : 'Time for ${v.habit.name}'));
+          if (at.isAfter(now))
+            plan.add((
+              at,
+              v.habit.name,
+              i == 0 && left < v.meta.target
+                  ? '${left.ceil()} to go today'
+                  : 'Time for ${v.habit.name}',
+            ));
         }
         if (v.meta.remindMissed) {
           final at = d.add(const Duration(hours: 20));
-          if (at.isAfter(now)) plan.add((at, v.habit.name, 'Your target isn’t reached yet — there’s still time'));
+          if (at.isAfter(now))
+            plan.add((
+              at,
+              v.habit.name,
+              'Your target isn’t reached yet — there’s still time',
+            ));
         }
       }
     }
     plan.sort((a, b) => a.$1.compareTo(b.$1));
-    final sig = plan.map((p) => '${p.$1.millisecondsSinceEpoch}${p.$2}').join('|');
+    final sig = plan
+        .map((p) => '${p.$1.millisecondsSinceEpoch}${p.$2}')
+        .join('|');
     if (sig == _sig) return;
     _sig = sig;
     try {
@@ -75,7 +94,10 @@ class HabitReminderScheduler {
           title: p.$2,
           body: p.$3,
           scheduledFor: p.$1,
-          details: PrismNotify.details('prism_habit_routines', 'Habit reminders'),
+          details: PrismNotify.details(
+            'prism_habit_routines',
+            'Habit reminders',
+          ),
           payload: 'prism:habits',
         );
       }
@@ -97,9 +119,20 @@ class HabitAutoLogger {
   String? _sleepId;
 
   void start() {
-    ref.listen<AsyncValue<List<TrackerRecord>>>(trackerRecordsProvider, (_, next) => _onTracker(next.value), fireImmediately: true);
-    ref.listen<AsyncValue<List<MoodEntry>>>(moodEntriesProvider, (_, next) => _onMood(next.value), fireImmediately: true);
-    ref.listen<AsyncValue<FrontingSession?>>(activeSleepSessionProvider, (prev, next) {
+    ref.listen<AsyncValue<List<TrackerRecord>>>(
+      trackerRecordsProvider,
+      (_, next) => _onTracker(next.value),
+      fireImmediately: true,
+    );
+    ref.listen<AsyncValue<List<MoodEntry>>>(
+      moodEntriesProvider,
+      (_, next) => _onMood(next.value),
+      fireImmediately: true,
+    );
+    ref.listen<AsyncValue<FrontingSession?>>(activeSleepSessionProvider, (
+      prev,
+      next,
+    ) {
       final was = prev?.value?.id ?? _sleepId;
       _sleepId = next.value?.id;
       if (was != null && next.hasValue && next.value == null) {
@@ -108,7 +141,8 @@ class HabitAutoLogger {
     }, fireImmediately: true);
   }
 
-  bool _fresh(DateTime created) => created.isAfter(_started.subtract(const Duration(seconds: 10)));
+  bool _fresh(DateTime created) =>
+      created.isAfter(_started.subtract(const Duration(seconds: 10)));
 
   void _onTracker(List<TrackerRecord>? list) {
     if (list == null) return;
@@ -118,8 +152,19 @@ class HabitAutoLogger {
     if (prev == null) return;
     for (final r in list) {
       if (prev.contains(r.id) || !_fresh(r.createdAt)) continue;
-      if (const {'nutri.drink', 'nutri.meal', 'fitness.workout', 'journal.entry', 'dream.entry'}.contains(r.kind)) {
-        _fire(r.kind, RecordRef(RecordRef.rec, r.id), r.memberId, minutes: r.integer('minutes'));
+      if (const {
+        'nutri.drink',
+        'nutri.meal',
+        'fitness.workout',
+        'journal.entry',
+        'dream.entry',
+      }.contains(r.kind)) {
+        _fire(
+          r.kind,
+          RecordRef(RecordRef.rec, r.id),
+          r.memberId,
+          minutes: r.integer('minutes'),
+        );
       }
     }
   }
@@ -131,24 +176,47 @@ class HabitAutoLogger {
     _moods = ids;
     if (prev == null) return;
     for (final m in list) {
-      if (!prev.contains(m.id) && _fresh(m.createdAt)) _fire('mood', RecordRef(RecordRef.mood, m.id), m.memberId);
+      if (!prev.contains(m.id) && _fresh(m.createdAt))
+        _fire('mood', RecordRef(RecordRef.mood, m.id), m.memberId);
     }
   }
 
-  Future<void> _fire(String source, RecordRef origin, String? memberId, {int? minutes}) async {
+  Future<void> _fire(
+    String source,
+    RecordRef origin,
+    String? memberId, {
+    int? minutes,
+  }) async {
     if (!isFeatureOn(ref, 'habits')) return;
-    final views = ref.read(habitViewsProvider).values.where((v) => v.habit.isActive && v.meta.autoLog == source && !v.meta.isPausedOn(DateTime.now()));
-    final logs = ref.read(trackerKindProvider(TrackerKind.habitLog)).value ?? const <TrackerRecord>[];
-    for (final v in views) {
-      if (logs.any((l) => l.str('habitId') == v.habit.id && l.str('source') == origin.key)) continue;
-      try {
-        await ref.read(habitCenterActionsProvider).log(
-          habit: v.habit,
-          memberId: memberId ?? ref.read(currentFronterProvider).value?.id,
-          minutes: v.meta.unit == HabitUnit.minutes ? (minutes ?? v.meta.defaultMinutes) : minutes,
-          source: origin.key,
-          linkTo: [origin],
+    final views = ref
+        .read(habitViewsProvider)
+        .values
+        .where(
+          (v) =>
+              v.habit.isActive &&
+              v.meta.autoLog == source &&
+              !v.meta.isPausedOn(DateTime.now()),
         );
+    final logs =
+        ref.read(trackerKindProvider(TrackerKind.habitLog)).value ??
+        const <TrackerRecord>[];
+    for (final v in views) {
+      if (logs.any(
+        (l) => l.str('habitId') == v.habit.id && l.str('source') == origin.key,
+      ))
+        continue;
+      try {
+        await ref
+            .read(habitCenterActionsProvider)
+            .log(
+              habit: v.habit,
+              memberId: memberId ?? ref.read(currentFronterProvider).value?.id,
+              minutes: v.meta.unit == HabitUnit.minutes
+                  ? (minutes ?? v.meta.defaultMinutes)
+                  : minutes,
+              source: origin.key,
+              linkTo: [origin],
+            );
       } catch (e) {
         debugPrint('[Habits] auto log failed: $e');
       }
@@ -162,7 +230,9 @@ final habitReminderSchedulerProvider = Provider<HabitReminderScheduler>((ref) {
   return s;
 });
 
-final habitAutoLoggerProvider = Provider<HabitAutoLogger>((ref) => HabitAutoLogger(ref)..start());
+final habitAutoLoggerProvider = Provider<HabitAutoLogger>(
+  (ref) => HabitAutoLogger(ref)..start(),
+);
 
 /// Starts the habit services a few seconds after launch.
 final habitCenterBootProvider = Provider<void>((ref) {

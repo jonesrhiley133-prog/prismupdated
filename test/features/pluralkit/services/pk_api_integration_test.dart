@@ -145,10 +145,14 @@ void main() {
             if (m.name.startsWith(_kPrefix)) {
               try {
                 await client.deleteMember(m.id);
-              } catch (_) {/* ignore */}
+              } catch (_) {
+                /* ignore */
+              }
             }
           }
-        } catch (_) {/* ignore */}
+        } catch (_) {
+          /* ignore */
+        }
 
         client.dispose();
       });
@@ -162,8 +166,10 @@ void main() {
         'performFullImport writes members and sessions to DB',
         () async {
           final memberRepo = DriftMemberRepository(db.membersDao, null);
-          final sessionRepo =
-              DriftFrontingSessionRepository(db.frontingSessionsDao, null);
+          final sessionRepo = DriftFrontingSessionRepository(
+            db.frontingSessionsDao,
+            null,
+          );
 
           // tokenOverride bypasses FlutterSecureStorage so no test binding needed.
           final service = PluralKitSyncService(
@@ -183,41 +189,62 @@ void main() {
           await service.performFullImport();
 
           expect(service.state.isSyncing, isFalse);
-          expect(service.state.syncError, isNull,
-              reason: 'Full import should complete without error');
+          expect(
+            service.state.syncError,
+            isNull,
+            reason: 'Full import should complete without error',
+          );
 
           // Members were written to DB.
           final membersInDb = await db.membersDao.getAllMembers();
-          expect(membersInDb, isNotEmpty,
-              reason: 'At least one member should be imported from PK');
+          expect(
+            membersInDb,
+            isNotEmpty,
+            reason: 'At least one member should be imported from PK',
+          );
 
           // Every member must carry its PK IDs for future delta syncs.
           for (final m in membersInDb) {
-            expect(m.pluralkitId, isNotNull,
-                reason: 'Member ${m.name} missing pluralkitId');
-            expect(m.pluralkitUuid, isNotNull,
-                reason: 'Member ${m.name} missing pluralkitUuid');
+            expect(
+              m.pluralkitId,
+              isNotNull,
+              reason: 'Member ${m.name} missing pluralkitId',
+            );
+            expect(
+              m.pluralkitUuid,
+              isNotNull,
+              reason: 'Member ${m.name} missing pluralkitUuid',
+            );
           }
 
           // Switches were written as fronting sessions.
           final sessionsInDb = await db.frontingSessionsDao.getAllSessions();
-          expect(sessionsInDb, isNotEmpty,
-              reason: 'At least one switch should become a fronting session');
+          expect(
+            sessionsInDb,
+            isNotEmpty,
+            reason: 'At least one switch should become a fronting session',
+          );
 
           // Every session with a member must reference a known member.
           final memberIds = membersInDb.map((m) => m.id).toSet();
           for (final s in sessionsInDb) {
             if (s.memberId != null) {
-              expect(memberIds, contains(s.memberId),
-                  reason:
-                      'Session ${s.id} references unknown member ${s.memberId}');
+              expect(
+                memberIds,
+                contains(s.memberId),
+                reason:
+                    'Session ${s.id} references unknown member ${s.memberId}',
+              );
             }
           }
 
           // Sync state was updated.
           final syncState = await db.pluralKitSyncDao.getSyncState();
-          expect(syncState.lastSyncDate, isNotNull,
-              reason: 'lastSyncDate should be set after full import');
+          expect(
+            syncState.lastSyncDate,
+            isNotNull,
+            reason: 'lastSyncDate should be set after full import',
+          );
         },
         timeout: const Timeout(Duration(minutes: 3)),
       );
@@ -226,8 +253,10 @@ void main() {
         're-import is idempotent — same member count, no duplicate sessions',
         () async {
           final memberRepo = DriftMemberRepository(db.membersDao, null);
-          final sessionRepo =
-              DriftFrontingSessionRepository(db.frontingSessionsDao, null);
+          final sessionRepo = DriftFrontingSessionRepository(
+            db.frontingSessionsDao,
+            null,
+          );
 
           final service = PluralKitSyncService(
             memberRepository: memberRepo,
@@ -242,20 +271,26 @@ void main() {
           await service.performFullImport();
 
           final membersAfterFirst = await db.membersDao.getAllMembers();
-          final sessionsAfterFirst =
-              await db.frontingSessionsDao.getAllSessions();
+          final sessionsAfterFirst = await db.frontingSessionsDao
+              .getAllSessions();
 
           // Second import — should update existing members and skip duplicate switches.
           await service.performFullImport();
 
           final membersAfterSecond = await db.membersDao.getAllMembers();
-          final sessionsAfterSecond =
-              await db.frontingSessionsDao.getAllSessions();
+          final sessionsAfterSecond = await db.frontingSessionsDao
+              .getAllSessions();
 
-          expect(membersAfterSecond.length, membersAfterFirst.length,
-              reason: 'Second import should not create duplicate members');
-          expect(sessionsAfterSecond.length, sessionsAfterFirst.length,
-              reason: 'Second import should not create duplicate sessions');
+          expect(
+            membersAfterSecond.length,
+            membersAfterFirst.length,
+            reason: 'Second import should not create duplicate members',
+          );
+          expect(
+            sessionsAfterSecond.length,
+            sessionsAfterFirst.length,
+            reason: 'Second import should not create duplicate sessions',
+          );
         },
         timeout: const Timeout(Duration(minutes: 5)),
       );
@@ -283,17 +318,22 @@ void main() {
           expect(patched.displayName, 'Push A (updated)');
 
           // 3. Null-clear display_name (explicit null, not omit).
-          await client.updateMember(created.id, {
-            'display_name': null,
-          });
+          await client.updateMember(created.id, {'display_name': null});
 
           // 4. GET verifies clearing took.
-          final fetched =
-              (await client.getMembers()).firstWhere((m) => m.id == created.id);
-          expect(fetched.displayName, isNull,
-              reason: 'Null PATCH must clear display_name on PK');
-          expect(fetched.pronouns, 'they/them',
-              reason: 'Unrelated fields must survive a null-clear PATCH');
+          final fetched = (await client.getMembers()).firstWhere(
+            (m) => m.id == created.id,
+          );
+          expect(
+            fetched.displayName,
+            isNull,
+            reason: 'Null PATCH must clear display_name on PK',
+          );
+          expect(
+            fetched.pronouns,
+            'they/them',
+            reason: 'Unrelated fields must survive a null-clear PATCH',
+          );
         },
         timeout: const Timeout(Duration(minutes: 2)),
         skip: _skipAll ? _skipReason : false,
@@ -307,22 +347,15 @@ void main() {
           _created.memberIds.add(m.id);
 
           final t0 = DateTime.now().toUtc().subtract(const Duration(hours: 1));
-          final sw = await client.createSwitch(
-            [m.id],
-            timestamp: t0,
-          );
+          final sw = await client.createSwitch([m.id], timestamp: t0);
           _created.switchIds.add(sw.id);
 
           // PATCH the timestamp forward 10 minutes.
           final t1 = t0.add(const Duration(minutes: 10));
-          final patched = await client.updateSwitch(
-            sw.id,
-            timestamp: t1,
-          );
+          final patched = await client.updateSwitch(sw.id, timestamp: t1);
           // Assert the PATCH round-tripped to t1 (not merely "after t0").
           // Allow a 1-second tolerance for PK's timestamp rounding.
-          final delta =
-              patched.timestamp.toUtc().difference(t1.toUtc()).abs();
+          final delta = patched.timestamp.toUtc().difference(t1.toUtc()).abs();
           expect(
             delta <= const Duration(seconds: 1),
             isTrue,
@@ -346,9 +379,13 @@ void main() {
           // Regression for audit finding C2: the members PATCH body must be a
           // bare JSON array, and a re-PATCH of the identical list returns 400
           // with code 40004 (matched against PluralKitApiError.message).
-          final m1 = await client.createMember({'name': '${_kPrefix}repatch-1'});
+          final m1 = await client.createMember({
+            'name': '${_kPrefix}repatch-1',
+          });
           _created.memberIds.add(m1.id);
-          final m2 = await client.createMember({'name': '${_kPrefix}repatch-2'});
+          final m2 = await client.createMember({
+            'name': '${_kPrefix}repatch-2',
+          });
           _created.memberIds.add(m2.id);
 
           // Switch with member 1, explicitly in the past so it doesn't disturb
@@ -358,10 +395,15 @@ void main() {
           _created.switchIds.add(sw.id);
 
           // PATCH the member list to [m1, m2] — must round-trip both.
-          final patched =
-              await client.updateSwitchMembers(sw.id, [m1.id, m2.id]);
-          expect(patched.members.toSet(), containsAll([m1.id, m2.id]),
-              reason: 'PATCH members must replace the fronter list with both');
+          final patched = await client.updateSwitchMembers(sw.id, [
+            m1.id,
+            m2.id,
+          ]);
+          expect(
+            patched.members.toSet(),
+            containsAll([m1.id, m2.id]),
+            reason: 'PATCH members must replace the fronter list with both',
+          );
 
           // PATCH again with the identical list → 400 40004.
           try {
@@ -369,10 +411,16 @@ void main() {
             fail('expected a 400 40004 on an identical-list re-PATCH');
           } on PluralKitApiError catch (e) {
             expect(e.statusCode, 400);
-            expect(e.message, contains('40004'),
-                reason: 'identical-front PATCH must embed code 40004');
-            expect(e.code, 40004,
-                reason: 'parsed error code must surface the JSON body code');
+            expect(
+              e.message,
+              contains('40004'),
+              reason: 'identical-front PATCH must embed code 40004',
+            );
+            expect(
+              e.code,
+              40004,
+              reason: 'parsed error code must surface the JSON body code',
+            );
           }
 
           // Clean up the switch (members cleaned by teardown).
@@ -401,28 +449,33 @@ void main() {
           final ours = allPk
               .where((m) => m.name == a.name || m.name == b.name)
               .toList();
-          expect(ours.length, 2,
-              reason: 'Both seeded PK members must be visible');
+          expect(
+            ours.length,
+            2,
+            reason: 'Both seeded PK members must be visible',
+          );
 
           // Two local members matching by name — plus one unrelated local
           // that must not be paired to anything.
           final locals = <domain.Member>[
             domain.Member(
-                id: 'local-a',
-                name: a.name,
-                createdAt: DateTime(2026)),
+              id: 'local-a',
+              name: a.name,
+              createdAt: DateTime(2026),
+            ),
             domain.Member(
-                id: 'local-b',
-                name: b.name,
-                createdAt: DateTime(2026)),
+              id: 'local-b',
+              name: b.name,
+              createdAt: DateTime(2026),
+            ),
             domain.Member(
-                id: 'local-noise',
-                name: '${_kPrefix}zzz-noise',
-                createdAt: DateTime(2026)),
+              id: 'local-noise',
+              name: '${_kPrefix}zzz-noise',
+              createdAt: DateTime(2026),
+            ),
           ];
 
-          final suggestions =
-              const PkMemberMatcher().suggest(locals, ours);
+          final suggestions = const PkMemberMatcher().suggest(locals, ours);
 
           // Exactly one suggestion per PK member.
           expect(suggestions.length, 2);
@@ -438,8 +491,9 @@ void main() {
           expect(sb.suggestedLocal?.id, 'local-b');
 
           // local-noise must not appear as a suggestion target.
-          final suggestedLocalIds =
-              suggestions.map((s) => s.suggestedLocal?.id).toSet();
+          final suggestedLocalIds = suggestions
+              .map((s) => s.suggestedLocal?.id)
+              .toSet();
           expect(suggestedLocalIds, isNot(contains('local-noise')));
         },
         timeout: const Timeout(Duration(minutes: 2)),
@@ -462,9 +516,11 @@ void main() {
           _created.memberIds.remove(m.id);
 
           final still = await client.getMembers();
-          expect(still.any((x) => x.id == m.id), isFalse,
-              reason:
-                  'After delete, member must disappear from the live listing');
+          expect(
+            still.any((x) => x.id == m.id),
+            isFalse,
+            reason: 'After delete, member must disappear from the live listing',
+          );
         },
         timeout: const Timeout(Duration(minutes: 2)),
         skip: _skipAll ? _skipReason : false,

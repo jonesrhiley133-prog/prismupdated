@@ -32,35 +32,35 @@ class _SecureStorageStub {
     TestWidgetsFlutterBinding.ensureInitialized();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-      (MethodCall call) async {
-        switch (call.method) {
-          case 'write':
-            writeCalls += 1;
-            store[call.arguments['key'] as String] =
-                call.arguments['value'] as String?;
-            return null;
-          case 'read':
-            return store[call.arguments['key'] as String];
-          case 'delete':
-            deleteCalls += 1;
-            store.remove(call.arguments['key'] as String);
-            return null;
-          case 'containsKey':
-            return store.containsKey(call.arguments['key'] as String);
-          default:
-            return null;
-        }
-      },
-    );
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          (MethodCall call) async {
+            switch (call.method) {
+              case 'write':
+                writeCalls += 1;
+                store[call.arguments['key'] as String] =
+                    call.arguments['value'] as String?;
+                return null;
+              case 'read':
+                return store[call.arguments['key'] as String];
+              case 'delete':
+                deleteCalls += 1;
+                store.remove(call.arguments['key'] as String);
+                return null;
+              case 'containsKey':
+                return store.containsKey(call.arguments['key'] as String);
+              default:
+                return null;
+            }
+          },
+        );
   }
 
   void teardown() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-      null,
-    );
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          null,
+        );
     store.clear();
     writeCalls = 0;
     deleteCalls = 0;
@@ -92,35 +92,30 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('property: divergent writes always blocked while repair pending', () {
-    test(
-      'writeDatabaseKeyHex refuses every divergent random hex',
-      () async {
-        final verified = '01' * 32; // pinned verified key
-        await setKeychainRepairPending(true);
+    test('writeDatabaseKeyHex refuses every divergent random hex', () async {
+      final verified = '01' * 32; // pinned verified key
+      await setKeychainRepairPending(true);
 
-        for (var i = 0; i < _kPropertyIterations; i++) {
-          final candidate = _randomHex(rng);
-          if (candidate == verified) continue; // skip the equality edge
+      for (var i = 0; i < _kPropertyIterations; i++) {
+        final candidate = _randomHex(rng);
+        if (candidate == verified) continue; // skip the equality edge
 
-          await expectLater(
-            () => writeDatabaseKeyHex(
-              candidate,
-              verifiedStartupKey: verified,
-            ),
-            throwsStateError,
-            reason: 'iteration $i with candidate=$candidate',
-          );
-        }
-
-        // Invariant: NOTHING was written to the primary slot.
-        expect(
-          storageStub.store.containsKey(kDatabaseKeyStorageKey),
-          isFalse,
-          reason: 'guard must refuse every divergent write — storage stayed empty',
+        await expectLater(
+          () => writeDatabaseKeyHex(candidate, verifiedStartupKey: verified),
+          throwsStateError,
+          reason: 'iteration $i with candidate=$candidate',
         );
-        expect(storageStub.writeCalls, equals(0));
-      },
-    );
+      }
+
+      // Invariant: NOTHING was written to the primary slot.
+      expect(
+        storageStub.store.containsKey(kDatabaseKeyStorageKey),
+        isFalse,
+        reason:
+            'guard must refuse every divergent write — storage stayed empty',
+      );
+      expect(storageStub.writeCalls, equals(0));
+    });
 
     test(
       'writeSyncDatabaseKeyHex refuses every divergent random hex',
@@ -169,10 +164,7 @@ void main() {
         }
 
         expect(storageStub.writeCalls, equals(0));
-        expect(
-          storageStub.store.containsKey(kDatabaseKeyStorageKey),
-          isFalse,
-        );
+        expect(storageStub.store.containsKey(kDatabaseKeyStorageKey), isFalse);
         expect(
           storageStub.store.containsKey(kSyncDatabaseKeyStorageKey),
           isFalse,
@@ -233,46 +225,38 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('property: staging writes always blocked while repair pending', () {
-    test(
-      'writeStagingDatabaseKeyHex refuses every random hex',
-      () async {
-        await setKeychainRepairPending(true);
-        for (var i = 0; i < _kPropertyIterations; i++) {
-          final hex = _randomHex(rng);
-          await expectLater(
-            () => writeStagingDatabaseKeyHex(hex),
-            throwsStateError,
-            reason: 'iter $i, hex=$hex',
-          );
-        }
-        expect(
-          storageStub.store
-              .containsKey('${kDatabaseKeyStorageKey}_staging'),
-          isFalse,
+    test('writeStagingDatabaseKeyHex refuses every random hex', () async {
+      await setKeychainRepairPending(true);
+      for (var i = 0; i < _kPropertyIterations; i++) {
+        final hex = _randomHex(rng);
+        await expectLater(
+          () => writeStagingDatabaseKeyHex(hex),
+          throwsStateError,
+          reason: 'iter $i, hex=$hex',
         );
-        expect(storageStub.writeCalls, equals(0));
-      },
-    );
+      }
+      expect(
+        storageStub.store.containsKey('${kDatabaseKeyStorageKey}_staging'),
+        isFalse,
+      );
+      expect(storageStub.writeCalls, equals(0));
+    });
 
-    test(
-      'writeStagingSyncDatabaseKeyHex refuses every random hex',
-      () async {
-        await setKeychainRepairPending(true);
-        for (var i = 0; i < _kPropertyIterations; i++) {
-          final hex = _randomHex(rng);
-          await expectLater(
-            () => writeStagingSyncDatabaseKeyHex(hex),
-            throwsStateError,
-          );
-        }
-        expect(
-          storageStub.store
-              .containsKey('${kSyncDatabaseKeyStorageKey}_staging'),
-          isFalse,
+    test('writeStagingSyncDatabaseKeyHex refuses every random hex', () async {
+      await setKeychainRepairPending(true);
+      for (var i = 0; i < _kPropertyIterations; i++) {
+        final hex = _randomHex(rng);
+        await expectLater(
+          () => writeStagingSyncDatabaseKeyHex(hex),
+          throwsStateError,
         );
-        expect(storageStub.writeCalls, equals(0));
-      },
-    );
+      }
+      expect(
+        storageStub.store.containsKey('${kSyncDatabaseKeyStorageKey}_staging'),
+        isFalse,
+      );
+      expect(storageStub.writeCalls, equals(0));
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -300,30 +284,27 @@ void main() {
       },
     );
 
-    test(
-      'writeStagingDatabaseKeyHex / writeStagingSyncDatabaseKeyHex always '
-      'succeed when flag is false',
-      () async {
-        expect(await isKeychainRepairPending(), isFalse);
+    test('writeStagingDatabaseKeyHex / writeStagingSyncDatabaseKeyHex always '
+        'succeed when flag is false', () async {
+      expect(await isKeychainRepairPending(), isFalse);
 
-        for (var i = 0; i < _kPropertyIterations; i++) {
-          final hex = _randomHex(rng);
-          final r1 = await writeStagingDatabaseKeyHex(hex);
-          expect(r1.ok, isTrue);
-          expect(
-            storageStub.store['${kDatabaseKeyStorageKey}_staging'],
-            equals(hex),
-          );
+      for (var i = 0; i < _kPropertyIterations; i++) {
+        final hex = _randomHex(rng);
+        final r1 = await writeStagingDatabaseKeyHex(hex);
+        expect(r1.ok, isTrue);
+        expect(
+          storageStub.store['${kDatabaseKeyStorageKey}_staging'],
+          equals(hex),
+        );
 
-          final r2 = await writeStagingSyncDatabaseKeyHex(hex);
-          expect(r2.ok, isTrue);
-          expect(
-            storageStub.store['${kSyncDatabaseKeyStorageKey}_staging'],
-            equals(hex),
-          );
-        }
-      },
-    );
+        final r2 = await writeStagingSyncDatabaseKeyHex(hex);
+        expect(r2.ok, isTrue);
+        expect(
+          storageStub.store['${kSyncDatabaseKeyStorageKey}_staging'],
+          equals(hex),
+        );
+      }
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -349,10 +330,7 @@ void main() {
         // expected
       }
       try {
-        await writeSyncDatabaseKeyHex(
-          candidate,
-          verifiedStartupKey: verified,
-        );
+        await writeSyncDatabaseKeyHex(candidate, verifiedStartupKey: verified);
         fail('should have thrown for divergent sync write at iter $i');
       } on StateError {
         // expected

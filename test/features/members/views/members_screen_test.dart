@@ -279,7 +279,9 @@ Widget _buildSubject({
         frontingTermsSettingProvider.overrideWithValue(frontingTerms),
       allGroupsProvider.overrideWith((ref) => Stream.value(groups)),
       // Statuses, intro cards and record links (0.24) read tracker records.
-      trackerRecordsProvider.overrideWith((ref) => Stream.value(const <TrackerRecord>[])),
+      trackerRecordsProvider.overrideWith(
+        (ref) => Stream.value(const <TrackerRecord>[]),
+      ),
       allGroupEntriesProvider.overrideWith((ref) => Stream.value(entries)),
       groupByIdProvider.overrideWith((ref, groupId) {
         final matching = groups.where((group) => group.id == groupId);
@@ -2371,89 +2373,138 @@ void main() {
   // accessibility, music host), with banners on and off.
   for (final banners in [false, true]) {
     for (final lookId in ['prism', 'aurora']) {
-      testWidgets('opens inside the full app theme (look $lookId, banners $banners)', (tester) async {
-        final look = builtInLooks.firstWhere((l) => l.id == lookId);
-        final members = [_member('alice'), _member('bob', displayOrder: 1)];
-        final png = Uint8List.fromList(img.encodePng(img.Image(width: 60, height: 20)));
-        await tester.pumpWidget(
-          _buildSubject(
-            members: members,
-            groups: const [],
-            entries: const [],
-            withRouter: true,
-            theme: applyLook(applyAccessibility(AppTheme.dark(), const A11ySettings()), look),
-            appBuilder: (context, child) => A11yScope(child: MusicPlayerHost(child: child!)),
-            extraOverrides: [
-              showMemberBannersProvider.overrideWithValue(banners),
-              memberBannerImageDataProvider.overrideWith((ref, id) => Stream.value(png)),
-              mediaControlsProvider.overrideWithValue(MediaControlsPlatform(supported: false)),
-            ],
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        expect(find.text('Member alice'), findsOneWidget);
-      });
+      testWidgets(
+        'opens inside the full app theme (look $lookId, banners $banners)',
+        (tester) async {
+          final look = builtInLooks.firstWhere((l) => l.id == lookId);
+          final members = [_member('alice'), _member('bob', displayOrder: 1)];
+          final png = Uint8List.fromList(
+            img.encodePng(img.Image(width: 60, height: 20)),
+          );
+          await tester.pumpWidget(
+            _buildSubject(
+              members: members,
+              groups: const [],
+              entries: const [],
+              withRouter: true,
+              theme: applyLook(
+                applyAccessibility(AppTheme.dark(), const A11ySettings()),
+                look,
+              ),
+              appBuilder: (context, child) =>
+                  A11yScope(child: MusicPlayerHost(child: child!)),
+              extraOverrides: [
+                showMemberBannersProvider.overrideWithValue(banners),
+                memberBannerImageDataProvider.overrideWith(
+                  (ref, id) => Stream.value(png),
+                ),
+                mediaControlsProvider.overrideWithValue(
+                  MediaControlsPlatform(supported: false),
+                ),
+              ],
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+          expect(find.text('Member alice'), findsOneWidget);
+        },
+      );
     }
   }
 
   // Regression: real database (avatars + banners loaded through the real
   // DAO queries) inside the full app theme.
-  for (final (banners, themed, withData, boards) in [(false, false, true, false), (false, true, false, false), (false, true, true, false), (true, true, true, false), (false, true, true, true), (true, true, true, true)]) {
-    testWidgets('opens with real stored members (banners $banners themed $themed data $withData boards $boards)', (tester) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 844);
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final png = Uint8List.fromList(img.encodePng(img.Image(width: 300, height: 100)));
-      final members = [
-        for (var i = 0; i < 12; i++)
-          withData
-              ? _member('m$i', displayOrder: i).copyWith(
-                  avatarImageData: png,
-                  profileHeaderImageData: i.isEven ? png : null,
-                  pronouns: 'they/them',
-                )
-              : _member('m$i', displayOrder: i),
-      ];
-      final imageInfra = TestBioImageInfra.create();
-      final database = imageInfra.database;
-      final repository = DriftMemberRepository(database.membersDao, null);
-      try {
-        await tester.runAsync(() => database.transaction(() async {
+  for (final (banners, themed, withData, boards) in [
+    (false, false, true, false),
+    (false, true, false, false),
+    (false, true, true, false),
+    (true, true, true, false),
+    (false, true, true, true),
+    (true, true, true, true),
+  ]) {
+    testWidgets(
+      'opens with real stored members (banners $banners themed $themed data $withData boards $boards)',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(390, 844);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final png = Uint8List.fromList(
+          img.encodePng(img.Image(width: 300, height: 100)),
+        );
+        final members = [
+          for (var i = 0; i < 12; i++)
+            withData
+                ? _member('m$i', displayOrder: i).copyWith(
+                    avatarImageData: png,
+                    profileHeaderImageData: i.isEven ? png : null,
+                    pronouns: 'they/them',
+                  )
+                : _member('m$i', displayOrder: i),
+        ];
+        final imageInfra = TestBioImageInfra.create();
+        final database = imageInfra.database;
+        final repository = DriftMemberRepository(database.membersDao, null);
+        try {
+          await tester.runAsync(
+            () => database.transaction(() async {
               for (final m in members) {
                 await repository.createMember(m);
               }
-            }));
-        await tester.pumpWidget(
-          _buildSubject(
-            members: members,
-            groups: const [],
-            entries: const [],
-            memberDatabase: database,
-            imageInfra: imageInfra,
-            withRouter: true,
-            settings: boards
-                ? const SystemSettings(notesEnabled: true, boardsEnabled: true, membersShowFrontButtons: true)
-                : const SystemSettings(notesEnabled: false, boardsEnabled: false, membersShowFrontButtons: false),
-            theme: themed ? applyLook(applyAccessibility(AppTheme.dark(), const A11ySettings()), plainLook) : null,
-            appBuilder: themed ? (context, child) => A11yScope(child: MusicPlayerHost(child: child!)) : null,
-            extraOverrides: [
-              showMemberBannersProvider.overrideWithValue(banners),
-              mediaControlsProvider.overrideWithValue(MediaControlsPlatform(supported: false)),
-            ],
-          ),
-        );
-        await tester.runAsync(() => repository.watchActiveMembersForList().first);
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        expect(find.text('Member m0'), findsOneWidget);
-      } finally {
-        await tester.pumpWidget(const SizedBox.shrink());
-        await tester.pumpAndSettle();
-        await tester.runAsync(() => imageInfra.close().timeout(const Duration(seconds: 10)));
-      }
-    });
+            }),
+          );
+          await tester.pumpWidget(
+            _buildSubject(
+              members: members,
+              groups: const [],
+              entries: const [],
+              memberDatabase: database,
+              imageInfra: imageInfra,
+              withRouter: true,
+              settings: boards
+                  ? const SystemSettings(
+                      notesEnabled: true,
+                      boardsEnabled: true,
+                      membersShowFrontButtons: true,
+                    )
+                  : const SystemSettings(
+                      notesEnabled: false,
+                      boardsEnabled: false,
+                      membersShowFrontButtons: false,
+                    ),
+              theme: themed
+                  ? applyLook(
+                      applyAccessibility(AppTheme.dark(), const A11ySettings()),
+                      plainLook,
+                    )
+                  : null,
+              appBuilder: themed
+                  ? (context, child) =>
+                        A11yScope(child: MusicPlayerHost(child: child!))
+                  : null,
+              extraOverrides: [
+                showMemberBannersProvider.overrideWithValue(banners),
+                mediaControlsProvider.overrideWithValue(
+                  MediaControlsPlatform(supported: false),
+                ),
+              ],
+            ),
+          );
+          await tester.runAsync(
+            () => repository.watchActiveMembersForList().first,
+          );
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+          expect(find.text('Member m0'), findsOneWidget);
+        } finally {
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpAndSettle();
+          await tester.runAsync(
+            () => imageInfra.close().timeout(const Duration(seconds: 10)),
+          );
+        }
+      },
+    );
   }
 }
 

@@ -16,8 +16,7 @@ class Call {
 
 class FakePluralKitClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final List<Call> calls = [];
 
   String nextMemberId = 'abcde';
@@ -289,10 +288,7 @@ void main() {
     );
 
     test('gated PATCH sends Prism Name as PK internal name', () async {
-      final member = _member(
-        name: 'New Prism Name',
-        pluralkitId: 'pk123',
-      );
+      final member = _member(name: 'New Prism Name', pluralkitId: 'pk123');
 
       await pushService.pushMember(
         member,
@@ -309,33 +305,35 @@ void main() {
       expect(data, {'name': 'New Prism Name'});
     });
 
-    test('gated PATCH skips blank name but still sends sibling fields',
-        () async {
-      final member = _member(
-        name: '   ',
-        pluralkitId: 'pk123',
-        pronouns: 'they/them',
-      );
-      final skips = <(String, String)>[];
+    test(
+      'gated PATCH skips blank name but still sends sibling fields',
+      () async {
+        final member = _member(
+          name: '   ',
+          pluralkitId: 'pk123',
+          pronouns: 'they/them',
+        );
+        final skips = <(String, String)>[];
 
-      await pushService.pushMember(
-        member,
-        fakeClient,
-        pkMember: const PKMember(
-          id: 'pk123',
-          uuid: 'uuid-pk123',
-          name: 'Old PK Name',
-        ),
-        allowedFields: {'name', 'pronouns'},
-        onFieldSkipped: (field, reason) => skips.add((field, reason)),
-      );
+        await pushService.pushMember(
+          member,
+          fakeClient,
+          pkMember: const PKMember(
+            id: 'pk123',
+            uuid: 'uuid-pk123',
+            name: 'Old PK Name',
+          ),
+          allowedFields: {'name', 'pronouns'},
+          onFieldSkipped: (field, reason) => skips.add((field, reason)),
+        );
 
-      final data = fakeClient.calls.first.args.last as Map<String, dynamic>;
-      expect(data.containsKey('name'), isFalse);
-      expect(data['pronouns'], 'they/them');
-      expect(skips.single.$1, 'name');
-      expect(skips.single.$2, contains('is empty'));
-    });
+        final data = fakeClient.calls.first.args.last as Map<String, dynamic>;
+        expect(data.containsKey('name'), isFalse);
+        expect(data['pronouns'], 'they/them');
+        expect(skips.single.$1, 'name');
+        expect(skips.single.$2, contains('is empty'));
+      },
+    );
 
     test('includes empty proxy tag list for explicit local clear', () async {
       final member = _member(proxyTagsJson: '[]');
@@ -363,18 +361,15 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('_memberToPayload PATCH gating (H1)', () {
-    PKMember pk({
-      String? pronouns,
-      String? description,
-      String? color,
-    }) => PKMember(
-      id: 'pk123',
-      uuid: 'uuid-pk123',
-      name: 'Alice',
-      pronouns: pronouns,
-      description: description,
-      color: color,
-    );
+    PKMember pk({String? pronouns, String? description, String? color}) =>
+        PKMember(
+          id: 'pk123',
+          uuid: 'uuid-pk123',
+          name: 'Alice',
+          pronouns: pronouns,
+          description: description,
+          color: color,
+        );
 
     test('includes only the allowed field, omits all others', () async {
       final member = _member(
@@ -486,23 +481,25 @@ void main() {
       expect(data.containsKey('proxy_tags'), isFalse);
     });
 
-    test('legacy PATCH (no allowedFields) still sends local non-null fields', ()
-        async {
-      // No allowedFields and no pkMember: the sync-service auto-push shape.
-      final member = _member(
-        pluralkitId: 'pk123',
-        bio: 'hi',
-        pronouns: 'she/her',
-      );
+    test(
+      'legacy PATCH (no allowedFields) still sends local non-null fields',
+      () async {
+        // No allowedFields and no pkMember: the sync-service auto-push shape.
+        final member = _member(
+          pluralkitId: 'pk123',
+          bio: 'hi',
+          pronouns: 'she/her',
+        );
 
-      await pushService.pushMember(member, fakeClient);
+        await pushService.pushMember(member, fakeClient);
 
-      final data = fakeClient.calls.first.args.last as Map<String, dynamic>;
-      expect(data['description'], 'hi');
-      expect(data['pronouns'], 'she/her');
-      // No remote snapshot → no explicit nulls to clear absent fields.
-      expect(data.containsKey('birthday'), isFalse);
-    });
+        final data = fakeClient.calls.first.args.last as Map<String, dynamic>;
+        expect(data['description'], 'hi');
+        expect(data['pronouns'], 'she/her');
+        // No remote snapshot → no explicit nulls to clear absent fields.
+        expect(data.containsKey('birthday'), isFalse);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -553,31 +550,34 @@ void main() {
       );
     });
 
-    test('over-cap display_name dropped; empty payload becomes a no-op', () async {
-      final skips = <(String, String)>[];
-      final member = _member(
-        pluralkitId: 'pk123',
-        pluralkitDisplayName: 'd' * 101,
-      );
+    test(
+      'over-cap display_name dropped; empty payload becomes a no-op',
+      () async {
+        final skips = <(String, String)>[];
+        final member = _member(
+          pluralkitId: 'pk123',
+          pluralkitDisplayName: 'd' * 101,
+        );
 
-      final result = await pushService.pushMemberFull(
-        member,
-        fakeClient,
-        pkMember: pkSnapshot,
-        allowedFields: {'display_name'},
-        onFieldSkipped: (field, reason) => skips.add((field, reason)),
-      );
+        final result = await pushService.pushMemberFull(
+          member,
+          fakeClient,
+          pkMember: pkSnapshot,
+          allowedFields: {'display_name'},
+          onFieldSkipped: (field, reason) => skips.add((field, reason)),
+        );
 
-      // The only allowed field was dropped → empty PATCH would 400, so the
-      // existing empty-payload guard returns the snapshot without a call.
-      expect(fakeClient.calls, isEmpty);
-      expect(result.id, 'pk123');
-      expect(skips.single.$1, 'display_name');
-      expect(
-        skips.single.$2,
-        contains('is 101 characters (PluralKit max 100)'),
-      );
-    });
+        // The only allowed field was dropped → empty PATCH would 400, so the
+        // existing empty-payload guard returns the snapshot without a call.
+        expect(fakeClient.calls, isEmpty);
+        expect(result.id, 'pk123');
+        expect(skips.single.$1, 'display_name');
+        expect(
+          skips.single.$2,
+          contains('is 101 characters (PluralKit max 100)'),
+        );
+      },
+    );
 
     test('over-cap pronouns dropped on PATCH', () async {
       final skips = <(String, String)>[];
@@ -849,8 +849,7 @@ class _Throw500OnCreateSwitchClient extends FakePluralKitClient {
 /// path deterministically.
 class _ScriptedDeletionClient implements PluralKitClient {
   @override
-  Future<PKSwitch> getSwitch(String switchRef) =>
-      throw UnimplementedError();
+  Future<PKSwitch> getSwitch(String switchRef) => throw UnimplementedError();
   final List<int?> memberScript;
   final List<int?> switchScript;
   int memberCalls = 0;

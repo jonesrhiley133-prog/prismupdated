@@ -88,7 +88,9 @@ class AppearanceSettingsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es' ? 'Pantalla de inicio y saludo' : 'Launch screen & greeting',
+                  label: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Pantalla de inicio y saludo'
+                      : 'Launch screen & greeting',
                   icon: Icons.auto_awesome_outlined,
                   expanded: true,
                   onPressed: () => context.push(AppRoutePaths.settingsLaunch),
@@ -97,7 +99,9 @@ class AppearanceSettingsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es' ? 'Personalidad y voz' : 'Personality & voice',
+                  label: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Personalidad y voz'
+                      : 'Personality & voice',
                   icon: Icons.record_voice_over_outlined,
                   expanded: true,
                   onPressed: () => context.push(AppRoutePaths.settingsVoice),
@@ -503,9 +507,18 @@ class _WebRenderingSection extends StatelessWidget {
         children: [
           PrismSegmentedControl<String>(
             segments: [
-              PrismSegment(value: 'auto', label: tr(context, 'Automatic', 'Automático')),
-              PrismSegment(value: 'cpu', label: tr(context, 'Compatibility', 'Compatibilidad')),
-              PrismSegment(value: 'gpu', label: tr(context, 'Graphics card', 'Tarjeta gráfica')),
+              PrismSegment(
+                value: 'auto',
+                label: tr(context, 'Automatic', 'Automático'),
+              ),
+              PrismSegment(
+                value: 'cpu',
+                label: tr(context, 'Compatibility', 'Compatibilidad'),
+              ),
+              PrismSegment(
+                value: 'gpu',
+                label: tr(context, 'Graphics card', 'Tarjeta gráfica'),
+              ),
             ],
             selected: mode,
             onChanged: (v) {
@@ -544,8 +557,13 @@ class _AppIconSection extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8, top: 4),
               child: Text(
-                plural ? tr(context, 'Plurality', 'Pluralidad') : tr(context, 'Prism', 'Prism'),
-                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700),
+                plural
+                    ? tr(context, 'Plurality', 'Pluralidad')
+                    : tr(context, 'Prism', 'Prism'),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             Wrap(
@@ -563,7 +581,11 @@ class _AppIconSection extends ConsumerWidget {
                       await ref.read(appIconProvider.notifier).select(p.id);
                     },
                   ),
-                if (plural) _CustomIconTile(selected: current == 'custom', enabled: appIconSupported),
+                if (plural)
+                  _CustomIconTile(
+                    selected: current == 'custom',
+                    enabled: appIconSupported,
+                  ),
               ],
             ),
             const SizedBox(height: 12),
@@ -571,10 +593,22 @@ class _AppIconSection extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             !appIconSupported
-                ? tr(context, 'Changing the icon isn’t available on this device yet.', 'Cambiar el icono aún no está disponible en este dispositivo.')
+                ? tr(
+                    context,
+                    'Changing the icon isn’t available on this device yet.',
+                    'Cambiar el icono aún no está disponible en este dispositivo.',
+                  )
                 : kIsWeb
-                ? tr(context, 'Changes the icon on this browser tab.', 'Cambia el icono de esta pestaña del navegador.')
-                : tr(context, 'Changes Prism’s icon on your home screen. Some launchers take a few seconds to update, and a home-screen shortcut may need to be added again.', 'Cambia el icono de Prism en la pantalla de inicio. Algunos lanzadores tardan unos segundos y puede que tengas que volver a añadir el acceso directo.'),
+                ? tr(
+                    context,
+                    'Changes the icon on this browser tab.',
+                    'Cambia el icono de esta pestaña del navegador.',
+                  )
+                : tr(
+                    context,
+                    'Changes Prism’s icon on your home screen. Some launchers take a few seconds to update, and a home-screen shortcut may need to be added again.',
+                    'Cambia el icono de Prism en la pantalla de inicio. Algunos lanzadores tardan unos segundos y puede que tengas que volver a añadir el acceso directo.',
+                  ),
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -584,7 +618,13 @@ class _AppIconSection extends ConsumerWidget {
 }
 
 class _IconTile extends StatelessWidget {
-  const _IconTile({required this.preset, required this.label, required this.selected, required this.enabled, required this.onTap});
+  const _IconTile({
+    required this.preset,
+    required this.label,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
   final AppIconPreset preset;
   final String label;
   final bool selected;
@@ -608,15 +648,32 @@ class _IconTile extends StatelessWidget {
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   borderRadius: prismCorners(context, 18),
-                  border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5),
+                  border: Border.all(
+                    color: selected
+                        ? theme.colorScheme.primary
+                        : Colors.transparent,
+                    width: 2.5,
+                  ),
                 ),
                 child: Opacity(
                   opacity: enabled ? 1 : 0.5,
-                  child: Image.asset(preset.asset, width: 60, height: 60, filterQuality: FilterQuality.medium),
+                  child: Image.asset(
+                    preset.asset,
+                    width: 60,
+                    height: 60,
+                    filterQuality: FilterQuality.medium,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
-              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall?.copyWith(fontWeight: selected ? FontWeight.w700 : null)),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : null,
+                ),
+              ),
             ],
           ),
         ),
@@ -637,7 +694,11 @@ class _CustomIconTile extends ConsumerWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: tr(context, 'Custom app icon. Design your own', 'Icono personalizado. Diseña el tuyo'),
+      label: tr(
+        context,
+        'Custom app icon. Design your own',
+        'Icono personalizado. Diseña el tuyo',
+      ),
       child: InkWell(
         borderRadius: prismCorners(context, 16),
         onTap: enabled ? () => showAppIconMaker(context) : null,
@@ -647,7 +708,15 @@ class _CustomIconTile extends ConsumerWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(borderRadius: prismCorners(context, 18), border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 2.5)),
+                decoration: BoxDecoration(
+                  borderRadius: prismCorners(context, 18),
+                  border: Border.all(
+                    color: selected
+                        ? theme.colorScheme.primary
+                        : Colors.transparent,
+                    width: 2.5,
+                  ),
+                ),
                 child: ClipRRect(
                   borderRadius: prismCorners(context, 14),
                   child: SizedBox(
@@ -656,14 +725,29 @@ class _CustomIconTile extends ConsumerWidget {
                     child: png != null
                         ? Image.memory(png, fit: BoxFit.cover)
                         : DecoratedBox(
-                            decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.outlineVariant), borderRadius: prismCorners(context, 14), color: theme.colorScheme.surfaceContainerHigh),
-                            child: Icon(Icons.brush_outlined, color: theme.colorScheme.onSurfaceVariant),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                              borderRadius: prismCorners(context, 14),
+                              color: theme.colorScheme.surfaceContainerHigh,
+                            ),
+                            child: Icon(
+                              Icons.brush_outlined,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
                   ),
                 ),
               ),
               const SizedBox(height: 4),
-              Text(tr(context, 'Custom', 'Personal'), maxLines: 1, style: theme.textTheme.labelSmall?.copyWith(fontWeight: selected ? FontWeight.w700 : null)),
+              Text(
+                tr(context, 'Custom', 'Personal'),
+                maxLines: 1,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : null,
+                ),
+              ),
             ],
           ),
         ),

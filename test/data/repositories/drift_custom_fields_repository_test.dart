@@ -187,30 +187,32 @@ void main() {
       expect(row.displayOrder, 3);
     });
 
-    test('null-clearing emits the null patch (datePrecision: value → null)',
-        () async {
-      await repo.createField(
-        makeField(
-          fieldType: domain.CustomFieldType.date,
-          datePrecision: domain.DatePrecision.full,
-        ),
-      );
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+    test(
+      'null-clearing emits the null patch (datePrecision: value → null)',
+      () async {
+        await repo.createField(
+          makeField(
+            fieldType: domain.CustomFieldType.date,
+            datePrecision: domain.DatePrecision.full,
+          ),
+        );
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      await repo.updateField(
-        makeField(fieldType: domain.CustomFieldType.date),
-      );
+        await repo.updateField(
+          makeField(fieldType: domain.CustomFieldType.date),
+        );
 
-      expect(captured, hasLength(1));
-      final patch = captured.single.fields;
-      expect(patch.containsKey('date_precision'), isTrue);
-      expect(patch['date_precision'], isNull);
+        expect(captured, hasLength(1));
+        final patch = captured.single.fields;
+        expect(patch.containsKey('date_precision'), isTrue);
+        expect(patch['date_precision'], isNull);
 
-      final row = await database.customFieldsDao.getFieldById('f1');
-      expect(row!.datePrecision, isNull);
-    });
+        final row = await database.customFieldsDao.getFieldById('f1');
+        expect(row!.datePrecision, isNull);
+      },
+    );
 
     test('silently no-ops on a tombstoned row', () async {
       await repo.createField(makeField());
@@ -274,23 +276,28 @@ void main() {
 
         // Insert a row with a future variant directly via the DB, simulating
         // delivery over sync from a newer peer.
-        await database.into(database.customFields).insert(
-          db.CustomFieldsCompanion.insert(
-            id: 'fwd1',
-            name: 'Original Name',
-            fieldType: 0,
-            fieldTypeId: const Value('futureType'),
-            typeConfigJson: const Value(unknownRaw),
-            createdAt: DateTime.utc(2026, 5, 25),
-          ),
-        );
+        await database
+            .into(database.customFields)
+            .insert(
+              db.CustomFieldsCompanion.insert(
+                id: 'fwd1',
+                name: 'Original Name',
+                fieldType: 0,
+                fieldTypeId: const Value('futureType'),
+                typeConfigJson: const Value(unknownRaw),
+                createdAt: DateTime.utc(2026, 5, 25),
+              ),
+            );
 
         // Read via mapper → unknownTypeConfigRaw should be preserved.
         final row = await database.customFieldsDao.getFieldById('fwd1');
         expect(row, isNotNull);
         final domainField = CustomFieldMapper.toDomain(row!);
-        expect(domainField.typeConfig, isNull,
-            reason: 'futureType must not decode to a known variant');
+        expect(
+          domainField.typeConfig,
+          isNull,
+          reason: 'futureType must not decode to a known variant',
+        );
         expect(domainField.unknownTypeConfigRaw, unknownRaw);
 
         // Simulate a rename: produce a new domain object with only the name
@@ -308,40 +315,45 @@ void main() {
 
         // toCompanion must re-emit the raw bytes unchanged.
         final companion = CustomFieldMapper.toCompanion(renamed);
-        expect(companion.typeConfigJson.value, unknownRaw,
-            reason:
-                'unknownTypeConfigRaw must survive through rename → toCompanion; '
-                'forward-compat blob must not be wiped when the field is edited on this build');
+        expect(
+          companion.typeConfigJson.value,
+          unknownRaw,
+          reason:
+              'unknownTypeConfigRaw must survive through rename → toCompanion; '
+              'forward-compat blob must not be wiped when the field is edited on this build',
+        );
       },
     );
 
-    test('reorderFields still emits one display_order patch per changed field',
-        () async {
-      await repo.createField(makeField(id: 'a', displayOrder: 0));
-      await repo.createField(makeField(id: 'b', displayOrder: 1));
-      await repo.createField(makeField(id: 'c', displayOrder: 2));
+    test(
+      'reorderFields still emits one display_order patch per changed field',
+      () async {
+        await repo.createField(makeField(id: 'a', displayOrder: 0));
+        await repo.createField(makeField(id: 'b', displayOrder: 1));
+        await repo.createField(makeField(id: 'c', displayOrder: 2));
 
-      final captured = <CapturedSyncOp>[];
-      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+        final captured = <CapturedSyncOp>[];
+        SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+        addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-      // Reorder: c, a, b (positions 0, 1, 2). All three change order.
-      await repo.reorderFields([
-        makeField(id: 'c', displayOrder: 2),
-        makeField(id: 'a', displayOrder: 0),
-        makeField(id: 'b', displayOrder: 1),
-      ]);
+        // Reorder: c, a, b (positions 0, 1, 2). All three change order.
+        await repo.reorderFields([
+          makeField(id: 'c', displayOrder: 2),
+          makeField(id: 'a', displayOrder: 0),
+          makeField(id: 'b', displayOrder: 1),
+        ]);
 
-      expect(captured, hasLength(3));
-      for (final op in captured) {
-        expect(op.opType, SyncRecordOpType.update);
-        expect(op.table, 'custom_fields');
-        expect(op.fields.keys.toSet(), {'display_order'});
-      }
-      final emittedByEntity = {
-        for (final op in captured) op.entityId: op.fields['display_order'],
-      };
-      expect(emittedByEntity, {'c': 0, 'a': 1, 'b': 2});
-    });
+        expect(captured, hasLength(3));
+        for (final op in captured) {
+          expect(op.opType, SyncRecordOpType.update);
+          expect(op.table, 'custom_fields');
+          expect(op.fields.keys.toSet(), {'display_order'});
+        }
+        final emittedByEntity = {
+          for (final op in captured) op.entityId: op.fields['display_order'],
+        };
+        expect(emittedByEntity, {'c': 0, 'a': 1, 'b': 2});
+      },
+    );
   });
 }

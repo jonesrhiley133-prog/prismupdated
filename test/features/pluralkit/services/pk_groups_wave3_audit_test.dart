@@ -22,9 +22,8 @@ import '../../../helpers/pk_fixtures.dart';
 // ── Fakes ──────────────────────────────────────────────────────────────────
 
 class _FakeMemberRepo implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _FakeMemberRepo(this.members);
   final List<domain.Member> members;
@@ -45,9 +44,11 @@ class _FakeMemberRepo implements MemberRepository {
 
   // Unused by these tests.
   @override
-  Future<void> clearPluralKitLink(String id) async => throw UnimplementedError();
+  Future<void> clearPluralKitLink(String id) async =>
+      throw UnimplementedError();
   @override
-  Future<void> createMember(domain.Member m) async => throw UnimplementedError();
+  Future<void> createMember(domain.Member m) async =>
+      throw UnimplementedError();
   @override
   Future<void> deleteMember(String id) async => throw UnimplementedError();
   @override
@@ -57,7 +58,8 @@ class _FakeMemberRepo implements MemberRepository {
   Future<void> stampDeletePushStartedAt(String id, int t) async =>
       throw UnimplementedError();
   @override
-  Future<void> updateMember(domain.Member m) async => throw UnimplementedError();
+  Future<void> updateMember(domain.Member m) async =>
+      throw UnimplementedError();
   @override
   Future<int> updateMemberFields(String id, Map<String, dynamic> f) async =>
       throw UnimplementedError();
@@ -65,15 +67,19 @@ class _FakeMemberRepo implements MemberRepository {
   Future<int> applyPluralKitLink(String id, Map<String, dynamic> p) async =>
       throw UnimplementedError();
   @override
-  Future<int> recordPluralKitIdentity(String id, Map<String, dynamic> p) async =>
-      throw UnimplementedError();
+  Future<int> recordPluralKitIdentity(
+    String id,
+    Map<String, dynamic> p,
+  ) async => throw UnimplementedError();
   @override
   Future<int> excludePluralKitSync(String id) async =>
       throw UnimplementedError();
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
   @override
-  Stream<List<domain.Member>> watchActiveMembers() => throw UnimplementedError();
+  Stream<List<domain.Member>> watchActiveMembers() =>
+      throw UnimplementedError();
   @override
   Stream<List<domain.Member>> watchAllMembers() => throw UnimplementedError();
   @override
@@ -112,7 +118,10 @@ class _ProgrammableClient implements PluralKitClient {
   }
 
   @override
-  Future<void> removeMembersFromGroup(String groupRef, List<String> refs) async {
+  Future<void> removeMembersFromGroup(
+    String groupRef,
+    List<String> refs,
+  ) async {
     callOrder.add('remove');
     removeCalls.add((groupRef: groupRef, refs: refs));
     final next = removeResponses.isEmpty ? null : removeResponses.removeAt(0);
@@ -157,7 +166,9 @@ Future<void> _seedGroup(
   bool isDeleted = false,
   DateTime? lastSeen,
 }) {
-  return db.into(db.memberGroups).insert(
+  return db
+      .into(db.memberGroups)
+      .insert(
         MemberGroupsCompanion.insert(
           id: id,
           name: id,
@@ -181,7 +192,9 @@ Future<void> _seedEntry(
   String pendingPkOp = 'none',
   DateTime? createdAt,
 }) {
-  return db.into(db.memberGroupEntries).insert(
+  return db
+      .into(db.memberGroupEntries)
+      .insert(
         MemberGroupEntriesCompanion.insert(
           id: id,
           groupId: groupId,
@@ -196,9 +209,9 @@ Future<void> _seedEntry(
 }
 
 Future<MemberGroupEntryRow?> _findEntry(AppDatabase db, String id) async {
-  final rows = await (db.select(db.memberGroupEntries)
-        ..where((e) => e.id.equals(id)))
-      .get();
+  final rows = await (db.select(
+    db.memberGroupEntries,
+  )..where((e) => e.id.equals(id))).get();
   return rows.isEmpty ? null : rows.single;
 }
 
@@ -216,93 +229,103 @@ void main() {
 
   // ── H6a ────────────────────────────────────────────────────────────────
   group('H6a push-before-reconcile ordering', () {
-    test('pushPendingGroupOps runs BEFORE getGroups when pushClient supplied',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1', pkId: 'gid');
-      // A locally-added entry queued for push.
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-      );
+    test(
+      'pushPendingGroupOps runs BEFORE getGroups when pushClient supplied',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1', pkId: 'gid');
+        // A locally-added entry queued for push.
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+        );
 
-      final client = _ProgrammableClient()
-        ..groupsProvider = () => const [
-              PKGroup(
-                id: 'gid',
-                uuid: 'pk-g1',
-                name: 'g1',
-                // PK already reflects the add because push ran first.
-                memberIds: ['pk-m1'],
-              ),
-            ];
+        final client = _ProgrammableClient()
+          ..groupsProvider = () => const [
+            PKGroup(
+              id: 'gid',
+              uuid: 'pk-g1',
+              name: 'g1',
+              // PK already reflects the add because push ran first.
+              memberIds: ['pk-m1'],
+            ),
+          ];
 
-      await importer.importGroups(
-        [
-          const PKGroup(
-            id: 'gid',
-            uuid: 'pk-g1',
-            name: 'g1',
-            memberIds: ['pk-m1'],
-          ),
-        ],
-        direction: PkSyncDirection.bidirectional,
-        pushClient: client,
-      );
+        await importer.importGroups(
+          [
+            const PKGroup(
+              id: 'gid',
+              uuid: 'pk-g1',
+              name: 'g1',
+              memberIds: ['pk-m1'],
+            ),
+          ],
+          direction: PkSyncDirection.bidirectional,
+          pushClient: client,
+        );
 
-      // The add POST must precede the importer's own getGroups would-be call —
-      // here the orchestrator's refetch is unneeded (204) so we assert the add
-      // happened and pending was cleared (drained to PK before reconcile).
-      expect(client.addCalls, hasLength(1));
-      expect(client.callOrder.first, 'add',
-          reason: 'push must run before pull reconcile (H6a)');
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
-    });
+        // The add POST must precede the importer's own getGroups would-be call —
+        // here the orchestrator's refetch is unneeded (204) so we assert the add
+        // happened and pending was cleared (drained to PK before reconcile).
+        expect(client.addCalls, hasLength(1));
+        expect(
+          client.callOrder.first,
+          'add',
+          reason: 'push must run before pull reconcile (H6a)',
+        );
+        expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
+      },
+    );
 
-    test('a push failure does NOT abort the pull (failure isolation)',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1', pkId: 'gid');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-      );
+    test(
+      'a push failure does NOT abort the pull (failure isolation)',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1', pkId: 'gid');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+        );
 
-      final client = _ProgrammableClient();
-      // Push 5xx + refetch 5xx → push leaves pending; must not throw out.
-      client.addResponses.add(const PluralKitApiError(500, 'boom'));
+        final client = _ProgrammableClient();
+        // Push 5xx + refetch 5xx → push leaves pending; must not throw out.
+        client.addResponses.add(const PluralKitApiError(500, 'boom'));
 
-      // Pull brings in a brand-new group; the import must still apply it.
-      final result = await importer.importGroups(
-        [
-          const PKGroup(
-            id: 'g2id',
-            uuid: 'pk-g2',
-            name: 'NewGroup',
-            memberIds: [],
-          ),
-        ],
-        direction: PkSyncDirection.bidirectional,
-        pushClient: client,
-      );
+        // Pull brings in a brand-new group; the import must still apply it.
+        final result = await importer.importGroups(
+          [
+            const PKGroup(
+              id: 'g2id',
+              uuid: 'pk-g2',
+              name: 'NewGroup',
+              memberIds: [],
+            ),
+          ],
+          direction: PkSyncDirection.bidirectional,
+          pushClient: client,
+        );
 
-      expect(result.groupsInserted, 1,
-          reason: 'a push failure must not abort the pull (H6a)');
-      // The failing add intent stays pending for the next round.
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'push_add');
-    });
+        expect(
+          result.groupsInserted,
+          1,
+          reason: 'a push failure must not abort the pull (H6a)',
+        );
+        // The failing add intent stays pending for the next round.
+        expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'push_add');
+      },
+    );
   });
 
   // ── H6b ────────────────────────────────────────────────────────────────
@@ -343,8 +366,9 @@ void main() {
         memberId: 'm1',
         pkGroupUuid: 'pk-g1',
         pkMemberUuid: 'pk-m1',
-        createdAt: DateTime.now()
-            .subtract(PkGroupsImporter.removalRecencyGrace * 2),
+        createdAt: DateTime.now().subtract(
+          PkGroupsImporter.removalRecencyGrace * 2,
+        ),
       );
 
       final result = await importer.importGroups([
@@ -356,8 +380,7 @@ void main() {
       expect((await _findEntry(db, 'e1'))!.isDeleted, isTrue);
     });
 
-    test('a NULL created_at (pre-column row) is treated as eligible',
-        () async {
+    test('a NULL created_at (pre-column row) is treated as eligible', () async {
       final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
       final importer = PkGroupsImporter(db: db, memberRepository: repo);
       await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
@@ -380,42 +403,58 @@ void main() {
         const PKGroup(id: 'g1id', uuid: 'pk-g1', name: 'g1', memberIds: []),
       ]);
 
-      expect(result.entriesRemoved, 1,
-          reason: 'missing stamp must not permanently leak a PK membership');
+      expect(
+        result.entriesRemoved,
+        1,
+        reason: 'missing stamp must not permanently leak a PK membership',
+      );
     });
   });
 
   // ── M13 ──────────────────────────────────────────────────────────────────
   group('M13 deleted group not resurrected', () {
-    test('a user-deleted PK group (deterministic-id tombstone) is preserved',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
+    test(
+      'a user-deleted PK group (deterministic-id tombstone) is preserved',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
 
-      // Simulate the deleteGroup outcome: deterministic id tombstone with the
-      // pluralkit_uuid NULLED (exactly what member_groups_dao.deleteGroup does).
-      final deterministicId = PkGroupsImporter.deriveGroupId('pk-g1');
-      await _seedGroup(db, id: deterministicId, pkUuid: null, isDeleted: true);
+        // Simulate the deleteGroup outcome: deterministic id tombstone with the
+        // pluralkit_uuid NULLED (exactly what member_groups_dao.deleteGroup does).
+        final deterministicId = PkGroupsImporter.deriveGroupId('pk-g1');
+        await _seedGroup(
+          db,
+          id: deterministicId,
+          pkUuid: null,
+          isDeleted: true,
+        );
 
-      final result = await importer.importGroups([
-        const PKGroup(
-          id: 'gid',
-          uuid: 'pk-g1',
-          name: 'Resurrected?',
-          memberIds: ['pk-m1'],
-        ),
-      ], overwriteMetadata: true);
+        final result = await importer.importGroups([
+          const PKGroup(
+            id: 'gid',
+            uuid: 'pk-g1',
+            name: 'Resurrected?',
+            memberIds: ['pk-m1'],
+          ),
+        ], overwriteMetadata: true);
 
-      expect(result.groupsInserted, 0);
-      expect(result.groupsPreservedAsDeletedTombstone, 1);
-      // The group stays deleted; no entry was re-created.
-      final active = await db.memberGroupsDao.getAllActiveGroups();
-      expect(active, isEmpty,
-          reason: 'a user-deleted PK group must not resurrect on pull (M13)');
-      final entries = await (db.select(db.memberGroupEntries)).get();
-      expect(entries, isEmpty,
-          reason: 'entries of a deleted group must not be re-created (M13)');
-    });
+        expect(result.groupsInserted, 0);
+        expect(result.groupsPreservedAsDeletedTombstone, 1);
+        // The group stays deleted; no entry was re-created.
+        final active = await db.memberGroupsDao.getAllActiveGroups();
+        expect(
+          active,
+          isEmpty,
+          reason: 'a user-deleted PK group must not resurrect on pull (M13)',
+        );
+        final entries = await (db.select(db.memberGroupEntries)).get();
+        expect(
+          entries,
+          isEmpty,
+          reason: 'entries of a deleted group must not be re-created (M13)',
+        );
+      },
+    );
 
     test('a fresh (no tombstone) PK group still imports normally', () async {
       final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
@@ -445,7 +484,10 @@ void main() {
         memberRepository: repo,
         recordCreateOverride: (t, e, f) async {},
         recordUpdateOverride: (table, entityId, fields) async {
-          updates.add({'table': table, 'fields': {...fields}});
+          updates.add({
+            'table': table,
+            'fields': {...fields},
+          });
         },
         recordDeleteOverride: (t, e) async {},
       );
@@ -457,176 +499,192 @@ void main() {
       // Immediate second pull, no identity change, no metadata change.
       await importer.importGroups([group], overwriteMetadata: false);
 
-      final groupUpdates =
-          updates.where((u) => u['table'] == 'member_groups').toList();
-      expect(groupUpdates, isEmpty,
-          reason: 'M14a: unchanged group must not churn an update every pull');
+      final groupUpdates = updates
+          .where((u) => u['table'] == 'member_groups')
+          .toList();
+      expect(
+        groupUpdates,
+        isEmpty,
+        reason: 'M14a: unchanged group must not churn an update every pull',
+      );
     });
 
-    test('a stale (>24h) last_seen DOES refresh + emit a lone heartbeat',
-        () async {
-      final updates = <Map<String, Object?>>[];
-      final repo = _FakeMemberRepo([]);
-      final importer = PkGroupsImporter(
-        db: db,
-        memberRepository: repo,
-        recordCreateOverride: (t, e, f) async {},
-        recordUpdateOverride: (table, entityId, fields) async {
-          updates.add({'table': table, 'fields': {...fields}});
-        },
-        recordDeleteOverride: (t, e) async {},
-      );
+    test(
+      'a stale (>24h) last_seen DOES refresh + emit a lone heartbeat',
+      () async {
+        final updates = <Map<String, Object?>>[];
+        final repo = _FakeMemberRepo([]);
+        final importer = PkGroupsImporter(
+          db: db,
+          memberRepository: repo,
+          recordCreateOverride: (t, e, f) async {},
+          recordUpdateOverride: (table, entityId, fields) async {
+            updates.add({
+              'table': table,
+              'fields': {...fields},
+            });
+          },
+          recordDeleteOverride: (t, e) async {},
+        );
 
-      // Seed an existing group whose last_seen is 25h old and matching PK
-      // identity (no identity change), so only the heartbeat is due.
-      await _seedGroup(
-        db,
-        id: PkGroupsImporter.deriveGroupId('pk-g1'),
-        pkUuid: 'pk-g1',
-        pkId: 'gid',
-        lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
-      );
+        // Seed an existing group whose last_seen is 25h old and matching PK
+        // identity (no identity change), so only the heartbeat is due.
+        await _seedGroup(
+          db,
+          id: PkGroupsImporter.deriveGroupId('pk-g1'),
+          pkUuid: 'pk-g1',
+          pkId: 'gid',
+          lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
+        );
 
-      await importer.importGroups([
-        const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
-      ], overwriteMetadata: false);
+        await importer.importGroups([
+          const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
+        ], overwriteMetadata: false);
 
-      final groupUpdates =
-          updates.where((u) => u['table'] == 'member_groups').toList();
-      expect(groupUpdates, hasLength(1));
-      expect((groupUpdates.single['fields'] as Map).keys,
-          contains('last_seen_from_pk_at'));
-    });
+        final groupUpdates = updates
+            .where((u) => u['table'] == 'member_groups')
+            .toList();
+        expect(groupUpdates, hasLength(1));
+        expect(
+          (groupUpdates.single['fields'] as Map).keys,
+          contains('last_seen_from_pk_at'),
+        );
+      },
+    );
   });
 
   // ── M14b ──────────────────────────────────────────────────────────────────
   group('M14b legacy alias emitted-once-then-cleaned', () {
-    test('a legacy alias delete is emitted once, then the alias row is gone',
-        () async {
-      final deletes = <String>[];
-      final repo = _FakeMemberRepo([]);
-      final importer = PkGroupsImporter(
-        db: db,
-        memberRepository: repo,
-        recordCreateOverride: (t, e, f) async {},
-        recordUpdateOverride: (t, e, f) async {},
-        recordDeleteOverride: (table, entityId) async {
-          deletes.add('$table:$entityId');
-        },
-      );
+    test(
+      'a legacy alias delete is emitted once, then the alias row is gone',
+      () async {
+        final deletes = <String>[];
+        final repo = _FakeMemberRepo([]);
+        final importer = PkGroupsImporter(
+          db: db,
+          memberRepository: repo,
+          recordCreateOverride: (t, e, f) async {},
+          recordUpdateOverride: (t, e, f) async {},
+          recordDeleteOverride: (table, entityId) async {
+            deletes.add('$table:$entityId');
+          },
+        );
 
-      // Existing PK-linked group + a legacy alias pointing at it.
-      await _seedGroup(
-        db,
-        id: PkGroupsImporter.deriveGroupId('pk-g1'),
-        pkUuid: 'pk-g1',
-        pkId: 'gid',
-        lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
-      );
-      await db.pkGroupSyncAliasesDao.upsertAlias(
-        legacyEntityId: 'legacy-entity-1',
-        pkGroupUuid: 'pk-g1',
-        canonicalEntityId: 'pk-group:pk-g1',
-      );
+        // Existing PK-linked group + a legacy alias pointing at it.
+        await _seedGroup(
+          db,
+          id: PkGroupsImporter.deriveGroupId('pk-g1'),
+          pkUuid: 'pk-g1',
+          pkId: 'gid',
+          lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
+        );
+        await db.pkGroupSyncAliasesDao.upsertAlias(
+          legacyEntityId: 'legacy-entity-1',
+          pkGroupUuid: 'pk-g1',
+          canonicalEntityId: 'pk-group:pk-g1',
+        );
 
-      // First pull (last_seen due → emits an update → triggers alias deletes).
-      await importer.importGroups([
-        const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
-      ], overwriteMetadata: false);
+        // First pull (last_seen due → emits an update → triggers alias deletes).
+        await importer.importGroups([
+          const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
+        ], overwriteMetadata: false);
 
-      expect(deletes, contains('member_groups:legacy-entity-1'));
-      // Alias row deleted, so it cannot be re-emitted.
-      final remaining =
-          await db.pkGroupSyncAliasesDao.getByPkGroupUuid('pk-g1');
-      expect(remaining, isEmpty);
+        expect(deletes, contains('member_groups:legacy-entity-1'));
+        // Alias row deleted, so it cannot be re-emitted.
+        final remaining = await db.pkGroupSyncAliasesDao.getByPkGroupUuid(
+          'pk-g1',
+        );
+        expect(remaining, isEmpty);
 
-      // Second pull (force another due update) must NOT re-emit the delete.
-      deletes.clear();
-      await db
-          .update(db.memberGroups)
-          .write(
-            MemberGroupsCompanion(
-              lastSeenFromPkAt: Value(
-                DateTime.now().subtract(const Duration(hours: 25)),
+        // Second pull (force another due update) must NOT re-emit the delete.
+        deletes.clear();
+        await db
+            .update(db.memberGroups)
+            .write(
+              MemberGroupsCompanion(
+                lastSeenFromPkAt: Value(
+                  DateTime.now().subtract(const Duration(hours: 25)),
+                ),
               ),
-            ),
-          );
-      await importer.importGroups([
-        const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
-      ], overwriteMetadata: false);
+            );
+        await importer.importGroups([
+          const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
+        ], overwriteMetadata: false);
 
-      expect(
-        deletes.where((d) => d.contains('legacy-entity-1')),
-        isEmpty,
-        reason: 'M14b: a cleaned alias delete must not re-emit forever',
-      );
-    });
+        expect(
+          deletes.where((d) => d.contains('legacy-entity-1')),
+          isEmpty,
+          reason: 'M14b: a cleaned alias delete must not re-emit forever',
+        );
+      },
+    );
   });
 
   // ── F25 ─────────────────────────────────────────────────────────────────
   group('F25 self/active alias-delete emission is guarded and purged', () {
     test(
-        'a planted self-alias for the deterministic pk-group-<uuid> id emits NO '
-        'delete and the alias row is purged; a genuine loser alias still emits',
-        () async {
-      final deletes = <String>[];
-      final repo = _FakeMemberRepo([]);
-      final importer = PkGroupsImporter(
-        db: db,
-        memberRepository: repo,
-        recordCreateOverride: (t, e, f) async {},
-        recordUpdateOverride: (t, e, f) async {},
-        recordDeleteOverride: (table, entityId) async {
-          deletes.add('$table:$entityId');
-        },
-      );
+      'a planted self-alias for the deterministic pk-group-<uuid> id emits NO '
+      'delete and the alias row is purged; a genuine loser alias still emits',
+      () async {
+        final deletes = <String>[];
+        final repo = _FakeMemberRepo([]);
+        final importer = PkGroupsImporter(
+          db: db,
+          memberRepository: repo,
+          recordCreateOverride: (t, e, f) async {},
+          recordUpdateOverride: (t, e, f) async {},
+          recordDeleteOverride: (table, entityId) async {
+            deletes.add('$table:$entityId');
+          },
+        );
 
-      // The active local group row lives under the importer's deterministic
-      // hyphen-form id `pk-group-<uuid>` — the same id is every importing
-      // device's own active row across the fleet.
-      final selfId = PkGroupsImporter.deriveGroupId('pk-g1');
-      await _seedGroup(
-        db,
-        id: selfId,
-        pkUuid: 'pk-g1',
-        pkId: 'gid',
-        lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
-      );
-      // Poison: a stale self-alias pointing the deterministic id at this uuid.
-      await db.pkGroupSyncAliasesDao.upsertAlias(
-        legacyEntityId: selfId,
-        pkGroupUuid: 'pk-g1',
-        canonicalEntityId: 'pk-group:pk-g1',
-      );
-      // A genuine loser alias: a random id that is NOT an active local row.
-      await db.pkGroupSyncAliasesDao.upsertAlias(
-        legacyEntityId: 'loser-entity-1',
-        pkGroupUuid: 'pk-g1',
-        canonicalEntityId: 'pk-group:pk-g1',
-      );
+        // The active local group row lives under the importer's deterministic
+        // hyphen-form id `pk-group-<uuid>` — the same id is every importing
+        // device's own active row across the fleet.
+        final selfId = PkGroupsImporter.deriveGroupId('pk-g1');
+        await _seedGroup(
+          db,
+          id: selfId,
+          pkUuid: 'pk-g1',
+          pkId: 'gid',
+          lastSeen: DateTime.now().subtract(const Duration(hours: 25)),
+        );
+        // Poison: a stale self-alias pointing the deterministic id at this uuid.
+        await db.pkGroupSyncAliasesDao.upsertAlias(
+          legacyEntityId: selfId,
+          pkGroupUuid: 'pk-g1',
+          canonicalEntityId: 'pk-group:pk-g1',
+        );
+        // A genuine loser alias: a random id that is NOT an active local row.
+        await db.pkGroupSyncAliasesDao.upsertAlias(
+          legacyEntityId: 'loser-entity-1',
+          pkGroupUuid: 'pk-g1',
+          canonicalEntityId: 'pk-group:pk-g1',
+        );
 
-      // Due update (last_seen 25h old) drives the alias-delete emitter.
-      await importer.importGroups([
-        const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
-      ], overwriteMetadata: false);
+        // Due update (last_seen 25h old) drives the alias-delete emitter.
+        await importer.importGroups([
+          const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g', memberIds: []),
+        ], overwriteMetadata: false);
 
-      // The self-id delete must NOT be emitted (it would tombstone peers' and
-      // this device's own active row), and the poisoned alias is purged so the
-      // emitter loop terminates.
-      expect(
-        deletes.where((d) => d.contains(selfId)),
-        isEmpty,
-        reason: 'F25: never emit a delete for the deterministic self-id',
-      );
-      expect(
-        await db.pkGroupSyncAliasesDao.getByLegacyEntityId(selfId),
-        isNull,
-        reason: 'F25: a forbidden self-alias is purged on sight',
-      );
+        // The self-id delete must NOT be emitted (it would tombstone peers' and
+        // this device's own active row), and the poisoned alias is purged so the
+        // emitter loop terminates.
+        expect(
+          deletes.where((d) => d.contains(selfId)),
+          isEmpty,
+          reason: 'F25: never emit a delete for the deterministic self-id',
+        );
+        expect(
+          await db.pkGroupSyncAliasesDao.getByLegacyEntityId(selfId),
+          isNull,
+          reason: 'F25: a forbidden self-alias is purged on sight',
+        );
 
-      // The genuine loser alias still gets its one delete (convergence).
-      expect(deletes, contains('member_groups:loser-entity-1'));
-    });
+        // The genuine loser alias still gets its one delete (convergence).
+        expect(deletes, contains('member_groups:loser-entity-1'));
+      },
+    );
   });
 
   // ── M14c ──────────────────────────────────────────────────────────────────
@@ -635,69 +693,84 @@ void main() {
 
   // ── M15a ──────────────────────────────────────────────────────────────────
   group('M15a 404 terminal cleanup gated on code 20004', () {
-    test('a bare 404 (no code 20004) on refetch keeps intents (transient)',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-        createdAt: DateTime.now(),
-      );
+    test(
+      'a bare 404 (no code 20004) on refetch keeps intents (transient)',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+          createdAt: DateTime.now(),
+        );
 
-      final client = _ProgrammableClient();
-      client.addResponses.add(const PluralKitApiError(400, 'bad'));
-      // Refetch 404 WITHOUT code 20004 → transient, keep pending.
-      client.getMembersResponses['pk-g1'] =
-          const PluralKitApiError(404, 'proxy hiccup');
+        final client = _ProgrammableClient();
+        client.addResponses.add(const PluralKitApiError(400, 'bad'));
+        // Refetch 404 WITHOUT code 20004 → transient, keep pending.
+        client.getMembersResponses['pk-g1'] = const PluralKitApiError(
+          404,
+          'proxy hiccup',
+        );
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      expect(result.stranded, 0,
-          reason: 'a bare 404 must NOT be treated as group-gone (M15a)');
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'push_add',
-          reason: 'intent kept for retry on a transient 404 (M15a)');
-      expect(result.failed, 1);
-    });
+        expect(
+          result.stranded,
+          0,
+          reason: 'a bare 404 must NOT be treated as group-gone (M15a)',
+        );
+        expect(
+          (await _findEntry(db, 'e1'))!.pendingPkOp,
+          'push_add',
+          reason: 'intent kept for retry on a transient 404 (M15a)',
+        );
+        expect(result.failed, 1);
+      },
+    );
 
-    test('a 404 WITH code 20004 on refetch triggers terminal cleanup',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-        createdAt: DateTime.now(),
-      );
+    test(
+      'a 404 WITH code 20004 on refetch triggers terminal cleanup',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+          createdAt: DateTime.now(),
+        );
 
-      final client = _ProgrammableClient();
-      client.addResponses.add(const PluralKitApiError(404, 'gone'));
-      client.getMembersResponses['pk-g1'] =
-          const PluralKitApiError(404, 'group gone', code: 20004);
+        final client = _ProgrammableClient();
+        client.addResponses.add(const PluralKitApiError(404, 'gone'));
+        client.getMembersResponses['pk-g1'] = const PluralKitApiError(
+          404,
+          'group gone',
+          code: 20004,
+        );
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      expect(result.stranded, 1);
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
-    });
+        expect(result.stranded, 1);
+        expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none');
+      },
+    );
   });
 
   // ── M15 retry cap ─────────────────────────────────────────────────────────
@@ -716,8 +789,9 @@ void main() {
         pkMemberUuid: 'pk-m1',
         pendingPkOp: 'push_add',
         // Older than the cap.
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 2),
+        createdAt: DateTime.now().subtract(
+          PkGroupsImporter.pushRetryMaxAge * 2,
+        ),
       );
 
       final client = _ProgrammableClient();
@@ -732,8 +806,11 @@ void main() {
       );
 
       expect(result.terminallyFailed, 1);
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'none',
-          reason: 'past-cap intent must stop churning (M15)');
+      expect(
+        (await _findEntry(db, 'e1'))!.pendingPkOp,
+        'none',
+        reason: 'past-cap intent must stop churning (M15)',
+      );
     });
 
     test('a YOUNG failing push_add stays pending (not yet capped)', () async {
@@ -768,180 +845,205 @@ void main() {
 
   // ── M15c ──────────────────────────────────────────────────────────────────
   group('M15c poisoned bulk-add ref isolation', () {
-    test('a 20003-named bad ref is dropped while the valid ref proceeds',
-        () async {
-      final repo = _FakeMemberRepo([
-        _member('m1', pkUuid: 'pk-good'),
-        _member('m2', pkUuid: 'pk-bad'),
-      ]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'eGood',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-good',
-        pendingPkOp: 'push_add',
-        createdAt: DateTime.now(),
-      );
-      await _seedEntry(
-        db,
-        id: 'eBad',
-        groupId: 'g1',
-        memberId: 'm2',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-bad',
-        pendingPkOp: 'push_add',
-        createdAt: DateTime.now(),
-      );
+    test(
+      'a 20003-named bad ref is dropped while the valid ref proceeds',
+      () async {
+        final repo = _FakeMemberRepo([
+          _member('m1', pkUuid: 'pk-good'),
+          _member('m2', pkUuid: 'pk-bad'),
+        ]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'eGood',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-good',
+          pendingPkOp: 'push_add',
+          createdAt: DateTime.now(),
+        );
+        await _seedEntry(
+          db,
+          id: 'eBad',
+          groupId: 'g1',
+          memberId: 'm2',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-bad',
+          pendingPkOp: 'push_add',
+          createdAt: DateTime.now(),
+        );
 
-      final client = _ProgrammableClient();
-      // First bulk add (both refs) → atomic 404 20003 naming the bad ref.
-      client.addResponses.add(
-        const PluralKitApiError(
-          404,
-          'Member "pk-bad" not found',
-          code: 20003,
-        ),
-      );
-      // Retry with the survivor (pk-good) succeeds (204 default).
+        final client = _ProgrammableClient();
+        // First bulk add (both refs) → atomic 404 20003 naming the bad ref.
+        client.addResponses.add(
+          const PluralKitApiError(
+            404,
+            'Member "pk-bad" not found',
+            code: 20003,
+          ),
+        );
+        // Retry with the survivor (pk-good) succeeds (204 default).
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      // The bad ref dropped terminally; the good ref pushed and cleared.
-      expect(result.terminallyFailed, 1);
-      expect(result.added, 1);
-      expect((await _findEntry(db, 'eBad'))!.pendingPkOp, 'none',
-          reason: 'poisoned ref intent dropped (M15c)');
-      expect((await _findEntry(db, 'eGood'))!.pendingPkOp, 'none',
-          reason: 'valid ref still pushed despite the poisoned sibling (M15c)');
-      // Two add calls: the failing batch, then the survivor-only retry.
-      expect(client.addCalls, hasLength(2));
-      expect(client.addCalls.last.refs, ['pk-good']);
-    });
+        // The bad ref dropped terminally; the good ref pushed and cleared.
+        expect(result.terminallyFailed, 1);
+        expect(result.added, 1);
+        expect(
+          (await _findEntry(db, 'eBad'))!.pendingPkOp,
+          'none',
+          reason: 'poisoned ref intent dropped (M15c)',
+        );
+        expect(
+          (await _findEntry(db, 'eGood'))!.pendingPkOp,
+          'none',
+          reason: 'valid ref still pushed despite the poisoned sibling (M15c)',
+        );
+        // Two add calls: the failing batch, then the survivor-only retry.
+        expect(client.addCalls, hasLength(2));
+        expect(client.addCalls.last.refs, ['pk-good']);
+      },
+    );
   });
 
   // ── Verifier issue 1: auth/rate-limit must never reach the refetch/cap ──
   group('issue 1: 401/429 keep intents pending regardless of age', () {
-    test('401 on the add POST: stale push_add untouched, no refetch, no cap',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_add',
-        // WAY past the retry cap — pre-fix, the 401 entered the 4xx
-        // refetch path, the refetch 401'd the same way, and the cap
-        // terminal-dropped this intent on a routine token rotation.
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 3),
-      );
+    test(
+      '401 on the add POST: stale push_add untouched, no refetch, no cap',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_add',
+          // WAY past the retry cap — pre-fix, the 401 entered the 4xx
+          // refetch path, the refetch 401'd the same way, and the cap
+          // terminal-dropped this intent on a routine token rotation.
+          createdAt: DateTime.now().subtract(
+            PkGroupsImporter.pushRetryMaxAge * 3,
+          ),
+        );
 
-      final client = _ProgrammableClient();
-      client.addResponses.add(const PluralKitAuthError());
+        final client = _ProgrammableClient();
+        client.addResponses.add(const PluralKitAuthError());
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      expect(result.terminallyFailed, 0,
-          reason: 'auth failure is environmental — never consumes the cap');
-      expect(result.failed, 1);
-      expect(client.getMembersCalls, isEmpty,
-          reason: '401 must not trigger the refetch (same token would 401)');
-      expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'push_add');
-    });
+        expect(
+          result.terminallyFailed,
+          0,
+          reason: 'auth failure is environmental — never consumes the cap',
+        );
+        expect(result.failed, 1);
+        expect(
+          client.getMembersCalls,
+          isEmpty,
+          reason: '401 must not trigger the refetch (same token would 401)',
+        );
+        expect((await _findEntry(db, 'e1'))!.pendingPkOp, 'push_add');
+      },
+    );
 
-    test('429 on the remove POST: stale push_remove tombstone untouched',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_remove',
-        isDeleted: true,
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 3),
-      );
+    test(
+      '429 on the remove POST: stale push_remove tombstone untouched',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_remove',
+          isDeleted: true,
+          createdAt: DateTime.now().subtract(
+            PkGroupsImporter.pushRetryMaxAge * 3,
+          ),
+        );
 
-      final client = _ProgrammableClient();
-      client.removeResponses.add(const PluralKitRateLimitError());
+        final client = _ProgrammableClient();
+        client.removeResponses.add(const PluralKitRateLimitError());
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      // Pre-fix: cap hard-deleted the tombstone → next pull re-imported the
-      // member → user's remove silently reverted fleet-wide.
-      expect(result.terminallyFailed, 0);
-      expect(result.removed, 0);
-      expect(client.getMembersCalls, isEmpty);
-      final row = await _findEntry(db, 'e1');
-      expect(row, isNotNull,
-          reason: '429 must never hard-delete a push_remove tombstone');
-      expect(row!.isDeleted, isTrue);
-      expect(row.pendingPkOp, 'push_remove');
-    });
+        // Pre-fix: cap hard-deleted the tombstone → next pull re-imported the
+        // member → user's remove silently reverted fleet-wide.
+        expect(result.terminallyFailed, 0);
+        expect(result.removed, 0);
+        expect(client.getMembersCalls, isEmpty);
+        final row = await _findEntry(db, 'e1');
+        expect(
+          row,
+          isNotNull,
+          reason: '429 must never hard-delete a push_remove tombstone',
+        );
+        expect(row!.isDeleted, isTrue);
+        expect(row.pendingPkOp, 'push_remove');
+      },
+    );
 
-    test('401 on the REFETCH (after a generic 4xx POST) also bypasses the cap',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        pendingPkOp: 'push_remove',
-        isDeleted: true,
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 3),
-      );
+    test(
+      '401 on the REFETCH (after a generic 4xx POST) also bypasses the cap',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          pendingPkOp: 'push_remove',
+          isDeleted: true,
+          createdAt: DateTime.now().subtract(
+            PkGroupsImporter.pushRetryMaxAge * 3,
+          ),
+        );
 
-      final client = _ProgrammableClient();
-      client.removeResponses.add(const PluralKitApiError(400, 'bad'));
-      client.getMembersResponses['pk-g1'] = const PluralKitAuthError();
+        final client = _ProgrammableClient();
+        client.removeResponses.add(const PluralKitApiError(400, 'bad'));
+        client.getMembersResponses['pk-g1'] = const PluralKitAuthError();
 
-      final result = await importer.pushPendingGroupOps(
-        client,
-        PkSyncDirection.bidirectional,
-      );
+        final result = await importer.pushPendingGroupOps(
+          client,
+          PkSyncDirection.bidirectional,
+        );
 
-      expect(result.terminallyFailed, 0);
-      expect(result.failed, 1);
-      final row = await _findEntry(db, 'e1');
-      expect(row, isNotNull);
-      expect(row!.pendingPkOp, 'push_remove');
-    });
+        expect(result.terminallyFailed, 0);
+        expect(result.failed, 1);
+        final row = await _findEntry(db, 'e1');
+        expect(row, isNotNull);
+        expect(row!.pendingPkOp, 'push_remove');
+      },
+    );
   });
 
   // ── Verifier issue 1(ii): the cap measures INTENT age, not row age ──────
   group('issue 1: intent-age semantics for the retry cap', () {
     test('a fresh REMOVE of an old row is NOT expired '
-        '(softDeleteEntryWithPendingOp refreshes the recency stamp)',
-        () async {
+        '(softDeleteEntryWithPendingOp refreshes the recency stamp)', () async {
       final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
       final importer = PkGroupsImporter(db: db, memberRepository: repo);
       await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
@@ -953,8 +1055,9 @@ void main() {
         memberId: 'm1',
         pkGroupUuid: 'pk-g1',
         pkMemberUuid: 'pk-m1',
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 3),
+        createdAt: DateTime.now().subtract(
+          PkGroupsImporter.pushRetryMaxAge * 3,
+        ),
       );
 
       // The user removes it NOW — the DAO method the repository's
@@ -986,8 +1089,11 @@ void main() {
         PkSyncDirection.bidirectional,
       );
 
-      expect(result.terminallyFailed, 0,
-          reason: 'a fresh remove intent must not be age-capped');
+      expect(
+        result.terminallyFailed,
+        0,
+        reason: 'a fresh remove intent must not be age-capped',
+      );
       expect(result.failed, 1);
       final row = await _findEntry(db, 'e1');
       expect(row, isNotNull);
@@ -1010,8 +1116,9 @@ void main() {
         pkMemberUuid: 'pk-m1',
         pendingPkOp: 'push_remove',
         isDeleted: true,
-        createdAt:
-            DateTime.now().subtract(PkGroupsImporter.pushRetryMaxAge * 2),
+        createdAt: DateTime.now().subtract(
+          PkGroupsImporter.pushRetryMaxAge * 2,
+        ),
       );
 
       final client = _ProgrammableClient();
@@ -1024,123 +1131,142 @@ void main() {
       );
 
       expect(result.terminallyFailed, 1);
-      expect(await _findEntry(db, 'e1'), isNull,
-          reason: 'past-cap remove intent is given up on (M15 cap intact)');
+      expect(
+        await _findEntry(db, 'e1'),
+        isNull,
+        reason: 'past-cap remove intent is given up on (M15 cap intact)',
+      );
     });
   });
 
   // ── Verifier issue 2: CRDT revive refreshes the recency stamp ───────────
   group('issue 2: apply-onto-tombstone restamps created_at', () {
-    test('a revive apply gets a fresh stamp and the H6b grace protects it',
-        () async {
-      // Real member row — the adapter resolves pk_member_uuid against the DB.
-      await db.into(db.members).insert(
-            pkFixtureMember(id: 'm1', name: 'M1', pluralkitUuid: 'pk-m1'),
-          );
-      await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
-      // Old local tombstone for the (pk-g1, pk-m1) edge — e.g. an earlier
-      // reconcile-removal. Stamp far in the past.
-      final entryId = PkGroupsImporter.deriveEntryId('pk-g1', 'pk-m1');
-      await _seedEntry(
-        db,
-        id: entryId,
-        groupId: 'g1',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-        isDeleted: true,
-        createdAt: DateTime.now()
-            .subtract(PkGroupsImporter.removalRecencyGrace * 4),
-      );
+    test(
+      'a revive apply gets a fresh stamp and the H6b grace protects it',
+      () async {
+        // Real member row — the adapter resolves pk_member_uuid against the DB.
+        await db
+            .into(db.members)
+            .insert(
+              pkFixtureMember(id: 'm1', name: 'M1', pluralkitUuid: 'pk-m1'),
+            );
+        await _seedGroup(db, id: 'g1', pkUuid: 'pk-g1');
+        // Old local tombstone for the (pk-g1, pk-m1) edge — e.g. an earlier
+        // reconcile-removal. Stamp far in the past.
+        final entryId = PkGroupsImporter.deriveEntryId('pk-g1', 'pk-m1');
+        await _seedEntry(
+          db,
+          id: entryId,
+          groupId: 'g1',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+          isDeleted: true,
+          createdAt: DateTime.now().subtract(
+            PkGroupsImporter.removalRecencyGrace * 4,
+          ),
+        );
 
-      // Peer B re-adds → emits a CREATE under the deterministic id. Apply it
-      // here (device A). Drift's clientDefault fires only on true INSERTs;
-      // pre-fix this revive kept the ORIGINAL stamp, so A's next pull (PK
-      // still missing the member — B hasn't pushed yet) reconcile-deleted
-      // the revive and destroyed B's unpushed push_add (scenario A).
-      final entriesEntity = buildSyncAdapterWithCompletion(db)
-          .adapter
-          .entities
-          .singleWhere((e) => e.tableName == 'member_group_entries');
-      final before = DateTime.now().subtract(const Duration(seconds: 5));
-      await entriesEntity.applyFields(entryId, {
-        'group_id': 'g1',
-        'member_id': 'm1',
-        'pk_group_uuid': 'pk-g1',
-        'pk_member_uuid': 'pk-m1',
-        'is_deleted': false,
-      });
+        // Peer B re-adds → emits a CREATE under the deterministic id. Apply it
+        // here (device A). Drift's clientDefault fires only on true INSERTs;
+        // pre-fix this revive kept the ORIGINAL stamp, so A's next pull (PK
+        // still missing the member — B hasn't pushed yet) reconcile-deleted
+        // the revive and destroyed B's unpushed push_add (scenario A).
+        final entriesEntity = buildSyncAdapterWithCompletion(db)
+            .adapter
+            .entities
+            .singleWhere((e) => e.tableName == 'member_group_entries');
+        final before = DateTime.now().subtract(const Duration(seconds: 5));
+        await entriesEntity.applyFields(entryId, {
+          'group_id': 'g1',
+          'member_id': 'm1',
+          'pk_group_uuid': 'pk-g1',
+          'pk_member_uuid': 'pk-m1',
+          'is_deleted': false,
+        });
 
-      final revived = await _findEntry(db, entryId);
-      expect(revived, isNotNull);
-      expect(revived!.isDeleted, isFalse);
-      expect(revived.createdAt, isNotNull);
-      expect(revived.createdAt!.isAfter(before), isTrue,
-          reason: 'apply onto an existing tombstone must restamp created_at');
+        final revived = await _findEntry(db, entryId);
+        expect(revived, isNotNull);
+        expect(revived!.isDeleted, isFalse);
+        expect(revived.createdAt, isNotNull);
+        expect(
+          revived.createdAt!.isAfter(before),
+          isTrue,
+          reason: 'apply onto an existing tombstone must restamp created_at',
+        );
 
-      // And the grace now protects the revived row against the next pull.
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
-      final result = await importer.importGroups([
-        // PK does not list the member yet (peer B hasn't pushed).
-        const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g1', memberIds: []),
-      ]);
+        // And the grace now protects the revived row against the next pull.
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
+        final result = await importer.importGroups([
+          // PK does not list the member yet (peer B hasn't pushed).
+          const PKGroup(id: 'gid', uuid: 'pk-g1', name: 'g1', memberIds: []),
+        ]);
 
-      expect(result.entriesRemoved, 0);
-      expect(result.entriesSkippedRecent, 1);
-      expect((await _findEntry(db, entryId))!.isDeleted, isFalse,
-          reason: 'H6b grace must protect the freshly-revived entry');
-    });
+        expect(result.entriesRemoved, 0);
+        expect(result.entriesSkippedRecent, 1);
+        expect(
+          (await _findEntry(db, entryId))!.isDeleted,
+          isFalse,
+          reason: 'H6b grace must protect the freshly-revived entry',
+        );
+      },
+    );
   });
 
   // ── Verifier issue 3: uuid-keeping tombstones block resurrection ─────────
-  group('issue 3: repair-linked (non-deterministic id) deletion preserved',
-      () {
-    test('deleteGroup keeps the uuid; the next pull does not resurrect',
-        () async {
-      final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
-      final importer = PkGroupsImporter(db: db, memberRepository: repo);
+  group('issue 3: repair-linked (non-deterministic id) deletion preserved', () {
+    test(
+      'deleteGroup keeps the uuid; the next pull does not resurrect',
+      () async {
+        final repo = _FakeMemberRepo([_member('m1', pkUuid: 'pk-m1')]);
+        final importer = PkGroupsImporter(db: db, memberRepository: repo);
 
-      // A group adopted under its ORIGINAL row id (repair's
-      // linkGroupToPluralkitUuid path) — NOT the deterministic pk-group-<uuid>
-      // id, so the deterministic-id tombstone lookup alone cannot see it.
-      await _seedGroup(db, id: 'my-original-group', pkUuid: 'pk-g1');
-      await _seedEntry(
-        db,
-        id: 'e1',
-        groupId: 'my-original-group',
-        memberId: 'm1',
-        pkGroupUuid: 'pk-g1',
-        pkMemberUuid: 'pk-m1',
-      );
+        // A group adopted under its ORIGINAL row id (repair's
+        // linkGroupToPluralkitUuid path) — NOT the deterministic pk-group-<uuid>
+        // id, so the deterministic-id tombstone lookup alone cannot see it.
+        await _seedGroup(db, id: 'my-original-group', pkUuid: 'pk-g1');
+        await _seedEntry(
+          db,
+          id: 'e1',
+          groupId: 'my-original-group',
+          memberId: 'm1',
+          pkGroupUuid: 'pk-g1',
+          pkMemberUuid: 'pk-m1',
+        );
 
-      // User deletes it through the real DAO path.
-      await db.memberGroupsDao.deleteGroup('my-original-group');
+        // User deletes it through the real DAO path.
+        await db.memberGroupsDao.deleteGroup('my-original-group');
 
-      final tombstone = await db.memberGroupsDao
-          .getGroupByIdIncludingDeleted('my-original-group');
-      expect(tombstone!.isDeleted, isTrue);
-      expect(tombstone.pluralkitUuid, 'pk-g1',
-          reason: 'deleteGroup must KEEP the uuid for guard findability');
+        final tombstone = await db.memberGroupsDao.getGroupByIdIncludingDeleted(
+          'my-original-group',
+        );
+        expect(tombstone!.isDeleted, isTrue);
+        expect(
+          tombstone.pluralkitUuid,
+          'pk-g1',
+          reason: 'deleteGroup must KEEP the uuid for guard findability',
+        );
 
-      // Next pull still lists the group on PK — must NOT resurrect.
-      final result = await importer.importGroups([
-        const PKGroup(
-          id: 'gid',
-          uuid: 'pk-g1',
-          name: 'Resurrected?',
-          memberIds: ['pk-m1'],
-        ),
-      ], overwriteMetadata: true);
+        // Next pull still lists the group on PK — must NOT resurrect.
+        final result = await importer.importGroups([
+          const PKGroup(
+            id: 'gid',
+            uuid: 'pk-g1',
+            name: 'Resurrected?',
+            memberIds: ['pk-m1'],
+          ),
+        ], overwriteMetadata: true);
 
-      expect(result.groupsInserted, 0);
-      expect(result.groupsPreservedAsDeletedTombstone, 1);
-      expect(await db.memberGroupsDao.getAllActiveGroups(), isEmpty);
-      // The entry tombstone is untouched — not revived, not duplicated.
-      final entry = await _findEntry(db, 'e1');
-      expect(entry!.isDeleted, isTrue);
-      final allEntries = await (db.select(db.memberGroupEntries)).get();
-      expect(allEntries, hasLength(1));
-    });
+        expect(result.groupsInserted, 0);
+        expect(result.groupsPreservedAsDeletedTombstone, 1);
+        expect(await db.memberGroupsDao.getAllActiveGroups(), isEmpty);
+        // The entry tombstone is untouched — not revived, not duplicated.
+        final entry = await _findEntry(db, 'e1');
+        expect(entry!.isDeleted, isTrue);
+        final allEntries = await (db.select(db.memberGroupEntries)).get();
+        expect(allEntries, hasLength(1));
+      },
+    );
   });
 }

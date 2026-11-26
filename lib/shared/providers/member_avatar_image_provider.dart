@@ -17,7 +17,9 @@ final memberBannerImageDataProvider = StreamProvider.autoDispose
     .family<Uint8List?, String>((ref, memberId) {
       final link = ref.keepAlive();
       Timer? release;
-      ref.onCancel(() => release = Timer(const Duration(seconds: 30), link.close));
+      ref.onCancel(
+        () => release = Timer(const Duration(seconds: 30), link.close),
+      );
       ref.onResume(() => release?.cancel());
       ref.onDispose(() => release?.cancel());
       return ref.watch(membersDaoProvider).watchBannerImageData(memberId);

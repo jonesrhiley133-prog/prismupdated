@@ -30,11 +30,9 @@ class _FakeMemberRepo implements MemberRepository {
   Future<List<domain.Member>> getAllMembersIncludingDeleted() async => members;
 
   @override
-  Future<domain.Member?> getMemberById(String id) async =>
-      members.cast<domain.Member?>().firstWhere(
-        (m) => m!.id == id,
-        orElse: () => null,
-      );
+  Future<domain.Member?> getMemberById(String id) async => members
+      .cast<domain.Member?>()
+      .firstWhere((m) => m!.id == id, orElse: () => null);
 
   @override
   Future<List<domain.Member>> getMembersByIds(List<String> ids) async =>
@@ -73,11 +71,13 @@ class _FakeMemberRepo implements MemberRepository {
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   @override
   Future<void> deleteMember(String id) async =>
@@ -149,108 +149,98 @@ void main() {
 
   // Helper: seed a group row directly via the DAO with a non-null avatar blob.
   Future<void> seedGroupWithAvatar() async {
-    await db.into(db.memberGroups).insert(
-      MemberGroupsCompanion.insert(
-        id: _groupId,
-        name: 'Original Name',
-        createdAt: DateTime.utc(2026, 1, 1),
-        pluralkitId: const Value(_pkId),
-        pluralkitUuid: const Value(_pkUuid),
-        avatarImageData: Value(_avatarBlob),
-      ),
-    );
+    await db
+        .into(db.memberGroups)
+        .insert(
+          MemberGroupsCompanion.insert(
+            id: _groupId,
+            name: 'Original Name',
+            createdAt: DateTime.utc(2026, 1, 1),
+            pluralkitId: const Value(_pkId),
+            pluralkitUuid: const Value(_pkUuid),
+            avatarImageData: Value(_avatarBlob),
+          ),
+        );
   }
 
-  test(
-    'avatar_image_data is byte-identical after PK metadata overwrite '
-    '(overwriteMetadata=true)',
-    () async {
-      // Seed a locally-stored avatar blob.
-      await seedGroupWithAvatar();
+  test('avatar_image_data is byte-identical after PK metadata overwrite '
+      '(overwriteMetadata=true)', () async {
+    // Seed a locally-stored avatar blob.
+    await seedGroupWithAvatar();
 
-      final importer = PkGroupsImporter(
-        db: db,
-        memberRepository: _FakeMemberRepo(const []),
-      );
+    final importer = PkGroupsImporter(
+      db: db,
+      memberRepository: _FakeMemberRepo(const []),
+    );
 
-      // Pull a PK payload with different name/description/color and NO
-      // avatar_image_data. overwriteMetadata=true triggers the companion
-      // that overwrites name/description/colorHex. avatarImageData is absent
-      // from that companion, so it must survive unchanged.
-      await importer.importGroups(
-        [
-          const PKGroup(
-            id: _pkId,
-            uuid: _pkUuid,
-            name: 'PK Name After Pull',
-            description: 'PK description',
-            color: 'aabbcc',
-            memberIds: [],
-          ),
-        ],
-        overwriteMetadata: true,
-      );
+    // Pull a PK payload with different name/description/color and NO
+    // avatar_image_data. overwriteMetadata=true triggers the companion
+    // that overwrites name/description/colorHex. avatarImageData is absent
+    // from that companion, so it must survive unchanged.
+    await importer.importGroups([
+      const PKGroup(
+        id: _pkId,
+        uuid: _pkUuid,
+        name: 'PK Name After Pull',
+        description: 'PK description',
+        color: 'aabbcc',
+        memberIds: [],
+      ),
+    ], overwriteMetadata: true);
 
-      final stored = await db.memberGroupsDao.getGroupById(_groupId);
-      expect(stored, isNotNull);
+    final stored = await db.memberGroupsDao.getGroupById(_groupId);
+    expect(stored, isNotNull);
 
-      // Metadata fields were overwritten as expected (sanity check).
-      expect(stored!.name, 'PK Name After Pull');
-      expect(stored.colorHex, '#aabbcc');
+    // Metadata fields were overwritten as expected (sanity check).
+    expect(stored!.name, 'PK Name After Pull');
+    expect(stored.colorHex, '#aabbcc');
 
-      // avatarImageData must be byte-identical to the seeded blob.
-      expect(
-        stored.avatarImageData,
-        equals(_avatarBlob),
-        reason:
-            'PK pull must never clobber local avatar_image_data — '
-            'avatarImageData must be absent from the update companion',
-      );
-    },
-  );
+    // avatarImageData must be byte-identical to the seeded blob.
+    expect(
+      stored.avatarImageData,
+      equals(_avatarBlob),
+      reason:
+          'PK pull must never clobber local avatar_image_data — '
+          'avatarImageData must be absent from the update companion',
+    );
+  });
 
-  test(
-    'avatar_image_data is byte-identical after background sync pull '
-    '(overwriteMetadata=false)',
-    () async {
-      // Seed a locally-stored avatar blob.
-      await seedGroupWithAvatar();
+  test('avatar_image_data is byte-identical after background sync pull '
+      '(overwriteMetadata=false)', () async {
+    // Seed a locally-stored avatar blob.
+    await seedGroupWithAvatar();
 
-      final importer = PkGroupsImporter(
-        db: db,
-        memberRepository: _FakeMemberRepo(const []),
-      );
+    final importer = PkGroupsImporter(
+      db: db,
+      memberRepository: _FakeMemberRepo(const []),
+    );
 
-      // Background sync — only last_seen_from_pk_at and PK linkage fields
-      // are written. avatarImageData must also survive here.
-      await importer.importGroups(
-        [
-          const PKGroup(
-            id: _pkId,
-            uuid: _pkUuid,
-            name: 'PK Name Background',
-            description: 'ignored in background sync',
-            color: 'ffffff',
-            memberIds: [],
-          ),
-        ],
-        overwriteMetadata: false,
-      );
+    // Background sync — only last_seen_from_pk_at and PK linkage fields
+    // are written. avatarImageData must also survive here.
+    await importer.importGroups([
+      const PKGroup(
+        id: _pkId,
+        uuid: _pkUuid,
+        name: 'PK Name Background',
+        description: 'ignored in background sync',
+        color: 'ffffff',
+        memberIds: [],
+      ),
+    ], overwriteMetadata: false);
 
-      final stored = await db.memberGroupsDao.getGroupById(_groupId);
-      expect(stored, isNotNull);
+    final stored = await db.memberGroupsDao.getGroupById(_groupId);
+    expect(stored, isNotNull);
 
-      // Name is preserved (background sync doesn't overwrite metadata).
-      expect(stored!.name, 'Original Name');
+    // Name is preserved (background sync doesn't overwrite metadata).
+    expect(stored!.name, 'Original Name');
 
-      // avatarImageData must be byte-identical to the seeded blob.
-      expect(
-        stored.avatarImageData,
-        equals(_avatarBlob),
-        reason:
-            'Background sync must not touch avatar_image_data — '
-            'avatarImageData must be absent from the update companion',
-      );
-    },
-  );
+    // avatarImageData must be byte-identical to the seeded blob.
+    expect(
+      stored.avatarImageData,
+      equals(_avatarBlob),
+      reason:
+          'Background sync must not touch avatar_image_data — '
+          'avatarImageData must be absent from the update companion',
+    );
+  });
 }

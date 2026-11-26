@@ -8,9 +8,7 @@ import 'package:prism_plurality/features/chat/services/klipy_service.dart';
 /// Helper to build a realistic Klipy API response body.
 Map<String, dynamic> _buildResponse(List<Map<String, dynamic>> items) {
   return {
-    'data': {
-      'data': items,
-    },
+    'data': {'data': items},
   };
 }
 
@@ -25,7 +23,8 @@ Map<String, dynamic> _gifItem({
     'id': id,
     'title': title,
     'type': type,
-    'file': file ??
+    'file':
+        file ??
         {
           'xs': {
             'mp4': {
@@ -75,9 +74,7 @@ void main() {
       expect(capturedUri, isNotNull);
       expect(
         capturedUri!.toString(),
-        startsWith(
-          'https://relay.example/v1/gifs/trending',
-        ),
+        startsWith('https://relay.example/v1/gifs/trending'),
       );
       expect(capturedUri!.queryParameters['per_page'], '30');
       expect(capturedUri!.queryParameters['content_filter'], 'medium');
@@ -101,9 +98,7 @@ void main() {
       expect(capturedUri, isNotNull);
       expect(
         capturedUri!.toString(),
-        startsWith(
-          'https://relay.example/v1/gifs/search',
-        ),
+        startsWith('https://relay.example/v1/gifs/search'),
       );
       expect(capturedUri!.queryParameters['q'], 'cats');
       expect(capturedUri!.queryParameters['per_page'], '30');
@@ -120,10 +115,7 @@ void main() {
   group('response parsing', () {
     test('parses KlipyGif with xs mp4 url, preview, and dimensions', () async {
       final client = MockClient((request) async {
-        return http.Response(
-          jsonEncode(_buildResponse([_gifItem()])),
-          200,
-        );
+        return http.Response(jsonEncode(_buildResponse([_gifItem()])), 200);
       });
       final service = KlipyService(
         baseUrl: 'https://relay.example/v1/gifs',
@@ -147,24 +139,28 @@ void main() {
     test('falls back to sm mp4 when xs has no mp4', () async {
       final client = MockClient((request) async {
         return http.Response(
-          jsonEncode(_buildResponse([
-            _gifItem(file: {
-              'xs': {
-                'gif': {
-                  'url': 'https://media.klipy.com/xs.gif',
-                  'width': 100,
-                  'height': 80,
+          jsonEncode(
+            _buildResponse([
+              _gifItem(
+                file: {
+                  'xs': {
+                    'gif': {
+                      'url': 'https://media.klipy.com/xs.gif',
+                      'width': 100,
+                      'height': 80,
+                    },
+                  },
+                  'sm': {
+                    'mp4': {
+                      'url': 'https://media.klipy.com/sm.mp4',
+                      'width': 200,
+                      'height': 160,
+                    },
+                  },
                 },
-              },
-              'sm': {
-                'mp4': {
-                  'url': 'https://media.klipy.com/sm.mp4',
-                  'width': 200,
-                  'height': 160,
-                },
-              },
-            }),
-          ])),
+              ),
+            ]),
+          ),
           200,
         );
       });
@@ -192,10 +188,12 @@ void main() {
     test('excludes items with type "ad"', () async {
       final client = MockClient((request) async {
         return http.Response(
-          jsonEncode(_buildResponse([
-            _gifItem(id: 'real-gif', type: 'gif'),
-            _gifItem(id: 'ad-item', type: 'ad'),
-          ])),
+          jsonEncode(
+            _buildResponse([
+              _gifItem(id: 'real-gif', type: 'gif'),
+              _gifItem(id: 'ad-item', type: 'ad'),
+            ]),
+          ),
           200,
         );
       });
@@ -215,10 +213,12 @@ void main() {
     test('excludes items with no mp4 url', () async {
       final client = MockClient((request) async {
         return http.Response(
-          jsonEncode(_buildResponse([
-            _gifItem(id: 'good'),
-            _gifItem(id: 'empty-file', file: {}),
-          ])),
+          jsonEncode(
+            _buildResponse([
+              _gifItem(id: 'good'),
+              _gifItem(id: 'empty-file', file: {}),
+            ]),
+          ),
           200,
         );
       });
@@ -301,25 +301,27 @@ void main() {
       service.dispose();
     });
 
-    test('search with whitespace-only string calls trending endpoint',
-        () async {
-      Uri? capturedUri;
-      final client = MockClient((request) async {
-        capturedUri = request.url;
-        return http.Response(jsonEncode(_buildResponse([])), 200);
-      });
-      final service = KlipyService(
-        baseUrl: 'https://relay.example/v1/gifs',
-        httpClient: client,
-      );
+    test(
+      'search with whitespace-only string calls trending endpoint',
+      () async {
+        Uri? capturedUri;
+        final client = MockClient((request) async {
+          capturedUri = request.url;
+          return http.Response(jsonEncode(_buildResponse([])), 200);
+        });
+        final service = KlipyService(
+          baseUrl: 'https://relay.example/v1/gifs',
+          httpClient: client,
+        );
 
-      await service.search('   ');
+        await service.search('   ');
 
-      expect(capturedUri, isNotNull);
-      expect(capturedUri!.path, contains('/trending'));
+        expect(capturedUri, isNotNull);
+        expect(capturedUri!.path, contains('/trending'));
 
-      service.dispose();
-    });
+        service.dispose();
+      },
+    );
   });
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -356,10 +358,7 @@ void main() {
     });
 
     test('rejects unknown domain', () {
-      expect(
-        KlipyService.isValidGifUrl('https://evil.com/gif.mp4'),
-        isFalse,
-      );
+      expect(KlipyService.isValidGifUrl('https://evil.com/gif.mp4'), isFalse);
     });
 
     test('rejects domain that looks like klipy but is not', () {
@@ -482,10 +481,7 @@ void main() {
         GifServiceConfig.sanitizeGifApiBaseUrl(url, relayUrl: relayUrl);
 
     test('accepts a trusted klipy proxy host over https', () {
-      expect(
-        sanitize('https://api.klipy.com/v1'),
-        'https://api.klipy.com/v1',
-      );
+      expect(sanitize('https://api.klipy.com/v1'), 'https://api.klipy.com/v1');
     });
 
     test('accepts the apex klipy.com host', () {
@@ -493,10 +489,7 @@ void main() {
     });
 
     test('accepts a tenor provider host', () {
-      expect(
-        sanitize('https://api.tenor.com/v2'),
-        'https://api.tenor.com/v2',
-      );
+      expect(sanitize('https://api.tenor.com/v2'), 'https://api.tenor.com/v2');
     });
 
     test('accepts the Prism-hosted gif.prism.app service', () {
@@ -523,18 +516,22 @@ void main() {
     // Core new assertion: the allowlist is ENFORCING. A perfectly valid public
     // https host that is NOT a trusted GIF provider (and not the relay) must be
     // rejected so a malicious relay cannot exfiltrate GIF search terms to it.
-    test('rejects an off-allowlist public https host (exfiltration vector)',
-        () {
-      expect(sanitize('https://evil.example.com/v1'), isNull);
-    });
+    test(
+      'rejects an off-allowlist public https host (exfiltration vector)',
+      () {
+        expect(sanitize('https://evil.example.com/v1'), isNull);
+      },
+    );
 
-    test('rejects an off-allowlist host that merely contains a provider name',
-        () {
-      // Substring / lookalike must not match the suffix allowlist.
-      expect(sanitize('https://api.klipy.com.evil.example/v1'), isNull);
-      expect(sanitize('https://gif.prism.app.evil.example/v1'), isNull);
-      expect(sanitize('https://notklipy.com/v1'), isNull);
-    });
+    test(
+      'rejects an off-allowlist host that merely contains a provider name',
+      () {
+        // Substring / lookalike must not match the suffix allowlist.
+        expect(sanitize('https://api.klipy.com.evil.example/v1'), isNull);
+        expect(sanitize('https://gif.prism.app.evil.example/v1'), isNull);
+        expect(sanitize('https://notklipy.com/v1'), isNull);
+      },
+    );
 
     test('rejects an arbitrary relay-supplied third-party host', () {
       // Even though the relay served it, an arbitrary host that is neither a
@@ -587,47 +584,51 @@ void main() {
     });
 
     test('GifServiceConfig.fromJson nulls out a private api_base_url', () {
-      final config = GifServiceConfig.fromJson(
-        {'enabled': true, 'api_base_url': 'https://127.0.0.1/v1'},
-        relayUrl: relayUrl,
-      );
+      final config = GifServiceConfig.fromJson({
+        'enabled': true,
+        'api_base_url': 'https://127.0.0.1/v1',
+      }, relayUrl: relayUrl);
       expect(config.enabled, isTrue);
       expect(config.apiBaseUrl, isNull);
     });
 
-    test('GifServiceConfig.fromJson nulls out an off-allowlist api_base_url',
-        () {
-      final config = GifServiceConfig.fromJson(
-        {'enabled': true, 'api_base_url': 'https://evil.example.com/v1'},
-        relayUrl: relayUrl,
-      );
-      expect(config.enabled, isTrue);
-      expect(config.apiBaseUrl, isNull);
-    });
+    test(
+      'GifServiceConfig.fromJson nulls out an off-allowlist api_base_url',
+      () {
+        final config = GifServiceConfig.fromJson({
+          'enabled': true,
+          'api_base_url': 'https://evil.example.com/v1',
+        }, relayUrl: relayUrl);
+        expect(config.enabled, isTrue);
+        expect(config.apiBaseUrl, isNull);
+      },
+    );
 
-    test('GifServiceConfig.fromJson keeps the Prism-hosted gif.prism.app URL',
-        () {
-      final config = GifServiceConfig.fromJson(
-        {'enabled': true, 'api_base_url': 'https://gif.prism.app/v1/gifs'},
-        relayUrl: relayUrl,
-      );
-      expect(config.apiBaseUrl, 'https://gif.prism.app/v1/gifs');
-    });
+    test(
+      'GifServiceConfig.fromJson keeps the Prism-hosted gif.prism.app URL',
+      () {
+        final config = GifServiceConfig.fromJson({
+          'enabled': true,
+          'api_base_url': 'https://gif.prism.app/v1/gifs',
+        }, relayUrl: relayUrl);
+        expect(config.apiBaseUrl, 'https://gif.prism.app/v1/gifs');
+      },
+    );
 
     test('GifServiceConfig.fromJson keeps a valid absolute api_base_url', () {
-      final config = GifServiceConfig.fromJson(
-        {'enabled': true, 'api_base_url': 'https://api.klipy.com/v1'},
-        relayUrl: relayUrl,
-      );
+      final config = GifServiceConfig.fromJson({
+        'enabled': true,
+        'api_base_url': 'https://api.klipy.com/v1',
+      }, relayUrl: relayUrl);
       expect(config.apiBaseUrl, 'https://api.klipy.com/v1');
     });
 
     test('GifServiceConfig.fromJson resolves a relative path against the '
         'relay and keeps it (same-host)', () {
-      final config = GifServiceConfig.fromJson(
-        {'enabled': true, 'api_base_url': '/gif/v1'},
-        relayUrl: relayUrl,
-      );
+      final config = GifServiceConfig.fromJson({
+        'enabled': true,
+        'api_base_url': '/gif/v1',
+      }, relayUrl: relayUrl);
       expect(config.apiBaseUrl, 'https://relay.prismsync.com/gif/v1');
     });
   });

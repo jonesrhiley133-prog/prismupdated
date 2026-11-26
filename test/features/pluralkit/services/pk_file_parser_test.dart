@@ -60,15 +60,17 @@ void main() {
       expect(export.unresolvableGroupMemberRefs, 0);
     });
 
-    test('keeps already-UUID entries verbatim (live-API / old-fixture shape)',
-        () async {
-      final export = await parsePkExportFile(
-        _exportJson(groupMembers: [_alphaUuid, _betaUuid]),
-      );
+    test(
+      'keeps already-UUID entries verbatim (live-API / old-fixture shape)',
+      () async {
+        final export = await parsePkExportFile(
+          _exportJson(groupMembers: [_alphaUuid, _betaUuid]),
+        );
 
-      expect(export.groups.single.memberIds, [_alphaUuid, _betaUuid]);
-      expect(export.unresolvableGroupMemberRefs, 0);
-    });
+        expect(export.groups.single.memberIds, [_alphaUuid, _betaUuid]);
+        expect(export.unresolvableGroupMemberRefs, 0);
+      },
+    );
 
     test('handles a mixed hid + uuid members array', () async {
       final export = await parsePkExportFile(
@@ -147,29 +149,31 @@ void main() {
   });
 
   group('switches are parsed with hids untranslated', () {
-    test('switch member IDs stay as short IDs (matcher is hid-based)',
-        () async {
-      // Switch matching (PkFrontingSwitchKey) and the file-switch provenance
-      // id (_pkFileSwitchSourceId) compare file hids against the API's
-      // short-ID `members`, so these MUST remain hids — even when an
-      // identical hid→uuid mapping exists for the group path.
-      final export = await parsePkExportFile(
-        _exportJson(
-          groupMembers: [_alphaHid],
-          switchesOverride: [
-            {
-              'timestamp': '2026-04-01T10:00:00.123456Z',
-              'members': [_alphaHid, _betaHid],
-            },
-          ],
-        ),
-      );
+    test(
+      'switch member IDs stay as short IDs (matcher is hid-based)',
+      () async {
+        // Switch matching (PkFrontingSwitchKey) and the file-switch provenance
+        // id (_pkFileSwitchSourceId) compare file hids against the API's
+        // short-ID `members`, so these MUST remain hids — even when an
+        // identical hid→uuid mapping exists for the group path.
+        final export = await parsePkExportFile(
+          _exportJson(
+            groupMembers: [_alphaHid],
+            switchesOverride: [
+              {
+                'timestamp': '2026-04-01T10:00:00.123456Z',
+                'members': [_alphaHid, _betaHid],
+              },
+            ],
+          ),
+        );
 
-      expect(export.switches, hasLength(1));
-      expect(export.switches.single.memberIds, [_alphaHid, _betaHid]);
-      // Group path translated to UUID; switch path did not.
-      expect(export.groups.single.memberIds, [_alphaUuid]);
-    });
+        expect(export.switches, hasLength(1));
+        expect(export.switches.single.memberIds, [_alphaHid, _betaHid]);
+        // Group path translated to UUID; switch path did not.
+        expect(export.groups.single.memberIds, [_alphaUuid]);
+      },
+    );
 
     test('switch timestamp and absent id round-trip', () async {
       final export = await parsePkExportFile(
@@ -213,7 +217,8 @@ void main() {
   group('version gating', () {
     test('rejects version != 2', () async {
       expect(
-        () => parsePkExportFile(_exportJson(groupMembers: const [], version: 1)),
+        () =>
+            parsePkExportFile(_exportJson(groupMembers: const [], version: 1)),
         throwsA(isA<PkFileParseException>()),
       );
     });
@@ -287,16 +292,18 @@ void main() {
       expect(export.switches.single.memberIds, [_alphaHid]);
     });
 
-    test('a group ref that is neither uuid nor a plausible hid is dropped',
-        () async {
-      // `not-a-real-id` normalizes to a non-alpha / wrong-length string, so it
-      // is neither UUID-shaped nor a 5–6 alpha hid → counted unresolvable.
-      final export = await parsePkExportFile(
-        _exportJson(groupMembers: [_alphaHid, 'not-a-real-id']),
-      );
+    test(
+      'a group ref that is neither uuid nor a plausible hid is dropped',
+      () async {
+        // `not-a-real-id` normalizes to a non-alpha / wrong-length string, so it
+        // is neither UUID-shaped nor a 5–6 alpha hid → counted unresolvable.
+        final export = await parsePkExportFile(
+          _exportJson(groupMembers: [_alphaHid, 'not-a-real-id']),
+        );
 
-      expect(export.groups.single.memberIds, [_alphaUuid]);
-      expect(export.unresolvableGroupMemberRefs, 1);
-    });
+        expect(export.groups.single.memberIds, [_alphaUuid]);
+        expect(export.unresolvableGroupMemberRefs, 1);
+      },
+    );
   });
 }

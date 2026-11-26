@@ -42,56 +42,62 @@ void main() {
     RustLib.dispose();
   });
 
-  test('a single sync drains the whole backlog to head across pages (pull-to-head)',
-      skip: e2eSkip(), () async {
-    final relay = await spawnRelay();
-    E2EDevice? a, b;
-    try {
-      a = await createDevice(relay);
-      b = await pairNewDevice(relay, a);
+  test(
+    'a single sync drains the whole backlog to head across pages (pull-to-head)',
+    skip: e2eSkip(),
+    () async {
+      final relay = await spawnRelay();
+      E2EDevice? a, b;
+      try {
+        a = await createDevice(relay);
+        b = await pairNewDevice(relay, a);
 
-      // More than one pull page (500) of batches, so draining to head REQUIRES a
-      // second page. Each recordCreate is its own batch (no coalescing).
-      const pad = 600;
-      for (var i = 0; i < pad; i++) {
+        // More than one pull page (500) of batches, so draining to head REQUIRES a
+        // second page. Each recordCreate is its own batch (no coalescing).
+        const pad = 600;
+        for (var i = 0; i < pad; i++) {
+          await ffi.recordCreate(
+            handle: b.handle,
+            table: 'members',
+            entityId: 'pad-$i',
+            fieldsJson: '{"name":"p$i"}',
+          );
+        }
+        // The sentinel is the NEWEST op → highest server_seq → only reachable by
+        // pulling past the first page.
         await ffi.recordCreate(
           handle: b.handle,
           table: 'members',
-          entityId: 'pad-$i',
-          fieldsJson: '{"name":"p$i"}',
+          entityId: 'pull-sentinel',
+          fieldsJson: '{"name":"SENTINEL"}',
         );
+
+        await drainPush(
+          b,
+        ); // B uploads the whole backlog (several cap-bounded cycles)
+
+        // A pulls. Pull-to-head must reach the sentinel in ONE sync; a single-page
+        // pull would stop at 500 and never see it.
+        await a.sync();
+
+        final sentinel = await ffi.readFieldValue(
+          handle: a.handle,
+          table: 'members',
+          entityId: 'pull-sentinel',
+          field: 'name',
+        );
+        expect(
+          sentinel,
+          equals('"SENTINEL"'),
+          reason:
+              'A must drain past the first pull page to head in one sync '
+              '(pull-to-head); a single-page pull misses the tail. got: $sentinel',
+        );
+      } finally {
+        a?.dispose();
+        b?.dispose();
+        relay.stop();
       }
-      // The sentinel is the NEWEST op → highest server_seq → only reachable by
-      // pulling past the first page.
-      await ffi.recordCreate(
-        handle: b.handle,
-        table: 'members',
-        entityId: 'pull-sentinel',
-        fieldsJson: '{"name":"SENTINEL"}',
-      );
-
-      await drainPush(b); // B uploads the whole backlog (several cap-bounded cycles)
-
-      // A pulls. Pull-to-head must reach the sentinel in ONE sync; a single-page
-      // pull would stop at 500 and never see it.
-      await a.sync();
-
-      final sentinel = await ffi.readFieldValue(
-        handle: a.handle,
-        table: 'members',
-        entityId: 'pull-sentinel',
-        field: 'name',
-      );
-      expect(
-        sentinel,
-        equals('"SENTINEL"'),
-        reason: 'A must drain past the first pull page to head in one sync '
-            '(pull-to-head); a single-page pull misses the tail. got: $sentinel',
-      );
-    } finally {
-      a?.dispose();
-      b?.dispose();
-      relay.stop();
-    }
-  });
+    },
+  );
 }

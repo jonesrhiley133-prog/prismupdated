@@ -42,8 +42,11 @@ void main() {
         firstObservedAt: null,
       );
       expect(s.isHealthy, isFalse);
-      expect(s.hasAnyUnreadable, isFalse,
-          reason: 'degraded is not the same as unreadable');
+      expect(
+        s.hasAnyUnreadable,
+        isFalse,
+        reason: 'degraded is not the same as unreadable',
+      );
       expect(s.unreadableSlotNames, {'syncCredentials'});
     });
 
@@ -55,8 +58,12 @@ void main() {
         pin: SlotState.unreadable,
         firstObservedAt: null,
       );
-      expect(s.unreadableSlotNames,
-          {'appDbKey', 'syncKey', 'syncCredentials', 'pin'});
+      expect(s.unreadableSlotNames, {
+        'appDbKey',
+        'syncKey',
+        'syncCredentials',
+        'pin',
+      });
     });
   });
 
@@ -235,17 +242,17 @@ void main() {
       // ok. (This is the forward-compat hook: when we bump
       // currentSchemaVersion later and add a field, old saves load
       // cleanly.)
-      final json = {
-        'schemaVersion': 0,
-        'firstObservedAt': null,
-      };
+      final json = {'schemaVersion': 0, 'firstObservedAt': null};
       final state = KeychainDegradedState.fromJson(json);
       expect(state.appDbKey, SlotState.ok);
       expect(state.syncKey, SlotState.ok);
       expect(state.syncCredentials, SlotState.ok);
       expect(state.pin, SlotState.ok);
-      expect(state.schemaVersion, 0,
-          reason: 'schemaVersion is preserved from the save');
+      expect(
+        state.schemaVersion,
+        0,
+        reason: 'schemaVersion is preserved from the save',
+      );
     });
 
     test('schemaVersion higher than current → parses best-effort', () {
@@ -319,10 +326,7 @@ void main() {
         'firstObservedAt': '2026-05-19T09:00:00.000Z',
       };
       final state = KeychainDegradedState.fromJson(json);
-      expect(
-        state.firstObservedAt,
-        DateTime.utc(2026, 5, 19, 9, 0, 0),
-      );
+      expect(state.firstObservedAt, DateTime.utc(2026, 5, 19, 9, 0, 0));
     });
   });
 
@@ -355,44 +359,45 @@ void main() {
       expect(back, equals(input));
     });
 
-    test('corrupted JSON → service returns healthy without throwing',
-        () async {
-      SharedPreferences.setMockInitialValues({
-        _kPrefsKey: '{not valid json',
-      });
+    test('corrupted JSON → service returns healthy without throwing', () async {
+      SharedPreferences.setMockInitialValues({_kPrefsKey: '{not valid json'});
       final prefs = await SharedPreferences.getInstance();
       final service = KeychainDegradedStateService(prefs: prefs);
       final state = await service.read();
       expect(state, const KeychainDegradedState.healthy());
     });
 
-    test('JSON-object-but-corrupt → service returns healthy without throwing',
-        () async {
-      // Missing required field at schemaVersion 1.
-      SharedPreferences.setMockInitialValues({
-        _kPrefsKey: jsonEncode({
-          'schemaVersion': 1,
-          'syncKey': 'ok',
-          'syncCredentials': 'ok',
-          'pin': 'ok',
-        }),
-      });
-      final prefs = await SharedPreferences.getInstance();
-      final service = KeychainDegradedStateService(prefs: prefs);
-      final state = await service.read();
-      expect(state, const KeychainDegradedState.healthy());
-    });
+    test(
+      'JSON-object-but-corrupt → service returns healthy without throwing',
+      () async {
+        // Missing required field at schemaVersion 1.
+        SharedPreferences.setMockInitialValues({
+          _kPrefsKey: jsonEncode({
+            'schemaVersion': 1,
+            'syncKey': 'ok',
+            'syncCredentials': 'ok',
+            'pin': 'ok',
+          }),
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final service = KeychainDegradedStateService(prefs: prefs);
+        final state = await service.read();
+        expect(state, const KeychainDegradedState.healthy());
+      },
+    );
 
-    test('non-object JSON → service returns healthy without throwing',
-        () async {
-      SharedPreferences.setMockInitialValues({
-        _kPrefsKey: jsonEncode([1, 2, 3]),
-      });
-      final prefs = await SharedPreferences.getInstance();
-      final service = KeychainDegradedStateService(prefs: prefs);
-      final state = await service.read();
-      expect(state, const KeychainDegradedState.healthy());
-    });
+    test(
+      'non-object JSON → service returns healthy without throwing',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          _kPrefsKey: jsonEncode([1, 2, 3]),
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final service = KeychainDegradedStateService(prefs: prefs);
+        final state = await service.read();
+        expect(state, const KeychainDegradedState.healthy());
+      },
+    );
   });
 
   // ── updateSlot + firstObservedAt management ─────────────────────────────
@@ -415,7 +420,9 @@ void main() {
       expect(state.isHealthy, isFalse);
       expect(state.firstObservedAt, isNotNull);
       expect(
-        state.firstObservedAt!.isBefore(before.subtract(const Duration(seconds: 1))),
+        state.firstObservedAt!.isBefore(
+          before.subtract(const Duration(seconds: 1)),
+        ),
         isFalse,
       );
       expect(
@@ -441,29 +448,33 @@ void main() {
     });
 
     test(
-        'not-healthy → still-not-healthy preserves the original firstObservedAt',
-        () async {
-      final prefs = await SharedPreferences.getInstance();
-      final service = KeychainDegradedStateService(prefs: prefs);
+      'not-healthy → still-not-healthy preserves the original firstObservedAt',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = KeychainDegradedStateService(prefs: prefs);
 
-      await service.updateSlot('syncKey', SlotState.unreadable);
-      final first = await service.read();
-      final firstStamp = first.firstObservedAt;
-      expect(firstStamp, isNotNull);
+        await service.updateSlot('syncKey', SlotState.unreadable);
+        final first = await service.read();
+        final firstStamp = first.firstObservedAt;
+        expect(firstStamp, isNotNull);
 
-      // Wait long enough that DateTime.now() would differ measurably.
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+        // Wait long enough that DateTime.now() would differ measurably.
+        await Future<void>.delayed(const Duration(milliseconds: 20));
 
-      // Add another degraded slot — still not fully healthy.
-      await service.updateSlot('pin', SlotState.unreadable);
-      final second = await service.read();
-      expect(second.firstObservedAt, firstStamp,
-          reason: 'firstObservedAt should not be re-stamped on subsequent '
-              'transitions while remaining non-healthy');
-    });
+        // Add another degraded slot — still not fully healthy.
+        await service.updateSlot('pin', SlotState.unreadable);
+        final second = await service.read();
+        expect(
+          second.firstObservedAt,
+          firstStamp,
+          reason:
+              'firstObservedAt should not be re-stamped on subsequent '
+              'transitions while remaining non-healthy',
+        );
+      },
+    );
 
-    test('updateSlot with unknown slot name is a no-op (no throw)',
-        () async {
+    test('updateSlot with unknown slot name is a no-op (no throw)', () async {
       final prefs = await SharedPreferences.getInstance();
       final service = KeychainDegradedStateService(prefs: prefs);
 
@@ -473,17 +484,19 @@ void main() {
       expect(state, const KeychainDegradedState.healthy());
     });
 
-    test('updateSlot to same value is a no-op (no firstObservedAt churn)',
-        () async {
-      final prefs = await SharedPreferences.getInstance();
-      final service = KeychainDegradedStateService(prefs: prefs);
+    test(
+      'updateSlot to same value is a no-op (no firstObservedAt churn)',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = KeychainDegradedStateService(prefs: prefs);
 
-      // Starting from healthy, set syncKey to ok — no change.
-      await service.updateSlot('syncKey', SlotState.ok);
-      final state = await service.read();
-      expect(state.firstObservedAt, isNull);
-      expect(state.isHealthy, isTrue);
-    });
+        // Starting from healthy, set syncKey to ok — no change.
+        await service.updateSlot('syncKey', SlotState.ok);
+        final state = await service.read();
+        expect(state.firstObservedAt, isNull);
+        expect(state.isHealthy, isTrue);
+      },
+    );
 
     test('every known slot name routes correctly', () async {
       final prefs = await SharedPreferences.getInstance();

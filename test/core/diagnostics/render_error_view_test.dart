@@ -27,11 +27,18 @@ class _Boom extends StatelessWidget {
 }
 
 void main() {
-  testWidgets('a page that fails to build shows a recoverable themed view', (t) async {
+  testWidgets('a page that fails to build shows a recoverable themed view', (
+    t,
+  ) async {
     final old = ErrorWidget.builder;
     ErrorWidget.builder = (d) => RecoverableErrorView(details: d);
     _Flaky.fail = true;
-    await t.pumpWidget(MaterialApp(theme: AppTheme.light(), home: const Scaffold(body: _Flaky())));
+    await t.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const Scaffold(body: _Flaky()),
+      ),
+    );
     expect(t.takeException(), isStateError);
     expect(find.text('This page hit a snag'), findsOneWidget);
     _Flaky.fail = false;

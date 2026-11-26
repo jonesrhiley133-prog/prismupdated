@@ -887,7 +887,6 @@ class _PreviewMemberRow extends StatelessWidget {
   }
 }
 
-
 /// Mood cards: one column on phones, two side by side on wider screens.
 class _MoodGrid extends StatelessWidget {
   const _MoodGrid({required this.children});
@@ -904,7 +903,9 @@ class _MoodGrid extends StatelessWidget {
         return Wrap(
           spacing: gap,
           runSpacing: gap,
-          children: [for (final child in children) SizedBox(width: w, child: child)],
+          children: [
+            for (final child in children) SizedBox(width: w, child: child),
+          ],
         );
       },
     );
@@ -1020,7 +1021,6 @@ class _CustomAccentsSection extends ConsumerWidget {
     );
   }
 }
-
 
 /// Shows the automatic accent a picker is using until one is chosen.
 class _AutoSwatch extends StatelessWidget {

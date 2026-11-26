@@ -92,22 +92,25 @@ void main() {
     expect(prefs.getInt('test.scope.locked_until_ms'), isNull);
   });
 
-  test('isLockedOut flips to false once lockedUntil timestamp is in the past',
-      () async {
-    // Seed prefs with a lockout that expired 1 second ago.
-    final pastMs =
-        DateTime.now().subtract(const Duration(seconds: 1)).millisecondsSinceEpoch;
-    SharedPreferences.setMockInitialValues({
-      'test.scope.failed_attempts': 5,
-      'test.scope.locked_until_ms': pastMs,
-    });
+  test(
+    'isLockedOut flips to false once lockedUntil timestamp is in the past',
+    () async {
+      // Seed prefs with a lockout that expired 1 second ago.
+      final pastMs = DateTime.now()
+          .subtract(const Duration(seconds: 1))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({
+        'test.scope.failed_attempts': 5,
+        'test.scope.locked_until_ms': pastMs,
+      });
 
-    final state = PinLockoutState(prefsScope: 'test.scope');
-    await state.load();
+      final state = PinLockoutState(prefsScope: 'test.scope');
+      await state.load();
 
-    expect(state.isLockedOut, isFalse);
-    expect(state.secondsRemaining, equals(0));
-  });
+      expect(state.isLockedOut, isFalse);
+      expect(state.secondsRemaining, equals(0));
+    },
+  );
 
   test('different prefsScope instances do not share state', () async {
     final a = PinLockoutState(prefsScope: 'test.scope_a');
@@ -123,90 +126,98 @@ void main() {
     expect(b.isLockedOut, isFalse);
   });
 
-  test('two instances with same scope share persisted state after load()',
-      () async {
-    final first = PinLockoutState(prefsScope: 'test.shared');
-    await first.load();
-    for (var i = 0; i < 5; i++) {
-      await first.recordFailure();
-    }
-    expect(first.isLockedOut, isTrue);
+  test(
+    'two instances with same scope share persisted state after load()',
+    () async {
+      final first = PinLockoutState(prefsScope: 'test.shared');
+      await first.load();
+      for (var i = 0; i < 5; i++) {
+        await first.recordFailure();
+      }
+      expect(first.isLockedOut, isTrue);
 
-    // Second instance created fresh — must load() to see persisted state.
-    final second = PinLockoutState(prefsScope: 'test.shared');
-    await second.load();
+      // Second instance created fresh — must load() to see persisted state.
+      final second = PinLockoutState(prefsScope: 'test.shared');
+      await second.load();
 
-    expect(second.isLockedOut, isTrue);
-    expect(second.secondsRemaining, greaterThan(0));
-  });
+      expect(second.isLockedOut, isTrue);
+      expect(second.secondsRemaining, greaterThan(0));
+    },
+  );
 
   test(
-      'load() migrates legacy underscore-keyed prefs for prism.sync_pin scope',
-      () async {
-    // Seed legacy keys (underscore-separated, as used by old SyncPinSheet).
-    final futureMs =
-        DateTime.now().add(const Duration(seconds: 60)).millisecondsSinceEpoch;
-    SharedPreferences.setMockInitialValues({
-      'prism.sync_pin_failed_attempts': 3,
-      'prism.sync_pin_locked_until_ms': futureMs,
-    });
+    'load() migrates legacy underscore-keyed prefs for prism.sync_pin scope',
+    () async {
+      // Seed legacy keys (underscore-separated, as used by old SyncPinSheet).
+      final futureMs = DateTime.now()
+          .add(const Duration(seconds: 60))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({
+        'prism.sync_pin_failed_attempts': 3,
+        'prism.sync_pin_locked_until_ms': futureMs,
+      });
 
-    final state = PinLockoutState(prefsScope: 'prism.sync_pin');
-    await state.load();
+      final state = PinLockoutState(prefsScope: 'prism.sync_pin');
+      await state.load();
 
-    // State is preserved.
-    expect(state.failedAttempts, equals(3));
-    expect(state.isLockedOut, isTrue);
-    expect(state.secondsRemaining, greaterThan(0));
+      // State is preserved.
+      expect(state.failedAttempts, equals(3));
+      expect(state.isLockedOut, isTrue);
+      expect(state.secondsRemaining, greaterThan(0));
 
-    // New keys hold the values.
-    final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getInt('prism.sync_pin.failed_attempts'), equals(3));
-    expect(prefs.getInt('prism.sync_pin.locked_until_ms'), equals(futureMs));
+      // New keys hold the values.
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getInt('prism.sync_pin.failed_attempts'), equals(3));
+      expect(prefs.getInt('prism.sync_pin.locked_until_ms'), equals(futureMs));
 
-    // Legacy keys are gone.
-    expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isFalse);
-    expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isFalse);
-  });
-
-  test(
-      'migration does NOT run for other scopes — legacy keys remain untouched',
-      () async {
-    final futureMs =
-        DateTime.now().add(const Duration(seconds: 60)).millisecondsSinceEpoch;
-    SharedPreferences.setMockInitialValues({
-      'prism.sync_pin_failed_attempts': 3,
-      'prism.sync_pin_locked_until_ms': futureMs,
-    });
-
-    // A different scope should not touch the sync_pin legacy keys.
-    final preflight = PinLockoutState(prefsScope: 'prism.preflight');
-    await preflight.load();
-
-    expect(preflight.isLockedOut, isFalse);
-
-    final prefs = await SharedPreferences.getInstance();
-    expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isTrue);
-    expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isTrue);
-  });
+      // Legacy keys are gone.
+      expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isFalse);
+      expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isFalse);
+    },
+  );
 
   test(
-      'migration does NOT run for verify_backup scope — legacy keys remain',
-      () async {
-    final futureMs =
-        DateTime.now().add(const Duration(seconds: 60)).millisecondsSinceEpoch;
-    SharedPreferences.setMockInitialValues({
-      'prism.sync_pin_failed_attempts': 3,
-      'prism.sync_pin_locked_until_ms': futureMs,
-    });
+    'migration does NOT run for other scopes — legacy keys remain untouched',
+    () async {
+      final futureMs = DateTime.now()
+          .add(const Duration(seconds: 60))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({
+        'prism.sync_pin_failed_attempts': 3,
+        'prism.sync_pin_locked_until_ms': futureMs,
+      });
 
-    final verifyBackup = PinLockoutState(prefsScope: 'prism.verify_backup');
-    await verifyBackup.load();
+      // A different scope should not touch the sync_pin legacy keys.
+      final preflight = PinLockoutState(prefsScope: 'prism.preflight');
+      await preflight.load();
 
-    expect(verifyBackup.isLockedOut, isFalse);
+      expect(preflight.isLockedOut, isFalse);
 
-    final prefs = await SharedPreferences.getInstance();
-    expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isTrue);
-    expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isTrue);
-  });
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isTrue);
+      expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isTrue);
+    },
+  );
+
+  test(
+    'migration does NOT run for verify_backup scope — legacy keys remain',
+    () async {
+      final futureMs = DateTime.now()
+          .add(const Duration(seconds: 60))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({
+        'prism.sync_pin_failed_attempts': 3,
+        'prism.sync_pin_locked_until_ms': futureMs,
+      });
+
+      final verifyBackup = PinLockoutState(prefsScope: 'prism.verify_backup');
+      await verifyBackup.load();
+
+      expect(verifyBackup.isLockedOut, isFalse);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.containsKey('prism.sync_pin_failed_attempts'), isTrue);
+      expect(prefs.containsKey('prism.sync_pin_locked_until_ms'), isTrue);
+    },
+  );
 }

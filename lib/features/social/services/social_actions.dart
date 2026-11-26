@@ -37,14 +37,19 @@ class SocialActions {
     String? reblogOf,
     String? quoteOf,
   }) {
-    final allTags = {...tags.map(normalizeTag).where((t) => t.isNotEmpty), ...extractTags('$title $body')}.toList();
+    final allTags = {
+      ...tags.map(normalizeTag).where((t) => t.isNotEmpty),
+      ...extractTags('$title $body'),
+    }.toList();
     return _t.create(
       kind: SocialKind.post,
       memberId: actor,
       title: title,
       body: body,
       tags: allTags,
-      occurredAt: status == PostStatus.scheduled ? scheduledFor : DateTime.now(),
+      occurredAt: status == PostStatus.scheduled
+          ? scheduledFor
+          : DateTime.now(),
       fields: {
         'type': type.name,
         'status': status.name,
@@ -82,11 +87,15 @@ class SocialActions {
     final record = p.r.copyWith(
       title: t,
       body: b,
-      tags: {...(tags ?? p.tags).map(normalizeTag).where((x) => x.isNotEmpty), ...extractTags('$t $b')}.toList(),
+      tags: {
+        ...(tags ?? p.tags).map(normalizeTag).where((x) => x.isNotEmpty),
+        ...extractTags('$t $b'),
+      }.toList(),
       occurredAt: switch (newStatus) {
         PostStatus.scheduled => scheduledFor ?? p.publishedAt,
         // Publishing a draft or scheduled post now dates it now.
-        PostStatus.published when p.status != PostStatus.published => DateTime.now(),
+        PostStatus.published when p.status != PostStatus.published =>
+          DateTime.now(),
         _ => p.r.occurredAt,
       },
     );
@@ -94,10 +103,16 @@ class SocialActions {
       record.withFields({
         'status': newStatus.name,
         'audience': (audience ?? p.audience).name,
-        'audienceIds': (audience ?? p.audience) == Audience.selected ? (audienceIds ?? p.audienceIds) : null,
+        'audienceIds': (audience ?? p.audience) == Audience.selected
+            ? (audienceIds ?? p.audienceIds)
+            : null,
         'images': ?images,
-        'cw': cw == null ? p.contentWarning : (cw.trim().isEmpty ? null : cw.trim()),
-        if (p.status == PostStatus.published && newStatus == PostStatus.published) 'editedAt': DateTime.now().millisecondsSinceEpoch,
+        'cw': cw == null
+            ? p.contentWarning
+            : (cw.trim().isEmpty ? null : cw.trim()),
+        if (p.status == PostStatus.published &&
+            newStatus == PostStatus.published)
+          'editedAt': DateTime.now().millisecondsSinceEpoch,
       }),
     );
   }
@@ -124,31 +139,68 @@ class SocialActions {
 
   Future<void> togglePin(Post p) => _t.save(p.r.copyWith(isPinned: !p.pinned));
 
-  Future<TrackerRecord> reblog({required String actor, required Post post, String comment = '', List<String> tags = const []}) =>
-      createPost(actor: actor, body: comment, tags: tags, reblogOf: _d.original(post)?.id ?? post.id);
+  Future<TrackerRecord> reblog({
+    required String actor,
+    required Post post,
+    String comment = '',
+    List<String> tags = const [],
+  }) => createPost(
+    actor: actor,
+    body: comment,
+    tags: tags,
+    reblogOf: _d.original(post)?.id ?? post.id,
+  );
 
-  Future<TrackerRecord> quote({required String actor, required Post post, required String body, List<String> tags = const []}) =>
-      createPost(actor: actor, body: body, tags: tags, quoteOf: post.id);
+  Future<TrackerRecord> quote({
+    required String actor,
+    required Post post,
+    required String body,
+    List<String> tags = const [],
+  }) => createPost(actor: actor, body: body, tags: tags, quoteOf: post.id);
 
   // ------------------------------------------------------------ reactions
 
   /// Adds or removes [emoji] by [actor] on a post, comment or story.
-  Future<void> toggleReaction({required String actor, required String targetId, required String emoji}) async {
-    final existing = (_d.reactionsOn[targetId] ?? const <TrackerRecord>[]).where((r) => r.memberId == actor && r.title == emoji).firstOrNull;
+  Future<void> toggleReaction({
+    required String actor,
+    required String targetId,
+    required String emoji,
+  }) async {
+    final existing = (_d.reactionsOn[targetId] ?? const <TrackerRecord>[])
+        .where((r) => r.memberId == actor && r.title == emoji)
+        .firstOrNull;
     if (existing != null) {
       await _t.delete(existing.id, children: false);
     } else {
-      await _t.create(kind: SocialKind.reaction, memberId: actor, parentId: targetId, title: emoji);
+      await _t.create(
+        kind: SocialKind.reaction,
+        memberId: actor,
+        parentId: targetId,
+        title: emoji,
+      );
     }
   }
 
   // ------------------------------------------------------------- comments
 
-  Future<TrackerRecord> comment({required String actor, required String targetId, required String body, String? replyTo}) =>
-      _t.create(kind: SocialKind.comment, memberId: actor, parentId: targetId, body: body.trim(), fields: {'replyTo': ?replyTo});
+  Future<TrackerRecord> comment({
+    required String actor,
+    required String targetId,
+    required String body,
+    String? replyTo,
+  }) => _t.create(
+    kind: SocialKind.comment,
+    memberId: actor,
+    parentId: targetId,
+    body: body.trim(),
+    fields: {'replyTo': ?replyTo},
+  );
 
-  Future<void> editComment(Comment c, String body) =>
-      _t.save(c.r.copyWith(body: body.trim()).withFields({'editedAt': DateTime.now().millisecondsSinceEpoch}));
+  Future<void> editComment(Comment c, String body) => _t.save(
+    c.r.copyWith(body: body.trim()).withFields({
+      'editedAt': DateTime.now().millisecondsSinceEpoch,
+    }),
+  );
 
   /// Deletes a comment and the replies under it.
   Future<void> deleteComment(Comment c) async {
@@ -158,7 +210,8 @@ class SocialActions {
     while (grew) {
       grew = false;
       for (final x in all) {
-        if (x.replyTo != null && doomed.contains(x.replyTo) && doomed.add(x.id)) grew = true;
+        if (x.replyTo != null && doomed.contains(x.replyTo) && doomed.add(x.id))
+          grew = true;
       }
     }
     for (final id in doomed) {
@@ -168,16 +221,29 @@ class SocialActions {
 
   // ---------------------------------------------------------------- polls
 
-  Future<void> vote({required String actor, required Post post, required int option}) async {
-    final mine = (_d.votesOn[post.id] ?? const <TrackerRecord>[]).where((v) => v.memberId == actor).firstOrNull;
-    if (post.pollCloses != null && DateTime.now().isAfter(post.pollCloses!)) return;
+  Future<void> vote({
+    required String actor,
+    required Post post,
+    required int option,
+  }) async {
+    final mine = (_d.votesOn[post.id] ?? const <TrackerRecord>[])
+        .where((v) => v.memberId == actor)
+        .firstOrNull;
+    if (post.pollCloses != null && DateTime.now().isAfter(post.pollCloses!))
+      return;
     final current = mine?.strings('options').toSet() ?? <String>{};
     final key = '$option';
     final next = post.pollMulti
         ? (current.contains(key) ? (current..remove(key)) : (current..add(key)))
         : (current.contains(key) ? <String>{} : {key});
     if (mine == null) {
-      if (next.isNotEmpty) await _t.create(kind: SocialKind.vote, memberId: actor, parentId: post.id, fields: {'options': next.toList()});
+      if (next.isNotEmpty)
+        await _t.create(
+          kind: SocialKind.vote,
+          memberId: actor,
+          parentId: post.id,
+          fields: {'options': next.toList()},
+        );
     } else if (next.isEmpty) {
       await _t.delete(mine.id, children: false);
     } else {
@@ -187,24 +253,39 @@ class SocialActions {
 
   // --------------------------------------------------------------- social
 
-  Future<void> toggleFollow({required String actor, required String target}) async {
+  Future<void> toggleFollow({
+    required String actor,
+    required String target,
+  }) async {
     if (actor == target) return;
     final id = _d.following[actor]?[target];
     if (id != null) {
       await _t.delete(id, children: false);
     } else {
-      await _t.create(kind: SocialKind.follow, memberId: actor, fields: {'target': target});
+      await _t.create(
+        kind: SocialKind.follow,
+        memberId: actor,
+        fields: {'target': target},
+      );
     }
   }
 
   /// [mode] 'block' (no interaction either way) or 'mute' (hide their content).
-  Future<void> toggleBlock({required String actor, required String target, String mode = 'block'}) async {
+  Future<void> toggleBlock({
+    required String actor,
+    required String target,
+    String mode = 'block',
+  }) async {
     final id = (mode == 'mute' ? _d.muted : _d.blocked)[actor]?[target];
     if (id != null) {
       await _t.delete(id, children: false);
       return;
     }
-    await _t.create(kind: SocialKind.block, memberId: actor, fields: {'target': target, 'mode': mode});
+    await _t.create(
+      kind: SocialKind.block,
+      memberId: actor,
+      fields: {'target': target, 'mode': mode},
+    );
     if (mode == 'block') {
       // Blocking also ends follows in both directions.
       for (final pair in [(actor, target), (target, actor)]) {
@@ -214,7 +295,10 @@ class SocialActions {
     }
   }
 
-  Future<void> toggleHide({required String actor, required String postId}) async {
+  Future<void> toggleHide({
+    required String actor,
+    required String postId,
+  }) async {
     final id = _d.hidden[actor]?[postId];
     if (id != null) {
       await _t.delete(id, children: false);
@@ -224,19 +308,36 @@ class SocialActions {
   }
 
   /// Flags a post for the system to review (Bulletin Board → Reported).
-  Future<void> report({required String actor, required String targetId, required String reason}) async {
-    await _t.create(kind: SocialKind.report, memberId: actor, parentId: targetId, body: reason.trim());
+  Future<void> report({
+    required String actor,
+    required String targetId,
+    required String reason,
+  }) async {
+    await _t.create(
+      kind: SocialKind.report,
+      memberId: actor,
+      parentId: targetId,
+      body: reason.trim(),
+    );
     await toggleHide(actor: actor, postId: targetId);
   }
 
-  Future<void> resolveReport(TrackerRecord report) => _t.delete(report.id, children: false);
+  Future<void> resolveReport(TrackerRecord report) =>
+      _t.delete(report.id, children: false);
 
   Future<void> saveProfile(String memberId, BlogProfile profile) async {
     final existing = _d.profileRecords[memberId];
     if (existing == null) {
-      await _t.create(kind: SocialKind.profile, memberId: memberId, body: profile.bio, fields: profile.fields());
+      await _t.create(
+        kind: SocialKind.profile,
+        memberId: memberId,
+        body: profile.bio,
+        fields: profile.fields(),
+      );
     } else {
-      await _t.save(existing.copyWith(body: profile.bio).withFields(profile.fields()));
+      await _t.save(
+        existing.copyWith(body: profile.bio).withFields(profile.fields()),
+      );
     }
   }
 
@@ -244,7 +345,11 @@ class SocialActions {
   Future<void> markSeen(String memberId) async {
     final existing = _d.seenRecords[memberId];
     if (existing == null) {
-      await _t.create(kind: SocialKind.seen, memberId: memberId, occurredAt: DateTime.now());
+      await _t.create(
+        kind: SocialKind.seen,
+        memberId: memberId,
+        occurredAt: DateTime.now(),
+      );
     } else {
       await _t.save(existing.copyWith(occurredAt: DateTime.now()));
     }
@@ -272,11 +377,21 @@ class SocialActions {
     },
   );
 
-  Future<void> setStoryArchived(Story s, bool archived) => _t.save(s.r.withFields({'archive': archived}));
+  Future<void> setStoryArchived(Story s, bool archived) =>
+      _t.save(s.r.withFields({'archive': archived}));
 
   Future<void> deleteStory(Story s) async {
-    for (final h in _d.highlights.values.where((h) => h.storyIds.contains(s.id))) {
-      await _t.save(h.r.withFields({'stories': [for (final x in h.storyIds) if (x != s.id) x]}));
+    for (final h in _d.highlights.values.where(
+      (h) => h.storyIds.contains(s.id),
+    )) {
+      await _t.save(
+        h.r.withFields({
+          'stories': [
+            for (final x in h.storyIds)
+              if (x != s.id) x,
+          ],
+        }),
+      );
     }
     for (final c in _d.commentsOn[s.id] ?? const <Comment>[]) {
       await _deleteTarget(c.id);
@@ -288,21 +403,38 @@ class SocialActions {
   }
 
   /// Records that [viewer] watched [story] (once per alter).
-  Future<void> markViewed({required String viewer, required Story story}) async {
+  Future<void> markViewed({
+    required String viewer,
+    required Story story,
+  }) async {
     if (story.author == viewer || _d.hasSeen(story.id, viewer)) return;
-    await _t.create(kind: SocialKind.storyView, memberId: viewer, parentId: story.id);
+    await _t.create(
+      kind: SocialKind.storyView,
+      memberId: viewer,
+      parentId: story.id,
+    );
   }
 
-  Future<TrackerRecord> createHighlight({required String owner, required String title, String category = '', List<String> storyIds = const []}) =>
-      _t.create(
-        kind: SocialKind.highlight,
-        memberId: owner,
-        title: title.trim(),
-        sortOrder: _d.highlightsOf(owner).length,
-        fields: {'category': category.trim(), 'stories': storyIds},
-      );
+  Future<TrackerRecord> createHighlight({
+    required String owner,
+    required String title,
+    String category = '',
+    List<String> storyIds = const [],
+  }) => _t.create(
+    kind: SocialKind.highlight,
+    memberId: owner,
+    title: title.trim(),
+    sortOrder: _d.highlightsOf(owner).length,
+    fields: {'category': category.trim(), 'stories': storyIds},
+  );
 
-  Future<void> updateHighlight(Highlight h, {String? title, String? category, List<String>? storyIds, String? cover}) => _t.save(
+  Future<void> updateHighlight(
+    Highlight h, {
+    String? title,
+    String? category,
+    List<String>? storyIds,
+    String? cover,
+  }) => _t.save(
     h.r.copyWith(title: title?.trim() ?? h.title).withFields({
       'category': category?.trim() ?? h.category,
       'stories': storyIds ?? h.storyIds,
@@ -314,7 +446,8 @@ class SocialActions {
   /// so they outlive the 24 hours.
   Future<void> addToHighlight(Highlight h, Story s) async {
     if (!s.archived) await setStoryArchived(s, true);
-    if (!h.storyIds.contains(s.id)) await updateHighlight(h, storyIds: [...h.storyIds, s.id]);
+    if (!h.storyIds.contains(s.id))
+      await updateHighlight(h, storyIds: [...h.storyIds, s.id]);
   }
 
   Future<void> deleteHighlight(Highlight h) => _t.delete(h.id, children: false);

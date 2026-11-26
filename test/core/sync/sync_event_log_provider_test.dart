@@ -89,13 +89,15 @@ void main() {
     final subscription = container.listen(syncEventLogProvider, (_, _) {});
     addTearDown(subscription.close);
 
-    controller.add(SyncEvent('EphemeralMessage', {
-      'type': 'EphemeralMessage',
-      'sender_device_id': 'dev-2',
-      'kind': 'media_request',
-      'media_id': 'blob-7',
-      'epoch_id': 3,
-    }));
+    controller.add(
+      SyncEvent('EphemeralMessage', {
+        'type': 'EphemeralMessage',
+        'sender_device_id': 'dev-2',
+        'kind': 'media_request',
+        'media_id': 'blob-7',
+        'epoch_id': 3,
+      }),
+    );
     await settle();
 
     final entries = container.read(syncEventLogProvider);

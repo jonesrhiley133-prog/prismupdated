@@ -77,13 +77,13 @@ class _PrismButtonState extends State<PrismButton> {
         ? (_pressed
               ? PrismTokens.buttonFilledPressedAlphaDark
               : _hovered
-                  ? 0.98
-                  : PrismTokens.buttonFilledAlphaDark)
+              ? 0.98
+              : PrismTokens.buttonFilledAlphaDark)
         : (_pressed
               ? PrismTokens.buttonFilledPressedAlphaLight
               : _hovered
-                  ? 0.83
-                  : PrismTokens.buttonFilledAlphaLight);
+              ? 0.83
+              : PrismTokens.buttonFilledAlphaLight);
     final filledColor = tone == PrismButtonTone.filled
         ? contrastAdjustedTranslucentAccent(
             color,
@@ -103,8 +103,8 @@ class _PrismButtonState extends State<PrismButton> {
                 alpha: _pressed
                     ? (isDark ? 0.16 : 0.14)
                     : _hovered
-                        ? (isDark ? 0.13 : 0.12)
-                        : 0.10,
+                    ? (isDark ? 0.13 : 0.12)
+                    : 0.10,
               )
             : color.withValues(alpha: 0.05),
       PrismButtonTone.subtle =>
@@ -113,20 +113,32 @@ class _PrismButtonState extends State<PrismButton> {
                 alpha: _pressed
                     ? (isDark ? 0.2 : 0.14)
                     : _hovered
-                        ? (isDark ? 0.15 : 0.12)
-                        : 0.10,
+                    ? (isDark ? 0.15 : 0.12)
+                    : 0.10,
               )
             : color.withValues(alpha: 0.04),
       PrismButtonTone.outlined =>
         canPress
-            ? color.withValues(alpha: _pressed ? 0.06 : _hovered ? 0.03 : 0.0)
+            ? color.withValues(
+                alpha: _pressed
+                    ? 0.06
+                    : _hovered
+                    ? 0.03
+                    : 0.0,
+              )
             : Colors.transparent,
     };
 
     final borderColor = switch (tone) {
       PrismButtonTone.filled =>
         canPress
-            ? filledColor.withValues(alpha: _pressed ? 0.30 : _hovered ? 0.22 : 0.14)
+            ? filledColor.withValues(
+                alpha: _pressed
+                    ? 0.30
+                    : _hovered
+                    ? 0.22
+                    : 0.14,
+              )
             : color.withValues(alpha: 0.08),
       PrismButtonTone.destructive =>
         canPress
@@ -134,8 +146,8 @@ class _PrismButtonState extends State<PrismButton> {
                 alpha: _pressed
                     ? 0.22
                     : _hovered
-                        ? (isDark ? 0.19 : 0.20)
-                        : (isDark ? 0.16 : 0.18),
+                    ? (isDark ? 0.19 : 0.20)
+                    : (isDark ? 0.16 : 0.18),
               )
             : color.withValues(alpha: 0.08),
       PrismButtonTone.subtle =>
@@ -144,13 +156,19 @@ class _PrismButtonState extends State<PrismButton> {
                 alpha: _pressed
                     ? (isDark ? 0.30 : 0.22)
                     : _hovered
-                        ? (isDark ? 0.23 : 0.19)
-                        : (isDark ? 0.16 : 0.16),
+                    ? (isDark ? 0.23 : 0.19)
+                    : (isDark ? 0.16 : 0.16),
               )
             : color.withValues(alpha: 0.05),
       PrismButtonTone.outlined =>
         canPress
-            ? color.withValues(alpha: _pressed ? 0.26 : _hovered ? 0.22 : 0.18)
+            ? color.withValues(
+                alpha: _pressed
+                    ? 0.26
+                    : _hovered
+                    ? 0.22
+                    : 0.18,
+              )
             : color.withValues(alpha: 0.08),
     };
     final foregroundColor = switch (tone) {
@@ -189,47 +207,47 @@ class _PrismButtonState extends State<PrismButton> {
               ? Duration.zero
               : const Duration(milliseconds: 100),
           child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: canPress ? widget.onPressed : null,
-            onHighlightChanged: (value) {
-              if (_pressed != value) {
-                setState(() => _pressed = value);
-              }
-            },
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            splashFactory: NoSplash.splashFactory,
-            borderRadius: buttonRadius,
-            child: AnimatedContainer(
-              duration: themeAware(const Duration(milliseconds: 150)),
-              width: widget.expanded ? double.infinity : null,
-              padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding * padScale,
-                vertical: verticalPadding * padScale,
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: canPress ? widget.onPressed : null,
+              onHighlightChanged: (value) {
+                if (_pressed != value) {
+                  setState(() => _pressed = value);
+                }
+              },
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              borderRadius: buttonRadius,
+              child: AnimatedContainer(
+                duration: themeAware(const Duration(milliseconds: 150)),
+                width: widget.expanded ? double.infinity : null,
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding * padScale,
+                  vertical: verticalPadding * padScale,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: buttonRadius,
+                  color: lookGradient == null ? backgroundColor : null,
+                  gradient: lookGradient,
+                  border: lookBorder ?? Border.all(color: borderColor),
+                  boxShadow: lookShadow,
+                ),
+                child: widget.isLoading
+                    ? PrismSpinner(color: foregroundColor, size: 20)
+                    : _PrismButtonContent(
+                        label: widget.label,
+                        icon: widget.icon,
+                        expanded: widget.expanded,
+                        density: density,
+                        foregroundColor: foregroundColor,
+                      ),
               ),
-              decoration: BoxDecoration(
-                borderRadius: buttonRadius,
-                color: lookGradient == null ? backgroundColor : null,
-                gradient: lookGradient,
-                border: lookBorder ?? Border.all(color: borderColor),
-                boxShadow: lookShadow,
-              ),
-              child: widget.isLoading
-                  ? PrismSpinner(color: foregroundColor, size: 20)
-                  : _PrismButtonContent(
-                      label: widget.label,
-                      icon: widget.icon,
-                      expanded: widget.expanded,
-                      density: density,
-                      foregroundColor: foregroundColor,
-                    ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
 
     if (widget.expanded) {
       final expandedButton = button;
@@ -397,8 +415,8 @@ class _PrismIconButtonState extends State<PrismIconButton> {
     final fillAlpha = _pressed
         ? (isDark ? 0.2 : 0.18)
         : _hovered
-            ? (isDark ? 0.16 : 0.15)
-            : 0.12;
+        ? (isDark ? 0.16 : 0.15)
+        : 0.12;
 
     Widget button = Semantics(
       button: true,
@@ -416,42 +434,42 @@ class _PrismIconButtonState extends State<PrismIconButton> {
           scale: _pressed ? 0.94 : 1.0,
           duration: const Duration(milliseconds: 100),
           child: Material(
-          color: Colors.transparent,
-          shape: PrismShapes.of(context).circleOrSquareBorder(),
-          child: InkResponse(
-            onTap: canPress ? widget.onPressed : null,
-            onLongPress: canPress ? widget.onLongPress : null,
-            onSecondaryTap: canPress ? widget.onSecondaryTap : null,
-            onHighlightChanged: (value) {
-              if (_pressed != value) {
-                setState(() => _pressed = value);
-              }
-            },
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            splashFactory: NoSplash.splashFactory,
-            radius: widget.size / 2,
-            customBorder: PrismShapes.of(context).circleOrSquareBorder(),
-            child: AnimatedContainer(
-              duration: themeAware(const Duration(milliseconds: 100)),
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                shape: PrismShapes.of(context).avatarShape(),
-                borderRadius: PrismShapes.of(context).avatarBorderRadius(),
-                color: canPress
-                    ? color.withValues(alpha: fillAlpha)
-                    : color.withValues(alpha: 0.05),
-              ),
-              child: Icon(
-                widget.icon,
-                color: iconColor,
-                size: widget.iconSize ?? widget.size * 0.5,
+            color: Colors.transparent,
+            shape: PrismShapes.of(context).circleOrSquareBorder(),
+            child: InkResponse(
+              onTap: canPress ? widget.onPressed : null,
+              onLongPress: canPress ? widget.onLongPress : null,
+              onSecondaryTap: canPress ? widget.onSecondaryTap : null,
+              onHighlightChanged: (value) {
+                if (_pressed != value) {
+                  setState(() => _pressed = value);
+                }
+              },
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              radius: widget.size / 2,
+              customBorder: PrismShapes.of(context).circleOrSquareBorder(),
+              child: AnimatedContainer(
+                duration: themeAware(const Duration(milliseconds: 100)),
+                width: widget.size,
+                height: widget.size,
+                decoration: BoxDecoration(
+                  shape: PrismShapes.of(context).avatarShape(),
+                  borderRadius: PrismShapes.of(context).avatarBorderRadius(),
+                  color: canPress
+                      ? color.withValues(alpha: fillAlpha)
+                      : color.withValues(alpha: 0.05),
+                ),
+                child: Icon(
+                  widget.icon,
+                  color: iconColor,
+                  size: widget.iconSize ?? widget.size * 0.5,
+                ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
 

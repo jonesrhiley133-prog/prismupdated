@@ -148,11 +148,13 @@ class _FakeMemberRepository implements MemberRepository {
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> excludePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> excludePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   // Stub: not exercised by this test file.
   @override
-  Future<int> resumePluralKitSync(String id) async => throw UnimplementedError();
+  Future<int> resumePluralKitSync(String id) async =>
+      throw UnimplementedError();
 
   @override
   Stream<List<member_domain.Member>> watchActiveMembers() =>
@@ -168,7 +170,7 @@ class _FakeMemberRepository implements MemberRepository {
 
   @override
   Future<({member_domain.Member member, bool wasCreated})>
-      ensureUnknownSentinelMember() => throw UnimplementedError();
+  ensureUnknownSentinelMember() => throw UnimplementedError();
 }
 
 domain.MemberGroup _groupModel({

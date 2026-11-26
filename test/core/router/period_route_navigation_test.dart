@@ -17,10 +17,7 @@ void main() {
     test('route path is "period"', () {
       // Construct the route exactly as it appears in app_router.dart and
       // assert the path string matches, proving the route is wired correctly.
-      final route = GoRoute(
-        path: 'period',
-        builder: _noopBuilder,
-      );
+      final route = GoRoute(path: 'period', builder: _noopBuilder);
       expect(route.path, 'period');
     });
 
@@ -49,11 +46,14 @@ void main() {
       expect(hint, isNull);
     });
 
-    test('PeriodDetailScreen accepts sorted ids and null hint without error', () {
-      const screen = PeriodDetailScreen(sessionIds: ['a', 'b'], hint: null);
-      expect(screen.sessionIds, ['a', 'b']);
-      expect(screen.hint, isNull);
-    });
+    test(
+      'PeriodDetailScreen accepts sorted ids and null hint without error',
+      () {
+        const screen = PeriodDetailScreen(sessionIds: ['a', 'b'], hint: null);
+        expect(screen.sessionIds, ['a', 'b']);
+        expect(screen.hint, isNull);
+      },
+    );
   });
 }
 

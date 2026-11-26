@@ -46,12 +46,8 @@ final _longTextStub = _stub(
   allowsTextualSwitch: true,
 );
 
-CustomFieldTypeRegistry get _legacyRegistry => CustomFieldTypeRegistry([
-  _textStub,
-  _colorStub,
-  _dateStub,
-  _longTextStub,
-]);
+CustomFieldTypeRegistry get _legacyRegistry =>
+    CustomFieldTypeRegistry([_textStub, _colorStub, _dateStub, _longTextStub]);
 
 void main() {
   group('CustomFieldTypeRegistry', () {
@@ -65,10 +61,7 @@ void main() {
     test('rejects duplicate legacy ints', () {
       final defA = _stub(id: 'alpha', legacyInt: 99);
       final defB = _stub(id: 'beta', legacyInt: 99);
-      expect(
-        () => CustomFieldTypeRegistry([defA, defB]),
-        throwsStateError,
-      );
+      expect(() => CustomFieldTypeRegistry([defA, defB]), throwsStateError);
     });
 
     test('stub registry has all 4 expected types', () {

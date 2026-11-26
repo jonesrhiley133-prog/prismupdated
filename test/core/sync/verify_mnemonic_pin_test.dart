@@ -29,19 +29,22 @@ class _FakeVerifyFns implements SyncVerifyMnemonicPinFns {
       required ffi.PrismSyncHandle handle,
       required Uint8List password,
       required List<int> secretKey,
-    })? verifyMnemonicPin,
-  })  : _mnemonicToBytes =
-            mnemonicToBytes ?? ((_) async => List<int>.filled(16, 0)),
-        _verifyMnemonicPin = verifyMnemonicPin ??
-            (({required handle, required password, required secretKey}) async =>
-                true);
+    })?
+    verifyMnemonicPin,
+  }) : _mnemonicToBytes =
+           mnemonicToBytes ?? ((_) async => List<int>.filled(16, 0)),
+       _verifyMnemonicPin =
+           verifyMnemonicPin ??
+           (({required handle, required password, required secretKey}) async =>
+               true);
 
   final Future<List<int>> Function(Uint8List mnemonic) _mnemonicToBytes;
   final Future<bool> Function({
     required ffi.PrismSyncHandle handle,
     required Uint8List password,
     required List<int> secretKey,
-  }) _verifyMnemonicPin;
+  })
+  _verifyMnemonicPin;
 
   @override
   Future<List<int>> mnemonicToBytes(Uint8List mnemonic) =>
@@ -52,12 +55,11 @@ class _FakeVerifyFns implements SyncVerifyMnemonicPinFns {
     required ffi.PrismSyncHandle handle,
     required Uint8List password,
     required List<int> secretKey,
-  }) =>
-      _verifyMnemonicPin(
-        handle: handle,
-        password: password,
-        secretKey: secretKey,
-      );
+  }) => _verifyMnemonicPin(
+    handle: handle,
+    password: password,
+    secretKey: secretKey,
+  );
 }
 
 /// A handle notifier that resolves synchronously. This ensures
@@ -91,9 +93,7 @@ ProviderContainer _buildContainer({
 }) {
   final container = ProviderContainer(
     overrides: [
-      prismSyncHandleProvider.overrideWith(
-        () => _SyncHandleNotifier(handle),
-      ),
+      prismSyncHandleProvider.overrideWith(() => _SyncHandleNotifier(handle)),
       syncWrappedDekPresentProvider.overrideWithValue(
         AsyncValue.data(wrappedDekPresent),
       ),
@@ -163,13 +163,14 @@ void main() {
   test('returns Match when FFI confirms credentials', () async {
     bool verifyCalled = false;
     final fakeVerifyFns = _FakeVerifyFns(
-      verifyMnemonicPin: ({required handle, required password, required secretKey}) async {
-        verifyCalled = true;
-        expect(handle, same(_fakeHandle));
-        expect(password, isNotEmpty);
-        expect(secretKey, isNotEmpty);
-        return true;
-      },
+      verifyMnemonicPin:
+          ({required handle, required password, required secretKey}) async {
+            verifyCalled = true;
+            expect(handle, same(_fakeHandle));
+            expect(password, isNotEmpty);
+            expect(secretKey, isNotEmpty);
+            return true;
+          },
     );
     final container = _buildContainer(
       handle: _fakeHandle,
@@ -210,37 +211,45 @@ void main() {
     expect(stateAfter, equals(stateBefore), reason: 'state must not change');
   });
 
-  test('returns Error when FFI throws Exception (infrastructure failure, not wrong cred)', () async {
-    final fakeVerifyFns = _FakeVerifyFns(
-      verifyMnemonicPin:
-          ({required handle, required password, required secretKey}) async =>
-              throw Exception('simulated Rust error'),
-    );
-    final container = _buildContainer(
-      handle: _fakeHandle,
-      fakeVerifyFns: fakeVerifyFns,
-    );
-    addTearDown(container.dispose);
+  test(
+    'returns Error when FFI throws Exception (infrastructure failure, not wrong cred)',
+    () async {
+      final fakeVerifyFns = _FakeVerifyFns(
+        verifyMnemonicPin:
+            ({required handle, required password, required secretKey}) async =>
+                throw Exception('simulated Rust error'),
+      );
+      final container = _buildContainer(
+        handle: _fakeHandle,
+        fakeVerifyFns: fakeVerifyFns,
+      );
+      addTearDown(container.dispose);
 
-    final stateBefore = container.read(syncHealthProvider);
-    final result = await container
-        .read(syncHealthProvider.notifier)
-        .verifyMnemonicPin(pin: _makePin('123456'), mnemonic: _validMnemonic);
-    final stateAfter = container.read(syncHealthProvider);
+      final stateBefore = container.read(syncHealthProvider);
+      final result = await container
+          .read(syncHealthProvider.notifier)
+          .verifyMnemonicPin(pin: _makePin('123456'), mnemonic: _validMnemonic);
+      final stateAfter = container.read(syncHealthProvider);
 
-    expect(result, isA<VerifyMnemonicPinError>(),
-        reason: 'FFI throws should return Error not NoMatch to prevent false lockout');
-    expect(stateAfter, equals(stateBefore), reason: 'state must not change');
-  });
+      expect(
+        result,
+        isA<VerifyMnemonicPinError>(),
+        reason:
+            'FFI throws should return Error not NoMatch to prevent false lockout',
+      );
+      expect(stateAfter, equals(stateBefore), reason: 'state must not change');
+    },
+  );
 
   test('returns NoMatch when mnemonicToBytes throws (bad mnemonic)', () async {
     bool verifyPinCalled = false;
     final fakeVerifyFns = _FakeVerifyFns(
       mnemonicToBytes: (_) async => throw Exception('invalid BIP39'),
-      verifyMnemonicPin: ({required handle, required password, required secretKey}) async {
-        verifyPinCalled = true;
-        return true;
-      },
+      verifyMnemonicPin:
+          ({required handle, required password, required secretKey}) async {
+            verifyPinCalled = true;
+            return true;
+          },
     );
     final container = _buildContainer(
       handle: _fakeHandle,
@@ -281,10 +290,16 @@ void main() {
               ? (_) async => throw Exception('bad mnemonic')
               : (_) async => List<int>.filled(16, 0),
           verifyMnemonicPin: ffiThrows
-              ? ({required handle, required password, required secretKey}) async =>
-                    throw Exception('ffi error')
-              : ({required handle, required password, required secretKey}) async =>
-                    ffiReturnsTrue,
+              ? ({
+                  required handle,
+                  required password,
+                  required secretKey,
+                }) async => throw Exception('ffi error')
+              : ({
+                  required handle,
+                  required password,
+                  required secretKey,
+                }) async => ffiReturnsTrue,
         );
 
         final container = _buildContainer(
@@ -317,10 +332,7 @@ void main() {
     }
 
     runCase('handle null → HandleUnavailable', handle: null);
-    runCase(
-      'no wrapped_dek → NeedsRewrap',
-      wrappedDekPresent: false,
-    );
+    runCase('no wrapped_dek → NeedsRewrap', wrappedDekPresent: false);
     runCase('ffi true → Match', ffiReturnsTrue: true);
     runCase('ffi false → NoMatch', ffiReturnsTrue: false);
     runCase('ffi throws → Error (infra failure)', ffiThrows: true);

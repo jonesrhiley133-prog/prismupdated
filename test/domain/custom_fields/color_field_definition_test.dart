@@ -32,14 +32,17 @@ void main() {
       expect(colorFieldDefinition.configToJson(null), isNull);
     });
 
-    test('ColorConfig(hideTitleOnProfile: true) → non-null map that round-trips', () {
-      const config = ColorConfig(hideTitleOnProfile: true);
-      final json = colorFieldDefinition.configToJson(config);
-      expect(json, isNotNull);
+    test(
+      'ColorConfig(hideTitleOnProfile: true) → non-null map that round-trips',
+      () {
+        const config = ColorConfig(hideTitleOnProfile: true);
+        final json = colorFieldDefinition.configToJson(config);
+        expect(json, isNotNull);
 
-      final roundTripped = colorFieldDefinition.configFromJson(json);
-      expect(roundTripped, isA<ColorConfig>());
-      expect((roundTripped as ColorConfig).hideTitleOnProfile, isTrue);
-    });
+        final roundTripped = colorFieldDefinition.configFromJson(json);
+        expect(roundTripped, isA<ColorConfig>());
+        expect((roundTripped as ColorConfig).hideTitleOnProfile, isTrue);
+      },
+    );
   });
 }

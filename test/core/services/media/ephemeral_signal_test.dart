@@ -42,10 +42,11 @@ void main() {
       String? gotKind;
       String? gotMedia;
       String? gotRecipient;
-      final sender = EphemeralSignalSender((
-          {required String kind,
-          required String mediaId,
-          String? recipientDeviceId}) async {
+      final sender = EphemeralSignalSender(({
+        required String kind,
+        required String mediaId,
+        String? recipientDeviceId,
+      }) async {
         gotKind = kind;
         gotMedia = mediaId;
         gotRecipient = recipientDeviceId;
@@ -64,10 +65,11 @@ void main() {
 
     test('broadcast send passes a null recipient', () async {
       String? gotRecipient = 'unset';
-      final sender = EphemeralSignalSender((
-          {required String kind,
-          required String mediaId,
-          String? recipientDeviceId}) async {
+      final sender = EphemeralSignalSender(({
+        required String kind,
+        required String mediaId,
+        String? recipientDeviceId,
+      }) async {
         gotRecipient = recipientDeviceId;
       });
       await sender.send(kind: 'media_request', mediaId: 'b');
@@ -98,20 +100,24 @@ void main() {
       await settle();
 
       controller.add(SyncEvent('SyncStarted', {'type': 'SyncStarted'}));
-      controller.add(SyncEvent('EphemeralMessage', {
-        'type': 'EphemeralMessage',
-        'sender_device_id': 'dev-1',
-        'kind': 'media_request',
-        'media_id': 'blob-1',
-        'epoch_id': 2,
-      }));
+      controller.add(
+        SyncEvent('EphemeralMessage', {
+          'type': 'EphemeralMessage',
+          'sender_device_id': 'dev-1',
+          'kind': 'media_request',
+          'media_id': 'blob-1',
+          'epoch_id': 2,
+        }),
+      );
       // Malformed (missing media_id) — dropped.
-      controller.add(SyncEvent('EphemeralMessage', {
-        'type': 'EphemeralMessage',
-        'sender_device_id': 'dev-1',
-        'kind': 'media_request',
-        'epoch_id': 2,
-      }));
+      controller.add(
+        SyncEvent('EphemeralMessage', {
+          'type': 'EphemeralMessage',
+          'sender_device_id': 'dev-1',
+          'kind': 'media_request',
+          'epoch_id': 2,
+        }),
+      );
       await settle();
 
       expect(received, hasLength(1));

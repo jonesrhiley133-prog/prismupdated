@@ -6,7 +6,14 @@ import 'package:pointycastle/export.dart';
 /// Salsa20/8 core works on local variables and typed arrays only. Produces
 /// exactly the same keys as pointycastle's `Scrypt`, several times faster
 /// in browsers, where the import runs on the page's only thread.
-Uint8List fastScrypt(Uint8List password, Uint8List salt, {required int n, required int r, required int p, required int dkLen}) {
+Uint8List fastScrypt(
+  Uint8List password,
+  Uint8List salt, {
+  required int n,
+  required int r,
+  required int p,
+  required int dkLen,
+}) {
   final blockWords = 32 * r;
   final b = _pbkdf2(password, salt, p * 128 * r);
   final bWords = Uint32List(p * blockWords);
@@ -48,7 +55,8 @@ Uint8List fastScrypt(Uint8List password, Uint8List salt, {required int n, requir
 }
 
 Uint8List _pbkdf2(Uint8List password, Uint8List salt, int len) {
-  final d = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))..init(Pbkdf2Parameters(salt, 1, len));
+  final d = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
+    ..init(Pbkdf2Parameters(salt, 1, len));
   return d.process(password);
 }
 
@@ -78,8 +86,22 @@ const _m = 0xffffffff;
 int _rotl(int v, int c) => ((v << c) | (v >> (32 - c))) & _m;
 
 void _salsa8(Uint32List s) {
-  var x0 = s[0], x1 = s[1], x2 = s[2], x3 = s[3], x4 = s[4], x5 = s[5], x6 = s[6], x7 = s[7];
-  var x8 = s[8], x9 = s[9], x10 = s[10], x11 = s[11], x12 = s[12], x13 = s[13], x14 = s[14], x15 = s[15];
+  var x0 = s[0],
+      x1 = s[1],
+      x2 = s[2],
+      x3 = s[3],
+      x4 = s[4],
+      x5 = s[5],
+      x6 = s[6],
+      x7 = s[7];
+  var x8 = s[8],
+      x9 = s[9],
+      x10 = s[10],
+      x11 = s[11],
+      x12 = s[12],
+      x13 = s[13],
+      x14 = s[14],
+      x15 = s[15];
   for (var i = 0; i < 8; i += 2) {
     x4 ^= _rotl((x0 + x12) & _m, 7);
     x8 ^= _rotl((x4 + x0) & _m, 9);

@@ -42,26 +42,25 @@ void main() {
     test('returns true when verified more than 30 days ago', () async {
       final prefs = await SharedPreferences.getInstance();
       final old = DateTime.now().subtract(const Duration(days: 45));
-      await prefs.setInt(
-        'prism.last_pin_verified',
-        old.millisecondsSinceEpoch,
-      );
+      await prefs.setInt('prism.last_pin_verified', old.millisecondsSinceEpoch);
 
       expect(await service.isPinVerificationDue(), isTrue);
     });
 
-    test('returns true when stored timestamp is in the future (clock rollback)',
-        () async {
-      final prefs = await SharedPreferences.getInstance();
-      final future = DateTime.now().add(const Duration(days: 1));
-      await prefs.setInt(
-        'prism.last_pin_verified',
-        future.millisecondsSinceEpoch,
-      );
+    test(
+      'returns true when stored timestamp is in the future (clock rollback)',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final future = DateTime.now().add(const Duration(days: 1));
+        await prefs.setInt(
+          'prism.last_pin_verified',
+          future.millisecondsSinceEpoch,
+        );
 
-      // Future timestamps are treated as missing — require re-verification.
-      expect(await service.isPinVerificationDue(), isTrue);
-    });
+        // Future timestamps are treated as missing — require re-verification.
+        expect(await service.isPinVerificationDue(), isTrue);
+      },
+    );
   });
 
   // ── recordPinVerified ─────────────────────────────────────────────────────
@@ -82,5 +81,4 @@ void main() {
       expect(ts!, greaterThan(0));
     });
   });
-
 }

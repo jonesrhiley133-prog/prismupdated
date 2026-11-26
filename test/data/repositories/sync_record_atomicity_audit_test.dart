@@ -23,11 +23,13 @@ import 'package:flutter_test/flutter_test.dart';
 /// own their own `suppressAndCapture` + post-commit replay fence.
 void main() {
   group('emit-after-commit audit (deny-by-default)', () {
-    test('every durable emission is inside runSyncedWrite or a trusted helper',
-        () {
+    test('every durable emission is inside runSyncedWrite or a trusted helper', () {
       final files = _repoFiles();
-      expect(files.length, greaterThanOrEqualTo(14),
-          reason: 'glob should see the rewritten repositories');
+      expect(
+        files.length,
+        greaterThanOrEqualTo(14),
+        reason: 'glob should see the rewritten repositories',
+      );
 
       final violations = <String>[];
       for (final file in files) {
@@ -49,8 +51,9 @@ void main() {
           final region = _regionFor(code, methods, name);
           if (region == null) {
             violations.add(
-                '$base: allowlisted helper `$name` no longer exists — remove '
-                'it from the audit allowlist.');
+              '$base: allowlisted helper `$name` no longer exists — remove '
+              'it from the audit allowlist.',
+            );
             continue;
           }
           trustedBodies.add([region.bodyOpen, region.bodyClose]);
@@ -79,15 +82,17 @@ void main() {
           if (_inAnySpan(site.offset, trustedBodies)) continue;
           final method = _enclosing(methods, site.offset);
           violations.add(
-              '$base :: $method :: `${site.text.trim()}` emits/relays outside '
-              'runSyncedWrite');
+            '$base :: $method :: `${site.text.trim()}` emits/relays outside '
+            'runSyncedWrite',
+          );
         }
       }
 
       expect(
         violations,
         isEmpty,
-        reason: 'Emit-after-commit violation(s):\n'
+        reason:
+            'Emit-after-commit violation(s):\n'
             '  ${violations.join('\n  ')}\n\n'
             'Fix by wrapping the data write + emission in runSyncedWrite(() async {...}). '
             'If this is a verified helper whose every caller already wraps, add it to '
@@ -141,14 +146,17 @@ const _emitTokens = [
   'syncRecordDelete',
 ];
 
-List<File> _repoFiles() => Directory('lib/data/repositories')
-    .listSync()
-    .whereType<File>()
-    .where((f) =>
-        _basename(f.path).startsWith('drift_') &&
-        f.path.endsWith('_repository.dart'))
-    .toList()
-  ..sort((a, b) => a.path.compareTo(b.path));
+List<File> _repoFiles() =>
+    Directory('lib/data/repositories')
+        .listSync()
+        .whereType<File>()
+        .where(
+          (f) =>
+              _basename(f.path).startsWith('drift_') &&
+              f.path.endsWith('_repository.dart'),
+        )
+        .toList()
+      ..sort((a, b) => a.path.compareTo(b.path));
 
 String _basename(String path) => path.split(Platform.pathSeparator).last;
 
@@ -284,8 +292,9 @@ class _Method {
   final int start;
 }
 
-List<_Method> _methods(String code) =>
-    [for (final m in _declRe.allMatches(code)) _Method(m.group(1)!, m.start)];
+List<_Method> _methods(String code) => [
+  for (final m in _declRe.allMatches(code)) _Method(m.group(1)!, m.start),
+];
 
 String _enclosing(List<_Method> methods, int off) {
   var name = '<top-level>';
@@ -309,8 +318,10 @@ class _Region {
 /// Declaration + body span for a named method (the first declaration match).
 /// Handles both block bodies (`{...}`) and arrow bodies (`=> expr;`).
 _Region? _regionFor(String code, List<_Method> methods, String name) {
-  final decl = methods.firstWhere((m) => m.name == name,
-      orElse: () => _Method('', -1));
+  final decl = methods.firstWhere(
+    (m) => m.name == name,
+    orElse: () => _Method('', -1),
+  );
   if (decl.start < 0) return null;
   final paramOpen = code.indexOf('(', decl.start);
   if (paramOpen < 0) return null;

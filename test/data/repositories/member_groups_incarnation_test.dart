@@ -96,8 +96,16 @@ void main() {
   late AppDatabase db;
   late DriftMemberGroupsRepository repo;
 
-  final gen0EntryId = deriveEntryIncarnationEntityId(_groupUuid, _memberUuid, 0)!;
-  final gen1EntryId = deriveEntryIncarnationEntityId(_groupUuid, _memberUuid, 1)!;
+  final gen0EntryId = deriveEntryIncarnationEntityId(
+    _groupUuid,
+    _memberUuid,
+    0,
+  )!;
+  final gen1EntryId = deriveEntryIncarnationEntityId(
+    _groupUuid,
+    _memberUuid,
+    1,
+  )!;
 
   setUp(() async {
     db = AppDatabase(NativeDatabase.memory());
@@ -168,7 +176,8 @@ void main() {
       expect(
         entryCreates.single.entityId,
         gen1EntryId,
-        reason: 'create must target the gen-1 incarnation, not the burned gen-0',
+        reason:
+            'create must target the gen-1 incarnation, not the burned gen-0',
       );
 
       final liveRow = await db.memberGroupsDao.findEntry(

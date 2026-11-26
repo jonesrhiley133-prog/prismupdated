@@ -29,24 +29,21 @@ import 'package:flutter_test/flutter_test.dart';
 /// fresh-install pairing on a real device with Drift in a background
 /// isolate.
 void main() {
-  test(
-    'app.dart keeps frontingMigrationModeProvider always-warm '
-    '(Bug A pairing-apply deadlock regression guard)',
-    () {
-      final appDart = File('lib/app.dart').readAsStringSync();
-      expect(
-        appDart,
-        contains('ref.listen(frontingMigrationModeProvider'),
-        reason:
-            'lib/app.dart must keep frontingMigrationModeProvider warm via '
-            'an always-on ref.listen at the top level of PrismApp.build. '
-            'Without it, the sync apply path cold-starts a Drift '
-            'StreamProvider from inside db.transaction() and deadlocks the '
-            'commit on the background isolate during fresh-install pairing. '
-            'See driftSyncAdapterProvider INVARIANT comment in '
-            'lib/core/sync/prism_sync_providers.dart for the dependency '
-            'chain and reproduction details.',
-      );
-    },
-  );
+  test('app.dart keeps frontingMigrationModeProvider always-warm '
+      '(Bug A pairing-apply deadlock regression guard)', () {
+    final appDart = File('lib/app.dart').readAsStringSync();
+    expect(
+      appDart,
+      contains('ref.listen(frontingMigrationModeProvider'),
+      reason:
+          'lib/app.dart must keep frontingMigrationModeProvider warm via '
+          'an always-on ref.listen at the top level of PrismApp.build. '
+          'Without it, the sync apply path cold-starts a Drift '
+          'StreamProvider from inside db.transaction() and deadlocks the '
+          'commit on the background isolate during fresh-install pairing. '
+          'See driftSyncAdapterProvider INVARIANT comment in '
+          'lib/core/sync/prism_sync_providers.dart for the dependency '
+          'chain and reproduction details.',
+    );
+  });
 }

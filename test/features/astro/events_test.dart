@@ -9,7 +9,9 @@ import 'package:prism_plurality/features/astro/engine/events.dart';
 void main() {
   final ref =
       jsonDecode(
-            File('test/features/astro/events_reference.json').readAsStringSync(),
+            File(
+              'test/features/astro/events_reference.json',
+            ).readAsStringSync(),
           )
           as Map<String, dynamic>;
   final from = DateTime.utc(2024, 1, 1);
@@ -18,8 +20,7 @@ void main() {
 
   void checkPhase(String key, MoonPhase phase) {
     final expected = [
-      for (final s in (ref[key] as List).cast<String>())
-        DateTime.parse(s),
+      for (final s in (ref[key] as List).cast<String>()) DateTime.parse(s),
     ].where((d) => d.isBefore(to)).toList();
     final got = [
       for (final l in all)
@@ -49,7 +50,10 @@ void main() {
     for (var i = 0; i < got.length; i++) {
       expect(got[i].sign, expected[i][1]);
       expect(
-        got[i].utc.difference(DateTime.parse(expected[i][0] as String)).inMinutes.abs(),
+        got[i].utc
+            .difference(DateTime.parse(expected[i][0] as String))
+            .inMinutes
+            .abs(),
         lessThan(15),
       );
     }
@@ -70,7 +74,10 @@ void main() {
 
   test('Mercury stations in 2024', () {
     final s = stations(Body.mercury, from, DateTime.utc(2024, 12, 31));
-    final retro = [for (final x in s) if (x.toRetrograde) x.utc];
+    final retro = [
+      for (final x in s)
+        if (x.toRetrograde) x.utc,
+    ];
     expect(retro.length, 3);
     expect(retro.first.month, 4); // 1 April 2024
     expect(retro.first.day, 1);

@@ -784,9 +784,8 @@ class _NoopHttpClient extends http.BaseClient {
 /// successful batch insert), see `_MidBatchFailingChatMessagesDao` /
 /// `_MidBatchFailingAppDatabase` further down.
 class _EarlyFailingMemberRepository implements MemberRepository {
-  
   Future<void> stampCreatePushStartedAt(String id, int timestampMs) async {}
-  
+
   Future<void> clearCreatePushStartedAt(String id) async {}
   _EarlyFailingMemberRepository(this._inner);
   final MemberRepository _inner;
@@ -853,7 +852,8 @@ class _EarlyFailingMemberRepository implements MemberRepository {
       _inner.recordPluralKitIdentity(id, patch);
 
   @override
-  Future<int> excludePluralKitSync(String id) => _inner.excludePluralKitSync(id);
+  Future<int> excludePluralKitSync(String id) =>
+      _inner.excludePluralKitSync(id);
 
   @override
   Future<int> resumePluralKitSync(String id) => _inner.resumePluralKitSync(id);

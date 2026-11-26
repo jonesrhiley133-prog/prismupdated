@@ -31,8 +31,9 @@ void main() {
   });
 
   group('context.formatTime', () {
-    testWidgets('alwaysUse24HourFormat=true forces 24-hour output',
-        (tester) async {
+    testWidgets('alwaysUse24HourFormat=true forces 24-hour output', (
+      tester,
+    ) async {
       final context = await _contextWith(tester, alwaysUse24HourFormat: true);
       // 2:30 PM = 14:30
       final dt = DateTime(2026, 1, 1, 14, 30);
@@ -42,8 +43,9 @@ void main() {
       expect(out, isNot(contains('AM')));
     });
 
-    testWidgets('alwaysUse24HourFormat=false uses 12-hour output',
-        (tester) async {
+    testWidgets('alwaysUse24HourFormat=false uses 12-hour output', (
+      tester,
+    ) async {
       final context = await _contextWith(tester, alwaysUse24HourFormat: false);
       final dt = DateTime(2026, 1, 1, 14, 30);
       final out = context.formatTime(dt);
@@ -69,8 +71,9 @@ void main() {
   });
 
   group('context.formatDateTime', () {
-    testWidgets('24-hour mode embeds 24-hour time in date+time string',
-        (tester) async {
+    testWidgets('24-hour mode embeds 24-hour time in date+time string', (
+      tester,
+    ) async {
       final context = await _contextWith(tester, alwaysUse24HourFormat: true);
       final dt = DateTime(2026, 3, 9, 14, 30);
       final out = context.formatDateTime(dt);
@@ -78,8 +81,9 @@ void main() {
       expect(out, isNot(contains('PM')));
     });
 
-    testWidgets('12-hour mode embeds 12-hour time in date+time string',
-        (tester) async {
+    testWidgets('12-hour mode embeds 12-hour time in date+time string', (
+      tester,
+    ) async {
       final context = await _contextWith(tester, alwaysUse24HourFormat: false);
       final dt = DateTime(2026, 3, 9, 14, 30);
       final out = context.formatDateTime(dt);

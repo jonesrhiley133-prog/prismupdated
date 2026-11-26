@@ -48,34 +48,36 @@ void main() {
       .map((op) => op.entityId)
       .toList();
 
-  test('deleteSession emits delete for the row id and each recorded alias id',
-      () async {
-    await insertSession('rowY', pkUuid: 'SW');
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'fronting_sessions',
-      legacyEntityId: 'alias-1',
-      pkUuid: 'SW',
-      memberId: 'm1',
-      targetRowId: 'rowY',
-    );
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'fronting_sessions',
-      legacyEntityId: 'alias-2',
-      pkUuid: 'SW',
-      memberId: 'm1',
-      targetRowId: 'rowY',
-    );
+  test(
+    'deleteSession emits delete for the row id and each recorded alias id',
+    () async {
+      await insertSession('rowY', pkUuid: 'SW');
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'fronting_sessions',
+        legacyEntityId: 'alias-1',
+        pkUuid: 'SW',
+        memberId: 'm1',
+        targetRowId: 'rowY',
+      );
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'fronting_sessions',
+        legacyEntityId: 'alias-2',
+        pkUuid: 'SW',
+        memberId: 'm1',
+        targetRowId: 'rowY',
+      );
 
-    final captured = <CapturedSyncOp>[];
-    SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-    addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-    await repo.deleteSession('rowY');
+      await repo.deleteSession('rowY');
 
-    final deletes = deletesFrom(captured);
-    expect(deletes, containsAll(<String>['rowY', 'alias-1', 'alias-2']));
-    expect(deletes, hasLength(3));
-  });
+      final deletes = deletesFrom(captured);
+      expect(deletes, containsAll(<String>['rowY', 'alias-1', 'alias-2']));
+      expect(deletes, hasLength(3));
+    },
+  );
 
   test('deleteSession skips an alias id that is an active local row', () async {
     await insertSession('rowY', pkUuid: 'SW');
@@ -133,23 +135,25 @@ void main() {
     expect(deletes, <String>['rowY'], reason: 'no alias fan-out for artifact');
   });
 
-  test('deleteSession of a session with no PK link emits only the row delete',
-      () async {
-    await insertSession('rowZ');
-    await db.pkIdentitySyncAliasesDao.upsertAlias(
-      entityTable: 'fronting_sessions',
-      legacyEntityId: 'unrelated',
-      pkUuid: 'OTHER',
-      memberId: 'm9',
-      targetRowId: 'somewhere',
-    );
+  test(
+    'deleteSession of a session with no PK link emits only the row delete',
+    () async {
+      await insertSession('rowZ');
+      await db.pkIdentitySyncAliasesDao.upsertAlias(
+        entityTable: 'fronting_sessions',
+        legacyEntityId: 'unrelated',
+        pkUuid: 'OTHER',
+        memberId: 'm9',
+        targetRowId: 'somewhere',
+      );
 
-    final captured = <CapturedSyncOp>[];
-    SyncRecordMixin.installCaptureSinkForTesting(captured.add);
-    addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
+      final captured = <CapturedSyncOp>[];
+      SyncRecordMixin.installCaptureSinkForTesting(captured.add);
+      addTearDown(SyncRecordMixin.removeCaptureSinkForTesting);
 
-    await repo.deleteSession('rowZ');
+      await repo.deleteSession('rowZ');
 
-    expect(deletesFrom(captured), <String>['rowZ']);
-  });
+      expect(deletesFrom(captured), <String>['rowZ']);
+    },
+  );
 }

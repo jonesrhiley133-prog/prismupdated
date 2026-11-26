@@ -228,8 +228,8 @@ void main() {
       // (sortState) are normalized to Map<String, dynamic> before being
       // re-parsed. The generated `toJson` writes nested freezed values
       // as-is, which is fine for jsonEncode but not for direct fromJson.
-      final json = jsonDecode(jsonEncode(group.toJson()))
-          as Map<String, dynamic>;
+      final json =
+          jsonDecode(jsonEncode(group.toJson())) as Map<String, dynamic>;
       final restored = domain.MemberGroup.fromJson(json);
       expect(restored.id, group.id);
       expect(restored.name, group.name);
@@ -251,8 +251,7 @@ void main() {
     // tests in the same process having pushed entries first.
     late int baselineErrorCount;
     setUp(() {
-      baselineErrorCount =
-          ErrorReportingService.instance.errors.length;
+      baselineErrorCount = ErrorReportingService.instance.errors.length;
     });
 
     int warningsEmittedSinceBaseline() {
@@ -299,10 +298,7 @@ void main() {
       for (final length in [0, 1, 50, 1000]) {
         final order = List.generate(length, (i) => 'entry-$i');
         final restored = roundTrip(
-          GroupSortState(
-            mode: GroupSortMode.manual,
-            manualOrder: order,
-          ),
+          GroupSortState(mode: GroupSortMode.manual, manualOrder: order),
         );
         expect(restored.sortState.manualOrder.length, length);
         expect(restored.sortState.manualOrder, order);
@@ -336,18 +332,20 @@ void main() {
       expect(warningsEmittedSinceBaseline(), 1);
     });
 
-    test('decode dedupes duplicate ids in order, preserving first occurrence',
-        () {
-      final restored = decodeWithSortState(
-        jsonEncode({
-          'mode': 0,
-          'order': ['a', 'a', 'b'],
-        }),
-      );
-      expect(restored.sortState.mode, GroupSortMode.manual);
-      expect(restored.sortState.manualOrder, ['a', 'b']);
-      expect(warningsEmittedSinceBaseline(), 0);
-    });
+    test(
+      'decode dedupes duplicate ids in order, preserving first occurrence',
+      () {
+        final restored = decodeWithSortState(
+          jsonEncode({
+            'mode': 0,
+            'order': ['a', 'a', 'b'],
+          }),
+        );
+        expect(restored.sortState.mode, GroupSortMode.manual);
+        expect(restored.sortState.manualOrder, ['a', 'b']);
+        expect(warningsEmittedSinceBaseline(), 0);
+      },
+    );
 
     test('decode of mixed-type order array falls back + warn', () {
       final restored = decodeWithSortState('{"mode": 0, "order": [1, "b"]}');
@@ -358,8 +356,7 @@ void main() {
     // Strict mode type. Wrong-type mode (string, null, double, bool) must
     // be rejected as garbage; only unknown *ints* are forward-compat.
     test('decode of string-type mode falls back + warn', () {
-      final restored =
-          decodeWithSortState('{"mode": "nameAsc", "order": []}');
+      final restored = decodeWithSortState('{"mode": "nameAsc", "order": []}');
       expect(restored.sortState, GroupSortState.manualEmpty);
       expect(warningsEmittedSinceBaseline(), 1);
     });
@@ -390,8 +387,7 @@ void main() {
   group('sanitizeSortStateForEmission', () {
     late int baselineErrorCount;
     setUp(() {
-      baselineErrorCount =
-          ErrorReportingService.instance.errors.length;
+      baselineErrorCount = ErrorReportingService.instance.errors.length;
     });
 
     int warningsEmittedSinceBaseline() {

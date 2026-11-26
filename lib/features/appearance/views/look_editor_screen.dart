@@ -1,10 +1,10 @@
+import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/shared/widgets/section_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:prism_plurality/features/appearance/models/look.dart';
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
@@ -758,7 +758,8 @@ class LookSample extends StatelessWidget {
                             color:
                                 look?.fill(LookElement.nav) ??
                                 theme.colorScheme.surfaceContainerHigh,
-                            borderRadius: prismCorners(context, 
+                            borderRadius: prismCorners(
+                              context,
                               look?.style(LookElement.nav).radius ?? 15,
                             ),
                             border: look?.border(LookElement.nav),
@@ -981,13 +982,14 @@ class BackgroundEditor extends ConsumerWidget {
                         ? l10n.apUploadImage
                         : l10n.apChangeImage,
                     onPressed: () async {
-                      final f = await ImagePicker().pickImage(
-                        source: ImageSource.gallery,
+                      final f = await PrismImageCrop.pick(
+                        context,
+                        spec: PrismCropSpec.background,
                       );
                       if (f == null) return;
                       final name = await ref
                           .read(appearanceProvider.notifier)
-                          .addBackgroundImage(await f.readAsBytes());
+                          .addBackgroundImage(f.bytes);
                       if (name == null) {
                         if (context.mounted)
                           PrismToast.error(
@@ -1133,7 +1135,11 @@ class BackgroundEditor extends ConsumerWidget {
                                         ),
                                         DecoratedBox(
                                           decoration: BoxDecoration(
-                                            color: t?.$1 ?? (t?.$2 == null ? const Color(0x00000000) : null),
+                                            color:
+                                                t?.$1 ??
+                                                (t?.$2 == null
+                                                    ? const Color(0x00000000)
+                                                    : null),
                                             gradient: t?.$2,
                                             backgroundBlendMode:
                                                 BlendMode.color,

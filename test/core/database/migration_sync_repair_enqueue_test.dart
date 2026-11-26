@@ -106,65 +106,60 @@ Future<List<Map<String, Object?>>> _repairs(AppDatabase db) async {
 
 void main() {
   group('F28: migration rewrites enqueue sync repairs', () {
-    test(
-      'v21→current performs the data rewrites but enqueues no in-migration '
-      'repairs post-flatten',
-      () async {
-        final tempDir = Directory.systemTemp.createTempSync(
-          'prism_f28_enqueue_',
+    test('v21→current performs the data rewrites but enqueues no in-migration '
+        'repairs post-flatten', () async {
+      final tempDir = Directory.systemTemp.createTempSync('prism_f28_enqueue_');
+      addTearDown(() {
+        if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
+      });
+      final dbFile = File('${tempDir.path}/db.sqlite');
+      await _seedV21Db(dbFile);
+
+      final rawDb = raw.sqlite3.open(dbFile.path);
+      try {
+        _insertGroup(rawDb, 'g1');
+        // markdown_enabled = 0 will be flipped to 1 by the migration.
+        _insertMember(rawDb, 'm_off', markdownEnabled: 0);
+        // Already enabled — must NOT be enqueued (WHERE no longer matches).
+        _insertMember(rawDb, 'm_on', markdownEnabled: 1);
+        // An everyone-group conversation (>2 participants, no DM heuristic).
+        _insertConversation(
+          rawDb,
+          'c_everyone',
+          creatorId: 'm_on',
+          participantIds: const ['m_on', 'm_off', 'extra'],
         );
-        addTearDown(() {
-          if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
-        });
-        final dbFile = File('${tempDir.path}/db.sqlite');
-        await _seedV21Db(dbFile);
+      } finally {
+        rawDb.close();
+      }
 
-        final rawDb = raw.sqlite3.open(dbFile.path);
-        try {
-          _insertGroup(rawDb, 'g1');
-          // markdown_enabled = 0 will be flipped to 1 by the migration.
-          _insertMember(rawDb, 'm_off', markdownEnabled: 0);
-          // Already enabled — must NOT be enqueued (WHERE no longer matches).
-          _insertMember(rawDb, 'm_on', markdownEnabled: 1);
-          // An everyone-group conversation (>2 participants, no DM heuristic).
-          _insertConversation(
-            rawDb,
-            'c_everyone',
-            creatorId: 'm_on',
-            participantIds: const ['m_on', 'm_off', 'extra'],
-          );
-        } finally {
-          rawDb.close();
-        }
+      final upgraded = AppDatabase(NativeDatabase(dbFile));
+      addTearDown(upgraded.close);
+      await upgraded.customSelect('SELECT 1').get();
 
-        final upgraded = AppDatabase(NativeDatabase(dbFile));
-        addTearDown(upgraded.close);
-        await upgraded.customSelect('SELECT 1').get();
+      // Data rewrites happened.
+      final mOff = await upgraded
+          .customSelect(
+            'SELECT markdown_enabled FROM members WHERE id = ?',
+            variables: [Variable.withString('m_off')],
+          )
+          .getSingle();
+      expect(mOff.read<bool>('markdown_enabled'), isTrue);
 
-        // Data rewrites happened.
-        final mOff = await upgraded
-            .customSelect(
-              'SELECT markdown_enabled FROM members WHERE id = ?',
-              variables: [Variable.withString('m_off')],
-            )
-            .getSingle();
-        expect(mOff.read<bool>('markdown_enabled'), isTrue);
+      final everyone = await upgraded
+          .customSelect(
+            'SELECT includes_all_members FROM conversations WHERE id = ?',
+            variables: [Variable.withString('c_everyone')],
+          )
+          .getSingle();
+      expect(everyone.read<bool>('includes_all_members'), isTrue);
 
-        final everyone = await upgraded
-            .customSelect(
-              'SELECT includes_all_members FROM conversations WHERE id = ?',
-              variables: [Variable.withString('c_everyone')],
-            )
-            .getSingle();
-        expect(everyone.read<bool>('includes_all_members'), isTrue);
-
-        // No in-migration enqueue post-flatten: the historical steps that
-        // performed the rewrites are unreachable for real installs, so the
-        // repair queue stays empty. Convergence for diverged installs is via
-        // MigrationSyncRepairService's runtime blanket backfill.
-        expect(await _repairs(upgraded), isEmpty);
-      },
-    );
+      // No in-migration enqueue post-flatten: the historical steps that
+      // performed the rewrites are unreachable for real installs, so the
+      // repair queue stays empty. Convergence for diverged installs is via
+      // MigrationSyncRepairService's runtime blanket backfill.
+      expect(await _repairs(upgraded), isEmpty);
+    });
 
     test('a clean current-schema DB enqueues nothing', () async {
       final db = AppDatabase(NativeDatabase.memory());
