@@ -1,3 +1,10 @@
+import 'package:prism_plurality/features/links/widgets/related_records.dart'
+    show promptText;
+import 'package:prism_plurality/features/wallets/id_shapes.dart';
+import 'package:prism_plurality/features/wallets/id_template_gallery.dart';
+import 'package:prism_plurality/features/wallets/id_templates.dart';
+import 'package:prism_plurality/shared/widgets/prism_image_crop_screen.dart'
+    show PrismCropRatio;
 import 'package:prism_plurality/shared/fonts/font_browser.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/domain/models/member.dart';
@@ -22,6 +29,8 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
   late Map<String, String> _values;
   late String _title;
   bool _loaded = false;
+  double get _aspect => _front.aspect > 0 ? _front.aspect : _cardAspect;
+  double _cardAspect = idCardRatio;
   bool _onBack = false;
   bool _snap = true;
   bool _grid = false;
@@ -138,6 +147,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
       _ => CardLayer(
         id: _newId(),
         kind: 'shape',
+        text: kind.startsWith('shape:') ? kind.substring(6) : '',
         x: 0.5,
         y: 0.5,
         w: 0.4,
@@ -162,6 +172,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
           title: _title,
           collection: _front.tpl.isEmpty ? null : _front.tpl.split('.').first,
           layout: _front.tpl.isEmpty ? null : _front.tpl.split('.').last,
+          aspect: _aspect,
         );
     if (mounted) {
       setState(() => _dirty = false);
@@ -182,6 +193,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
       _back = card.back;
       _values = {...card.values};
       _title = card.r.title;
+      _cardAspect = card.aspect;
       _loaded = true;
     }
     final theme = Theme.of(context);
@@ -278,6 +290,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                       values: values,
                       photo: photo,
                       width: w,
+                      ratio: _aspect,
                       selected: _sel,
                       showGrid: _grid,
                       onLayerTap: (id) => setState(() => _sel = id),
@@ -348,7 +361,14 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                   PrismPopupMenu<String>(
                     icon: Icons.add_box_outlined,
                     tooltip: 'Add layer',
-                    onSelected: _add,
+                    onSelected: (k) async {
+                      if (k == 'shapes') {
+                        final shape = await showIdShapePicker(context);
+                        if (shape != null) _add('shape:$shape');
+                      } else {
+                        _add(k);
+                      }
+                    },
                     items: const [
                       PrismMenuItem(
                         value: 'text',
@@ -371,9 +391,9 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                         icon: Icons.portrait,
                       ),
                       PrismMenuItem(
-                        value: 'shape',
-                        label: 'Rectangle',
-                        icon: Icons.crop_square,
+                        value: 'shapes',
+                        label: 'Shape (30 to choose)',
+                        icon: Icons.category_outlined,
                       ),
                       PrismMenuItem(
                         value: 'circle',
@@ -391,6 +411,12 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                         icon: Icons.qr_code_2,
                       ),
                     ],
+                  ),
+                  PrismButton(
+                    label: 'Shape & size',
+                    icon: Icons.aspect_ratio,
+                    density: PrismControlDensity.compact,
+                    onPressed: _cardShape,
                   ),
                   PrismButton(
                     label: 'Template',
@@ -597,6 +623,59 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
           record: false,
         ),
       ),
+      if (l.kind == 'shape') ...[
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            PrismButton(
+              label:
+                  'Shape: ${idShapeKinds[l.text.isEmpty ? 'rrect' : l.text] ?? l.text}',
+              icon: Icons.category_outlined,
+              density: PrismControlDensity.compact,
+              tone: PrismButtonTone.outlined,
+              onPressed: () async {
+                final k = await showIdShapePicker(
+                  context,
+                  current: l.text,
+                  color: Color(l.color),
+                );
+                if (k != null) _updateLayer(l.copyWith(text: k));
+              },
+            ),
+            PrismChip(
+              label: 'Outline',
+              selected: l.stroke > 0,
+              onTap: () =>
+                  _updateLayer(l.copyWith(stroke: l.stroke > 0 ? 0 : 0.02)),
+            ),
+            PrismChip(
+              label: l.color2 == null ? 'Gradient' : 'Gradient on',
+              selected: l.color2 != null,
+              onTap: () async {
+                if (l.color2 != null) {
+                  _updateLayer(l.copyWith(color2: null));
+                  return;
+                }
+                final c = await showPrismColorPicker(
+                  context: context,
+                  initial: Color(l.color),
+                  title: 'Gradient end colour',
+                );
+                if (c != null) _updateLayer(l.copyWith(color2: c.toARGB32()));
+              },
+            ),
+          ],
+        ),
+        if (l.stroke > 0)
+          slider(
+            'Line width',
+            l.stroke,
+            0.004,
+            0.08,
+            (v) => _updateLayer(l.copyWith(stroke: v), record: false),
+          ),
+      ],
       slider(
         'Opacity',
         l.opacity,
@@ -713,78 +792,102 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
     ];
   }
 
-  Future<void> _templates(IdCard card) async {
-    final pick = await PrismSheet.show<(String, String)>(
+  void _setAspect(double v) => setState(() {
+    _push();
+    _front = _front.copyWith(aspect: v);
+    _back = _back.copyWith(aspect: v);
+  });
+
+  Future<void> _cardShape() async {
+    await PrismSheet.show<void>(
       context: context,
-      title: 'Templates',
-      builder: (ctx) => ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(12),
-        children: [
-          Text(
-            'Pick a design to see it on your card right away. Your details and anything you added yourself are kept, and you can undo.',
-            style: Theme.of(ctx).textTheme.bodySmall,
-          ),
-          for (final c in templateCollections) ...[
-            Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 4),
-              child: Text(c.name, style: Theme.of(ctx).textTheme.titleSmall),
+      title: 'Card shape',
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, set) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final o in const [
+                  ('Landscape', 1.585),
+                  ('Wide', 2.0),
+                  ('Square', 1.0),
+                  ('Portrait', 0.64),
+                  ('Tall', 0.5),
+                ])
+                  PrismChip(
+                    label: o.$1,
+                    selected: (_aspect - o.$2).abs() < 0.01,
+                    onTap: () {
+                      _setAspect(o.$2);
+                      set(() {});
+                    },
+                  ),
+                PrismChip(
+                  label: 'Custom…',
+                  selected: false,
+                  onTap: () async {
+                    final raw = await promptText(
+                      context,
+                      'Width : height (e.g. 3:4)',
+                      initial: '',
+                    );
+                    final v = raw == null ? null : PrismCropRatio.parse(raw);
+                    if (v == null) return;
+                    _setAspect(v.clamp(0.4, 3.0));
+                    set(() {});
+                  },
+                ),
+              ],
             ),
-            SizedBox(
-              height: 92,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  for (final lay in templateLayouts.entries)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(ctx).pop((c.id, lay.key)),
-                        child: Semantics(
-                          button: true,
-                          selected: _front.tpl == '${c.id}.${lay.key}',
-                          label: '${c.name}, ${lay.value}',
-                          child: DecoratedBox(
-                            position: DecorationPosition.foreground,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: _front.tpl == '${c.id}.${lay.key}'
-                                  ? Border.all(
-                                      color: Theme.of(ctx).colorScheme.primary,
-                                      width: 3,
-                                    )
-                                  : null,
-                            ),
-                            child: IgnorePointer(
-                              child: CardFaceView(
-                                face: buildTemplate(
-                                  c.id,
-                                  lay.key,
-                                  type: card.type,
-                                ).$1,
-                                values: const {
-                                  'name': 'Sam Rivers',
-                                  'pronouns': 'they/them',
-                                  'number': 'PRM-0000',
-                                  'issued': 'Today',
-                                  'emoji': '✨',
-                                },
-                                width: 140,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+            const SizedBox(height: 8),
+            Text(
+              'Currently ${_aspect.toStringAsFixed(2)} : 1. Layers keep their place as fractions of the card, so check them after changing the shape.',
+              style: Theme.of(ctx).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _templates(IdCard card) async {
+    final pick = await PrismSheet.showFullScreen<String>(
+      context: context,
+      builder: (ctx, scroll) => Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Pick a design to see it on your card right away. Your details and anything you added yourself are kept, and you can undo.',
+              style: Theme.of(ctx).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: IdTemplateGallery(
+                type: card.type,
+                selected: _front.tpl,
+                fields: {
+                  for (final l in [..._front.layers, ..._back.layers])
+                    if (l.kind == 'field') l.field!,
+                  'photo',
+                  'name',
+                  'number',
+                },
+                onPick: (id) => Navigator.of(ctx).pop(id),
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
     if (pick == null) return;
-    _applyTemplate(card, pick.$1, pick.$2);
+    final parts = pick.split('.');
+    _applyTemplate(card, parts.first, parts.last);
   }
 
   /// Applies a template without losing anything the user made: their own
@@ -796,7 +899,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
         if (l.kind == 'field') l.field!,
       if ([..._front.layers].any((l) => l.kind == 'photo')) 'photo',
     };
-    final (f, b) = buildTemplate(
+    final (f, b) = buildAnyTemplate(
       collection,
       layout,
       type: card.type,
@@ -812,8 +915,9 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
           ];
     setState(() {
       _push();
-      _front = f.copyWith(layers: [...f.layers, ...mine(_front)]);
-      _back = b.copyWith(layers: [...b.layers, ...mine(_back)]);
+      final ar = f.aspect > 0 ? f.aspect : idCardRatio;
+      _front = f.copyWith(layers: [...f.layers, ...mine(_front)], aspect: ar);
+      _back = b.copyWith(layers: [...b.layers, ...mine(_back)], aspect: ar);
       _sel = null;
     });
     PrismToast.show(context, message: 'Template applied — undo to go back');
@@ -986,6 +1090,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                       values: values,
                       photo: photo,
                       width: 300,
+                      ratio: _aspect,
                     ),
                     const SizedBox(height: 10),
                     CardFaceView(
@@ -993,6 +1098,7 @@ class _IdCardDesignerState extends ConsumerState<IdCardDesigner> {
                       values: values,
                       photo: photo,
                       width: 300,
+                      ratio: _aspect,
                     ),
                     const SizedBox(height: 8),
                     const Text(

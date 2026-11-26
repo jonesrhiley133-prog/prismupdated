@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/features/wallets/id_template_gallery.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart'
@@ -512,53 +513,16 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             const SizedBox(height: 10),
             Text('Look', style: Theme.of(ctx).textTheme.titleSmall),
             const SizedBox(height: 4),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final c in templateCollections)
-                  PrismChip(
-                    label: c.name,
-                    selected: collection == c.id,
-                    onTap: () => set(() => collection = c.id),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final e in templateLayouts.entries)
-                  PrismChip(
-                    label: e.value,
-                    selected: layout == e.key,
-                    onTap: () => set(() => layout = e.key),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Center(
-              child: IgnorePointer(
-                child: CardFaceView(
-                  face: buildTemplate(
-                    collection,
-                    layout,
-                    type: type,
-                    fields: fields,
-                  ).$1,
-                  values: {
-                    'name': member == null
-                        ? 'The system'
-                        : names[member] ?? 'Name',
-                    'pronouns': 'they/them',
-                    'number': 'PRM-0000-0000',
-                    'issued': 'Today',
-                    'emoji': '✨',
-                  },
-                  width: 260,
-                ),
-              ),
+            IdTemplateGallery(
+              shrinkWrap: true,
+              type: type,
+              fields: fields,
+              selected: '$collection.$layout',
+              onPick: (id) => set(() {
+                final parts = id.split('.');
+                collection = parts.first;
+                layout = parts.last;
+              }),
             ),
             const SizedBox(height: 12),
             PrismButton(

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:intl/intl.dart' show DateFormat;
 
+import 'package:prism_plurality/features/wallets/id_shapes.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
@@ -36,6 +37,10 @@ Map<String, String> resolveCardValues(IdCard c, Member? m, SystemIdentity id) {
     'issuer': pick('issuer', id.issuer),
     'notes': pick('notes', ''),
     'emoji': pick('emoji', m?.emoji ?? id.emblem),
+    'status': pick('status', ''),
+    'flags': pick('flags', ''),
+    'boundaries': pick('boundaries', ''),
+    'interests': pick('interests', ''),
     'custom1': pick('custom1', ''),
     'custom2': pick('custom2', ''),
     'custom3': pick('custom3', ''),
@@ -50,6 +55,9 @@ String fieldLabel(String k) => switch (k) {
   'issuer' => 'Issued by',
   'age' => 'Age',
   'role' => 'Role',
+  'status' => 'Status',
+  'boundaries' => 'Boundaries',
+  'interests' => 'Into',
   _ => '',
 };
 
@@ -86,7 +94,11 @@ class CardFaceView extends StatelessWidget {
     this.onLayerTap,
     this.onLayerDrag,
     this.showGrid = false,
+    this.ratio = idCardRatio,
   });
+
+  /// Width ÷ height of the card (landscape, portrait, square or custom).
+  final double ratio;
   final CardFace face;
   final Map<String, String> values;
   final Widget? photo;
@@ -98,7 +110,7 @@ class CardFaceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final h = width / idCardRatio;
+    final h = width / ratio;
     return SizedBox(
       width: width,
       height: h,
@@ -177,10 +189,12 @@ class CardFaceView extends StatelessWidget {
       case 'emoji':
         child = FittedBox(child: Text(l.text.isEmpty ? '⭐' : l.text));
       case 'shape':
-        child = DecoratedBox(
-          decoration: BoxDecoration(
+        child = CustomPaint(
+          painter: IdShapePainter(
+            kind: l.text,
             color: color,
-            borderRadius: prismCorners(context, lh * 0.1),
+            color2: l.color2 == null ? null : Color(l.color2!),
+            stroke: l.stroke,
           ),
         );
       case 'circle':
@@ -336,6 +350,7 @@ class _IdCardViewState extends ConsumerState<IdCardView>
                         values: values,
                         photo: photo,
                         width: widget.width,
+                        ratio: widget.card.aspect,
                       ),
                     )
                   : CardFaceView(
@@ -343,6 +358,7 @@ class _IdCardViewState extends ConsumerState<IdCardView>
                       values: values,
                       photo: photo,
                       width: widget.width,
+                      ratio: widget.card.aspect,
                     ),
             );
           },
@@ -359,6 +375,7 @@ class _PatternPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size s) {
+    if (paintIdExtraPattern(canvas, s, kind, a, b)) return;
     final p = Paint()
       ..color = Color.lerp(a, Colors.black, 0.08)!.withValues(alpha: 0.35)
       ..style = PaintingStyle.stroke
