@@ -86,7 +86,7 @@ List<SeasonalCollection> _parse(String src) {
       DecoPalette? palette;
       GarlandStyle? garland;
       LightsStyle? lights;
-      BorderStyle? border;
+      DecoBorder? border;
       ParticleKind? particle;
       CornerStyle? corner;
       for (final t in tags) {

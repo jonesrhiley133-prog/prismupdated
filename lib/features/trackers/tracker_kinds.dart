@@ -191,6 +191,11 @@ abstract final class TrackerKind {
   // Contact profiles: everything beyond the basic contact record.
   static const contactProfile = 'contact.profile';
 
+  // Seasonal Living: preferences and saved decoration arrangements.
+  static const seasonPrefs = 'season.prefs';
+  static const seasonPreset = 'season.preset';
+  static const seasonWorkspace = 'season.workspace';
+
   // Flag Studio.
   static const flag = 'flag.design';
 

@@ -163,14 +163,6 @@ DateTime? holiDate(int y) => _fromTable(_holi, y);
 
 const _hebrewEpoch = -1373427; // R.D. of 1 Tishri, year 1
 
-int _rdFromDate(DateTime d) =>
-    DateTime.utc(
-      d.year,
-      d.month,
-      d.day,
-    ).difference(DateTime.utc(1, 1, 1)).inDays +
-    1;
-
 DateTime _dateFromRd(int rd) {
   final u = DateTime.utc(1, 1, 1).add(Duration(days: rd - 1));
   return DateTime(u.year, u.month, u.day);

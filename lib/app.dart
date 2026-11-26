@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_overlay.dart';
 import 'package:prism_plurality/shared/fonts/font_prefs.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
 import 'package:prism_plurality/features/account/account_core.dart';
@@ -987,6 +988,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             // The player host sits above the navigator so music and its
             // controls survive every page change.
             result = LaunchOverlay(child: result);
+            // Seasonal Living sits above everything as its own layer; it never
+            // changes the theme and ignores touches (except its own tiny toys).
+            result = SeasonalOverlay(router: router, child: result);
             return A11yScope(
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),

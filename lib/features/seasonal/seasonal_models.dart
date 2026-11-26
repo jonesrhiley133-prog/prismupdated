@@ -34,16 +34,7 @@ enum GarlandStyle {
 
 enum LightsStyle { none, fairy, bulbs, lanterns, stars, candles }
 
-enum BorderStyle {
-  none,
-  hairline,
-  double,
-  dotted,
-  scallop,
-  frost,
-  vine,
-  ornate,
-}
+enum DecoBorder { none, hairline, double, dotted, scallop, frost, vine, ornate }
 
 enum ParticleKind {
   none,
@@ -109,7 +100,7 @@ class SeasonalVariation {
   final DecoPalette palette;
   final GarlandStyle garland;
   final LightsStyle lights;
-  final BorderStyle border;
+  final DecoBorder border;
   final CornerStyle corner;
   final ParticleKind particle;
 

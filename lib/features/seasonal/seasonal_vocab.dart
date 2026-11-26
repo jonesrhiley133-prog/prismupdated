@@ -133,8 +133,8 @@ GarlandStyle? garlandOf(String s) =>
     GarlandStyle.values.where((e) => e.name == s).firstOrNull;
 LightsStyle? lightsOf(String s) =>
     LightsStyle.values.where((e) => e.name == s).firstOrNull;
-BorderStyle? borderOf(String s) =>
-    BorderStyle.values.where((e) => e.name == s).firstOrNull;
+DecoBorder? borderOf(String s) =>
+    DecoBorder.values.where((e) => e.name == s).firstOrNull;
 ParticleKind? particleOf(String s) =>
     ParticleKind.values.where((e) => e.name == s).firstOrNull;
 CornerStyle? cornerOf(String s) =>

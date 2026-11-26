@@ -27,6 +27,10 @@ const ambienceCatalog = <AmbienceInfo>[
   AmbienceInfo('stream', '💧', 'Stream', 'Arroyo'),
   AmbienceInfo('night', '🦗', 'Night crickets', 'Grillos'),
   AmbienceInfo('birds', '🐦', 'Morning birds', 'Pájaros'),
+  AmbienceInfo('forest', '🌲', 'Forest', 'Bosque'),
+  AmbienceInfo('cafe', '☕', 'Café', 'Café'),
+  AmbienceInfo('room', '🛋️', 'Cozy room', 'Habitación acogedora'),
+  AmbienceInfo('winter', '❄️', 'Winter wind', 'Viento de invierno'),
   AmbienceInfo('white', '☁️', 'Soft noise', 'Ruido suave'),
   AmbienceInfo(
     'chimes',
@@ -77,6 +81,10 @@ class AmbienceSynth {
       'stream' => s._stream(),
       'night' => s._night(),
       'birds' => s._birds(),
+      'forest' => s._forest(),
+      'cafe' => s._cafe(),
+      'room' => s._room(),
+      'winter' => s._winter(),
       'chimes' => s._chimes(),
       'bowls' => s._bowls(),
       'musicbox' => s._musicBox(),
@@ -93,6 +101,10 @@ class AmbienceSynth {
     'waves' => 24,
     'birds' => 24,
     'wind' || 'night' || 'chimes' => 20,
+    'forest' => 24,
+    'cafe' => 20,
+    'room' => 16,
+    'winter' => 24,
     'bowls' => 30,
     'musicbox' => 19.2, // 6 bars at 75 bpm
     'harp' => 27.428571428571427, // 8 bars at 70 bpm
@@ -705,6 +717,118 @@ class AmbienceSynth {
       }
     }
     return _reverb(out, mix: 0.25, room: 0.8);
+  }
+
+  /// Soft wind in the trees with birds now and then.
+  Float32List _forest() {
+    final wind = _wind(), birds = _birds();
+    final out = Float32List(n);
+    for (var i = 0; i < n; i++) {
+      out[i] = wind[i] * 0.4 + birds[i] * 0.6;
+    }
+    // A little leaf rustle underneath.
+    _mix(
+      out,
+      _filter(_white(), [_hp(2500), _lp(6500)]),
+      0.025,
+      (i) => 0.4 + 0.6 * _gust(i, 3),
+    );
+    return out;
+  }
+
+  /// A low murmur of conversation, cups and a distant machine.
+  Float32List _cafe() {
+    final out = Float32List(n);
+    // Voices: speech-band noise swelling and fading in loose phrases.
+    for (var v = 0; v < 5; v++) {
+      final f = _range(300, 900);
+      final band = _filter(_pink(), [_bp(f, 1.2), _lp(2600)]);
+      _mix(
+        out,
+        band,
+        0.22,
+        (i) =>
+            0.25 +
+            0.75 *
+                math
+                    .pow(0.5 + 0.5 * _cyc(i, 2 + v * 3, v * 1.9), 2.2)
+                    .toDouble(),
+      );
+    }
+    _mix(out, _filter(_brown(), [_lp(180)]), 0.18);
+    // Cups and spoons: short, bright, quiet pings.
+    for (var t = 0.0; t < n / sr; t += -math.log(1 - _r) / 0.55) {
+      final len = (sr * _range(0.08, 0.22)).round();
+      final f = _range(2600, 5200);
+      final res = _bp(f, 14);
+      final ev = Float32List(len);
+      final tau = len / _range(3, 5);
+      for (var j = 0; j < len; j++) {
+        ev[j] =
+            res.run((_r * 2 - 1) * (j < 40 ? 1 : 0.02)) * math.exp(-j / tau);
+      }
+      _place(out, (t * sr).round(), ev, _range(0.5, 1.4));
+    }
+    return out;
+  }
+
+  /// Room tone with a quiet clock and a far-off fire.
+  Float32List _room() {
+    final out = Float32List(n);
+    _mix(out, _filter(_brown(), [_lp(260)]), 0.5);
+    _mix(out, _filter(_pink(), [_lp(900)]), 0.05);
+    final seconds = n / sr;
+    for (var t = 0.0; t < seconds - 0.01; t += 1.0) {
+      final len = (sr * 0.045).round();
+      final hp = _hp(1800), res = _bp(3200, 5);
+      final tick = Float32List(len);
+      for (var j = 0; j < len; j++) {
+        final x = (_r * 2 - 1) * math.exp(-j / (len / 5));
+        tick[j] = hp.run(x) * 0.6 + res.run(x) * 0.4;
+      }
+      _place(out, (t * sr).round(), tick, (t.round().isEven ? 1.0 : 0.8) * 1.4);
+    }
+    final fire = _fire();
+    for (var i = 0; i < n; i++) {
+      out[i] += fire[i] * 0.22;
+    }
+    return out;
+  }
+
+  /// Cold, low wind with a thin whistle.
+  Float32List _winter() {
+    final out = Float32List(n);
+    final pink = _pink();
+    final low = _bp(160, 0.8);
+    _mix(
+      out,
+      _filter(pink, [
+        low,
+        _lp(700),
+      ], mod: (i) => low.bandpass(110 + 140 * _gust(i, 4), 0.8, sr)),
+      1.0,
+      (i) => 0.3 + 0.8 * math.pow(_gust(i, 4), 1.3).toDouble(),
+    );
+    final mid = _bp(520, 1.2);
+    _mix(
+      out,
+      _filter(pink, [
+        mid,
+        _lp(1500),
+      ], mod: (i) => mid.bandpass(380 + 420 * _gust(i, 5), 1.2, sr)),
+      0.5,
+      (i) => math.pow(_gust(i, 5), 1.6).toDouble(),
+    );
+    final whistle = _bp(1100, 12);
+    _mix(
+      out,
+      _filter(pink, [
+        whistle,
+      ], mod: (i) => whistle.bandpass(820 + 600 * _gust(i, 6), 12, sr)),
+      0.28,
+      (i) => math.pow(_gust(i, 6), 3.2).toDouble(),
+    );
+    return out;
   }
 
   Float32List _soft() {
