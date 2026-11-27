@@ -25,7 +25,10 @@ void main() {
   );
 
   test('search finds by name and category', () {
-    expect(scrapStickerCatalog.where((s) => s.matches('strawberry')), isNotEmpty);
+    expect(
+      scrapStickerCatalog.where((s) => s.matches('strawberry')),
+      isNotEmpty,
+    );
     expect(scrapStickerCatalog.where((s) => s.matches('pixel')), isNotEmpty);
     expect(
       scrapStickerCatalog.where((s) => s.matches('')).length,
