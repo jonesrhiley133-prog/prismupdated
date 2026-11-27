@@ -147,6 +147,8 @@ abstract final class AppRoutePaths {
   static const layouts = '/settings/appearance/layouts';
   static const digitalRooms = '/settings/appearance/rooms';
   static const appIcons = '/settings/appearance/app-icons';
+  static const importedAssets = '/settings/appearance/imported';
+  static const appearancePerformance = '/settings/appearance/performance';
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';

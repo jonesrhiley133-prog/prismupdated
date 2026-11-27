@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prism_plurality/features/appearance/models/look.dart' show BgSpec;
+import 'package:prism_plurality/features/appearance/models/look.dart'
+    show BgSpec;
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:flutter/material.dart';

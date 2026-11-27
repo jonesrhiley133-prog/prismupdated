@@ -196,8 +196,12 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
       );
     }
 
+    // Battery saver keeps decorations but stops anything that moves.
+    final battery = prefs.integrations['batterySaver'] == true;
     final reduced =
-        MediaQuery.of(context).disableAnimations || prefs.reducedMotion;
+        MediaQuery.of(context).disableAnimations ||
+        prefs.reducedMotion ||
+        battery;
     var layers = prefs.layers.forMode(prefs.performance);
     if (reduced) {
       // Reduced motion: still, quiet decorations only.

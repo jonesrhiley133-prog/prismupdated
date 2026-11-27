@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/core/app_icon/app_icon.dart';
+import 'package:prism_plurality/features/appearance/views/appearance_hub.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_maker.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
@@ -67,113 +68,7 @@ class AppearanceSettingsScreen extends ConsumerWidget {
           return ListView(
             padding: EdgeInsets.only(bottom: NavBarInset.of(context)),
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                child: PrismButton(
-                  label: context.l10n.apOpenStudio,
-                  icon: Icons.palette_outlined,
-                  tone: PrismButtonTone.filled,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.appearanceStudio),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: context.l10n.socBannersTitle,
-                  icon: Icons.panorama_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.headmateBanners),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Pantalla de inicio y saludo'
-                      : 'Launch screen & greeting',
-                  icon: Icons.auto_awesome_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.settingsLaunch),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Colecciones vivas'
-                      : 'Living Collections',
-                  icon: Icons.auto_awesome_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.living),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Efectos ambientales'
-                      : 'Environmental effects',
-                  icon: Icons.wb_twilight_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.environment),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Diseños'
-                      : 'Layouts',
-                  icon: Icons.dashboard_customize_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.layouts),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Salas digitales'
-                      : 'Digital Rooms',
-                  icon: Icons.meeting_room_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.digitalRooms),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Vida estacional y decoración'
-                      : 'Seasonal Living & decoration',
-                  icon: Icons.celebration_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.seasonal),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Fuentes'
-                      : 'Fonts',
-                  icon: Icons.font_download_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.settingsFonts),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: PrismButton(
-                  label: Localizations.localeOf(context).languageCode == 'es'
-                      ? 'Personalidad y voz'
-                      : 'Personality & voice',
-                  icon: Icons.record_voice_over_outlined,
-                  expanded: true,
-                  onPressed: () => context.push(AppRoutePaths.settingsVoice),
-                ),
-              ),
+              const AppearanceHub(),
               PrismSection(
                 title: context.l10n.appearanceBrightness,
                 child: PrismSegmentedControl<ThemeBrightness>(
