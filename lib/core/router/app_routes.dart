@@ -143,6 +143,7 @@ abstract final class AppRoutePaths {
   static const living = '/settings/appearance/living';
   static String livingGenre(String id) => '/settings/appearance/living/g/$id';
   static const livingAssets = '/settings/appearance/living/assets';
+  static const environment = '/settings/appearance/environment';
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';

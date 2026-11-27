@@ -29,7 +29,24 @@ class DecorScene {
     this.images = const {},
     this.lightsOn = true,
     this.burst = 0,
+    this.phase,
+    this.music = false,
+    this.toggled = const {},
+    this.reduced = false,
   });
+
+  /// The current time phase name ('morning', 'evening'…), when anything
+  /// follows the time of day.
+  final String? phase;
+
+  /// Prism's music player is playing.
+  final bool music;
+
+  /// Items the person tapped into their other state (a lamp off, a book open).
+  final Set<String> toggled;
+
+  /// Reduced motion is on.
+  final bool reduced;
 
   final List<DecorItem> items;
   final DecoLayerSettings layers;
@@ -262,16 +279,20 @@ class DecorPainter extends CustomPainter {
     final items = [
       for (final i in scene.items)
         if (i.enabled &&
-            layersToDraw.contains(i.layer) &&
-            scene.layers.on(i.layer) &&
+            layersToDraw.contains(layerOf(i)) &&
+            scene.layers.on(layerOf(i)) &&
             i.showsOn(scene.route) &&
             !i.tweakFor(scene.device).hidden &&
-            i.kind != DecoKind.interactive)
+            i.kind != DecoKind.interactive &&
+            (i.phases.isEmpty ||
+                scene.phase == null ||
+                i.phases.contains(scene.phase)) &&
+            !(scene.reduced && i.moves && i.still == 'hide'))
           i,
     ]..sort((a, b) => a.z.compareTo(b.z));
     var animatedDrawn = 0;
     for (final item in items) {
-      if (item.layer == DecoLayer.animated) {
+      if (layerOf(item) == DecoLayer.animated) {
         if (animatedDrawn >= scene.layers.maxAnimated) continue;
         animatedDrawn++;
       }
@@ -280,6 +301,16 @@ class DecorPainter extends CustomPainter {
       _drawItem(canvas, size, item, frame);
     }
   }
+
+  /// The layer an item is drawn on. Objects given a behaviour move on the
+  /// animated layer; when that layer is off (minimal mode, reduced motion)
+  /// they stay on screen, still.
+  DecoLayer layerOf(DecorItem i) =>
+      i.moves &&
+          i.kind.layer == DecoLayer.staticDeco &&
+          scene.layers.on(DecoLayer.animated)
+      ? DecoLayer.animated
+      : i.kind.layer;
 
   /// The rectangle an anchor refers to on this screen, or null when it
   /// follows a part of the UI that isn't showing.
@@ -339,19 +370,44 @@ class DecorPainter extends CustomPainter {
     _assetTint2 = Color(second);
 
     final width = frame.width * item.w * tw.scale;
-    final cx = frame.left + frame.width * (item.x + tw.dx);
-    final cy = frame.top + frame.height * (item.y + tw.dy);
+    final cx0 = frame.left + frame.width * (item.x + tw.dx);
+    final cy0 = frame.top + frame.height * (item.y + tw.dy);
+    // Living behaviour: how the object moves this frame.
+    final m = item.moves && t != 0
+        ? _motion(item, t * speed, phase, size)
+        : _Motion.rest;
+    final cx = cx0 + m.dx, cy = cy0 + m.dy;
+    final mode = item.behavior;
+    final off = scene.toggled.contains(item.id);
+    var alpha = item.opacity * m.alpha;
+    if (mode == 'toggle' && off) alpha *= 0.45;
 
     canvas.save();
-    if (item.opacity < 1) {
+    if (alpha < 1) {
       canvas.saveLayer(
         Rect.fromLTWH(0, 0, size.width, size.height),
-        Paint()..color = Colors.white.withValues(alpha: item.opacity),
+        Paint()..color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0)),
       );
     }
     // Flip and rotate around the item's own origin.
     canvas.translate(cx, cy);
     if (item.rot != 0) canvas.rotate(item.rot * math.pi / 180);
+    if (m.rot != 0) canvas.rotate(m.rot);
+    var sc = m.scale;
+    if (mode == 'bloom') sc *= 0.6 + 0.4 * _daylight(scene.phase);
+    if (mode == 'open' && off) sc *= 1.2;
+    if (sc != 1) canvas.scale(sc);
+    if (m.flip) canvas.scale(-1, 1);
+    // A lamp that's on glows; a toy that plays spins with the music.
+    if (mode == 'toggle' && !off) {
+      canvas.drawCircle(
+        Offset.zero,
+        width * 0.75,
+        Paint()
+          ..color = Color(second).withValues(alpha: 0.28)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, width * 0.35),
+      );
+    }
     if (item.flipX || item.flipY)
       canvas.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1);
 
@@ -425,9 +481,229 @@ class DecorPainter extends CustomPainter {
         _particles(canvas, frame, item, v, t * speed, scene.burst);
       case DecoKind.interactive:
         break;
+      case DecoKind.environment:
+        canvas.translate(-cx, -cy);
+        _environment(canvas, size, item.glyph ?? '');
     }
-    if (item.opacity < 1) canvas.restore();
+    // Extras some behaviours draw on top.
+    if (mode == 'tick') _clockHands(canvas, width, Color(main));
+    if (mode == 'steam' && t != 0) _steam(canvas, width, t * speed, phase);
+    if (alpha < 1) canvas.restore();
     canvas.restore();
+  }
+
+  static double _daylight(String? phase) => switch (phase) {
+    'earlyMorning' => 0.45,
+    'morning' => 0.85,
+    'afternoon' => 1,
+    'sunset' => 0.65,
+    'evening' => 0.3,
+    'midnight' => 0.15,
+    _ => 1,
+  };
+
+  /// Where a living object is this frame, from its behaviour, range,
+  /// direction and frequency. Every motion stays inside its range so
+  /// objects never wander over the app's controls.
+  _Motion _motion(DecorItem i, double tt, double ph, Size size) {
+    final r = i.range * size.shortestSide;
+    final dir = i.direction * math.pi / 180;
+    final f = 0.35 + i.frequency;
+    final w = tt * f + ph;
+    double tri(double x) => (2 * ((x / _tau) % 1.0) - 1).abs() * 2 - 1;
+    switch (i.behavior) {
+      case 'sway' || 'wave':
+        return _Motion(rot: math.sin(w * 1.4) * 0.12 * (0.4 + i.range * 4));
+      case 'twinkle' || 'shimmer':
+        final a = 0.55 + 0.45 * (0.5 + 0.5 * math.sin(w * 2.3));
+        return _Motion(
+          alpha: a,
+          scale: i.behavior == 'shimmer' ? 0.95 + 0.08 * a : 1,
+        );
+      case 'flicker':
+        final n = math.sin(w * 7) * math.sin(w * 3.1 + 1);
+        return _Motion(alpha: 0.75 + 0.25 * n, scale: 1 + 0.03 * n);
+      case 'pulse':
+        return _Motion(scale: 1 + 0.08 * math.sin(w * 2));
+      case 'bounce':
+        return _Motion(dy: -(math.sin(w * 2.2)).abs() * r * 0.5);
+      case 'float':
+        return _Motion(
+          dy: math.sin(w) * r * 0.5,
+          dx: math.cos(w * 0.7) * r * 0.15,
+        );
+      case 'walk' || 'move':
+        // Back and forth along its direction, turning round at each end.
+        final x = tri(w * 0.25) * r;
+        final goingBack = math.cos(w * 0.25) < 0;
+        return _Motion(
+          dx: math.cos(dir) * x,
+          dy: math.sin(dir) * x,
+          flip: i.behavior == 'walk' && goingBack,
+          rot: i.behavior == 'walk' ? math.sin(w * 6) * 0.05 : 0,
+        );
+      case 'swim':
+        final x = tri(w * 0.2) * r;
+        return _Motion(
+          dx: math.cos(dir) * x,
+          dy: math.sin(dir) * x + math.sin(w * 1.7) * r * 0.12,
+          flip: math.cos(w * 0.2) < 0,
+        );
+      case 'flutter':
+        return _Motion(
+          dx: math.sin(w * 0.9) * r * 0.6,
+          dy: math.sin(w * 1.9) * r * 0.35,
+          scale: 0.92 + 0.08 * math.sin(w * 9).abs(),
+        );
+      case 'orbit':
+        return _Motion(dx: math.cos(w) * r, dy: math.sin(w) * r * 0.45);
+      case 'drift':
+        final x = ((w * 0.05) % 2.0) - 1;
+        return _Motion(
+          dx: math.cos(dir) * x * r,
+          dy: math.sin(dir) * x * r,
+          alpha: 1 - x.abs() * 0.5,
+        );
+      case 'fall':
+        final y = (w * 0.08) % 1.0;
+        return _Motion(
+          dy: (y - 0.5) * r * 2,
+          rot: math.sin(w) * 0.3,
+          alpha: 1 - (y - 0.5).abs(),
+        );
+      case 'spin':
+        return _Motion(rot: w * 0.8);
+      case 'play':
+        // A record player only turns while music is playing.
+        return scene.music ? _Motion(rot: w * 2.2) : _Motion.rest;
+      case 'ripple' || 'blink':
+        final on = math.sin(w * 1.3) > -0.2;
+        return _Motion(
+          alpha: i.behavior == 'blink' ? (on ? 1 : 0.35) : 1,
+          scale: i.behavior == 'ripple' ? 1 + 0.05 * math.sin(w * 3) : 1,
+        );
+    }
+    if (i.idle == 'breathe') return _Motion(scale: 1 + 0.03 * math.sin(w));
+    if (i.idle == 'peek') {
+      return _Motion(dy: math.max(0, math.sin(w * 0.3)) * r * -0.2);
+    }
+    return _Motion.rest;
+  }
+
+  /// Real-time clock hands over a clock decoration.
+  void _clockHands(Canvas c, double w, Color color) {
+    final now = DateTime.now();
+    final p = Paint()
+      ..color = color
+      ..strokeCap = StrokeCap.round;
+    final hA = ((now.hour % 12) + now.minute / 60) / 12 * _tau - math.pi / 2;
+    final mA = (now.minute + now.second / 60) / 60 * _tau - math.pi / 2;
+    c.drawLine(
+      Offset.zero,
+      Offset(math.cos(hA), math.sin(hA)) * w * 0.2,
+      p..strokeWidth = w * 0.06,
+    );
+    c.drawLine(
+      Offset.zero,
+      Offset(math.cos(mA), math.sin(mA)) * w * 0.3,
+      p..strokeWidth = w * 0.04,
+    );
+    c.drawCircle(Offset.zero, w * 0.04, p);
+  }
+
+  /// Wisps of steam rising from a cup.
+  void _steam(Canvas c, double w, double tt, double ph) {
+    for (var k = 0; k < 3; k++) {
+      final y = ((tt * 0.4 + k / 3 + ph) % 1.0);
+      final path = Path()..moveTo((k - 1) * w * 0.15, -w * 0.4);
+      for (var s = 1; s <= 6; s++) {
+        path.lineTo(
+          (k - 1) * w * 0.15 + math.sin(s + tt * 2 + k) * w * 0.06,
+          -w * 0.4 - s * w * 0.06 - y * w * 0.2,
+        );
+      }
+      c.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = w * 0.03
+          ..color = Colors.white.withValues(alpha: 0.5 * (1 - y)),
+      );
+    }
+  }
+
+  /// Light for the time of day, fog, mist, sunshine and storm washes.
+  void _environment(Canvas c, Size size, String glyph) {
+    final rect = Offset.zero & size;
+    final g = glyph.startsWith('env:') ? glyph.substring(4) : glyph;
+    if (g.startsWith('phase.')) {
+      final (top, bottom) = switch (g.substring(6)) {
+        'earlyMorning' => (const Color(0x22FFB38A), const Color(0x00FFE3B0)),
+        'morning' => (const Color(0x14FFF2C4), const Color(0x00FFFFFF)),
+        'afternoon' => (const Color(0x0AFFFFFF), const Color(0x00FFFFFF)),
+        'sunset' => (const Color(0x26FF7A45), const Color(0x149B4F96)),
+        'evening' => (const Color(0x22263A80), const Color(0x10131A40)),
+        _ => (const Color(0x2A0B1030), const Color(0x18070A1C)),
+      };
+      c.drawRect(
+        rect,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [top, Colors.transparent, bottom],
+            stops: const [0, 0.45, 1],
+          ).createShader(rect),
+      );
+      return;
+    }
+    switch (g) {
+      case 'fog' || 'mist':
+        final a = g == 'fog' ? 0.22 : 0.12;
+        for (var k = 0; k < 4; k++) {
+          final y = size.height * (0.2 + k * 0.22);
+          final dx = math.sin(t * 0.05 + k) * size.width * 0.1;
+          c.drawOval(
+            Rect.fromCenter(
+              center: Offset(size.width / 2 + dx, y),
+              width: size.width * 1.6,
+              height: size.height * 0.18,
+            ),
+            Paint()
+              ..color = Colors.white.withValues(alpha: a)
+              ..maskFilter = MaskFilter.blur(
+                BlurStyle.normal,
+                size.height * 0.05,
+              ),
+          );
+        }
+      case 'sun':
+        final o = Offset(size.width * 0.92, size.height * 0.06);
+        c.drawCircle(
+          o,
+          size.shortestSide * 0.45,
+          Paint()
+            ..shader =
+                RadialGradient(
+                  colors: [const Color(0x33FFE08A), const Color(0x00FFE08A)],
+                ).createShader(
+                  Rect.fromCircle(center: o, radius: size.shortestSide * 0.45),
+                ),
+        );
+        final rays = Paint()
+          ..color = const Color(0x14FFE08A)
+          ..strokeWidth = size.shortestSide * 0.03;
+        for (var k = 0; k < 6; k++) {
+          final a = math.pi * (0.55 + k * 0.08) + math.sin(t * 0.2) * 0.02;
+          c.drawLine(
+            o,
+            o + Offset(math.cos(a), math.sin(a)) * size.longestSide * 0.6,
+            rays,
+          );
+        }
+      case 'storm':
+        c.drawRect(rect, Paint()..color = const Color(0x1A1C2433));
+    }
   }
 
   // ── Garlands ────────────────────────────────────────────────────────
@@ -2222,6 +2498,22 @@ Rect decorItemBounds(DecorItem item, Size size, DecorScene scene) {
       return Rect.fromLTWH(left, cy, w, w);
     case DecoKind.border:
     case DecoKind.particles:
+    case DecoKind.environment:
       return frame;
   }
+}
+
+/// One frame of a living object's movement.
+class _Motion {
+  const _Motion({
+    this.dx = 0,
+    this.dy = 0,
+    this.rot = 0,
+    this.scale = 1,
+    this.alpha = 1,
+    this.flip = false,
+  });
+  final double dx, dy, rot, scale, alpha;
+  final bool flip;
+  static const rest = _Motion();
 }

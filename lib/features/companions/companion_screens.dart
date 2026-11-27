@@ -5,6 +5,9 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/domain/models/member.dart';
+import 'package:prism_plurality/features/seasonal/living_environment.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_providers.dart'
+    show currentWeatherProvider;
 import 'package:prism_plurality/features/companions/adopt_screen.dart';
 import 'package:prism_plurality/features/companions/appearance_editor.dart';
 import 'package:prism_plurality/features/companions/companion_art.dart';
@@ -731,8 +734,20 @@ class _CompanionProfileScreenState
         .firstOrNull;
     final motion = ref.watch(companionMotionProvider);
     final persona = CompanionPersonality.of(c);
+    // A clear habitat follows the living environment's weather (rain on the
+    // app means rain for them too); a habitat with its own weather keeps it.
+    final outside = switch (ref.watch(currentWeatherProvider)) {
+      WeatherKind.lightRain ||
+      WeatherKind.heavyRain ||
+      WeatherKind.mist => 'rain',
+      WeatherKind.snow => 'snow',
+      _ => null,
+    };
+    final habitatWeather = habitat?.weather ?? 'clear';
     final env = CompanionEnvironment(
-      weather: motion.environment ? (habitat?.weather ?? 'clear') : 'clear',
+      weather: motion.environment
+          ? (habitatWeather == 'clear' ? (outside ?? 'clear') : habitatWeather)
+          : 'clear',
       timeOfDay: motion.environment
           ? CompanionEnvironment.resolveTime(
               habitat?.timeOfDay ?? 'auto',

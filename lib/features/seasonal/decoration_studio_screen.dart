@@ -11,6 +11,7 @@ import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/living_environment.dart';
 import 'package:prism_plurality/features/seasonal/living_screens.dart';
 import 'package:prism_plurality/features/seasonal/decor_painter.dart';
 import 'package:prism_plurality/features/seasonal/decor_preview.dart';
@@ -1151,8 +1152,193 @@ class _DecorationStudioScreenState
         value: i.enabled,
         onChanged: (v) => _edit(() => all((x) => x.enabled = v)),
       ),
+      const SizedBox(height: 6),
+      Text(
+        tr(context, 'Living behaviour', 'Comportamiento vivo'),
+        style: theme.textTheme.titleSmall,
+      ),
+      PrismSelect<String>(
+        labelText: tr(context, 'How it moves', 'Cómo se mueve'),
+        value: i.behavior ?? 'none',
+        items: [
+          for (final b in AssetBehavior.values)
+            PrismSelectItem(value: b.name, label: _behaviorLabel(context, b)),
+        ],
+        onChanged: (v) => _edit(
+          () => all((x) => x.behavior = v == null || v == 'none' ? null : v),
+        ),
+      ),
+      if (i.behavior != null) ...[
+        slider(
+          tr(context, 'Movement range', 'Alcance del movimiento'),
+          i.range,
+          0,
+          0.6,
+          (v) => '${(v * 100).round()}%',
+          (v) => all((x) => x.range = v),
+        ),
+        slider(
+          tr(context, 'Direction', 'Dirección'),
+          i.direction,
+          0,
+          359,
+          (v) => '${v.round()}°',
+          (v) => all((x) => x.direction = v.roundToDouble()),
+        ),
+        PrismSwitchRow(
+          title: tr(context, 'Animate', 'Animar'),
+          subtitle: tr(
+            context,
+            'Off keeps it on screen, still.',
+            'Apagado lo deja quieto en pantalla.',
+          ),
+          value: i.animate,
+          onChanged: (v) => _edit(() => all((x) => x.animate = v)),
+        ),
+      ],
+      PrismSelect<String>(
+        labelText: tr(context, 'When idle', 'En reposo'),
+        value: i.idle,
+        items: [
+          PrismSelectItem(value: 'none', label: tr(context, 'Nothing', 'Nada')),
+          PrismSelectItem(
+            value: 'breathe',
+            label: tr(context, 'Breathe gently', 'Respirar suave'),
+          ),
+          PrismSelectItem(
+            value: 'peek',
+            label: tr(context, 'Peek now and then', 'Asomarse a ratos'),
+          ),
+        ],
+        onChanged: (v) => _edit(() => all((x) => x.idle = v ?? 'none')),
+      ),
+      const SizedBox(height: 8),
+      PrismSelect<String>(
+        labelText: tr(
+          context,
+          'With reduced motion',
+          'Con movimiento reducido',
+        ),
+        value: i.still,
+        items: [
+          PrismSelectItem(
+            value: 'still',
+            label: tr(context, 'Stay, without moving', 'Quedarse, sin moverse'),
+          ),
+          PrismSelectItem(value: 'hide', label: tr(context, 'Hide', 'Ocultar')),
+        ],
+        onChanged: (v) => _edit(() => all((x) => x.still = v ?? 'still')),
+      ),
+      PrismSwitchRow(
+        title: tr(context, 'Tap to interact', 'Tocar para interactuar'),
+        subtitle: tr(
+          context,
+          'A lamp switches, a book opens. Only turn on for things away from buttons.',
+          'Una lámpara se enciende, un libro se abre. Úsalo lejos de los botones.',
+        ),
+        value: i.tap,
+        onChanged: (v) => _edit(() => all((x) => x.tap = v)),
+      ),
+      if (i.tap) ...[
+        slider(
+          tr(context, 'Interaction sensitivity', 'Sensibilidad'),
+          i.sensitivity,
+          0,
+          1,
+          (v) => '${(v * 100).round()}%',
+          (v) => all((x) => x.sensitivity = v),
+        ),
+        PrismSwitchRow(
+          title: tr(context, 'Sound when tapped', 'Sonido al tocar'),
+          value: i.sound,
+          onChanged: (v) => _edit(() => all((x) => x.sound = v)),
+        ),
+      ],
+      PrismSwitchRow(
+        title: tr(
+          context,
+          'Companions react to it',
+          'Los compañeros reaccionan',
+        ),
+        value: i.companion,
+        onChanged: (v) => _edit(() => all((x) => x.companion = v)),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        tr(context, 'Show during', 'Mostrar durante'),
+        style: theme.textTheme.titleSmall,
+      ),
+      Text(
+        tr(context, 'None selected = all day.', 'Ninguno = todo el día.'),
+        style: theme.textTheme.bodySmall,
+      ),
+      const SizedBox(height: 4),
+      Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: [
+          for (final ph in TimePhase.values)
+            PrismChip(
+              label: Localizations.localeOf(context).languageCode == 'es'
+                  ? ph.es
+                  : ph.en,
+              selected: i.phases.contains(ph.name),
+              onTap: () => _edit(
+                () => all(
+                  (x) => x.phases = x.phases.contains(ph.name)
+                      ? [
+                          for (final p in x.phases)
+                            if (p != ph.name) p,
+                        ]
+                      : [...x.phases, ph.name],
+                ),
+              ),
+            ),
+        ],
+      ),
     ];
   }
+
+  static String _behaviorLabel(BuildContext context, AssetBehavior b) =>
+      switch (b) {
+        AssetBehavior.none => tr(context, 'Stays still', 'Quieto'),
+        AssetBehavior.sway => tr(context, 'Sways', 'Se mece'),
+        AssetBehavior.twinkle => tr(context, 'Twinkles', 'Titila'),
+        AssetBehavior.bloom => tr(
+          context,
+          'Opens through the day',
+          'Se abre con el día',
+        ),
+        AssetBehavior.toggle => tr(context, 'Switches on/off', 'Se enciende'),
+        AssetBehavior.flicker => tr(context, 'Flickers', 'Parpadea'),
+        AssetBehavior.open => tr(
+          context,
+          'Opens when tapped',
+          'Se abre al tocar',
+        ),
+        AssetBehavior.play => tr(
+          context,
+          'Spins while music plays',
+          'Gira con la música',
+        ),
+        AssetBehavior.bounce => tr(context, 'Bounces', 'Rebota'),
+        AssetBehavior.walk => tr(context, 'Walks back and forth', 'Camina'),
+        AssetBehavior.flutter => tr(context, 'Flutters', 'Revolotea'),
+        AssetBehavior.swim => tr(context, 'Swims', 'Nada'),
+        AssetBehavior.orbit => tr(context, 'Orbits', 'Orbita'),
+        AssetBehavior.drift => tr(context, 'Drifts', 'Flota a la deriva'),
+        AssetBehavior.fall => tr(context, 'Falls gently', 'Cae suave'),
+        AssetBehavior.ripple => tr(context, 'Ripples', 'Ondula'),
+        AssetBehavior.shimmer => tr(context, 'Shimmers', 'Brilla'),
+        AssetBehavior.tick => tr(context, 'Shows the real time', 'Da la hora'),
+        AssetBehavior.blink => tr(context, 'Blinks', 'Parpadea a ratos'),
+        AssetBehavior.float => tr(context, 'Floats', 'Flota'),
+        AssetBehavior.spin => tr(context, 'Spins', 'Gira'),
+        AssetBehavior.move => tr(context, 'Moves along a track', 'Recorre'),
+        AssetBehavior.steam => tr(context, 'Steams', 'Humea'),
+        AssetBehavior.pulse => tr(context, 'Pulses', 'Late'),
+        AssetBehavior.wave => tr(context, 'Waves', 'Saluda'),
+      };
 
   List<Widget> _layersPanel(BuildContext context, bool l) {
     final theme = Theme.of(context);

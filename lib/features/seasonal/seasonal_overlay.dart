@@ -41,6 +41,9 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
   double _burst = 0;
   Timer? _burstTimer;
   final Map<String, ui.Image> _images = {};
+
+  /// Decorations tapped into their other state (lamp off, book open).
+  final Set<String> _toggled = {};
   final Set<String> _loading = {};
 
   @override
@@ -110,6 +113,27 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
     }
   }
 
+  Widget _tapTarget(DecorItem i, DecorScene scene, Size size) {
+    final r = decorItemBounds(i, size, scene);
+    if (r.isEmpty || r.width > size.width * 0.5) return const SizedBox();
+    return Positioned.fromRect(
+      rect: r,
+      child: Semantics(
+        button: true,
+        label: i.glyph ?? i.kind.label,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            setState(() {
+              if (!_toggled.remove(i.id)) _toggled.add(i.id);
+            });
+            if (i.sound) _audio.chime(i.sensitivity);
+          },
+        ),
+      ),
+    );
+  }
+
   void _shake() {
     _burstTimer?.cancel();
     setState(() => _burst = 1);
@@ -165,6 +189,8 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
       );
     }
     _loadImages(items);
+    final phase = ref.watch(currentPhaseProvider);
+    final music = ref.watch(decorMusicProvider);
 
     final needsTicker =
         _resumed &&
@@ -173,7 +199,9 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
         items.any(
           (i) =>
               i.enabled &&
-              (i.layer == DecoLayer.animated || i.layer == DecoLayer.ambient),
+              (i.layer == DecoLayer.animated ||
+                  i.layer == DecoLayer.ambient ||
+                  i.moves),
         );
     if (needsTicker && !_ticker.isActive) {
       _ticker.start();
@@ -205,6 +233,10 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                     images: _images,
                     lightsOn: _lightsOn,
                     burst: _burst,
+                    phase: phase?.name,
+                    music: music,
+                    toggled: _toggled,
+                    reduced: reduced,
                   );
                   final size = Size(box.maxWidth, box.maxHeight);
                   Widget layer(Set<DecoLayer> which, {required bool moving}) =>
@@ -258,6 +290,17 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                                   setState(() => _lightsOn = !_lightsOn),
                               onShake: _shake,
                             ),
+                      // Decorations the person made tappable: a lamp
+                      // switches, a book opens, a chime rings. Only these
+                      // ever take a touch, and only where they're drawn.
+                      if (mq.viewInsets.bottom == 0)
+                        for (final i in items)
+                          if (i.enabled &&
+                              i.tap &&
+                              i.kind != DecoKind.interactive &&
+                              i.showsOn(_route) &&
+                              !i.tweakFor(device).hidden)
+                            _tapTarget(i, scene, size),
                     ],
                   );
                 },

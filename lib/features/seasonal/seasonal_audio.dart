@@ -79,7 +79,22 @@ class SeasonalAudio {
     await _player.stop();
   }
 
+  /// A short soft chime for a tapped decoration (wind chime, bell…),
+  /// louder with [strength] 0–1. Never interrupts music.
+  Future<void> chime(double strength) async {
+    if (_disposed) return;
+    try {
+      await _tap.loop('chimes', volume: 0.15 + strength * 0.35);
+      Timer(const Duration(milliseconds: 1600), () {
+        if (!_disposed) _tap.stop();
+      });
+    } catch (_) {}
+  }
+
+  final TonePlayer _tap = TonePlayer();
+
   void dispose() {
+    _tap.dispose();
     _disposed = true;
     _fade?.cancel();
     _player.dispose();

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:prism_plurality/features/seasonal/living_environment.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_calendar.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
@@ -74,7 +75,11 @@ enum DecoKind {
   furniture('Furniture', DecoLayer.staticDeco),
   sticker('Imported image', DecoLayer.staticDeco),
   particles('Falling things', DecoLayer.ambient),
-  interactive('Interactive object', DecoLayer.interactive);
+  interactive('Interactive object', DecoLayer.interactive),
+
+  /// Time-of-day light, fog, sunshine and other weather washes. Purely
+  /// decorative and drawn faintly behind everything else.
+  environment('Environment', DecoLayer.staticDeco);
 
   const DecoKind(this.label, this.layer);
   final String label;
@@ -188,7 +193,59 @@ class DecorItem {
     this.enabled = true,
     this.pages = const [],
     Map<String, DeviceTweak>? tweaks,
+    this.behavior,
+    this.range = 0.15,
+    this.direction = 0,
+    this.sensitivity = 0.5,
+    this.sound = false,
+    this.tap = false,
+    this.phases = const [],
+    this.idle = 'none',
+    this.companion = false,
+    this.still = 'still',
+    this.animate = true,
   }) : tweaks = tweaks ?? {};
+
+  // ── Living behaviour ────────────────────────────────────────────────
+
+  /// How it moves: an [AssetBehavior] name ('sway', 'walk', 'orbit'…), or
+  /// null / 'none' to stay put.
+  String? behavior;
+
+  /// 0–1: how far it may wander, as a share of the screen.
+  double range;
+
+  /// Degrees: which way it walks, drifts or swims (0 = right).
+  double direction;
+
+  /// 0–1: how strongly it reacts when tapped.
+  double sensitivity;
+
+  /// Plays a soft sound when tapped.
+  bool sound;
+
+  /// Tappable (a lamp switches, a book opens). Off by default so nothing
+  /// ever sits on top of buttons unless the person asks.
+  bool tap;
+
+  /// Time phases it shows in ('morning', 'evening'…); empty = always.
+  List<String> phases;
+
+  /// What it does while nothing else is happening: 'none' | 'breathe' | 'peek'.
+  String idle;
+
+  /// Companions notice and react to it.
+  bool companion;
+
+  /// With reduced motion: 'still' (frozen in place) or 'hide'.
+  String still;
+
+  /// False keeps the object on screen but stops it moving.
+  bool animate;
+
+  /// Whether this item moves at all.
+  bool get moves =>
+      animate && behavior != null && behavior != 'none' && behavior!.isNotEmpty;
 
   final String id;
   DecoKind kind;
@@ -272,6 +329,17 @@ class DecorItem {
         for (final e in tweaks.entries)
           if (!e.value.isDefault) e.key: e.value.toJson(),
       },
+    'bh': ?behavior,
+    if (range != 0.15) 'rg': _r(range),
+    if (direction != 0) 'dr': _r(direction),
+    if (sensitivity != 0.5) 'se': _r(sensitivity),
+    if (sound) 'snd': true,
+    if (tap) 'tap': true,
+    if (phases.isNotEmpty) 'phs': phases,
+    if (idle != 'none') 'idl': idle,
+    if (companion) 'cmp': true,
+    if (still != 'still') 'rms': still,
+    if (!animate) 'na': true,
   };
 
   static DecorItem? fromJson(Object? o) {
@@ -316,6 +384,23 @@ class DecorItem {
             if (p is String) p,
       ],
       tweaks: tw,
+      behavior: o['bh'] is String ? o['bh'] as String : null,
+      range: d('rg', 0.15).clamp(0.0, 1.0),
+      direction: d('dr', 0) % 360,
+      sensitivity: d('se', 0.5).clamp(0.0, 1.0),
+      sound: o['snd'] == true,
+      tap: o['tap'] == true,
+      phases: [
+        if (o['phs'] is List)
+          for (final p in o['phs'] as List)
+            if (p is String) p,
+      ],
+      idle: const {'breathe', 'peek'}.contains(o['idl'])
+          ? o['idl'] as String
+          : 'none',
+      companion: o['cmp'] == true,
+      still: o['rms'] == 'hide' ? 'hide' : 'still',
+      animate: o['na'] != true,
     );
   }
 }
@@ -580,8 +665,12 @@ class SeasonalPrefs {
     this.audioVolume = 0.35,
     this.integrations = const {},
     this.livingVariation,
+    this.env = const EnvSettings(),
     this.version = 1,
   });
+
+  /// Time of day, weather and music reactions.
+  final EnvSettings env;
 
   /// Off until the person turns it on.
   final DecoPerformance performance;
@@ -660,6 +749,7 @@ class SeasonalPrefs {
     double? audioVolume,
     Map<String, bool>? integrations,
     Object? livingVariation = _k,
+    EnvSettings? env,
   }) => SeasonalPrefs(
     performance: performance ?? this.performance,
     layers: layers ?? this.layers,
@@ -695,6 +785,7 @@ class SeasonalPrefs {
     livingVariation: identical(livingVariation, _k)
         ? this.livingVariation
         : livingVariation as String?,
+    env: env ?? this.env,
     version: version,
   );
 
@@ -727,6 +818,7 @@ class SeasonalPrefs {
     'av': audioVolume,
     if (integrations.isNotEmpty) 'in': integrations,
     'lv': ?livingVariation,
+    if (env.toJson().isNotEmpty) 'env': env.toJson(),
   };
 
   static Set<String> _strSet(Object? o) => {
@@ -787,6 +879,7 @@ class SeasonalPrefs {
               e.key as String: e.value as bool,
       },
       livingVariation: o['lv'] is String ? o['lv'] as String : null,
+      env: EnvSettings.fromJson(o['env']),
     );
   }
 }

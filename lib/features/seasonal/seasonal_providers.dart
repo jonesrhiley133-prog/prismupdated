@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/boards/providers/board_posts_providers.dart'
     show currentFronterMemberIdsProvider;
+import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/living_environment.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
@@ -320,6 +322,7 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
       ? null
       : variationById(prefs.livingVariation!);
   if (living != null) items.addAll(arrangementForVariation(living));
+  items.addAll(ref.watch(environmentItemsProvider));
   final active = ref.watch(activeSeasonProvider);
   if (active != null && prefs.integrationOn('overlay')) {
     final v = active.variation;
@@ -330,6 +333,56 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
     if (v != null) items.addAll(arrangementForVariation(v));
   }
   return items;
+});
+
+// ── Environment ────────────────────────────────────────────────────────
+
+/// Whether anything follows the time of day, so the phase clock only runs
+/// when it's needed.
+final _needsPhaseProvider = Provider<bool>((ref) {
+  final prefs = ref.watch(seasonalPrefsProvider);
+  if (prefs.performance == DecoPerformance.off) return false;
+  final env = prefs.env;
+  if (env.phases || env.fireflies || env.birds) return true;
+  // A look or preset item limited to certain phases also needs the clock.
+  final presets = ref.watch(decorPresetsProvider);
+  return presets.any((p) => p.items.any((i) => i.phases.isNotEmpty));
+});
+
+/// The current time phase name, or null when nothing follows the clock.
+final currentPhaseProvider = Provider<TimePhase?>((ref) {
+  if (!ref.watch(_needsPhaseProvider)) return null;
+  return ref.watch(livingPhaseProvider).value ?? timePhaseOf(DateTime.now());
+});
+
+/// Music is playing in Prism's own player and decorations may react.
+final decorMusicProvider = Provider<bool>((ref) {
+  final env = ref.watch(seasonalPrefsProvider.select((p) => p.env));
+  if (!env.music) return false;
+  return ref.watch(musicControllerProvider.select((s) => s.playing));
+});
+
+/// The weather showing now, if any.
+final currentWeatherProvider = Provider<WeatherKind?>((ref) {
+  final prefs = ref.watch(seasonalPrefsProvider);
+  if (prefs.performance == DecoPerformance.off) return null;
+  final env = prefs.env;
+  WeatherKind? live;
+  if (env.mode == WeatherMode.live && env.hasPlace) {
+    live = ref.watch(liveWeatherProvider((env.lat!, env.lon!))).value;
+  }
+  return effectiveWeather(env, live);
+});
+
+final environmentItemsProvider = Provider<List<DecorItem>>((ref) {
+  final env = ref.watch(seasonalPrefsProvider.select((p) => p.env));
+  if (!env.any) return const [];
+  return environmentItems(
+    env,
+    phase: ref.watch(currentPhaseProvider) ?? timePhaseOf(DateTime.now()),
+    weather: ref.watch(currentWeatherProvider),
+    musicPlaying: ref.watch(decorMusicProvider),
+  );
 });
 
 // ── Theme sharing ──────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import 'package:prism_plurality/features/seasonal/decor_presets_screen.dart';
 import 'package:prism_plurality/features/seasonal/decoration_studio_screen.dart';
+import 'package:prism_plurality/features/seasonal/environment_screen.dart';
 import 'package:prism_plurality/features/seasonal/living_screens.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_hub_screen.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_prefs_screen.dart';
@@ -1000,6 +1001,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'fonts',
                         builder: (context, state) => const FontStudioScreen(),
+                      ),
+                      GoRoute(
+                        path: 'environment',
+                        builder: (context, state) => const EnvironmentScreen(),
                       ),
                       GoRoute(
                         path: 'living',

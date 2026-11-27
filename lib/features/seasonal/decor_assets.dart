@@ -309,5 +309,14 @@ DecorItem decorItemForAsset(DecorAsset a, String id, {String? variationId}) {
     },
     w: wide ? 1.0 : (a.kind == DecoKind.corner ? 0.24 : 0.14),
     z: 5,
+    behavior: wide || a.kind == DecoKind.corner ? null : defaultBehaviorFor(a),
   );
+}
+
+/// How a library piece moves when first placed (the person can change it).
+String? defaultBehaviorFor(DecorAsset a) {
+  const players = {'ph:vinyl-record', '💿', '📀', '📻', 'ph:disc'};
+  if (players.contains(a.glyph)) return 'play';
+  final b = decorAssetCategoryById(a.category)?.behavior ?? AssetBehavior.none;
+  return b == AssetBehavior.none ? null : b.name;
 }
