@@ -37,7 +37,38 @@ class BgSpec {
     this.tintStrength = 0.55,
     this.tintColor = 0xFFB57EDC,
     this.tintColor2 = 0xFF5BCEFA,
+    this.temperature = 0,
+    this.zoom = 1,
+    this.alignX = 0,
+    this.alignY = 0,
+    this.repeat = false,
+    this.parallax = 0,
+    this.scrolls = false,
+    this.texture,
+    this.textureIntensity = 0.5,
   });
+
+  /// −1 (cooler, bluer) … 0 … 1 (warmer).
+  final double temperature;
+
+  /// 1–3: how far the picture is zoomed in.
+  final double zoom;
+
+  /// −1…1: which part of a zoomed picture shows (left/right, top/bottom).
+  final double alignX, alignY;
+
+  /// Tile a photo instead of stretching it.
+  final bool repeat;
+
+  /// 0–1: how much the background drifts behind scrolling content.
+  final double parallax;
+
+  /// The background scrolls away with the page instead of staying fixed.
+  final bool scrolls;
+
+  /// A scrapbook texture laid over the background, and how strongly.
+  final String? texture;
+  final double textureIntensity;
 
   final BgKind kind;
   final int color;
@@ -99,6 +130,15 @@ class BgSpec {
     double? tintStrength,
     int? tintColor,
     int? tintColor2,
+    double? temperature,
+    double? zoom,
+    double? alignX,
+    double? alignY,
+    bool? repeat,
+    double? parallax,
+    bool? scrolls,
+    Object? texture = _k,
+    double? textureIntensity,
   }) => BgSpec(
     kind: kind ?? this.kind,
     color: color ?? this.color,
@@ -120,7 +160,18 @@ class BgSpec {
     tintStrength: tintStrength ?? this.tintStrength,
     tintColor: tintColor ?? this.tintColor,
     tintColor2: tintColor2 ?? this.tintColor2,
+    temperature: temperature ?? this.temperature,
+    zoom: zoom ?? this.zoom,
+    alignX: alignX ?? this.alignX,
+    alignY: alignY ?? this.alignY,
+    repeat: repeat ?? this.repeat,
+    parallax: parallax ?? this.parallax,
+    scrolls: scrolls ?? this.scrolls,
+    texture: identical(texture, _k) ? this.texture : texture as String?,
+    textureIntensity: textureIntensity ?? this.textureIntensity,
   );
+
+  static const _k = Object();
 
   Map<String, Object?> toJson() => {
     'kind': kind.name,
@@ -143,6 +194,15 @@ class BgSpec {
     'tintStrength': tintStrength,
     'tintColor': tintColor,
     'tintColor2': tintColor2,
+    if (temperature != 0) 'temperature': temperature,
+    if (zoom != 1) 'zoom': zoom,
+    if (alignX != 0) 'alignX': alignX,
+    if (alignY != 0) 'alignY': alignY,
+    if (repeat) 'repeat': true,
+    if (parallax != 0) 'parallax': parallax,
+    if (scrolls) 'scrolls': true,
+    'texture': ?texture,
+    if (texture != null) 'textureIntensity': textureIntensity,
   };
 
   static BgSpec fromJson(Object? j) {
@@ -180,12 +240,23 @@ class BgSpec {
             'custom',
             'gradient',
             'none',
+            'complement',
+            'mono',
           ].contains(j['tintMode'])
           ? j['tintMode'] as String
           : null,
       tintStrength: _d(j['tintStrength'], 0.55, 0, 1),
       tintColor: _i(j['tintColor']) ?? 0xFFB57EDC,
       tintColor2: _i(j['tintColor2']) ?? 0xFF5BCEFA,
+      temperature: _d(j['temperature'], 0, -1, 1),
+      zoom: _d(j['zoom'], 1, 1, 3),
+      alignX: _d(j['alignX'], 0, -1, 1),
+      alignY: _d(j['alignY'], 0, -1, 1),
+      repeat: j['repeat'] == true,
+      parallax: _d(j['parallax'], 0, 0, 1),
+      scrolls: j['scrolls'] == true,
+      texture: j['texture'] is String ? j['texture'] as String : null,
+      textureIntensity: _d(j['textureIntensity'], 0.5, 0, 1),
     );
   }
 }
@@ -721,6 +792,12 @@ const builtInLooks = <PrismLook>[
 const lookPages = [
   'home',
   'members',
+  'profiles',
+  'subsystemProfiles',
+  'contacts',
+  'companions',
+  'games',
+  'settings',
   'chat',
   'boards',
   'stories',

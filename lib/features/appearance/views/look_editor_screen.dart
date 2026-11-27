@@ -1,3 +1,6 @@
+import 'package:prism_plurality/features/appearance/views/background_gallery.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
+import 'package:prism_plurality/shared/theme/collection_backgrounds.dart';
 import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
@@ -19,7 +22,9 @@ import 'package:prism_plurality/shared/widgets/prism_dialog.dart';
 import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:prism_plurality/shared/widgets/prism_segmented_control.dart';
 import 'package:prism_plurality/shared/widgets/prism_sheet.dart';
+import 'package:prism_plurality/shared/widgets/prism_select.dart';
 import 'package:prism_plurality/shared/widgets/prism_surface.dart';
+import 'package:prism_plurality/shared/widgets/prism_switch_row.dart';
 import 'package:prism_plurality/shared/widgets/prism_text_field.dart';
 import 'package:prism_plurality/shared/widgets/prism_toast.dart';
 import 'package:prism_plurality/shared/widgets/prism_top_bar.dart';
@@ -115,6 +120,16 @@ String pageLabel(AppLocalizations l10n, String page) => switch (page) {
   'social' => 'Social',
   'locations' => l10n.navLocations,
   'reminders' => l10n.navReminders,
+  'profiles' =>
+    l10n.localeName.startsWith('es') ? 'Perfiles de alters' : 'Alter profiles',
+  'subsystemProfiles' =>
+    l10n.localeName.startsWith('es')
+        ? 'Perfiles de subsistemas'
+        : 'Subsystem profiles',
+  'contacts' => l10n.localeName.startsWith('es') ? 'Contactos' : 'Contacts',
+  'companions' =>
+    l10n.localeName.startsWith('es') ? 'Compañeros' : 'Companions',
+  'games' => l10n.localeName.startsWith('es') ? 'Juegos' : 'Games',
   _ => l10n.apPageSettings,
 };
 
@@ -919,6 +934,54 @@ class BackgroundEditor extends ConsumerWidget {
                     onChanged: (v) => onChanged(s.copyWith(intensity: v)),
                   ),
                 ],
+                if (s.kind == BgKind.builtin) ...[
+                  PrismButton(
+                    label: tr(
+                      context,
+                      'Browse ${collectionBackgrounds.length} collection backgrounds',
+                      'Ver ${collectionBackgrounds.length} fondos de colección',
+                    ),
+                    icon: Icons.collections_outlined,
+                    tone: PrismButtonTone.filled,
+                    expanded: true,
+                    onPressed: () async {
+                      final id = await showBackgroundGallery(
+                        context,
+                        current: s.builtin,
+                      );
+                      if (id != null) onChanged(s.copyWith(builtin: id));
+                    },
+                  ),
+                  if (collectionBackgroundById(s.builtin) != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 100,
+                            child: ClipRRect(
+                              borderRadius: prismCorners(context, 10),
+                              child: LookBackground(
+                                spec: BgSpec(
+                                  kind: BgKind.builtin,
+                                  builtin: s.builtin,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              collectionBackgroundName(s),
+                              style: theme.textTheme.titleSmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                ],
                 if (s.kind == BgKind.builtin)
                   Wrap(
                     spacing: 8,
@@ -1036,6 +1099,8 @@ class BackgroundEditor extends ConsumerWidget {
                         ('original', 'Original colours', 'Colores originales'),
                         ('custom', 'Custom colour', 'Color propio'),
                         ('gradient', 'Custom gradient', 'Degradado propio'),
+                        ('complement', 'Complementary', 'Complementario'),
+                        ('mono', 'Monochrome', 'Monocromo'),
                         ('none', 'No adaptation', 'Sin adaptación'),
                       ])
                         PrismChip(
@@ -1204,6 +1269,133 @@ class BackgroundEditor extends ConsumerWidget {
                     format: (v) => '${(v * 100).round()}%',
                     onChanged: (v) => onChanged(s.copyWith(saturation: v)),
                   ),
+                  LabeledSlider(
+                    label: tr(
+                      context,
+                      'Colour temperature',
+                      'Temperatura de color',
+                    ),
+                    value: s.temperature,
+                    min: -1,
+                    max: 1,
+                    divisions: 20,
+                    format: (v) => v == 0
+                        ? tr(context, 'Neutral', 'Neutra')
+                        : v > 0
+                        ? tr(context, 'Warmer', 'Más cálida')
+                        : tr(context, 'Cooler', 'Más fría'),
+                    onChanged: (v) => onChanged(s.copyWith(temperature: v)),
+                  ),
+                  const Divider(height: 24),
+                  Text(
+                    tr(context, 'Position', 'Posición'),
+                    style: theme.textTheme.labelLarge,
+                  ),
+                  LabeledSlider(
+                    label: tr(context, 'Zoom', 'Zoom'),
+                    value: s.zoom,
+                    min: 1,
+                    max: 3,
+                    divisions: 20,
+                    format: (v) => '${v.toStringAsFixed(1)}×',
+                    onChanged: (v) => onChanged(s.copyWith(zoom: v)),
+                  ),
+                  if (s.zoom > 1 || s.kind == BgKind.image) ...[
+                    LabeledSlider(
+                      label: tr(context, 'Left ↔ right', 'Izquierda ↔ derecha'),
+                      value: s.alignX,
+                      min: -1,
+                      max: 1,
+                      divisions: 20,
+                      format: (v) => '${(v * 100).round()}',
+                      onChanged: (v) => onChanged(s.copyWith(alignX: v)),
+                    ),
+                    LabeledSlider(
+                      label: tr(context, 'Top ↕ bottom', 'Arriba ↕ abajo'),
+                      value: s.alignY,
+                      min: -1,
+                      max: 1,
+                      divisions: 20,
+                      format: (v) => '${(v * 100).round()}',
+                      onChanged: (v) => onChanged(s.copyWith(alignY: v)),
+                    ),
+                  ],
+                  if (s.kind == BgKind.image)
+                    PrismSwitchRow(
+                      title: tr(
+                        context,
+                        'Repeat as tiles',
+                        'Repetir en mosaico',
+                      ),
+                      value: s.repeat,
+                      onChanged: (v) => onChanged(s.copyWith(repeat: v)),
+                    ),
+                  const Divider(height: 24),
+                  PrismSelect<String>(
+                    labelText: tr(context, 'Texture', 'Textura'),
+                    value: s.texture ?? '',
+                    items: [
+                      PrismSelectItem(
+                        value: '',
+                        label: tr(context, 'None', 'Ninguna'),
+                      ),
+                      for (final t in scrapTextures)
+                        PrismSelectItem(value: t.id, label: t.name),
+                    ],
+                    onChanged: (v) => onChanged(
+                      s.copyWith(texture: v == null || v.isEmpty ? null : v),
+                    ),
+                  ),
+                  if (s.texture != null)
+                    LabeledSlider(
+                      label: tr(
+                        context,
+                        'Texture intensity',
+                        'Intensidad de textura',
+                      ),
+                      value: s.textureIntensity,
+                      min: 0.05,
+                      max: 1,
+                      divisions: 19,
+                      format: (v) => '${(v * 100).round()}%',
+                      onChanged: (v) =>
+                          onChanged(s.copyWith(textureIntensity: v)),
+                    ),
+                  const Divider(height: 24),
+                  Text(
+                    tr(context, 'Scrolling', 'Desplazamiento'),
+                    style: theme.textTheme.labelLarge,
+                  ),
+                  PrismSwitchRow(
+                    title: tr(
+                      context,
+                      'Scroll with the page',
+                      'Desplazar con la página',
+                    ),
+                    subtitle: tr(
+                      context,
+                      'Off keeps the background still behind content.',
+                      'Apagado deja el fondo quieto detrás del contenido.',
+                    ),
+                    value: s.scrolls,
+                    onChanged: (v) => onChanged(s.copyWith(scrolls: v)),
+                  ),
+                  if (!s.scrolls)
+                    LabeledSlider(
+                      label: tr(
+                        context,
+                        'Parallax depth',
+                        'Profundidad de paralaje',
+                      ),
+                      value: s.parallax,
+                      min: 0,
+                      max: 1,
+                      divisions: 10,
+                      format: (v) => v == 0
+                          ? tr(context, 'Off', 'No')
+                          : '${(v * 100).round()}%',
+                      onChanged: (v) => onChanged(s.copyWith(parallax: v)),
+                    ),
                 ],
                 const Divider(height: 24),
                 Text(l10n.apOverlay, style: theme.textTheme.labelLarge),

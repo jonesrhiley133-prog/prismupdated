@@ -4,6 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
+import 'package:prism_plurality/shared/theme/collection_backgrounds.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/features/appearance/models/look.dart';
 
@@ -153,7 +156,9 @@ Color? backgroundBaseColor(BgSpec bg) => switch (bg.kind) {
   BgKind.theme || BgKind.image => null,
   BgKind.color => Color(bg.color),
   BgKind.gradient => bg.intensity < 0.5 ? null : Color(bg.colors.first),
-  BgKind.builtin => builtInBackgrounds[bg.builtin]?.base,
+  BgKind.builtin =>
+    builtInBackgrounds[bg.builtin]?.base ??
+        collectionBackgroundById(bg.builtin)?.base,
 };
 
 /// The brightness [look] is designed for, judged from its colours.
@@ -770,27 +775,30 @@ List<double> adjustMatrix({
   double brightness = 0,
   double contrast = 1,
   double saturation = 1,
+  double temperature = 0,
 }) {
   const lr = 0.2126, lg = 0.7152, lb = 0.0722;
   final s = saturation, c = contrast;
   final o = (0.5 * (1 - c) + brightness) * 255;
   double m(double lum, bool same) => c * (lum * (1 - s) + (same ? s : 0));
+  // Warmer adds red and takes away blue (and the reverse for cooler).
+  final warm = temperature * 30;
   return [
     m(lr, true),
     m(lg, false),
     m(lb, false),
     0,
-    o,
+    o + warm,
     m(lr, false),
     m(lg, true),
     m(lb, false),
     0,
-    o,
+    o + warm * 0.25,
     m(lr, false),
     m(lg, false),
     m(lb, true),
     0,
-    o,
+    o - warm,
     0,
     0,
     0,
@@ -1066,6 +1074,16 @@ class _ViewedAlterTintDriverState extends State<ViewedAlterTintDriver>
       return (fade(theme.colorScheme.secondary), null);
     case 'custom':
       return (fade(Color(spec.tintColor)), null);
+    case 'complement':
+      // The opposite hue of the app's accent.
+      final h = HSLColor.fromColor(theme.colorScheme.primary);
+      return (fade(h.withHue((h.hue + 180) % 360).toColor()), null);
+    case 'mono':
+      // One colour throughout; the colour blend keeps every shade of detail.
+      return (
+        theme.colorScheme.primary.withValues(alpha: math.max(a, 0.9)),
+        null,
+      );
     case 'gradient':
       return (
         null,
@@ -1172,7 +1190,10 @@ Future<ui.Image?> _bake(BakeRequest r) async {
     final canvas = Canvas(rec, rect);
     canvas.drawRect(rect, Paint()..color = Color(r.base));
     final adjusted =
-        spec.brightness != 0 || spec.contrast != 1 || spec.saturation != 1;
+        spec.brightness != 0 ||
+        spec.contrast != 1 ||
+        spec.saturation != 1 ||
+        spec.temperature != 0;
     final blur = r.reduceEffects ? 0.0 : spec.blur * (w / 400);
     final layerPaint = Paint()
       ..color = Color.fromRGBO(
@@ -1187,6 +1208,7 @@ Future<ui.Image?> _bake(BakeRequest r) async {
           brightness: spec.brightness,
           contrast: spec.contrast,
           saturation: spec.saturation,
+          temperature: spec.temperature,
         ),
       );
     }
@@ -1207,24 +1229,88 @@ Future<ui.Image?> _bake(BakeRequest r) async {
             ..color = Color.fromRGBO(0, 0, 0, spec.intensity),
         );
       case BgKind.builtin:
-        (builtInBackgrounds[spec.builtin] ?? builtInBackgrounds.values.first)
-            .paint(canvas, rect.size);
+        // Zoom and position work on drawn backgrounds too.
+        canvas.save();
+        if (spec.zoom != 1) {
+          final focus = Offset(
+            w / 2 + spec.alignX * w / 2,
+            h / 2 + spec.alignY * h / 2,
+          );
+          canvas.translate(focus.dx, focus.dy);
+          canvas.scale(spec.zoom);
+          canvas.translate(-focus.dx, -focus.dy);
+        }
+        final art = builtInBackgrounds[spec.builtin];
+        final collection = art == null
+            ? collectionBackgroundById(spec.builtin)
+            : null;
+        if (collection != null) {
+          collection.paint(canvas, rect.size);
+        } else {
+          (art ?? builtInBackgrounds.values.first).paint(canvas, rect.size);
+        }
+        canvas.restore();
       case BgKind.image:
         final p = photo!;
-        final scale = (w / p.width) > (h / p.height)
-            ? w / p.width
-            : h / p.height;
-        final dw = p.width * scale, dh = p.height * scale;
-        canvas.drawImageRect(
-          p,
-          Rect.fromLTWH(0, 0, p.width.toDouble(), p.height.toDouble()),
-          Rect.fromLTWH((w - dw) / 2, (h - dh) / 2, dw, dh),
-          Paint()..filterQuality = FilterQuality.medium,
+        final src = Rect.fromLTWH(
+          0,
+          0,
+          p.width.toDouble(),
+          p.height.toDouble(),
         );
+        if (spec.repeat) {
+          // Tiles: each a third of the screen width, smaller as you zoom out.
+          final tw = w / 3 / spec.zoom;
+          final th = tw * p.height / p.width;
+          for (var y = 0.0; y < h; y += th) {
+            for (var x = 0.0; x < w; x += tw) {
+              canvas.drawImageRect(
+                p,
+                src,
+                Rect.fromLTWH(x, y, tw, th),
+                Paint()..filterQuality = FilterQuality.medium,
+              );
+            }
+          }
+        } else {
+          final scale =
+              ((w / p.width) > (h / p.height) ? w / p.width : h / p.height) *
+              spec.zoom;
+          final dw = p.width * scale, dh = p.height * scale;
+          canvas.drawImageRect(
+            p,
+            src,
+            Rect.fromLTWH(
+              (w - dw) / 2 * (1 + spec.alignX),
+              (h - dh) / 2 * (1 + spec.alignY),
+              dw,
+              dh,
+            ),
+            Paint()..filterQuality = FilterQuality.medium,
+          );
+        }
       case BgKind.color || BgKind.theme:
         break;
     }
     canvas.restore();
+    // A texture over the whole background.
+    final tex = spec.texture == null ? null : scrapTextureById(spec.texture!);
+    if (tex != null && !r.reduceEffects) {
+      canvas.saveLayer(
+        rect,
+        Paint()..color = Color.fromRGBO(0, 0, 0, spec.textureIntensity),
+      );
+      paintScrapTexture(
+        canvas,
+        rect.size,
+        kind: tex.kind,
+        c1: tex.c1,
+        c2: tex.c2,
+        seed: 5,
+        scale: 1.4,
+      );
+      canvas.restore();
+    }
     final overlay = r.reduceEffects ? BgOverlay.none : spec.overlay;
     final oc = Color(spec.overlayColor);
     switch (overlay) {

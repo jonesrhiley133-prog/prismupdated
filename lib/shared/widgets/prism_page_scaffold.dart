@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prism_plurality/features/appearance/models/look.dart' show BgSpec;
 import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:flutter/material.dart';
@@ -104,6 +105,17 @@ class LookBackdrop extends StatelessWidget {
         }
         Widget built = !bg.isCustom || fixedColor != null
             ? builder(fixedColor)
+            : (bg.parallax > 0 || bg.scrolls) && !look.reduceEffects
+            ? _ScrollingBackdrop(
+                spec: bg,
+                background: LookBackground(
+                  spec: bg,
+                  dir: look.backgroundDir,
+                  reduceEffects: look.reduceEffects,
+                  reduceTransparency: look.reduceTransparency,
+                ),
+                child: builder(Colors.transparent),
+              )
             : Stack(
                 fit: StackFit.expand,
                 children: [
@@ -142,8 +154,82 @@ class LookBackdrop extends StatelessWidget {
 String? lookPageOf(BuildContext context) {
   try {
     final segments = GoRouterState.of(context).uri.pathSegments;
-    return segments.isEmpty ? 'home' : segments.first;
+    if (segments.isEmpty) return 'home';
+    // An alter's or subsystem's own profile can have its own background.
+    if (segments.length >= 2 && segments.first == 'members') return 'profiles';
+    if (segments.length >= 2 && segments.first == 'subsystems') {
+      return 'subsystemProfiles';
+    }
+    return segments.first;
   } catch (_) {
     return null;
+  }
+}
+
+/// A background that drifts behind scrolling content (parallax) or scrolls
+/// away with it. Listens to the page's own scrolling; nothing else moves.
+class _ScrollingBackdrop extends StatefulWidget {
+  const _ScrollingBackdrop({
+    required this.spec,
+    required this.background,
+    required this.child,
+  });
+  final BgSpec spec;
+  final Widget background;
+  final Widget child;
+  @override
+  State<_ScrollingBackdrop> createState() => _ScrollingBackdropState();
+}
+
+class _ScrollingBackdropState extends State<_ScrollingBackdrop> {
+  final _offset = ValueNotifier<double>(0);
+
+  @override
+  void dispose() {
+    _offset.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification n) {
+    if (n.depth == 0 && n.metrics.axis == Axis.vertical) {
+      _offset.value = n.metrics.pixels.clamp(0, double.infinity);
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final spec = widget.spec;
+    return LayoutBuilder(
+      builder: (context, box) {
+        final h = box.maxHeight.isFinite ? box.maxHeight : 800.0;
+        // Parallax needs a taller picture so the bottom never shows.
+        final extra = spec.scrolls ? 0.0 : h * spec.parallax * 0.5;
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            ValueListenableBuilder<double>(
+              valueListenable: _offset,
+              builder: (context, o, child) {
+                final dy = spec.scrolls
+                    ? -o.clamp(0.0, h)
+                    : -(o * spec.parallax * 0.3).clamp(0.0, extra);
+                return Transform.translate(offset: Offset(0, dy), child: child);
+              },
+              child: OverflowBox(
+                alignment: Alignment.topCenter,
+                maxHeight: h + extra,
+                minHeight: h + extra,
+                child: widget.background,
+              ),
+            ),
+            NotificationListener<ScrollNotification>(
+              onNotification: _onScroll,
+              child: widget.child,
+            ),
+          ],
+        );
+      },
+    );
   }
 }
