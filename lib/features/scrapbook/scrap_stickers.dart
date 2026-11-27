@@ -266,15 +266,15 @@ List<ScrapSticker> _build() {
   return out;
 }
 
-final List<ScrapSticker> scrapStickers = _build();
+final List<ScrapSticker> scrapStickerCatalog = _build();
 
 final Map<String, ScrapSticker> _byId = {
-  for (final s in scrapStickers) s.id: s,
+  for (final s in scrapStickerCatalog) s.id: s,
 };
 
 ScrapSticker? scrapStickerById(String id) => _byId[id];
 
 List<ScrapSticker> stickersIn(String category) => [
-  for (final s in scrapStickers)
+  for (final s in scrapStickerCatalog)
     if (s.category == category) s,
 ];

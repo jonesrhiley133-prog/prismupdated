@@ -12,6 +12,7 @@ import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/providers/link_providers.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_canvas.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/features/social/services/social_media.dart';
@@ -1555,38 +1556,19 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
   );
 
   Future<void> _pickSticker() async {
-    final s = await PrismSheet.show<String>(
-      context: context,
-      title: tr(context, 'Stickers', 'Pegatinas'),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final e in scrapStickers)
-              InkWell(
-                onTap: () => Navigator.of(ctx).pop(e),
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Text(e, style: const TextStyle(fontSize: 32)),
-                ),
-              ),
-          ],
-        ),
+    final s = await showScrapStickerPicker(context);
+    if (s == null) return;
+    _add(
+      ScrapElement(
+        type: ScrapType.sticker,
+        text: s.id,
+        media: s.media,
+        x: 0.4,
+        y: 0.4,
+        w: 0.18,
+        h: 0.13,
       ),
     );
-    if (s != null)
-      _add(
-        ScrapElement(
-          type: ScrapType.sticker,
-          text: s,
-          x: 0.4,
-          y: 0.4,
-          w: 0.18,
-          h: 0.13,
-        ),
-      );
   }
 
   Future<void> _pickShape() async {

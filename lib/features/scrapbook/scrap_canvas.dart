@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_video.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
@@ -375,7 +376,11 @@ class ScrapElementView extends StatelessWidget {
           overflow: TextOverflow.fade,
         ),
       ),
-      ScrapType.sticker => FittedBox(child: Text(e.text ?? '⭐')),
+      ScrapType.sticker => ScrapStickerContent(
+        id: e.text ?? '⭐',
+        media: e.media,
+        tint: e.color == null ? null : Color(e.color!),
+      ),
       ScrapType.tape => Opacity(
         opacity: 0.75,
         child: CustomPaint(painter: _TapePainter(Color(e.color ?? 0xFFF8B6C9))),
