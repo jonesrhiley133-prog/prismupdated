@@ -393,6 +393,18 @@ ScrapFrameSpec? scrapFrameById(String id) {
   return null;
 }
 
+/// Paints [f] (back and front) into [size] on [canvas], for places that draw
+/// on a canvas directly rather than with widgets.
+void paintScrapFrame(
+  Canvas canvas,
+  Size size,
+  ScrapFrameSpec f, {
+  Color? tint,
+}) {
+  _FramePainter(f, false, tint).paint(canvas, size);
+  _FramePainter(f, true, tint).paint(canvas, size);
+}
+
 class _FramePainter extends CustomPainter {
   _FramePainter(this.f, this.front, this.tint);
   final ScrapFrameSpec f;

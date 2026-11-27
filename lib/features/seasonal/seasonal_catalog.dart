@@ -1,4 +1,5 @@
 import 'package:flutter/painting.dart';
+import 'package:prism_plurality/features/seasonal/living_data.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_data.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_vocab.dart';
@@ -10,12 +11,26 @@ List<SeasonalCollection> get seasonalCollections =>
 
 List<SeasonalCollection>? _cache;
 
-SeasonalCollection? collectionById(String id) {
-  for (final c in seasonalCollections) {
-    if (c.id == id) return c;
-  }
-  return null;
-}
+/// Permanent, year-round aesthetics (80 genres, 25+ looks each). Kept apart
+/// from [seasonalCollections] so nothing ever schedules them.
+List<SeasonalCollection> get livingCollections =>
+    _living ??= _parse(livingSource);
+
+List<SeasonalCollection>? _living;
+
+Map<String, SeasonalCollection>? _byId;
+
+/// A holiday, season or living genre by id.
+SeasonalCollection? collectionById(String id) => (_byId ??= {
+  for (final c in seasonalCollections) c.id: c,
+  for (final c in livingCollections) c.id: c,
+})[id];
+
+/// The genres in one living family, in catalog order.
+List<SeasonalCollection> livingInGroup(String group) => [
+  for (final c in livingCollections)
+    if (c.group == group) c,
+];
 
 SeasonalVariation? variationById(String id) {
   final i = id.indexOf('.');
@@ -47,6 +62,7 @@ List<SeasonalCollection> _parse(String src) {
     final head = lines.first.split('|');
     final id = head[0];
     final kind = SeasonalKind.values.firstWhere((k) => k.name == head[3]);
+    final living = kind == SeasonalKind.living;
     String field(String k) =>
         lines
             .where((l) => l.startsWith('$k:'))
@@ -64,7 +80,9 @@ List<SeasonalCollection> _parse(String src) {
         hangerPool = list('hangers'),
         furniturePool = list('furniture');
     final icons = list('icons'), acc = list('acc'), amb = list('amb');
-    final d = list('defaults');
+    final d = list('defaults').isEmpty
+        ? const ['vine', 'fairy', 'hairline', 'none', 'cluster']
+        : list('defaults');
     final defGarland = garlandOf(d[0]),
         defLights = lightsOf(d[1]),
         defBorder = borderOf(d[2]),
@@ -91,6 +109,28 @@ List<SeasonalCollection> _parse(String src) {
     }
 
     final looks = lines.where((l) => l.startsWith('- ')).toList();
+    // Living genres list their looks by name and get their parts from the
+    // genre's moods and styles, stepping so no two looks pick the same mix.
+    final named = list('looks');
+    if (named.isNotEmpty) {
+      final moods = list('mood').isEmpty
+          ? const ['classic', 'midnight', 'pastel', 'bold', 'neon', 'elegant']
+          : list('mood');
+      final styles = list('styles');
+      if (styles.isEmpty) throw StateError('No styles for $id');
+      final n = styles.length;
+      for (var i = 0; i < named.length; i++) {
+        final picks = <String>{
+          styles[i % n],
+          styles[(i * 3 + 1) % n],
+          styles[(i * 5 + 2) % n],
+          styles[(i * 7 + 4) % n],
+        };
+        looks.add(
+          '- ${named[i]}|${moods[i % moods.length]},${picks.join(',')}',
+        );
+      }
+    }
     final variations = <SeasonalVariation>[];
     for (var i = 0; i < looks.length; i++) {
       final parts = looks[i].substring(2).split('|');
@@ -172,7 +212,8 @@ List<SeasonalCollection> _parse(String src) {
         variations: variations,
         greetings: list('greet', '|'),
         greetingsEs: list('greetEs', '|'),
-        approximateDates: head[4] == 'true',
+        approximateDates: !living && head[4] == 'true',
+        group: living ? head[4] : null,
       ),
     );
   }

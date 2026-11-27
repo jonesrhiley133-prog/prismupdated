@@ -140,6 +140,9 @@ abstract final class AppRoutePaths {
   static const seasonalPrefs = '/settings/appearance/seasonal/preferences';
   static const seasonalStudio = '/settings/appearance/seasonal/studio';
   static const seasonalPresets = '/settings/appearance/seasonal/presets';
+  static const living = '/settings/appearance/living';
+  static String livingGenre(String id) => '/settings/appearance/living/g/$id';
+  static const livingAssets = '/settings/appearance/living/assets';
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';

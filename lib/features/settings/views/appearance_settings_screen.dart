@@ -100,6 +100,17 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: PrismButton(
                   label: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Colecciones vivas'
+                      : 'Living Collections',
+                  icon: Icons.auto_awesome_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.living),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: Localizations.localeOf(context).languageCode == 'es'
                       ? 'Vida estacional y decoración'
                       : 'Seasonal Living & decoration',
                   icon: Icons.celebration_outlined,

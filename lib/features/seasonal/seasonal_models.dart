@@ -1,7 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 /// Where in the year a collection belongs.
-enum SeasonalKind { holiday, season, awareness }
+enum SeasonalKind {
+  holiday,
+  season,
+  awareness,
+
+  /// A permanent, year-round aesthetic (Space Station, Cottagecore…). Never
+  /// scheduled; shown only when the person picks one.
+  living,
+}
 
 /// What a collection's colours and shapes are built from. Every variation
 /// resolves to one of these, so adding a collection never needs new code.
@@ -155,6 +163,36 @@ class SeasonalVariation {
   final int seed;
   final List<String> tags;
 
+  /// This look with one part pinned to a specific style (a decoration from
+  /// the asset library that says "this garland, in kente").
+  SeasonalVariation withStyle({
+    GarlandStyle? garland,
+    LightsStyle? lights,
+    DecoBorder? border,
+    CornerStyle? corner,
+    ParticleKind? particle,
+  }) => SeasonalVariation(
+    id: id,
+    collectionId: collectionId,
+    index: index,
+    name: name,
+    palette: palette,
+    garland: garland ?? this.garland,
+    lights: lights ?? this.lights,
+    border: border ?? this.border,
+    corner: corner ?? this.corner,
+    particle: particle ?? this.particle,
+    garlandEmoji: garlandEmoji,
+    cornerEmoji: cornerEmoji,
+    hangers: hangers,
+    furniture: furniture,
+    icons: icons,
+    accessory: accessory,
+    ambience: ambience,
+    seed: seed,
+    tags: tags,
+  );
+
   /// Everything that makes this look visually unique.
   String get signature => [
     palette.id,
@@ -182,6 +220,7 @@ class SeasonalCollection {
     this.greetingsEs = const [],
     this.note,
     this.approximateDates = false,
+    this.group,
   });
 
   final String id;
@@ -200,4 +239,7 @@ class SeasonalCollection {
   /// Dates come from a lunar or observational calendar and may differ by a
   /// day or two where you live.
   final bool approximateDates;
+
+  /// For [SeasonalKind.living]: the family it belongs to ('space', 'cozy'…).
+  final String? group;
 }

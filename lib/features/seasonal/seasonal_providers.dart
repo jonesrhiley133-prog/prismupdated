@@ -7,6 +7,7 @@ import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/boards/providers/board_posts_providers.dart'
     show currentFronterMemberIdsProvider;
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 
@@ -314,6 +315,11 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
       );
     }
   }
+  // A living look is its own layer: it stays whatever season it is.
+  final living = prefs.livingVariation == null
+      ? null
+      : variationById(prefs.livingVariation!);
+  if (living != null) items.addAll(arrangementForVariation(living));
   final active = ref.watch(activeSeasonProvider);
   if (active != null && prefs.integrationOn('overlay')) {
     final v = active.variation;

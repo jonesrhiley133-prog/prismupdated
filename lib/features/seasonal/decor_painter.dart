@@ -4,9 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_washi.dart';
+import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_vocab.dart';
 
 const _tau = math.pi * 2;
 
@@ -70,6 +75,98 @@ TextPainter _glyph(String g, double size) {
   return _glyphs[key] = tp;
 }
 
+/// Colours for library pieces drawn through [_drawGlyph] (line-art icons,
+/// shapes, frames, tape), set per item so they follow its look.
+Color _assetTint = const Color(0xFFB07CC6);
+Color _assetTint2 = const Color(0xFFFFC857);
+
+final _icons = <String, TextPainter>{};
+
+TextPainter? _iconGlyph(String g, double size, Color color) {
+  final icon = decorIconFor(g);
+  if (icon == null) return null;
+  final s = size.clamp(6.0, 220.0).roundToDouble();
+  final key = '$g@$s@${color.toARGB32()}';
+  final hit = _icons[key];
+  if (hit != null) return hit;
+  if (_icons.length > 200) _icons.remove(_icons.keys.first);
+  final tp = TextPainter(
+    text: TextSpan(
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontSize: s,
+        fontFamily: icon.fontFamily,
+        package: icon.fontPackage,
+        color: color,
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  return _icons[key] = tp;
+}
+
+/// Draws a library piece that isn't an emoji. Returns false for emoji.
+bool _drawAsset(Canvas c, String g, Offset center, double size) {
+  if (g.length < 4 || g[2] != ':') return false;
+  final kind = g.substring(0, 2);
+  final id = g.substring(3);
+  switch (kind) {
+    case 'ph':
+      final tp = _iconGlyph(g, size, _assetTint);
+      if (tp == null) return false;
+      // A soft halo of the second colour keeps line art readable on any
+      // background.
+      final halo = _iconGlyph(g, size, _assetTint2.withValues(alpha: 0.35));
+      halo?.paint(c, center - Offset(halo.width / 2 - 1, halo.height / 2 - 1));
+      tp.paint(c, center - Offset(tp.width / 2, tp.height / 2));
+      return true;
+    case 'sh':
+      c.save();
+      c.translate(center.dx - size / 2, center.dy - size / 2);
+      ScrapShapePainter(
+        shape: id,
+        fill: _assetTint,
+        fill2: _assetTint2,
+        border: _assetTint2,
+        borderWidth: size * 0.03,
+      ).paint(c, Size.square(size));
+      c.restore();
+      return true;
+    case 'wa':
+      final w = washiPatterns.where((p) => p.id == id).firstOrNull;
+      if (w == null) return false;
+      c.save();
+      c.translate(center.dx - size / 2, center.dy - size / 8);
+      WashiPainter(w).paint(c, Size(size, size / 4));
+      c.restore();
+      return true;
+    case 'fr':
+      final f = scrapFrameById(id);
+      if (f == null) return false;
+      c.save();
+      c.translate(center.dx - size / 2, center.dy - size / 2);
+      paintScrapFrame(c, Size.square(size), f, tint: null);
+      c.restore();
+      return true;
+  }
+  return false;
+}
+
+/// Draws any decoration glyph (emoji or library piece) for previews and
+/// pickers, in the given colours.
+void paintDecorGlyph(
+  Canvas c,
+  String g,
+  Offset center,
+  double size, {
+  Color tint = const Color(0xFFB07CC6),
+  Color tint2 = const Color(0xFFFFC857),
+}) {
+  _assetTint = tint;
+  _assetTint2 = tint2;
+  _drawGlyph(c, g, center, size);
+}
+
 void _drawGlyph(
   Canvas c,
   String g,
@@ -78,6 +175,21 @@ void _drawGlyph(
   double rot = 0,
   double alpha = 1,
 }) {
+  if (g.length > 3 && g[2] == ':') {
+    c.save();
+    c.translate(center.dx, center.dy);
+    if (rot != 0) c.rotate(rot);
+    if (alpha < 1) {
+      c.saveLayer(
+        Rect.fromCircle(center: Offset.zero, radius: size),
+        Paint()..color = Colors.white.withValues(alpha: alpha),
+      );
+    }
+    final drawn = _drawAsset(c, g, Offset.zero, size);
+    if (alpha < 1) c.restore();
+    c.restore();
+    if (drawn) return;
+  }
   final tp = _glyph(g, size);
   c.save();
   c.translate(center.dx, center.dy);
@@ -105,6 +217,20 @@ double _hash01(Object o, [int salt = 0]) {
 }
 
 Color _c(int v, [double a = 1]) => Color(v).withValues(alpha: a);
+
+/// [v] (or a neutral look when the piece has none) with one part pinned:
+/// `g` garland, `l` lights, `b` border, `c` corner, `p` falling things.
+SeasonalVariation? _pinStyle(SeasonalVariation? v, String part, String style) {
+  final base = v ?? livingCollections.first.variations.first;
+  return switch (part) {
+    'g' => base.withStyle(garland: garlandOf(style)),
+    'l' => base.withStyle(lights: lightsOf(style)),
+    'b' => base.withStyle(border: borderOf(style)),
+    'c' => base.withStyle(corner: cornerOf(style)),
+    'p' => base.withStyle(particle: particleOf(style)),
+    _ => v,
+  };
+}
 
 /// Draws everything for one frame. One painter, one pass: items are
 /// clipped to the layers that are on and to the pages they belong to.
@@ -198,9 +324,10 @@ class DecorPainter extends CustomPainter {
   // ── Items ───────────────────────────────────────────────────────────
 
   void _drawItem(Canvas canvas, Size size, DecorItem item, Rect frame) {
-    final v = item.variationId == null
-        ? null
-        : variationById(item.variationId!);
+    var v = item.variationId == null ? null : variationById(item.variationId!);
+    // A library piece can pin one part to a specific style.
+    final pinned = decorStyleOf(item.glyph);
+    if (pinned != null) v = _pinStyle(v, pinned.part, pinned.style);
     final tw = item.tweakFor(scene.device);
     final speed = item.speed * scene.layers.animationSpeed;
     final phase = _hash01(item.id) * _tau;
@@ -208,6 +335,8 @@ class DecorPainter extends CustomPainter {
     final main = item.color ?? pal?.primary ?? 0xFFB07CC6;
     final second = item.color2 ?? pal?.secondary ?? 0xFFFFC857;
     final accent = pal?.accent ?? 0xFF6B4E9B;
+    _assetTint = Color(main);
+    _assetTint2 = Color(second);
 
     final width = frame.width * item.w * tw.scale;
     final cx = frame.left + frame.width * (item.x + tw.dx);

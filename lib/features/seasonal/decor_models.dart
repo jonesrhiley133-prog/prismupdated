@@ -579,6 +579,7 @@ class SeasonalPrefs {
     this.audioId,
     this.audioVolume = 0.35,
     this.integrations = const {},
+    this.livingVariation,
     this.version = 1,
   });
 
@@ -630,6 +631,10 @@ class SeasonalPrefs {
 
   bool integrationOn(String key) => integrations[key] ?? true;
 
+  /// A permanent living look (`genre.index`), its own layer: shown all year,
+  /// alongside (never instead of) seasonal looks and the person's presets.
+  final String? livingVariation;
+
   SeasonalPrefs copyWith({
     DecoPerformance? performance,
     DecoLayerSettings? layers,
@@ -654,6 +659,7 @@ class SeasonalPrefs {
     Object? audioId = _k,
     double? audioVolume,
     Map<String, bool>? integrations,
+    Object? livingVariation = _k,
   }) => SeasonalPrefs(
     performance: performance ?? this.performance,
     layers: layers ?? this.layers,
@@ -686,6 +692,9 @@ class SeasonalPrefs {
     audioId: identical(audioId, _k) ? this.audioId : audioId as String?,
     audioVolume: audioVolume ?? this.audioVolume,
     integrations: integrations ?? this.integrations,
+    livingVariation: identical(livingVariation, _k)
+        ? this.livingVariation
+        : livingVariation as String?,
     version: version,
   );
 
@@ -717,6 +726,7 @@ class SeasonalPrefs {
     'ai': ?audioId,
     'av': audioVolume,
     if (integrations.isNotEmpty) 'in': integrations,
+    'lv': ?livingVariation,
   };
 
   static Set<String> _strSet(Object? o) => {
@@ -776,6 +786,7 @@ class SeasonalPrefs {
             if (e.key is String && e.value is bool)
               e.key as String: e.value as bool,
       },
+      livingVariation: o['lv'] is String ? o['lv'] as String : null,
     );
   }
 }

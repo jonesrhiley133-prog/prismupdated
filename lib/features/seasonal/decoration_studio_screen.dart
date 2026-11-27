@@ -9,7 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
+import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/living_screens.dart';
 import 'package:prism_plurality/features/seasonal/decor_painter.dart';
 import 'package:prism_plurality/features/seasonal/decor_preview.dart';
 import 'package:prism_plurality/features/seasonal/decor_presets_screen.dart'
@@ -126,7 +128,17 @@ class _DecorationStudioScreenState
         ];
         _layers = DecoLayerSettings.fromJson(d.fields['layers']);
       }
-      if (seed != null) {
+      if (seed != null && seed.startsWith('asset:')) {
+        final a = decorAssetById(seed.substring(6));
+        if (a != null) {
+          final it = decorItemForAsset(a, _uid(), variationId: _look.id);
+          it.z = _topZ;
+          _items.add(it);
+          _sel
+            ..clear()
+            ..add(it.id);
+        }
+      } else if (seed != null) {
         final v = variationById(seed);
         if (v != null) {
           _lookCollection = v.collectionId;
@@ -800,6 +812,11 @@ class _DecorationStudioScreenState
         items: [
           for (final c in seasonalCollections)
             PrismSelectItem(value: c.id, label: '${c.emoji} ${c.name}'),
+          for (final c in livingCollections)
+            PrismSelectItem(
+              value: c.id,
+              label: '${c.emoji} ${c.name} · ${tr(context, 'living', 'vivo')}',
+            ),
         ],
         onChanged: (v) => setState(() {
           _lookCollection = v ?? _lookCollection;
@@ -842,6 +859,22 @@ class _DecorationStudioScreenState
               onPressed: () => _addPart(p.$1),
             ),
         ],
+      ),
+      const SizedBox(height: 12),
+      PrismButton(
+        label: tr(
+          context,
+          'Asset library (${decorAssets.length})',
+          'Biblioteca de elementos (${decorAssets.length})',
+        ),
+        icon: Icons.category_outlined,
+        tone: PrismButtonTone.filled,
+        expanded: true,
+        onPressed: () async {
+          final a = await showDecorAssetPicker(context);
+          if (a == null || !mounted) return;
+          _add(decorItemForAsset(a, _uid(), variationId: _look.id));
+        },
       ),
       const SizedBox(height: 12),
       Text(
@@ -1225,10 +1258,12 @@ class _DecorationStudioScreenState
         PrismListRow(
           dense: true,
           selected: _sel.contains(i.id),
-          leading: Text(
-            i.glyph ?? _kindEmoji(i.kind),
-            style: const TextStyle(fontSize: 20),
-          ),
+          leading: i.glyph != null && i.glyph!.length > 3 && i.glyph![2] == ':'
+              ? DecorGlyphView(i.glyph!, size: 24)
+              : Text(
+                  i.glyph ?? _kindEmoji(i.kind),
+                  style: const TextStyle(fontSize: 20),
+                ),
           title: Text(
             '${i.kind.label}${i.variationId == null ? '' : ' · ${variationById(i.variationId!)?.name ?? ''}'}',
             maxLines: 1,

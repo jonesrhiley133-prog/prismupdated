@@ -70,6 +70,7 @@ abstract final class TrackerKind {
 
   static const scrapBook = 'scrap.book';
   static const scrapPage = 'scrap.page';
+
   /// Saved page layouts (Save this page as a template).
   static const scrapTemplate = 'scrap.template';
 
@@ -196,6 +197,10 @@ abstract final class TrackerKind {
   static const seasonPrefs = 'season.prefs';
   static const seasonPreset = 'season.preset';
   static const seasonWorkspace = 'season.workspace';
+
+  // Appearance: favourites and recently used items across every gallery
+  // (living genres, decoration assets, backgrounds, app icons…).
+  static const appearanceLibrary = 'appearance.library';
 
   // Scrapbook sticker library: favorites, recents, collections, imports.
   static const scrapStickers = 'scrap.stickers';
