@@ -22,6 +22,8 @@ amb: fire,chimes,wind
 greet: Merry Christmas!|Happy holidays|Wishing you a cozy, gentle season
 greetEs: ¡Feliz Navidad!|Felices fiestas|Te deseo unas fiestas tranquilas
 defaults: vine,fairy,hairline,snow,cluster
+colors: B3202A,1E6B3A,D4AF37,FFFFFF
+motifs: icicles,stitched,glittery,tassels,lace
 - Classic Christmas|classic,vine,fairy
 - Cozy Cabin|cozy,candles,leafy
 - Snowy Village|village,windowed,snowing
@@ -60,6 +62,8 @@ amb: night,wind,chimes
 greet: Happy Halloween!|Have a spooky, cozy night|Pumpkins and candlelight to you
 greetEs: ¡Feliz Halloween!|Una noche espeluznante y acogedora
 defaults: swag,candles,hairline,leaves,cluster
+colors: F2780C,1A1A1A,6B2FA0,7AC74F
+motifs: neonlights,zigzag,feathery,tassels
 - Classic Halloween|classic,swag,candles
 - Haunted Mansion|gothic,windowed,glowing
 - Pumpkin Patch|harvest,emojis,leafy
@@ -98,6 +102,8 @@ amb: fire,wind,chimes
 greet: Happy Thanksgiving|Grateful for you today|Wishing you a warm table
 greetEs: Feliz Día de Acción de Gracias|Agradecido por ti
 defaults: swag,candles,hairline,leaves,cluster
+colors: B5532A,D98E04,6B4226,8E9B5A
+motifs: flags,stitched,fans,feathery,tassels
 - Harvest Table|harvest,swag,candles
 - Cozy Hearth|cozy,fairy,leafy
 - Autumn Orchard|rustic,emojis,leafy
@@ -136,6 +142,8 @@ amb: chimes,pad,night
 greet: Happy New Year's Eve!|Here's to a fresh start|Counting down with you
 greetEs: ¡Feliz Nochevieja!|Brindemos por empezar de nuevo
 defaults: tinsel,bulbs,hairline,confetti,cluster
+colors: D4AF37,C0C0C0,1A1A1A,FFFFFF
+motifs: streamers,glittery,neonlights,sunburst,ribbonfall
 - Midnight Countdown|midnight,tinsel,starry
 - Golden Fireworks|golden,bulbs,sparkly
 - Silver Sparkle|elegant,tinsel,double
@@ -174,6 +182,7 @@ amb: birds,chimes,wind
 greet: Happy New Year!|A fresh page is waiting|New year, gentle beginnings
 greetEs: ¡Feliz Año Nuevo!|Una página nueva te espera
 defaults: swag,fairy,hairline,sparkles,cluster
+motifs: sunburst,streamers,glittery,flags
 - First Sunrise|sunset,swag,sparkly
 - Fresh Page|paper,scroll,calm
 - Gentle Resolutions|pastel,pompoms,petalfall
@@ -212,6 +221,8 @@ amb: musicbox,harp,chimes
 greet: Happy Valentine's Day|Sending you a little love|Be kind to yourself today
 greetEs: Feliz Día de San Valentín|Te mando un poquito de cariño
 defaults: ribbon,fairy,scallop,hearts,cluster
+colors: D7263D,FF8FAB,FFFFFF,8E1B3A
+motifs: lace,ribbonfall,tassels,fans
 - Classic Valentine|rose,ribbons,hearty
 - Love Letters|vintage,scroll,dotted
 - Candy Hearts|sweet,beads,bubbly
@@ -250,6 +261,7 @@ amb: birds,stream,chimes
 greet: Happy Easter|Wishing you a bright spring day|Soft sunshine and new beginnings
 greetEs: Feliz Pascua|Un día de primavera lleno de luz
 defaults: vine,fairy,scallop,petals,cluster
+motifs: lace,flags,stitched,fans
 - Classic Easter|pastel,vine,petalfall
 - Spring Meadow|garden,vine,flutter
 - Egg Hunt|whimsical,bunting,confettied
@@ -289,6 +301,8 @@ amb: chimes,harp,night
 greet: Happy Lunar New Year|Wishing you health and happiness|May the year bring you peace
 greetEs: Feliz Año Nuevo Lunar|Salud y felicidad para ti
 defaults: emoji,lanterns,hairline,petals,lantern
+colors: C8102E,F2C230,7A0C14,FFE7A3
+motifs: tassels,fans,skylanterns,zigzag
 - Red Lantern Street|lantern,lanterns,glowing
 - Spring Couplets|paper,scroll,double
 - Family Reunion Table|market,swag,candles
@@ -328,6 +342,8 @@ amb: chimes,night,harp
 greet: Happy Mid-Autumn Festival|May your moon be bright|Sharing moonlight with you
 greetEs: Feliz Festival del Medio Otoño|Que tu luna brille
 defaults: emoji,lanterns,hairline,fireflies,lantern
+colors: C8102E,F2C230,1C2A5A,F6E7B4
+motifs: skylanterns,fans,tassels
 - Full Moon Courtyard|midnight,lanterns,glowing
 - Mooncake Table|market,swag,candles
 - Lantern Parade|lantern,lanterns,glowing
@@ -367,6 +383,7 @@ amb: night,wind,chimes
 greet: Happy Chuseok|Wishing you a bountiful harvest|Full moon, full hearts
 greetEs: Feliz Chuseok|Una cosecha abundante para ti
 defaults: swag,candles,hairline,leaves,cluster
+motifs: fans,flags,stitched,skylanterns
 - Harvest Moon|midnight,swag,glowing
 - Songpyeon Table|market,scallops,candles
 - Family Gathering|cozy,fairy,calm
@@ -406,6 +423,8 @@ amb: chimes,harp,wind
 greet: Happy Seollal|Wishing you health and good fortune|Peace and warmth to your family
 greetEs: Feliz Seollal|Salud y buena fortuna para ti
 defaults: bunting,fairy,hairline,snow,cluster
+colors: 1F4E9A,C8102E,F2C230,FFFFFF
+motifs: fans,flags,tassels,stitched
 - Hanbok New Year|bold,ribbons,hairline
 - Tteokguk Morning|cafe,scallops,calm
 - Kite Flying|sky,bunting,flutter
@@ -445,6 +464,7 @@ amb: chimes,harp,pad
 greet: Happy Diwali|May your home glow with light|Wishing you joy and light
 greetEs: Feliz Diwali|Que tu hogar brille de luz
 defaults: emoji,fairy,hairline,sparkles,cluster
+motifs: diyas,rangoli,tassels,skylanterns,glittery
 - Diya Glow|lantern,candles,glowing
 - Rangoli Courtyard|bold,bunting,confettied
 - Marigold Garlands|harvest,vine,petalfall
@@ -484,6 +504,7 @@ amb: birds,stream,chimes
 greet: Happy Holi|Wishing you a day of colour|Bright joy to you and yours
 greetEs: Feliz Holi|Un día lleno de color para ti
 defaults: bunting,fairy,hairline,confetti,cluster
+motifs: glittery,streamers,rangoli,ribbonfall
 - Colour Burst|whimsical,bunting,confettied
 - Spring Marigolds|harvest,vine,petalfall
 - Gulal Clouds|dreamy,fairy,cloudy
@@ -523,6 +544,8 @@ amb: chimes,night,pad
 greet: Ramadan Mubarak|Wishing you a peaceful, blessed month|Peace and reflection to you
 greetEs: Ramadán Mubarak|Un mes de paz y reflexión
 defaults: emoji,lanterns,hairline,stars,lantern
+colors: 0F5C4D,D4AF37,1C2A5A,F7F1E3
+motifs: lace,tassels,stitched
 - Crescent & Lanterns|sacred,lanterns,glowing
 - Fanous Night|lantern,candles,glowing
 - Iftar Table|market,swag,calm
@@ -562,6 +585,8 @@ amb: chimes,birds,harp
 greet: Eid Mubarak|Wishing you joy and gratitude|Peace and blessings to you
 greetEs: Eid Mubarak|Alegría y gratitud para ti
 defaults: bunting,fairy,hairline,sparkles,cluster
+colors: 0F5C4D,D4AF37,1C2A5A,F7F1E3
+motifs: lace,tassels,glittery,flags
 - Festive Crescent|sacred,bunting,sparkly
 - Morning Prayer Light|sunset,hairline,cloudy
 - Family Feast|market,swag,candles
@@ -601,6 +626,8 @@ amb: chimes,wind,pad
 greet: Eid Mubarak|Wishing you a blessed Eid|Peace and generosity to you
 greetEs: Eid Mubarak|Un Eid bendecido para ti
 defaults: emoji,fairy,hairline,stars,lantern
+colors: 0F5C4D,D4AF37,1C2A5A,F7F1E3
+motifs: lace,tassels,stitched,flags
 - Blessed Morning|sacred,hairline,cloudy
 - Shared Meal|market,swag,candles
 - Desert Dawn|desert,swag,cloudy
@@ -640,6 +667,8 @@ amb: fire,chimes,musicbox
 greet: Happy Hanukkah|Wishing you eight nights of light|Chag Hanukkah sameach
 greetEs: Feliz Hanuká|Ocho noches de luz para ti
 defaults: swag,candles,hairline,sparkles,cluster
+colors: 1F4E9A,FFFFFF,C0C7D1,7FB2E5
+motifs: glittery,zigzag,lace,tassels
 - Eight Nights|indigo,candles,sparkly
 - Menorah Glow|golden,candles,glowing
 - Dreidel Game|bold,bunting,confettied
@@ -669,8 +698,8 @@ defaults: swag,candles,hairline,sparkles,cluster
 @kwanzaa|Kwanzaa|🕯️|holiday|false
 blurb: Seven days honouring heritage, community and the seven principles, for those who celebrate Kwanzaa.
 note: Celebrated December 26 to January 1 with the kinara, mishumaa saba and Nguzo Saba. Colours follow the red, black and green of the Bendera.
-garland: 🕯️,🌽,🍎,🌍,✨,🥁,🌾
-corner: 🕯️,🌽,🥁,🌍,🍎,🌾
+garland: 🕯️,🌽,🥁,🧺,🌾,🍎,🌍
+corner: 🕯️,🌽,🥁,🧺,🍎,🌾
 hangers: 🕯️,✨,🌍,🥁,🌽,⭐
 furniture: 🕯️,🌽,🥁,🍎,📖,🎁
 icons: 🕯️,🌽,🥁,🌍,🍎
@@ -678,32 +707,34 @@ acc: 🕯️,🌍,🥁,🌽
 amb: fire,chimes,harp
 greet: Happy Kwanzaa|Harambee — pulling together|Habari gani?
 greetEs: Feliz Kwanzaa|Harambee — unidos
-defaults: swag,candles,hairline,sparkles,cluster
-- Seven Candles|bold,candles,sparkly
-- Kinara Glow|ember,candles,glowing
-- Harvest Table|market,swag,calm
-- Umoja Unity|forest,chain,wreathed
-- Golden Heritage|golden,tinsel,sparkly
-- Drum Circle|harvest,bunting,confettied
-- Woven Kente|folk,beads,hairline
-- Soft Pastel Light|pastel,pompoms,sparkly
-- Cozy Family Gathering|cozy,fairy,calm
-- Starlit Night|celestial,starlights,starry
-- Minimal Candles|minimal,hairline,calm
-- Elegant Evening|elegant,double,fairy
-- Sunrise on the Savanna|desert,hairline,cloudy
-- Storybook Ancestors|storybook,vined,flutter
-- Indigo Night|indigo,starlights,starry
-- Teal Reflections|teal,hairline,bubbly
-- Rose Warmth|rose,ribbons,hearty
-- Amber Lamps|amber,lanterns,embers
-- Dreamy Evening|dreamy,fairy,bokehy
-- Jade Garden|jade,vine,flutter
-- Moss & Clay|moss,vine,leafy
-- Sunset Gathering|sunset,swag,cloudy
-- Kawaii Kinara|kawaii,pompoms,hearty
-- Vintage Quilt|vintage,scroll,dotted
-- Garden of Principles|garden,vined,petalfall
+defaults: kente,candles,mkeka,embers,kinara
+colors: C8102E,111111,1E7B34
+motifs: kinara,kente,stitched,flags,mkeka,tassels,zigzag,beads,dotted
+- Mishumaa Saba|bold,kinara,kente
+- Umoja|forest,chain,stitched
+- Kujichagulia|midnight,kinara,glowing
+- Ujima|market,flags,mkeka
+- Ujamaa|rustic,tassels,dotted
+- Nia|sacred,kinara,stitched
+- Kuumba|whimsical,streamers,confettied
+- Imani|celestial,kinara,starry
+- Karamu Feast|harvest,flags,kinara
+- Mkeka Weave|folk,mkeka,beads
+- Kente Weave|bold,kente,double
+- Bendera Colours|classic,flags,hairline
+- Zawadi Gifts|golden,tassels,kinara
+- Kikombe cha Umoja|vintage,kinara,stitched
+- First Fruits|garden,vine,leafy
+- Drum and Dance|retro,bunting,zigzag
+- Ancestral Night|ember,kinara,embers
+- Libation at Dawn|desert,ribbons,cloudy
+- Family Circle|cozy,tassels,kinara
+- Harambee|carnival,flags,stitched
+- Woven Baskets|woodland,kente,fans
+- Candlelit Evening|gothic,kinara,glowing
+- Storyteller's Night|storybook,beads,starry
+- Marketplace|market,tassels,mkeka
+- Seven Principles|elegant,kinara,mkeka
 
 @diademuertos|Día de los Muertos|💀|holiday|false
 blurb: Marigolds, ofrendas and loving remembrance of those who came before, for those who observe Día de los Muertos.
@@ -718,6 +749,7 @@ amb: chimes,night,harp
 greet: Feliz Día de los Muertos|Remembering with love|Marigolds and memories to you
 greetEs: Feliz Día de los Muertos|Recordando con amor
 defaults: swag,candles,hairline,petals,cluster
+motifs: papel,zigzag,tassels
 - Marigold Ofrenda|harvest,swag,candles
 - Papel Picado|bold,bunting,confettied
 - Candlelit Altar|ember,candles,glowing
@@ -756,6 +788,8 @@ amb: chimes,night,musicbox
 greet: Happy Mardi Gras|Laissez les bons temps rouler|Beads and brass to you
 greetEs: Feliz Mardi Gras|¡Que empiece la fiesta!
 defaults: beads,bulbs,hairline,confetti,cluster
+colors: 5B2A86,1E8E3E,F2C230
+motifs: tassels,feathery,streamers,glittery,zigzag
 - Purple, Green & Gold|carnival,beads,confettied
 - Masquerade Ball|gothic,ornate,sparkly
 - Second Line Parade|bold,bunting,confettied
@@ -795,6 +829,7 @@ amb: chimes,birds,musicbox
 greet: Happy Carnival|Dance, colour and joy to you|Enjoy the rhythm
 greetEs: Feliz Carnaval|Baile, color y alegría
 defaults: bunting,bulbs,hairline,confetti,cluster
+motifs: feathery,streamers,glittery,flags
 - Street Parade|whimsical,bunting,confettied
 - Samba Drums|bold,chain,confettied
 - Venetian Masks|gothic,ornate,sparkly
@@ -833,6 +868,8 @@ amb: stream,birds,harp
 greet: Happy St. Patrick's Day|Luck of the Irish to you|May your day be green and gentle
 greetEs: Feliz Día de San Patricio|Que la suerte te acompañe
 defaults: vine,fairy,hairline,sparkles,cluster
+colors: 169B62,0E5C2F,E5B83B,F4F1E6
+motifs: stitched,flags,tassels,lace
 - Lucky Clover|garden,vine,sparkly
 - Rainbow's End|whimsical,bunting,flutter
 - Emerald Hills|forest,vine,cloudy
@@ -872,6 +909,7 @@ amb: birds,chimes,stream
 greet: Happy Pride|You belong here|Be proud, be you
 greetEs: Feliz Orgullo|Aquí perteneces
 defaults: bunting,fairy,hairline,confetti,cluster
+motifs: flags,streamers,glittery,ribbonfall
 - Rainbow Parade|whimsical,bunting,confettied
 - Prism Light|celestial,starlights,sparkly
 - Pastel Pride|pastel,pompoms,petalfall
@@ -911,6 +949,7 @@ amb: birds,musicbox,chimes
 greet: Happy Children's Day|Stay curious and playful|Wishing you wonder today
 greetEs: Feliz Día del Niño|Que sigas jugando y soñando
 defaults: bunting,fairy,hairline,bubbles,cluster
+motifs: flags,streamers,glittery
 - Carp Streamers|bold,bunting,flutter
 - Balloon Party|whimsical,chain,confettied
 - Playroom Blocks|workshop,chain,clustered
@@ -949,6 +988,8 @@ amb: stream,birds,wind
 greet: Happy Earth Day|Be gentle with the planet|Grow something good today
 greetEs: Feliz Día de la Tierra|Cuida el planeta hoy
 defaults: vine,fairy,vine,leaves,sprig
+colors: 2E7D32,1565C0,8BC34A,6D4C41
+motifs: stitched,flags,tassels
 - Seedling Morning|garden,vine,leafy
 - Blue Marble|ocean,swag,cloudy
 - Wildflower Meadow|floral,vine,flutter
@@ -988,6 +1029,7 @@ amb: birds,stream,chimes
 greet: Happy cherry blossom season|Petals are falling — take a breath|Hanami wishes to you
 greetEs: Feliz temporada de cerezos|Los pétalos están cayendo
 defaults: vine,fairy,hairline,petals,sprig
+motifs: fans,lace,tassels
 - Full Bloom|blossom,vine,petalfall
 - Hanami Picnic|garden,swag,flutter
 - Petal Storm|pastel,pompoms,petalfall
@@ -1026,6 +1068,7 @@ amb: birds,stream,wind
 greet: Happy spring|New growth is on its way|Soft light and new beginnings
 greetEs: Feliz primavera|Nuevos comienzos
 defaults: vine,fairy,hairline,petals,sprig
+motifs: flags,lace,stitched
 - Tulip Fields|garden,vine,petalfall
 - Spring Showers|monsoon,hairline,raining
 - Pollinator Meadow|whimsical,bunting,flutter
@@ -1064,6 +1107,7 @@ amb: waves,birds,night
 greet: Happy summer|Long light and slow evenings|Stay cool and kind
 greetEs: Feliz verano|Largas tardes de luz
 defaults: bunting,bulbs,hairline,bubbles,cluster
+motifs: flags,sunburst,streamers,fans
 - Sunny Beach Day|sky,bunting,bubbly
 - Sunflower Field|garden,vine,flutter
 - Lemonade Stand|golden,scallops,clustered
@@ -1102,6 +1146,7 @@ amb: wind,fire,night
 greet: Happy autumn|Leaves are turning|Cozy evenings are here
 greetEs: Feliz otoño|Las hojas están cambiando
 defaults: swag,candles,hairline,leaves,cluster
+motifs: stitched,tassels,fans,feathery
 - Maple Lane|sunset,swag,leafy
 - Harvest Moon|harvest,vine,glowing
 - Cozy Cabin|cozy,candles,calm
@@ -1140,6 +1185,7 @@ amb: wind,fire,chimes
 greet: Happy winter|Stay warm and soft|Quiet snow and warm light
 greetEs: Feliz invierno|Calidez para los días fríos
 defaults: swag,fairy,frost,snow,cluster
+motifs: icicles,stitched,lace,glittery
 - First Snow|frost,swag,snowing
 - Cozy Fireside|cozy,candles,embers
 - Snowy Village|village,windowed,snowing
@@ -1179,6 +1225,7 @@ amb: rain,storm,stream
 greet: Happy rainy season|Listen to the rain|A cozy day for staying in
 greetEs: Feliz temporada de lluvias|Escucha la lluvia
 defaults: vine,fairy,hairline,rain,cluster
+motifs: stitched,tassels
 - Window Droplets|monsoon,hairline,raining
 - Umbrella Street|village,windowed,raining
 - Hydrangea Garden|lilac,vine,petalfall
@@ -1218,6 +1265,7 @@ amb: storm,rain,stream
 greet: Happy monsoon season|Let the rain arrive|Green after the rain
 greetEs: Feliz temporada de monzones|Que llegue la lluvia
 defaults: vine,fairy,hairline,rain,cluster
+motifs: stitched,tassels,flags
 - First Rains|monsoon,hairline,raining
 - Lotus Pond|jade,vine,bubbly
 - Green After Rain|moss,vine,leafy

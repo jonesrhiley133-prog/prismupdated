@@ -30,11 +30,39 @@ enum GarlandStyle {
   chain,
   pompom,
   swag,
+  kente,
+  papel,
+  streamers,
+  tassels,
+  flags,
 }
 
-enum LightsStyle { none, fairy, bulbs, lanterns, stars, candles }
+enum LightsStyle {
+  none,
+  fairy,
+  bulbs,
+  lanterns,
+  stars,
+  candles,
+  icicle,
+  neon,
+  diya,
+}
 
-enum DecoBorder { none, hairline, double, dotted, scallop, frost, vine, ornate }
+enum DecoBorder {
+  none,
+  hairline,
+  double,
+  dotted,
+  scallop,
+  frost,
+  vine,
+  ornate,
+  mkeka,
+  zigzag,
+  lace,
+  stitched,
+}
 
 enum ParticleKind {
   none,
@@ -52,6 +80,10 @@ enum ParticleKind {
   clouds,
   butterflies,
   bokeh,
+  feathers,
+  glitter,
+  skylanterns,
+  ribbons,
 }
 
 enum CornerStyle {
@@ -63,6 +95,10 @@ enum CornerStyle {
   frame,
   ribbon,
   window,
+  kinara,
+  fan,
+  rangoli,
+  sunburst,
 }
 
 /// One finished look inside a collection: its own palette, garland, lights,

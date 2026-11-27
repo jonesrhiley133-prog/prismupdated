@@ -1,3 +1,4 @@
+import 'package:flutter/painting.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_data.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_vocab.dart';
@@ -77,6 +78,18 @@ List<SeasonalCollection> _parse(String src) {
       throw StateError('Bad defaults for $id: ${d.join(",")}');
     }
 
+    // Traditional colours: every look is redrawn in these, so a holiday
+    // never picks up colours that don't belong to it.
+    final colors = [
+      for (final h in list('colors')) 0xFF000000 | int.parse(h, radix: 16),
+    ];
+    // Signature styles mixed through the looks so a holiday looks like
+    // itself, and its looks don't all share the same defaults.
+    final motifs = list('motifs');
+    for (final m in motifs) {
+      if (decoStyles[m] == null) throw StateError('Unknown motif "$m" in $id');
+    }
+
     final looks = lines.where((l) => l.startsWith('- ')).toList();
     final variations = <SeasonalVariation>[];
     for (var i = 0; i < looks.length; i++) {
@@ -104,6 +117,26 @@ List<SeasonalCollection> _parse(String src) {
         }
       }
       if (palette == null) throw StateError('No palette for $id / $name');
+      if (colors.length >= 2) palette = recolorPalette(palette, colors, i, id);
+      // Fill slots the look didn't choose from the collection's motifs,
+      // rotating so neighbouring looks differ; every third look also lets a
+      // motif replace one of its own choices.
+      if (motifs.isNotEmpty) {
+        for (var k = 0; k < motifs.length; k++) {
+          final sty = decoStyles[motifs[(i + k * 3) % motifs.length]]!;
+          final force = k == 0 && i % 3 == 1;
+          GarlandStyle? g(String x) => x == '-' ? null : garlandOf(x);
+          if (sty[0] != '-' && (garland == null || force)) garland = g(sty[0]);
+          if (sty[1] != '-' && (lights == null || force))
+            lights = lightsOf(sty[1]);
+          if (sty[2] != '-' && (border == null || force))
+            border = borderOf(sty[2]);
+          if (sty[3] != '-' && (particle == null || force))
+            particle = particleOf(sty[3]);
+          if (sty[4] != '-' && (corner == null || force))
+            corner = cornerOf(sty[4]);
+        }
+      }
       final v = SeasonalVariation(
         id: '$id.$i',
         collectionId: id,
@@ -144,4 +177,60 @@ List<SeasonalCollection> _parse(String src) {
     );
   }
   return out;
+}
+
+/// Redraws [o] using only a holiday's [colors], keeping the look's mood: a
+/// dark look stays dark, a soft (pastel) look stays soft, a bright one stays
+/// bright. Neighbouring looks rotate which colour leads.
+DecoPalette recolorPalette(DecoPalette o, List<int> colors, int i, String id) {
+  double lum(int c) => Color(c).computeLuminance();
+  int mix(int a, int b, double t) =>
+      Color.lerp(Color(a), Color(b), t)!.toARGB32();
+  const white = 0xFFFFFFFF, black = 0xFF000000;
+  final n = colors.length;
+  int pick(int k) => colors[(i + k) % n];
+  final dark = lum(o.base) < 0.2;
+  final soft = lum(o.primary) > 0.55 && !dark;
+  final inky = [
+    for (final c in colors)
+      if (lum(c) < 0.03) c,
+  ];
+  final base = dark
+      ? (inky.isNotEmpty
+            ? mix(inky.first, pick(0), 0.1)
+            : mix(pick(0), black, 0.8))
+      : mix(
+          pick(lum(pick(0)) < 0.03 && n > 1 ? 1 : 0),
+          white,
+          lum(o.base) > 0.9 ? 0.93 : 0.82,
+        );
+  // Colours that show up against the base, in rotating order.
+  final usable = <int>[
+    for (var k = 0; k < n; k++)
+      if (!(dark && lum(pick(k)) < 0.03)) pick(k),
+  ];
+  int at(int k) => usable[k % usable.length];
+  var p = at(0),
+      s = at(1),
+      a = usable.length > 2
+          ? at(2)
+          : (dark ? mix(at(0), white, 0.45) : mix(at(1), black, 0.25));
+  if (soft) {
+    p = mix(p, white, 0.38);
+    s = mix(s, white, 0.38);
+  }
+  // Each time the rotation comes round again, shift the shades so two looks
+  // with the same mood never end up identical.
+  final turn = (i ~/ n) % 4;
+  if (turn == 1) {
+    p = mix(p, white, 0.18);
+    a = mix(a, black, 0.15);
+  } else if (turn == 2) {
+    p = mix(p, black, 0.18);
+    s = mix(s, white, 0.2);
+  } else if (turn == 3) {
+    s = mix(s, black, 0.2);
+    a = mix(a, white, 0.2);
+  }
+  return DecoPalette('${o.id}~$id.$i', base, p, s, a);
 }

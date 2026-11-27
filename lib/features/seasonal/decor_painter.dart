@@ -357,6 +357,188 @@ class DecorPainter extends CustomPainter {
       ..isAntiAlias = true;
     final pal = [main, second, accent, v?.palette.base ?? 0xFFFFFFFF];
     switch (style) {
+      case GarlandStyle.kente:
+        // A woven strip: blocks of colour with dark weft stripes and a
+        // little zigzag in each block, like kente cloth.
+        const weft = 0xFF1A1A1A;
+        for (var i = 0; i < points.length; i++) {
+          final (p, a) = points[i];
+          final w = unit * 1.16, h = unit * 0.78;
+          c.save();
+          c.translate(p.dx, p.dy + unit * 0.3);
+          c.rotate(a);
+          final block = Rect.fromCenter(
+            center: Offset.zero,
+            width: w,
+            height: h,
+          );
+          c.drawRect(block, Paint()..color = _c(pal[i % 3]));
+          c.drawRect(
+            Rect.fromLTWH(block.left, block.top, w, h * 0.14),
+            Paint()..color = _c(weft, 0.9),
+          );
+          c.drawRect(
+            Rect.fromLTWH(block.left, block.bottom - h * 0.14, w, h * 0.14),
+            Paint()..color = _c(weft, 0.9),
+          );
+          final z = Path()..moveTo(block.left, 0);
+          for (var k = 0; k <= 4; k++) {
+            z.lineTo(block.left + w * k / 4, k.isEven ? -h * 0.16 : h * 0.16);
+          }
+          c.drawPath(
+            z,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1.6
+              ..color = _c(pal[(i + 1) % 3]),
+          );
+          if (i.isOdd) {
+            c.drawRect(
+              Rect.fromCenter(
+                center: Offset.zero,
+                width: w * 0.18,
+                height: h * 0.18,
+              ),
+              Paint()..color = _c(pal[(i + 2) % 3]),
+            );
+          }
+          c.restore();
+        }
+      case GarlandStyle.papel:
+        // Papel picado: cut-paper banners with little holes punched out.
+        c.drawPath(
+          path,
+          line
+            ..color = _c(0xFF6B5B4B, 0.8)
+            ..strokeWidth = 1.1,
+        );
+        for (var i = 0; i < points.length; i++) {
+          final p = points[i].$1;
+          final w = unit * 1.05, h = unit * 1.35;
+          final sway = math.sin(tt * 1.3 + i + phase) * 0.06;
+          c.save();
+          c.translate(p.dx, p.dy);
+          c.rotate(sway);
+          final flag = Path()
+            ..moveTo(-w / 2, 0)
+            ..lineTo(w / 2, 0)
+            ..lineTo(w / 2, h * 0.86);
+          for (var k = 4; k >= 0; k--) {
+            flag.lineTo(-w / 2 + w * k / 4, k.isEven ? h : h * 0.86);
+          }
+          flag.close();
+          final holes = Path();
+          for (var k = 0; k < 3; k++) {
+            final y = h * (0.25 + k * 0.22);
+            holes.addOval(
+              Rect.fromCenter(
+                center: Offset(0, y),
+                width: w * 0.22,
+                height: w * 0.22,
+              ),
+            );
+            holes.addRect(
+              Rect.fromCenter(
+                center: Offset(-w * 0.28, y),
+                width: w * 0.1,
+                height: w * 0.1,
+              ),
+            );
+            holes.addRect(
+              Rect.fromCenter(
+                center: Offset(w * 0.28, y),
+                width: w * 0.1,
+                height: w * 0.1,
+              ),
+            );
+          }
+          c.drawPath(
+            Path.combine(PathOperation.difference, flag, holes),
+            Paint()
+              ..color = _c(
+                pal[i % 4] == (v?.palette.base ?? 0) ? main : pal[i % 4],
+                0.92,
+              ),
+          );
+          c.restore();
+        }
+      case GarlandStyle.streamers:
+        c.drawPath(
+          path,
+          line
+            ..color = _c(main, 0.7)
+            ..strokeWidth = 1.6,
+        );
+        for (var i = 0; i < points.length; i += 2) {
+          final p = points[i].$1;
+          final curl = Path()..moveTo(p.dx, p.dy);
+          final len = unit * (2.2 + 1.2 * _hash01(i, 9));
+          for (var k = 1; k <= 12; k++) {
+            final y = p.dy + len * k / 12;
+            final x = p.dx + math.sin(k * 0.9 + tt * 1.6 + i) * unit * 0.32;
+            curl.lineTo(x, y);
+          }
+          c.drawPath(
+            curl,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = unit * 0.16
+              ..strokeCap = StrokeCap.round
+              ..color = _c(pal[(i ~/ 2) % 3]),
+          );
+        }
+      case GarlandStyle.tassels:
+        c.drawPath(
+          path,
+          line
+            ..color = _c(main)
+            ..strokeWidth = 2,
+        );
+        for (var i = 0; i < points.length; i++) {
+          final p = points[i].$1;
+          final col = _c(pal[i % 3]);
+          final sway = math.sin(tt + i * 0.7 + phase) * unit * 0.12;
+          c.drawCircle(
+            p + Offset(0, unit * 0.12),
+            unit * 0.18,
+            Paint()..color = col,
+          );
+          for (var k = -3; k <= 3; k++) {
+            c.drawLine(
+              p + Offset(k * unit * 0.05, unit * 0.25),
+              p + Offset(k * unit * 0.07 + sway, unit * 1.1),
+              Paint()
+                ..color = col
+                ..strokeWidth = 1.3,
+            );
+          }
+        }
+      case GarlandStyle.flags:
+        c.drawPath(
+          path,
+          line
+            ..color = _c(0xFF5B4B3B, 0.8)
+            ..strokeWidth = 1.2,
+        );
+        for (var i = 0; i < points.length; i++) {
+          final p = points[i].$1;
+          final w = unit * 1.05, h = unit * 0.95;
+          final flag = Path()
+            ..moveTo(p.dx - w / 2, p.dy)
+            ..lineTo(p.dx + w / 2, p.dy)
+            ..lineTo(p.dx + w / 2, p.dy + h)
+            ..lineTo(p.dx, p.dy + h * 0.72)
+            ..lineTo(p.dx - w / 2, p.dy + h)
+            ..close();
+          c.drawPath(flag, Paint()..color = _c(pal[i % 3]));
+          c.drawLine(
+            Offset(p.dx - w / 2, p.dy + h * 0.3),
+            Offset(p.dx + w / 2, p.dy + h * 0.3),
+            Paint()
+              ..color = _c(pal[(i + 1) % 3], 0.8)
+              ..strokeWidth = 2,
+          );
+        }
       case GarlandStyle.vine:
         c.drawPath(
           path,
@@ -553,6 +735,35 @@ class DecorPainter extends CustomPainter {
         ..color = const Color(0x886B6B6B),
     );
     final on = scene.lightsOn;
+    if (style == LightsStyle.neon) {
+      // A glowing tube along the line instead of separate bulbs.
+      final flicker = on ? 0.75 + 0.25 * math.sin(tt * 3.1 + phase) : 0.15;
+      c.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 9
+          ..strokeCap = StrokeCap.round
+          ..color = _c(main, 0.22 * flicker)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+      );
+      c.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.2
+          ..strokeCap = StrokeCap.round
+          ..color = _c(main, flicker),
+      );
+      c.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1
+          ..color = Colors.white.withValues(alpha: 0.7 * flicker),
+      );
+      return;
+    }
     final colors = style == LightsStyle.fairy
         ? [0xFFFFE9A8, 0xFFFFD27A, 0xFFFFF3C9]
         : [
@@ -572,6 +783,60 @@ class DecorPainter extends CustomPainter {
           : 0.15;
       final col = colors[i % colors.length];
       switch (style) {
+        case LightsStyle.icicle:
+          final len = 10 + 10 * _hash01(i, 6);
+          final ice = Path()
+            ..moveTo(p.dx - 3, p.dy - 4)
+            ..lineTo(p.dx + 3, p.dy - 4)
+            ..lineTo(p.dx, p.dy - 4 + len)
+            ..close();
+          c.drawPath(
+            ice,
+            Paint()
+              ..shader = LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.95),
+                  const Color(0xFFBFE3FF).withValues(alpha: 0.6 * glow),
+                ],
+              ).createShader(Rect.fromLTWH(p.dx - 3, p.dy - 4, 6, len)),
+          );
+          c.drawCircle(
+            Offset(p.dx, p.dy - 4 + len),
+            2.2,
+            Paint()..color = Colors.white.withValues(alpha: 0.5 * glow),
+          );
+        case LightsStyle.diya:
+          // A small clay lamp with a living flame.
+          final bowl = Path()
+            ..moveTo(p.dx - 7, p.dy + 2)
+            ..quadraticBezierTo(p.dx, p.dy + 11, p.dx + 7, p.dy + 2)
+            ..lineTo(p.dx + 9, p.dy)
+            ..close();
+          c.drawPath(bowl, Paint()..color = _c(i.isEven ? 0xFFB5532A : main));
+          c.drawCircle(
+            Offset(p.dx, p.dy - 4),
+            7,
+            Paint()
+              ..color = const Color(0xFFFFB347).withValues(alpha: 0.25 * glow),
+          );
+          final flame = Path()
+            ..moveTo(p.dx, p.dy - 9 - 2 * glow)
+            ..quadraticBezierTo(p.dx + 3.4, p.dy - 2, p.dx, p.dy)
+            ..quadraticBezierTo(
+              p.dx - 3.4,
+              p.dy - 2,
+              p.dx,
+              p.dy - 9 - 2 * glow,
+            );
+          c.drawPath(
+            flame,
+            Paint()
+              ..color = const Color(
+                0xFFFFC94D,
+              ).withValues(alpha: glow.clamp(0.3, 1.0)),
+          );
         case LightsStyle.stars:
           _drawGlyph(
             c,
@@ -959,6 +1224,130 @@ class DecorPainter extends CustomPainter {
     final glyphs = v?.cornerEmoji ?? const ['✨', '🌿', '⭐'];
     final s = width;
     switch (style) {
+      case CornerStyle.kinara:
+        // Seven candles (mishumaa saba): three red, one black, three green.
+        const candles = [
+          0xFFC8102E,
+          0xFFC8102E,
+          0xFFC8102E,
+          0xFF161616,
+          0xFF1E7B34,
+          0xFF1E7B34,
+          0xFF1E7B34,
+        ];
+        final baseY = s * 0.62, left = s * 0.08, w = s * 0.84;
+        c.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(left, baseY, w, s * 0.08),
+            Radius.circular(s * 0.02),
+          ),
+          Paint()..color = _c(0xFF6B4226),
+        );
+        c.drawRect(
+          Rect.fromLTWH(left + w * 0.4, baseY + s * 0.08, w * 0.2, s * 0.1),
+          Paint()..color = _c(0xFF5A3A1E),
+        );
+        for (var k = 0; k < 7; k++) {
+          final x = left + w * (k + 0.5) / 7;
+          final hgt = s * (k == 3 ? 0.34 : 0.28 - (k - 3).abs() * 0.02);
+          c.drawRect(
+            Rect.fromLTWH(x - s * 0.028, baseY - hgt, s * 0.056, hgt),
+            Paint()..color = _c(candles[k]),
+          );
+          final fl = 0.8 + 0.2 * math.sin(tt * 3 + k + phase);
+          final fy = baseY - hgt;
+          c.drawCircle(
+            Offset(x, fy - s * 0.03),
+            s * 0.05,
+            Paint()
+              ..color = const Color(0xFFFFB347).withValues(alpha: 0.25 * fl),
+          );
+          final flame = Path()
+            ..moveTo(x, fy - s * 0.07 * fl)
+            ..quadraticBezierTo(x + s * 0.022, fy - s * 0.015, x, fy)
+            ..quadraticBezierTo(
+              x - s * 0.022,
+              fy - s * 0.015,
+              x,
+              fy - s * 0.07 * fl,
+            );
+          c.drawPath(flame, Paint()..color = const Color(0xFFFFC94D));
+        }
+      case CornerStyle.fan:
+        final cols = [main, second, accent];
+        for (var k = 0; k < 9; k++) {
+          final a0 = k * (math.pi / 2) / 9, a1 = (k + 1) * (math.pi / 2) / 9;
+          final seg = Path()
+            ..moveTo(0, 0)
+            ..arcTo(
+              Rect.fromCircle(center: Offset.zero, radius: s * 0.72),
+              a0,
+              a1 - a0,
+              false,
+            )
+            ..close();
+          c.drawPath(seg, Paint()..color = _c(cols[k % 3], 0.92));
+          c.drawLine(
+            Offset.zero,
+            Offset(math.cos(a0), math.sin(a0)) * s * 0.72,
+            Paint()
+              ..color = _c(0xFF3A2A1A, 0.5)
+              ..strokeWidth = 1,
+          );
+        }
+        for (var k = 0; k <= 9; k++) {
+          final a = k * (math.pi / 2) / 9;
+          c.drawCircle(
+            Offset(math.cos(a), math.sin(a)) * s * 0.72,
+            s * 0.04,
+            Paint()..color = _c(accent),
+          );
+        }
+      case CornerStyle.rangoli:
+        // A rangoli mandala: rings of petals and dots.
+        final ctr = Offset(s * 0.36, s * 0.36);
+        final cols = [main, second, accent];
+        for (var ring = 3; ring >= 1; ring--) {
+          final r = s * 0.1 * ring;
+          final n = 6 + ring * 2;
+          for (var k = 0; k < n; k++) {
+            final a =
+                k * _tau / n + ring * 0.2 + math.sin(tt * 0.2 + phase) * 0.05;
+            c.save();
+            c.translate(ctr.dx + math.cos(a) * r, ctr.dy + math.sin(a) * r);
+            c.rotate(a);
+            c.drawOval(
+              Rect.fromCenter(
+                center: Offset.zero,
+                width: s * 0.11,
+                height: s * 0.055,
+              ),
+              Paint()..color = _c(cols[ring % 3]),
+            );
+            c.restore();
+          }
+        }
+        for (var k = 0; k < 16; k++) {
+          final a = k * _tau / 16;
+          c.drawCircle(
+            ctr + Offset(math.cos(a), math.sin(a)) * s * 0.38,
+            s * 0.018,
+            Paint()..color = _c(cols[k % 3]),
+          );
+        }
+        c.drawCircle(ctr, s * 0.05, Paint()..color = _c(accent));
+      case CornerStyle.sunburst:
+        for (var k = 0; k < 12; k++) {
+          final a0 = k * (math.pi / 2) / 12, a1 = a0 + (math.pi / 2) / 24;
+          final ray = Path()
+            ..moveTo(0, 0)
+            ..lineTo(math.cos(a0) * s * 0.8, math.sin(a0) * s * 0.8)
+            ..lineTo(math.cos(a1) * s * 0.8, math.sin(a1) * s * 0.8)
+            ..close();
+          c.drawPath(ray, Paint()..color = _c(k.isEven ? main : second, 0.75));
+        }
+        c.drawCircle(Offset.zero, s * 0.24, Paint()..color = _c(accent));
+        _drawGlyph(c, glyphs[0], Offset(s * 0.14, s * 0.14), s * 0.2);
       case CornerStyle.cluster:
         _drawGlyph(
           c,
@@ -1109,6 +1498,99 @@ class DecorPainter extends CustomPainter {
       ..strokeWidth = 1.4
       ..color = _c(accent, 0.75);
     switch (style) {
+      case DecoBorder.mkeka:
+        // A woven mat edge: short blocks of colour along every side.
+        final cols = [main, second, accent];
+        final band = 7.0;
+        var k = 0;
+        for (var x = r.left; x < r.right; x += band * 1.6, k++) {
+          c.drawRect(
+            Rect.fromLTWH(x, r.top, band * 1.4, band),
+            Paint()..color = _c(cols[k % 3], 0.85),
+          );
+          c.drawRect(
+            Rect.fromLTWH(x, r.bottom - band, band * 1.4, band),
+            Paint()..color = _c(cols[(k + 1) % 3], 0.85),
+          );
+        }
+        k = 0;
+        for (var y = r.top + band; y < r.bottom - band; y += band * 1.6, k++) {
+          c.drawRect(
+            Rect.fromLTWH(r.left, y, band, band * 1.4),
+            Paint()..color = _c(cols[(k + 2) % 3], 0.85),
+          );
+          c.drawRect(
+            Rect.fromLTWH(r.right - band, y, band, band * 1.4),
+            Paint()..color = _c(cols[k % 3], 0.85),
+          );
+        }
+      case DecoBorder.zigzag:
+        final zp = Path();
+        void edge(Offset a, Offset b) {
+          final d = b - a;
+          final len = d.distance;
+          final n = (len / 9).floor().clamp(2, 400);
+          final nrm = Offset(-d.dy, d.dx) / len;
+          zp.moveTo(a.dx, a.dy);
+          for (var i = 1; i <= n; i++) {
+            final p = a + d * (i / n) + nrm * (i.isOdd ? 4.0 : 0.0);
+            zp.lineTo(p.dx, p.dy);
+          }
+        }
+        edge(r.topLeft, r.topRight);
+        edge(r.topRight, r.bottomRight);
+        edge(r.bottomRight, r.bottomLeft);
+        edge(r.bottomLeft, r.topLeft);
+        c.drawPath(
+          zp,
+          line
+            ..color = _c(main, 0.8)
+            ..strokeWidth = 1.6,
+        );
+      case DecoBorder.lace:
+        final p = Path()
+          ..addRRect(RRect.fromRectAndRadius(r, const Radius.circular(10)));
+        for (final m in p.computeMetrics()) {
+          for (var d = 0.0; d < m.length; d += 14) {
+            final tan = m.getTangentForOffset(d)!;
+            c.drawCircle(
+              tan.position,
+              5,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.2
+                ..color = _c(0xFFFFFFFF, 0.8),
+            );
+            c.drawCircle(
+              tan.position,
+              1.4,
+              Paint()..color = _c(0xFFFFFFFF, 0.8),
+            );
+          }
+        }
+        c.drawRRect(
+          RRect.fromRectAndRadius(r.deflate(6), const Radius.circular(8)),
+          line
+            ..color = _c(accent, 0.5)
+            ..strokeWidth = 0.8,
+        );
+      case DecoBorder.stitched:
+        final p = Path()
+          ..addRRect(
+            RRect.fromRectAndRadius(r.deflate(3), const Radius.circular(10)),
+          );
+        for (final m in p.computeMetrics()) {
+          for (var d = 0.0; d < m.length; d += 10) {
+            c.drawPath(
+              m.extractPath(d, math.min(d + 6, m.length)),
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.6
+                ..strokeCap = StrokeCap.round
+                ..color = _c(main, 0.85),
+            );
+          }
+        }
       case DecoBorder.none:
         break;
       case DecoBorder.hairline:
@@ -1247,6 +1729,9 @@ class DecorPainter extends CustomPainter {
       ParticleKind.confetti => 28,
       ParticleKind.bokeh || ParticleKind.clouds => 8,
       ParticleKind.butterflies => 4,
+      ParticleKind.skylanterns => 7,
+      ParticleKind.feathers => 9,
+      ParticleKind.glitter => 40,
       _ => 22,
     };
     final n =
@@ -1270,7 +1755,93 @@ class DecorPainter extends CustomPainter {
       final prog = ((tt / cycle) + _hash01(seed, 2)) % 1.0;
       final bx = frame.left + frame.width * _hash01(seed, 3);
       final size = 0.6 + 0.9 * _hash01(seed, 4);
+      final cols =
+          pal?.all ?? const [0xFFFF5E8A, 0xFF3DD6D0, 0xFFFFC43D, 0xFFFFFFFF];
       switch (kind) {
+        case ParticleKind.feathers:
+          final x = bx + math.sin(tt * 0.5 + i * 1.3) * 34;
+          final y = frame.top + frame.height * prog;
+          c.save();
+          c.translate(x, y);
+          c.rotate(math.sin(tt * 0.9 + i) * 0.7);
+          final len = 14 * size + 6;
+          final quill = Path()
+            ..moveTo(0, -len / 2)
+            ..quadraticBezierTo(len * 0.32, 0, 0, len / 2)
+            ..quadraticBezierTo(-len * 0.32, 0, 0, -len / 2);
+          c.drawPath(quill, Paint()..color = _c(cols[1 + i % 3], 0.85));
+          c.drawLine(
+            Offset(0, -len / 2),
+            Offset(0, len / 2 + 3),
+            Paint()
+              ..color = _c(0xFFFFFFFF, 0.7)
+              ..strokeWidth = 0.8,
+          );
+          c.restore();
+        case ParticleKind.glitter:
+          final x = bx + math.sin(tt * 0.4 + i) * 6;
+          final y = frame.top + frame.height * prog;
+          final tw = 0.4 + 0.6 * (0.5 + 0.5 * math.sin(tt * 4 + i * 2.1));
+          c.save();
+          c.translate(x, y);
+          c.rotate(tt * 2 + i);
+          c.drawRect(
+            Rect.fromCenter(
+              center: Offset.zero,
+              width: 2.4 * size + 1,
+              height: 2.4 * size + 1,
+            ),
+            Paint()..color = _c(cols[i % 4], tw),
+          );
+          c.restore();
+        case ParticleKind.skylanterns:
+          // Paper lanterns rising slowly and glowing.
+          final x = bx + math.sin(tt * 0.25 + i) * 22;
+          final y = frame.bottom - frame.height * prog;
+          final w = 9 + 7 * size, h = w * 1.25;
+          final glow = 0.75 + 0.25 * math.sin(tt * 2 + i);
+          c.drawCircle(
+            Offset(x, y),
+            w,
+            Paint()
+              ..color = const Color(0xFFFFB347).withValues(alpha: 0.18 * glow),
+          );
+          final body = Path()
+            ..moveTo(x - w / 2, y - h / 2)
+            ..lineTo(x + w / 2, y - h / 2)
+            ..lineTo(x + w * 0.36, y + h / 2)
+            ..lineTo(x - w * 0.36, y + h / 2)
+            ..close();
+          c.drawPath(
+            body,
+            Paint()
+              ..shader = LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  _c(cols[1 % 4], 0.9),
+                  const Color(0xFFFFD27A).withValues(alpha: 0.95 * glow),
+                ],
+              ).createShader(Rect.fromLTWH(x - w / 2, y - h / 2, w, h)),
+          );
+        case ParticleKind.ribbons:
+          final x = bx + math.sin(tt * 0.7 + i) * 20;
+          final y = frame.top + frame.height * prog;
+          final rib = Path()..moveTo(x, y);
+          for (var k = 1; k <= 8; k++) {
+            rib.lineTo(
+              x + math.sin(k * 1.1 + tt * 2 + i) * 4,
+              y + k * 2.4 * size + k,
+            );
+          }
+          c.drawPath(
+            rib,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2.6
+              ..strokeCap = StrokeCap.round
+              ..color = _c(cols[1 + i % 3], 0.9),
+          );
         case ParticleKind.snow:
           final x = bx + math.sin(tt * 0.7 + i) * 14;
           final y = frame.top + frame.height * prog;

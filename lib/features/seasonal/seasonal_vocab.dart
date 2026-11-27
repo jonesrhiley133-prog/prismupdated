@@ -98,6 +98,26 @@ cloudy|-|-|-|clouds|-
 flutter|-|-|-|butterflies|-
 bokehy|-|-|-|bokeh|-
 calm|-|fairy|-|none|-
+kente|kente|-|-|-|-
+papel|papel|-|-|-|-
+streamers|streamers|-|-|-|-
+tassels|tassels|-|-|-|-
+flags|flags|-|-|-|-
+icicles|-|icicle|-|-|-
+neonlights|-|neon|-|-|-
+diyas|-|diya|-|-|-
+mkeka|-|-|mkeka|-|-
+zigzag|-|-|zigzag|-|-
+lace|-|-|lace|-|-
+stitched|-|-|stitched|-|-
+kinara|-|-|-|-|kinara
+fans|-|-|-|-|fan
+rangoli|-|-|-|-|rangoli
+sunburst|-|-|-|-|sunburst
+feathery|-|-|-|feathers|-
+glittery|-|-|-|glitter|-
+skylanterns|-|-|-|skylanterns|-
+ribbonfall|-|-|-|ribbons|-
 ''';
 
 int _hex(String h) => 0xFF000000 | int.parse(h, radix: 16);

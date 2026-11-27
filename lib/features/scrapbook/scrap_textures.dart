@@ -615,6 +615,10 @@ ScrapTexture seasonalTexture(SeasonalVariation v) {
     ParticleKind.clouds => 'clouds',
     ParticleKind.butterflies => 'ditsy',
     ParticleKind.bokeh => 'polkaBig',
+    ParticleKind.feathers => 'leaves',
+    ParticleKind.glitter => 'glitter',
+    ParticleKind.skylanterns => 'constellations',
+    ParticleKind.ribbons => 'chevron',
     ParticleKind.none =>
       v.border == DecoBorder.hairline ? 'stripes' : 'diamonds',
   };
