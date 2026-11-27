@@ -1253,24 +1253,64 @@ class AlterAccentScope extends StatefulWidget {
 }
 
 class _AlterAccentScopeState extends State<AlterAccentScope> {
+  ModalRoute<Object?>? _route;
+
+  /// The profile owns the tint only while its page is the one in front:
+  /// it lets go the moment you start going back, or when another page opens
+  /// on top, instead of after the page has finished closing.
+  bool get _showing {
+    final r = _route;
+    if (r == null) return true;
+    final leaving =
+        r.animation?.status == AnimationStatus.reverse ||
+        r.animation?.status == AnimationStatus.dismissed;
+    final sec = r.secondaryAnimation?.status;
+    final covered =
+        sec == AnimationStatus.forward || sec == AnimationStatus.completed;
+    return r.isActive && !leaving && !covered;
+  }
+
+  void _sync() {
+    if (!mounted) return;
+    if (_showing) {
+      viewedAlterAccent.value = widget.accent;
+    } else if (viewedAlterAccent.value == widget.accent) {
+      viewedAlterAccent.value = null;
+    }
+  }
+
+  void _onRouteAnimation(AnimationStatus _) => _sync();
+
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) viewedAlterAccent.value = widget.accent;
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final r = ModalRoute.of(context);
+    if (r != _route) {
+      _route?.animation?.removeStatusListener(_onRouteAnimation);
+      _route?.secondaryAnimation?.removeStatusListener(_onRouteAnimation);
+      _route = r;
+      r?.animation?.addStatusListener(_onRouteAnimation);
+      r?.secondaryAnimation?.addStatusListener(_onRouteAnimation);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
   }
 
   @override
   void didUpdateWidget(AlterAccentScope old) {
     super.didUpdateWidget(old);
-    if (old.accent != widget.accent) viewedAlterAccent.value = widget.accent;
+    if (old.accent != widget.accent) {
+      if (viewedAlterAccent.value == old.accent) viewedAlterAccent.value = null;
+      _sync();
+    }
   }
 
   @override
   void dispose() {
-    if (viewedAlterAccent.value == widget.accent)
+    _route?.animation?.removeStatusListener(_onRouteAnimation);
+    _route?.secondaryAnimation?.removeStatusListener(_onRouteAnimation);
+    if (viewedAlterAccent.value == widget.accent) {
       viewedAlterAccent.value = null;
+    }
     super.dispose();
   }
 

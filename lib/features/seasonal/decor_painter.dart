@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
@@ -110,15 +111,22 @@ Color _c(int v, [double a = 1]) => Color(v).withValues(alpha: a);
 class DecorPainter extends CustomPainter {
   DecorPainter({
     required this.scene,
-    required this.t,
+    required double t,
     required this.layersToDraw,
     Listenable? repaint,
-  }) : super(repaint: repaint);
+  }) : _t0 = t,
+       _clock = repaint is ValueListenable<double> ? repaint : null,
+       super(repaint: repaint);
 
   final DecorScene scene;
+  final double _t0;
+
+  /// The shared clock this painter repaints on, read at paint time so every
+  /// repaint draws the current frame (not the one from the last rebuild).
+  final ValueListenable<double>? _clock;
 
   /// Seconds on the shared clock; 0 when nothing should move.
-  final double t;
+  double get t => _clock?.value ?? _t0;
 
   /// Which layers this painter draws (static / animated / ambient).
   final Set<DecoLayer> layersToDraw;

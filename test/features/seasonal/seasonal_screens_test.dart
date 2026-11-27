@@ -133,6 +133,37 @@ void main() {
   });
 
   test(
+    'switching Reduced motion off stays off, including after a restart',
+    () async {
+      final env = _Env();
+      addTearDown(env.dispose);
+      final n = env.container.read(seasonalPrefsProvider.notifier);
+      final sub = env.container.listen(seasonalPrefsProvider, (_, _) {});
+      n.update((p) => p.copyWith(reducedMotion: true, greetingsOn: false));
+      await n.flush();
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      n.update((p) => p.copyWith(reducedMotion: false));
+      expect(sub.read().reducedMotion, isFalse);
+      await n.flush();
+      // The database stream catching up must not flip it back on.
+      for (var i = 0; i < 6; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+        expect(sub.read().reducedMotion, isFalse, reason: 'tick $i');
+      }
+      final again = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(env.db),
+          prismSyncHandleProvider.overrideWithBuild((ref, notifier) => null),
+        ],
+      );
+      addTearDown(again.dispose);
+      final sub2 = again.listen(seasonalPrefsProvider, (_, _) {});
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      expect(sub2.read().reducedMotion, isFalse);
+    },
+  );
+
+  test(
     'arrangements can be saved, updated, duplicated, exported, imported and deleted',
     () async {
       final env = _Env();

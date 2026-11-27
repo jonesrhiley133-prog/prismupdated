@@ -991,6 +991,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             // Seasonal Living sits above everything as its own layer; it never
             // changes the theme and ignores touches (except its own tiny toys).
             result = SeasonalOverlay(router: router, child: result);
+            // Eases the background tint when an alter's profile opens/closes.
+            result = ViewedAlterTintDriver(child: result);
             return A11yScope(
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),

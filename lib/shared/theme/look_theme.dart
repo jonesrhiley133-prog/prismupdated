@@ -926,13 +926,18 @@ class _LookBackgroundState extends State<LookBackground> {
                   // Colour adaptation keeps the picture's light and shade
                   // and only changes its hue (blend mode "color"), and it
                   // animates between alters without re-drawing the image.
-                  ValueListenableBuilder<Color?>(
-                    valueListenable: viewedAlterAccent,
-                    builder: (context, accent, _) {
-                      final t = backgroundTint(spec, theme, accent);
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 450),
-                        curve: Curves.easeOut,
+                  // One shared clock drives every background's tint, so
+                  // backgrounds on two pages during a transition never
+                  // disagree (which looked like blinking).
+                  ValueListenableBuilder<double>(
+                    valueListenable: viewedAlterTintProgress,
+                    builder: (context, k, _) {
+                      final t = backgroundTint(
+                        spec,
+                        theme,
+                        viewedAlterTintColor(k),
+                      );
+                      return DecoratedBox(
                         decoration: BoxDecoration(
                           color:
                               t?.$1 ??
@@ -940,6 +945,7 @@ class _LookBackgroundState extends State<LookBackground> {
                           gradient: t?.$2,
                           backgroundBlendMode: BlendMode.color,
                         ),
+                        child: const SizedBox.expand(),
                       );
                     },
                   ),
@@ -951,7 +957,92 @@ class _LookBackgroundState extends State<LookBackground> {
 }
 
 /// The accent of the alter whose profile is on screen (null elsewhere).
+/// This is the target; [ViewedAlterTintDriver] eases toward it.
 final viewedAlterAccent = ValueNotifier<Color?>(null);
+
+/// 0 → [_tintFrom], 1 → [_tintTo]; advanced by [ViewedAlterTintDriver].
+final viewedAlterTintProgress = _TintProgress();
+
+class _TintProgress extends ValueNotifier<double> {
+  _TintProgress() : super(1);
+  void ping() => notifyListeners();
+}
+
+Color? _tintFrom, _tintTo;
+
+/// The tint colour right now, [k] along the current change. Fading to or
+/// from "no tint" keeps the hue and only fades the strength, so there is no
+/// grey dip in the middle.
+Color? viewedAlterTintColor(double k) {
+  final a = _tintFrom, b = _tintTo;
+  if (a == null && b == null) return null;
+  final from = a ?? b!.withValues(alpha: 0);
+  final to = b ?? a!.withValues(alpha: 0);
+  return Color.lerp(from, to, k.clamp(0.0, 1.0));
+}
+
+/// Sits once near the top of the app and animates the alter tint whenever
+/// [viewedAlterAccent] changes. Keep it quick: it should feel like the page
+/// colour, not a slow fade you wait for.
+class ViewedAlterTintDriver extends StatefulWidget {
+  const ViewedAlterTintDriver({super.key, required this.child});
+  final Widget child;
+  @override
+  State<ViewedAlterTintDriver> createState() => _ViewedAlterTintDriverState();
+}
+
+class _ViewedAlterTintDriverState extends State<ViewedAlterTintDriver>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 220),
+    value: 1,
+  )..addListener(() => viewedAlterTintProgress.value = _c.value);
+
+  @override
+  void initState() {
+    super.initState();
+    _tintFrom = _tintTo = viewedAlterAccent.value;
+    viewedAlterAccent.addListener(_onTarget);
+  }
+
+  bool _still = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Read here, not in the listener: the listener can fire while this
+    // widget is being taken down, when looking things up is unsafe.
+    _still = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+  }
+
+  void _onTarget() {
+    if (!mounted) return;
+    final target = viewedAlterAccent.value;
+    if (target == _tintTo) return;
+    // Start from wherever the tint is now, so quick back-and-forth never jumps.
+    _tintFrom = viewedAlterTintColor(_c.value);
+    _tintTo = target;
+    if (_still) {
+      _c.value = 1;
+      viewedAlterTintProgress.value = 1;
+      // Repaint even if the value was already 1.
+      viewedAlterTintProgress.ping();
+      return;
+    }
+    _c.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    viewedAlterAccent.removeListener(_onTarget);
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
 
 /// The colour (or gradient) a picture background is tinted with, already
 /// faded by the tint strength; null for no tint.

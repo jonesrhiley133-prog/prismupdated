@@ -48,14 +48,35 @@ class SeasonalPrefsNotifier extends Notifier<SeasonalPrefs> {
 
   @override
   SeasonalPrefs build() {
-    ref.onDispose(() => _debounce?.cancel());
+    ref.onDispose(() {
+      _debounce?.cancel();
+      _settle?.cancel();
+    });
     final rec = _first(ref.watch(trackerKindProvider(TrackerKind.seasonPrefs)));
-    // A local edit that hasn't been written yet wins over what's stored.
-    return _pending ??
-        (rec == null
-            ? const SeasonalPrefs()
-            : SeasonalPrefs.fromJson(rec.fields));
+    final stored = rec == null
+        ? const SeasonalPrefs()
+        : SeasonalPrefs.fromJson(rec.fields);
+    // A local edit wins until the database shows it: the stream can still
+    // hand back the old record for a moment after a save, and taking that
+    // would flip a switch back (e.g. Reduced motion turning itself on).
+    final p = _pending;
+    if (p != null) {
+      if (_written == p && _sameJson(stored.toJson(), p.toJson())) {
+        _pending = null;
+        _written = null;
+        return stored;
+      }
+      return p;
+    }
+    return stored;
   }
+
+  /// The edit most recently written, waiting to come back from the database.
+  SeasonalPrefs? _written;
+  Timer? _settle;
+
+  static bool _sameJson(Map<String, Object?> a, Map<String, Object?> b) =>
+      jsonEncode(a) == jsonEncode(b);
 
   /// Applies [change] to the current preferences.
   void update(SeasonalPrefs Function(SeasonalPrefs p) change) {
@@ -80,9 +101,22 @@ class SeasonalPrefsNotifier extends Notifier<SeasonalPrefs> {
         fields: p.toJson(),
       );
     } else {
-      await t.save(rec.withFields(p.toJson()));
+      await t.save(rec.replacingFields(p.toJson()));
     }
-    if (identical(_pending, p)) _pending = null;
+    // Keep showing [p] until the stored record matches it (see build).
+    if (identical(_pending, p)) {
+      _written = p;
+      // If the stored copy never compares equal (a rounding difference, say),
+      // stop holding the local copy once the write has certainly landed.
+      _settle?.cancel();
+      _settle = Timer(const Duration(seconds: 3), () {
+        if (identical(_written, p) && identical(_pending, p)) {
+          _pending = null;
+          _written = null;
+          ref.invalidateSelf();
+        }
+      });
+    }
   }
 }
 
@@ -138,7 +172,7 @@ class DecorPresetActions {
       await create(p);
       return;
     }
-    await _t.save(rec.copyWith(title: p.name).withFields(p.toJson()));
+    await _t.save(rec.copyWith(title: p.name).replacingFields(p.toJson()));
   }
 
   Future<void> delete(String id) async {

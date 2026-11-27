@@ -73,6 +73,16 @@ abstract class TrackerRecord with _$TrackerRecord {
 
   /// Returns a copy with [changes] merged into [data] (null values remove a
   /// key).
+  /// Returns a copy whose fields are exactly [fields]: keys missing from
+  /// [fields] are removed. Use this when [fields] is a whole object's JSON
+  /// that leaves out default values, so a value switched back to its
+  /// default isn't kept from before.
+  TrackerRecord replacingFields(Map<String, Object?> fields) => withFields({
+    for (final k in this.fields.keys)
+      if (!fields.containsKey(k)) k: null,
+    ...fields,
+  });
+
   TrackerRecord withFields(Map<String, Object?> changes) {
     final next = Map<String, dynamic>.of(fields);
     changes.forEach((k, v) => v == null ? next.remove(k) : next[k] = v);
