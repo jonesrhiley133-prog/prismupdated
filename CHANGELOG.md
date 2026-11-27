@@ -2,6 +2,21 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.46.0] - 2026-11-27
+
+### Added
+- **Living Collections**: 80 permanent decoration genres in 8 families (space, futuristic, cozy, academic, environmental, artistic, cute, lifestyle), 25 looks each (2,000 looks). A living look is its own layer and never changes your theme, colours, background or fonts.
+- **Decoration asset library**: 1,500+ individually placeable decorations in 56 categories (emoji, tinted line art, frames, washi tape, shapes, garland/light/border/corner/weather styles), with search, favourites and recents.
+- **Living behaviours**: 25 motions (sway, walk, swim, orbit, flutter, real-time clocks, record players that spin with music…), with range, direction, tap-to-interact, sound, time-of-day visibility, idle motion and a reduced-motion choice per decoration.
+- **Environmental effects**: time-of-day light, manual or real weather (city picked from Prism's offline list, no location permission), evening fireflies, birds, music reactions. Companions follow the app's weather.
+- **Layouts**: optional per-look ornaments for headers, cards, dividers, profile frames, the navigation bar and hanging trims, each part switchable.
+- **Digital Rooms**: saved decorated spaces with their own look, layout, weather, lighting, ambience and companions; assign to alters or subsystems; Home shortcut; import/export.
+- **Decoration Studio**: shadow, outline, texture, safe-area and scroll-with-page placement; subsystem decoration profiles with inheritance.
+- **App icons**: 60 new launcher icons, a seasonal library of 15 icons per holiday (applied as a home-screen shortcut or browser tab icon, with opt-in holiday scheduling), gallery with search, groups, favourites, mask previews and export.
+- **Icon Studio**: patterns, textures, frame, sticker, label, shadow, transparency, overlays, saved designs and PNG export.
+- **120 collection backgrounds** in 12 collections, with a gallery, colour temperature, zoom and position, tiling, textures, parallax and scroll-with-page, complementary and monochrome tints, and backgrounds for alter/subsystem profiles, contacts, companions, games and settings.
+- **Appearance hub**: searchable sections, recently used, an independent-layers overview, ambient audio, imported assets and a performance & storage screen with battery saver.
+
 ## [0.45.0] - 2026-11-27
 
 ### Added
