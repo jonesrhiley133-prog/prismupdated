@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
 import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/living_environment.dart';
@@ -1152,6 +1153,61 @@ class _DecorationStudioScreenState
         value: i.enabled,
         onChanged: (v) => _edit(() => all((x) => x.enabled = v)),
       ),
+      const SizedBox(height: 6),
+      Text(tr(context, 'Finish', 'Acabado'), style: theme.textTheme.titleSmall),
+      slider(
+        tr(context, 'Shadow', 'Sombra'),
+        i.shadow,
+        0,
+        1,
+        (v) => '${(v * 100).round()}%',
+        (v) => all((x) => x.shadow = v),
+      ),
+      slider(
+        tr(context, 'Outline thickness', 'Grosor del contorno'),
+        i.outline,
+        0,
+        8,
+        (v) => '${v.toStringAsFixed(1)} px',
+        (v) => all((x) => x.outline = v),
+      ),
+      PrismSelect<String>(
+        labelText: tr(context, 'Texture', 'Textura'),
+        value: i.texture ?? '',
+        items: [
+          PrismSelectItem(value: '', label: tr(context, 'None', 'Ninguna')),
+          for (final t in scrapTextures)
+            PrismSelectItem(value: t.id, label: t.name),
+        ],
+        onChanged: (v) => _edit(
+          () => all((x) => x.texture = v == null || v.isEmpty ? null : v),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        tr(context, 'Placement', 'Colocación'),
+        style: theme.textTheme.titleSmall,
+      ),
+      PrismSwitchRow(
+        title: tr(context, 'Moves with the page', 'Se mueve con la página'),
+        subtitle: tr(
+          context,
+          'Scrolls along with what\'s on screen instead of staying fixed.',
+          'Se desplaza con el contenido en lugar de quedarse fijo.',
+        ),
+        value: i.scroll,
+        onChanged: (v) => _edit(() => all((x) => x.scroll = v)),
+      ),
+      if (i.anchor == DecoAnchor.screen)
+        PrismSwitchRow(
+          title: tr(
+            context,
+            'Keep clear of notches and system bars',
+            'Evitar muescas y barras del sistema',
+          ),
+          value: i.safeArea,
+          onChanged: (v) => _edit(() => all((x) => x.safeArea = v)),
+        ),
       const SizedBox(height: 6),
       Text(
         tr(context, 'Living behaviour', 'Comportamiento vivo'),

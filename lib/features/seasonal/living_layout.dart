@@ -125,11 +125,13 @@ LayoutDecorData layoutDecorFor(SeasonalVariation v, Set<String> parts) {
 final layoutDecorProvider = Provider<LayoutDecorData?>((ref) {
   final prefs = ref.watch(seasonalPrefsProvider);
   if (prefs.performance == DecoPerformance.off) return null;
-  final id = prefs.layoutVariation;
+  final room = ref.watch(activeRoomProvider);
+  final id = room?.layout ?? prefs.layoutVariation;
   if (id == null) return null;
   final v = variationById(id);
   if (v == null) return null;
-  return layoutDecorFor(v, prefs.layoutParts ?? LayoutPart.all.toSet());
+  final parts = room?.layout != null ? room?.layoutParts : prefs.layoutParts;
+  return layoutDecorFor(v, parts ?? LayoutPart.all.toSet());
 });
 
 /// The overlay parts of an arrangement: a garland along the navigation bar

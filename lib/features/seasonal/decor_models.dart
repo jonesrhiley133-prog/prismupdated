@@ -204,7 +204,29 @@ class DecorItem {
     this.companion = false,
     this.still = 'still',
     this.animate = true,
+    this.shadow = 0,
+    this.outline = 0,
+    this.texture,
+    this.safeArea = false,
+    this.scroll = false,
   }) : tweaks = tweaks ?? {};
+
+  // ── Studio extras ───────────────────────────────────────────────────
+
+  /// 0–1: soft drop shadow strength.
+  double shadow;
+
+  /// Outline thickness in logical pixels (0 = none), in the second colour.
+  double outline;
+
+  /// A scrapbook texture id laid over the decoration (paper, glitter…).
+  String? texture;
+
+  /// Keeps whole-screen decorations clear of notches and system bars.
+  bool safeArea;
+
+  /// Moves with the page as it scrolls instead of staying fixed.
+  bool scroll;
 
   // ── Living behaviour ────────────────────────────────────────────────
 
@@ -340,6 +362,11 @@ class DecorItem {
     if (companion) 'cmp': true,
     if (still != 'still') 'rms': still,
     if (!animate) 'na': true,
+    if (shadow != 0) 'sh': _r(shadow),
+    if (outline != 0) 'ol': _r(outline),
+    'tx': ?texture,
+    if (safeArea) 'sa': true,
+    if (scroll) 'sc': true,
   };
 
   static DecorItem? fromJson(Object? o) {
@@ -401,6 +428,11 @@ class DecorItem {
       companion: o['cmp'] == true,
       still: o['rms'] == 'hide' ? 'hide' : 'still',
       animate: o['na'] != true,
+      shadow: d('sh', 0).clamp(0.0, 1.0),
+      outline: d('ol', 0).clamp(0.0, 12.0),
+      texture: o['tx'] is String ? o['tx'] as String : null,
+      safeArea: o['sa'] == true,
+      scroll: o['sc'] == true,
     );
   }
 }
@@ -496,6 +528,87 @@ class DecoLayerSettings {
   };
 }
 
+/// What makes a saved arrangement a Digital Room: its own living look,
+/// layout, environment, ambience, lighting and companions. Anything left
+/// empty is inherited from the system's own settings.
+@immutable
+class RoomSettings {
+  const RoomSettings({
+    this.living,
+    this.layout,
+    this.layoutParts,
+    this.env,
+    this.audioId,
+    this.lighting,
+    this.companions = const [],
+  });
+
+  final String? living, layout;
+  final Set<String>? layoutParts;
+  final EnvSettings? env;
+
+  /// Ambient sound for this room (still only plays if sound is on).
+  final String? audioId;
+
+  /// A fixed time-of-day light ('evening'…) instead of the real time.
+  final String? lighting;
+
+  /// Companions who live in this room.
+  final List<String> companions;
+
+  RoomSettings copyWith({
+    Object? living = _k,
+    Object? layout = _k,
+    Object? layoutParts = _k,
+    Object? env = _k,
+    Object? audioId = _k,
+    Object? lighting = _k,
+    List<String>? companions,
+  }) => RoomSettings(
+    living: identical(living, _k) ? this.living : living as String?,
+    layout: identical(layout, _k) ? this.layout : layout as String?,
+    layoutParts: identical(layoutParts, _k)
+        ? this.layoutParts
+        : layoutParts as Set<String>?,
+    env: identical(env, _k) ? this.env : env as EnvSettings?,
+    audioId: identical(audioId, _k) ? this.audioId : audioId as String?,
+    lighting: identical(lighting, _k) ? this.lighting : lighting as String?,
+    companions: companions ?? this.companions,
+  );
+
+  static const _k = Object();
+
+  Map<String, Object?> toJson() => {
+    'lv': ?living,
+    'lo': ?layout,
+    if (layoutParts != null) 'lp': layoutParts!.toList(),
+    if (env != null) 'env': env!.toJson(),
+    'au': ?audioId,
+    'lt': ?lighting,
+    if (companions.isNotEmpty) 'cmp': companions,
+  };
+
+  static RoomSettings? fromJson(Object? o) {
+    if (o is! Map) return null;
+    List<String> strs(Object? x) => [
+      if (x is List)
+        for (final e in x)
+          if (e is String) e,
+    ];
+    return RoomSettings(
+      living: o['lv'] is String ? o['lv'] as String : null,
+      layout: o['lo'] is String ? o['lo'] as String : null,
+      layoutParts: o['lp'] is List ? strs(o['lp']).toSet() : null,
+      env: o['env'] is Map ? EnvSettings.fromJson(o['env']) : null,
+      audioId: o['au'] is String ? o['au'] as String : null,
+      lighting: TimePhase.values.any((p) => p.name == o['lt'])
+          ? o['lt'] as String
+          : null,
+      companions: strs(o['cmp']).take(20).toList(),
+    );
+  }
+}
+
 /// A saved arrangement.
 class DecorPreset {
   DecorPreset({
@@ -507,7 +620,13 @@ class DecorPreset {
     this.layers = const DecoLayerSettings(),
     this.thumbnail,
     this.pages = const [],
+    this.room,
   }) : items = items ?? [];
+
+  /// Set when this arrangement is a Digital Room.
+  RoomSettings? room;
+
+  bool get isRoom => room != null;
 
   final String id;
   String name, description, category;
@@ -530,6 +649,7 @@ class DecorPreset {
     'ly': layers.toJson(),
     'th': ?thumbnail,
     if (pages.isNotEmpty) 'pg': pages,
+    if (room != null) 'room': room!.toJson(),
   };
 
   static DecorPreset? fromJson(Object? o) {
@@ -550,6 +670,7 @@ class DecorPreset {
           for (final p in o['pg'] as List)
             if (p is String) p,
       ],
+      room: RoomSettings.fromJson(o['room']),
     );
   }
 }
@@ -668,8 +789,13 @@ class SeasonalPrefs {
     this.env = const EnvSettings(),
     this.layoutVariation,
     this.layoutParts,
+    this.subsystemPresets = const {},
     this.version = 1,
   });
+
+  /// Subsystem id → preset id, shown when someone from it fronts (an alter's
+  /// own choice comes first).
+  final Map<String, String> subsystemPresets;
 
   /// A look whose layout arrangement decorates headers, cards, dividers,
   /// profile pictures, the navigation bar and hanging trims. Separate from
@@ -762,6 +888,7 @@ class SeasonalPrefs {
     EnvSettings? env,
     Object? layoutVariation = _k,
     Object? layoutParts = _k,
+    Map<String, String>? subsystemPresets,
   }) => SeasonalPrefs(
     performance: performance ?? this.performance,
     layers: layers ?? this.layers,
@@ -804,6 +931,7 @@ class SeasonalPrefs {
     layoutParts: identical(layoutParts, _k)
         ? this.layoutParts
         : layoutParts as Set<String>?,
+    subsystemPresets: subsystemPresets ?? this.subsystemPresets,
     version: version,
   );
 
@@ -839,6 +967,7 @@ class SeasonalPrefs {
     if (env.toJson().isNotEmpty) 'env': env.toJson(),
     'lo': ?layoutVariation,
     if (layoutParts != null) 'lp': layoutParts!.toList(),
+    if (subsystemPresets.isNotEmpty) 'sp': subsystemPresets,
   };
 
   static Set<String> _strSet(Object? o) => {
@@ -902,6 +1031,7 @@ class SeasonalPrefs {
       env: EnvSettings.fromJson(o['env']),
       layoutVariation: o['lo'] is String ? o['lo'] as String : null,
       layoutParts: o['lp'] is List ? _strSet(o['lp']) : null,
+      subsystemPresets: _strMap(o['sp']),
     );
   }
 }

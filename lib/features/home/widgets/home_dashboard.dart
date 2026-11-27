@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:prism_plurality/features/seasonal/digital_rooms.dart';
 import 'package:prism_plurality/features/companions/companion_home_card.dart';
 import 'package:prism_plurality/features/experiences/experiences_hub.dart';
 import 'package:prism_plurality/features/fitness/health/health_home_card.dart';
@@ -192,6 +193,11 @@ String dashboardWidgetLabel(BuildContext context, String id) {
       context,
       'Companion habitat',
       'Hábitat del compañero',
+    ),
+    DashboardWidgetId.rooms => tr(
+      context,
+      'Digital Rooms shortcut',
+      'Acceso a salas digitales',
     ),
     _ => id,
   };
@@ -393,6 +399,7 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.wrapped => const WrappedHomeCard(),
       DashboardWidgetId.passportStamps => const StampsHomeCard(),
       DashboardWidgetId.habitat => const HabitatHomeCard(),
+      DashboardWidgetId.rooms => const DigitalRoomsHomeCard(),
       _ => const SizedBox.shrink(),
     };
     // Each card repaints on its own (stories, timers, charts animate).

@@ -44,6 +44,20 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
 
   /// Decorations tapped into their other state (lamp off, book open).
   final Set<String> _toggled = {};
+
+  /// The current page's scroll offset, for decorations that move with it.
+  double _scroll = 0;
+  bool _tracksScroll = false;
+
+  bool _onScroll(ScrollNotification n) {
+    if (!_tracksScroll || n.depth != 0 || n.metrics.axis != Axis.vertical) {
+      return false;
+    }
+    final px = n.metrics.pixels;
+    if ((px - _scroll).abs() >= 1) setState(() => _scroll = px);
+    return false;
+  }
+
   final Set<String> _loading = {};
 
   @override
@@ -59,7 +73,12 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
     final path = widget.router.routerDelegate.currentConfiguration.uri.path;
     if (path == _route) return;
     void apply() {
-      if (mounted && path != _route) setState(() => _route = path);
+      if (mounted && path != _route) {
+        setState(() {
+          _route = path;
+          _scroll = 0;
+        });
+      }
     }
 
     // The router can notify in the middle of building; never rebuild then.
@@ -153,12 +172,14 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
     final items = ref.watch(seasonalItemsProvider);
 
     // Sound is separate from decorations: opt-in, and independent of them.
+    // A Digital Room can bring its own ambience (only if sound is on).
+    final audioId = ref.watch(activeRoomProvider)?.audioId ?? prefs.audioId;
     final wantAudio =
         _resumed &&
         prefs.audioOn &&
-        prefs.audioId != null &&
+        audioId != null &&
         prefs.performance != DecoPerformance.off;
-    _audio.apply(on: wantAudio, id: prefs.audioId, volume: prefs.audioVolume);
+    _audio.apply(on: wantAudio, id: audioId, volume: prefs.audioVolume);
 
     // The app stays at the same place in the tree whether or not anything
     // is drawn over it, so turning Seasonal Living on or off never rebuilds
@@ -189,6 +210,7 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
       );
     }
     _loadImages(items);
+    _tracksScroll = items.any((i) => i.scroll);
     final phase = ref.watch(currentPhaseProvider);
     final music = ref.watch(decorMusicProvider);
 
@@ -214,7 +236,10 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
       textDirection: TextDirection.ltr,
       fit: StackFit.passthrough,
       children: [
-        widget.child,
+        NotificationListener<ScrollNotification>(
+          onNotification: _onScroll,
+          child: widget.child,
+        ),
         Positioned.fill(
           child: LayoutBuilder(
             builder: (context, box) {
@@ -237,6 +262,7 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                     music: music,
                     toggled: _toggled,
                     reduced: reduced,
+                    scroll: _scroll,
                   );
                   final size = Size(box.maxWidth, box.maxHeight);
                   Widget layer(Set<DecoLayer> which, {required bool moving}) =>

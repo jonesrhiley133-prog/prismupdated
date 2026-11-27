@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_washi.dart';
 import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
@@ -33,7 +35,12 @@ class DecorScene {
     this.music = false,
     this.toggled = const {},
     this.reduced = false,
+    this.scroll = 0,
   });
+
+  /// How far the current page has scrolled, for decorations that move with
+  /// it.
+  final double scroll;
 
   /// The current time phase name ('morning', 'evening'…), when anything
   /// follows the time of day.
@@ -296,8 +303,14 @@ class DecorPainter extends CustomPainter {
         if (animatedDrawn >= scene.layers.maxAnimated) continue;
         animatedDrawn++;
       }
-      final frame = frameFor(item.anchor, size);
+      var frame = frameFor(item.anchor, size);
       if (frame == null) continue;
+      if (item.safeArea && item.anchor == DecoAnchor.screen) {
+        frame = scene.safe.deflateRect(frame);
+      }
+      if (item.scroll && scene.scroll != 0) {
+        frame = frame.shift(Offset(0, -scene.scroll));
+      }
       _drawItem(canvas, size, item, frame);
     }
   }
@@ -411,79 +424,154 @@ class DecorPainter extends CustomPainter {
     if (item.flipX || item.flipY)
       canvas.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1);
 
-    switch (item.kind) {
-      case DecoKind.garland:
-        _garland(
-          canvas,
-          frame,
-          item,
-          v,
-          width,
-          main,
-          second,
-          accent,
-          t * speed,
-          phase,
-        );
-      case DecoKind.fairyLights:
-        _lights(canvas, frame, item, v, width, main, second, t * speed, phase);
-      case DecoKind.ribbon:
-        _ribbon(canvas, width, main, second);
-      case DecoKind.bow:
-        _bow(canvas, width, main, second);
-      case DecoKind.lantern:
-        _lantern(canvas, width, main, second, t * speed, phase);
-      case DecoKind.wreath:
-        _wreath(
-          canvas,
-          width,
-          main,
-          second,
-          accent,
-          item.glyph ?? v?.icons.first,
-        );
-      case DecoKind.ornament:
-        _ornament(canvas, frame, item, width, main, second, t * speed, phase);
-      case DecoKind.window:
-        _window(canvas, width, main, second, accent, t * speed, phase);
-      case DecoKind.flower:
-        _cluster(canvas, item.glyph ?? '🌷', width, t * speed, phase, 3);
-      case DecoKind.candle:
-        _candle(canvas, width, t * speed, phase);
-      case DecoKind.foliage:
-        _foliage(canvas, width, main, second);
-      case DecoKind.corner:
-        _corner(canvas, v, width, main, second, accent, t * speed, phase);
-      case DecoKind.border:
-        // Borders are drawn in screen space, not around the origin.
-        canvas.translate(-cx, -cy);
-        _border(
-          canvas,
-          frame,
-          v?.border ?? DecoBorder.hairline,
-          main,
-          accent,
-          second,
-        );
-      case DecoKind.illustration:
-        _drawGlyph(
-          canvas,
-          item.glyph ?? v?.icons.first ?? '✨',
-          Offset.zero,
-          width,
-        );
-      case DecoKind.furniture:
-        _drawGlyph(canvas, item.glyph ?? '🪑', Offset.zero, width);
-      case DecoKind.sticker:
-        _sticker(canvas, item, width);
-      case DecoKind.particles:
-        canvas.translate(-cx, -cy);
-        _particles(canvas, frame, item, v, t * speed, scene.burst);
-      case DecoKind.interactive:
-        break;
-      case DecoKind.environment:
-        canvas.translate(-cx, -cy);
-        _environment(canvas, size, item.glyph ?? '');
+    void body() {
+      switch (item.kind) {
+        case DecoKind.garland:
+          _garland(
+            canvas,
+            frame,
+            item,
+            v,
+            width,
+            main,
+            second,
+            accent,
+            t * speed,
+            phase,
+          );
+        case DecoKind.fairyLights:
+          _lights(
+            canvas,
+            frame,
+            item,
+            v,
+            width,
+            main,
+            second,
+            t * speed,
+            phase,
+          );
+        case DecoKind.ribbon:
+          _ribbon(canvas, width, main, second);
+        case DecoKind.bow:
+          _bow(canvas, width, main, second);
+        case DecoKind.lantern:
+          _lantern(canvas, width, main, second, t * speed, phase);
+        case DecoKind.wreath:
+          _wreath(
+            canvas,
+            width,
+            main,
+            second,
+            accent,
+            item.glyph ?? v?.icons.first,
+          );
+        case DecoKind.ornament:
+          _ornament(canvas, frame, item, width, main, second, t * speed, phase);
+        case DecoKind.window:
+          _window(canvas, width, main, second, accent, t * speed, phase);
+        case DecoKind.flower:
+          _cluster(canvas, item.glyph ?? '🌷', width, t * speed, phase, 3);
+        case DecoKind.candle:
+          _candle(canvas, width, t * speed, phase);
+        case DecoKind.foliage:
+          _foliage(canvas, width, main, second);
+        case DecoKind.corner:
+          _corner(canvas, v, width, main, second, accent, t * speed, phase);
+        case DecoKind.border:
+          // Borders are drawn in screen space, not around the origin.
+          canvas.translate(-cx, -cy);
+          _border(
+            canvas,
+            frame,
+            v?.border ?? DecoBorder.hairline,
+            main,
+            accent,
+            second,
+          );
+        case DecoKind.illustration:
+          _drawGlyph(
+            canvas,
+            item.glyph ?? v?.icons.first ?? '✨',
+            Offset.zero,
+            width,
+          );
+        case DecoKind.furniture:
+          _drawGlyph(canvas, item.glyph ?? '🪑', Offset.zero, width);
+        case DecoKind.sticker:
+          _sticker(canvas, item, width);
+        case DecoKind.particles:
+          canvas.translate(-cx, -cy);
+          _particles(canvas, frame, item, v, t * speed, scene.burst);
+        case DecoKind.interactive:
+          break;
+        case DecoKind.environment:
+          canvas.translate(-cx, -cy);
+          _environment(canvas, size, item.glyph ?? '');
+      }
+    }
+
+    // Studio extras: shadow, outline and texture. Screen-wide pieces
+    // (borders, falling things, light) are drawn as they are.
+    final local = !const {
+      DecoKind.border,
+      DecoKind.particles,
+      DecoKind.environment,
+    }.contains(item.kind);
+    if (local && item.shadow > 0) {
+      canvas.save();
+      canvas.translate(width * 0.03 * item.shadow, width * 0.05 * item.shadow);
+      canvas.saveLayer(
+        null,
+        Paint()
+          ..colorFilter = ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.4 * item.shadow),
+            BlendMode.srcIn,
+          )
+          ..imageFilter = ui.ImageFilter.blur(
+            sigmaX: 1 + 4 * item.shadow,
+            sigmaY: 1 + 4 * item.shadow,
+          ),
+      );
+      body();
+      canvas.restore();
+      canvas.restore();
+    }
+    if (local && item.outline > 0) {
+      canvas.saveLayer(
+        null,
+        Paint()
+          ..colorFilter = ColorFilter.mode(Color(second), BlendMode.srcIn)
+          ..imageFilter = ui.ImageFilter.dilate(
+            radiusX: item.outline,
+            radiusY: item.outline,
+          ),
+      );
+      body();
+      canvas.restore();
+    }
+    final tex = local && item.texture != null
+        ? scrapTextureById(item.texture!)
+        : null;
+    if (tex != null) {
+      canvas.saveLayer(null, Paint());
+      body();
+      canvas.saveLayer(null, Paint()..blendMode = BlendMode.srcATop);
+      canvas.translate(-width, -width);
+      paintScrapTexture(
+        canvas,
+        Size(width * 2, width * 2),
+        kind: tex.kind,
+        c1: Color(main),
+        c2: Color(second),
+        seed: item.id.hashCode,
+        scale: 0.6,
+        intensity: 0.8,
+      );
+      canvas.restore();
+      canvas.restore();
+    } else {
+      body();
     }
     // Extras some behaviours draw on top.
     if (mode == 'tick') _clockHands(canvas, width, Color(main));

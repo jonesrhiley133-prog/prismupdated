@@ -13,7 +13,11 @@ import 'package:share_plus/share_plus.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart'
     show memberNamesProvider;
+import 'package:prism_plurality/features/appearance/appearance_undo_banner.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/digital_rooms.dart';
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart'
+    show subsystemsProvider;
 import 'package:prism_plurality/features/seasonal/decor_preview.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
@@ -30,7 +34,10 @@ const decorPages = <(String path, String en, String es)>[
 ];
 
 class DecorPresetsScreen extends ConsumerStatefulWidget {
-  const DecorPresetsScreen({super.key});
+  const DecorPresetsScreen({super.key, this.rooms = false});
+
+  /// Shows only Digital Rooms, with room actions first.
+  final bool rooms;
   @override
   ConsumerState<DecorPresetsScreen> createState() => _DecorPresetsScreenState();
 }
@@ -173,12 +180,60 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
     }
   }
 
+  Future<void> _newRoom() async {
+    final name = TextEditingController(text: tr(context, 'My room', 'Mi sala'));
+    final ok = await PrismSheet.show<bool>(
+      context: context,
+      title: tr(context, 'New room', 'Nueva sala'),
+      builder: (ctx) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            tr(
+              ctx,
+              'Saves the decorations, living look, layout, environment and ambience showing now.',
+              'Guarda las decoraciones, estilo vivo, diseño, ambiente y sonido actuales.',
+            ),
+            style: Theme.of(ctx).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 10),
+          PrismTextField(
+            controller: name,
+            labelText: tr(ctx, 'Name', 'Nombre'),
+          ),
+          const SizedBox(height: 12),
+          PrismButton(
+            label: tr(ctx, 'Create room', 'Crear sala'),
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            onPressed: () => Navigator.of(ctx).pop(true),
+          ),
+        ],
+      ),
+    );
+    final text = name.text.trim();
+    name.dispose();
+    if (ok != true || !mounted) return;
+    final id = await createRoomFromCurrent(
+      ref,
+      text.isEmpty ? tr(context, 'My room', 'Mi sala') : text,
+    );
+    if (!mounted) return;
+    PrismToast.show(
+      context,
+      message: tr(context, 'Room saved.', 'Sala guardada.'),
+    );
+    enterRoom(ref, id);
+  }
+
   Future<void> _menu(DecorPreset pr) async {
     final prefs = ref.read(seasonalPrefsProvider);
     final n = ref.read(seasonalPrefsProvider.notifier);
     final actions = ref.read(decorPresetActionsProvider);
     final names = ref.read(memberNamesProvider);
     final isActive = prefs.activePresetId == pr.id;
+    final subs = ref.read(subsystemsProvider);
     await PrismSheet.show<void>(
       context: context,
       title: pr.name,
@@ -206,7 +261,11 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
           children: [
             row(
               isActive ? Icons.check_circle : Icons.check_circle_outline,
-              isActive
+              pr.isRoom
+                  ? (isActive
+                        ? tr(ctx, 'Leave this room', 'Salir de esta sala')
+                        : tr(ctx, 'Enter this room', 'Entrar en esta sala'))
+                  : isActive
                   ? tr(
                       ctx,
                       'Stop using everywhere',
@@ -259,6 +318,45 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
                     );
                 },
               ),
+            if (subs.isNotEmpty)
+              row(
+                Icons.hub_outlined,
+                tr(ctx, 'Use for a subsystem…', 'Usar para un subsistema…'),
+                () async {
+                  final id = await PrismSheet.show<String>(
+                    context: context,
+                    title: tr(
+                      context,
+                      'Show it when someone from this subsystem fronts',
+                      'Mostrar cuando alguien de este subsistema está al frente',
+                    ),
+                    builder: (c2) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final sub in subs)
+                          PrismListRow(
+                            title: Text(
+                              sub.title.isEmpty
+                                  ? tr(context, 'Subsystem', 'Subsistema')
+                                  : sub.title,
+                            ),
+                            selected: prefs.subsystemPresets[sub.id] == pr.id,
+                            onTap: () => Navigator.of(c2).pop(sub.id),
+                          ),
+                      ],
+                    ),
+                  );
+                  if (id != null)
+                    n.update(
+                      (x) => x.copyWith(
+                        subsystemPresets: {...x.subsystemPresets, id: pr.id},
+                        performance: x.performance == DecoPerformance.off
+                            ? DecoPerformance.balanced
+                            : x.performance,
+                      ),
+                    );
+                },
+              ),
             row(
               Icons.web_asset_outlined,
               tr(ctx, 'Use on one page…', 'Usar en una página…'),
@@ -294,19 +392,24 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
               },
             ),
             if (prefs.alterPresets.containsValue(pr.id) ||
+                prefs.subsystemPresets.containsValue(pr.id) ||
                 prefs.pagePresets.containsValue(pr.id))
               row(
                 Icons.link_off,
                 tr(
                   ctx,
-                  'Remove from alters and pages',
-                  'Quitar de alters y páginas',
+                  'Remove from alters, subsystems and pages',
+                  'Quitar de alters, subsistemas y páginas',
                 ),
                 () async {
                   n.update(
                     (x) => x.copyWith(
                       alterPresets: {
                         for (final e in x.alterPresets.entries)
+                          if (e.value != pr.id) e.key: e.value,
+                      },
+                      subsystemPresets: {
+                        for (final e in x.subsystemPresets.entries)
                           if (e.value != pr.id) e.key: e.value,
                       },
                       pagePresets: {
@@ -317,6 +420,13 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
                   );
                 },
               ),
+            row(
+              Icons.meeting_room_outlined,
+              pr.isRoom
+                  ? tr(ctx, 'Room settings…', 'Ajustes de la sala…')
+                  : tr(ctx, 'Make it a Digital Room…', 'Convertir en sala…'),
+              () async => showRoomSettings(context, ref, pr),
+            ),
             row(
               Icons.edit_outlined,
               tr(ctx, 'Edit in the Studio', 'Editar en el Estudio'),
@@ -361,8 +471,15 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
     final theme = Theme.of(context);
     final cats = {for (final p in presets) p.category};
     final shown = presets
-        .where((p) => _category == null || p.category == _category)
+        .where(
+          (p) =>
+              (!widget.rooms || p.isRoom) &&
+              (_category == null || p.category == _category),
+        )
         .toList();
+    final subNames = {
+      for (final sub in ref.watch(subsystemsProvider)) sub.id: sub.title,
+    };
     final names = ref.watch(memberNamesProvider);
     String where(DecorPreset pr) {
       final w = <String>[
@@ -371,6 +488,9 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
         for (final e in prefs.alterPresets.entries)
           if (e.value == pr.id)
             names[e.key] ?? tr(context, 'An alter', 'Un alter'),
+        for (final e in prefs.subsystemPresets.entries)
+          if (e.value == pr.id)
+            subNames[e.key] ?? tr(context, 'A subsystem', 'Un subsistema'),
         for (final e in prefs.pagePresets.entries)
           if (e.value == pr.id) e.key,
       ];
@@ -379,7 +499,9 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
 
     return PrismPageScaffold(
       topBar: PrismTopBar(
-        title: tr(context, 'My arrangements', 'Mis arreglos'),
+        title: widget.rooms
+            ? tr(context, 'Digital Rooms', 'Salas digitales')
+            : tr(context, 'My arrangements', 'Mis arreglos'),
         showBackButton: true,
       ),
       bodyPadding: EdgeInsets.zero,
@@ -387,15 +509,44 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
         child: ListView(
           padding: EdgeInsets.fromLTRB(16, 8, 16, 40 + NavBarInset.of(context)),
           children: [
+            const AppearanceUndoBanner(),
+            if (widget.rooms)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  tr(
+                    context,
+                    'A room is a whole decorated space: its furniture and decorations, living look, layout, weather and lighting, ambient sound and companions. Make as many as you like, give one to an alter or subsystem so it opens when they front, and share them as files. Rooms only decorate; your Headspace map stays separate.',
+                    'Una sala es un espacio decorado completo: muebles, estilo vivo, diseño, clima, luz, sonido y compañeros. Asígnala a un alter o subsistema para que se abra al estar al frente. Tu mapa del Headspace sigue aparte.',
+                  ),
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
             Row(
               children: [
                 Expanded(
-                  child: PrismButton(
-                    label: tr(context, 'New in Studio', 'Nuevo en el Estudio'),
-                    icon: Icons.add,
-                    tone: PrismButtonTone.filled,
-                    onPressed: () => context.push(AppRoutePaths.seasonalStudio),
-                  ),
+                  child: widget.rooms
+                      ? PrismButton(
+                          label: tr(
+                            context,
+                            'New room from what\'s showing',
+                            'Nueva sala con lo que se ve',
+                          ),
+                          icon: Icons.add,
+                          tone: PrismButtonTone.filled,
+                          onPressed: _newRoom,
+                        )
+                      : PrismButton(
+                          label: tr(
+                            context,
+                            'New in Studio',
+                            'Nuevo en el Estudio',
+                          ),
+                          icon: Icons.add,
+                          tone: PrismButtonTone.filled,
+                          onPressed: () =>
+                              context.push(AppRoutePaths.seasonalStudio),
+                        ),
                 ),
                 const SizedBox(width: 8),
                 PrismButton(
@@ -430,15 +581,21 @@ class _DecorPresetsScreenState extends ConsumerState<DecorPresetsScreen> {
                 ),
               ),
             const SizedBox(height: 10),
-            if (presets.isEmpty)
+            if (shown.isEmpty && _category == null)
               PrismSurface(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  tr(
-                    context,
-                    'No arrangements yet. Build one in the Decoration Studio and save it here, or import one.',
-                    'Aún no hay arreglos. Crea uno en el Estudio y guárdalo aquí, o importa uno.',
-                  ),
+                  widget.rooms
+                      ? tr(
+                          context,
+                          'No rooms yet. Decorate the way you like, then save it as a room here.',
+                          'Aún no hay salas. Decora a tu gusto y guárdalo aquí como sala.',
+                        )
+                      : tr(
+                          context,
+                          'No arrangements yet. Build one in the Decoration Studio and save it here, or import one.',
+                          'Aún no hay arreglos. Crea uno en el Estudio y guárdalo aquí, o importa uno.',
+                        ),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),

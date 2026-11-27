@@ -133,6 +133,17 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: PrismButton(
                   label: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Salas digitales'
+                      : 'Digital Rooms',
+                  icon: Icons.meeting_room_outlined,
+                  expanded: true,
+                  onPressed: () => context.push(AppRoutePaths.digitalRooms),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: PrismButton(
+                  label: Localizations.localeOf(context).languageCode == 'es'
                       ? 'Vida estacional y decoración'
                       : 'Seasonal Living & decoration',
                   icon: Icons.celebration_outlined,

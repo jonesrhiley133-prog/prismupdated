@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/boards/providers/board_posts_providers.dart'
     show currentFronterMemberIdsProvider;
+import 'package:prism_plurality/features/subsystems/hub/subsystem_data.dart'
+    show subMembershipsProvider;
 import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/living_environment.dart';
@@ -195,6 +197,14 @@ class DecorPresetActions {
               for (final e in prefs.alterPresets.entries)
                 if (e.value != id) e.key: e.value,
             },
+            subsystemPresets: {
+              for (final e in prefs.subsystemPresets.entries)
+                if (e.value != id) e.key: e.value,
+            },
+            pagePresets: {
+              for (final e in prefs.pagePresets.entries)
+                if (e.value != id) e.key: e.value,
+            },
           ),
         );
   }
@@ -217,6 +227,7 @@ class DecorPresetActions {
       layers: p.layers,
       thumbnail: p.thumbnail,
       pages: p.pages,
+      room: p.room,
     ),
   );
 }
@@ -243,6 +254,7 @@ final decorPresetActionsProvider = Provider<DecorPresetActions>(
     layers: p.layers,
     thumbnail: p.thumbnail,
     pages: p.pages,
+    room: p.room,
   );
   return (
     json: const JsonEncoder.withIndent(
@@ -276,6 +288,7 @@ DecorPreset? importPreset(String text) {
       layers: p.layers,
       thumbnail: (p.thumbnail?.length ?? 0) > 200000 ? null : p.thumbnail,
       pages: p.pages,
+      room: p.room,
     );
   } catch (_) {
     return null;
@@ -283,6 +296,47 @@ DecorPreset? importPreset(String text) {
 }
 
 // ── What's on screen ───────────────────────────────────────────────────
+
+/// The arrangement (or Digital Room) showing now, by priority: the one for
+/// whoever is fronting, then their subsystem's, then the one used everywhere.
+/// This is how decoration profiles inherit: anything unassigned falls back
+/// to the system's choice.
+final frontPresetProvider = Provider<DecorPreset?>((ref) {
+  final prefs = ref.watch(seasonalPrefsProvider);
+  if (prefs.performance == DecoPerformance.off) return null;
+  final presets = ref.watch(decorPresetsProvider);
+  DecorPreset? byId(String? id) =>
+      id == null ? null : presets.where((p) => p.id == id).firstOrNull;
+  if (prefs.alterPresets.isNotEmpty || prefs.subsystemPresets.isNotEmpty) {
+    final fronters = ref.watch(currentFronterMemberIdsProvider);
+    for (final f in fronters) {
+      final p = byId(prefs.alterPresets[f]);
+      if (p != null) return p;
+    }
+    if (prefs.subsystemPresets.isNotEmpty) {
+      final memberships = ref.watch(subMembershipsProvider);
+      for (final f in fronters) {
+        for (final m in memberships) {
+          if (m.memberId != f) continue;
+          final p = byId(prefs.subsystemPresets[m.subsystemId]);
+          if (p != null) return p;
+        }
+      }
+    }
+  }
+  return byId(prefs.activePresetId);
+});
+
+/// The Digital Room showing now, if the current arrangement is one.
+final activeRoomProvider = Provider<RoomSettings?>(
+  (ref) => ref.watch(frontPresetProvider)?.room,
+);
+
+/// Environment settings in effect: the room's if it has its own.
+final effectiveEnvProvider = Provider<EnvSettings>((ref) {
+  final room = ref.watch(activeRoomProvider);
+  return room?.env ?? ref.watch(seasonalPrefsProvider.select((p) => p.env));
+});
 
 /// The decorations to draw: the person's own arrangement (their chosen
 /// preset, or the one for whoever is fronting, plus any per-page ones) and,
@@ -295,16 +349,8 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
   DecorPreset? byId(String? id) =>
       id == null ? null : presets.where((p) => p.id == id).firstOrNull;
 
-  final fronters = ref.watch(currentFronterMemberIdsProvider);
-  String? alterPreset;
-  for (final f in fronters) {
-    if (prefs.alterPresets.containsKey(f)) {
-      alterPreset = prefs.alterPresets[f];
-      break;
-    }
-  }
   final items = <DecorItem>[];
-  final own = byId(alterPreset) ?? byId(prefs.activePresetId);
+  final own = ref.watch(frontPresetProvider);
   if (own != null) items.addAll(own.items);
   for (final e in prefs.pagePresets.entries) {
     final p = byId(e.value);
@@ -319,17 +365,21 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
       );
     }
   }
-  // A living look is its own layer: it stays whatever season it is.
-  final living = prefs.livingVariation == null
-      ? null
-      : variationById(prefs.livingVariation!);
+  // A living look is its own layer: it stays whatever season it is. A room
+  // can bring its own; otherwise the system's applies.
+  final room = own?.room;
+  final livingId = room?.living ?? prefs.livingVariation;
+  final living = livingId == null ? null : variationById(livingId);
   if (living != null) items.addAll(arrangementForVariation(living));
-  final layout = prefs.layoutVariation == null
-      ? null
-      : variationById(prefs.layoutVariation!);
+  final layoutId = room?.layout ?? prefs.layoutVariation;
+  final layout = layoutId == null ? null : variationById(layoutId);
   if (layout != null) {
     items.addAll(
-      layoutOverlayItems(layout, prefs.layoutParts ?? LayoutPart.all.toSet()),
+      layoutOverlayItems(
+        layout,
+        (room?.layout != null ? room?.layoutParts : prefs.layoutParts) ??
+            LayoutPart.all.toSet(),
+      ),
     );
   }
   items.addAll(ref.watch(environmentItemsProvider));
@@ -352,7 +402,7 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
 final _needsPhaseProvider = Provider<bool>((ref) {
   final prefs = ref.watch(seasonalPrefsProvider);
   if (prefs.performance == DecoPerformance.off) return false;
-  final env = prefs.env;
+  final env = ref.watch(effectiveEnvProvider);
   if (env.phases || env.fireflies || env.birds) return true;
   // A look or preset item limited to certain phases also needs the clock.
   final presets = ref.watch(decorPresetsProvider);
@@ -362,12 +412,17 @@ final _needsPhaseProvider = Provider<bool>((ref) {
 /// The current time phase name, or null when nothing follows the clock.
 final currentPhaseProvider = Provider<TimePhase?>((ref) {
   if (!ref.watch(_needsPhaseProvider)) return null;
+  // A room can keep its own fixed lighting.
+  final lit = ref.watch(activeRoomProvider)?.lighting;
+  if (lit != null) {
+    return TimePhase.values.where((p) => p.name == lit).firstOrNull;
+  }
   return ref.watch(livingPhaseProvider).value ?? timePhaseOf(DateTime.now());
 });
 
 /// Music is playing in Prism's own player and decorations may react.
 final decorMusicProvider = Provider<bool>((ref) {
-  final env = ref.watch(seasonalPrefsProvider.select((p) => p.env));
+  final env = ref.watch(effectiveEnvProvider);
   if (!env.music) return false;
   return ref.watch(musicControllerProvider.select((s) => s.playing));
 });
@@ -376,7 +431,7 @@ final decorMusicProvider = Provider<bool>((ref) {
 final currentWeatherProvider = Provider<WeatherKind?>((ref) {
   final prefs = ref.watch(seasonalPrefsProvider);
   if (prefs.performance == DecoPerformance.off) return null;
-  final env = prefs.env;
+  final env = ref.watch(effectiveEnvProvider);
   WeatherKind? live;
   if (env.mode == WeatherMode.live && env.hasPlace) {
     live = ref.watch(liveWeatherProvider((env.lat!, env.lon!))).value;
@@ -385,7 +440,7 @@ final currentWeatherProvider = Provider<WeatherKind?>((ref) {
 });
 
 final environmentItemsProvider = Provider<List<DecorItem>>((ref) {
-  final env = ref.watch(seasonalPrefsProvider.select((p) => p.env));
+  final env = ref.watch(effectiveEnvProvider);
   if (!env.any) return const [];
   return environmentItems(
     env,

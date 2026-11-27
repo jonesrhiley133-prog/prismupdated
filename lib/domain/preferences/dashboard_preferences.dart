@@ -29,6 +29,7 @@ abstract final class DashboardWidgetId {
   static const wrapped = 'wrapped';
   static const passportStamps = 'passport_stamps';
   static const habitat = 'habitat';
+  static const rooms = 'digital_rooms';
 
   /// Cards whose size can be switched between compact and full.
   static const resizable = {health, companion};
@@ -43,6 +44,7 @@ abstract final class DashboardWidgetId {
     wrapped,
     passportStamps,
     habitat,
+    rooms,
     quickActions,
     howWeFeel,
     insight,

@@ -1004,6 +1004,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) => const FontStudioScreen(),
                       ),
                       GoRoute(
+                        path: 'rooms',
+                        builder: (context, state) =>
+                            const DecorPresetsScreen(rooms: true),
+                      ),
+                      GoRoute(
                         path: 'layouts',
                         builder: (context, state) => const LayoutsScreen(),
                       ),
