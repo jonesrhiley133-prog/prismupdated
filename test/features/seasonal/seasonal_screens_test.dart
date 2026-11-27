@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:prism_plurality/core/database/app_database.dart';
 import 'package:prism_plurality/core/database/database_provider.dart';
 import 'package:prism_plurality/core/sync/prism_sync_providers.dart';
+import 'package:prism_plurality/domain/models/tracker_record.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/decoration_studio_screen.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_calendar.dart';
@@ -12,7 +13,57 @@ import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_hub_screen.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_prefs_screen.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
+import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/l10n/app_localizations.dart';
+
+class _FakePrefs extends SeasonalPrefsNotifier {
+  @override
+  Future<void> flush() async {}
+}
+
+class _FakeTracker extends TrackerNotifier {
+  @override
+  Future<TrackerRecord> create({
+    required String kind,
+    String title = '',
+    String? body,
+    String? parentId,
+    Map<String, Object?> fields = const {},
+    List<String> tags = const [],
+    DateTime? occurredAt,
+    DateTime? endedAt,
+    int? amount,
+    String? memberId,
+    bool isPrivate = false,
+    bool isPinned = false,
+    int sortOrder = 0,
+    DateTime? now,
+  }) async => TrackerRecord(
+    id: 'fake',
+    kind: kind,
+    title: title,
+    createdAt: DateTime(2026),
+    modifiedAt: DateTime(2026),
+  ).withFields(fields);
+
+  @override
+  Future<void> save(TrackerRecord record, {DateTime? now}) async {}
+
+  @override
+  Future<void> delete(String id, {bool children = true}) async {}
+}
+
+/// A container with no database, for widget tests (a real database leaves
+/// close-timers pending under the test clock).
+ProviderContainer _lightContainer() => ProviderContainer(
+  overrides: [
+    seasonalPrefsProvider.overrideWith(_FakePrefs.new),
+    trackerNotifierProvider.overrideWith(_FakeTracker.new),
+    trackerKindProvider.overrideWith(
+      (ref, kind) => const AsyncValue.data(<TrackerRecord>[]),
+    ),
+  ],
+);
 
 class _Env {
   _Env() {
@@ -194,12 +245,11 @@ void main() {
   testWidgets('the hub explains independence and starts switched off', (
     tester,
   ) async {
-    final env = _Env();
-    addTearDown(env.dispose);
+    final c = _lightContainer();
     tester.view.physicalSize = const Size(420, 1800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(_host(env.container, const SeasonalHubScreen()));
+    await tester.pumpWidget(_host(c, const SeasonalHubScreen()));
     await _settle(tester);
     expect(
       find.textContaining('never changes your background'),
@@ -209,54 +259,44 @@ void main() {
     expect(find.textContaining('Seasonal Living is off'), findsOneWidget);
     expect(find.textContaining('yours, never changed here'), findsNWidgets(3));
     // Ambient sound is off until you turn it on.
-    expect(env.container.read(seasonalPrefsProvider).audioOn, isFalse);
+    expect(c.read(seasonalPrefsProvider).audioOn, isFalse);
     expect(tester.takeException(), isNull);
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpWidget(const SizedBox());
-    env.container.dispose();
+    c.dispose();
   });
 
   testWidgets('choosing a mode turns Seasonal Living on', (tester) async {
-    final env = _Env();
-    addTearDown(env.dispose);
+    final c = _lightContainer();
     tester.view.physicalSize = const Size(420, 1800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(_host(env.container, const SeasonalHubScreen()));
+    await tester.pumpWidget(_host(c, const SeasonalHubScreen()));
     await _settle(tester);
     await tester.tap(find.text('Balanced'));
     await _settle(tester);
-    expect(
-      env.container.read(seasonalPrefsProvider).performance,
-      DecoPerformance.balanced,
-    );
+    expect(c.read(seasonalPrefsProvider).performance, DecoPerformance.balanced);
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpWidget(const SizedBox());
-    env.container.dispose();
+    c.dispose();
   });
 
   testWidgets(
     'preferences: scheduling is off until chosen, holidays can be celebrated or hidden',
     (tester) async {
-      final env = _Env();
-      addTearDown(env.dispose);
+      final c = _lightContainer();
       tester.view.physicalSize = const Size(420, 2400);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        _host(env.container, const SeasonalPrefsScreen()),
-      );
+      await tester.pumpWidget(_host(c, const SeasonalPrefsScreen()));
       await _settle(tester);
-      expect(env.container.read(seasonalPrefsProvider).autoSchedule, isFalse);
+      expect(c.read(seasonalPrefsProvider).autoSchedule, isFalse);
       await tester.tap(find.byTooltip('I celebrate Christmas'));
       await _settle(tester);
-      expect(
-        env.container.read(seasonalPrefsProvider).celebrated,
-        contains('christmas'),
-      );
+      expect(c.read(seasonalPrefsProvider).celebrated, contains('christmas'));
       await tester.tap(find.byTooltip('Hide Christmas'));
       await _settle(tester);
-      final p = env.container.read(seasonalPrefsProvider);
+      final p = c.read(seasonalPrefsProvider);
       expect(p.hidden, contains('christmas'));
       expect(p.celebrated, isNot(contains('christmas')));
       await tester.pump(const Duration(seconds: 1));
@@ -266,14 +306,11 @@ void main() {
   testWidgets(
     'studio: add a whole look, undo and redo, group, lock, and the draft is kept',
     (tester) async {
-      final env = _Env();
-      addTearDown(env.dispose);
-      tester.view.physicalSize = const Size(420, 1000);
+      final c = _lightContainer();
+      tester.view.physicalSize = const Size(420, 1500);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        _host(env.container, const DecorationStudioScreen()),
-      );
+      await tester.pumpWidget(_host(c, const DecorationStudioScreen()));
       await _settle(tester);
       expect(find.text('Decoration Studio'), findsOneWidget);
 
@@ -282,7 +319,7 @@ void main() {
       // The Layers tab lists what was added.
       await tester.tap(find.text('Layers'));
       await _settle(tester);
-      expect(find.textContaining('Garland'), findsWidgets);
+      expect(find.textContaining('Interactive object'), findsWidgets);
 
       // Undo takes it all back; redo restores it.
       await tester.tap(find.byTooltip('Undo'));
@@ -290,7 +327,7 @@ void main() {
       expect(find.textContaining('Nothing here yet'), findsOneWidget);
       await tester.tap(find.byTooltip('Redo'));
       await _settle(tester);
-      expect(find.textContaining('Garland'), findsWidgets);
+      expect(find.textContaining('Interactive object'), findsWidgets);
 
       // Select all, group, then lock.
       await tester.tap(find.text('Select all'));

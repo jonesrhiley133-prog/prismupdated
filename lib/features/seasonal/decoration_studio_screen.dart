@@ -99,6 +99,8 @@ class _DecorationStudioScreenState
           .firstOrNull;
 
   void _load() {
+    _tracker = ref.read(trackerNotifierProvider.notifier);
+    _draft = _draftRecord;
     final seed = widget.seed;
     if (seed != null && seed.startsWith('preset:')) {
       final id = seed.substring(7);
@@ -143,24 +145,33 @@ class _DecorationStudioScreenState
     _draftTimer = Timer(const Duration(milliseconds: 900), _flushDraft);
   }
 
+  // Held so the draft can still be written while the screen is closing,
+  // when reading providers is no longer allowed.
+  TrackerNotifier? _tracker;
+  TrackerRecord? _draft;
+
   Future<void> _flushDraft() async {
-    if (!_loaded || (widget.seed != null && widget.seed!.startsWith('preset:')))
+    final t = _tracker;
+    if (!_loaded ||
+        t == null ||
+        (widget.seed != null && widget.seed!.startsWith('preset:')))
       return;
-    final t = ref.read(trackerNotifierProvider.notifier);
     final fields = <String, Object?>{
       'items': [for (final i in _items) i.toJson()],
       'layers': _layers.toJson(),
     };
-    final d = _draftRecord;
+    final d = _draft;
     if (d == null) {
       if (_items.isEmpty) return;
-      await t.create(
+      _draft = await t.create(
         kind: TrackerKind.seasonWorkspace,
         title: 'Studio draft',
         fields: fields,
       );
     } else {
-      await t.save(d.withFields(fields));
+      final next = d.withFields(fields);
+      await t.save(next);
+      _draft = next;
     }
   }
 
