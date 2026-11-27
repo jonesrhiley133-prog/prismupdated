@@ -2,6 +2,37 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.44.0] - 2026-11-27
+
+### Added
+- Scrapbook Studio.
+  - Cover Designer: front and back covers with 36 materials, colour,
+    multicolour gradient or picture backgrounds, a texture overlay with blend
+    modes, 8 binding styles, thickness, corner rounding, custom proportions,
+    14 starting templates and 12 opening animations. Covers autosave.
+  - Page editor: multi-select, group, lock, layers, alignment and spacing,
+    copy and paste, snap guides, zoom, undo and redo, autosave, page
+    backgrounds with gradients and 70 textures (or your own picture), custom
+    page sizes, two-page spreads, 9 page transitions and reusable page
+    templates.
+  - 500+ stickers in 23 categories with search, favourites, recents and your
+    own collections; import PNG, SVG, GIF and WebP, and share sticker packs.
+  - 83 shapes, 100+ frames that mask a picture without stretching it (move and
+    zoom the picture inside its frame), 26 washi tape patterns and a drawing
+    pad with 7 brushes.
+  - Seasonal covers, textures, stickers, frames and page templates from every
+    holiday and season look, listed by what is closest to today.
+- App-wide font system with 150 fonts, and a Font Studio.
+- ID cards: 66 templates, 30 shapes and a much richer designer.
+- Contacts redesign with profile extras.
+- Seasonal Living and Decoration Studio, with scheduling that is off until
+  you choose it and ambient sound that is off by default.
+- One shared image cropper across the app.
+
+### Fixed
+- Several videos on one scrapbook page no longer interfere with each other.
+- Choosing an ID card template now keeps your selection.
+
 ## [0.43.2] - 2026-11-25
 
 ### Added
