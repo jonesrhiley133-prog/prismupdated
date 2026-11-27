@@ -23,9 +23,13 @@ void paintScrapTexture(
   double scale = 1,
   double intensity = 1,
 }) {
+  if (size.width <= 0 || size.height <= 0) return;
   final rnd = math.Random(seed);
   final w = size.width, h = size.height;
   final u = (w / 360) * scale; // one design unit
+  // Counts follow the area in design units, so a thumbnail has the same
+  // density as a full page.
+  final area = (w * h) / (u * u);
   final a = intensity.clamp(0.0, 2.0);
   Paint ink(
     double alpha, {
@@ -43,6 +47,8 @@ void paintScrapTexture(
       Paint()
         ..color = Colors.black.withValues(alpha: (alpha * a).clamp(0.0, 1.0));
   final rect = Offset.zero & size;
+  canvas.save();
+  canvas.clipRect(rect);
   canvas.drawRect(rect, Paint()..color = c1);
 
   void speckle(int n, double r, Paint Function() paint) {
@@ -176,16 +182,16 @@ void paintScrapTexture(
   switch (kind) {
     // ── Paper ─────────────────────────────────────────────────────────
     case 'paper':
-      speckle((w * h / 160).round(), 0.5 * u, () => ink(0.06));
+      speckle((area / 160).round(), 0.5 * u, () => ink(0.06));
     case 'aged':
       blobs(7, 40, 120, [c2, const Color(0xFF8B5A2B)], 0.16);
       vignette(0.4, const Color(0xFF6B4A1E));
-      speckle((w * h / 400).round(), 0.8 * u, () => dark(0.07));
+      speckle((area / 400).round(), 0.8 * u, () => dark(0.07));
     case 'fibers':
-      fibers((w * h / 700).round(), 14 * u, 0.22, c2);
+      fibers((area / 700).round(), 14 * u, 0.22, c2);
     case 'handmade':
-      fibers((w * h / 500).round(), 18 * u, 0.3, c2);
-      speckle((w * h / 3000).round(), 1.2 * u, () => ink(0.18));
+      fibers((area / 500).round(), 18 * u, 0.3, c2);
+      speckle((area / 3000).round(), 1.2 * u, () => ink(0.18));
       canvas.drawRect(
         rect.deflate(2 * u),
         Paint()
@@ -194,8 +200,8 @@ void paintScrapTexture(
           ..color = Colors.white.withValues(alpha: 0.35),
       );
     case 'construction':
-      fibers((w * h / 450).round(), 10 * u, 0.2, Colors.black);
-      speckle((w * h / 700).round(), 0.7 * u, () => light(0.18));
+      fibers((area / 450).round(), 10 * u, 0.2, Colors.black);
+      speckle((area / 700).round(), 0.7 * u, () => light(0.18));
     case 'parchment':
       blobs(9, 50, 130, [c2, const Color(0xFFB5832F)], 0.2);
       vignette(0.55, const Color(0xFF5A3A12));
@@ -215,7 +221,7 @@ void paintScrapTexture(
         );
       }
     case 'crumple':
-      for (var i = 0; i < (w * h / 2600).round(); i++) {
+      for (var i = 0; i < (area / 2600).round(); i++) {
         final cx = rnd.nextDouble() * w, cy = rnd.nextDouble() * h;
         final p = Path()..moveTo(cx, cy);
         for (var k = 0; k < 4; k++) {
@@ -240,14 +246,14 @@ void paintScrapTexture(
         }
         canvas.drawRect(Rect.fromLTWH(x, 6 * u, colW, 7 * u), ink(0.42));
       }
-      speckle((w * h / 500).round(), 0.5 * u, () => dark(0.05));
+      speckle((area / 500).round(), 0.5 * u, () => dark(0.05));
     case 'watercolor':
       blobs(7, 90, 230, [
         c2,
         _mix(c2, Colors.white, 0.4),
         _mix(c2, c1, 0.5),
       ], 0.32);
-      fibers((w * h / 2500).round(), 12 * u, 0.12, c2);
+      fibers((area / 2500).round(), 12 * u, 0.12, c2);
     case 'wash2':
       blobs(6, 100, 260, [
         c2,
@@ -360,7 +366,7 @@ void paintScrapTexture(
           light(0.09)..strokeWidth = 1 * u,
         );
       }
-      speckle((w * h / 900).round(), 0.5 * u, () => dark(0.05));
+      speckle((area / 900).round(), 0.5 * u, () => dark(0.05));
     case 'denim':
       for (var d = -h; d < w; d += 2.6 * u) {
         canvas.drawLine(
@@ -369,7 +375,7 @@ void paintScrapTexture(
           (rnd.nextBool() ? light(0.11) : dark(0.1))..strokeWidth = 1 * u,
         );
       }
-      speckle((w * h / 900).round(), 0.6 * u, () => light(0.1));
+      speckle((area / 900).round(), 0.6 * u, () => light(0.1));
     case 'corduroy':
       for (var x = 0.0; x < w; x += 5 * u) {
         canvas.drawLine(
@@ -384,7 +390,7 @@ void paintScrapTexture(
         );
       }
     case 'tweed':
-      for (var i = 0; i < (w * h / 40).round(); i++) {
+      for (var i = 0; i < (area / 40).round(); i++) {
         final x = rnd.nextDouble() * w, y = rnd.nextDouble() * h;
         canvas.drawRect(
           Rect.fromLTWH(x, y, 2.2 * u, 1 * u),
@@ -393,11 +399,11 @@ void paintScrapTexture(
       }
     case 'felt':
       speckle(
-        (w * h / 70).round(),
+        (area / 70).round(),
         0.55 * u,
         () => rnd.nextBool() ? light(0.12) : dark(0.1),
       );
-      fibers((w * h / 1200).round(), 7 * u, 0.15, Colors.white);
+      fibers((area / 1200).round(), 7 * u, 0.15, Colors.white);
     case 'burlap':
       for (var x = 0.0; x < w; x += 4.5 * u) {
         canvas.drawLine(
@@ -456,7 +462,7 @@ void paintScrapTexture(
       );
     case 'velvet':
       speckle(
-        (w * h / 55).round(),
+        (area / 55).round(),
         0.5 * u,
         () => rnd.nextBool() ? light(0.1) : dark(0.12),
       );
@@ -472,7 +478,7 @@ void paintScrapTexture(
       );
     case 'suede':
       speckle(
-        (w * h / 45).round(),
+        (area / 45).round(),
         0.5 * u,
         () => rnd.nextBool() ? light(0.1) : dark(0.08),
       );
@@ -581,7 +587,7 @@ void paintScrapTexture(
         r2++;
       }
     case 'croc':
-      for (var i = 0; i < (w * h / 700).round(); i++) {
+      for (var i = 0; i < (area / 700).round(); i++) {
         final cx = rnd.nextDouble() * w, cy = rnd.nextDouble() * h;
         final r = (5 + rnd.nextDouble() * 9) * u;
         final rr = RRect.fromRectAndRadius(
@@ -616,13 +622,13 @@ void paintScrapTexture(
             ..strokeWidth = 1.4 * u,
         );
       }
-      fibers((w * h / 900).round(), 8 * u, 0.2, Colors.black);
-      speckle((w * h / 800).round(), 0.7 * u, () => dark(0.07));
+      fibers((area / 900).round(), 8 * u, 0.2, Colors.black);
+      speckle((area / 800).round(), 0.7 * u, () => dark(0.07));
     case 'kraft':
-      fibers((w * h / 700).round(), 12 * u, 0.28, const Color(0xFF5A3A1E));
-      speckle((w * h / 600).round(), 0.8 * u, () => dark(0.07));
+      fibers((area / 700).round(), 12 * u, 0.28, const Color(0xFF5A3A1E));
+      speckle((area / 600).round(), 0.8 * u, () => dark(0.07));
     case 'cork':
-      for (var i = 0; i < (w * h / 160).round(); i++) {
+      for (var i = 0; i < (area / 160).round(); i++) {
         final r = (1 + rnd.nextDouble() * 3.2) * u;
         canvas.drawCircle(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
@@ -706,7 +712,7 @@ void paintScrapTexture(
             const [0, 0.22, 0.5, 0.78, 1],
           ),
       );
-      for (var i = 0; i < (w * h / 700).round(); i++) {
+      for (var i = 0; i < (area / 700).round(); i++) {
         final p = Path()..moveTo(rnd.nextDouble() * w, rnd.nextDouble() * h);
         p.relativeLineTo(
           (rnd.nextDouble() - .5) * 30 * u,
@@ -737,7 +743,7 @@ void paintScrapTexture(
       }
     case 'glitter':
       speckle(
-        (w * h / 40).round(),
+        (area / 40).round(),
         0.8 * u,
         () => Paint()
           ..color = HSVColor.fromAHSV(
@@ -747,7 +753,7 @@ void paintScrapTexture(
             1,
           ).toColor(),
       );
-      for (var i = 0; i < (w * h / 600).round(); i++) {
+      for (var i = 0; i < (area / 600).round(); i++) {
         star(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (1.5 + rnd.nextDouble() * 2.5) * u,
@@ -778,7 +784,7 @@ void paintScrapTexture(
           light(0.14)..strokeWidth = 2 * u,
         );
       }
-      for (var i = 0; i < (w * h / 1500).round(); i++) {
+      for (var i = 0; i < (area / 1500).round(); i++) {
         star(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (1.4 + rnd.nextDouble() * 2) * u,
@@ -806,7 +812,7 @@ void paintScrapTexture(
       }
     case 'concrete':
       speckle(
-        (w * h / 60).round(),
+        (area / 60).round(),
         0.8 * u,
         () => rnd.nextBool() ? dark(0.12) : light(0.1),
       );
@@ -840,8 +846,8 @@ void paintScrapTexture(
         const Color(0xFF37C6E8),
         const Color(0xFFFF5E8A),
       ], 0.26);
-      speckle((w * h / 450).round(), 0.6 * u, () => light(0.8));
-      for (var i = 0; i < (w * h / 6000).round(); i++) {
+      speckle((area / 450).round(), 0.6 * u, () => light(0.8));
+      for (var i = 0; i < (area / 6000).round(); i++) {
         star(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (2 + rnd.nextDouble() * 3) * u,
@@ -850,7 +856,7 @@ void paintScrapTexture(
       }
     // ── Patterns ──────────────────────────────────────────────────────
     case 'floral':
-      for (var i = 0; i < (w * h / 3600).round(); i++) {
+      for (var i = 0; i < (area / 3600).round(); i++) {
         flower(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (6 + rnd.nextDouble() * 7) * u,
@@ -904,7 +910,7 @@ void paintScrapTexture(
         );
       }
     case 'snowflakes':
-      for (var i = 0; i < (w * h / 3500).round(); i++) {
+      for (var i = 0; i < (area / 3500).round(); i++) {
         final c = Offset(rnd.nextDouble() * w, rnd.nextDouble() * h);
         final r = (4 + rnd.nextDouble() * 8) * u;
         for (var k = 0; k < 3; k++) {
@@ -917,7 +923,7 @@ void paintScrapTexture(
         }
       }
     case 'leaves':
-      for (var i = 0; i < (w * h / 3000).round(); i++) {
+      for (var i = 0; i < (area / 3000).round(); i++) {
         leaf(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (12 + rnd.nextDouble() * 12) * u,
@@ -931,7 +937,7 @@ void paintScrapTexture(
         );
       }
     case 'hearts':
-      for (var i = 0; i < (w * h / 3500).round(); i++) {
+      for (var i = 0; i < (area / 3500).round(); i++) {
         heart(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (3 + rnd.nextDouble() * 5) * u,
@@ -939,7 +945,7 @@ void paintScrapTexture(
         );
       }
     case 'stars':
-      for (var i = 0; i < (w * h / 2500).round(); i++) {
+      for (var i = 0; i < (area / 2500).round(); i++) {
         star(
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
           (3 + rnd.nextDouble() * 6) * u,
@@ -948,7 +954,7 @@ void paintScrapTexture(
         );
       }
     case 'moons':
-      for (var i = 0; i < (w * h / 6000).round(); i++) {
+      for (var i = 0; i < (area / 6000).round(); i++) {
         final c = Offset(rnd.nextDouble() * w, rnd.nextDouble() * h);
         final r = (5 + rnd.nextDouble() * 6) * u;
         final path = Path.combine(
@@ -963,10 +969,10 @@ void paintScrapTexture(
         );
         canvas.drawPath(path, ink(0.55));
       }
-      speckle((w * h / 800).round(), 0.7 * u, () => ink(0.4));
+      speckle((area / 800).round(), 0.7 * u, () => ink(0.4));
     case 'constellations':
       final pts = [
-        for (var i = 0; i < (w * h / 8000).round() + 6; i++)
+        for (var i = 0; i < (area / 8000).round() + 6; i++)
           Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
       ];
       for (var i = 1; i < pts.length; i++) {
@@ -977,7 +983,7 @@ void paintScrapTexture(
         star(p, 3.2 * u, ink(0.8));
       }
     case 'clouds':
-      for (var i = 0; i < (w * h / 14000).round() + 2; i++) {
+      for (var i = 0; i < (area / 14000).round() + 2; i++) {
         final c = Offset(rnd.nextDouble() * w, rnd.nextDouble() * h);
         final r = (14 + rnd.nextDouble() * 14) * u;
         for (final (dx, dy, k) in [
@@ -1077,7 +1083,7 @@ void paintScrapTexture(
       }
     case 'grunge':
       blobs(10, 30, 110, [Colors.black, c2], 0.14);
-      for (var i = 0; i < (w * h / 4000).round() + 6; i++) {
+      for (var i = 0; i < (area / 4000).round() + 6; i++) {
         final y = rnd.nextDouble() * h;
         canvas.drawLine(
           Offset(rnd.nextDouble() * w * 0.5, y),
@@ -1089,12 +1095,12 @@ void paintScrapTexture(
         );
       }
       speckle(
-        (w * h / 120).round(),
+        (area / 120).round(),
         0.9 * u,
         () => rnd.nextBool() ? dark(0.18) : light(0.12),
       );
     case 'scratches':
-      for (var i = 0; i < (w * h / 900).round(); i++) {
+      for (var i = 0; i < (area / 900).round(); i++) {
         final x = rnd.nextDouble() * w, y = rnd.nextDouble() * h;
         final ang = rnd.nextDouble() * math.pi;
         final l = (10 + rnd.nextDouble() * 40) * u;
@@ -1117,6 +1123,7 @@ void paintScrapTexture(
     default:
       break;
   }
+  canvas.restore();
 }
 
 /// A [CustomPainter] for one texture, with the blend and opacity a page uses.

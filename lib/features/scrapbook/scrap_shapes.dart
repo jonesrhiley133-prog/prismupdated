@@ -208,8 +208,11 @@ Path _petals(Rect r, int n, double petal) {
   path.addOval(
     Rect.fromCenter(center: c, width: r.width * 0.34, height: r.height * 0.34),
   );
-  return path;
+  return _merged(path);
 }
+
+/// Merges overlapping pieces into one clean outline.
+Path _merged(Path p) => Path.combine(PathOperation.union, p, Path());
 
 Path _bubble(Rect r, Path body) {
   final tail = Path()
@@ -259,11 +262,11 @@ Path scrapShapePath(String id, Rect r) {
     case 'quarter':
       return Path()
         ..moveTo(r.left, r.bottom)
-        ..lineTo(r.left, r.top)
+        ..lineTo(r.right, r.bottom)
         ..arcTo(
-          Rect.fromLTWH(r.left, r.top, w * 2, h * 2),
-          -math.pi,
-          math.pi / 2,
+          Rect.fromLTWH(r.left - w, r.bottom - h, w * 2, h * 2),
+          0,
+          -math.pi / 2,
           false,
         )
         ..close();
@@ -579,7 +582,10 @@ Path scrapShapePath(String id, Rect r) {
         [0.12, 0.1],
       ]);
     default:
-      return idShapePath(id.isEmpty ? 'rrect' : id, r);
+      final p = idShapePath(id.isEmpty ? 'rrect' : id, r);
+      return const {'cloud', 'flower', 'blob', 'scallop', 'cross'}.contains(id)
+          ? _merged(p)
+          : p;
   }
 }
 
