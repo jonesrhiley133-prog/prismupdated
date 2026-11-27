@@ -22,6 +22,7 @@ import 'package:prism_plurality/features/trackers/providers/tracker_providers.da
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/shared/widgets/prism_spinner.dart';
 
 enum _Tab { add, edit, layers, place, save }
 
@@ -622,7 +623,9 @@ class _DecorationStudioScreenState
       ),
       bodyPadding: EdgeInsets.zero,
       body: !_loaded
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: PrismSpinner(color: Theme.of(context).colorScheme.primary),
+            )
           : Column(
               children: [
                 // Device tabs and tools

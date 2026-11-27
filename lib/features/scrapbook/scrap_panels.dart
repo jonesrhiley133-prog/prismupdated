@@ -209,7 +209,7 @@ class ScrapLayersPanel extends StatelessWidget {
       },
       itemBuilder: (_, i) {
         final e = list[i];
-        return ListTile(
+        return PrismListRow(
           key: ValueKey(e.id),
           dense: true,
           selected: c.selected.contains(e.id),

@@ -329,7 +329,7 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         children: [
           for (final f in _handwritingFonts.entries)
-            ListTile(
+            PrismListRow(
               title: ValueListenableBuilder<int>(
                 valueListenable: PrismFonts.loadTick,
                 builder: (_, _, _) {
