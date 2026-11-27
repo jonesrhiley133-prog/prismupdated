@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prism_plurality/shared/theme/layout_decor.dart';
 import 'package:prism_plurality/shared/media/content_keyed_image.dart';
 import 'package:prism_plurality/features/settings/providers/terminology_provider.dart';
 import 'package:prism_plurality/shared/providers/member_avatar_image_provider.dart';
@@ -194,6 +195,35 @@ class MemberAvatar extends ConsumerWidget {
       if (dimmed) {
         child = Opacity(opacity: opacity, child: child);
       }
+    }
+
+    // Profile-size pictures get the layout arrangement's frame, drawn just
+    // outside so nothing moves.
+    final frame = size >= 56
+        ? LayoutDecor.part(context, LayoutPart.profile)
+        : null;
+    if (frame != null) {
+      child = Stack(
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: LayoutRingPainter(
+                  frame,
+                  square: effectiveShape == MemberAvatarShape.square,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: -size * 0.04,
+            bottom: -size * 0.04,
+            child: LayoutGlyph(frame.corner, size: size * 0.22),
+          ),
+        ],
+      );
     }
 
     if (showBorder) {

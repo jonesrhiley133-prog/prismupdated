@@ -10,6 +10,7 @@ import 'package:prism_plurality/features/seasonal/decor_assets.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/decor_painter.dart';
 import 'package:prism_plurality/features/seasonal/decor_preview.dart';
+import 'package:prism_plurality/features/seasonal/layouts_screen.dart';
 import 'package:prism_plurality/features/seasonal/living_data.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
@@ -417,6 +418,30 @@ class LivingGenreScreen extends ConsumerWidget {
                         context,
                         '${v.name} is on. Your theme is untouched.',
                         '${v.name} está activo. Tu tema no cambia.',
+                      ),
+              );
+              Navigator.of(ctx).pop();
+            },
+          ),
+          const SizedBox(height: 8),
+          PrismButton(
+            label: ref.read(seasonalPrefsProvider).layoutVariation == v.id
+                ? tr(ctx, 'Turn its layout off', 'Apagar su diseño')
+                : tr(ctx, 'Use its layout too', 'Usar también su diseño'),
+            icon: Icons.dashboard_customize_outlined,
+            tone: PrismButtonTone.outlined,
+            onPressed: () {
+              final on =
+                  ref.read(seasonalPrefsProvider).layoutVariation == v.id;
+              applyLayout(
+                ref,
+                on ? null : v.id,
+                undoMessage: on
+                    ? tr(context, 'Layout off.', 'Diseño apagado.')
+                    : tr(
+                        context,
+                        '${v.name} layout on. Choose its parts in Layouts.',
+                        'Diseño de ${v.name} activado.',
                       ),
               );
               Navigator.of(ctx).pop();

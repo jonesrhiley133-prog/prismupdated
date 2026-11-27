@@ -666,8 +666,18 @@ class SeasonalPrefs {
     this.integrations = const {},
     this.livingVariation,
     this.env = const EnvSettings(),
+    this.layoutVariation,
+    this.layoutParts,
     this.version = 1,
   });
+
+  /// A look whose layout arrangement decorates headers, cards, dividers,
+  /// profile pictures, the navigation bar and hanging trims. Separate from
+  /// [livingVariation]: either can be on without the other.
+  final String? layoutVariation;
+
+  /// Which parts of the arrangement are on; null = all of them.
+  final Set<String>? layoutParts;
 
   /// Time of day, weather and music reactions.
   final EnvSettings env;
@@ -750,6 +760,8 @@ class SeasonalPrefs {
     Map<String, bool>? integrations,
     Object? livingVariation = _k,
     EnvSettings? env,
+    Object? layoutVariation = _k,
+    Object? layoutParts = _k,
   }) => SeasonalPrefs(
     performance: performance ?? this.performance,
     layers: layers ?? this.layers,
@@ -786,6 +798,12 @@ class SeasonalPrefs {
         ? this.livingVariation
         : livingVariation as String?,
     env: env ?? this.env,
+    layoutVariation: identical(layoutVariation, _k)
+        ? this.layoutVariation
+        : layoutVariation as String?,
+    layoutParts: identical(layoutParts, _k)
+        ? this.layoutParts
+        : layoutParts as Set<String>?,
     version: version,
   );
 
@@ -819,6 +837,8 @@ class SeasonalPrefs {
     if (integrations.isNotEmpty) 'in': integrations,
     'lv': ?livingVariation,
     if (env.toJson().isNotEmpty) 'env': env.toJson(),
+    'lo': ?layoutVariation,
+    if (layoutParts != null) 'lp': layoutParts!.toList(),
   };
 
   static Set<String> _strSet(Object? o) => {
@@ -880,6 +900,8 @@ class SeasonalPrefs {
       },
       livingVariation: o['lv'] is String ? o['lv'] as String : null,
       env: EnvSettings.fromJson(o['env']),
+      layoutVariation: o['lo'] is String ? o['lo'] as String : null,
+      layoutParts: o['lp'] is List ? _strSet(o['lp']) : null,
     );
   }
 }

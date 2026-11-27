@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/theme/layout_decor.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/navigation/prism_back.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -114,73 +115,102 @@ class PrismTopBar extends StatelessWidget implements PreferredSizeWidget {
       titleStyle: titleStyle,
     );
 
+    final decor = LayoutDecor.part(context, LayoutPart.header);
     return SafeArea(
       bottom: false,
       child: SizedBox(
         height: height,
-        child: Padding(
-          padding: horizontalPadding,
-          child: Align(
-            alignment: Alignment.center,
-            child: centerTitle
-                ? Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Title centered on the full bar width, kept clear
-                      // of the buttons on both sides so long titles shrink
-                      // instead of running underneath them.
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal:
-                              (actions == null ||
-                                      actions!.length <= 1 ||
-                                      trailing != null
-                                  ? 1
-                                  : actions!.length) *
-                              (PrismTokens.topBarActionSize + 8),
-                        ),
-                        child: titleBlock,
-                      ),
-                      // Leading and trailing positioned at edges.
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (effectiveLeading != null)
-                            effectiveLeading
-                          else
-                            _slot(null),
-                          const Spacer(),
-                          if (effectiveTrailing != null)
-                            effectiveTrailing
-                          else
-                            _slot(null),
-                        ],
-                      ),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      effectiveLeading ?? _slot(null),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: titleBlock,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      if (effectiveTrailing != null)
-                        effectiveTrailing
-                      else
-                        _slot(null),
-                    ],
+        child: decor == null
+            ? _bar(centerTitle, titleBlock, effectiveLeading, effectiveTrailing)
+            : Stack(
+                children: [
+                  _bar(
+                    centerTitle,
+                    titleBlock,
+                    effectiveLeading,
+                    effectiveTrailing,
                   ),
-          ),
-        ),
+                  // A layout arrangement's header trim along the bottom.
+                  Positioned(
+                    left: 24,
+                    right: 24,
+                    bottom: 0,
+                    height: 8,
+                    child: IgnorePointer(
+                      child: CustomPaint(painter: LayoutLinePainter(decor)),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
+
+  Widget _bar(
+    bool centerTitle,
+    Widget titleBlock,
+    Widget? effectiveLeading,
+    Widget? effectiveTrailing,
+  ) => Padding(
+    padding: horizontalPadding,
+    child: Align(
+      alignment: Alignment.center,
+      child: centerTitle
+          ? Stack(
+              alignment: Alignment.center,
+              children: [
+                // Title centered on the full bar width, kept clear
+                // of the buttons on both sides so long titles shrink
+                // instead of running underneath them.
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal:
+                        (actions == null ||
+                                actions!.length <= 1 ||
+                                trailing != null
+                            ? 1
+                            : actions!.length) *
+                        (PrismTokens.topBarActionSize + 8),
+                  ),
+                  child: titleBlock,
+                ),
+                // Leading and trailing positioned at edges.
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (effectiveLeading != null)
+                      effectiveLeading
+                    else
+                      _slot(null),
+                    const Spacer(),
+                    if (effectiveTrailing != null)
+                      effectiveTrailing
+                    else
+                      _slot(null),
+                  ],
+                ),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                effectiveLeading ?? _slot(null),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: titleBlock,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (effectiveTrailing != null)
+                  effectiveTrailing
+                else
+                  _slot(null),
+              ],
+            ),
+    ),
+  );
 
   Widget? _buildActions() {
     if (actions == null || actions!.isEmpty) return null;

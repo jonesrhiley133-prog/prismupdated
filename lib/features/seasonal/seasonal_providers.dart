@@ -9,6 +9,8 @@ import 'package:prism_plurality/features/boards/providers/board_posts_providers.
 import 'package:prism_plurality/features/music/services/music_player.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/living_environment.dart';
+import 'package:prism_plurality/features/seasonal/living_layout.dart';
+import 'package:prism_plurality/shared/theme/layout_decor.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
@@ -322,6 +324,14 @@ final seasonalItemsProvider = Provider<List<DecorItem>>((ref) {
       ? null
       : variationById(prefs.livingVariation!);
   if (living != null) items.addAll(arrangementForVariation(living));
+  final layout = prefs.layoutVariation == null
+      ? null
+      : variationById(prefs.layoutVariation!);
+  if (layout != null) {
+    items.addAll(
+      layoutOverlayItems(layout, prefs.layoutParts ?? LayoutPart.all.toSet()),
+    );
+  }
   items.addAll(ref.watch(environmentItemsProvider));
   final active = ref.watch(activeSeasonProvider);
   if (active != null && prefs.integrationOn('overlay')) {

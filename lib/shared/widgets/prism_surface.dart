@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/theme/layout_decor.dart';
 import 'package:prism_plurality/features/appearance/models/look.dart';
 import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -151,7 +152,7 @@ class _PrismSurfaceState extends State<PrismSurface> {
         child: widget.child,
       ),
     );
-    final Widget content = lookShadow == null
+    final Widget plain = lookShadow == null
         ? clipped
         : DecoratedBox(
             decoration: BoxDecoration(
@@ -159,6 +160,23 @@ class _PrismSurfaceState extends State<PrismSurface> {
               boxShadow: lookShadow,
             ),
             child: clipped,
+          );
+    // A layout arrangement tucks a small ornament into plain cards' corner.
+    final decor = widget.fillColor == null && !useAccentFill
+        ? LayoutDecor.part(context, LayoutPart.cards)
+        : null;
+    final Widget content = decor == null
+        ? plain
+        : Stack(
+            clipBehavior: Clip.none,
+            children: [
+              plain,
+              Positioned(
+                top: -7,
+                right: -5,
+                child: LayoutGlyph(decor.corner, size: 15),
+              ),
+            ],
           );
 
     return Padding(
@@ -285,15 +303,35 @@ class PrismSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final text = Text(
+      title,
+      style: theme.textTheme.labelMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+      ),
+    );
+    // A layout arrangement can add a decorative divider after the title.
+    final decor = LayoutDecor.part(context, LayoutPart.dividers);
     return Padding(
       padding: padding,
-      child: Text(
-        title,
-        style: theme.textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-        ),
-      ),
+      child: decor == null
+          ? text
+          : Row(
+              children: [
+                Flexible(child: text),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: IgnorePointer(
+                    child: SizedBox(
+                      height: 12,
+                      child: CustomPaint(painter: LayoutLinePainter(decor)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                LayoutGlyph(decor.motif, size: 12),
+              ],
+            ),
     );
   }
 }
