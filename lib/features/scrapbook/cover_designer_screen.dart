@@ -10,6 +10,7 @@ import 'package:prism_plurality/features/scrapbook/scrap_edit_surface.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_editor_core.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_panels.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_props.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
@@ -18,7 +19,6 @@ import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
 import 'package:prism_plurality/features/trackers/providers/tracker_providers.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
 import 'package:prism_plurality/features/experiences/color_sheet.dart';
-import 'package:prism_plurality/features/scrapbook/scrap_stickers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 
@@ -477,137 +477,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
     );
   }
 
-  Widget _tool(
-    IconData icon,
-    String tip,
-    VoidCallback? onTap, {
-    bool on = false,
-  }) => IconButton(
-    tooltip: tip,
-    icon: Icon(
-      icon,
-      size: 20,
-      color: on ? Theme.of(context).colorScheme.primary : null,
-    ),
-    onPressed: onTap,
-  );
-
-  Widget _selectionBar() {
-    final one = _c.single;
-    return SizedBox(
-      height: 44,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        children: [
-          if (one != null)
-            _tool(
-              Icons.tune,
-              tr(context, 'Settings', 'Ajustes'),
-              () => showScrapElementProps(context, _c, one),
-            ),
-          _tool(Icons.copy, tr(context, 'Copy', 'Copiar'), _c.copySelected),
-          _tool(
-            Icons.paste,
-            tr(context, 'Paste', 'Pegar'),
-            _c.canPaste ? _c.paste : null,
-          ),
-          _tool(
-            Icons.control_point_duplicate,
-            tr(context, 'Duplicate', 'Duplicar'),
-            _c.duplicateSelected,
-          ),
-          _tool(
-            Icons.group_work_outlined,
-            tr(context, 'Group', 'Agrupar'),
-            _c.canGroup ? _c.group : null,
-          ),
-          _tool(
-            Icons.workspaces_outline,
-            tr(context, 'Ungroup', 'Desagrupar'),
-            _c.canUngroup ? _c.ungroup : null,
-          ),
-          _tool(
-            _c.allLocked ? Icons.lock : Icons.lock_open,
-            tr(context, 'Lock', 'Bloquear'),
-            _c.toggleLock,
-            on: _c.allLocked,
-          ),
-          _tool(
-            Icons.flip_to_front,
-            tr(context, 'Bring to front', 'Traer al frente'),
-            _c.toFront,
-          ),
-          _tool(
-            Icons.arrow_upward,
-            tr(context, 'Forward', 'Subir'),
-            _c.forward,
-          ),
-          _tool(
-            Icons.arrow_downward,
-            tr(context, 'Backward', 'Bajar'),
-            _c.backward,
-          ),
-          _tool(
-            Icons.flip_to_back,
-            tr(context, 'Send to back', 'Enviar al fondo'),
-            _c.toBack,
-          ),
-          _tool(
-            Icons.align_horizontal_left,
-            tr(context, 'Align left', 'Alinear izquierda'),
-            () => _c.align(ScrapAlign.left),
-          ),
-          _tool(
-            Icons.align_horizontal_center,
-            tr(context, 'Align centre', 'Centrar'),
-            () => _c.align(ScrapAlign.hCenter),
-          ),
-          _tool(
-            Icons.align_horizontal_right,
-            tr(context, 'Align right', 'Alinear derecha'),
-            () => _c.align(ScrapAlign.right),
-          ),
-          _tool(
-            Icons.align_vertical_top,
-            tr(context, 'Align top', 'Alinear arriba'),
-            () => _c.align(ScrapAlign.top),
-          ),
-          _tool(
-            Icons.align_vertical_center,
-            tr(context, 'Align middle', 'Centrar vertical'),
-            () => _c.align(ScrapAlign.vCenter),
-          ),
-          _tool(
-            Icons.align_vertical_bottom,
-            tr(context, 'Align bottom', 'Alinear abajo'),
-            () => _c.align(ScrapAlign.bottom),
-          ),
-          _tool(
-            Icons.horizontal_distribute,
-            tr(context, 'Space evenly across', 'Distribuir horizontal'),
-            () => _c.distribute(horizontal: true),
-          ),
-          _tool(
-            Icons.vertical_distribute,
-            tr(context, 'Space evenly down', 'Distribuir vertical'),
-            () => _c.distribute(horizontal: false),
-          ),
-          _tool(Icons.delete_outline, tr(context, 'Delete', 'Eliminar'), () {
-            if (_c.deleteSelected() == 0)
-              PrismToast.show(
-                context,
-                message: tr(
-                  context,
-                  'Locked items can’t be deleted — unlock them first.',
-                  'Los elementos bloqueados no se pueden eliminar.',
-                ),
-              );
-          }),
-        ],
-      ),
-    );
-  }
+  Widget _selectionBar() => ScrapSelectionBar(controller: _c);
 
   Widget _tabs() {
     String label(_Tab t) => switch (t) {
@@ -1087,8 +957,8 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
         Text(
           tr(
             context,
-            'A texture laid over the background. Mix it with blend modes, or import your own picture.',
-            'Una textura sobre el fondo. Mézclala o importa tu imagen.',
+            'A texture laid over the background. Mix it with blend modes.',
+            'Una textura sobre el fondo. Mézclala con modos de mezcla.',
           ),
           style: Theme.of(context).textTheme.bodySmall,
         ),
@@ -1104,7 +974,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
                   alignment: Alignment.topCenter,
                   child: PrismChip(
                     label: tr(context, 'None', 'Ninguna'),
-                    selected: o.id == 'plain' && o.custom == null,
+                    selected: o.id == 'plain',
                     onTap: () => setO((s) => const ScrapTextureStyle()),
                   ),
                 ),
@@ -1171,27 +1041,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
             ],
           ),
         ),
-        Row(
-          children: [
-            PrismButton(
-              label: tr(context, 'Import texture picture', 'Importar textura'),
-              icon: Icons.add_photo_alternate_outlined,
-              density: PrismControlDensity.compact,
-              onPressed: () async {
-                final id = await PrismMedia.pickImage(ref, crop: false);
-                if (id != null)
-                  setO(
-                    (s) => s.copyWith(
-                      id: 'plain',
-                      custom: id,
-                      opacity: s.opacity == 1 ? 0.7 : s.opacity,
-                    ),
-                  );
-              },
-            ),
-          ],
-        ),
-        if (o.id != 'plain' || o.custom != null) ...[
+        if (o.id != 'plain') ...[
           ScrapSlider(
             label: tr(context, 'Strength', 'Intensidad'),
             value: o.intensity,
@@ -1229,7 +1079,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
                 ),
             ],
           ),
-          if (o.custom == null) ...[
+          ...[
             ScrapColorField(
               label: tr(context, 'Base colour', 'Color base'),
               value: o.color,
@@ -1312,78 +1162,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
   );
 
   // Layers ------------------------------------------------------------------
-  Widget _layers() {
-    final list = [
-      for (final e in _c.els)
-        if (_onSide(e)) e,
-    ]..sort((a, b) => b.z.compareTo(a.z));
-    if (list.isEmpty)
-      return Center(
-        child: Padding(
-          padding: _pad,
-          child: Text(
-            tr(
-              context,
-              'Nothing on this side yet.',
-              'Nada en este lado todavía.',
-            ),
-          ),
-        ),
-      );
-    String name(ScrapElement e) => switch (e.type) {
-      ScrapType.text =>
-        e.text == '{title}'
-            ? tr(context, 'Title', 'Título')
-            : e.text == '{subtitle}'
-            ? tr(context, 'Subtitle', 'Subtítulo')
-            : (e.text?.isEmpty ?? true
-                  ? tr(context, 'Text', 'Texto')
-                  : e.text!),
-      ScrapType.sticker => scrapStickerName(e.text),
-      ScrapType.shape => scrapShapeName(e.text ?? 'heart'),
-      ScrapType.photo => tr(context, 'Picture', 'Imagen'),
-      ScrapType.tape => tr(context, 'Washi tape', 'Cinta washi'),
-      _ => e.type.name,
-    };
-    return ReorderableListView.builder(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
-      itemCount: list.length,
-      onReorder: (from, to) {
-        if (to > from) to--;
-        final zs = [for (final e in list) e.z]..sort((a, b) => b.compareTo(a));
-        final moved = list.removeAt(from);
-        list.insert(to, moved);
-        for (var i = 0; i < list.length; i++) {
-          list[i].z = zs[i];
-        }
-        _c.commit();
-      },
-      itemBuilder: (_, i) {
-        final e = list[i];
-        final on = _c.selected.contains(e.id);
-        return ListTile(
-          key: ValueKey(e.id),
-          dense: true,
-          selected: on,
-          title: Text(name(e), maxLines: 1, overflow: TextOverflow.ellipsis),
-          leading: Icon(
-            e.group != null ? Icons.group_work_outlined : Icons.layers_outlined,
-          ),
-          trailing: IconButton(
-            tooltip: e.locked
-                ? tr(context, 'Unlock', 'Desbloquear')
-                : tr(context, 'Lock', 'Bloquear'),
-            icon: Icon(e.locked ? Icons.lock : Icons.lock_open, size: 18),
-            onPressed: () {
-              e.locked = !e.locked;
-              _c.commit();
-            },
-          ),
-          onTap: () => _c.select(e.id),
-        );
-      },
-    );
-  }
+  Widget _layers() => ScrapLayersPanel(controller: _c, filter: _onSide);
 
   // Opening -----------------------------------------------------------------
   Widget _opening(CoverDesign d) => ListView(

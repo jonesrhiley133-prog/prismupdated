@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_canvas.dart';
-import 'package:prism_plurality/features/scrapbook/scrap_custom_texture.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
@@ -255,8 +254,6 @@ class _FaceBase extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         base,
-        if (face.overlay.custom != null)
-          ScrapCustomTexture(media: face.overlay.custom!, style: face.overlay),
         if (ov != null && face.overlay.id != 'plain')
           IgnorePointer(
             child: CustomPaint(

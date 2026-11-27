@@ -137,7 +137,7 @@ void main() {
       await t.tap(find.text('Square'));
       await t.pump(const Duration(milliseconds: 150));
       await t.ensureVisible(find.text('Spiral', skipOffstage: false));
-    await t.pump(const Duration(milliseconds: 150));
+      await t.pump(const Duration(milliseconds: 150));
       await t.tap(find.text('Spiral'));
       await t.pump(const Duration(seconds: 2));
       final d = coverOf(_Tracker.saved.last.fields)!;

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_canvas.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_editor_core.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 
 /// The interactive layer for a [ScrapEditorController]: select, multi-select,
@@ -15,6 +16,7 @@ class ScrapEditSurface extends StatefulWidget {
     this.filter,
     this.onEdit,
     this.resolve,
+    this.widthDivisor = 1,
   });
   final ScrapEditorController controller;
 
@@ -24,6 +26,9 @@ class ScrapEditSurface extends StatefulWidget {
 
   /// Swaps placeholders (like the book title) before drawing.
   final ScrapElement Function(ScrapElement e)? resolve;
+
+  /// 2 for a two-page spread, so text and decorations keep single-page size.
+  final double widthDivisor;
 
   @override
   State<ScrapEditSurface> createState() => _ScrapEditSurfaceState();
@@ -35,6 +40,7 @@ class _ScrapEditSurfaceState extends State<ScrapEditSurface> {
   Rect _startBounds = Rect.zero;
   Offset _startFocal = Offset.zero;
   double _startRot = 0, _startW = 0, _startH = 0;
+  ScrapImageFit _startFit = const ScrapImageFit();
   bool _moved = false;
 
   ScrapEditorController get c => widget.controller;
@@ -81,11 +87,30 @@ class _ScrapEditSurfaceState extends State<ScrapEditSurface> {
     _startRot = e.rot;
     _startW = e.w;
     _startH = e.h;
+    _startFit = ScrapImageFit.fromJson(e.opts['fit']);
   }
 
   void _update(ScrapElement e, ScaleUpdateDetails d, Size size) {
     if (e.locked) return;
     _moved = true;
+    if (c.adjustId == e.id) {
+      // Moving the picture inside its frame, not the frame itself.
+      final z = (_startFit.zoom * d.scale).clamp(1.0, 6.0);
+      final room = math.max(8.0, e.w * size.width * (z - 1) / 2);
+      final roomY = math.max(8.0, e.h * size.height * (z - 1) / 2);
+      final dx = d.focalPoint.dx - _startFocal.dx,
+          dy = d.focalPoint.dy - _startFocal.dy;
+      e.setOpt(
+        'fit',
+        ScrapImageFit(
+          zoom: z,
+          dx: _startFit.dx - dx / room,
+          dy: _startFit.dy - dy / roomY,
+        ).clamped().toJson(),
+      );
+      setState(() {});
+      return;
+    }
     final dx = d.focalPoint.dx - _startFocal.dx,
         dy = d.focalPoint.dy - _startFocal.dy;
     var sx = 0.0, sy = 0.0;

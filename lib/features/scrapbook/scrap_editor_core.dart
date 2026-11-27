@@ -197,6 +197,14 @@ class ScrapEditorController extends ChangeNotifier {
 
   /// Whether multi-select is on: taps add to the selection instead of replacing it.
   bool multi = false;
+
+  /// The framed picture whose contents are being moved instead of the frame.
+  String? adjustId;
+  void setAdjust(String? id) {
+    adjustId = id;
+    notifyListeners();
+  }
+
   void setMulti(bool v) {
     multi = v;
     notifyListeners();

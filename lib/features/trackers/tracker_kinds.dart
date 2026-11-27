@@ -70,6 +70,7 @@ abstract final class TrackerKind {
 
   static const scrapBook = 'scrap.book';
   static const scrapPage = 'scrap.page';
+  static const scrapPageTemplate = 'scrap.pagetemplate';
   static const scrapTemplate = 'scrap.template';
 
   static const connMap = 'conn.map';
