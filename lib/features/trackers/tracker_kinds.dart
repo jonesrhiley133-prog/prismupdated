@@ -196,6 +196,9 @@ abstract final class TrackerKind {
   static const seasonPreset = 'season.preset';
   static const seasonWorkspace = 'season.workspace';
 
+  // Scrapbook sticker library: favorites, recents, collections, imports.
+  static const scrapStickers = 'scrap.stickers';
+
   // Flag Studio.
   static const flag = 'flag.design';
 
