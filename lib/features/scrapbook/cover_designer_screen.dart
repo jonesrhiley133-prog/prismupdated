@@ -12,6 +12,7 @@ import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_panels.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_props.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_seasonal_ui.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
@@ -571,6 +572,7 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
           ],
         ),
       ),
+      SeasonalCoverPicker(title: widget.book.title, onPick: _applyTemplate),
     ],
   );
 
@@ -961,6 +963,15 @@ class _CoverDesignerState extends ConsumerState<CoverDesignerScreen> {
             'Una textura sobre el fondo. Mézclala con modos de mezcla.',
           ),
           style: Theme.of(context).textTheme.bodySmall,
+        ),
+        SeasonalTexturePicker(
+          current: o.id,
+          onPick: (id) => setO(
+            (s) => s.copyWith(
+              id: id,
+              opacity: s.id == 'plain' && s.opacity == 1 ? 0.7 : s.opacity,
+            ),
+          ),
         ),
         const SizedBox(height: 6),
         SizedBox(

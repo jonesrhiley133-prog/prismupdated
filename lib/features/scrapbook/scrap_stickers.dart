@@ -1,3 +1,5 @@
+import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
+
 /// The built-in sticker library: 500+ stickers in 23 categories, all drawn
 /// on the device (emoji glyphs, pixel sprites, shape art and lettering), so
 /// nothing is downloaded and everything works offline.
@@ -272,7 +274,57 @@ final Map<String, ScrapSticker> _byId = {
   for (final s in scrapStickerCatalog) s.id: s,
 };
 
-ScrapSticker? scrapStickerById(String id) => _byId[id];
+ScrapSticker? scrapStickerById(String id) =>
+    _byId[id] ?? (id.startsWith('seas.') ? _seasonalById(id) : null);
+
+/// Where holiday and season stickers are filed in the picker.
+const seasonalStickerCategory = 'Holidays & seasons';
+
+final Map<String, List<ScrapSticker>> _seasonalCache = {};
+
+/// The emoji a holiday or season is made of: its own symbol first, then
+/// everything its looks use (garlands, corners, hangers, furniture, icons).
+List<ScrapSticker> seasonalStickersFor(String collectionId) =>
+    _seasonalCache.putIfAbsent(collectionId, () {
+      final c = collectionById(collectionId);
+      if (c == null) return const [];
+      final seen = <String>{};
+      final glyphs = <String>[];
+      void add(String g) {
+        if (g.trim().isNotEmpty && seen.add(g)) glyphs.add(g);
+      }
+
+      add(c.emoji);
+      for (final v in c.variations) {
+        for (final l in [
+          v.icons,
+          v.cornerEmoji,
+          v.garlandEmoji,
+          v.hangers,
+          v.furniture,
+        ]) {
+          l.forEach(add);
+        }
+      }
+      return [
+        for (var i = 0; i < glyphs.length; i++)
+          ScrapSticker(
+            'seas.$collectionId.$i',
+            '${c.name} ${i + 1}',
+            seasonalStickerCategory,
+            StickerKind.emoji,
+            glyphs[i],
+          ),
+      ];
+    });
+
+ScrapSticker? _seasonalById(String id) {
+  final dot = id.lastIndexOf('.');
+  if (dot <= 5) return null;
+  final n = int.tryParse(id.substring(dot + 1));
+  final list = seasonalStickersFor(id.substring(5, dot));
+  return n == null || n < 0 || n >= list.length ? null : list[n];
+}
 
 List<ScrapSticker> stickersIn(String category) => [
   for (final s in scrapStickerCatalog)

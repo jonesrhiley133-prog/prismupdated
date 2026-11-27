@@ -10,11 +10,11 @@ import 'package:prism_plurality/features/links/widgets/related_records.dart'
 import 'package:prism_plurality/features/scrapbook/scrap_draw.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_edit_surface.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_editor_core.dart';
-import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_page.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_panels.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_props.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_seasonal_ui.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
@@ -394,7 +394,10 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
       context: context,
       title: tr(context, 'Pick a frame', 'Elige un marco'),
       maxHeightFactor: 0.9,
-      builder: (_) => const _FrameGrid(),
+      builder: (ctx) => ScrapFrameBrowser(
+        current: '',
+        onPick: (id) => Navigator.pop(ctx, id),
+      ),
     );
     if (id != null) await _addPhoto(frame: id);
   }
@@ -925,6 +928,16 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
           ],
         ),
       ),
+      SeasonalTexturePicker(
+        current: o.id,
+        onPick: (id) => setO(
+          (x) => x.copyWith(
+            id: id,
+            clearCustom: true,
+            opacity: x.id == 'plain' && x.opacity == 1 ? 0.8 : x.opacity,
+          ),
+        ),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Wrap(
@@ -1158,6 +1171,12 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
           children: [for (final t in saved) tile(t)],
         ),
       ],
+      SeasonalPageTemplatePicker(
+        onPick: (t) {
+          _applyTemplate(t);
+          Navigator.of(ctx).pop();
+        },
+      ),
       const SizedBox(height: 14),
       PrismButton(
         label: tr(
@@ -1218,81 +1237,6 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
       _c.meta['s'] = s.toJson();
     }
     _c.commit();
-  }
-}
-
-class _FrameGrid extends StatefulWidget {
-  const _FrameGrid();
-  @override
-  State<_FrameGrid> createState() => _FrameGridState();
-}
-
-class _FrameGridState extends State<_FrameGrid> {
-  String _cat = scrapFrameCategories.first;
-
-  @override
-  Widget build(BuildContext context) {
-    final list = [
-      for (final f in scrapFrames)
-        if (f.category == _cat) f,
-    ];
-    const pic = DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF35D0FF), Color(0xFFFF7A9C)],
-        ),
-      ),
-      child: Center(child: Icon(Icons.image, color: Colors.white70, size: 28)),
-    );
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: 40,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final c in scrapFrameCategories)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: PrismChip(
-                      label: c,
-                      selected: _cat == c,
-                      onTap: () => setState(() => _cat = c),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Flexible(
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 92,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-              ),
-              itemCount: list.length,
-              itemBuilder: (_, i) => Semantics(
-                button: true,
-                label: list[i].name,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context, list[i].id),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: ScrapFramedImage(frame: list[i], child: pic),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

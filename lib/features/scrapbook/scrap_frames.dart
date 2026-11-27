@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
 
 /// A picture frame: the shape the picture is masked to, plus the mat, line
 /// and decoration drawn around it. Frames only ever *mask* a picture (it is
@@ -46,6 +48,8 @@ class ScrapFrameSpec {
     return Rect.fromLTRB(m, m, s.width - m, s.height - m - b);
   }
 }
+
+const seasonalFrameCategory = 'Holidays & seasons';
 
 const scrapFrameCategories = <String>[
   'Simple',
@@ -382,6 +386,7 @@ List<ScrapFrameSpec> _build() {
 }
 
 ScrapFrameSpec? scrapFrameById(String id) {
+  if (id.startsWith('seas:')) return seasonalFrameById(id);
   for (final f in scrapFrames) {
     if (f.id == id) return f;
   }
@@ -651,4 +656,47 @@ class _ShapeClipper extends CustomClipper<Path> {
   Path getClip(Size size) => scrapShapePath(shape, Offset.zero & size);
   @override
   bool shouldReclip(_ShapeClipper o) => o.shape != shape;
+}
+
+/// A frame in one holiday or season look's colours and edge style.
+ScrapFrameSpec seasonalFrame(SeasonalVariation v) {
+  final p = v.palette;
+  final shape = switch (v.corner) {
+    CornerStyle.wreath => 'ellipse',
+    CornerStyle.lantern => 'arch',
+    CornerStyle.window => 'tombstone',
+    CornerStyle.ribbon => 'ticket',
+    CornerStyle.cluster => 'squircle',
+    CornerStyle.sprig => 'rrect',
+    _ => v.border == DecoBorder.scallop ? 'scallop' : 'rect',
+  };
+  final col = collectionById(v.collectionId);
+  return ScrapFrameSpec(
+    'seas:${v.id}',
+    '${col?.name ?? ''} · ${v.name}',
+    seasonalFrameCategory,
+    shape,
+    mat: 0.055,
+    matColor: Color(p.primary),
+    line: 0.012,
+    lineColor: Color(p.accent),
+    twin: v.border == DecoBorder.double || v.border == DecoBorder.ornate,
+    dashed: v.border == DecoBorder.dotted,
+    glow: v.lights == LightsStyle.fairy || v.lights == LightsStyle.stars
+        ? Color(p.accent)
+        : null,
+    shadow: 4,
+  );
+}
+
+/// Four frames per holiday or season (its first four looks).
+List<ScrapFrameSpec> seasonalFramesFor(String collectionId) {
+  final c = collectionById(collectionId);
+  if (c == null) return const [];
+  return [for (final v in c.variations.take(4)) seasonalFrame(v)];
+}
+
+ScrapFrameSpec? seasonalFrameById(String id) {
+  final v = variationById(id.substring(5));
+  return v == null ? null : seasonalFrame(v);
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
 
 /// One page texture or cover material: a procedural recipe, not an image.
 class ScrapTexture {
@@ -452,6 +454,7 @@ final List<ScrapTexture> scrapTextures = [
 ];
 
 ScrapTexture? scrapTextureById(String id) {
+  if (id.startsWith('seas:')) return seasonalTextureById(id);
   for (final t in scrapTextures) {
     if (t.id == id) return t;
   }
@@ -593,3 +596,42 @@ final List<ScrapTexture> scrapMaterials = [
   _t('m-marble', 'Marble', 'Stone & lace', 'marble', 0xF4F4F2, 0x6B7078),
   _t('m-lace', 'Lace', 'Stone & lace', 'lace', 0x6E5A7A, 0x000000),
 ];
+
+/// A page texture made from one holiday or season look: its palette, with
+/// the pattern that matches what falls or floats in that look.
+ScrapTexture seasonalTexture(SeasonalVariation v) {
+  final kind = switch (v.particle) {
+    ParticleKind.snow => 'snowflakes',
+    ParticleKind.leaves => 'leaves',
+    ParticleKind.petals => 'floral',
+    ParticleKind.rain => 'waves',
+    ParticleKind.fireflies => 'constellations',
+    ParticleKind.stars => 'starfield',
+    ParticleKind.confetti => 'polka',
+    ParticleKind.hearts => 'hearts',
+    ParticleKind.bubbles => 'polkaBig',
+    ParticleKind.sparkles => 'stars',
+    ParticleKind.embers => 'grunge',
+    ParticleKind.clouds => 'clouds',
+    ParticleKind.butterflies => 'ditsy',
+    ParticleKind.bokeh => 'polkaBig',
+    ParticleKind.none =>
+      v.border == DecoBorder.hairline ? 'stripes' : 'diamonds',
+  };
+  final p = v.palette;
+  return ScrapTexture(
+    'seas:${v.id}',
+    v.name,
+    'Holidays & seasons',
+    kind,
+    Color(p.base),
+    Color(p.primary),
+    scale: 0.8 + (v.seed % 5) * 0.12,
+    seed: v.seed % 97 + 1,
+  );
+}
+
+ScrapTexture? seasonalTextureById(String id) {
+  final v = variationById(id.substring(5));
+  return v == null ? null : seasonalTexture(v);
+}

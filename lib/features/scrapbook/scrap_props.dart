@@ -5,6 +5,7 @@ import 'package:prism_plurality/features/experiences/color_sheet.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_editor_core.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_seasonal_ui.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/shared/fonts/font_browser.dart';
 import 'package:prism_plurality/shared/pickers/style_pickers.dart';
@@ -220,7 +221,10 @@ class _PropsState extends State<_Props> {
       context: context,
       title: tr(context, 'Frames', 'Marcos'),
       maxHeightFactor: 0.9,
-      builder: (ctx) => _FramePicker(current: e.opt<String>('fr2', '')),
+      builder: (ctx) => ScrapFrameBrowser(
+        current: e.opt<String>('fr2', ''),
+        onPick: (id) => Navigator.pop(ctx, id),
+      ),
     );
     if (id == null) return;
     done(() => id.isEmpty ? e.setOpt('fr2', null) : e.setOpt('fr2', id));
@@ -529,85 +533,6 @@ class _PropsState extends State<_Props> {
             onChanged: (v) => done(() => e.setOpt('oc', v)),
           ),
       ],
-    );
-  }
-}
-
-class _FramePicker extends StatefulWidget {
-  const _FramePicker({required this.current});
-  final String current;
-  @override
-  State<_FramePicker> createState() => _FramePickerState();
-}
-
-class _FramePickerState extends State<_FramePicker> {
-  String _cat = scrapFrameCategories.first;
-
-  @override
-  Widget build(BuildContext context) {
-    final list = [
-      for (final f in scrapFrames)
-        if (f.category == _cat) f,
-    ];
-    final pic = DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF35D0FF), Color(0xFFFF7A9C)],
-        ),
-      ),
-      child: const Center(
-        child: Icon(Icons.image, color: Colors.white70, size: 28),
-      ),
-    );
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: 40,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final c in scrapFrameCategories)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: PrismChip(
-                      label: c,
-                      selected: _cat == c,
-                      onTap: () => setState(() => _cat = c),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Flexible(
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 92,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-              ),
-              itemCount: list.length,
-              itemBuilder: (_, i) => Semantics(
-                button: true,
-                selected: list[i].id == widget.current,
-                label: list[i].name,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context, list[i].id),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: ScrapFramedImage(frame: list[i], child: pic),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

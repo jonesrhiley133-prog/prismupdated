@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_library.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_seasonal_ui.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_view.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_stickers.dart';
 import 'package:prism_plurality/features/social/services/social_media.dart';
@@ -73,6 +74,7 @@ class _Picker extends ConsumerStatefulWidget {
 class _PickerState extends ConsumerState<_Picker> {
   String _tab = 'Kawaii'; // category, or ‘★’, ‘recent’, ‘mine’, ‘c:<id>’
   String _q = '';
+  String? _coll;
 
   void _toast(String m) => PrismToast.show(context, message: m);
 
@@ -181,6 +183,13 @@ class _PickerState extends ConsumerState<_Picker> {
     if (_tab == 'recent') return lib.recents;
     if (_tab == '★') return lib.favorites;
     if (_tab == 'mine') return [for (final c in lib.custom) c.id];
+    if (_tab == 'seasonal') {
+      final order = ref.read(scrapSeasonOrderProvider);
+      final id = _coll ?? (order.isEmpty ? null : order.first.id);
+      return id == null
+          ? const []
+          : [for (final s in seasonalStickersFor(id)) s.id];
+    }
     if (_tab.startsWith('col:'))
       return lib.collections
               .where((c) => 'col:${c.id}' == _tab)
@@ -306,6 +315,10 @@ class _PickerState extends ConsumerState<_Picker> {
                 chip('recent', tr(context, 'Recent', 'Recientes')),
                 chip('★', tr(context, 'Favorites', 'Favoritos')),
                 chip('mine', tr(context, 'Mine', 'Mías')),
+                chip(
+                  'seasonal',
+                  tr(context, 'Holidays & seasons', 'Fiestas y estaciones'),
+                ),
                 for (final c in lib.collections) chip('col:${c.id}', c.name),
                 for (final c in scrapStickerCategories) chip(c, c),
               ],
@@ -343,6 +356,14 @@ class _PickerState extends ConsumerState<_Picker> {
             ],
           ),
           const SizedBox(height: 8),
+          if (_tab == 'seasonal' && _q.trim().isEmpty) ...[
+            SeasonalCollectionChips(
+              selected:
+                  _coll ?? ref.read(scrapSeasonOrderProvider).firstOrNull?.id,
+              onSelect: (id) => setState(() => _coll = id),
+            ),
+            const SizedBox(height: 8),
+          ],
           Flexible(
             child: ids.isEmpty
                 ? Padding(
