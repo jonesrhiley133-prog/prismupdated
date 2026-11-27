@@ -2,6 +2,39 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.45.0] - 2026-11-27
+
+### Added
+- Scrapbook Rentry notes: import a public Rentry page by link or paste
+  Rentry text, edit it with a live preview and a formatting toolbar, and
+  export it as Markdown. Headings, lists, tables, dividers, links, images,
+  centred text, coloured text, highlights, note boxes and tables of contents
+  all render; scripts and HTML never run.
+- Companions: 16 emotions (new: sad, grumpy, scared, loving, curious,
+  proud, bored, silly), each with its own face, movement and little effects;
+  moods that follow personality, the habitat's weather and time of day, and
+  what just happened; personality sliders; an umbrella in the rain and misty
+  breath in the snow; dance, stretch, spin, peekaboo, nod, shiver and
+  celebrate; and an animation-strength setting.
+- Seasonal Living: 20 new decoration styles (kente, papel picado, streamers,
+  tassels and flags; icicle, neon and diya lights; mkeka, zigzag, lace and
+  stitched borders; kinara, fan, rangoli and sunburst corners; feathers,
+  glitter, sky lanterns and ribbons). Each holiday mixes in its own
+  signature styles.
+
+### Changed
+- Holidays with traditional colours now use only those colours (for
+  example Mardi Gras is purple, green and gold, with no pink).
+- Kwanzaa has its own look built around the kinara, kente and mkeka, with
+  25 new looks named for the seven principles and the celebration.
+- When Seasonal Living is off, it no longer keeps a clock running.
+
+### Fixed
+- Seasonal "Reduced motion" turning itself back on after being turned off.
+- Moving seasonal decorations staying frozen.
+- The background tint blinking and taking a long time to return after
+  opening an alter's profile and going back.
+
 ## [0.44.0] - 2026-11-27
 
 ### Added

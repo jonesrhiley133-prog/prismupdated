@@ -128,6 +128,8 @@ final seasonalPrefsProvider =
 /// The look showing today, if any.
 final activeSeasonProvider = Provider<ActiveSeason?>((ref) {
   final p = ref.watch(seasonalPrefsProvider);
+  // Off means nothing shows, so don't keep a clock running at all.
+  if (p.performance == DecoPerformance.off) return null;
   final now = ref.watch(seasonalClockProvider).value ?? DateTime.now();
   return resolveActiveSeason(now, p);
 });

@@ -993,15 +993,18 @@ class ViewedAlterTintDriver extends StatefulWidget {
 
 class _ViewedAlterTintDriverState extends State<ViewedAlterTintDriver>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 220),
-    value: 1,
-  )..addListener(() => viewedAlterTintProgress.value = _c.value);
+  late final AnimationController _c;
 
   @override
   void initState() {
     super.initState();
+    // Created here, not lazily: a lazy controller first touched in dispose()
+    // would try to create a ticker while the tree is being torn down.
+    _c = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1,
+    )..addListener(() => viewedAlterTintProgress.value = _c.value);
     _tintFrom = _tintTo = viewedAlterAccent.value;
     viewedAlterAccent.addListener(_onTarget);
   }

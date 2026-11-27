@@ -21,6 +21,8 @@ import 'package:prism_plurality/features/fronting/migration/fronting_migration_s
 import 'package:prism_plurality/features/fronting/migration/providers/fronting_migration_providers.dart';
 import 'package:prism_plurality/features/fronting/providers/fronting_session_repair_provider.dart';
 import 'package:prism_plurality/features/habits/providers/habit_providers.dart';
+import 'package:prism_plurality/features/seasonal/decor_models.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/shared/providers/accessibility_preferences_provider.dart';
 import 'package:prism_plurality/shared/theme/prism_text_scaler.dart';
@@ -345,9 +347,21 @@ class _StartupGateHarness {
       forceCenteredSheetsProvider.overrideWith(
         _StaticForceCenteredNotifier.new,
       ),
+      // Seasonal Living sits at the app root; keep it off the database here
+      // so closing its stream doesn't leave drift's close timer pending.
+      seasonalPrefsProvider.overrideWith(_StaticSeasonalPrefs.new),
+      seasonalItemsProvider.overrideWithValue(const []),
     ],
     child: const PrismApp(),
   );
+}
+
+class _StaticSeasonalPrefs extends SeasonalPrefsNotifier {
+  @override
+  SeasonalPrefs build() => const SeasonalPrefs();
+
+  @override
+  Future<void> flush() async {}
 }
 
 class _StaticDimBackgroundNotifier extends DimBackgroundBehindSheetsNotifier {
