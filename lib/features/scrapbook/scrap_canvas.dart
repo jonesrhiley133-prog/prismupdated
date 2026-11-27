@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_video.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
@@ -331,30 +333,14 @@ class ScrapElementView extends StatelessWidget {
         e.media == null
             ? mediaOrPlaceholder()
             : ScrapVideoView(key: ValueKey('vid-${e.id}'), element: e),
-      ScrapType.photo || ScrapType.drawing => mediaOrPlaceholder(),
+      ScrapType.photo ||
+      ScrapType.drawing => _framedMedia(mediaOrPlaceholder(), e),
       ScrapType.audio => Center(
         child: e.media == null
             ? Icon(PhosphorIcons.microphone())
             : AudioClip(id: e.media!, label: e.text),
       ),
-      ScrapType.text => Align(
-        alignment: Alignment.topLeft,
-        child: Text(
-          (e.text?.isEmpty ?? true)
-              ? tr(
-                  context,
-                  'Double-tap to write…',
-                  'Doble toque para escribir…',
-                )
-              : e.text!,
-          style: scrapFont(e.font, base).copyWith(
-            color: (e.text?.isEmpty ?? true)
-                ? base.color!.withValues(alpha: 0.4)
-                : null,
-          ),
-          overflow: TextOverflow.fade,
-        ),
-      ),
+      ScrapType.text => _text(context, e, base, scale),
       ScrapType.note => Container(
         padding: EdgeInsets.all(8 * scale),
         decoration: BoxDecoration(
@@ -386,7 +372,21 @@ class ScrapElementView extends StatelessWidget {
         child: CustomPaint(painter: _TapePainter(Color(e.color ?? 0xFFF8B6C9))),
       ),
       ScrapType.shape => CustomPaint(
-        painter: _ShapePainter(e.text ?? 'heart', Color(e.color ?? 0xFFE74C3C)),
+        painter: ScrapShapePainter(
+          shape: switch (e.text) {
+            null => 'heart',
+            'circle' => 'ellipse',
+            'banner' => 'ribbon',
+            final id => id,
+          },
+          fill: Color(e.color ?? 0xFFE74C3C),
+          fill2: e.opt<int>('c2', 0) == 0 ? null : Color(e.opt<int>('c2', 0)),
+          border: e.opt<int>('bc', 0) == 0 ? null : Color(e.opt<int>('bc', 0)),
+          borderWidth: e.opt<double>('bw', 0) * scale,
+          shadow: e.opt<double>('sh', 0) * scale,
+          filled: !e.opt<bool>('nf', false),
+        ),
+        size: Size.infinite,
       ),
     };
     final framed = switch (e.frame) {
@@ -461,9 +461,133 @@ class ScrapElementView extends StatelessWidget {
         ],
       ),
     };
+    final decorated = _decorate(framed, e, scale);
     return e.opacity < 1
-        ? Opacity(opacity: e.opacity.clamp(0.0, 1.0), child: framed)
-        : framed;
+        ? Opacity(opacity: e.opacity.clamp(0.0, 1.0), child: decorated)
+        : decorated;
+  }
+
+  static Widget _framedMedia(Widget media, ScrapElement e) {
+    final f = scrapFrameById(e.opt<String>('fr2', ''));
+    if (f == null) return media;
+    return ScrapFramedImage(
+      frame: f,
+      fit: ScrapImageFit.fromJson(e.opts['fit']),
+      child: media,
+    );
+  }
+
+  /// Drop shadow and outline for stickers, pictures and the like.
+  static Widget _decorate(Widget child, ScrapElement e, double scale) {
+    final shd = e.opt<double>('shd', 0);
+    final ow = e.opt<double>('ow', 0);
+    if ((shd <= 0 && ow <= 0) ||
+        e.type == ScrapType.text ||
+        e.type == ScrapType.shape) {
+      return child;
+    }
+    Widget tint(Color c) => ColorFiltered(
+      colorFilter: ColorFilter.mode(c, BlendMode.srcIn),
+      child: child,
+    );
+    return Stack(
+      clipBehavior: Clip.none,
+      fit: StackFit.passthrough,
+      children: [
+        if (shd > 0)
+          Transform.translate(
+            offset: Offset(shd * 3 * scale, shd * 5 * scale),
+            child: Opacity(
+              opacity: 0.4,
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(
+                  sigmaX: math.max(0.1, shd * 4 * scale),
+                  sigmaY: math.max(0.1, shd * 4 * scale),
+                ),
+                child: tint(Colors.black),
+              ),
+            ),
+          ),
+        if (ow > 0)
+          for (var i = 0; i < 8; i++)
+            Transform.translate(
+              offset: Offset.fromDirection(i * math.pi / 4, ow * scale),
+              child: tint(Color(e.opt<int>('oc', 0xFFFFFFFF))),
+            ),
+        child,
+      ],
+    );
+  }
+
+  static Widget _text(
+    BuildContext context,
+    ScrapElement e,
+    TextStyle base,
+    double scale,
+  ) {
+    final empty = e.text?.isEmpty ?? true;
+    final ow = e.opt<double>('ow', 0);
+    final shd = e.opt<double>('shd', 0);
+    var style = scrapFont(e.font, base).copyWith(
+      color: empty ? base.color!.withValues(alpha: 0.4) : null,
+      fontWeight: e.opt<bool>('bd', false) ? FontWeight.w800 : null,
+      fontStyle: e.opt<bool>('it', false) ? FontStyle.italic : null,
+      letterSpacing: e.opt<double>('ls', 0) * scale,
+      height: e.opt<double>('lh', 0) == 0 ? null : e.opt<double>('lh', 0),
+      shadows: shd > 0
+          ? [
+              Shadow(
+                color: Colors.black45,
+                blurRadius: shd * 5 * scale,
+                offset: Offset(shd * 1.5 * scale, shd * 2.5 * scale),
+              ),
+            ]
+          : null,
+    );
+    final txt = empty
+        ? tr(context, 'Double-tap to write…', 'Doble toque para escribir…')
+        : e.text!;
+    final align = switch (e.opt<String>('ta', 'left')) {
+      'center' => TextAlign.center,
+      'right' => TextAlign.right,
+      _ => TextAlign.left,
+    };
+    final fill = Text(
+      txt,
+      style: style,
+      textAlign: align,
+      overflow: TextOverflow.fade,
+    );
+    final box = Align(
+      alignment: switch (e.opt<String>('ta', 'left')) {
+        'center' => Alignment.topCenter,
+        'right' => Alignment.topRight,
+        _ => Alignment.topLeft,
+      },
+      child: ow > 0
+          ? Stack(
+              children: [
+                Text(
+                  txt,
+                  textAlign: align,
+                  overflow: TextOverflow.fade,
+                  style: style.copyWith(
+                    shadows: null,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = ow * 2 * scale
+                      ..strokeJoin = StrokeJoin.round
+                      ..color = Color(e.opt<int>('oc', 0xFFFFFFFF)),
+                  ),
+                ),
+                fill,
+              ],
+            )
+          : fill,
+    );
+    return e.opt<bool>('fit', false)
+        ? FittedBox(fit: BoxFit.scaleDown, child: box)
+        : box;
   }
 }
 
@@ -499,53 +623,6 @@ class _TapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_TapePainter old) => old.color != color;
-}
-
-class _ShapePainter extends CustomPainter {
-  _ShapePainter(this.shape, this.color);
-  final String shape;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()..color = color;
-    final w = size.width, h = size.height;
-    switch (shape) {
-      case 'circle':
-        canvas.drawOval(Offset.zero & size, p);
-      case 'star':
-        final path = Path();
-        for (var k = 0; k < 10; k++) {
-          final r = (k.isEven ? 0.5 : 0.22) * math.min(w, h);
-          final a = -math.pi / 2 + k * math.pi / 5;
-          final pt = Offset(w / 2 + math.cos(a) * r, h / 2 + math.sin(a) * r);
-          k == 0 ? path.moveTo(pt.dx, pt.dy) : path.lineTo(pt.dx, pt.dy);
-        }
-        canvas.drawPath(path..close(), p);
-      case 'banner':
-        canvas.drawPath(
-          Path()
-            ..moveTo(0, 0)
-            ..lineTo(w, 0)
-            ..lineTo(w * 0.92, h / 2)
-            ..lineTo(w, h)
-            ..lineTo(0, h)
-            ..lineTo(w * 0.08, h / 2)
-            ..close(),
-          p,
-        );
-      default: // heart
-        final path = Path()
-          ..moveTo(w / 2, h * 0.9)
-          ..cubicTo(-w * 0.2, h * 0.45, w * 0.2, -h * 0.1, w / 2, h * 0.25)
-          ..cubicTo(w * 0.8, -h * 0.1, w * 1.2, h * 0.45, w / 2, h * 0.9);
-        canvas.drawPath(path, p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ShapePainter old) =>
-      old.shape != shape || old.color != color;
 }
 
 /// Finger drawing pad; returns PNG bytes.
