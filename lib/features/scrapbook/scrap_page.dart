@@ -471,7 +471,7 @@ final List<ScrapPageTemplate> builtInPageTemplates = [
 /// Templates people saved themselves.
 final savedPageTemplatesProvider = Provider<List<ScrapPageTemplate>>((ref) {
   final recs =
-      ref.watch(trackerKindProvider(TrackerKind.scrapPageTemplate)).value ??
+      ref.watch(trackerKindProvider(TrackerKind.scrapTemplate)).value ??
       const <TrackerRecord>[];
   return [
     for (final r in recs)

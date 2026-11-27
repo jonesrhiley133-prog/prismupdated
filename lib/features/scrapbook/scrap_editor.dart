@@ -1225,7 +1225,7 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
           );
           if (name == null || name.trim().isEmpty) return;
           await _tracker.create(
-            kind: TrackerKind.scrapPageTemplate,
+            kind: TrackerKind.scrapTemplate,
             title: name.trim(),
             fields: {
               // Photos and other media stay behind; the layout is what's reusable.

@@ -408,6 +408,7 @@ final List<PrismFeature> prismFeatures = [
         TrackerKind.wallet,
         TrackerKind.walletCard,
         TrackerKind.walletIdentity,
+        TrackerKind.walletTemplate,
         TrackerKind.flag,
       ],
     ),
@@ -850,7 +851,11 @@ final List<PrismFeature> prismFeatures = [
     route: AppRoutePaths.scrapbook,
     data: const FeatureData(
       activityKinds: [TrackerKind.scrapPage],
-      permanentKinds: [TrackerKind.scrapBook, TrackerKind.scrapTemplate],
+      permanentKinds: [
+        TrackerKind.scrapBook,
+        TrackerKind.scrapTemplate,
+        TrackerKind.scrapStickers,
+      ],
     ),
   ),
   PrismFeature(
