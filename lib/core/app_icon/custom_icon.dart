@@ -7,6 +7,11 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' show IconData;
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/widgets.dart' show StringCharacters;
+
+import 'package:prism_plurality/core/app_icon/icon_art.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
 
 /// Aura styles for a custom icon.
 enum IconAura { none, glow, halo, rays, stars, nebula }
@@ -90,7 +95,49 @@ class CustomIconSpec {
     this.symbol = 'moonStars',
     this.symbolColor = 0xFFF3ECFF,
     this.background = IconBackground.linear,
+    this.art,
+    this.texture,
+    this.border = 0,
+    this.borderColor = 0xFFFFFFFF,
+    this.sticker,
+    this.text = '',
+    this.textColor = 0xFFFFFFFF,
+    this.shadow = false,
+    this.opacity = 1,
+    this.overlay = 'none',
+    this.shape = 'squircle',
   });
+
+  /// A patterned backdrop from the icon gallery's painter (stars, knit,
+  /// stained glass…), drawn in [top], [bottom] and [auraColor].
+  final String? art;
+
+  /// A scrapbook texture laid over the background.
+  final String? texture;
+
+  /// Frame thickness (0–1) and colour, drawn inside the launcher safe zone.
+  final double border;
+  final int borderColor;
+
+  /// An emoji sticker in the lower corner.
+  final String? sticker;
+
+  /// A short label (up to 6 characters).
+  final String text;
+  final int textColor;
+
+  /// A soft shadow under the centre piece.
+  final bool shadow;
+
+  /// 0.2–1: how solid the centre piece is.
+  final double opacity;
+
+  /// none | gloss | vignette | sparkles
+  final String overlay;
+
+  /// The mask used for previews: squircle | circle | rounded | teardrop |
+  /// square. (Launchers apply their own; this shows how it may look.)
+  final String shape;
 
   final int top;
   final int bottom;
@@ -114,6 +161,17 @@ class CustomIconSpec {
     String? symbol,
     int? symbolColor,
     IconBackground? background,
+    Object? art = _k,
+    Object? texture = _k,
+    double? border,
+    int? borderColor,
+    Object? sticker = _k,
+    String? text,
+    int? textColor,
+    bool? shadow,
+    double? opacity,
+    String? overlay,
+    String? shape,
   }) => CustomIconSpec(
     top: top ?? this.top,
     bottom: bottom ?? this.bottom,
@@ -125,7 +183,20 @@ class CustomIconSpec {
     symbol: symbol ?? this.symbol,
     symbolColor: symbolColor ?? this.symbolColor,
     background: background ?? this.background,
+    art: identical(art, _k) ? this.art : art as String?,
+    texture: identical(texture, _k) ? this.texture : texture as String?,
+    border: border ?? this.border,
+    borderColor: borderColor ?? this.borderColor,
+    sticker: identical(sticker, _k) ? this.sticker : sticker as String?,
+    text: text ?? this.text,
+    textColor: textColor ?? this.textColor,
+    shadow: shadow ?? this.shadow,
+    opacity: opacity ?? this.opacity,
+    overlay: overlay ?? this.overlay,
+    shape: shape ?? this.shape,
   );
+
+  static const _k = Object();
 
   Map<String, Object?> toJson() => {
     'top': top,
@@ -138,6 +209,17 @@ class CustomIconSpec {
     'symbol': symbol,
     'symbolColor': symbolColor,
     'background': background.name,
+    'art': ?art,
+    'texture': ?texture,
+    if (border > 0) 'border': border,
+    if (border > 0) 'borderColor': borderColor,
+    'sticker': ?sticker,
+    if (text.isNotEmpty) 'text': text,
+    if (text.isNotEmpty) 'textColor': textColor,
+    if (shadow) 'shadow': true,
+    if (opacity < 1) 'opacity': opacity,
+    if (overlay != 'none') 'overlay': overlay,
+    if (shape != 'squircle') 'shape': shape,
   };
 
   static CustomIconSpec fromJson(Map<String, Object?> j) => CustomIconSpec(
@@ -161,8 +243,29 @@ class CustomIconSpec {
             .where((b) => b.name == j['background'])
             .firstOrNull ??
         IconBackground.linear,
+    art: iconBackgrounds.contains(j['art']) ? j['art']! as String : null,
+    texture: j['texture'] is String ? j['texture']! as String : null,
+    border: ((j['border'] as num?)?.toDouble() ?? 0).clamp(0.0, 1.0),
+    borderColor: (j['borderColor'] as num?)?.toInt() ?? 0xFFFFFFFF,
+    sticker: j['sticker'] is String ? j['sticker']! as String : null,
+    text: j['text'] is String
+        ? (j['text']! as String).characters.take(6).toString()
+        : '',
+    textColor: (j['textColor'] as num?)?.toInt() ?? 0xFFFFFFFF,
+    shadow: j['shadow'] == true,
+    opacity: ((j['opacity'] as num?)?.toDouble() ?? 1).clamp(0.2, 1.0),
+    overlay: const {'gloss', 'vignette', 'sparkles'}.contains(j['overlay'])
+        ? j['overlay']! as String
+        : 'none',
+    shape:
+        const {'circle', 'rounded', 'teardrop', 'square'}.contains(j['shape'])
+        ? j['shape']! as String
+        : 'squircle',
   );
 }
+
+/// The Prism mark, decoded once, for icon art.
+Future<ui.Image> prismLogoImage() => _prism();
 
 ui.Image? _prismCache;
 
@@ -212,6 +315,33 @@ Future<Uint8List> renderCustomIcon(
       bg.color = Color(spec.top);
   }
   c.drawRect(rect, bg);
+  if (spec.art != null) {
+    paintIconArt(
+      c,
+      s,
+      IconArt(
+        bg: spec.art!,
+        fg: 'none',
+        logo: 'none',
+        c1: spec.top,
+        c2: spec.bottom,
+        c3: spec.auraColor,
+      ),
+    );
+  }
+  final tex = spec.texture == null ? null : scrapTextureById(spec.texture!);
+  if (tex != null) {
+    c.saveLayer(rect, Paint()..color = const Color(0x66FFFFFF));
+    paintScrapTexture(
+      c,
+      rect.size,
+      kind: tex.kind,
+      c1: Color(spec.top),
+      c2: Color(spec.auraColor),
+      seed: 11,
+    );
+    c.restore();
+  }
 
   switch (spec.aura) {
     case IconAura.none:
@@ -327,9 +457,62 @@ Future<Uint8List> renderCustomIcon(
       }
   }
 
+  // The centre piece, drawn into its own layer so it can be faded and given
+  // a shadow.
+  final photoImage = spec.center == IconCenter.photo && spec.photo != null
+      ? (await (await ui.instantiateImageCodec(
+          spec.photo!,
+          targetWidth: size,
+        )).getNextFrame()).image
+      : null;
+  final prismImage = spec.center == IconCenter.prism ? await _prism() : null;
+  void drawCenter() {
+    _drawCenter(c, s, spec, aura, prismImage, photoImage);
+  }
+
+  if (spec.shadow) {
+    c.save();
+    c.translate(s * 0.012, s * 0.02);
+    c.saveLayer(
+      rect,
+      Paint()
+        ..colorFilter = const ColorFilter.mode(
+          Color(0x66000000),
+          BlendMode.srcIn,
+        )
+        ..imageFilter = ui.ImageFilter.blur(sigmaX: s * 0.02, sigmaY: s * 0.02),
+    );
+    drawCenter();
+    c.restore();
+    c.restore();
+  }
+  if (spec.opacity < 1) {
+    c.saveLayer(
+      rect,
+      Paint()..color = Color.fromRGBO(255, 255, 255, spec.opacity),
+    );
+  }
+  drawCenter();
+  if (spec.opacity < 1) c.restore();
+  _finish(c, s, spec);
+
+  final img = await rec.endRecording().toImage(size, size);
+  final png = await img.toByteData(format: ui.ImageByteFormat.png);
+  return png!.buffer.asUint8List();
+}
+
+void _drawCenter(
+  Canvas c,
+  double s,
+  CustomIconSpec spec,
+  Color aura,
+  ui.Image? prismImage,
+  ui.Image? photoImage,
+) {
   switch (spec.center) {
     case IconCenter.prism:
-      final img = await _prism();
+      final img = prismImage;
+      if (img == null) return;
       final d = s * 0.78;
       c.drawImageRect(
         img,
@@ -377,10 +560,8 @@ Future<Uint8List> renderCustomIcon(
       )..layout();
       tp.paint(c, Offset(s / 2 - tp.width / 2, s / 2 - tp.height / 2));
     case IconCenter.photo:
-      final bytes = spec.photo;
-      if (bytes != null) {
-        final codec = await ui.instantiateImageCodec(bytes, targetWidth: size);
-        final img = (await codec.getNextFrame()).image;
+      final img = photoImage;
+      if (img != null) {
         final r = s * 0.3;
         final circle = Rect.fromCircle(center: Offset(s / 2, s / 2), radius: r);
         c.save();
@@ -408,8 +589,93 @@ Future<Uint8List> renderCustomIcon(
         );
       }
   }
+}
 
-  final img = await rec.endRecording().toImage(size, size);
-  final png = await img.toByteData(format: ui.ImageByteFormat.png);
-  return png!.buffer.asUint8List();
+/// Overlays, frame, sticker and label, kept inside the launcher safe zone.
+void _finish(Canvas c, double s, CustomIconSpec spec) {
+  final rect = Rect.fromLTWH(0, 0, s, s);
+  switch (spec.overlay) {
+    case 'gloss':
+      c.drawRect(
+        Rect.fromLTWH(0, 0, s, s * 0.5),
+        Paint()
+          ..shader = const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x55FFFFFF), Color(0x00FFFFFF)],
+          ).createShader(Rect.fromLTWH(0, 0, s, s * 0.5)),
+      );
+    case 'vignette':
+      c.drawRect(
+        rect,
+        Paint()
+          ..shader = const RadialGradient(
+            radius: 0.75,
+            colors: [Color(0x00000000), Color(0x77000000)],
+          ).createShader(rect),
+      );
+    case 'sparkles':
+      final rnd = math.Random(3);
+      for (var i = 0; i < 9; i++) {
+        final o = Offset(
+          s * (0.2 + rnd.nextDouble() * 0.6),
+          s * (0.2 + rnd.nextDouble() * 0.6),
+        );
+        final r = s * (0.012 + rnd.nextDouble() * 0.02);
+        c.drawPath(
+          Path()
+            ..moveTo(o.dx, o.dy - r)
+            ..quadraticBezierTo(o.dx, o.dy, o.dx + r, o.dy)
+            ..quadraticBezierTo(o.dx, o.dy, o.dx, o.dy + r)
+            ..quadraticBezierTo(o.dx, o.dy, o.dx - r, o.dy)
+            ..quadraticBezierTo(o.dx, o.dy, o.dx, o.dy - r),
+          Paint()..color = const Color(0xEEFFFFFF),
+        );
+      }
+  }
+  if (spec.border > 0) {
+    final w = s * 0.01 + spec.border * s * 0.05;
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        rect.deflate(s * 0.18 + w / 2),
+        Radius.circular(s * 0.14),
+      ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w
+        ..color = Color(spec.borderColor),
+    );
+  }
+  if (spec.sticker != null && spec.sticker!.isNotEmpty) {
+    final tp = TextPainter(
+      text: TextSpan(
+        text: spec.sticker,
+        style: TextStyle(
+          fontSize: s * 0.16,
+          height: 1,
+          fontFamilyFallback: const ['NotoColorEmoji', 'Apple Color Emoji'],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(c, Offset(s * 0.7 - tp.width / 2, s * 0.7 - tp.height / 2));
+  }
+  if (spec.text.isNotEmpty) {
+    final tp = TextPainter(
+      text: TextSpan(
+        text: spec.text,
+        style: TextStyle(
+          fontSize: s * 0.11,
+          fontWeight: FontWeight.w800,
+          height: 1,
+          color: Color(spec.textColor),
+          shadows: [
+            Shadow(color: const Color(0x88000000), blurRadius: s * 0.02),
+          ],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: s * 0.62);
+    tp.paint(c, Offset(s / 2 - tp.width / 2, s * 0.76 - tp.height / 2));
+  }
 }

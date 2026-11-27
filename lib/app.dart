@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/features/seasonal/living_layout.dart';
+import 'package:prism_plurality/features/seasonal/seasonal_icon_scheduler.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_overlay.dart';
 import 'package:prism_plurality/shared/fonts/font_prefs.dart';
 import 'package:prism_plurality/shared/fonts/prism_fonts.dart';
@@ -996,6 +997,8 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             result = ViewedAlterTintDriver(child: result);
             // Optional layout ornaments for headers, cards and frames.
             result = LayoutDecorHost(child: result);
+            // Holiday app icons, only if turned on in the icon gallery.
+            result = SeasonalIconScheduler(child: result);
             return A11yScope(
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),

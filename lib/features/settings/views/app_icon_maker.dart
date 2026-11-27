@@ -1,4 +1,12 @@
+import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:prism_plurality/core/app_icon/icon_art.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
+import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart'
+    show IconMask, iconMasks;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -6,6 +14,36 @@ import 'package:prism_plurality/shared/utils/prism_image_picker.dart';
 import 'package:prism_plurality/core/app_icon/app_icon.dart';
 import 'package:prism_plurality/core/app_icon/custom_icon.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+
+/// A small rendered thumbnail of a saved design.
+class _DesignThumb extends StatefulWidget {
+  const _DesignThumb({required this.spec});
+  final CustomIconSpec spec;
+  @override
+  State<_DesignThumb> createState() => _DesignThumbState();
+}
+
+class _DesignThumbState extends State<_DesignThumb> {
+  Uint8List? _png;
+  @override
+  void initState() {
+    super.initState();
+    renderCustomIcon(widget.spec, size: 128).then((p) {
+      if (mounted) setState(() => _png = p);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(14),
+    child: SizedBox.square(
+      dimension: 60,
+      child: _png == null
+          ? ColoredBox(color: Color(widget.spec.bottom))
+          : Image.memory(_png!, gaplessPlayback: true),
+    ),
+  );
+}
 
 /// Opens the custom icon designer.
 Future<void> showAppIconMaker(BuildContext context) =>
@@ -80,6 +118,61 @@ class _MakerState extends ConsumerState<_Maker> {
   CustomIconSpec _spec = const CustomIconSpec();
   Uint8List? _preview;
   final _emoji = TextEditingController(text: '✨');
+  final _sticker = TextEditingController();
+  final _text = TextEditingController();
+  List<CustomIconSpec> _designs = const [];
+
+  static const _designsKey = 'prism.appIcon.designs';
+
+  Future<void> _loadDesigns() async {
+    try {
+      final raw = (await SharedPreferences.getInstance()).getString(
+        _designsKey,
+      );
+      if (raw == null || !mounted) return;
+      final list = jsonDecode(raw);
+      if (list is! List) return;
+      setState(
+        () => _designs = [
+          for (final j in list)
+            if (j is Map) CustomIconSpec.fromJson(j.cast<String, Object?>()),
+        ],
+      );
+    } catch (_) {}
+  }
+
+  Future<void> _storeDesigns() async {
+    try {
+      await (await SharedPreferences.getInstance()).setString(
+        _designsKey,
+        jsonEncode([for (final d in _designs) d.toJson()]),
+      );
+    } catch (_) {}
+  }
+
+  Future<void> _saveDesign() async {
+    setState(() => _designs = [_spec, ..._designs].take(30).toList());
+    await _storeDesigns();
+    if (mounted) {
+      PrismToast.show(
+        context,
+        message: tr(context, 'Design saved', 'Diseño guardado'),
+      );
+    }
+  }
+
+  Future<void> _deleteDesign(int i) async {
+    final ok = await PrismDialog.confirm(
+      context: context,
+      title: tr(context, 'Delete this design?', '¿Borrar este diseño?'),
+      confirmLabel: tr(context, 'Delete', 'Borrar'),
+      destructive: true,
+    );
+    if (!ok) return;
+    setState(() => _designs = [..._designs]..removeAt(i));
+    await _storeDesigns();
+  }
+
   bool _busy = false;
   int _gen = 0;
 
@@ -91,14 +184,19 @@ class _MakerState extends ConsumerState<_Maker> {
       if (s != null) {
         _spec = s;
         _emoji.text = s.emoji;
+        _sticker.text = s.sticker ?? '';
+        _text.text = s.text;
       }
       _render();
     });
+    _loadDesigns();
   }
 
   @override
   void dispose() {
     _emoji.dispose();
+    _sticker.dispose();
+    _text.dispose();
     super.dispose();
   }
 
@@ -156,6 +254,106 @@ class _MakerState extends ConsumerState<_Maker> {
             ),
           ),
         ),
+        if (_preview != null) ...[
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (final m in iconMasks)
+                Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: InkWell(
+                    onTap: () => _update(_spec.copyWith(shape: m.$1)),
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _spec.shape == m.$1
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox.square(
+                        dimension: 44,
+                        child: IconMask(
+                          shape: m.$1,
+                          // Zoomed to the part launchers show.
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            clipBehavior: Clip.hardEdge,
+                            child: SizedBox.square(
+                              dimension: 66,
+                              child: OverflowBox(
+                                maxWidth: 100,
+                                maxHeight: 100,
+                                child: Image.memory(
+                                  _preview!,
+                                  width: 100,
+                                  height: 100,
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Center(
+            child: Text(
+              tr(
+                context,
+                'How launcher shapes may cut it (tap to preview with one)',
+                'Cómo pueden recortarlo los lanzadores',
+              ),
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+        ],
+        if (_designs.isNotEmpty) ...[
+          label(tr(context, 'My designs', 'Mis diseños')),
+          SizedBox(
+            height: 64,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (var i = 0; i < _designs.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        _emoji.text = _designs[i].emoji;
+                        _update(_designs[i]);
+                      },
+                      onLongPress: () => _deleteDesign(i),
+                      child: Semantics(
+                        button: true,
+                        label: tr(
+                          context,
+                          'Design ${i + 1}',
+                          'Diseño ${i + 1}',
+                        ),
+                        child: _DesignThumb(spec: _designs[i]),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Text(
+            tr(
+              context,
+              'Tap to open, hold to delete.',
+              'Toca para abrir, mantén para borrar.',
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
         label(tr(context, 'Center', 'Centro')),
         Wrap(
           spacing: 6,
@@ -328,6 +526,174 @@ class _MakerState extends ConsumerState<_Maker> {
             onChanged: (v) => _update(_spec.copyWith(bottom: v)),
           ),
         ],
+        label(tr(context, 'Backdrop pattern', 'Patrón de fondo')),
+        SizedBox(
+          height: 40,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              for (final b in [null, ...iconBackgrounds])
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: PrismChip(
+                    label: b ?? tr(context, 'None', 'Ninguno'),
+                    selected: _spec.art == b,
+                    onTap: () => _update(_spec.copyWith(art: b)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Text(
+          tr(
+            context,
+            'Uses your background colours and aura colour.',
+            'Usa tus colores de fondo y del aura.',
+          ),
+          style: theme.textTheme.bodySmall,
+        ),
+        label(tr(context, 'Texture', 'Textura')),
+        PrismSelect<String>(
+          labelText: tr(context, 'Texture', 'Textura'),
+          value: _spec.texture ?? '',
+          items: [
+            PrismSelectItem(value: '', label: tr(context, 'None', 'Ninguna')),
+            for (final t in scrapTextures)
+              PrismSelectItem(value: t.id, label: t.name),
+          ],
+          onChanged: (v) => _update(
+            _spec.copyWith(texture: v == null || v.isEmpty ? null : v),
+          ),
+        ),
+        label(tr(context, 'Frame', 'Marco')),
+        Slider(
+          value: _spec.border,
+          onChanged: (v) => setState(() => _spec = _spec.copyWith(border: v)),
+          onChangeEnd: (_) => _render(),
+        ),
+        if (_spec.border > 0)
+          ColorChoiceRow(
+            value: _spec.borderColor,
+            colors: _symbolColors,
+            onChanged: (v) => _update(_spec.copyWith(borderColor: v)),
+          ),
+        label(tr(context, 'Sticker and label', 'Pegatina y texto')),
+        Row(
+          children: [
+            SizedBox(
+              width: 90,
+              child: PrismTextField(
+                controller: _sticker,
+                hintText: '⭐',
+                onChanged: (v) => _update(
+                  _spec.copyWith(
+                    sticker: v.trim().isEmpty
+                        ? null
+                        : v.trim().characters.first,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: PrismTextField(
+                controller: _text,
+                hintText: tr(context, 'Label (6 letters)', 'Texto (6 letras)'),
+                onChanged: (v) => _update(
+                  _spec.copyWith(text: v.characters.take(6).toString()),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (_spec.text.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          ColorChoiceRow(
+            value: _spec.textColor,
+            colors: _symbolColors,
+            onChanged: (v) => _update(_spec.copyWith(textColor: v)),
+          ),
+        ],
+        label(tr(context, 'Finish', 'Acabado')),
+        PrismSwitchRow(
+          title: tr(
+            context,
+            'Shadow under the centre',
+            'Sombra bajo el centro',
+          ),
+          value: _spec.shadow,
+          onChanged: (v) => _update(_spec.copyWith(shadow: v)),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                tr(context, 'Centre opacity', 'Opacidad del centro'),
+                style: theme.textTheme.bodyMedium,
+              ),
+            ),
+            Text('${(_spec.opacity * 100).round()}%'),
+          ],
+        ),
+        Slider(
+          value: _spec.opacity,
+          min: 0.2,
+          onChanged: (v) => setState(() => _spec = _spec.copyWith(opacity: v)),
+          onChangeEnd: (_) => _render(),
+        ),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final o in [
+              ('none', tr(context, 'No overlay', 'Sin capa')),
+              ('gloss', tr(context, 'Gloss', 'Brillo')),
+              ('vignette', tr(context, 'Vignette', 'Viñeta')),
+              ('sparkles', tr(context, 'Sparkles', 'Destellos')),
+            ])
+              PrismChip(
+                label: o.$2,
+                selected: _spec.overlay == o.$1,
+                onTap: () => _update(_spec.copyWith(overlay: o.$1)),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: PrismButton(
+                label: tr(context, 'Save design', 'Guardar diseño'),
+                icon: Icons.bookmark_add_outlined,
+                tone: PrismButtonTone.outlined,
+                onPressed: _saveDesign,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: PrismButton(
+                label: tr(context, 'Export PNG', 'Exportar PNG'),
+                icon: Icons.ios_share,
+                tone: PrismButtonTone.outlined,
+                onPressed: () async {
+                  final png = await renderCustomIcon(_spec, size: 1024);
+                  await SharePlus.instance.share(
+                    ShareParams(
+                      files: [
+                        XFile.fromData(
+                          png,
+                          mimeType: 'image/png',
+                          name: 'prism-icon.png',
+                        ),
+                      ],
+                      fileNameOverrides: ['prism-icon.png'],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 20),
         PrismButton(
           label: kIsWeb

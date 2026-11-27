@@ -17,6 +17,7 @@ object AppIcon {
     val ids = listOf(
         "classic", "nebula", "aurora", "halo", "lunar", "ember", "abyss", "bloom", "void", "spectrum", "frost", "twilight", "verdant", "starlight", "solstice",
         "eclipse", "opal", "obsidian", "ultraviolet", "tide", "constellation", "facets", "moons", "chrysalis", "headspace", "harmony", "garden", "reflection", "murmuration", "threads", "lanterns", "chorus",
+        "original", "monoBlack", "monoWhite", "outline", "softMinimal", "glass", "frosted", "matte", "chrome", "iridescent", "galactic", "nebula2", "lunar2", "solar", "constellation2", "saturn", "stardust", "cosmicCrystal", "midnight", "aurora2", "cyberpunk", "holographic", "pixel", "frutigerAero", "y2k", "circuit", "neon", "retroComputer", "digitalGlass", "futuristic", "cottagecore", "botanical", "mushroom", "forest", "ocean", "cloud", "knitted", "wooden", "floral", "rainyWindow", "watercolor", "sketchbook", "scrapbook", "gothic", "grunge", "punk", "artDeco", "victorian", "stainedGlass", "paperCutout", "kawaii", "pastel", "plush", "candy", "ribbon", "notebook", "music", "arcade", "dreamcore", "fairycore",
     )
 
     private fun component(context: Context, id: String) =
@@ -40,8 +41,10 @@ object AppIcon {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP,
         )
+        // Only touch aliases that are actually on: with 90+ designs, turning
+        // every other one off on each switch would be needlessly slow.
         for (other in ids) {
-            if (other == id) continue
+            if (other == id || !isEnabled(context, other)) continue
             pm.setComponentEnabledSetting(
                 component(context, other),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
@@ -49,6 +52,26 @@ object AppIcon {
             )
         }
         return true
+    }
+
+    /**
+     * Refreshes the icon of Prism's pinned shortcut (custom or seasonal)
+     * without asking anything; does nothing if it was never pinned.
+     */
+    fun updatePinnedShortcut(context: Context, png: ByteArray, label: String): Boolean {
+        val bitmap = BitmapFactory.decodeByteArray(png, 0, png.size) ?: return false
+        val pinned = ShortcutManagerCompat.getShortcuts(context, ShortcutManagerCompat.FLAG_MATCH_PINNED)
+            .any { it.id == "prism_custom_icon" }
+        if (!pinned) return false
+        val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?: Intent(Intent.ACTION_MAIN).setClassName(context.packageName, "com.prismplural.prism.MainActivity")
+        launch.action = Intent.ACTION_MAIN
+        val info = ShortcutInfoCompat.Builder(context, "prism_custom_icon")
+            .setShortLabel(label)
+            .setIcon(IconCompat.createWithAdaptiveBitmap(bitmap))
+            .setIntent(launch)
+            .build()
+        return ShortcutManagerCompat.updateShortcuts(context, listOf(info))
     }
 
     /**

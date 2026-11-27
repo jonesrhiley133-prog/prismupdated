@@ -146,6 +146,7 @@ abstract final class AppRoutePaths {
   static const environment = '/settings/appearance/environment';
   static const layouts = '/settings/appearance/layouts';
   static const digitalRooms = '/settings/appearance/rooms';
+  static const appIcons = '/settings/appearance/app-icons';
   static const whosThere = '/whos-there';
   static const settingsFrontStatuses = '/settings/fronting-statuses';
   static const settingsMoments = '/settings/moments';

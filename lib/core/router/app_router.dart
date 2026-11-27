@@ -19,6 +19,7 @@ import 'package:prism_plurality/core/diagnostics/render_error_view.dart';
 import 'package:prism_plurality/features/companions/companion_screens.dart';
 import 'package:prism_plurality/features/wrapped/wrapped_screens.dart';
 import 'package:prism_plurality/features/experiences/experiences_hub.dart';
+import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/font_studio_screen.dart';
 import 'package:prism_plurality/features/voice/voice_settings_screen.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
@@ -1002,6 +1003,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: 'fonts',
                         builder: (context, state) => const FontStudioScreen(),
+                      ),
+                      GoRoute(
+                        path: 'app-icons',
+                        builder: (context, state) =>
+                            const AppIconGalleryScreen(),
                       ),
                       GoRoute(
                         path: 'rooms',

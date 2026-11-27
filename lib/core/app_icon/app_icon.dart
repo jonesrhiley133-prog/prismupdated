@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -6,18 +7,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prism_plurality/core/app_icon/custom_icon.dart';
+import 'package:prism_plurality/core/app_icon/icon_art.dart';
+import 'package:prism_plurality/core/app_icon/icon_catalog.dart';
 import 'package:prism_plurality/core/app_icon/favicon.dart';
 
 /// One choosable app icon.
 @immutable
 class AppIconPreset {
-  const AppIconPreset(this.id, this.en, this.es, {this.plural = false});
+  const AppIconPreset(
+    this.id,
+    this.en,
+    this.es, {
+    this.plural = false,
+    this.art,
+    this.group = 'classic',
+  });
   final String id;
   final String en;
   final String es;
 
   /// Plurality-themed designs (shown in their own group).
   final bool plural;
+
+  /// Designs from the icon gallery are drawn in code (no preview file).
+  final IconArt? art;
+
+  /// Gallery group ('classic', 'plural', or one of [iconArtGroups]).
+  final String group;
 
   /// Preview image bundled with the app.
   String get asset => 'assets/app_icons/$id.png';
@@ -60,6 +76,38 @@ const appIconPresets = [
   AppIconPreset('chorus', 'Chorus', 'Coro', plural: true),
 ];
 
+List<AppIconPreset>? _all;
+
+/// Every launcher icon: the original 32 plus the 60 gallery designs.
+List<AppIconPreset> get allAppIconPresets => _all ??= [
+  for (final p in appIconPresets)
+    AppIconPreset(
+      p.id,
+      p.en,
+      p.es,
+      plural: p.plural,
+      group: p.plural ? 'plural' : 'classic',
+    ),
+  for (final d in permanentIconDesigns)
+    AppIconPreset(d.id, d.en, d.es, art: d.art, group: d.group),
+];
+
+AppIconPreset? appIconPresetById(String id) {
+  for (final p in allAppIconPresets) {
+    if (p.id == id) return p;
+  }
+  return null;
+}
+
+/// PNG bytes of a gallery design at [size] px.
+Future<Uint8List> renderIconArtPng(IconArt art, int size) async {
+  final logo = await prismLogoImage();
+  final img = await renderIconArtImage(art, size, logo: logo);
+  final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+  img.dispose();
+  return bytes!.buffer.asUint8List();
+}
+
 /// Where changing the icon works: the Android launcher and the browser tab.
 bool get appIconSupported =>
     kIsWeb || defaultTargetPlatform == TargetPlatform.android;
@@ -94,9 +142,17 @@ class AppIconService {
 
   /// Switches the icon. Returns false where it isn't supported.
   Future<bool> set(String id) async {
-    if (!appIconPresets.any((p) => p.id == id)) return false;
+    final preset = appIconPresetById(id);
+    if (preset == null) return false;
     if (kIsWeb) {
-      setFavicon('icons/app/$id.png');
+      final art = preset.art;
+      if (art == null) {
+        setFavicon('icons/app/$id.png');
+      } else {
+        setFavicon(
+          'data:image/png;base64,${base64Encode(await renderIconArtPng(art, 128))}',
+        );
+      }
     } else if (defaultTargetPlatform == TargetPlatform.android) {
       final ok = await _channel.invokeMethod<bool>('set', {'id': id}) ?? false;
       if (!ok) return false;
@@ -107,6 +163,45 @@ class AppIconService {
       await (await SharedPreferences.getInstance()).setString(_key, id);
     } catch (_) {}
     return true;
+  }
+}
+
+extension SeasonalAppIcon on AppIconService {
+  static const autoKey = 'prism.appIcon.seasonAuto';
+
+  /// Uses a seasonal design. Android launchers can only switch between
+  /// icons built into the app, so it goes on a home-screen shortcut (Android
+  /// asks once; later changes update it silently). Web: the tab icon.
+  Future<bool> setDesign(IconDesign d, {bool ask = true}) async {
+    final png = await renderIconArtPng(d.art, kIsWeb ? 128 : 432);
+    if (kIsWeb) {
+      setFavicon('data:image/png;base64,${base64Encode(png)}');
+      return true;
+    }
+    if (defaultTargetPlatform != TargetPlatform.android) return false;
+    try {
+      return await AppIconService._channel.invokeMethod<bool>(
+            ask ? 'pinShortcut' : 'updateShortcut',
+            {'png': png, 'label': 'Prism'},
+          ) ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> autoSeasonal() async {
+    try {
+      return (await SharedPreferences.getInstance()).getBool(autoKey) ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> setAutoSeasonal(bool on) async {
+    try {
+      await (await SharedPreferences.getInstance()).setBool(autoKey, on);
+    } catch (_) {}
   }
 }
 

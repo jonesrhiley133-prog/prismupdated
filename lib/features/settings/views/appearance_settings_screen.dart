@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/core/app_icon/app_icon.dart';
+import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_maker.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
 import 'package:prism_plurality/shared/widgets/prism_button.dart';
@@ -606,7 +607,7 @@ class _WebRenderingSection extends StatelessWidget {
   }
 }
 
-/// Pick the app's icon (Android launcher, browser tab on the web).
+/// The app icon: what's in use, with the gallery and Icon Studio a tap away.
 class _AppIconSection extends ConsumerWidget {
   const _AppIconSection();
   @override
@@ -614,68 +615,51 @@ class _AppIconSection extends ConsumerWidget {
     final theme = Theme.of(context);
     final current = ref.watch(appIconProvider).value ?? 'classic';
     final es = Localizations.localeOf(context).languageCode == 'es';
+    final preset = appIconPresetById(current);
     return PrismSection(
       title: tr(context, 'App icon', 'Icono de la app'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final plural in [false, true]) ...[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8, top: 4),
-              child: Text(
-                plural
-                    ? tr(context, 'Plurality', 'Pluralidad')
-                    : tr(context, 'Prism', 'Prism'),
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
+          Row(
+            children: [
+              if (preset != null)
+                appIconPicture(preset, 56, 'squircle')
+              else
+                _CustomIconTile(
+                  selected: current == 'custom',
+                  enabled: appIconSupported,
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  preset == null
+                      ? tr(context, 'Your own design', 'Tu propio diseño')
+                      : (es ? preset.es : preset.en),
+                  style: theme.textTheme.titleMedium,
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          PrismButton(
+            label: tr(
+              context,
+              'Icon gallery (${allAppIconPresets.length} + seasonal)',
+              'Galería de iconos (${allAppIconPresets.length} + temporada)',
             ),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                for (final p in appIconPresets.where((p) => p.plural == plural))
-                  _IconTile(
-                    preset: p,
-                    label: es ? p.es : p.en,
-                    selected: p.id == current,
-                    enabled: appIconSupported,
-                    onTap: () async {
-                      if (p.id == current) return;
-                      await ref.read(appIconProvider.notifier).select(p.id);
-                    },
-                  ),
-                if (plural)
-                  _CustomIconTile(
-                    selected: current == 'custom',
-                    enabled: appIconSupported,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-          ],
+            icon: Icons.apps,
+            tone: PrismButtonTone.filled,
+            expanded: true,
+            onPressed: () => context.push(AppRoutePaths.appIcons),
+          ),
           const SizedBox(height: 8),
-          Text(
-            !appIconSupported
-                ? tr(
-                    context,
-                    'Changing the icon isn’t available on this device yet.',
-                    'Cambiar el icono aún no está disponible en este dispositivo.',
-                  )
-                : kIsWeb
-                ? tr(
-                    context,
-                    'Changes the icon on this browser tab.',
-                    'Cambia el icono de esta pestaña del navegador.',
-                  )
-                : tr(
-                    context,
-                    'Changes Prism’s icon on your home screen. Some launchers take a few seconds to update, and a home-screen shortcut may need to be added again.',
-                    'Cambia el icono de Prism en la pantalla de inicio. Algunos lanzadores tardan unos segundos y puede que tengas que volver a añadir el acceso directo.',
-                  ),
-            style: theme.textTheme.bodySmall,
+          PrismButton(
+            label: tr(context, 'Icon Studio', 'Estudio de iconos'),
+            icon: Icons.brush_outlined,
+            tone: PrismButtonTone.outlined,
+            expanded: true,
+            onPressed: () => showAppIconMaker(context),
           ),
         ],
       ),
@@ -683,72 +667,6 @@ class _AppIconSection extends ConsumerWidget {
   }
 }
 
-class _IconTile extends StatelessWidget {
-  const _IconTile({
-    required this.preset,
-    required this.label,
-    required this.selected,
-    required this.enabled,
-    required this.onTap,
-  });
-  final AppIconPreset preset;
-  final String label;
-  final bool selected;
-  final bool enabled;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: tr(context, '$label app icon', 'Icono $label'),
-      child: InkWell(
-        borderRadius: prismCorners(context, 16),
-        onTap: enabled ? onTap : null,
-        child: SizedBox(
-          width: 76,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  borderRadius: prismCorners(context, 18),
-                  border: Border.all(
-                    color: selected
-                        ? theme.colorScheme.primary
-                        : Colors.transparent,
-                    width: 2.5,
-                  ),
-                ),
-                child: Opacity(
-                  opacity: enabled ? 1 : 0.5,
-                  child: Image.asset(
-                    preset.asset,
-                    width: 60,
-                    height: 60,
-                    filterQuality: FilterQuality.medium,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontWeight: selected ? FontWeight.w700 : null,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// "Custom": opens the icon designer; shows the saved custom icon.
 class _CustomIconTile extends ConsumerWidget {
   const _CustomIconTile({required this.selected, required this.enabled});
   final bool selected;

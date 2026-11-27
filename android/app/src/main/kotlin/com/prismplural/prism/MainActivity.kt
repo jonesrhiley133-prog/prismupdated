@@ -213,6 +213,14 @@ class MainActivity : FlutterFragmentActivity() {
                             }
                         }
                     }
+                    "updateShortcut" -> {
+                        val png = call.argument<ByteArray>("png")
+                        try {
+                            result.success(png != null && AppIcon.updatePinnedShortcut(this, png, call.argument<String>("label") ?: "Prism"))
+                        } catch (e: Exception) {
+                            result.success(false)
+                        }
+                    }
                     "set" -> {
                         val id = call.argument<String>("id")
                         try {
