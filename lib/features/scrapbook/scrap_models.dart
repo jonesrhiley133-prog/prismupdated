@@ -20,6 +20,7 @@ enum ScrapType {
   drawing,
   tape,
   shape,
+  markdown,
 }
 
 enum ScrapFrame { none, polaroid, tape, round, shadow, border }

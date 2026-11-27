@@ -15,6 +15,7 @@ import 'package:prism_plurality/features/scrapbook/scrap_page.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_panels.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_props.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_seasonal_ui.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_rentry.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
@@ -370,6 +371,33 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
     }
   }
 
+  Future<void> _addRentry() async {
+    final text = await showRentryEditor(context);
+    if (text == null || text.trim().isEmpty) return;
+    _add(
+      ScrapElement(
+        type: ScrapType.markdown,
+        text: text,
+        x: 0.08,
+        y: 0.1,
+        w: 0.84,
+        h: 0.6,
+      ),
+    );
+  }
+
+  /// Double-tap: Rentry notes open their editor, everything else its settings.
+  Future<void> _edit(ScrapElement e) async {
+    if (e.type == ScrapType.markdown) {
+      final text = await showRentryEditor(context, initial: e.text ?? '');
+      if (text == null) return;
+      e.text = text;
+      _c.commit();
+      return;
+    }
+    await showScrapElementProps(context, _c, e);
+  }
+
   Future<void> _draw() async {
     final bytes = await ScrapDrawingPad.show(context);
     if (bytes == null) return;
@@ -520,7 +548,7 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
               child: ScrapEditSurface(
                 controller: _c,
                 widthDivisor: style.spread ? 2 : 1,
-                onEdit: (e) => showScrapElementProps(context, _c, e),
+                onEdit: _edit,
               ),
             ),
           ),
@@ -645,6 +673,11 @@ class _ScrapPageEditorState extends ConsumerState<ScrapPageEditor> {
         ),
       ),
       (Icons.gesture, tr(context, 'Handwriting', 'Escritura'), _addHandwriting),
+      (
+        Icons.article_outlined,
+        tr(context, 'Rentry note', 'Nota Rentry'),
+        _addRentry,
+      ),
       (
         Icons.sticky_note_2_outlined,
         tr(context, 'Note', 'Nota'),

@@ -330,6 +330,22 @@ class _PropsState extends State<_Props> {
             onChanged: (v) => done(() => e.color = v),
           ),
         ],
+        if (e.type == ScrapType.markdown) ...[
+          ScrapSlider(
+            label: tr(context, 'Text size', 'Tamaño del texto'),
+            value: e.size,
+            min: 0.4,
+            max: 3,
+            onChanged: (v) => live(() => e.size = v),
+            onEnd: c.commit,
+          ),
+          ScrapColorField(
+            label: tr(context, 'Text colour', 'Color del texto'),
+            value: e.color,
+            onChanged: (v) => done(() => e.color = v),
+            onClear: () => done(() => e.color = null),
+          ),
+        ],
         if (isShape) ...[
           sec(tr(context, 'Shape', 'Forma')),
           Row(

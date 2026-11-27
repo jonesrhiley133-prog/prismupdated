@@ -19,6 +19,7 @@ String scrapElementName(BuildContext context, ScrapElement e) =>
                   ? tr(context, 'Text', 'Texto')
                   : e.text!),
       ScrapType.note => tr(context, 'Note', 'Nota'),
+      ScrapType.markdown => tr(context, 'Rentry note', 'Nota Rentry'),
       ScrapType.sticker => scrapStickerName(e.text),
       ScrapType.shape => scrapShapeName(e.text ?? 'heart'),
       ScrapType.photo => tr(context, 'Picture', 'Imagen'),

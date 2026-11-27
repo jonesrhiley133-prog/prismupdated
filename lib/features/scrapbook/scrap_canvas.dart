@@ -5,6 +5,7 @@ import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_video.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_washi.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_rentry.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_shapes.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/shared/media/prism_media.dart';
@@ -138,6 +139,20 @@ class ScrapElementView extends StatelessWidget {
             : AudioClip(id: e.media!, label: e.text),
       ),
       ScrapType.text => _text(context, e, base, scale),
+      ScrapType.markdown => ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          maxHeight: double.infinity,
+          child: Padding(
+            padding: EdgeInsets.all(6 * scale),
+            child: RentryMarkdownView(
+              e.text ?? '',
+              scale: scale * e.size,
+              color: e.color == null ? null : Color(e.color!),
+            ),
+          ),
+        ),
+      ),
       ScrapType.note => Container(
         padding: EdgeInsets.all(8 * scale),
         decoration: BoxDecoration(
