@@ -187,10 +187,18 @@ class ScrapEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectAll() {
+  /// Selects everything, or only what [where] accepts (e.g. one side of a cover).
+  void selectAll([bool Function(ScrapElement e)? where]) {
     selected
       ..clear()
-      ..addAll(els.map((e) => e.id));
+      ..addAll(els.where((e) => where?.call(e) ?? true).map((e) => e.id));
+    notifyListeners();
+  }
+
+  /// Whether multi-select is on: taps add to the selection instead of replacing it.
+  bool multi = false;
+  void setMulti(bool v) {
+    multi = v;
     notifyListeners();
   }
 
@@ -461,6 +469,9 @@ class ScrapEditorController extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// Repaints listeners during a live edit (a slider drag) without making an undo step.
+  void refresh() => notifyListeners();
 
   void setZoom(double z) {
     zoom = z.clamp(0.5, 4.0);

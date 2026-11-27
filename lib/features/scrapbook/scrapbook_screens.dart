@@ -12,6 +12,8 @@ import 'package:prism_plurality/features/links/models/record_ref.dart';
 import 'package:prism_plurality/features/links/providers/link_providers.dart';
 import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_cover.dart';
+import 'package:prism_plurality/features/scrapbook/cover_designer_screen.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_sticker_picker.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_canvas.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
@@ -157,6 +159,43 @@ class _BookCover extends ConsumerWidget {
     final theme = themeById(book.str('theme'));
     final cover = book.str('cover');
     final t = Theme.of(context);
+    final designed = coverOf(book.fields);
+    if (designed != null) {
+      return Semantics(
+        button: true,
+        label: book.title,
+        child: GestureDetector(
+          onTap: () => openWithCoverAnimation(
+            context,
+            design: designed,
+            title: book.title,
+            subtitle: book.str('subtitle') ?? '',
+            open: onTap,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: ScrapCoverView(
+                    design: designed,
+                    title: book.title,
+                    subtitle: book.str('subtitle') ?? '',
+                    locked: book.isPrivate,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                tr(context, '$pages pages', '$pages páginas'),
+                textAlign: TextAlign.center,
+                style: t.textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Semantics(
       button: true,
       label: book.title,
@@ -1698,6 +1737,7 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
   late final _name = TextEditingController(text: e?.title);
   late final _desc = TextEditingController(text: e?.body);
   late final _emoji = TextEditingController(text: e?.str('emoji') ?? '📖');
+  late final _subtitle = TextEditingController(text: e?.str('subtitle'));
   late String _theme = e?.str('theme') ?? 'classic';
   late String? _cover = e?.str('cover');
   late String _font = e?.str('font') ?? 'serif';
@@ -1713,6 +1753,7 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
     _name.dispose();
     _desc.dispose();
     _emoji.dispose();
+    _subtitle.dispose();
     super.dispose();
   }
 
@@ -1763,13 +1804,23 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
           'pattern': _pattern,
           'color': _color,
           'emoji': _emoji.text.trim().isEmpty ? null : _emoji.text.trim(),
+          'subtitle': _subtitle.text.trim().isEmpty
+              ? null
+              : _subtitle.text.trim(),
           'contributors': _contributors.toList(),
           'for': _dedication,
           'forRef': _dedicationRef,
         };
         TrackerRecord book;
         if (e != null) {
-          book = e!
+          // The cover designer may have saved since this sheet opened.
+          final latest =
+              (ref.read(trackerKindProvider(TrackerKind.scrapBook)).value ??
+                      const <TrackerRecord>[])
+                  .where((r) => r.id == e!.id)
+                  .firstOrNull ??
+              e!;
+          book = latest
               .copyWith(
                 title: _name.text,
                 body: _desc.text,
@@ -1938,6 +1989,49 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
               ),
           ],
         ),
+        const SizedBox(height: 12),
+        PrismTextField(
+          controller: _subtitle,
+          labelText: tr(
+            context,
+            'Subtitle (shown on the cover)',
+            'Subtítulo (se muestra en la portada)',
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (e != null)
+          PrismButton(
+            label: tr(context, 'Design cover', 'Diseñar portada'),
+            icon: Icons.auto_awesome_outlined,
+            onPressed: () {
+              final latest =
+                  (ref.read(trackerKindProvider(TrackerKind.scrapBook)).value ??
+                          const <TrackerRecord>[])
+                      .where((r) => r.id == e!.id)
+                      .firstOrNull ??
+                  e!;
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => CoverDesignerScreen(
+                    book: latest.copyWith(title: _name.text).withFields({
+                      'subtitle': _subtitle.text.trim().isEmpty
+                          ? null
+                          : _subtitle.text.trim(),
+                    }),
+                  ),
+                ),
+              );
+            },
+          )
+        else
+          Text(
+            tr(
+              context,
+              'Save the scrapbook first, then design its cover.',
+              'Guarda el álbum primero y luego diseña su portada.',
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         const SizedBox(height: 12),
         TrackerLabel(tr(context, 'Title font', 'Fuente del título')),
         Wrap(

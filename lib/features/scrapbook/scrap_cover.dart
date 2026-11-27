@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_canvas.dart';
+import 'package:prism_plurality/features/scrapbook/scrap_custom_texture.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_frames.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_models.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
@@ -83,7 +84,8 @@ class CoverFace {
 
   static CoverFace fromJson(Object? o) {
     if (o is! Map) return CoverFace();
-    double d(String k, double def) => (o[k] is num ? (o[k] as num).toDouble() : def);
+    double d(String k, double def) =>
+        (o[k] is num ? (o[k] as num).toDouble() : def);
     final g = o['g'] is List
         ? [
             for (final x in o['g'] as List)
@@ -162,7 +164,8 @@ class CoverDesign {
 
   static CoverDesign? fromJson(Object? o) {
     if (o is! Map || o['v'] != 1) return null;
-    double d(String k, double def) => (o[k] is num ? (o[k] as num).toDouble() : def);
+    double d(String k, double def) =>
+        (o[k] is num ? (o[k] as num).toDouble() : def);
     return CoverDesign(
       aspect: d('ar', 0.72).clamp(minAspect, maxAspect),
       thickness: d('th', 0.3).clamp(0.0, 1.0),
@@ -252,6 +255,8 @@ class _FaceBase extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         base,
+        if (face.overlay.custom != null)
+          ScrapCustomTexture(media: face.overlay.custom!, style: face.overlay),
         if (ov != null && face.overlay.id != 'plain')
           IgnorePointer(
             child: CustomPaint(

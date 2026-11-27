@@ -278,3 +278,10 @@ List<ScrapSticker> stickersIn(String category) => [
   for (final s in scrapStickerCatalog)
     if (s.category == category) s,
 ];
+
+/// A readable name for whatever a sticker element holds (built-in, imported or an old emoji).
+String scrapStickerName(String? id) =>
+    (id == null ? null : scrapStickerById(id)?.name) ??
+    (id != null && id.startsWith('c:')
+        ? 'Imported sticker'
+        : (id ?? 'Sticker'));
