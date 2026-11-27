@@ -654,6 +654,12 @@ const companionInteractions = <String, (String, String)>{
   'sit': ('Sit together', '🪑'),
   'sleep': ('Watch them nap', '💤'),
   'explore': ('Send exploring', '🧭'),
+  'dance': ('Dance together', '💃'),
+  'stretch': ('Stretch', '🧘'),
+  'spin': ('Spin around', '🌀'),
+  'peekaboo': ('Peekaboo', '🙈'),
+  'celebrate': ('Celebrate', '🎉'),
+  'comfort': ('Cheer them up', '🫂'),
 };
 
 CompanionPose poseFor(String interaction) => switch (interaction) {
@@ -665,6 +671,12 @@ CompanionPose poseFor(String interaction) => switch (interaction) {
   'sleep' => CompanionPose.sleep,
   'pet' || 'sit' => CompanionPose.cuddle,
   'explore' => CompanionPose.hop,
+  'dance' => CompanionPose.dance,
+  'stretch' => CompanionPose.stretch,
+  'spin' => CompanionPose.spin,
+  'peekaboo' => CompanionPose.peek,
+  'celebrate' => CompanionPose.celebrate,
+  'comfort' => CompanionPose.cuddle,
   _ => CompanionPose.sit,
 };
 
@@ -713,6 +725,36 @@ const _lines = <String, List<String>>{
     '{n} dreams of something nice.',
     '{n} snores, very softly.',
     '{n} curls up and twitches a paw.',
+  ],
+  'dance': [
+    '{n} wiggles to a beat only they can hear.',
+    '{n} does a tiny spin and a bow.',
+    '{n} sways side to side, delighted.',
+  ],
+  'stretch': [
+    '{n} stretches all the way to their toes.',
+    '{n} reaches up, up, up — then flops happily.',
+    '{n} has a long, satisfying stretch.',
+  ],
+  'spin': [
+    '{n} twirls until the room spins a little.',
+    '{n} turns a happy circle.',
+    '{n} spins, wobbles, and laughs.',
+  ],
+  'peekaboo': [
+    '{n} hides… and pops back up!',
+    '{n} peeks over the edge, eyes sparkling.',
+    '{n} ducks down, then surprises you.',
+  ],
+  'celebrate': [
+    '{n} bounces with pure joy!',
+    '{n} cheers you on, very loudly for their size.',
+    '{n} throws an invisible confetti party.',
+  ],
+  'comfort': [
+    '{n} snuggles in close. It\'s going to be okay.',
+    '{n} sits right beside you, steady and warm.',
+    '{n} offers a gentle nudge and a soft look.',
   ],
 };
 
@@ -1242,6 +1284,25 @@ class CompanionActions {
     }
     await _t.delete(h.id);
   }
+
+  /// App-wide companion motion (stored with the companion settings).
+  Future<void> saveMotion(
+    CompanionSettings s,
+    Map<String, Object?> anim,
+  ) async {
+    if (s.record == null) {
+      await _t.create(
+        kind: TrackerKind.companionSettings,
+        fields: {...s.toFields(), 'anim': anim},
+      );
+    } else {
+      await _t.save(s.record!.withFields({'anim': anim}));
+    }
+  }
+
+  /// A companion's temperament sliders.
+  Future<void> savePersonality(Companion c, Map<String, Object?> persona) =>
+      _t.save(c.r.withFields({'persona': persona}));
 
   Future<void> saveSettings(CompanionSettings s) async {
     if (s.record == null) {

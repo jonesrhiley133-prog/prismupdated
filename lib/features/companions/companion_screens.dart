@@ -8,6 +8,7 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/companions/adopt_screen.dart';
 import 'package:prism_plurality/features/companions/appearance_editor.dart';
 import 'package:prism_plurality/features/companions/companion_art.dart';
+import 'package:prism_plurality/features/companions/companion_mood.dart';
 import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/companions/companion_species.dart';
 import 'package:prism_plurality/features/companions/companion_widgets.dart';
@@ -448,7 +449,11 @@ class _FeaturedStage extends StatelessWidget {
                 right: 0,
                 bottom: 4,
                 child: Center(
-                  child: CompanionFigure(companion: companion, size: 150),
+                  child: CompanionFigure(
+                    companion: companion,
+                    size: 150,
+                    weather: habitat?.weather,
+                  ),
                 ),
               ),
               Positioned(
@@ -668,9 +673,24 @@ class _CompanionProfileScreenState
   Timer? _reset;
   String? _as;
 
+  /// What just happened, which colours their mood for a while.
+  String? _last;
+  int _moodSeed = DateTime.now().minute;
+  Timer? _drift;
+
+  @override
+  void initState() {
+    super.initState();
+    // Moods drift gently over time instead of staying fixed.
+    _drift = Timer.periodic(const Duration(seconds: 40), (_) {
+      if (mounted) setState(() => _moodSeed++);
+    });
+  }
+
   @override
   void dispose() {
     _reset?.cancel();
+    _drift?.cancel();
     super.dispose();
   }
 
@@ -682,6 +702,8 @@ class _CompanionProfileScreenState
     setState(() {
       _pose = poseFor(kind);
       _bubble = text;
+      _last = kind;
+      _moodSeed++;
     });
     _reset?.cancel();
     _reset = Timer(const Duration(seconds: 6), () {
@@ -707,6 +729,25 @@ class _CompanionProfileScreenState
         .watch(habitatsProvider)
         .where((h) => h.id == c.habitatId)
         .firstOrNull;
+    final motion = ref.watch(companionMotionProvider);
+    final persona = CompanionPersonality.of(c);
+    final env = CompanionEnvironment(
+      weather: motion.environment ? (habitat?.weather ?? 'clear') : 'clear',
+      timeOfDay: motion.environment
+          ? CompanionEnvironment.resolveTime(
+              habitat?.timeOfDay ?? 'auto',
+              DateTime.now(),
+            )
+          : 'day',
+    );
+    final emotion = chooseEmotion(
+      p: persona,
+      env: env,
+      lastInteraction: _last,
+      resting: c.look.expression,
+      seed: c.id.hashCode ^ _moodSeed,
+    );
+    final emo = emotionById(emotion);
     final names = ref.watch(memberNamesProvider);
     final subNames = ref.watch(subsystemNamesProvider);
     final memories = [
@@ -792,6 +833,7 @@ class _CompanionProfileScreenState
                                     companion: c,
                                     size: 170,
                                     pose: _pose,
+                                    expression: emotion,
                                   ),
                           ),
                         ),
@@ -819,6 +861,8 @@ class _CompanionProfileScreenState
                                     companion: c,
                                     size: 170,
                                     pose: _pose,
+                                    expression: emotion,
+                                    weather: habitat?.weather,
                                   ),
                           ),
                         ),
@@ -867,6 +911,14 @@ class _CompanionProfileScreenState
                         ].join(' · '),
                         style: theme.textTheme.bodySmall,
                       ),
+                      if (!c.isEgg)
+                        Semantics(
+                          liveRegion: true,
+                          child: Text(
+                            '${emo.emoji} Feeling ${emo.label.toLowerCase()}${env.note == null ? '' : ' · ${env.note}'}',
+                            style: theme.textTheme.labelMedium,
+                          ),
+                        ),
                       if (c.status.isNotEmpty)
                         Text(
                           '“${c.status}”',
@@ -1154,6 +1206,22 @@ class _CompanionProfileScreenState
                       onPressed: () => _addNote(context, c),
                     ),
             ),
+            if (!c.isEgg)
+              section('Personality', [
+                Text(
+                  'Shapes how lively they are and which moods come naturally. Their habitat\'s weather and the time of day matter too.',
+                  style: theme.textTheme.bodySmall,
+                ),
+                for (final k in CompanionPersonality.labels.keys)
+                  _PersonaSlider(
+                    label: CompanionPersonality.labels[k]!,
+                    value: persona[k],
+                    onDone: (v) => actions.savePersonality(
+                      c,
+                      persona.copyWithKey(k, v).toJson(),
+                    ),
+                  ),
+              ]),
             section('Recent moments', [
               if (history.isEmpty)
                 Text(
@@ -1845,6 +1913,60 @@ class CompanionSettingsScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.fromLTRB(16, 8, 16, 32 + NavBarInset.of(context)),
           children: [
+            PrismSectionHeader(title: 'MOVEMENT'),
+            Builder(
+              builder: (context) {
+                final m = ref.watch(companionMotionProvider);
+                return PrismSurface(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Animation strength',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      Slider(
+                        value: m.intensity,
+                        label: '${(m.intensity * 100).round()}%',
+                        divisions: 10,
+                        onChanged: (v) => ref
+                            .read(companionActionsProvider)
+                            .saveMotion(
+                              s,
+                              CompanionMotionSettings(
+                                intensity: v,
+                                environment: m.environment,
+                              ).toJson(),
+                            ),
+                      ),
+                      Text(
+                        m.intensity == 0
+                            ? 'Companions stay still and show their mood with their face.'
+                            : 'How big their moods and moves look. Your device\'s reduced-motion setting always keeps them still.',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      PrismSwitchRow(
+                        title: 'React to weather and time of day',
+                        subtitle:
+                            'An umbrella in the rain, sleepy at night, excited by snow.',
+                        value: m.environment,
+                        padding: EdgeInsets.zero,
+                        onChanged: (v) => ref
+                            .read(companionActionsProvider)
+                            .saveMotion(
+                              s,
+                              CompanionMotionSettings(
+                                intensity: m.intensity,
+                                environment: v,
+                              ).toJson(),
+                            ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             PrismSectionHeader(title: 'WHERE THEY APPEAR'),
             PrismSurface(
               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1945,4 +2067,44 @@ class CompanionSettingsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _PersonaSlider extends StatefulWidget {
+  const _PersonaSlider({
+    required this.label,
+    required this.value,
+    required this.onDone,
+  });
+  final String label;
+  final double value;
+  final ValueChanged<double> onDone;
+  @override
+  State<_PersonaSlider> createState() => _PersonaSliderState();
+}
+
+class _PersonaSliderState extends State<_PersonaSlider> {
+  late double _v = widget.value;
+  @override
+  void didUpdateWidget(_PersonaSlider old) {
+    super.didUpdateWidget(old);
+    if (old.value != widget.value) _v = widget.value;
+  }
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox(
+        width: 120,
+        child: Text(widget.label, style: Theme.of(context).textTheme.bodySmall),
+      ),
+      Expanded(
+        child: Slider(
+          value: _v,
+          label: widget.label,
+          onChanged: (v) => setState(() => _v = v),
+          onChangeEnd: widget.onDone,
+        ),
+      ),
+    ],
+  );
 }

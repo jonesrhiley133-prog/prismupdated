@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import 'package:prism_plurality/features/companions/companion_mood.dart';
 import 'package:prism_plurality/features/companions/companion_species.dart';
 
 /// Everything about how a companion looks. Stored as plain JSON (versioned
@@ -78,6 +79,14 @@ class CompanionLook {
     'smug',
     'excited',
     'blush',
+    'sad',
+    'grumpy',
+    'scared',
+    'loving',
+    'curious',
+    'proud',
+    'bored',
+    'silly',
   ];
   static const markings = [
     'none',
@@ -395,7 +404,24 @@ class AccessoryAdjust {
 }
 
 /// Poses for interactions and photos.
-enum CompanionPose { sit, wave, sleep, play, hop, read, music, eat, cuddle }
+enum CompanionPose {
+  sit,
+  wave,
+  sleep,
+  play,
+  hop,
+  read,
+  music,
+  eat,
+  cuddle,
+  dance,
+  stretch,
+  spin,
+  peek,
+  nod,
+  shiver,
+  celebrate,
+}
 
 /// A companion, drawn live. Animates gently unless reduced motion is on,
 /// [animate] is false, or it's offscreen (TickerMode).
@@ -413,7 +439,17 @@ class CompanionView extends StatefulWidget {
     this.semanticLabel,
     this.showParticles = true,
     this.fit,
+    this.intensity = 1,
+    this.expressiveness = 0.6,
+    this.energy = 0.5,
+    this.weather,
   });
+
+  /// App-wide animation strength, the companion's expressiveness and energy
+  /// (energy sets how quick their breathing is), and the habitat's weather
+  /// when they should react to it.
+  final double intensity, expressiveness, energy;
+  final String? weather;
 
   /// Accessory anchors for uploaded artwork.
   final ArtFit? fit;
@@ -470,8 +506,15 @@ class _CompanionViewState extends State<CompanionView>
         widget.traits.contains('playful');
     final sleepy =
         widget.traits.contains('sleepy') || widget.traits.contains('calm');
-    _period = Duration(milliseconds: energetic ? 2200 : (sleepy ? 4600 : 3200));
-    final run = widget.animate && !reduced;
+    final speed = emotionById(
+      widget.expression ?? widget.look.expression,
+    ).motion.speed;
+    // Energy from the personality, nudged by old trait tags.
+    final e = (widget.energy + (energetic ? 0.2 : 0) - (sleepy ? 0.2 : 0))
+        .clamp(0.0, 1.0);
+    final ms = (4600 - e * 2600) / speed.clamp(0.5, 1.4);
+    _period = Duration(milliseconds: ms.round().clamp(1400, 7000));
+    final run = widget.animate && !reduced && widget.intensity > 0.01;
     if (run && !_ticker.isActive) _ticker.start();
     if (!run && _ticker.isActive) {
       _ticker.stop();
@@ -505,6 +548,9 @@ class _CompanionViewState extends State<CompanionView>
                 particles: widget.showParticles,
                 accessoriesOnly: widget.accessoriesOnly,
                 fit: widget.fit,
+                intensity: widget.intensity,
+                expressiveness: widget.expressiveness,
+                weather: widget.weather,
               ),
             ),
           ),
@@ -532,8 +578,34 @@ class CreaturePainter extends CustomPainter {
     this.accessoriesOnly = false,
     this.particles = true,
     this.fit,
+    this.intensity = 1,
+    this.expressiveness = 0.6,
+    this.weather,
   }) : _t = t,
        super(repaint: t);
+
+  /// App-wide animation strength (0 still – 1 full).
+  final double intensity;
+
+  /// From the companion's personality: how big their moods look.
+  final double expressiveness;
+
+  /// The habitat's weather when they react to it (null: they don't).
+  final String? weather;
+
+  /// The emotion showing right now.
+  String get _expr =>
+      expression ??
+      switch (pose) {
+        CompanionPose.sleep => 'sleepy',
+        CompanionPose.play ||
+        CompanionPose.hop ||
+        CompanionPose.dance ||
+        CompanionPose.celebrate => 'excited',
+        CompanionPose.shiver => 'scared',
+        CompanionPose.peek => 'curious',
+        _ => look.expression,
+      };
 
   final Species species;
   final CompanionLook look;
@@ -558,10 +630,21 @@ class CreaturePainter extends CustomPainter {
     _eyeGapPx = null;
     canvas.save();
     canvas.scale(size.width / 100, size.height / 100);
+    final emo = emotionById(_expr);
+    final mo = emo.motion;
+    final k = (intensity * (0.4 + expressiveness)).clamp(0.0, 1.6);
+    final n = mo.speed >= 1.4 ? 2 : 1;
     final floats = species.floats || pose == CompanionPose.hop;
     final bob =
-        math.sin(t * _tau) * (floats ? 3.5 : 1.2) -
-        (pose == CompanionPose.hop ? (math.sin(t * _tau).abs() * 6) : 0);
+        math.sin(t * _tau * n) *
+            (floats ? 3.5 : 1.2) *
+            (0.4 + 0.6 * mo.bob * k) -
+        (pose == CompanionPose.hop || pose == CompanionPose.celebrate
+            ? (math.sin(t * _tau * n).abs() *
+                  (pose == CompanionPose.celebrate ? 9 : 6) *
+                  k)
+            : 0) -
+        math.sin(t * _tau * n).abs() * 5 * mo.bounce * k;
     if (particles) _particles(canvas, t, behind: true);
     // Ground shadow.
     if (!accessoriesOnly) {
@@ -578,6 +661,7 @@ class CreaturePainter extends CustomPainter {
       canvas.rotate(math.sin(t * _tau) * 0.12);
       canvas.translate(-50, -70);
     }
+    _motion(canvas, t, mo, k);
     final f = fit;
     final anchor = accessoriesOnly
         ? (f == null
@@ -600,9 +684,14 @@ class CreaturePainter extends CustomPainter {
                 ))
         : _body(canvas, t);
     _accessories(canvas, anchor, t);
+    if (!accessoriesOnly || fit != null) {
+      if (weather != null) _weatherProps(canvas, anchor.head, anchor.headR, t);
+      if (particles) _emote(canvas, emo.emote, anchor.head, anchor.headR, t);
+    }
     canvas.restore();
     if (particles) _particles(canvas, t, behind: false);
-    if (pose == CompanionPose.sleep) _zzz(canvas, t);
+    if (pose == CompanionPose.sleep || (particles && emo.emote == Emote.zzz))
+      _zzz(canvas, t);
     if (pose == CompanionPose.music) _notes(canvas, t);
     canvas.restore();
   }
@@ -2611,13 +2700,7 @@ class CreaturePainter extends CustomPainter {
     double eyeGap = 9,
     bool owl = false,
   }) {
-    final expr =
-        expression ??
-        (pose == CompanionPose.sleep
-            ? 'sleepy'
-            : (pose == CompanionPose.play || pose == CompanionPose.hop
-                  ? 'excited'
-                  : look.expression));
+    final expr = _expr;
     final blink = t > 0.9 && t < 0.935;
     final eyeColor = Color(look.eye);
     final ink = Paint()
@@ -2630,6 +2713,8 @@ class CreaturePainter extends CustomPainter {
     _eyeGapPx = eyeGap * scale;
     for (final side in [-1.0, 1.0]) {
       final e = head + Offset(side * eyeGap * scale, eyeY * scale);
+      if (!blink && _customEye(c, expr, e, side, scale, eyeColor, ink))
+        continue;
       if (owl)
         c.drawCircle(e, 7 * scale, _fill(Colors.white.withValues(alpha: 0.9)));
       final closed = blink || expr == 'sleepy' || (expr == 'wink' && side > 0);
@@ -2749,6 +2834,7 @@ class CreaturePainter extends CustomPainter {
         ..strokeWidth = 1.2
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.stroke;
+      if (_customMouth(c, expr, head, mouthY, scale, mouth)) return;
       if (expr == 'surprised' || expr == 'excited') {
         c.drawOval(
           Rect.fromCenter(
@@ -2782,6 +2868,414 @@ class CreaturePainter extends CustomPainter {
           mouth,
         );
       }
+    }
+  }
+
+  /// Moves the whole companion (body, face and accessories together) for
+  /// the current emotion and pose, so worn things stay put.
+  void _motion(Canvas c, double t, EmotionMotion mo, double k) {
+    final a = t * _tau;
+    void around(Offset o, void Function() f) {
+      c.translate(o.dx, o.dy);
+      f();
+      c.translate(-o.dx, -o.dy);
+    }
+
+    // Emotion.
+    final shake =
+        math.sin(a * 12) * 1.4 * mo.shake * k +
+        (pose == CompanionPose.shiver ? math.sin(a * 16) * 1.6 * k : 0);
+    if (shake != 0) c.translate(shake, 0);
+    if (mo.droop > 0) {
+      c.translate(0, 4 * mo.droop * k);
+      around(const Offset(50, 94), () => c.scale(1, 1 - 0.05 * mo.droop * k));
+    }
+    final tilt = mo.tilt * k + math.sin(a) * 0.07 * mo.sway * k;
+    if (tilt != 0) around(const Offset(50, 80), () => c.rotate(tilt));
+    if (mo.stretch > 0) {
+      final st = 0.06 * mo.stretch * k * math.sin(a * 2);
+      around(const Offset(50, 94), () => c.scale(1 - st * 0.6, 1 + st));
+    }
+    // Pose.
+    switch (pose) {
+      case CompanionPose.dance:
+        around(
+          const Offset(50, 90),
+          () => c.rotate(math.sin(a * 2) * 0.22 * k),
+        );
+      case CompanionPose.stretch:
+        final st = (0.5 - 0.5 * math.cos(a)) * 0.12 * k;
+        around(const Offset(50, 94), () => c.scale(1 - st * 0.4, 1 + st));
+      case CompanionPose.spin:
+        final sx = math.cos(a);
+        around(
+          const Offset(50, 60),
+          () => c.scale(sx.abs() < 0.08 ? 0.08 * sx.sign : sx, 1),
+        );
+      case CompanionPose.peek:
+        c.translate(0, (0.5 + 0.5 * math.cos(a)) * 22 * k);
+      case CompanionPose.nod:
+        around(
+          const Offset(50, 70),
+          () => c.rotate(math.sin(a * 3).clamp(0.0, 1.0) * 0.1 * k),
+        );
+      case CompanionPose.celebrate:
+        around(const Offset(50, 90), () => c.rotate(math.sin(a * 2) * 0.1 * k));
+      default:
+        break;
+    }
+  }
+
+  // ── Extra emotions ─────────────────────────────────────────────────────
+
+  void _brow(
+    Canvas c,
+    Offset e,
+    double side,
+    double scale,
+    double angle, {
+    double lift = 0,
+  }) {
+    final p = Paint()
+      ..color = const Color(0xFF4A3A3A)
+      ..strokeWidth = 1.4
+      ..strokeCap = StrokeCap.round;
+    final mid = e.translate(0, (-5.6 - lift) * scale);
+    final d = Offset(math.cos(angle), math.sin(angle) * side) * 2.8 * scale;
+    c.drawLine(mid - d, mid + d, p);
+  }
+
+  /// Eyes for the emotions the original faces don't cover. Returns true
+  /// when it drew this eye.
+  bool _customEye(
+    Canvas c,
+    String expr,
+    Offset e,
+    double side,
+    double scale,
+    Color eyeColor,
+    Paint ink,
+  ) {
+    switch (expr) {
+      case 'sad':
+        c.drawCircle(e.translate(0, 0.6 * scale), 3.1 * scale, _fill(eyeColor));
+        c.drawCircle(
+          e.translate(-0.9 * scale, -0.6 * scale),
+          1.1 * scale,
+          _fill(Colors.white),
+        );
+        _brow(c, e, side, scale, 0.45 * side * -1);
+        return true;
+      case 'grumpy':
+        c.drawCircle(e, 3.2 * scale, _fill(eyeColor));
+        // Heavy lid across the top half.
+        c.drawRect(
+          Rect.fromCenter(
+            center: e.translate(0, -1.9 * scale),
+            width: 8 * scale,
+            height: 3.8 * scale,
+          ),
+          _fill(look.primaryOf(species)),
+        );
+        _brow(c, e, side, scale, -0.55 * side * -1, lift: -1.5);
+        return true;
+      case 'scared':
+        c.drawCircle(e, 4.6 * scale, _fill(Colors.white));
+        c.drawCircle(e, 4.6 * scale, ink..strokeWidth = 1);
+        c.drawCircle(e, 1.5 * scale, _fill(eyeColor));
+        _brow(c, e, side, scale, 0.35 * side * -1, lift: 1.5);
+        return true;
+      case 'loving':
+        _heart(
+          c,
+          e.translate(0, 0.8 * scale),
+          2.6 * scale,
+          _fill(const Color(0xFFFF4F7B)),
+        );
+        return true;
+      case 'curious':
+        final big = side > 0;
+        c.drawCircle(e, (big ? 4.2 : 3.0) * scale, _fill(eyeColor));
+        c.drawCircle(
+          e.translate(-1 * scale, -1.1 * scale),
+          (big ? 1.6 : 1.1) * scale,
+          _fill(Colors.white),
+        );
+        if (big) _brow(c, e, side, scale, -0.25, lift: 2);
+        return true;
+      case 'proud':
+        c.drawArc(
+          Rect.fromCenter(
+            center: e.translate(0, 1.4 * scale),
+            width: 7 * scale,
+            height: 5.4 * scale,
+          ),
+          math.pi + 0.25,
+          math.pi - 0.5,
+          false,
+          ink,
+        );
+        return true;
+      case 'bored':
+        c.drawCircle(e.translate(0, 0.8 * scale), 2.8 * scale, _fill(eyeColor));
+        c.drawRect(
+          Rect.fromCenter(
+            center: e.translate(0, -1.4 * scale),
+            width: 7.4 * scale,
+            height: 3.6 * scale,
+          ),
+          _fill(look.primaryOf(species)),
+        );
+        c.drawLine(
+          e.translate(-3.4 * scale, 0.4 * scale),
+          e.translate(3.4 * scale, 0.4 * scale),
+          ink..strokeWidth = 1.2,
+        );
+        return true;
+      case 'silly':
+        if (side < 0) {
+          c.drawLine(
+            e.translate(-3 * scale, -1.5 * scale),
+            e.translate(2.5 * scale, 0),
+            ink,
+          );
+          c.drawLine(
+            e.translate(-3 * scale, 1.5 * scale),
+            e.translate(2.5 * scale, 0),
+            ink,
+          );
+        } else {
+          c.drawCircle(e, 4 * scale, _fill(eyeColor));
+          c.drawCircle(
+            e.translate(1.2 * scale, -1.2 * scale),
+            1.5 * scale,
+            _fill(Colors.white),
+          );
+        }
+        return true;
+    }
+    return false;
+  }
+
+  /// Mouths for the extra emotions. Returns true when it drew one.
+  bool _customMouth(
+    Canvas c,
+    String expr,
+    Offset head,
+    double mouthY,
+    double scale,
+    Paint mouth,
+  ) {
+    Rect at(double w, double h, [double dy = 0]) => Rect.fromCenter(
+      center: head + Offset(0, mouthY + dy * scale),
+      width: w * scale,
+      height: h * scale,
+    );
+    switch (expr) {
+      case 'sad' || 'grumpy':
+        c.drawArc(at(6, 4, 2), math.pi + 0.3, math.pi - 0.6, false, mouth);
+        return true;
+      case 'scared':
+        final p = Path()
+          ..moveTo(head.dx - 3.5 * scale, head.dy + mouthY + 1.5 * scale);
+        for (var k = 1; k <= 4; k++) {
+          p.lineTo(
+            head.dx - 3.5 * scale + k * 1.75 * scale,
+            head.dy + mouthY + (k.isOdd ? 0.4 : 1.6) * scale,
+          );
+        }
+        c.drawPath(p, mouth);
+        return true;
+      case 'loving' || 'proud':
+        c.drawArc(
+          at(7, 5),
+          0.15,
+          math.pi - 0.3,
+          false,
+          mouth..strokeWidth = 1.4,
+        );
+        return true;
+      case 'curious':
+        c.drawOval(at(2.4, 2.4, 1.2), _fill(const Color(0xFF7A3A44)));
+        return true;
+      case 'bored':
+        c.drawLine(
+          head + Offset(-2.6 * scale, mouthY + 1 * scale),
+          head + Offset(2.6 * scale, mouthY + 1 * scale),
+          mouth,
+        );
+        return true;
+      case 'silly':
+        c.drawArc(at(7, 5), 0.1, math.pi - 0.2, false, mouth);
+        c.drawOval(at(3, 3.6, 2.6), _fill(const Color(0xFFFF7A95)));
+        return true;
+    }
+    return false;
+  }
+
+  /// Small effects that go with an emotion, drawn in the same moving frame
+  /// as the body so they stay attached.
+  void _emote(Canvas c, Emote e, Offset head, double hr, double t) {
+    final s = hr / 23;
+    switch (e) {
+      case Emote.none || Emote.zzz:
+        break;
+      case Emote.tears:
+        final eyes = _eyeCenter ?? head;
+        final gap = _eyeGapPx ?? 9 * s;
+        for (final side in [-1.0, 1.0]) {
+          final ph = (t * 2 + (side > 0 ? 0.5 : 0)) % 1;
+          final p = eyes + Offset(side * gap, 3 * s + ph * 9 * s);
+          final drop = Path()
+            ..moveTo(p.dx, p.dy - 2.2 * s)
+            ..quadraticBezierTo(
+              p.dx + 1.8 * s,
+              p.dy + 0.6 * s,
+              p.dx,
+              p.dy + 1.6 * s,
+            )
+            ..quadraticBezierTo(
+              p.dx - 1.8 * s,
+              p.dy + 0.6 * s,
+              p.dx,
+              p.dy - 2.2 * s,
+            );
+          c.drawPath(
+            drop,
+            _fill(const Color(0xFF7CC4F2).withValues(alpha: 1 - ph * 0.7)),
+          );
+        }
+      case Emote.sweat:
+        final p = head + Offset(hr * 0.75, -hr * 0.45 + math.sin(t * _tau) * s);
+        final drop = Path()
+          ..moveTo(p.dx, p.dy - 3.5 * s)
+          ..quadraticBezierTo(
+            p.dx + 2.6 * s,
+            p.dy + 0.8 * s,
+            p.dx,
+            p.dy + 2.2 * s,
+          )
+          ..quadraticBezierTo(
+            p.dx - 2.6 * s,
+            p.dy + 0.8 * s,
+            p.dx,
+            p.dy - 3.5 * s,
+          );
+        c.drawPath(drop, _fill(const Color(0xFF9AD8FF)));
+      case Emote.steam:
+        for (var i = 0; i < 2; i++) {
+          final ph = (t * 1.5 + i * 0.5) % 1;
+          final side = i.isEven ? -1.0 : 1.0;
+          c.drawCircle(
+            head + Offset(side * hr * 0.55, -hr * 1.0 - ph * 10 * s),
+            (2 + ph * 3) * s,
+            _fill(const Color(0xFFB8B8C0).withValues(alpha: (1 - ph) * 0.8)),
+          );
+        }
+      case Emote.hearts:
+        for (var i = 0; i < 3; i++) {
+          final ph = (t + i / 3) % 1;
+          _heart(
+            c,
+            head +
+                Offset(
+                  (i - 1) * hr * 0.6 + math.sin(ph * _tau) * 2,
+                  -hr * 0.9 - ph * 14 * s,
+                ),
+            (1.8 + ph) * s,
+            _fill(const Color(0xFFFF6B95).withValues(alpha: 1 - ph)),
+          );
+        }
+      case Emote.question || Emote.exclaim:
+        final tp = TextPainter(
+          text: TextSpan(
+            text: e == Emote.question ? '?' : '!',
+            style: TextStyle(
+              fontSize: 13 * s,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF5A5A7A),
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(
+          c,
+          head +
+              Offset(hr * 0.75, -hr * 1.25 + math.sin(t * _tau * 2) * 1.5 * s),
+        );
+      case Emote.sparkles:
+        for (var i = 0; i < 4; i++) {
+          final a = i * _tau / 4 + t * _tau * 0.5;
+          final tw = 0.5 + 0.5 * math.sin(t * _tau * 2 + i);
+          _tinyStar(
+            c,
+            head +
+                Offset(
+                  math.cos(a) * hr * 1.25,
+                  math.sin(a) * hr * 0.9 - hr * 0.3,
+                ),
+            (1.2 + tw * 1.6) * s,
+            _fill(const Color(0xFFFFE066).withValues(alpha: tw)),
+          );
+        }
+      case Emote.swirl:
+        final ctr = head + Offset(0, -hr * 1.15);
+        final p = Path();
+        for (var k = 0; k <= 24; k++) {
+          final a = k / 24 * _tau * 1.6 + t * _tau;
+          final r = k / 24 * 4 * s;
+          final pt = ctr + Offset(math.cos(a) * r, math.sin(a) * r);
+          k == 0 ? p.moveTo(pt.dx, pt.dy) : p.lineTo(pt.dx, pt.dy);
+        }
+        c.drawPath(
+          p,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1.2
+            ..color = const Color(0xFFB58CFF),
+        );
+    }
+  }
+
+  /// How the habitat's weather touches the companion: an umbrella in the
+  /// rain, misty breath in the snow. Drawn in the body's frame.
+  void _weatherProps(Canvas c, Offset head, double hr, double t) {
+    final s = hr / 23;
+    switch (weather) {
+      case 'rain':
+        final top = head + Offset(hr * 0.15, -hr * 1.35);
+        final canopy = Path()
+          ..moveTo(top.dx - hr * 1.3, top.dy + hr * 0.35)
+          ..quadraticBezierTo(
+            top.dx,
+            top.dy - hr * 0.75,
+            top.dx + hr * 1.3,
+            top.dy + hr * 0.35,
+          );
+        for (var k = 4; k >= 0; k--) {
+          canopy.quadraticBezierTo(
+            top.dx - hr * 1.3 + hr * 2.6 * (k + 0.5) / 5,
+            top.dy + hr * 0.15,
+            top.dx - hr * 1.3 + hr * 2.6 * k / 5,
+            top.dy + hr * 0.35,
+          );
+        }
+        canopy.close();
+        c.drawPath(canopy, _fill(Color(look.accent)));
+        c.drawLine(
+          top,
+          top + Offset(0, hr * 1.5),
+          Paint()
+            ..color = const Color(0xFF4A3A3A)
+            ..strokeWidth = 1.2 * s,
+        );
+      case 'snow':
+        final ph = t % 1;
+        c.drawCircle(
+          head + Offset(hr * 0.35 + ph * 4 * s, hr * 0.35 - ph * 3 * s),
+          (1.5 + ph * 2.2) * s,
+          _fill(Colors.white.withValues(alpha: (1 - ph) * 0.8)),
+        );
     }
   }
 
@@ -3514,5 +4008,8 @@ class CreaturePainter extends CustomPainter {
       old.look != look ||
       old.pose != pose ||
       old.expression != expression ||
+      old.intensity != intensity ||
+      old.expressiveness != expressiveness ||
+      old.weather != weather ||
       old.accessoriesOnly != accessoriesOnly;
 }

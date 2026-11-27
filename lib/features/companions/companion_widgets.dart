@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 
 import 'package:prism_plurality/features/companions/companion_art.dart';
 import 'package:prism_plurality/features/companions/companion_data.dart';
+import 'package:prism_plurality/features/companions/companion_mood.dart';
 import 'package:prism_plurality/features/companions/custom_art_editor.dart';
 import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
     show SocialImage;
@@ -20,7 +21,11 @@ class CompanionFigure extends ConsumerWidget {
     this.look,
     this.expression,
     this.showParticles = true,
+    this.weather,
   });
+
+  /// The habitat's weather; they react to it unless that's switched off.
+  final String? weather;
   final Companion companion;
   final double size;
   final CompanionPose pose;
@@ -38,6 +43,9 @@ class CompanionFigure extends ConsumerWidget {
               .where((s) => s.r.id == companion.customSpeciesId)
               .firstOrNull;
     final species = custom?.base ?? companion.species;
+    final motion = ref.watch(companionMotionProvider);
+    final persona = CompanionPersonality.of(companion);
+    final weatherNow = motion.environment ? weather : null;
     if (custom?.media != null) {
       return SizedBox.square(
         dimension: size,
@@ -56,6 +64,10 @@ class CompanionFigure extends ConsumerWidget {
               accessoriesOnly: true,
               fit: custom.fit,
               showParticles: showParticles,
+              intensity: motion.intensity,
+              expressiveness: persona.expressiveness,
+              energy: persona.energy,
+              weather: weatherNow,
               semanticLabel: '${companion.name}, ${custom.name}',
             ),
           ],
@@ -71,6 +83,10 @@ class CompanionFigure extends ConsumerWidget {
       traits: companion.traits,
       expression: expression,
       showParticles: showParticles,
+      intensity: motion.intensity,
+      expressiveness: persona.expressiveness,
+      energy: persona.energy,
+      weather: weatherNow,
       semanticLabel: '${companion.name}, ${species.name}',
     );
   }
