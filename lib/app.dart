@@ -1288,6 +1288,12 @@ void registerAdvancedRecordOpeners() {
   recordTypeOpeners[RecordRef.habitLog] = openHabitCompletion;
   recordKindOpeners[TrackerKind.relationship] = (context, id) =>
       GoRouter.of(context).push(relRoute(id));
+  recordKindOpeners[TrackerKind.yumeShip] = (context, id) =>
+      GoRouter.of(context).push(AppRoutePaths.yumeShip(id));
+  recordKindOpeners[TrackerKind.yumeSona] = (context, id) =>
+      GoRouter.of(context).push(AppRoutePaths.yumeSona(id));
+  recordKindOpeners[TrackerKind.yumeCreation] = (context, id) =>
+      GoRouter.of(context).push(AppRoutePaths.yumeCreation(id));
 }
 
 /// Notes theme switches (it sits below the app theme) so implicit

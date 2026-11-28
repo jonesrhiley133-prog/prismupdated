@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prism_plurality/features/seasonal/digital_rooms.dart';
+import 'package:prism_plurality/features/yumeships/yume_profile_module.dart'
+    show YumeCountdownHomeCard;
 import 'package:prism_plurality/features/companions/companion_home_card.dart';
 import 'package:prism_plurality/features/experiences/experiences_hub.dart';
 import 'package:prism_plurality/features/fitness/health/health_home_card.dart';
@@ -198,6 +200,11 @@ String dashboardWidgetLabel(BuildContext context, String id) {
       context,
       'Digital Rooms shortcut',
       'Acceso a salas digitales',
+    ),
+    DashboardWidgetId.yumeCountdown => tr(
+      context,
+      'Yumeship countdowns',
+      'Cuentas atrás de yumeships',
     ),
     _ => id,
   };
@@ -400,6 +407,7 @@ class HomeDashboard extends ConsumerWidget {
       DashboardWidgetId.passportStamps => const StampsHomeCard(),
       DashboardWidgetId.habitat => const HabitatHomeCard(),
       DashboardWidgetId.rooms => const DigitalRoomsHomeCard(),
+      DashboardWidgetId.yumeCountdown => const YumeCountdownHomeCard(),
       _ => const SizedBox.shrink(),
     };
     // Each card repaints on its own (stories, timers, charts animate).

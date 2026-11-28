@@ -24,6 +24,19 @@ import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/font_studio_screen.dart';
 import 'package:prism_plurality/features/voice/voice_settings_screen.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
+import 'package:prism_plurality/features/yumeships/yume_collections.dart'
+    show YumeCollectionScreen, YumeCollectionsArrangeScreen;
+import 'package:prism_plurality/features/yumeships/yume_export.dart'
+    show YumeExportScreen;
+import 'package:prism_plurality/features/yumeships/yume_hub.dart'
+    show YumeshipsHubScreen, YumeArrangeScreen;
+import 'package:prism_plurality/features/yumeships/yume_settings_screen.dart'
+    show YumeSettingsScreen;
+import 'package:prism_plurality/features/yumeships/yume_ship_screen.dart';
+import 'package:prism_plurality/features/yumeships/yume_sonas.dart'
+    show YumeSonaScreen, YumeSonasScreen;
+import 'package:prism_plurality/features/yumeships/yume_studio.dart'
+    show YumeCreationScreen, YumeStudioScreen;
 import 'package:prism_plurality/features/online_games/online_screens.dart';
 import 'package:prism_plurality/features/account/account_screens.dart';
 import 'package:prism_plurality/features/cycle/views/cycle_import_screen.dart';
@@ -261,6 +274,7 @@ final _availabilityNavigatorKey = GlobalKey<NavigatorState>(
 final _socialNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'social');
 final _healthNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'health');
 final _astroNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'astro');
+final _yumeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'yumeships');
 final _gamesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'games');
 final _cozyNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'cozy');
 final _experiencesNavigatorKey = GlobalKey<NavigatorState>(
@@ -2010,6 +2024,71 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutePaths.experiences,
                 builder: (context, state) => const ExperiencesHubScreen(),
+              ),
+            ],
+          ),
+          // Branch 44: Yumeships (fictional relationships and sonas)
+          StatefulShellBranch(
+            navigatorKey: _yumeNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutePaths.yumeships,
+                builder: (context, state) => const YumeshipsHubScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'ship/:id',
+                    builder: (context, state) =>
+                        YumeShipScreen(shipId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'sona/:id',
+                    builder: (context, state) =>
+                        YumeSonaScreen(sonaId: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'collection/:id',
+                    builder: (context, state) => YumeCollectionScreen(
+                      collectionId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'creation/:id',
+                    builder: (context, state) => YumeCreationScreen(
+                      creationId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'studio',
+                    builder: (context, state) => YumeStudioScreen(
+                      key: ValueKey(state.uri.query),
+                      shipId: state.uri.queryParameters['ship'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'sonas',
+                    builder: (context, state) => const YumeSonasScreen(),
+                  ),
+                  GoRoute(
+                    path: 'settings',
+                    builder: (context, state) => YumeSettingsScreen(
+                      initialSection: state.uri.queryParameters['section'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'arrange',
+                    builder: (context, state) => const YumeArrangeScreen(),
+                  ),
+                  GoRoute(
+                    path: 'arrange-collections',
+                    builder: (context, state) =>
+                        const YumeCollectionsArrangeScreen(),
+                  ),
+                  GoRoute(
+                    path: 'export/:id',
+                    builder: (context, state) =>
+                        YumeExportScreen(shipId: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

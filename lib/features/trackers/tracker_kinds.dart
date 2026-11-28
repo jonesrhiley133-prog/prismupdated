@@ -208,6 +208,15 @@ abstract final class TrackerKind {
   // Flag Studio.
   static const flag = 'flag.design';
 
+  // Yumeships: fictional relationships, F/Os, sonas and creative entries.
+  static const yumeShip = 'yume.ship';
+  static const yumeSona = 'yume.sona';
+  static const yumeCollection = 'yume.collection';
+  static const yumeCreation = 'yume.creation';
+  static const yumeEvent = 'yume.event';
+  static const yumeMedia = 'yume.media';
+  static const yumeSettings = 'yume.settings';
+
   /// The section part of [kind] (`journal.entry` → `journal`).
   static String section(String kind) {
     final i = kind.indexOf('.');

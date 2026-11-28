@@ -166,6 +166,26 @@ abstract final class AppRoutePaths {
 
   /// Astro: the system astrology hub, and one alter's astrology.
   static const astro = '/astro';
+
+  /// Yumeships: the organizer and one ship / sona / collection / creation.
+  static const yumeships = '/yumeships';
+  static String yumeShip(String id) =>
+      '/yumeships/ship/${Uri.encodeComponent(id)}';
+  static String yumeSona(String id) =>
+      '/yumeships/sona/${Uri.encodeComponent(id)}';
+  static String yumeCollection(String id) =>
+      '/yumeships/collection/${Uri.encodeComponent(id)}';
+  static String yumeCreation(String id) =>
+      '/yumeships/creation/${Uri.encodeComponent(id)}';
+  static String yumeStudio({String? shipId}) =>
+      '/yumeships/studio${shipId == null ? '' : '?ship=${Uri.encodeComponent(shipId)}'}';
+  static const yumeSonas = '/yumeships/sonas';
+  static String yumeSettings({String? section}) =>
+      '/yumeships/settings${section == null ? '' : '?section=$section'}';
+  static const yumeArrange = '/yumeships/arrange';
+  static const yumeArrangeCollections = '/yumeships/arrange-collections';
+  static String yumeExport(String shipId) =>
+      '/yumeships/export/${Uri.encodeComponent(shipId)}';
   static String astroAlter(String memberId, {String? section}) =>
       '/astro/alter/${Uri.encodeComponent(memberId)}${section == null ? '' : '?section=$section'}';
 
@@ -320,6 +340,7 @@ enum AppShellTabId {
   games,
   cozy,
   experiences,
+  yumeships,
 }
 
 class AppShellTab {
@@ -412,6 +433,7 @@ class AppShellTab {
         l10n.localeName.startsWith('es') ? 'Acogedor' : 'Cozy',
       AppShellTabId.experiences =>
         l10n.localeName.startsWith('es') ? 'Experiencias' : 'Experiences',
+      AppShellTabId.yumeships => 'Yumeships',
     };
   }
 
@@ -472,6 +494,7 @@ class AppShellTab {
       AppShellTabId.games => true,
       AppShellTabId.cozy => true,
       AppShellTabId.experiences => true,
+      AppShellTabId.yumeships => true,
     };
   }
 }
@@ -830,6 +853,14 @@ final appShellTabs = [
     branchIndex: 43,
     rootLocation: AppRoutePaths.experiences,
   ),
+  AppShellTab(
+    id: AppShellTabId.yumeships,
+    label: 'Yumeships',
+    icon: AppIcons.navYumeships,
+    activeIcon: AppIcons.navYumeshipsActive,
+    branchIndex: 44,
+    rootLocation: AppRoutePaths.yumeships,
+  ),
 ];
 
 /// The default nav bar tab IDs when no custom configuration exists.
@@ -849,6 +880,7 @@ const defaultNavBarOverflowTabIds = [
   'games',
   'cozy',
   'experiences',
+  'yumeships',
   'insights',
   'locations',
   'work',

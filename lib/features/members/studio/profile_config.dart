@@ -18,6 +18,7 @@ const profileModuleIds = [
   'journal',
   'astro',
   'games',
+  'yumeships',
 ];
 
 String moduleLabel(BuildContext c, String id) => switch (id) {
@@ -35,6 +36,7 @@ String moduleLabel(BuildContext c, String id) => switch (id) {
   'journal' => tr(c, 'Journal', 'Diario'),
   'astro' => tr(c, 'Astrology', 'Astrología'),
   'games' => tr(c, 'Games', 'Juegos'),
+  'yumeships' => 'Yumeships',
   _ => id,
 };
 

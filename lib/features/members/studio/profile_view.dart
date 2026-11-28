@@ -10,6 +10,7 @@ import 'package:prism_plurality/features/members/providers/members_providers.dar
 import 'package:prism_plurality/features/members/studio/profile_config.dart';
 import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
     show AstroProfileModule;
+import 'package:prism_plurality/features/yumeships/yume_profile_module.dart';
 import 'package:prism_plurality/core/features/feature_state.dart'
     show featureEnabledProvider;
 import 'package:prism_plurality/features/games/core/games_data.dart'
@@ -735,6 +736,10 @@ class _Body extends ConsumerWidget {
         // Shows only when this alter's astrology is visible to the viewer.
         if (!AstroProfileModule.visible(ref, member.id)) return null;
         return AstroProfileModule(member: member, accent: accent);
+      case 'yumeships':
+        // Opt-in per alter in Yumeships settings; viewer privacy applies.
+        if (!YumeProfileModule.visible(ref, member.id)) return null;
+        return YumeProfileModule(memberId: member.id, accent: accent);
       case 'games':
         // Optional: off by default, hidden when the alter hides their stats
         // or hasn't played anything yet.

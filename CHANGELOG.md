@@ -2,6 +2,19 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.47.0] - 2026-11-28
+
+### Added
+- **Yumeships** (optional, off until you turn it on in Settings → Features): a creative organizer for yumeshipping, self-shipping and F/Os.
+  - **Yumeship profiles**: unlimited, each with its own detailed page — any number of fictional others (names, nicknames, pronouns, source, biography, birthday), relationship types (romantic, platonic, familial, queerplatonic, comfort, custom), ship name, status, anniversary and significant dates, sharing boundaries and a boundary notice, dynamics, tropes, headcanons, lore, backstory, alternate universes, timeline, songs and Music playlists, custom fields, categories, labels and tags.
+  - **Sonas & self-inserts**: biographies, reference sheets, appearance, personality, outfits, lore, AUs, artwork and custom fields. Linked to any number of yumeships. Sonas and F/Os are never alters and never appear in fronting or fronting statistics.
+  - **Gallery & scrapbooks**: fanart and commissions with artist, source link and credits; photos, GIFs, videos, audio, moodboards, letters and stories. Each yumeship can have its own scrapbooks in Prism's full scrapbook editor.
+  - **Anniversaries & events**: anniversaries, character birthdays, appreciation days, creative challenges, commission deadlines and celebrations, once or repeating. Each one chooses whether it goes on your Calendar and whether it notifies; dashboard countdowns and an optional Home card.
+  - **Collections**: romantic, platonic, familial, comfort, primary, archived, by source, favorites or custom — smart ones fill themselves; covers, drag-and-drop order, pinning, search, filters (alter, subsystem, source, relationship type) and five views (gallery, scrapbook, compact list, detailed cards, collection shelves).
+  - **Creative Studio**: ship intro cards, relationship charts, ship bingo, questionnaires, matching icons, moodboards, fic & scenario organizer, development timelines, headcanon collections, art & commission wishlists, appreciation journals and prompt collections — save, edit, duplicate, organise in folders, export as images or text.
+  - **Alters & privacy**: yumeships belong to the alters you choose, with collaborators, transfer and duplicate between alters, an opt-in section on alter profiles, links to journal entries, scrapbooks, IDs, events and more. Private, system-visible or selected-alters visibility, optional Yumeships PIN per item, and you choose what appears on exported profiles. Nothing is shared outside Prism unless you export it.
+  - **Looks**: nine aesthetic presets (Romantic Scrapbook, Celestial, Kawaii Journal, Vintage Letters, Gothic Romance, Cottagecore, Dreamcore, Manga, Minimalist), accent colours, heading fonts, card styles, frames, ribbons, stickers, page backgrounds, living decorations, profile layouts and section order — always on top of your current theme and accessibility settings.
+
 ## [0.46.1] - 2026-11-28
 
 ### Fixed

@@ -212,6 +212,13 @@ final List<RecordModule> recordModules = [
     const Color(0xFFC2410C),
   ),
   RecordModule(
+    'yume',
+    'Yumeships',
+    'Yumeships',
+    PhosphorIcons.heartHalf(),
+    const Color(0xFFE26D8A),
+  ),
+  RecordModule(
     'games',
     'Games',
     'Juegos',
@@ -248,6 +255,10 @@ String? moduleForKind(String kind) => switch (kind) {
   TrackerKind.companion || TrackerKind.companionMemory => 'companion',
   TrackerKind.passport || TrackerKind.passportStamp => 'passport',
   TrackerKind.gameResult || TrackerKind.gameProject => 'games',
+  TrackerKind.yumeShip ||
+  TrackerKind.yumeSona ||
+  TrackerKind.yumeCreation => 'yume',
+  TrackerKind.walletCard => 'other',
   TrackerKind.cycleWellness ||
   TrackerKind.schoolAssignment ||
   TrackerKind.schoolStudy ||

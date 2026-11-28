@@ -143,6 +143,10 @@ abstract final class AppIcons {
   );
   static final navCozy = PhosphorIcons.coffee();
   static final navCozyActive = PhosphorIcons.coffee(PhosphorIconsStyle.fill);
+  static final navYumeships = PhosphorIcons.heartHalf();
+  static final navYumeshipsActive = PhosphorIcons.heartHalf(
+    PhosphorIconsStyle.fill,
+  );
   static final navExperiences = PhosphorIcons.sparkle();
   static final navExperiencesActive = PhosphorIcons.sparkle(
     PhosphorIconsStyle.fill,

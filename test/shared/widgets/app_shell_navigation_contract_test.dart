@@ -1516,6 +1516,7 @@ List<StatefulShellBranch> _contractBranches() {
       (AppRoutePaths.games, _gamesRootTitle),
       (AppRoutePaths.cozy, _cozyRootTitle),
       (AppRoutePaths.experiences, _experiencesRootTitle),
+      (AppRoutePaths.yumeships, _yumeshipsRootTitle),
     ])
       StatefulShellBranch(
         routes: [
@@ -1592,6 +1593,7 @@ String _rootTitle(String location) {
     AppRoutePaths.games => _gamesRootTitle,
     AppRoutePaths.cozy => _cozyRootTitle,
     AppRoutePaths.experiences => _experiencesRootTitle,
+    AppRoutePaths.yumeships => _yumeshipsRootTitle,
     _ => throw ArgumentError.value(location, 'location'),
   };
 }
@@ -1764,6 +1766,7 @@ const _astroRootTitle = 'Route contract: astro root';
 const _gamesRootTitle = 'Route contract: games root';
 const _cozyRootTitle = 'Route contract: cozy root';
 const _experiencesRootTitle = 'Route contract: experiences root';
+const _yumeshipsRootTitle = 'Route contract: yumeships root';
 const _insightsRootTitle = 'Route contract: insights root';
 
 const _homePeriodTitle = 'Route contract: home period detail';

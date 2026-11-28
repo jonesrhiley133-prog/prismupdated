@@ -414,6 +414,33 @@ final List<PrismFeature> prismFeatures = [
     ),
   ),
   PrismFeature(
+    id: 'yumeships',
+    name: ('Yumeships', 'Yumeships'),
+    description: (
+      'A creative organizer for yumeshipping, self-shipping and F/Os: detailed ship profiles, sonas, collections, galleries, anniversaries and a creative studio. Fictional characters and sonas never appear as alters.',
+      'Un organizador creativo para yumeshipping, self-shipping y F/Os: perfiles de ships, sonas, colecciones, galerías, aniversarios y un estudio creativo. Los personajes y sonas nunca aparecen como alters.',
+    ),
+    category: FeatureCategory.social,
+    icon: PhosphorIcons.heartHalf(),
+    tabs: const [AppShellTabId.yumeships],
+    route: AppRoutePaths.yumeships,
+    defaultEnabled: false,
+    data: const FeatureData(
+      activityKinds: [TrackerKind.yumeCreation, TrackerKind.yumeMedia],
+      permanentKinds: [
+        TrackerKind.yumeShip,
+        TrackerKind.yumeSona,
+        TrackerKind.yumeCollection,
+        TrackerKind.yumeEvent,
+        TrackerKind.yumeSettings,
+      ],
+      note: (
+        'Ships, sonas and collections are long-term creative work and are never reset by date.',
+        'Los ships, sonas y colecciones son trabajo creativo a largo plazo y nunca se restablecen por fecha.',
+      ),
+    ),
+  ),
+  PrismFeature(
     id: 'journal',
     name: ('Journal & dreams', 'Diario y sueños'),
     description: (

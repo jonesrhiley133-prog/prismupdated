@@ -30,6 +30,8 @@ abstract final class DashboardWidgetId {
   static const passportStamps = 'passport_stamps';
   static const habitat = 'habitat';
   static const rooms = 'digital_rooms';
+  // Yumeships: upcoming anniversaries and countdowns (opt-in).
+  static const yumeCountdown = 'yume_countdown';
 
   /// Cards whose size can be switched between compact and full.
   static const resizable = {health, companion};
@@ -45,6 +47,7 @@ abstract final class DashboardWidgetId {
     passportStamps,
     habitat,
     rooms,
+    yumeCountdown,
     quickActions,
     howWeFeel,
     insight,

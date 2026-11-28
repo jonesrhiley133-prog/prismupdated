@@ -24,6 +24,7 @@ import 'package:prism_plurality/features/links/widgets/related_records.dart';
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/features/astro/views/astro_integrations.dart'
     show AstroProfileModule;
+import 'package:prism_plurality/features/yumeships/yume_profile_module.dart';
 import 'package:intl/intl.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -303,6 +304,7 @@ class _MemberDetailBody extends ConsumerWidget {
       ),
       ProxyTagsSection(member: member),
       _AstroSection(member: member),
+      _YumeSection(member: member),
       _RetainedProfileSection(
         key: const ValueKey('frontingStats'),
         child: _FrontingStatsSection(memberId: member.id),
@@ -606,6 +608,26 @@ class _AstroSection extends ConsumerWidget {
           showTitle: false,
         ),
       ),
+    );
+  }
+}
+
+// ── Yumeships (opt-in per alter, only what the viewer may see) ──────────────
+
+class _YumeSection extends ConsumerWidget {
+  const _YumeSection({required this.member});
+  final Member member;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!YumeProfileModule.visible(ref, member.id))
+      return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    return _SectionCard(
+      icon: AppIcons.navYumeships,
+      title: 'Yumeships',
+      theme: theme,
+      child: PrismSurface(child: YumeProfileModule(memberId: member.id)),
     );
   }
 }

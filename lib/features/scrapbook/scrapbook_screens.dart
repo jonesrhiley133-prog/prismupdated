@@ -3,6 +3,7 @@ import 'package:prism_plurality/shared/widgets/prism_page_scaffold.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:prism_plurality/core/features/feature_state.dart';
 import 'package:prism_plurality/features/settings/views/feature_data_screen.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/links/models/record_ref.dart';
@@ -1063,6 +1064,9 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
       ('relationship', tr(context, 'A relationship', 'Una relación')),
       ('event', tr(context, 'An event', 'Un evento')),
       ('memory', tr(context, 'A memory or theme', 'Un recuerdo o tema')),
+      if (ref.watch(featureEnabledProvider('yumeships')) ||
+          _dedication == 'yumeship')
+        ('yumeship', tr(context, 'A yumeship', 'Un yumeship')),
     ];
     final refChoices = switch (_dedication) {
       'alter' => [
@@ -1080,6 +1084,10 @@ class _BookEditorState extends ConsumerState<_BookEditor> {
       'event' => [
         for (final i in catalog.values)
           if (i.module == 'event') i,
+      ],
+      'yumeship' => [
+        for (final i in catalog.values)
+          if (i.kind == TrackerKind.yumeShip) i,
       ],
       _ => const <RecordInfo>[],
     };

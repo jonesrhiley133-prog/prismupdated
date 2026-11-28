@@ -1,7 +1,7 @@
 name: prism_plurality
 description: "Prism — plural system management app"
 publish_to: 'none'
-version: 0.46.1+46100
+version: 0.47.0+47000
 
 environment:
   sdk: ^3.11.1
