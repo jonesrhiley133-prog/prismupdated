@@ -20,6 +20,7 @@ import 'package:prism_plurality/shared/theme/app_colors.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
 import 'package:prism_sync/generated/api.dart' as ffi;
 import 'package:uuid/uuid.dart';
+import 'package:prism_plurality/core/features/feature_registry.dart';
 
 /// Intercepts the bottom "Continue" button on the importData step so an
 /// inline import sub-flow (PK token, SP file, Prism export) can run its
@@ -361,15 +362,38 @@ onboardingFeatureFlags(OnboardingState state) {
   );
 }
 
+/// Features that start switched off (like Yumeships) aren't offered in
+/// onboarding; they appear once turned on in Settings › Features.
+NavLayout dropOffByDefaultTabs(NavLayout layout) {
+  bool keep(AppShellTab t) {
+    final f = featureByTab[t.id];
+    // Features onboarding asks about (chat, boards...) follow its choices.
+    return f == null || f.defaultEnabled || f.legacyFlag != null;
+  }
+
+  return (
+    primary: [
+      for (final t in layout.primary)
+        if (keep(t)) t,
+    ],
+    overflow: [
+      for (final t in layout.overflow)
+        if (keep(t)) t,
+    ],
+  );
+}
+
 NavLayout onboardingNavLayout(OnboardingState state) {
   final hasDraftLayout =
       state.navBarItems.isNotEmpty || state.navBarOverflowItems.isNotEmpty;
-  return normalizeNavLayout(
-    primaryIds: hasDraftLayout ? state.navBarItems : defaultNavBarTabIds,
-    overflowIds: hasDraftLayout
-        ? state.navBarOverflowItems
-        : defaultNavBarOverflowTabIds,
-    flags: onboardingFeatureFlags(state),
+  return dropOffByDefaultTabs(
+    normalizeNavLayout(
+      primaryIds: hasDraftLayout ? state.navBarItems : defaultNavBarTabIds,
+      overflowIds: hasDraftLayout
+          ? state.navBarOverflowItems
+          : defaultNavBarOverflowTabIds,
+      flags: onboardingFeatureFlags(state),
+    ),
   );
 }
 
@@ -949,10 +973,12 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
     required List<String> primary,
     required List<String> overflow,
   }) {
-    final layout = normalizeNavLayout(
-      primaryIds: primary,
-      overflowIds: overflow,
-      flags: onboardingFeatureFlags(state),
+    final layout = dropOffByDefaultTabs(
+      normalizeNavLayout(
+        primaryIds: primary,
+        overflowIds: overflow,
+        flags: onboardingFeatureFlags(state),
+      ),
     );
     state = state.copyWith(
       navBarItems: layout.primary.map((tab) => tab.id.name).toList(),
