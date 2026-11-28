@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_backdrop_blur.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -592,11 +593,8 @@ class _BlurPopupContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                 PrismShapes.of(context).radius(borderRadius),
               ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: PrismTokens.glassBlurStrong,
-                  sigmaY: PrismTokens.glassBlurStrong,
-                ),
+              child: PrismBackdropBlur(
+                sigma: PrismTokens.glassBlurStrong,
                 child: Container(
                   decoration: BoxDecoration(
                     color:

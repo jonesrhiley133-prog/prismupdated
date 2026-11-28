@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:async';
 import 'dart:ui' as ui;
 
@@ -6,6 +7,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 import 'package:prism_plurality/features/seasonal/decor_anchors.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/decor_painter.dart';
@@ -31,9 +34,10 @@ class SeasonalOverlay extends ConsumerStatefulWidget {
 }
 
 class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
-  late final Ticker _ticker;
-  final ValueNotifier<double> _t = ValueNotifier(0);
+    with WidgetsBindingObserver {
+  /// Bumped when pictures load or decorations are toggled (both change in
+  /// place), so unchanged scenes can skip repainting.
+  int _version = 0;
   final SeasonalAudio _audio = SeasonalAudio();
   bool _resumed = true;
   String _route = '/';
@@ -64,7 +68,6 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _ticker = createTicker((d) => _t.value = d.inMicroseconds / 1e6);
     widget.router.routerDelegate.addListener(_onRoute);
     _route = widget.router.routerDelegate.currentConfiguration.uri.path;
   }
@@ -104,7 +107,6 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.router.routerDelegate.removeListener(_onRoute);
-    _ticker.dispose();
     _burstTimer?.cancel();
     _audio.dispose();
     for (final i in _images.values) {
@@ -127,7 +129,10 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
           img.dispose();
           return;
         }
-        setState(() => _images[id] = img);
+        setState(() {
+          _images[id] = img;
+          _version++;
+        });
       });
     }
   }
@@ -145,6 +150,7 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
           onTap: () {
             setState(() {
               if (!_toggled.remove(i.id)) _toggled.add(i.id);
+              _version++;
             });
             if (i.sound) _audio.chime(i.sensitivity);
           },
@@ -185,10 +191,6 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
     // is drawn over it, so turning Seasonal Living on or off never rebuilds
     // the app or loses where you were.
     if (prefs.performance == DecoPerformance.off || items.isEmpty) {
-      if (_ticker.isActive) {
-        _ticker.stop();
-        _t.value = 0;
-      }
       return Stack(
         textDirection: TextDirection.ltr,
         fit: StackFit.passthrough,
@@ -202,8 +204,15 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
         MediaQuery.of(context).disableAnimations ||
         prefs.reducedMotion ||
         battery;
+    // The graphics engine's budget: particle density, how many things move
+    // at once, and shadow quality (all eased gradually when adaptive).
+    final q = ref.watch(graphicsEngineProvider);
     var layers = prefs.layers.forMode(prefs.performance);
-    if (reduced) {
+    layers = layers.copyWith(
+      particleDensity: layers.particleDensity * q.particleScale,
+      maxAnimated: math.min(layers.maxAnimated, q.maxAnimated),
+    );
+    if (reduced || !q.decorAnimates) {
       // Reduced motion: still, quiet decorations only.
       layers = layers.copyWith(
         enabled: {
@@ -221,6 +230,7 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
     final needsTicker =
         _resumed &&
         !reduced &&
+        q.decorAnimates &&
         (layers.on(DecoLayer.animated) || layers.on(DecoLayer.ambient)) &&
         items.any(
           (i) =>
@@ -229,12 +239,11 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                   i.layer == DecoLayer.ambient ||
                   i.moves),
         );
-    if (needsTicker && !_ticker.isActive) {
-      _ticker.start();
-    } else if (!needsTicker && _ticker.isActive) {
-      _ticker.stop();
-      _t.value = 0;
-    }
+    // Decorative motion runs on the shared clock: living decorations at
+    // medium priority, ambient particles and light at low priority. Both
+    // run below the display rate and step aside while you touch, scroll or
+    // type.
+    final clock = DecorClock.instance;
 
     return Stack(
       textDirection: TextDirection.ltr,
@@ -267,17 +276,19 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                     toggled: _toggled,
                     reduced: reduced,
                     scroll: _scroll,
+                    shadowLevel: q.shadowLevel,
+                    version: _version,
                   );
                   final size = Size(box.maxWidth, box.maxHeight);
-                  Widget layer(Set<DecoLayer> which, {required bool moving}) =>
+                  Widget layer(Set<DecoLayer> which, {DecorChannel? channel}) =>
                       RepaintBoundary(
                         child: CustomPaint(
                           size: size,
                           painter: DecorPainter(
                             scene: scene,
-                            t: moving ? _t.value : 0,
+                            t: channel?.value ?? 0,
                             layersToDraw: which,
-                            repaint: moving && needsTicker ? _t : null,
+                            repaint: needsTicker ? channel : null,
                           ),
                         ),
                       );
@@ -293,11 +304,15 @@ class _SeasonalOverlayState extends ConsumerState<SeasonalOverlay>
                               fit: StackFit.expand,
                               children: [
                                 if (layers.on(DecoLayer.staticDeco))
-                                  layer({DecoLayer.staticDeco}, moving: false),
+                                  layer(const {DecoLayer.staticDeco}),
                                 if (layers.on(DecoLayer.animated))
-                                  layer({DecoLayer.animated}, moving: true),
+                                  layer(const {
+                                    DecoLayer.animated,
+                                  }, channel: clock.medium),
                                 if (layers.on(DecoLayer.ambient))
-                                  layer({DecoLayer.ambient}, moving: true),
+                                  layer(const {
+                                    DecoLayer.ambient,
+                                  }, channel: clock.low),
                               ],
                             ),
                           ),

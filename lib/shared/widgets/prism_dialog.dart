@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_backdrop_blur.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_colors.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -309,11 +310,8 @@ class _GlassDialogShell extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
         child: ClipRRect(
           borderRadius: borderRadius,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: PrismTokens.glassBlurMedium,
-              sigmaY: PrismTokens.glassBlurMedium,
-            ),
+          child: PrismBackdropBlur(
+            sigma: PrismTokens.glassBlurMedium,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: fillColor,

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 
 import 'package:prism_plurality/core/features/feature_state.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart'
@@ -377,15 +379,16 @@ class YumeLivingBanner extends ConsumerStatefulWidget {
 }
 
 class _YumeLivingBannerState extends ConsumerState<YumeLivingBanner>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 60),
-  );
+    with DecorClockListener {
+  // Living decorations follow the shared decor clock (medium priority).
+  final _secs = ValueNotifier<double>(2.2);
+
+  @override
+  void onDecorTick(double seconds) => _secs.value = seconds;
 
   @override
   void dispose() {
-    _c.dispose();
+    _secs.dispose();
     super.dispose();
   }
 
@@ -393,26 +396,23 @@ class _YumeLivingBannerState extends ConsumerState<YumeLivingBanner>
   Widget build(BuildContext context) {
     final v = variationById(widget.lookId);
     if (v == null) return const SizedBox.shrink();
-    final still = yumeReduceMotion(context, ref);
-    if (still) {
-      _c.stop();
-    } else if (!_c.isAnimating) {
-      _c.repeat();
-    }
+    final q = ref.watch(graphicsEngineProvider);
+    final still = yumeReduceMotion(context, ref) || !q.decorAnimates;
+    setDecorRunning(!still);
     final items = arrangementForVariation(v);
     return ExcludeSemantics(
       child: SizedBox(
         height: widget.height,
         child: LayoutBuilder(
           builder: (context, box) => RepaintBoundary(
-            child: AnimatedBuilder(
-              animation: _c,
-              builder: (context, _) => DecorPreview(
+            child: ValueListenableBuilder<double>(
+              valueListenable: _secs,
+              builder: (context, t, _) => DecorPreview(
                 items: items,
                 width: box.maxWidth,
                 height: widget.height,
                 showMockUi: false,
-                t: still ? 2.2 : _c.value * 60,
+                t: still ? 2.2 : t,
               ),
             ),
           ),

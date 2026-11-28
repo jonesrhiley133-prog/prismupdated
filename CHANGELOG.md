@@ -2,6 +2,21 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.48.0] - 2026-11-28
+
+### Added
+- **Graphics & Performance** (Settings → Graphics & Performance, also linked from Appearance → Performance & storage): six presets — Ultra, High, Balanced, Performance, Ultra Lightweight and Adaptive — plus individual controls for target frame rate, hardware acceleration (Android: automatic, compatibility or software renderer, with automatic rollback if a launch can't draw), particle density, animation quality, background animation quality, texture quality, blur quality, shadow quality, decorative animation frequency, dynamic resolution, adaptive graphics, battery-saving graphics and pausing hidden animations. Changes apply immediately and are kept per device.
+- **Adaptive graphics engine**: reads real frame timings, thermal state, battery saver and device memory, and lowers decorative detail gradually when the device struggles — ambient particles and lighting first, then living decorations, then blur and shadows — restoring it once things are calm. The interface itself is never throttled.
+- **Performance monitor**: an optional draggable overlay with measured FPS, average FPS, UI and GPU-raster frame times, dropped frames, CPU use (Android), memory, image memory, active animations, current quality and the likely bottleneck.
+
+### Improved
+- **Decorations draw far less often**: all decorative motion (living and seasonal decorations, companions, habitats, banners, waving flags, holographic cards, star fields) now runs on one shared frame-synchronised clock at its own rate instead of separate full-rate tickers, requests no frames in between, steps aside while you touch, scroll or type, pauses on hidden pages and stops when Prism is in the background.
+- **Static decorations no longer repaint** when the overlay rebuilds for unrelated reasons (scrolling, timers, route changes).
+- **Cheaper effects**: decoration transparency, shadows, outlines and textures use offscreen layers sized to each item instead of the whole screen; shadow and glow quality follow the graphics budget (flat shadows skip the blur pass entirely).
+- **Glass and shadows** scale with blur and shadow quality, falling back to tinted glass with a slightly more opaque surface when live blur is off.
+- **Memory**: pictures are decoded at the size they're shown (never above screen resolution), the image cache is sized to the device, backgrounds bake at the chosen texture resolution, and caches are released when the system reports low memory.
+- **Lighter page transitions** (a short cross-fade) at low animation quality.
+
 ## [0.47.0] - 2026-11-28
 
 ### Added

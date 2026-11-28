@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/shared/widgets/prism_backdrop_blur.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/shared/extensions/app_localizations_extension.dart';
 import 'package:prism_plurality/shared/theme/app_icons.dart';
@@ -265,11 +266,8 @@ class _ToastOverlayState extends State<_ToastOverlay>
                     borderRadius: BorderRadius.circular(
                       PrismShapes.of(context).radius(PrismTokens.radiusPill),
                     ),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: PrismTokens.glassBlurStrong,
-                        sigmaY: PrismTokens.glassBlurStrong,
-                      ),
+                    child: PrismBackdropBlur(
+                      sigma: PrismTokens.glassBlurStrong,
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(16, 12, 10, 12),
                         decoration: BoxDecoration(

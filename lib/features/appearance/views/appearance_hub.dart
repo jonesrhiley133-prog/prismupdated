@@ -832,6 +832,21 @@ class _PerformanceState extends ConsumerState<AppearancePerformanceScreen> {
         child: ListView(
           padding: EdgeInsets.fromLTRB(16, 8, 16, 40 + NavBarInset.of(context)),
           children: [
+            PrismListRow(
+              leading: const Icon(Icons.speed_rounded),
+              title: Text(
+                tr(context, 'Graphics & Performance', 'Gráficos y rendimiento'),
+              ),
+              subtitle: Text(
+                tr(
+                  context,
+                  'Presets, frame rate, blur, shadows, adaptive quality and the performance monitor.',
+                  'Ajustes, frecuencia, desenfoque, sombras, calidad adaptativa y monitor.',
+                ),
+              ),
+              showChevron: true,
+              onTap: () => context.push(AppRoutePaths.settingsGraphics),
+            ),
             PrismSectionHeader(
               title: tr(context, 'DECORATIONS', 'DECORACIONES'),
             ),

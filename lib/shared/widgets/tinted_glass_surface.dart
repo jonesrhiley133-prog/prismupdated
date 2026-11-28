@@ -5,6 +5,7 @@ import 'package:prism_plurality/shared/providers/visual_effects_provider.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_theme_flavor.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 /// A cheap faux-glass surface that achieves a glassy appearance through
 /// translucent fill, directional highlight gradient, hairline border, and
@@ -121,13 +122,13 @@ class TintedGlassSurface extends ConsumerWidget {
         ? PrismTokens.tintedShadowAlphaDark
         : PrismTokens.tintedShadowAlphaLight;
 
-    final List<BoxShadow> shadow = [
+    final List<BoxShadow>? shadow = scaleShadows([
       BoxShadow(
         color: colors.shadow.withValues(alpha: shadowAlpha),
         blurRadius: PrismTokens.tintedShadowBlur,
         offset: const Offset(0, 1),
       ),
-    ];
+    ], GraphicsScope.of(context));
 
     // --- Shape helpers ---
     final effectiveBorderRadius = effectiveShape == BoxShape.circle

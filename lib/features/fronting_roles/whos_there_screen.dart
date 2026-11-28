@@ -12,6 +12,7 @@ import 'package:prism_plurality/features/members/providers/members_providers.dar
 import 'package:prism_plurality/features/settings/providers/settings_providers.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
 
 /// "Who's there?" — a welcoming, full-screen way to confirm who's fronting.
 class WhosThereScreen extends ConsumerStatefulWidget {
@@ -21,11 +22,12 @@ class WhosThereScreen extends ConsumerStatefulWidget {
 }
 
 class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _bg = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 24),
-  );
+    with TickerProviderStateMixin, DecorClockListener {
+  // Decorative background on the shared decor clock.
+  late final DecorLoop _bg = DecorLoop(const Duration(seconds: 24));
+
+  @override
+  void onDecorTick(double seconds) => _bg.tick(seconds);
   late final AnimationController _focus = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 650),
@@ -41,11 +43,7 @@ class _WhosThereScreenState extends ConsumerState<WhosThereScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.of(context).disableAnimations) {
-      _bg.stop();
-    } else if (!_bg.isAnimating) {
-      _bg.repeat();
-    }
+    setDecorRunning(!MediaQuery.of(context).disableAnimations);
   }
 
   @override

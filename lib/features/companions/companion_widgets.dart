@@ -1,7 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/scheduler.dart' show Ticker;
-
 import 'package:prism_plurality/features/companions/companion_art.dart';
 import 'package:prism_plurality/features/companions/companion_data.dart';
 import 'package:prism_plurality/features/companions/companion_mood.dart';
@@ -9,6 +7,7 @@ import 'package:prism_plurality/features/companions/custom_art_editor.dart';
 import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
     show SocialImage;
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
 
 /// A companion as stored: picks the custom artwork when there is one.
 class CompanionFigure extends ConsumerWidget {
@@ -179,18 +178,16 @@ class HabitatScene extends StatefulWidget {
   State<HabitatScene> createState() => _HabitatSceneState();
 }
 
-class _HabitatSceneState extends State<HabitatScene>
-    with SingleTickerProviderStateMixin {
-  late final Ticker _ticker;
+class _HabitatSceneState extends State<HabitatScene> with DecorClockListener {
   final _t = ValueNotifier<double>(0);
 
+  // Weather in the habitat is ambient: low priority on the decor clock.
   @override
-  void initState() {
-    super.initState();
-    _ticker = createTicker(
-      (e) => _t.value = (e.inMilliseconds % 12000) / 12000,
-    );
-  }
+  DecorPriority get decorPriority => DecorPriority.low;
+
+  @override
+  void onDecorTick(double seconds) =>
+      _t.value = ((seconds * 1000).round() % 12000) / 12000;
 
   @override
   void didChangeDependencies() {
@@ -199,8 +196,7 @@ class _HabitatSceneState extends State<HabitatScene>
         widget.animate &&
         !(MediaQuery.maybeDisableAnimationsOf(context) ?? false) &&
         widget.weather != 'clear';
-    if (run && !_ticker.isActive) _ticker.start();
-    if (!run && _ticker.isActive) _ticker.stop();
+    setDecorRunning(run);
   }
 
   @override
@@ -211,7 +207,6 @@ class _HabitatSceneState extends State<HabitatScene>
 
   @override
   void dispose() {
-    _ticker.dispose();
     _t.dispose();
     super.dispose();
   }

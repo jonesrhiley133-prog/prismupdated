@@ -1,10 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 import 'package:prism_plurality/features/companions/companion_mood.dart';
 import 'package:prism_plurality/features/companions/companion_species.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 /// Everything about how a companion looks. Stored as plain JSON (versioned
 /// via the record's `v` field) so outfits and photos can keep copies.
@@ -471,20 +472,16 @@ class CompanionView extends StatefulWidget {
   State<CompanionView> createState() => _CompanionViewState();
 }
 
-class _CompanionViewState extends State<CompanionView>
-    with SingleTickerProviderStateMixin {
-  late final Ticker _ticker;
+class _CompanionViewState extends State<CompanionView> with DecorClockListener {
   final _t = ValueNotifier<double>(0.25);
   Duration _period = const Duration(milliseconds: 3200);
 
+  // Idle life (breathing, blinking, bobbing) runs on the shared decor
+  // clock: decorative rate, paused when the page is hidden.
   @override
-  void initState() {
-    super.initState();
-    _ticker = createTicker((elapsed) {
-      _t.value =
-          (elapsed.inMicroseconds % _period.inMicroseconds) /
-          _period.inMicroseconds;
-    });
+  void onDecorTick(double seconds) {
+    final us = (seconds * 1e6).round();
+    _t.value = (us % _period.inMicroseconds) / _period.inMicroseconds;
   }
 
   @override
@@ -514,17 +511,19 @@ class _CompanionViewState extends State<CompanionView>
         .clamp(0.0, 1.0);
     final ms = (4600 - e * 2600) / speed.clamp(0.5, 1.4);
     _period = Duration(milliseconds: ms.round().clamp(1400, 7000));
-    final run = widget.animate && !reduced && widget.intensity > 0.01;
-    if (run && !_ticker.isActive) _ticker.start();
-    if (!run && _ticker.isActive) {
-      _ticker.stop();
-      _t.value = 0.25;
-    }
+    // Animation quality "Off" (Graphics & Performance) keeps companions
+    // still, like reduced motion.
+    final run =
+        widget.animate &&
+        !reduced &&
+        widget.intensity > 0.01 &&
+        GraphicsScope.of(context).animationDetail > 0;
+    setDecorRunning(run);
+    if (!run) _t.value = 0.25;
   }
 
   @override
   void dispose() {
-    _ticker.dispose();
     _t.dispose();
     super.dispose();
   }

@@ -117,8 +117,16 @@ class MainActivity : FlutterFragmentActivity() {
 
     private var pendingFileHandoff: PendingFileHandoff? = null
 
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        // Renderer choice (Graphics & Performance) must be in the launch
+        // intent before Flutter reads its shell arguments.
+        GraphicsBridge.applyRenderer(this)
+        super.onCreate(savedInstanceState)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        GraphicsBridge.register(this, flutterEngine.dartExecutor.binaryMessenger)
         PrismWidgets.channel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             WIDGETS_CHANNEL,

@@ -7,6 +7,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -2225,15 +2226,17 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                 alpha: isDark ? 0.42 : 0.56,
               ),
             ),
-        boxShadow:
-            look.shadow(LookElement.nav) ??
-            [
-              BoxShadow(
-                color: colors.shadow.withValues(alpha: isDark ? 0.34 : 0.10),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
+        boxShadow: scaleShadows(
+          look.shadow(LookElement.nav) ??
+              [
+                BoxShadow(
+                  color: colors.shadow.withValues(alpha: isDark ? 0.34 : 0.10),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+          GraphicsScope.of(context),
+        ),
       );
     }
 
@@ -2247,13 +2250,13 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
         width: _kNavBarBorderWidth,
         color: colors.outlineVariant.withValues(alpha: isDark ? 0.42 : 0.56),
       ),
-      boxShadow: [
+      boxShadow: scaleShadows([
         BoxShadow(
           color: colors.shadow.withValues(alpha: isDark ? 0.34 : 0.10),
           blurRadius: 20,
           offset: const Offset(0, 4),
         ),
-      ],
+      ], GraphicsScope.of(context)),
     );
   }
 
@@ -2486,12 +2489,13 @@ class _NavGlass extends StatelessWidget {
     final mq = MediaQuery.of(context);
     final android = !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     final reduced = mq.disableAnimations || mq.highContrast;
-    final blur = !reduced && (liveBlur || !android);
+    final q = GraphicsScope.of(context);
+    final blur = !reduced && q.liveBlur && (liveBlur || !android);
     if (blur) {
       return BackdropFilter.grouped(
         filter: ImageFilter.blur(
-          sigmaX: PrismTokens.glassBlurStrong,
-          sigmaY: PrismTokens.glassBlurStrong,
+          sigmaX: q.sigma(PrismTokens.glassBlurStrong),
+          sigmaY: q.sigma(PrismTokens.glassBlurStrong),
         ),
         child: child,
       );

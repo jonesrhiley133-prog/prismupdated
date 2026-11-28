@@ -14,6 +14,7 @@ import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_models.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_vocab.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 const _tau = math.pi * 2;
 
@@ -36,7 +37,65 @@ class DecorScene {
     this.toggled = const {},
     this.reduced = false,
     this.scroll = 0,
+    this.shadowLevel = 3,
+    this.version = 0,
   });
+
+  /// Shadow and glow quality from the graphics engine: 0 none, 1 flat
+  /// (no blur), 2 soft, 3 full.
+  final int shadowLevel;
+
+  /// Bumped when [images] or [toggled] change in place, so equal scenes
+  /// can skip repainting.
+  final int version;
+
+  /// Scenes with the same inputs draw the same picture. Lets the static
+  /// layer (and every painter) skip repainting when the overlay rebuilds
+  /// for unrelated reasons (scroll updates, timers, route listeners).
+  @override
+  bool operator ==(Object other) =>
+      other is DecorScene &&
+      identical(other.items, items) &&
+      _sameLayers(other.layers, layers) &&
+      other.device == device &&
+      other.route == route &&
+      identical(other.uiAnchors, uiAnchors) &&
+      other.safe == safe &&
+      identical(other.images, images) &&
+      other.lightsOn == lightsOn &&
+      other.burst == burst &&
+      other.phase == phase &&
+      other.music == music &&
+      identical(other.toggled, toggled) &&
+      other.reduced == reduced &&
+      other.scroll == scroll &&
+      other.shadowLevel == shadowLevel &&
+      other.version == version;
+
+  @override
+  int get hashCode => Object.hash(
+    identityHashCode(items),
+    layers.particleDensity,
+    layers.maxAnimated,
+    device,
+    route,
+    lightsOn,
+    burst,
+    phase,
+    music,
+    reduced,
+    scroll,
+    shadowLevel,
+    version,
+  );
+
+  static bool _sameLayers(DecoLayerSettings a, DecoLayerSettings b) =>
+      identical(a, b) ||
+      (a.particleDensity == b.particleDensity &&
+          a.animationSpeed == b.animationSpeed &&
+          a.maxAnimated == b.maxAnimated &&
+          a.enabled.length == b.enabled.length &&
+          a.enabled.containsAll(b.enabled));
 
   /// How far the current page has scrolled, for decorations that move with
   /// it.
@@ -77,6 +136,9 @@ class DecorScene {
 final _glyphs = <String, TextPainter>{};
 
 TextPainter _glyph(String g, double size) {
+  // Released under memory pressure. Painters aren't disposed: a recorded
+  // frame may still reference their text; the GC frees them once unused.
+  graphicsMemoryReleasers['decor.glyphs'] ??= _glyphs.clear;
   final s = size.clamp(6.0, 220.0).roundToDouble();
   final key = '$g@$s';
   final hit = _glyphs[key];
@@ -281,9 +343,13 @@ class DecorPainter extends CustomPainter {
   /// Which layers this painter draws (static / animated / ambient).
   final Set<DecoLayer> layersToDraw;
 
+  /// Items to draw, worked out once per painter (the clock repaints the
+  /// same painter many times; the list doesn't change between them).
+  List<DecorItem>? _items;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final items = [
+    final items = _items ??= [
       for (final i in scene.items)
         if (i.enabled &&
             layersToDraw.contains(layerOf(i)) &&
@@ -395,10 +461,26 @@ class DecorPainter extends CustomPainter {
     var alpha = item.opacity * m.alpha;
     if (mode == 'toggle' && off) alpha *= 0.45;
 
+    // Screen-wide pieces (borders, falling things, light) cover the whole
+    // canvas; everything else only needs a layer around itself.
+    final local = !const {
+      DecoKind.border,
+      DecoKind.particles,
+      DecoKind.environment,
+    }.contains(item.kind);
+    // Generous bounds: rotation, behaviour scale, glow and shadow offset
+    // all stay inside this circle. Offscreen layers sized to the item
+    // instead of the whole screen cost a fraction of the GPU fill.
+    final localBounds = Rect.fromCircle(
+      center: Offset.zero,
+      radius: width * 2.4 + 8,
+    );
     canvas.save();
     if (alpha < 1) {
       canvas.saveLayer(
-        Rect.fromLTWH(0, 0, size.width, size.height),
+        local
+            ? localBounds.shift(Offset(cx, cy))
+            : Rect.fromLTWH(0, 0, size.width, size.height),
         Paint()..color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0)),
       );
     }
@@ -413,13 +495,22 @@ class DecorPainter extends CustomPainter {
     if (m.flip) canvas.scale(-1, 1);
     // A lamp that's on glows; a toy that plays spins with the music.
     if (mode == 'toggle' && !off) {
-      canvas.drawCircle(
-        Offset.zero,
-        width * 0.75,
-        Paint()
+      // Glow: blurred at higher quality, a soft gradient (no blur pass)
+      // at lower quality.
+      final glow = Paint();
+      if (scene.shadowLevel >= 2) {
+        glow
           ..color = Color(second).withValues(alpha: 0.28)
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, width * 0.35),
-      );
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, width * 0.35);
+      } else {
+        glow.shader = RadialGradient(
+          colors: [
+            Color(second).withValues(alpha: 0.3),
+            Color(second).withValues(alpha: 0),
+          ],
+        ).createShader(Rect.fromCircle(center: Offset.zero, radius: width));
+      }
+      canvas.drawCircle(Offset.zero, width, glow);
     }
     if (item.flipX || item.flipY)
       canvas.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1);
@@ -512,26 +603,23 @@ class DecorPainter extends CustomPainter {
     }
 
     // Studio extras: shadow, outline and texture. Screen-wide pieces
-    // (borders, falling things, light) are drawn as they are.
-    final local = !const {
-      DecoKind.border,
-      DecoKind.particles,
-      DecoKind.environment,
-    }.contains(item.kind);
-    if (local && item.shadow > 0) {
+    // (borders, falling things, light) are drawn as they are. Each extra
+    // uses an offscreen layer bounded to the item.
+    if (local && item.shadow > 0 && scene.shadowLevel > 0) {
       canvas.save();
       canvas.translate(width * 0.03 * item.shadow, width * 0.05 * item.shadow);
+      final sigma = (1 + 4 * item.shadow) * (scene.shadowLevel >= 3 ? 1 : 0.6);
       canvas.saveLayer(
-        null,
+        localBounds,
         Paint()
           ..colorFilter = ColorFilter.mode(
             Colors.black.withValues(alpha: 0.4 * item.shadow),
             BlendMode.srcIn,
           )
-          ..imageFilter = ui.ImageFilter.blur(
-            sigmaX: 1 + 4 * item.shadow,
-            sigmaY: 1 + 4 * item.shadow,
-          ),
+          // Flat shadows (lowest quality) skip the blur pass entirely.
+          ..imageFilter = scene.shadowLevel >= 2
+              ? ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma)
+              : null,
       );
       body();
       canvas.restore();
@@ -539,7 +627,7 @@ class DecorPainter extends CustomPainter {
     }
     if (local && item.outline > 0) {
       canvas.saveLayer(
-        null,
+        localBounds,
         Paint()
           ..colorFilter = ColorFilter.mode(Color(second), BlendMode.srcIn)
           ..imageFilter = ui.ImageFilter.dilate(
@@ -554,9 +642,9 @@ class DecorPainter extends CustomPainter {
         ? scrapTextureById(item.texture!)
         : null;
     if (tex != null) {
-      canvas.saveLayer(null, Paint());
+      canvas.saveLayer(localBounds, Paint());
       body();
-      canvas.saveLayer(null, Paint()..blendMode = BlendMode.srcATop);
+      canvas.saveLayer(localBounds, Paint()..blendMode = BlendMode.srcATop);
       canvas.translate(-width, -width);
       paintScrapTexture(
         canvas,
@@ -2531,8 +2619,10 @@ class DecorPainter extends CustomPainter {
   @override
   bool shouldRepaint(DecorPainter old) =>
       old.scene != scene ||
-      old.t != t ||
-      !identical(old.layersToDraw, layersToDraw);
+      old._t0 != _t0 ||
+      old._clock != _clock ||
+      old.layersToDraw.length != layersToDraw.length ||
+      !old.layersToDraw.containsAll(layersToDraw);
 }
 
 /// Roughly where an item is on screen, for hit-testing and selection

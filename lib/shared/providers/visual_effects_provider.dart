@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
+
 /// Visual rendering policy for glass surfaces and decorative effects.
 enum VisualEffectsMode {
   /// Full blur and animation effects.
@@ -35,6 +37,9 @@ extension VisualEffectsModeX on VisualEffectsMode {
     final mq = MediaQuery.of(context);
     if (mq.highContrast) return VisualEffectsMode.accessible;
     if (mq.disableAnimations) return VisualEffectsMode.reduced;
+    // Graphics & Performance (or the adaptive engine) can turn live blur
+    // off; glass then uses the cheap tinted surface.
+    if (!GraphicsScope.of(context).liveBlur) return VisualEffectsMode.reduced;
     return VisualEffectsMode.full;
   }
 

@@ -24,6 +24,7 @@ import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/font_studio_screen.dart';
 import 'package:prism_plurality/features/voice/voice_settings_screen.dart';
 import 'package:prism_plurality/features/passport/passport_screens.dart';
+import 'package:prism_plurality/features/settings/views/graphics_settings_screen.dart';
 import 'package:prism_plurality/features/yumeships/yume_collections.dart'
     show YumeCollectionScreen, YumeCollectionsArrangeScreen;
 import 'package:prism_plurality/features/yumeships/yume_export.dart'
@@ -1112,6 +1113,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'accessibility',
                     builder: (context, state) =>
                         const AccessibilitySettingsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'graphics',
+                    builder: (context, state) => const GraphicsSettingsScreen(),
                   ),
                   GoRoute(
                     path: 'statistics',

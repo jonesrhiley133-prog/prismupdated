@@ -4,6 +4,7 @@ import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:prism_plurality/features/flags/flag_model.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
 import 'package:prism_plurality/features/social/widgets/social_widgets.dart'
     show SocialImage;
 
@@ -397,22 +398,17 @@ class WavingFlag extends StatefulWidget {
   State<WavingFlag> createState() => _WavingFlagState();
 }
 
-class _WavingFlagState extends State<WavingFlag>
-    with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 3),
-  );
+class _WavingFlagState extends State<WavingFlag> with DecorClockListener {
+  late final _c = DecorLoop(const Duration(seconds: 3));
+
+  @override
+  void onDecorTick(double seconds) => _c.tick(seconds);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    if (reduce) {
-      _c.stop();
-    } else if (!_c.isAnimating) {
-      _c.repeat();
-    }
+    setDecorRunning(!reduce);
   }
 
   @override

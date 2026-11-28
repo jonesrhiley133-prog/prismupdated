@@ -8,6 +8,7 @@ import 'package:prism_plurality/domain/models/member.dart';
 import 'package:prism_plurality/features/members/providers/members_providers.dart';
 import 'package:prism_plurality/features/wallets/wallet_data.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
 
 /// ID-1 card proportions (85.6 × 54 mm).
 const idCardRatio = 85.6 / 54;
@@ -388,11 +389,18 @@ class _Shine extends StatefulWidget {
   State<_Shine> createState() => _ShineState();
 }
 
-class _ShineState extends State<_Shine> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 5),
-  )..repeat();
+class _ShineState extends State<_Shine> with DecorClockListener {
+  // A decorative sheen on the shared decor clock.
+  late final _c = DecorLoop(const Duration(seconds: 5));
+
+  @override
+  void onDecorTick(double seconds) => _c.tick(seconds);
+
+  @override
+  void initState() {
+    super.initState();
+    setDecorRunning(true);
+  }
 
   @override
   void dispose() {

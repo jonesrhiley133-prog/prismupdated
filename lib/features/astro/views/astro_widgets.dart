@@ -7,6 +7,7 @@ import 'package:prism_plurality/features/astro/engine/ephemeris.dart';
 import 'package:prism_plurality/shared/providers/visual_effects_provider.dart';
 import 'package:prism_plurality/shared/ui_kit.dart';
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
+import 'package:prism_plurality/core/graphics/decor_clock.dart';
 
 bool astroEs(BuildContext c) =>
     Localizations.maybeLocaleOf(c)?.languageCode == 'es';
@@ -69,23 +70,19 @@ class StarField extends ConsumerStatefulWidget {
   ConsumerState<StarField> createState() => _StarFieldState();
 }
 
-class _StarFieldState extends ConsumerState<StarField>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 6),
-  );
+class _StarFieldState extends ConsumerState<StarField> with DecorClockListener {
+  // Follows the shared decor clock (decorative rate, paused when hidden).
+  late final DecorLoop _c = DecorLoop(const Duration(seconds: 6));
+
+  @override
+  void onDecorTick(double seconds) => _c.tick(seconds);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final animate =
         VisualEffectsModeX.of(context, ref) == VisualEffectsMode.full;
-    if (animate && !_c.isAnimating) {
-      _c.repeat();
-    } else if (!animate && _c.isAnimating) {
-      _c.stop();
-    }
+    setDecorRunning(animate);
   }
 
   @override

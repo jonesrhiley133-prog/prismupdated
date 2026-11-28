@@ -94,6 +94,7 @@ abstract final class AppRoutePaths {
   static const settingsAppearance = '/settings/appearance';
   static const settingsTerminology = '/settings/terminology';
   static const settingsAccessibility = '/settings/accessibility';
+  static const settingsGraphics = '/settings/graphics';
   static const settingsHabits = '/settings/habits';
   static const settingsStatistics = '/settings/statistics';
   static const settingsSync = '/settings/sync';

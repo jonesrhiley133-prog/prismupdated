@@ -5,6 +5,7 @@ import 'package:prism_plurality/shared/theme/look_theme.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/utils/animations.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 enum PrismSurfaceTone { subtle, strong, accent }
 
@@ -129,7 +130,10 @@ class _PrismSurfaceState extends State<PrismSurface> {
     final cardStyle = styled ? look.style(LookElement.card) : null;
     final lookGradient = styled ? look.gradient(LookElement.card) : null;
     final lookBorder = styled ? look.border(LookElement.card) : null;
-    final lookShadow = styled ? look.shadow(LookElement.card) : null;
+    final lookShadow = scaleShadows(
+      styled ? look.shadow(LookElement.card) : null,
+      GraphicsScope.of(context),
+    );
     final padScale = cardStyle?.padding ?? 1.0;
 
     final borderRadius = BorderRadius.circular(

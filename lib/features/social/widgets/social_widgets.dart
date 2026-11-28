@@ -16,6 +16,7 @@ import 'package:prism_plurality/shared/extensions/app_localizations_extension.da
 import 'package:prism_plurality/shared/widgets/member_avatar.dart';
 import 'package:prism_plurality/shared/widgets/member_search_sheet.dart';
 import 'package:prism_plurality/shared/widgets/prism_sheet.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 /// The alter the social screens act as. Starts as the current fronter but
 /// can be any alter: browsing, posting and reacting never need a switch.
@@ -253,12 +254,34 @@ class SocialImage extends ConsumerWidget {
         ),
       );
     }
+    // Decode at the size it's shown, never above screen resolution: a
+    // 4000px photo in a 48px avatar would otherwise hold ~60 MB of texture.
+    // Sizes round up to 128px steps so the image cache keeps few variants,
+    // scaled by the graphics budget's texture quality. (No LayoutBuilder:
+    // images also appear inside intrinsically sized layouts.)
+    final mq = MediaQuery.maybeOf(context);
+    final dpr = mq?.devicePixelRatio ?? 2;
+    final screen = mq?.size ?? const Size(400, 900);
+    final tex = GraphicsScope.of(context).textureScale.clamp(0.6, 1.0);
+    // Without an explicit width the image may span the screen's width;
+    // without either dimension, cap at the screen's longest side.
+    final double longest;
+    if (width == null && height == null) {
+      longest = screen.longestSide;
+    } else {
+      final w = (width != null && width!.isFinite) ? width! : screen.width;
+      final h = (height != null && height!.isFinite) ? height! : 0.0;
+      longest = w > h ? w : h;
+    }
+    final cache = (((longest * dpr * tex) / 128).ceil() * 128).clamp(128, 2048);
     return Image.memory(
       bytes,
       fit: fit,
       height: height,
       width: width,
+      cacheWidth: cache,
       gaplessPlayback: true,
+      filterQuality: FilterQuality.medium,
       semanticLabel: semanticLabel,
       excludeFromSemantics: semanticLabel == null,
       errorBuilder: (_, _, _) => SizedBox(height: height, width: width),

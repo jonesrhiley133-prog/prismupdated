@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prism_plurality/shared/providers/visual_effects_provider.dart';
 import 'package:prism_plurality/shared/theme/prism_shapes.dart';
@@ -63,6 +64,7 @@ class GlassSurface extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = VisualEffectsModeX.of(context, ref);
+    final q = GraphicsScope.of(context);
 
     // Fall back to the cheap tinted surface when blur is not appropriate.
     if (!mode.useBlur) {
@@ -112,7 +114,10 @@ class GlassSurface extends ConsumerWidget {
     return ClipRRect(
       borderRadius: effectiveBorderRadius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+        filter: ImageFilter.blur(
+          sigmaX: q.sigma(sigma),
+          sigmaY: q.sigma(sigma),
+        ),
         child: Container(
           width: width,
           height: height,

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
 
 import 'package:prism_plurality/features/scrapbook/scrap_texture_painter.dart';
 import 'package:prism_plurality/features/scrapbook/scrap_textures.dart';
@@ -877,13 +878,16 @@ class _LookBackgroundState extends State<LookBackground> {
     final mq = MediaQuery.maybeOf(context);
     final size = mq?.size ?? const Size(400, 800);
     final dpr = mq?.devicePixelRatio ?? 2;
+    // Texture quality / dynamic resolution from the graphics engine, in
+    // steps of 0.2 so small budget changes never trigger a re-bake.
+    final tex = (GraphicsScope.of(context).textureScale * 5).round() / 5;
     final base = Theme.of(context).scaffoldBackgroundColor;
     final req = BakeRequest(
       spec: widget.spec,
       dir: widget.dir,
       // Orientation matters, small size changes (keyboard, insets) don't.
       portrait: size.height >= size.width,
-      longestPx: (size.longestSide * dpr).clamp(320, 1600).round(),
+      longestPx: (size.longestSide * dpr * tex).clamp(320, 1600).round(),
       base: base.toARGB32(),
       reduceEffects: widget.reduceEffects,
       reduceTransparency: widget.reduceTransparency,
@@ -1177,6 +1181,10 @@ class _LruImages {
 }
 
 Future<ui.Image?> bakeBackground(BakeRequest r) {
+  // Under memory pressure, drop baked backgrounds that aren't showing
+  // (pages keep the image they hold; the GC frees the rest).
+  graphicsMemoryReleasers['look.backgrounds'] ??= () =>
+      backgroundCache._map.clear();
   final hit = backgroundCache[r.key];
   if (hit != null) return Future.value(hit);
   // Block body: returning the removed Future from whenComplete would make

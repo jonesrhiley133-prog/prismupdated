@@ -45,6 +45,7 @@ import 'package:prism_plurality/shared/theme/prism_shapes.dart';
 import 'package:prism_plurality/shared/theme/prism_tokens.dart';
 import 'package:prism_plurality/shared/widgets/prism_markdown_text.dart';
 import 'package:prism_plurality/shared/widgets/prism_logo_tile.dart';
+import 'package:prism_plurality/features/settings/views/graphics_settings_screen.dart';
 
 /// Main settings screen. Clean navigation list matching SwiftUI's layout:
 /// sections with icon-labeled links to sub-screens.
@@ -426,6 +427,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       selectionKey: 'accessibility',
                       route: AppRoutePaths.settingsAccessibility,
                       builder: (_) => const AccessibilitySettingsScreen(),
+                    ),
+                    _leafLink(
+                      icon: Icons.speed_rounded,
+                      iconColor: Colors.blueGrey,
+                      title: tr(
+                        context,
+                        'Graphics & Performance',
+                        'Gráficos y rendimiento',
+                      ),
+                      selectionKey: 'graphics',
+                      route: AppRoutePaths.settingsGraphics,
+                      builder: (_) => const GraphicsSettingsScreen(),
                     ),
                     _leafLink(
                       icon: AppIcons.toggleOnOutlined,

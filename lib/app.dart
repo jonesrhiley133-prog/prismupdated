@@ -27,6 +27,8 @@ import 'package:prism_plurality/features/fitness/health/health_sync.dart'
     show healthAutoSyncProvider;
 import 'package:prism_plurality/features/trackers/tracker_kinds.dart';
 import 'package:prism_plurality/features/music/views/mini_player.dart';
+import 'package:prism_plurality/core/graphics/graphics_engine.dart';
+import 'package:prism_plurality/core/graphics/graphics_host.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/accessibility/a11y_settings.dart';
 import 'package:prism_plurality/features/accessibility/a11y_theme.dart';
@@ -886,8 +888,25 @@ class _PrismAppState extends ConsumerState<PrismApp> {
           darkTheme = PrismFonts.applyTheme(darkTheme, fontPrefs);
 
           // Light, GPU-friendly page transitions on Android (the zoom
-          // transition renders whole pages into offscreen layers).
-          const transitions = PageTransitionsTheme(
+          // transition renders whole pages into offscreen layers). At low
+          // animation quality every platform uses a plain cross-fade:
+          // opacity only, composited on the GPU, no offscreen page layers.
+          final lightTransitions =
+              ref.watch(
+                graphicsEngineProvider.select((q) => q.animationDetail),
+              ) <
+              0.5;
+          const fade = PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: LightFadePageTransitionsBuilder(),
+              TargetPlatform.iOS: LightFadePageTransitionsBuilder(),
+              TargetPlatform.macOS: LightFadePageTransitionsBuilder(),
+              TargetPlatform.windows: LightFadePageTransitionsBuilder(),
+              TargetPlatform.linux: LightFadePageTransitionsBuilder(),
+              TargetPlatform.fuchsia: LightFadePageTransitionsBuilder(),
+            },
+          );
+          const rich = PageTransitionsTheme(
             builders: {
               TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
               TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
@@ -899,6 +918,7 @@ class _PrismAppState extends ConsumerState<PrismApp> {
               TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
             },
           );
+          final transitions = lightTransitions ? fade : rich;
           lightTheme = lightTheme.copyWith(pageTransitionsTheme: transitions);
           darkTheme = darkTheme.copyWith(pageTransitionsTheme: transitions);
 
@@ -999,6 +1019,9 @@ class _PrismAppState extends ConsumerState<PrismApp> {
             result = LayoutDecorHost(child: result);
             // Holiday app icons, only if turned on in the icon gallery.
             result = SeasonalIconScheduler(child: result);
+            // Graphics engine: render priority, shared decor clock,
+            // adaptive quality and the optional performance monitor.
+            result = GraphicsHost(child: result);
             return A11yScope(
               onOpenQuickPanel: () =>
                   router.push(AppRoutePaths.accessibilityQuick),
