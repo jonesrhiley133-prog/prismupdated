@@ -48,7 +48,11 @@ void main() {
       );
       return t
           .widgetList<ColoredBox>(find.byType(ColoredBox))
-          .where((b) => b.color.a < 1 && b.color.a > 0.5)
+          .where(
+            (b) =>
+                b.color ==
+                theme.scaffoldBackgroundColor.withValues(alpha: 0.62),
+          )
           .length;
     }
 

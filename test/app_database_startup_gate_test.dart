@@ -274,6 +274,8 @@ void main() {
     await tester.pump();
 
     expect(repairedKeys, ['aa' * 32]);
+
+    await _disposeAppAndFlushDriftCloseTimers(tester);
   });
 }
 

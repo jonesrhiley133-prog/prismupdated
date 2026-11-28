@@ -163,11 +163,14 @@ void main() {
     () async {
       final repo = _Repo();
       final now = DateTime.now();
+      // Keep the workout on today's date whatever time the test runs.
+      final midnight = DateTime(now.year, now.month, now.day);
+      final twoHoursAgo = now.subtract(const Duration(hours: 2));
       final gw = _FakeGateway([
         _workout(
           'w1',
           'Strava',
-          now.subtract(const Duration(hours: 2)),
+          twoHoursAgo.isBefore(midnight) ? midnight : twoHoursAgo,
           35,
           HealthWorkoutActivityType.RUNNING,
         ),

@@ -2,6 +2,15 @@
 
 All notable changes to Prism will be documented in this file.
 
+## [0.46.1] - 2026-11-28
+
+### Fixed
+- **Light / dark mode**: switching between Light, Dark, Medium and System now always works with custom themes. A theme's background picture (such as a dark collection background) no longer forces the whole app into one mode; backgrounds made for the other mode get a soft wash so text stays readable.
+- **Brightness settings** now explain when the active theme is set to one mode only, with one-tap options to make it work in both, use the default theme, or open Themes.
+- **Living decorations, layouts and environment**: turning them on, off or switching them now changes the Digital Room that is showing them, so they no longer ignore the switch or come back on their own.
+- **Launch animation** no longer leaves a timer running after it closes.
+- Fixed tests that failed depending on the time of day or teardown order.
+
 ## [0.46.0] - 2026-11-27
 
 ### Added
