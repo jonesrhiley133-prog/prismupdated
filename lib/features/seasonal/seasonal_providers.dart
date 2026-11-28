@@ -478,3 +478,127 @@ DecorPreset? extractDecorFromThemeImport(String text) {
     return null;
   }
 }
+
+// ── Layers in effect ───────────────────────────────────────────────────
+
+/// The living look showing now: the active room's own, else the system's.
+final effectiveLivingProvider = Provider<String?>((ref) {
+  final room = ref.watch(activeRoomProvider);
+  return room?.living ?? ref.watch(seasonalPrefsProvider).livingVariation;
+});
+
+/// The layout look showing now and its parts (null parts = all).
+final effectiveLayoutProvider = Provider<(String?, Set<String>?)>((ref) {
+  final room = ref.watch(activeRoomProvider);
+  if (room?.layout != null) return (room!.layout, room.layoutParts);
+  final p = ref.watch(seasonalPrefsProvider);
+  return (p.layoutVariation, p.layoutParts);
+});
+
+/// Changes a decoration layer where it really comes from. A Digital Room
+/// with its own living look, layout or environment overrides the system's,
+/// so changing only the system's value would look like nothing happened
+/// (and a "removed" look would keep showing). Edits go to the room when the
+/// room has its own value, otherwise to the system settings.
+class DecorLayers {
+  DecorLayers(this.ref);
+  final Ref ref;
+
+  SeasonalPrefsNotifier get _prefs => ref.read(seasonalPrefsProvider.notifier);
+
+  DecorPreset? get _room {
+    final p = ref.read(frontPresetProvider);
+    return p?.room == null ? null : p;
+  }
+
+  Future<void> _saveRoom(DecorPreset p, RoomSettings r) async {
+    final copy = DecorPreset.fromJson(p.toJson())!..room = r;
+    await ref.read(decorPresetActionsProvider).update(copy);
+  }
+
+  void _wake(bool on) {
+    if (!on) return;
+    _prefs.update(
+      (p) => p.performance == DecoPerformance.off
+          ? p.copyWith(performance: DecoPerformance.balanced)
+          : p,
+    );
+  }
+
+  /// Shows [id] as the living look, or turns living decorations off.
+  Future<void> setLiving(String? id) async {
+    final room = _room;
+    if (id == null) {
+      // Off means off everywhere it could come from.
+      _prefs.update((p) => p.copyWith(livingVariation: null));
+      if (room?.room?.living != null) {
+        await _saveRoom(room!, room.room!.copyWith(living: null));
+      }
+      return;
+    }
+    _wake(true);
+    if (room?.room?.living != null) {
+      await _saveRoom(room!, room.room!.copyWith(living: id));
+    } else {
+      _prefs.update((p) => p.copyWith(livingVariation: id));
+    }
+  }
+
+  Future<void> setLayout(String? id) async {
+    final room = _room;
+    if (id == null) {
+      _prefs.update((p) => p.copyWith(layoutVariation: null));
+      if (room?.room?.layout != null) {
+        await _saveRoom(room!, room.room!.copyWith(layout: null));
+      }
+      return;
+    }
+    _wake(true);
+    if (room?.room?.layout != null) {
+      await _saveRoom(room!, room.room!.copyWith(layout: id));
+    } else {
+      _prefs.update((p) => p.copyWith(layoutVariation: id));
+    }
+  }
+
+  Future<void> setLayoutParts(Set<String> parts) async {
+    final room = _room;
+    if (room?.room?.layout != null) {
+      await _saveRoom(room!, room.room!.copyWith(layoutParts: parts));
+    } else {
+      _prefs.update((p) => p.copyWith(layoutParts: parts));
+    }
+  }
+
+  /// Edits the environment in effect (the room's own, if it has one).
+  Future<void> setEnv(EnvSettings Function(EnvSettings e) change) async {
+    final room = _room;
+    final env = room?.room?.env;
+    if (env != null) {
+      final next = change(env);
+      _wake(next.any);
+      await _saveRoom(room!, room.room!.copyWith(env: next));
+    } else {
+      final next = change(ref.read(seasonalPrefsProvider).env);
+      _prefs.update(
+        (p) => p.copyWith(
+          env: next,
+          performance: next.any && p.performance == DecoPerformance.off
+              ? DecoPerformance.balanced
+              : p.performance,
+        ),
+      );
+    }
+  }
+
+  /// Turns environmental effects off wherever they come from.
+  Future<void> clearEnv() async {
+    _prefs.update((p) => p.copyWith(env: const EnvSettings()));
+    final room = _room;
+    if (room?.room?.env != null) {
+      await _saveRoom(room!, room.room!.copyWith(env: null));
+    }
+  }
+}
+
+final decorLayersProvider = Provider<DecorLayers>(DecorLayers.new);

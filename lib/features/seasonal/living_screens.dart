@@ -24,23 +24,13 @@ void applyLivingLook(
   String? variationId, {
   String? undoMessage,
 }) {
-  final previous = ref.read(seasonalPrefsProvider).livingVariation;
+  final previous = ref.read(effectiveLivingProvider);
   if (undoMessage != null && previous != variationId) {
     ref
         .read(appearanceUndoProvider.notifier)
         .record(undoMessage, () => applyLivingLook(ref, previous));
   }
-  ref
-      .read(seasonalPrefsProvider.notifier)
-      .update(
-        (p) => p.copyWith(
-          livingVariation: variationId,
-          performance:
-              variationId != null && p.performance == DecoPerformance.off
-              ? DecoPerformance.balanced
-              : p.performance,
-        ),
-      );
+  ref.read(decorLayersProvider).setLiving(variationId);
   if (variationId != null) {
     final g = variationId.split('.').first;
     ref.read(appearanceLibraryProvider.notifier).used('genre:$g');
@@ -71,12 +61,10 @@ class _LivingCollectionsScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final prefs = ref.watch(seasonalPrefsProvider);
     final lib = ref.watch(appearanceLibraryProvider);
     final q = _q.text.trim().toLowerCase();
-    final current = prefs.livingVariation == null
-        ? null
-        : variationById(prefs.livingVariation!);
+    final livingId = ref.watch(effectiveLivingProvider);
+    final current = livingId == null ? null : variationById(livingId);
 
     bool hit(SeasonalCollection c) =>
         q.isEmpty ||
@@ -287,7 +275,7 @@ class LivingGenreScreen extends ConsumerWidget {
         ),
       );
     }
-    final prefs = ref.watch(seasonalPrefsProvider);
+    final living = ref.watch(effectiveLivingProvider);
     final theme = Theme.of(context);
     return PrismPageScaffold(
       topBar: PrismTopBar(title: '${c.emoji} ${c.name}', showBackButton: true),
@@ -333,7 +321,7 @@ class LivingGenreScreen extends ConsumerWidget {
                 itemCount: c.variations.length,
                 itemBuilder: (context, i) {
                   final v = c.variations[i];
-                  final on = prefs.livingVariation == v.id;
+                  final on = living == v.id;
                   return Semantics(
                     button: true,
                     selected: on,
@@ -390,7 +378,7 @@ class LivingGenreScreen extends ConsumerWidget {
     WidgetRef ref,
     SeasonalVariation v,
   ) async {
-    final on = ref.read(seasonalPrefsProvider).livingVariation == v.id;
+    final on = ref.read(effectiveLivingProvider) == v.id;
     await PrismSheet.show<void>(
       context: context,
       title: v.name,
@@ -425,14 +413,13 @@ class LivingGenreScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           PrismButton(
-            label: ref.read(seasonalPrefsProvider).layoutVariation == v.id
+            label: ref.read(effectiveLayoutProvider).$1 == v.id
                 ? tr(ctx, 'Turn its layout off', 'Apagar su diseño')
                 : tr(ctx, 'Use its layout too', 'Usar también su diseño'),
             icon: Icons.dashboard_customize_outlined,
             tone: PrismButtonTone.outlined,
             onPressed: () {
-              final on =
-                  ref.read(seasonalPrefsProvider).layoutVariation == v.id;
+              final on = ref.read(effectiveLayoutProvider).$1 == v.id;
               applyLayout(
                 ref,
                 on ? null : v.id,

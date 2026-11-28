@@ -176,6 +176,61 @@ void main() {
     }
   });
 
+  test(
+    'switching or removing a look changes the room that is showing it',
+    () async {
+      _created.clear();
+      final c = _container(presets: [_room('den', room: settings)]);
+      addTearDown(c.dispose);
+      c
+          .read(seasonalPrefsProvider.notifier)
+          .update(
+            (p) => p.copyWith(
+              performance: DecoPerformance.balanced,
+              activePresetId: 'den',
+              livingVariation: 'bookshop.1',
+            ),
+          );
+      // The room's own look is the one in effect, not the system's.
+      expect(c.read(effectiveLivingProvider), 'kawaii.1');
+      await c.read(decorLayersProvider).setLiving('cyberpunk.3');
+      expect(DecorPreset.fromJson(_created.last)!.room!.living, 'cyberpunk.3');
+      expect(c.read(seasonalPrefsProvider).livingVariation, 'bookshop.1');
+      await c.read(decorLayersProvider).setLiving(null);
+      expect(DecorPreset.fromJson(_created.last)!.room!.living, isNull);
+      expect(
+        c.read(seasonalPrefsProvider).livingVariation,
+        isNull,
+        reason: 'off is off everywhere',
+      );
+      // Environment edits go to the room's own environment too.
+      await c
+          .read(decorLayersProvider)
+          .setEnv((e) => e.copyWith(weather: WeatherKind.fog));
+      expect(
+        DecorPreset.fromJson(_created.last)!.room!.env!.weather,
+        WeatherKind.fog,
+      );
+      await c.read(decorLayersProvider).setLayoutParts({'cards'});
+      expect(DecorPreset.fromJson(_created.last)!.room!.layoutParts, {'cards'});
+    },
+  );
+
+  test('without a room, layers change the system settings', () async {
+    final c = _container();
+    addTearDown(c.dispose);
+    await c.read(decorLayersProvider).setLiving('kawaii.4');
+    expect(c.read(seasonalPrefsProvider).livingVariation, 'kawaii.4');
+    expect(
+      c.read(seasonalPrefsProvider).performance,
+      isNot(DecoPerformance.off),
+    );
+    await c.read(decorLayersProvider).setLayout('gothic.1');
+    expect(c.read(effectiveLayoutProvider).$1, 'gothic.1');
+    await c.read(decorLayersProvider).setLiving(null);
+    expect(c.read(effectiveLivingProvider), isNull);
+  });
+
   test('studio extras round-trip, are bounded and paint', () {
     final i = DecorItem(
       id: 'x',

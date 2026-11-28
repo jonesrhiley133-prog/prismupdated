@@ -2,7 +2,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:prism_plurality/core/web/render_mode.dart';
 import 'package:prism_plurality/core/app_icon/app_icon.dart';
+import 'package:prism_plurality/features/appearance/models/look.dart'
+    show plainLook;
+import 'package:prism_plurality/features/appearance/services/appearance_store.dart';
 import 'package:prism_plurality/features/appearance/views/appearance_hub.dart';
+import 'package:prism_plurality/shared/theme/look_theme.dart'
+    show lookBrightness;
+import 'package:prism_plurality/shared/widgets/prism_surface.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_gallery.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_maker.dart';
 import 'package:prism_plurality/shared/l10n/tr.dart';
@@ -83,6 +89,7 @@ class AppearanceSettingsScreen extends ConsumerWidget {
                   },
                 ),
               ),
+              const _ThemeModeNotice(),
               PrismSection(
                 title: context.l10n.appearanceStyle,
                 child: Column(
@@ -629,6 +636,91 @@ class _CustomIconTile extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Explains (and offers to fix) a theme that only works in light or dark,
+/// which otherwise makes Light, Dark and System look like they do nothing.
+class _ThemeModeNotice extends ConsumerWidget {
+  const _ThemeModeNotice();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(appearanceProvider).value;
+    if (state == null || state.auto) return const SizedBox.shrink();
+    final look = state.look(state.activeId);
+    if (look.isPlain) return const SizedBox.shrink();
+    final forced = lookBrightness(look);
+    if (forced == null) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    final darkOnly = forced == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: PrismSurface(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              darkOnly
+                  ? tr(
+                      context,
+                      'Your theme “${look.name}” is made for dark mode, so Prism stays dark whichever brightness you pick.',
+                      'Tu tema «${look.name}» está hecho para el modo oscuro, así que Prism se queda oscuro.',
+                    )
+                  : tr(
+                      context,
+                      'Your theme “${look.name}” is made for light mode, so Prism stays light whichever brightness you pick.',
+                      'Tu tema «${look.name}» está hecho para el modo claro, así que Prism se queda claro.',
+                    ),
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (look.dark != null)
+                  PrismButton(
+                    label: tr(
+                      context,
+                      'Make it work in both',
+                      'Que funcione en ambos',
+                    ),
+                    tone: PrismButtonTone.filled,
+                    density: PrismControlDensity.compact,
+                    onPressed: () async {
+                      final store = ref.read(appearanceProvider.notifier);
+                      final saved = await store.saveLook(
+                        look.copyWith(dark: null),
+                      );
+                      await store.activate(saved.id);
+                    },
+                  ),
+                PrismButton(
+                  label: tr(
+                    context,
+                    'Use the default theme',
+                    'Usar el tema predeterminado',
+                  ),
+                  tone: PrismButtonTone.outlined,
+                  density: PrismControlDensity.compact,
+                  onPressed: () => ref
+                      .read(appearanceProvider.notifier)
+                      .activate(plainLook.id),
+                ),
+                PrismButton(
+                  label: tr(context, 'Themes', 'Temas'),
+                  tone: PrismButtonTone.outlined,
+                  density: PrismControlDensity.compact,
+                  onPressed: () => context.push(AppRoutePaths.appearanceStudio),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

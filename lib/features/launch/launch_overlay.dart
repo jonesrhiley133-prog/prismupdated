@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -359,6 +360,7 @@ class LaunchOverlay extends StatefulWidget {
 
 class _LaunchOverlayState extends State<LaunchOverlay>
     with SingleTickerProviderStateMixin {
+  Timer? _doneTimer;
   // Set once the hand-off finishes. If this widget is rebuilt from scratch
   // mid-animation, the new one carries on (the timeline is time-based).
   static bool _playedThisRun = false;
@@ -381,6 +383,7 @@ class _LaunchOverlayState extends State<LaunchOverlay>
 
   @override
   void dispose() {
+    _doneTimer?.cancel();
     _exit.dispose();
     super.dispose();
   }
@@ -418,10 +421,13 @@ class _LaunchOverlayState extends State<LaunchOverlay>
               onTap: () => _exit.forward(),
               child: LaunchBackdrop(
                 child: LaunchMark(
-                  onDone: () => Future<void>.delayed(
-                    const Duration(milliseconds: 120),
-                    () => mounted ? _exit.forward() : null,
-                  ),
+                  onDone: () {
+                    _doneTimer?.cancel();
+                    _doneTimer = Timer(
+                      const Duration(milliseconds: 120),
+                      () => mounted ? _exit.forward() : null,
+                    );
+                  },
                 ),
               ),
             ),

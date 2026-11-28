@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:prism_plurality/features/astro/engine/places.dart';
-import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/decor_preview.dart';
 import 'package:prism_plurality/features/seasonal/living_environment.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
@@ -27,17 +26,10 @@ class _EnvironmentScreenState extends ConsumerState<EnvironmentScreen> {
     super.dispose();
   }
 
-  void _set(EnvSettings Function(EnvSettings e) f) => ref
-      .read(seasonalPrefsProvider.notifier)
-      .update(
-        (p) => p.copyWith(
-          env: f(p.env),
-          // Choosing an effect is choosing to see it.
-          performance: p.performance == DecoPerformance.off
-              ? DecoPerformance.balanced
-              : p.performance,
-        ),
-      );
+  /// Edits the environment in effect: a Digital Room's own, if the room
+  /// has one, otherwise the system's.
+  void _set(EnvSettings Function(EnvSettings e) f) =>
+      ref.read(decorLayersProvider).setEnv(f);
 
   Future<void> _search(String q) async {
     if (q.trim().length < 2) {
@@ -53,7 +45,7 @@ class _EnvironmentScreenState extends ConsumerState<EnvironmentScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final es = Localizations.localeOf(context).languageCode == 'es';
-    final env = ref.watch(seasonalPrefsProvider.select((p) => p.env));
+    final env = ref.watch(effectiveEnvProvider);
     final phase = timePhaseOf(DateTime.now());
     final weather = ref.watch(currentWeatherProvider);
     final preview = environmentItems(

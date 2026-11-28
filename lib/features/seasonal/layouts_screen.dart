@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:prism_plurality/core/router/app_routes.dart';
 import 'package:prism_plurality/features/appearance/appearance_library.dart';
 import 'package:prism_plurality/features/appearance/appearance_undo_banner.dart';
-import 'package:prism_plurality/features/seasonal/decor_models.dart';
 import 'package:prism_plurality/features/seasonal/living_layout.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
@@ -14,23 +13,13 @@ import 'package:prism_plurality/shared/ui_kit.dart';
 
 /// Turns a look's layout arrangement on (or off with null), keeping undo.
 void applyLayout(WidgetRef ref, String? variationId, {String? undoMessage}) {
-  final prev = ref.read(seasonalPrefsProvider).layoutVariation;
+  final prev = ref.read(effectiveLayoutProvider).$1;
   if (undoMessage != null && prev != variationId) {
     ref
         .read(appearanceUndoProvider.notifier)
         .record(undoMessage, () => applyLayout(ref, prev));
   }
-  ref
-      .read(seasonalPrefsProvider.notifier)
-      .update(
-        (p) => p.copyWith(
-          layoutVariation: variationId,
-          performance:
-              variationId != null && p.performance == DecoPerformance.off
-              ? DecoPerformance.balanced
-              : p.performance,
-        ),
-      );
+  ref.read(decorLayersProvider).setLayout(variationId);
 }
 
 /// Layout arrangements: optional ornaments on headers, cards, dividers,
@@ -43,15 +32,11 @@ class LayoutsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final prefs = ref.watch(seasonalPrefsProvider);
-    final v = prefs.layoutVariation == null
-        ? null
-        : variationById(prefs.layoutVariation!);
-    final living = prefs.livingVariation == null
-        ? null
-        : variationById(prefs.livingVariation!);
-    final parts = prefs.layoutParts ?? LayoutPart.all.toSet();
-    final n = ref.read(seasonalPrefsProvider.notifier);
+    final (layoutId, layoutParts) = ref.watch(effectiveLayoutProvider);
+    final v = layoutId == null ? null : variationById(layoutId);
+    final livingId = ref.watch(effectiveLivingProvider);
+    final living = livingId == null ? null : variationById(livingId);
+    final parts = layoutParts ?? LayoutPart.all.toSet();
 
     return PrismPageScaffold(
       topBar: PrismTopBar(
@@ -199,13 +184,11 @@ class LayoutsScreen extends ConsumerWidget {
                   key: ValueKey('layout-part:$part'),
                   title: layoutPartName(context, v, part),
                   value: parts.contains(part),
-                  onChanged: (on) => n.update(
-                    (p) => p.copyWith(
-                      layoutParts: on
-                          ? {...parts, part}
-                          : ({...parts}..remove(part)),
-                    ),
-                  ),
+                  onChanged: (on) => ref
+                      .read(decorLayersProvider)
+                      .setLayoutParts(
+                        on ? {...parts, part} : ({...parts}..remove(part)),
+                      ),
                 ),
               if (living != null && living.id != v.id)
                 Padding(

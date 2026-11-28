@@ -161,12 +161,14 @@ Color? backgroundBaseColor(BgSpec bg) => switch (bg.kind) {
         collectionBackgroundById(bg.builtin)?.base,
 };
 
-/// The brightness [look] is designed for, judged from its colours.
+/// The brightness [look] is designed for: its own setting, or else judged
+/// from the background and surface colours it sets. A background picture
+/// or collection background never decides it, so choosing a dark wallpaper
+/// doesn't stop Light, Dark and System from working.
 Brightness? lookBrightness(PrismLook look) {
   if (look.dark != null) return look.dark! ? Brightness.dark : Brightness.light;
   final c = look.color(LookColor.background) ?? look.color(LookColor.surface);
-  final bg = c != null ? Color(c) : backgroundBaseColor(look.background);
-  return bg == null ? null : ThemeData.estimateBrightnessForColor(bg);
+  return c == null ? null : ThemeData.estimateBrightnessForColor(Color(c));
 }
 
 /// Applies [look] on top of a base Prism theme.
@@ -906,12 +908,30 @@ class _LookBackgroundState extends State<LookBackground> {
     final spec = widget.spec;
     final theme = Theme.of(context);
     if (spec.kind == BgKind.theme) return const SizedBox.shrink();
+    // A background made for the other mode (a dark wallpaper while the app
+    // is light, or the reverse) gets a soft wash of the page colour, so
+    // text stays readable and switching light/dark always looks right.
+    final base = backgroundBaseColor(spec);
+    final wash =
+        base != null &&
+            ThemeData.estimateBrightnessForColor(base) != theme.brightness
+        ? theme.scaffoldBackgroundColor.withValues(alpha: 0.62)
+        : null;
     if (spec.kind == BgKind.color) {
-      return ColoredBox(
+      final solid = ColoredBox(
         color: Color(
           spec.color,
         ).withValues(alpha: widget.reduceTransparency ? 1 : spec.opacity),
       );
+      return wash == null
+          ? solid
+          : Stack(
+              fit: StackFit.expand,
+              children: [
+                solid,
+                ColoredBox(color: wash),
+              ],
+            );
     }
     final img = _image;
     return ExcludeSemantics(
@@ -957,6 +977,7 @@ class _LookBackgroundState extends State<LookBackground> {
                       );
                     },
                   ),
+                  if (wash != null) ColoredBox(color: wash),
                 ],
               ),
       ),

@@ -13,7 +13,6 @@ import 'package:prism_plurality/features/appearance/services/appearance_store.da
 import 'package:prism_plurality/features/appearance/views/background_gallery.dart';
 import 'package:prism_plurality/features/games/engines/ambience_synth.dart';
 import 'package:prism_plurality/features/seasonal/decor_models.dart';
-import 'package:prism_plurality/features/seasonal/living_environment.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_catalog.dart';
 import 'package:prism_plurality/features/seasonal/seasonal_providers.dart';
 import 'package:prism_plurality/features/settings/views/app_icon_maker.dart';
@@ -411,6 +410,9 @@ class _LayersCard extends ConsumerWidget {
     }
 
     final seasonal = prefs.manualVariation ?? prefs.permanentVariation;
+    final living = ref.watch(effectiveLivingProvider);
+    final layout = ref.watch(effectiveLayoutProvider).$1;
+    final env = ref.watch(effectiveEnvProvider);
     final rows = <(String, String, VoidCallback?)>[
       (tr(context, 'Base theme', 'Tema base'), look?.name ?? '—', null),
       (
@@ -422,17 +424,17 @@ class _LayersCard extends ConsumerWidget {
       ),
       (
         tr(context, 'Living decorations', 'Decoraciones vivas'),
-        lookName(prefs.livingVariation) ?? tr(context, 'Off', 'Apagado'),
-        prefs.livingVariation == null
+        lookName(living) ?? tr(context, 'Off', 'Apagado'),
+        living == null
             ? null
-            : () => n.update((p) => p.copyWith(livingVariation: null)),
+            : () => ref.read(decorLayersProvider).setLiving(null),
       ),
       (
         tr(context, 'Layout', 'Diseño'),
-        lookName(prefs.layoutVariation) ?? tr(context, 'Off', 'Apagado'),
-        prefs.layoutVariation == null
+        lookName(layout) ?? tr(context, 'Off', 'Apagado'),
+        layout == null
             ? null
-            : () => n.update((p) => p.copyWith(layoutVariation: null)),
+            : () => ref.read(decorLayersProvider).setLayout(null),
       ),
       (
         tr(context, 'Seasonal decorations', 'Decoraciones de temporada'),
@@ -449,12 +451,10 @@ class _LayersCard extends ConsumerWidget {
       ),
       (
         tr(context, 'Environmental effects', 'Efectos ambientales'),
-        prefs.env.any
+        env.any
             ? tr(context, 'On', 'Activados')
             : tr(context, 'Off', 'Apagado'),
-        prefs.env.any
-            ? () => n.update((p) => p.copyWith(env: const EnvSettings()))
-            : null,
+        env.any ? () => ref.read(decorLayersProvider).clearEnv() : null,
       ),
       (
         tr(context, 'Ambient audio', 'Sonido ambiental'),
